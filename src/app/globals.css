@@ -1,5 +1,18 @@
+:root {
+  --primary-bg: #FFFFFF;
+  --primary-text: #000000;
+  --white: #FFFFFF;
+  --black: #000000;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+[data-theme="dark"] {
+  --primary-bg: #000000;
+  --primary-text: #FFFFFF;
 }
