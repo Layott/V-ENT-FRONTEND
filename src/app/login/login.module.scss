@@ -21,7 +21,7 @@
 
 .pageHeader h1 {
     color: var(--v-ent-red);
-    font-size: 3rem;
+    font-size: 2rem;
 }
 
 .mainContainer {
@@ -52,7 +52,7 @@
 }
 
 .formHeader h2 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 0.75rem;
 }
 
@@ -185,29 +185,22 @@
 }
 
 @media only screen and (min-width: 500px) {
-    .pageContainer {
-        border: 2px solid purple;
+    .pageHeader h1 {
+        font-size: 3rem;
     }
-
-    // .pageHeader {
-    //     height: 100px;
-    // }
-
-    // .mainContainer {
-    //     min-height: calc(100vh - 200px);
-    // }
 
     .formContainer {
         width: 450px;
         padding: 3rem 1.5rem;
+        border: 2px solid purple;
     } 
+
+    .formHeader h2 {
+        font-size: 2rem;
+    }    
 }
 
 @media only screen and (min-width: 650px) {
-    .pageContainer {
-        border: 2px solid green;
-    }
-
     .pageHeader {
         height: 100px;
     }
@@ -219,5 +212,6 @@
     .formContainer {
         width: 570px;
         padding: 3rem 3.5rem;
+        border: 2px solid green;
     } 
 }
