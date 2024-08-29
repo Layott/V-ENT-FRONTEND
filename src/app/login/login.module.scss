@@ -1,0 +1,163 @@
+.pageContainer {
+    width: 100%;
+    background-color: var(--primary-text);
+    min-height: 100vh;
+    color: var(--primary-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // justify-content: center;
+    padding-bottom: 100px;
+}
+
+.pageHeader {
+    height: 100px;
+    width: 100%;
+    border: 1px solid white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageHeader h1 {
+    color: var(--v-ent-red);
+    font-size: 3rem;
+}
+
+.mainContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+    // min-height: 100vh;
+    width: 100%;
+    border: 1px solid green;
+}
+
+.formContainer {
+    padding: 3rem 3.5rem;
+    border: 1px solid red;
+    background-color: var(--overlay-gray);
+    min-height: 50vh;
+    width: 500px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    // margin-top: -100px;
+}
+
+.formHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid red;
+}
+
+.formHeader h2 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.formHeader p {
+    font-weight: 100;
+    font-size: 0.9rem;
+}
+
+.loginForm {
+    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.inputGroup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.inputGroup label {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.inputGroup input {
+    font-size: 0.85rem;
+    padding-left: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 5px;
+    background-color: #303136;
+    border: 1px solid #303136;
+    outline: none;
+    color: var(--primary-bg);
+    transition: ease-in-out 0.5s all;
+}
+
+.inputGroup input:focus,
+.inputGroup input:active {
+    border: 1px solid var(--primary-bg);
+}
+
+.inputGroup input::placeholder {
+    color: rgba(255, 255, 255, 0.672);
+    font-weight: 100;
+}
+
+.loginBTN {
+    width: 100%;
+}
+
+.alternativeLoginContainer {
+    width: 100%;
+    min-height: 40px;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.alternativeLoginContainer p {
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+
+.logoContainer {
+    width: 100%;
+    border: 1px solid red;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.signInLogo {
+    height: 30px;
+    cursor: pointer;
+    width: 30px;
+    border: 1px solid purple;
+    border-radius: 50%;
+}
+
+.noAccountContainer {
+    display: flex;
+    font-size: 0.8rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.noAccountContainer p {
+    font-weight: 300;
+    color: var(--primary-bg);
+}
+
+.noAccountContainer a {
+    text-decoration: none;
+    color: var(--primary-bg);
+    font-weight: 500;
+}

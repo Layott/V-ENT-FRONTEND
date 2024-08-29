@@ -8,8 +8,11 @@ export const metadata = {
   description: "Vermillion Enterprise (V-ENT) is revolutionizing the gaming and anime world by providing a comprehensive platform for gamers, anime enthusiasts, and creative minds. With automated esports analytics, seamless event management, and connections to industry gigs, V-ENT is the future of interactive entertainment.",
   keywords: "Vermillion Enterprise, V-ENT, esports, gaming, anime, event management, esports analytics, streaming software, gaming community, anime events, industry jobs, creative minds",
   author: "Vermillion Enterprise Team",
-  viewport: "width=device-width, initial-scale=1.0",
-  charset: "UTF-8"
+  viewport: {
+    width: "device-width",
+    initialScale: 1
+  },
+  charSet: "UTF-8"
 };
 
 export default function RootLayout({ children }) {
@@ -20,7 +23,7 @@ export default function RootLayout({ children }) {
         <meta name="keywords" content={metadata.keywords} />
         <meta name="author" content={metadata.author} />
         <meta name="viewport" content={metadata.viewport} />
-        <meta charset={metadata.charset} />
+        <meta charset={metadata.charSet} />
         <title>{metadata.title}</title>
       </head>
       <body className={inter.className}>{children}</body>

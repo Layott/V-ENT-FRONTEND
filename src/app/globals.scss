@@ -4,6 +4,8 @@
 
   --white: #FFFFFF;
   --black: #000000;
+  --v-ent-red: #ED1C24;
+  --overlay-gray: #212225;
 
 }
 
@@ -14,6 +16,20 @@
   overflow-x: hidden;
 }
 
+.btn {
+  height: 37px;
+  font-weight: 600;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.redBTN {
+  color: var(--primary-bg);
+  background-color: var(--v-ent-red);
+  border: 1px solid var(--v-ent-red);
+}
 
 [data-theme="dark"] {
   --primary-bg: #000000;
