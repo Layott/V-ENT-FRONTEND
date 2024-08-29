@@ -28,6 +28,8 @@ const Login = () => {
                         <input type="text" placeholder="Enter your password" />
                     </div>
 
+                    <Link href={'/forgot-password'}>Forgot password?</Link>
+
                     <button className={`btn redBTN ${styles.loginBTN}`}>
                         Login
                     </button>

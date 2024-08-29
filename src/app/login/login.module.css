@@ -12,7 +12,6 @@
 .pageHeader {
   height: 100px;
   width: 100%;
-  border: 1px solid white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,15 +29,13 @@
   align-items: center;
   min-height: calc(100vh - 200px);
   width: 100%;
-  border: 1px solid green;
 }
 
 .formContainer {
   padding: 3rem 3.5rem;
-  border: 1px solid red;
   background-color: var(--overlay-gray);
   min-height: 50vh;
-  width: 500px;
+  width: 550px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -50,7 +47,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid red;
 }
 
 .formHeader h2 {
@@ -68,6 +64,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  align-items: flex-end;
+  padding: 1rem;
+}
+
+.loginForm a {
+  text-decoration: none;
+  color: var(--primary-bg);
+  font-size: 0.85rem;
+  margin-top: -0.75rem;
+  float: right;
 }
 
 .inputGroup {
@@ -111,7 +118,6 @@
 .alternativeLoginContainer {
   width: 100%;
   min-height: 40px;
-  border: 1px solid white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,7 +132,6 @@
 
 .logoContainer {
   width: 100%;
-  border: 1px solid red;
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -136,7 +141,6 @@
   height: 30px;
   cursor: pointer;
   width: 30px;
-  border: 1px solid purple;
   border-radius: 50%;
 }
 

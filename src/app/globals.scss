@@ -5,6 +5,7 @@
   --white: #FFFFFF;
   --black: #000000;
   --v-ent-red: #ED1C24;
+  --v-ent-light-red: #ff0008;
   --overlay-gray: #212225;
 
 }
@@ -29,6 +30,18 @@
   color: var(--primary-bg);
   background-color: var(--v-ent-red);
   border: 1px solid var(--v-ent-red);
+  transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
+}
+
+.redBTN:hover {
+  color: var(--primary-bg);
+  background-color: var(--v-ent-light-red);
+  border: 1px solid var(--primary-bg);
+  transform: scale(1);
+}
+
+.redBTN:active {
+  transform: scale(1.01);
 }
 
 [data-theme="dark"] {
