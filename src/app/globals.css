@@ -28,6 +28,7 @@
   color: var(--primary-bg);
   background-color: var(--v-ent-red);
   border: 1px solid var(--v-ent-red);
+  transform: scale(1);
   transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
 }
 
@@ -35,7 +36,6 @@
   color: var(--primary-bg);
   background-color: var(--v-ent-light-red);
   border: 1px solid var(--primary-bg);
-  transform: scale(1);
 }
 
 .redBTN:active {

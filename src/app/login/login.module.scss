@@ -35,7 +35,8 @@
     padding: 3rem 3.5rem;
     background-color: var(--overlay-gray);
     min-height: 50vh;
-    width: 550px;
+    // width: 550px;
+    width: 570px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -66,7 +67,7 @@
     align-items: center;
     width: 100%;
     align-items: flex-end;
-    padding: 1rem;
+    padding: 0.25rem;
 }
 
 .loginForm a {
@@ -109,6 +110,25 @@
 .inputGroup input::placeholder {
     color: rgba(255, 255, 255, 0.672);
     font-weight: 100;
+}
+
+.passwordContainer {
+    width: 100%;
+    position: relative;
+}
+
+.passwordContainer input {
+    width: 100%;
+    position: relative;
+    padding-right: 40px;
+}
+
+.togglePassword {
+    position: absolute;
+    right: 15px;
+    top: calc(50% + 2px);
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 
 .loginBTN {

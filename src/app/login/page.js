@@ -1,10 +1,21 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
 import facebookLogo from '../../../public/images/facebook.svg'
+import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { FaRegEyeSlash } from "react-icons/fa";
 import styles from './login.module.css'
 
 const Login = () => {
+    const [showPassword, setShowPassword] = useState(true)
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevState) => !prevState)
+    }
+
   return (
     <div className={styles.pageContainer}>
         <header className={styles.pageHeader}>
@@ -21,11 +32,26 @@ const Login = () => {
                 <form className={styles.loginForm}>
                     <div className={styles.inputGroup}>
                         <label>Email or Username:</label>
-                        <input type="text" placeholder="Enter your email address or username" />
+                        <input
+                            type="text"
+                            placeholder="Enter your email address or username"
+                        />
                     </div>
                     <div className={styles.inputGroup}>
                         <label>Password:</label>
-                        <input type="text" placeholder="Enter your password" />
+                        <div className={styles.passwordContainer}>
+                            <input
+                                type={showPassword ? "password" : "text"}
+                                placeholder="Enter your password"
+                            />
+
+                            <span
+                                onClick={togglePasswordVisibility}
+                                className={styles.togglePassword}
+                            >
+                                {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye /> }
+                            </span>
+                        </div>
                     </div>
 
                     <Link href={'/forgot-password'}>Forgot password?</Link>
