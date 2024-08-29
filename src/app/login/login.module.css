@@ -125,9 +125,10 @@
 .togglePassword {
   position: absolute;
   right: 15px;
-  top: calc(50% + 2px);
+  top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  display: flex;
 }
 
 .loginBTN {
