@@ -59,7 +59,7 @@
   font-size: 0.9rem;
 }
 
-.loginForm {
+.signUpForm {
   gap: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -67,14 +67,6 @@
   width: 100%;
   align-items: flex-end;
   padding: 0.25rem;
-}
-
-.loginForm a {
-  text-decoration: none;
-  color: var(--primary-bg);
-  font-size: 0.85rem;
-  margin-top: -0.75rem;
-  float: right;
 }
 
 .inputGroup {
@@ -111,6 +103,11 @@
   font-weight: 100;
 }
 
+.toolTip {
+  font-size: 0.75rem;
+  font-weight: 200;
+}
+
 .passwordContainer {
   width: 100%;
   position: relative;
@@ -135,7 +132,28 @@
   width: 100%;
 }
 
-.alternativeLoginContainer {
+.termsAndPrivacy {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+  color: var(--primary-bg);
+  font-weight: 200;
+  line-height: 1.5;
+  justify-content: center;
+  width: 100%;
+}
+
+.termsAndPrivacy a {
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: var(--primary-bg);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.alternativeSignUpContainer {
   width: 100%;
   min-height: 40px;
   display: flex;
@@ -145,7 +163,7 @@
   gap: 1.25rem;
 }
 
-.alternativeLoginContainer p {
+.alternativeSignUpContainer p {
   font-size: 0.8rem;
   font-weight: 300;
 }
@@ -157,14 +175,14 @@
   gap: 1rem;
 }
 
-.signInLogo {
+.signUpLogo {
   height: 30px;
   cursor: pointer;
   width: 30px;
   border-radius: 50%;
 }
 
-.noAccountContainer {
+.alreadyHaveAccount {
   display: flex;
   font-size: 0.8rem;
   width: 100%;
@@ -172,12 +190,12 @@
   justify-content: center;
 }
 
-.noAccountContainer p {
+.alreadyHaveAccount p {
   font-weight: 300;
   color: var(--primary-bg);
 }
 
-.noAccountContainer a {
+.alreadyHaveAccount a {
   text-decoration: none;
   color: var(--primary-bg);
   font-weight: 500;
