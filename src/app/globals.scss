@@ -49,6 +49,10 @@
   font-family: 'ClashDisplay-Regular', sans-serif;
 }
 
+a {
+  text-decoration: none;
+}
+
 h1 {
   font-size: var(--mobile-h1-size);
   font-weight: var(--fw-bold);

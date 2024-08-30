@@ -50,11 +50,15 @@
 
 .formHeader h3 {
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .formHeader p {
   font-weight: 100;
   font-size: 0.9rem;
+  text-align: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .loginForm {
@@ -68,7 +72,6 @@
 }
 
 .loginForm a {
-  text-decoration: none;
   color: var(--primary-bg);
   font-size: 0.85rem;
   margin-top: -0.75rem;
@@ -176,7 +179,6 @@
 }
 
 .noAccountContainer a {
-  text-decoration: none;
   color: var(--primary-bg);
   font-weight: 500;
 }
