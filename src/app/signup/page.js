@@ -56,6 +56,14 @@ const Signup = () => {
                     </div>
 
                     <div className={styles.inputGroup}>
+                        <label>Country:</label>
+                        <input
+                            type="text"
+                            placeholder="Create a drop down for fetching country"
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
                         <label>Password:</label>
                         <div className={styles.passwordContainer}>
                             <input
