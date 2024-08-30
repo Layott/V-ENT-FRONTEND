@@ -181,14 +181,14 @@
   font-weight: 500;
 }
 
-@media only screen and (min-width: 500px) {
+@media only screen and (min-width: 600px) {
   .formContainer {
     width: 450px;
     padding: 3rem 1.5rem;
   }
 }
 
-@media only screen and (min-width: 650px) {
+@media only screen and (min-width: 768px) {
   .pageHeader {
     height: 100px;
   }
