@@ -1,3 +1,4 @@
+@import url("./clash-display.css");
 :root {
   --primary-bg: #FFFFFF;
   --primary-text: #000000;
@@ -37,6 +38,7 @@
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+  font-family: 'ClashDisplay-Regular', sans-serif;
 }
 
 .btn {
