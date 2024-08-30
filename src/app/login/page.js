@@ -25,7 +25,7 @@ const Login = () => {
         <main className={styles.mainContainer}>
             <div className={styles.formContainer}>
                 <section className={styles.formHeader}>
-                    <h2>Welcome Back</h2>
+                    <h3>Welcome Back</h3>
                     <p>Please sign into your account</p>
                 </section>
 

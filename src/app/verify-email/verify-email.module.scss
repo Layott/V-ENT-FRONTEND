@@ -21,7 +21,6 @@
 
 .pageHeader h1 {
     color: var(--v-ent-red);
-    font-size: 2rem;
 }
 
 .mainContainer {
@@ -29,22 +28,28 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    // min-height: 10px;
     width: 500px;
     background-color: var(--overlay-gray);
-    padding: 3rem 4rem;
+    padding: 2.5rem 4rem;
     border-radius: 10px;
+    gap: 1.5rem;
+}
+
+.mainContainer h6 {
+    font-weight: var(--fw-medium);
+}
+
+.mainContainer p {
+    font-weight: var(--fw-light);
+    font-size: var(--fs-p-size-sm-desktop);
+    font-weight: var(--fw-extra-light);
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 1rem;
 }
 
 .resendBTN {
     width: 100%;
-}
-
-@media only screen and (min-width: 500px) {
-    .pageHeader h1 {
-        font-size: 3rem;
-    }
- 
 }
 
 @media only screen and (min-width: 650px) {

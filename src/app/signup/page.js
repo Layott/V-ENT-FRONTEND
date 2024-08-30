@@ -25,7 +25,7 @@ const Signup = () => {
         <main className={styles.mainContainer}>
             <div className={styles.formContainer}>
                 <section className={styles.formHeader}>
-                    <h2>Create an account</h2>
+                    <h3>Create an account</h3>
                     <p>Please complete your account details</p>
                 </section>
 

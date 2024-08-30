@@ -41,6 +41,19 @@
   font-family: 'ClashDisplay-Regular', sans-serif;
 }
 
+h1 {
+  font-size: var(--mobile-h1-size);
+  font-weight: var(--fw-bold);
+}
+
+h3 {
+  font-size: var(--mobile-h2-size);
+}
+
+h6 {
+  font-size: var(--desktop-h6-size);
+}
+
 .btn {
   height: 37px;
   font-weight: 600;
@@ -71,4 +84,16 @@
 [data-theme="dark"] {
   --primary-bg: #000000;
   --primary-text: #FFFFFF;
+}
+
+@media only screen and (min-width: 500px) {
+  h1 {
+    font-size: var(--desktop-h1-size);
+  }
+  h3 {
+    font-size: var(--desktop-h3-size);
+  }
+  h6 {
+    font-size: var(--desktop-h6-size);
+  }
 }
