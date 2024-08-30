@@ -201,20 +201,22 @@
   font-weight: 500;
 }
 
-@media only screen and (min-width: 500px) {
+@media only screen and (min-width: 600px) {
   .pageHeader h1 {
     font-size: 3rem;
   }
   .formContainer {
     width: 450px;
+    width: 500px;
     padding: 3rem 1.5rem;
+    padding: 3rem 2rem;
   }
   .formHeader h2 {
     font-size: 2rem;
   }
 }
 
-@media only screen and (min-width: 650px) {
+@media only screen and (min-width: 768px) {
   .pageHeader {
     height: 100px;
   }
@@ -222,7 +224,7 @@
     min-height: calc(100vh - 200px);
   }
   .formContainer {
-    width: 570px;
+    width: 650px;
     padding: 3rem 3.5rem;
   }
 }

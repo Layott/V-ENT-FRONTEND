@@ -10,7 +10,6 @@
 }
 
 .pageHeader {
-    // height: 200px;
     height: 100px;
     width: 100%;
     display: flex;
@@ -203,14 +202,17 @@
     font-weight: 500;
 }
 
-@media only screen and (min-width: 500px) {
+// @media only screen and (min-width: 500px) {
+@media only screen and (min-width: 600px) {
     .pageHeader h1 {
         font-size: 3rem;
     }
 
     .formContainer {
         width: 450px;
+        width: 500px;
         padding: 3rem 1.5rem;
+        padding: 3rem 2rem;
     } 
 
     .formHeader h2 {
@@ -218,7 +220,8 @@
     }    
 }
 
-@media only screen and (min-width: 650px) {
+// @media only screen and (min-width: 650px) {
+@media only screen and (min-width: 768px) {
     .pageHeader {
         height: 100px;
     }
@@ -228,7 +231,7 @@
     }
 
     .formContainer {
-        width: 570px;
+        width: 650px;
         padding: 3rem 3.5rem;
     } 
 }
