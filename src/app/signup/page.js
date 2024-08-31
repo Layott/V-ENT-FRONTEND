@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
@@ -11,10 +11,31 @@ import styles from './signup.module.css'
 
 const Signup = () => {
     const [showPassword, setShowPassword] = useState(true)
+    const [selectedCountry, setSelectedCountry] = useState('')
+    const [countries, setCountries] = useState([])
 
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState)
     }
+
+    const handleCountrySelection = (countryCode) => {
+        setSelectedCountry(countryCode)
+    }
+
+    useEffect(() => {
+        fetch('https://restcountries.com/v3.1/all')
+            .then((response) => response.json())
+            .then((data) => {
+                const sortedCountries = data
+                    .map(country => ({
+                        name: country.name.common,
+                        code: country.cca2
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                setCountries(sortedCountries)
+            })
+            .catch((error) => console.log('Error fetching countries:', error))
+    }, [])
 
   return (
     <div className={styles.pageContainer}>
@@ -57,10 +78,19 @@ const Signup = () => {
 
                     <div className={styles.inputGroup}>
                         <label>Country:</label>
-                        <input
-                            type="text"
-                            placeholder="Create a drop down for fetching country"
-                        />
+                        <select
+                            value={selectedCountry}
+                            onChange={handleCountrySelection}
+                            className={styles.countryDropdown}
+                            required
+                        >
+                            <option value="">Select your country</option>
+                            {countries.map((country) => (
+                                <option key={country.code} value={country.code}>
+                                    {country.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className={styles.inputGroup}>
@@ -138,3 +168,4 @@ const Signup = () => {
 }
 
 export default Signup
+

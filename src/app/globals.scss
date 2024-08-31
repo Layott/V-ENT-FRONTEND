@@ -93,6 +93,24 @@ h6 {
   transform: scale(1.01);
 }
 
+
+select {
+  border: 1px solid var(--overlay-gray);
+  height: 40px;
+  color: var(--primary-bg);
+  background-color: #303136 !important;
+  padding-left: 10px;
+  padding-right: 10px;
+  outline: none;
+  transition: ease-in-out 0.5s all;
+}
+
+select:focus,
+select:active {
+    border: 1px solid var(--primary-bg);
+    color: var(--primary-bg);
+}
+
 [data-theme="dark"] {
   --primary-bg: #000000;
   --primary-text: #FFFFFF;  
