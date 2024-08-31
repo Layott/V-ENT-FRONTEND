@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
@@ -8,11 +8,11 @@ import facebookLogo from '../../../public/images/facebook.svg'
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
 import styles from './signup.module.css'
+import { countries } from './countries'
 
 const Signup = () => {
     const [showPassword, setShowPassword] = useState(true)
     const [selectedCountry, setSelectedCountry] = useState('')
-    const [countries, setCountries] = useState([])
 
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState)
@@ -21,21 +21,6 @@ const Signup = () => {
     const handleCountrySelection = (event) => {
         setSelectedCountry(event.target.value)
     }
-
-    useEffect(() => {
-        fetch('https://restcountries.com/v3.1/all')
-            .then((response) => response.json())
-            .then((data) => {
-                const sortedCountries = data
-                    .map(country => ({
-                        name: country.name.common,
-                        code: country.cca2
-                    }))
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                setCountries(sortedCountries)
-            })
-            .catch((error) => console.log('Error fetching countries:', error))
-    }, [])
 
   return (
     <div className={styles.pageContainer}>
