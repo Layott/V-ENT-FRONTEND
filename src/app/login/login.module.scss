@@ -78,6 +78,7 @@
     font-size: 0.85rem;
     margin-top: -0.75rem;
     float: right;
+    font-weight: var(--fw-bold);
 }
 
 .inputGroup {
@@ -183,7 +184,7 @@
 
 .noAccountContainer a {
     color: var(--primary-bg);
-    font-weight: 500;
+    font-weight: var(--fw-bold);
 }
 
 @media only screen and (min-width: 600px) {

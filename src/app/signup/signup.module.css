@@ -150,7 +150,7 @@
   color: var(--primary-bg);
   display: inline-flex;
   align-items: center;
-  font-weight: 500;
+  font-weight: var(--fw-bold);
 }
 
 .alternativeSignUpContainer {
@@ -197,7 +197,7 @@
 
 .alreadyHaveAccount a {
   color: var(--primary-bg);
-  font-weight: 500;
+  font-weight: var(--fw-bold);
 }
 
 @media only screen and (min-width: 600px) {
