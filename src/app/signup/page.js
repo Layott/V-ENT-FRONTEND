@@ -18,8 +18,8 @@ const Signup = () => {
         setShowPassword((prevState) => !prevState)
     }
 
-    const handleCountrySelection = (countryCode) => {
-        setSelectedCountry(countryCode)
+    const handleCountrySelection = (event) => {
+        setSelectedCountry(event.target.value)
     }
 
     useEffect(() => {
