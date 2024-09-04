@@ -1,9 +1,10 @@
-@import url("./clash-display.css");
+@import url("./clash-grotesk.css");
 :root {
   --primary-bg: #FFFFFF;
   --primary-text: #000000;
   --white: #FFFFFF;
   --black: #000000;
+  --green: #008000;
   --v-ent-red: #ED1C24;
   --v-ent-light-red: #ff0008;
   --overlay-gray: #212225;
@@ -38,7 +39,8 @@
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
-  font-family: 'ClashDisplay-Regular', sans-serif;
+  font-family: 'ClashGrotesk-Regular', sans-serif;
+  color: var(--primary-bg);
 }
 
 a {
