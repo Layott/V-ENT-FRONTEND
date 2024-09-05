@@ -1,0 +1,43 @@
+.desktopSidebar {
+  width: 250px;
+  height: 100vh;
+  border: 1px solid red;
+  position: fixed;
+}
+
+.sidebarNav {
+  margin-top: 1rem;
+}
+
+.sidebarList li {
+  padding-left: 20px;
+}
+
+.sidebarItem {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.iconLink {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.sidebarItem a {
+  font-family: 'ClashGrotesk-Light', sans-serif;
+}
+
+.sidebarIcon {
+  font-size: 0.9rem;
+}
+
+.comingSoon {
+  font-size: 0.6rem;
+  background-color: rgba(251, 198, 75, 0.24);
+  padding: 3px 5px;
+  border-radius: 3px;
+}

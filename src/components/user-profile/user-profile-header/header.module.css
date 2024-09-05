@@ -1,0 +1,173 @@
+.userProfileHeader {
+  width: 100%;
+  height: 60px;
+  border: 1px solid green;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+}
+
+.logoContainer {
+  width: 250px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border: 1px solid red;
+}
+
+.logoContainer h1 {
+  font-family: 'ClashGrotesk-Semibold', sans-serif;
+  margin-left: 1rem;
+  font-weight: var(--fw-bold);
+  font-size: 2.5rem;
+  color: var(--v-ent-red);
+}
+
+.breadcrumbContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: inherit;
+  height: 100%;
+}
+
+.breadcrumbTitle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.6rem;
+}
+
+.currentSection,
+.backArrowIcon {
+  font-size: 1rem;
+  font-size: 1.2rem;
+}
+
+.backArrow {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  font-weight: var(--fw-bold);
+  gap: 2rem;
+  padding-left: 0.4rem;
+}
+
+.backArrowIcon {
+  font-weight: 700;
+}
+
+.breadcrumbNav {
+  font-size: 0.6rem;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  font-weight: var(--fw-medium);
+  align-items: center;
+  gap: 0rem;
+}
+
+.arrowRightIcon {
+  font-size: 0.7rem;
+}
+
+.currentSectionLink {
+  color: var(--v-ent-red);
+}
+
+.headerContent {
+  width: calc(100% - 250px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1.5rem;
+  padding-left: 2rem;
+}
+
+.searchBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 5px;
+  transition: all ease-in-out 0.5s;
+  background-color: #393A40;
+  border: 1px solid #393A40;
+}
+
+.searchBar:focus-within {
+  border: 1px solid var(--primary-bg);
+}
+
+.searchBar:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.searchIcon {
+  font-size: 1.2rem;
+  color: #888;
+  margin-right: 0px;
+  margin-left: 0.2rem;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  width: 250px;
+  padding: 0px 10px;
+  transition: width 0.5s ease-in-out, border 0.5s ease-in-out;
+  margin-right: 5px;
+  background-color: transparent;
+  font-size: 1rem;
+}
+
+.searchInput:focus {
+  width: 350px;
+}
+
+.searchInput::placeholder {
+  font-family: 'ClashGrotesk-Extralight', sans-serif;
+  color: white;
+  font-size: 0.85rem;
+}
+
+.userDetails {
+  display: flex;
+}
+
+.userInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 0.4rem;
+}
+
+.userName {
+  font-size: 0.85rem;
+  font-weight: var(--fw-bold);
+}
+
+.userUsername {
+  font-size: 0.65rem;
+}
+
+.userAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userAvatar img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}

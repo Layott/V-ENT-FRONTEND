@@ -26,7 +26,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    // min-height: calc(100vh - 200px);
     width: 100%;
 }
 
@@ -120,6 +119,50 @@
     width: 100%;
     position: relative;
     padding-right: 40px;
+}
+
+
+/* Password Validation Styling */
+.icon {
+    transition: color 0.3s ease;
+} 
+.criteriaContainer {
+    margin-top: 2px;
+}
+  
+.criterion {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+    font-size: 0.9rem; 
+}
+  
+.valid {
+    color: var(--green);
+    margin-right: 5px;
+    font-size: 1rem; 
+}
+  
+.invalid {
+    color: var(--primary-bg);
+    margin-right: 5px;
+    font-size: 1rem;
+}
+  
+.animate {
+    animation: bounce 0.5s ease;
+}
+  
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
 }
 
 .togglePassword {
