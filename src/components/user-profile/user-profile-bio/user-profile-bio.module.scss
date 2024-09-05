@@ -1,0 +1,115 @@
+.profileBioContainer {
+    border: 1px solid red;
+    min-height: 200px;
+    position: relative;
+}
+
+.profileBioHeader {
+    border: 1px solid green;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.profileBioInfo {
+    display: flex;
+    gap: 1.4rem;
+    margin-left: 1.5rem;
+    margin-top: -2.125rem;
+}
+
+.profileImageContainer {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.profileImageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+}
+
+.profileImageUpload {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    height: auto;
+    right: 0;
+    bottom: 1rem;
+    border-radius: 50%;
+}
+
+.profileImageUploadLabel {
+    color: var(--primary-bg);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 7px;
+    font-size: 1.2rem;
+    background-color: #393A40;
+    border-radius: 50%;
+}
+
+.uploadInput {
+    display: none;
+}
+
+.profileDetails {
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.profileUsernameHandle,
+.profileFullName {
+    font-size: 1rem;
+}
+
+.userLocation {
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+
+.userLocationState {
+    padding-left: 2px;
+}
+
+.profileEditButton {
+    margin-top: 0.85rem;
+    margin-right: 1rem;
+}
+
+.editButton {
+    background-color: #393A40;
+    padding: 7.5px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.profileDescription {
+    margin-left: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    // border: 1px solid red;
+    width: 60%;
+}
+
+.bioParagraph {
+    font-size: 0.9rem;
+    line-height: 1.75;
+}
