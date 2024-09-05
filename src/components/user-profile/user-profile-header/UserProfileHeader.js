@@ -62,7 +62,7 @@ const UserProfileHeader = () => {
         <div className={styles.userDetails}>
             <div className={styles.userInfo}>
             <p className={styles.userName}>Nathan Drake</p>    
-            <p className={styles.userUsername}>@nathandrake</p>
+            <p className={styles.userUsername}>@frostbite</p>
             </div>
             <div className={styles.userAvatar}>
             <Image

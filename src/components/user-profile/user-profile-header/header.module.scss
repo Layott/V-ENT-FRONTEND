@@ -7,6 +7,8 @@
     position: fixed;
     margin-left: 250px;
     background-color: #212225;
+    top: 0;
+    z-index: 100;
 }
 
 .breadcrumbContainer {
@@ -26,7 +28,6 @@
     width: 100%;
     gap: 0.6rem;
 }
-
 
 .currentSection,
 .backArrowIcon {
