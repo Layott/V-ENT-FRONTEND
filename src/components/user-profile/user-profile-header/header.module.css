@@ -5,22 +5,8 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
-}
-
-.logoContainer {
-  width: 250px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  border: 1px solid red;
-}
-
-.logoContainer h1 {
-  font-family: 'ClashGrotesk-Semibold', sans-serif;
-  margin-left: 1rem;
-  font-weight: var(--fw-bold);
-  font-size: 2.5rem;
-  color: var(--v-ent-red);
+  margin-left: 250px;
+  background-color: #212225;
 }
 
 .breadcrumbContainer {
@@ -41,7 +27,6 @@
 
 .currentSection,
 .backArrowIcon {
-  font-size: 1rem;
   font-size: 1.2rem;
 }
 

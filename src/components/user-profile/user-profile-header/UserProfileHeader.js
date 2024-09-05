@@ -25,10 +25,7 @@ const UserProfileHeader = () => {
   
   return (
     <div className={styles.userProfileHeader}>
-        <div className={styles.logoContainer}>
-        <h1>v-ent</h1>
-        </div>
-
+      
         <div className={styles.headerContent}>
         <div className={styles.breadcrumbContainer}>
 

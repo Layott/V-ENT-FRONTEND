@@ -8,6 +8,10 @@ import styles from './sidebar.module.css'
 const UserProfileSidebar = () => {
   return (
     <div className={styles.desktopSidebar}>
+        <div className={styles.logoContainer}>
+            <h1>v-ent</h1>
+        </div>
+
         <nav className={styles.sidebarNav}>
         <ul className={styles.sidebarList}>
             <li className={styles.sidebarItem}>
