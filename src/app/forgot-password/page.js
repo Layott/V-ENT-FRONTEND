@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { VENT } from '@/app/api/auth/route';
-import styles from './forgot-password.module.css';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar'
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
+import generalStyles from "@/styles/auth/auth.module.css"
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -58,20 +58,20 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className={styles.pageContainer}>
-            <header className={styles.pageHeader}>
+        <div className={generalStyles.pageContainer}>
+            <header className={generalStyles.pageHeader}>
                 <h1>v-ent</h1>
             </header>
 
-            <main className={styles.mainContainer}>
-                <div className={styles.formContainer}>
-                    <section className={styles.formHeader}>
-                        <h3>Forgot your password?</h3>
+            <main className={generalStyles.mainContainer}>
+                <div className={generalStyles.formContainer}>
+                    <section className={generalStyles.formHeader}>
+                        <h3 className={generalStyles.formHeaderH3}>Forgot your password?</h3>
                         <p>Enter the email address associated with your account.</p>
                     </section>
 
-                    <form className={styles.forgotPasswordForm} onSubmit={handleSubmit}>
-                        <div className={styles.inputGroup}>
+                    <form className={generalStyles.generalForm} onSubmit={handleSubmit}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Email Address:</label>
                             <input
                                 type="email"
@@ -84,14 +84,14 @@ const ForgotPassword = () => {
     
                         <button 
                             type="submit" 
-                            className={`btn redBTN ${styles.sendResetLinkBTN}`} 
+                            className={`btn redBTN ${generalStyles.formBTN}`} 
                             disabled={loading}
                         >
                             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Send Reset Link'}
                         </button>
                     </form>
 
-                    <div className={styles.rememberPassword}>
+                    <div className={generalStyles.formHelperContainer}>
                         <p>Remember password?&nbsp;</p>
                         <Link href={'/login'}>Login</Link>
                     </div>

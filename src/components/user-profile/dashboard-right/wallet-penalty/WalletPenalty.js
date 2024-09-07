@@ -1,14 +1,14 @@
 import { RiCopperCoinLine } from 'react-icons/ri'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { FiFlag } from 'react-icons/fi'
-import dRightStyles from './../dashboard-right.module.css'
+import profileStyles from "@/styles/user-profile/profile-page.module.css"
 import styles from './wallet-penalty.module.css'
 
 const WalletPenalty = () => {
   return (
     <div className={styles.walletPenaltyContainer}>
         
-        <div className={`${styles.walletContainer} ${dRightStyles.middleLayerColor}`}>
+        <div className={`${styles.walletContainer} ${profileStyles.middleLayerColor}`}>
             <h4>Wallet Balance</h4>
             <p className={styles.coinNumber}>
                 <span className={styles.coinSpan}><RiCopperCoinLine className={styles.coinIcon} /></span>
@@ -17,7 +17,7 @@ const WalletPenalty = () => {
 
         </div>
         
-        <div className={`${styles.penaltyContainer} ${dRightStyles.middleLayerColor}`}>
+        <div className={`${styles.penaltyContainer} ${profileStyles.middleLayerColor}`}>
             <h4 className={styles.penaltyHeader}>Penalty Points
                 <span className={styles.infoIconSpan}>
                 <IoIosInformationCircleOutline className={styles.infoIcon} />

@@ -6,12 +6,13 @@ import googleLogo from '../../../public/images/google.svg'
 import facebookLogo from '../../../public/images/facebook.svg'
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
-import styles from './login.module.css'
 import { signIn } from 'next-auth/react'; 
 import { VENT } from '@/app/api/auth/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar'; 
 import CircularProgress from '@mui/material/CircularProgress'; 
 import { useRouter } from 'next/navigation';
+import generalStyles from "@/styles/auth/auth.module.css"
+import styles from './login.module.css'
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(true)
@@ -100,20 +101,20 @@ const Login = () => {
     }
 
     return (
-        <div className={styles.pageContainer}>
-            <header className={styles.pageHeader}>
+        <div className={generalStyles.pageContainer}>
+            <header className={generalStyles.pageHeader}>
                 <h1>v-ent</h1>
             </header>
 
-            <main className={styles.mainContainer}>
-                <div className={styles.formContainer}>
-                    <section className={styles.formHeader}>
-                        <h3>Welcome Back</h3>
+            <main className={generalStyles.mainContainer}>
+                <div className={generalStyles.formContainer}>
+                    <section className={generalStyles.formHeader}>
+                        <h3 className={generalStyles.formHeaderH3}>Welcome Back</h3>
                         <p>Please sign into your account</p>
                     </section>
 
-                    <form className={styles.loginForm} onSubmit={handleSubmit}>
-                        <div className={styles.inputGroup}>
+                    <form className={`${generalStyles.generalForm} ${styles.loginForm}`} onSubmit={handleSubmit}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Email or Username:</label>
                             <input
                                 type="text"
@@ -124,9 +125,9 @@ const Login = () => {
                                 required
                             />
                         </div>
-                        <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Password:</label>
-                            <div className={styles.passwordContainer}>
+                            <div className={generalStyles.passwordContainer}>
                                 <input
                                     type={showPassword ? "password" : "text"}
                                     name="password"
@@ -137,7 +138,7 @@ const Login = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className={styles.togglePassword}
+                                    className={generalStyles.togglePassword}
                                 >
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
@@ -146,30 +147,30 @@ const Login = () => {
 
                         <Link href={'/forgot-password'}>Forgot password?</Link>
 
-                        <button className={`btn redBTN ${styles.loginBTN}`} disabled={loading}>
+                        <button className={`btn redBTN ${generalStyles.formBTN}`} disabled={loading}>
                             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Login'}
                         </button>
                     </form>
 
-                    <div className={styles.alternativeLoginContainer}>
+                    <div className={generalStyles.alternativeAuthContainer}>
                         <p>Or sign in with</p>
-                        <div className={styles.logoContainer}>
+                        <div className={generalStyles.logoContainer}>
                             <Image
                                 src={googleLogo}
                                 alt="Google Logo"
-                                className={`${styles.googleLogo} ${styles.signInLogo}`}
+                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignIn('google')}
                             />
                             <Image
                                 src={facebookLogo}
                                 alt="Facebook Logo"
-                                className={`${styles.facebookLogo} ${styles.signInLogo}`}
+                                className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignIn('facebook')}
                             />
                         </div>
                     </div>
 
-                    <div className={styles.noAccountContainer}>
+                    <div className={generalStyles.formHelperContainer}>
                         <p>Don&#39;t have an account?&nbsp;</p>
                         <Link href={'/signup'}>Create one</Link>
                     </div>
