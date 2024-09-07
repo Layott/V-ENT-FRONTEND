@@ -163,6 +163,19 @@ const Signup = () => {
                     <form className={generalStyles.generalForm} onSubmit={handleFormSubmit}>
 
                         <div className={generalStyles.inputGroup}>
+                            <label>Email Address:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+
+                        <div className={generalStyles.inputGroup}>
                             <label>Username:</label>
                             <input
                                 type="text"
@@ -182,18 +195,6 @@ const Signup = () => {
                                 name="fullName"
                                 placeholder="Enter your name"
                                 value={formData.fullName}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className={generalStyles.inputGroup}>
-                            <label>Email Address:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Enter your email address"
-                                value={formData.email}
                                 onChange={handleInputChange}
                                 required
                             />
