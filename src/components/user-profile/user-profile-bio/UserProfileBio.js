@@ -73,7 +73,7 @@ const UserProfileBio = () => {
 
         <div className={styles.profileDescription}>
             <p className={styles.bioParagraph}>
-                Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it's dominating in-game or leveling up your project with killer design, I'm here to make it happen. Let's team up and create something epic!
+                Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it&#39;s dominating in-game or leveling up your project with killer design, I&#39;m here to make it happen. Let&#39;s team up and create something epic!
             </p>
         </div>
 
