@@ -7,13 +7,14 @@ import facebookLogo from '../../../public/images/facebook.svg';
 import { signIn, getSession } from 'next-auth/react';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
-import styles from './signup.module.css';
 import { countries } from './countries';
 import PasswordStrength from './passwordStrength';
 import { VENT } from '@/app/api/auth/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress'; 
 import { useRouter } from 'next/navigation';
+import generalStyles from "@/styles/auth/auth.module.css"
+import styles from './signup.module.css';
 
 const Signup = () => {
     const [open, setOpen] = useState(false);
@@ -147,21 +148,21 @@ const Signup = () => {
     };
 
     return (
-        <div className={styles.pageContainer}>
-            <header className={styles.pageHeader}>
+        <div className={generalStyles.pageContainer}>
+            <header className={generalStyles.pageHeader}>
                 <h1>v-ent</h1>
             </header>
 
-            <main className={styles.mainContainer}>
-                <div className={styles.formContainer}>
-                    <section className={styles.formHeader}>
-                        <h3>Create an account</h3>
+            <main className={generalStyles.mainContainer}>
+                <div className={generalStyles.formContainer}>
+                    <section className={generalStyles.formHeader}>
+                        <h3 className={generalStyles.formHeaderH3}>Create an account</h3>
                         <p>Please complete your account details</p>
                     </section>
 
-                    <form className={styles.signUpForm} onSubmit={handleFormSubmit}>
+                    <form className={generalStyles.generalForm} onSubmit={handleFormSubmit}>
 
-                                               <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Username:</label>
                             <input
                                 type="text"
@@ -174,7 +175,7 @@ const Signup = () => {
                             <p className={styles.toolTip}>This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)</p>
                         </div>
 
-                        <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Full name:</label>
                             <input
                                 type="text"
@@ -186,7 +187,7 @@ const Signup = () => {
                             />
                         </div>
 
-                        <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Email Address:</label>
                             <input
                                 type="email"
@@ -198,7 +199,7 @@ const Signup = () => {
                             />
                         </div>
 
-                        <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Country:</label>
                             <select
                                 value={selectedCountry}
@@ -215,9 +216,9 @@ const Signup = () => {
                             </select>
                         </div>
 
-                        <div className={styles.inputGroup}>
+                        <div className={generalStyles.inputGroup}>
                             <label>Password:</label>
-                            <div className={styles.passwordContainer}>
+                            <div className={generalStyles.passwordContainer}>
                                 <input
                                     type={showPassword ? "password" : "text"}
                                     name="password"
@@ -228,16 +229,16 @@ const Signup = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className={styles.togglePassword}>
+                                    className={generalStyles.togglePassword}>
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
                             </div>
                             {password && <PasswordStrength password={password} />}
                         </div>
 
-                        <div className={styles.inputGroup}> 
+                        <div className={generalStyles.inputGroup}> 
                             <label>Confirm Password:</label>
-                            <div className={styles.passwordContainer}>
+                            <div className={generalStyles.passwordContainer}>
                                 <input
                                     type={showPassword ? "password" : "text"}
                                     name="confirmPassword"
@@ -248,14 +249,14 @@ const Signup = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className={styles.togglePassword}
+                                    className={generalStyles.togglePassword}
                                 >
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
                             </div>
                         </div>
 
-                        <button type="submit" className={`btn redBTN ${styles.loginBTN}`}>
+                        <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
                             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create account'}
                         </button>
                         <p className={styles.termsAndPrivacy}>By creating an account, you agree to our&nbsp;
@@ -265,26 +266,26 @@ const Signup = () => {
                         </p>
                     </form>
 
-                    <div className={styles.alternativeSignUpContainer}>
+                    <div className={generalStyles.alternativeAuthContainer}>
                         <p>Or sign up with</p>
-                        <div className={styles.logoContainer}>
+                        <div className={generalStyles.logoContainer}>
                             <Image
                                 src={googleLogo}
                                 alt="Google Logo"
-                                className={`${styles.googleLogo} ${styles.signUpLogo}`}
+                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignUp('google')}
                             />
 
                             <Image
                                 src={facebookLogo}
                                 alt="Facebook Logo"
-                                className={`${styles.facebookLogo} ${styles.signUpLogo}`}
+                                className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignUp('facebook')}
                             />
                         </div>
                     </div>
 
-                    <div className={styles.alreadyHaveAccount}>
+                    <div className={generalStyles.formHelperContainer}>
                         <p>Already have an account?&nbsp;</p>
                         <Link href={'/login'}>Login</Link>
                     </div>
