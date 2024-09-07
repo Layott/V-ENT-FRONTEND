@@ -22,21 +22,16 @@
   color: var(--v-ent-red);
 }
 
-.mainContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 .formContainer {
   padding: 2rem 1rem;
   background-color: var(--overlay-gray);
-  min-height: 50vh;
+  min-height: 10vh;
   width: 90%;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 1.5rem;
 }
 
@@ -47,11 +42,18 @@
   justify-content: center;
 }
 
-.formHeader h3 {
+.formHeaderH3 {
   margin-bottom: 0.75rem;
   text-align: center;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.mainContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .formHeader p {
@@ -62,14 +64,40 @@
   padding-right: 1rem;
 }
 
-.forgotPasswordForm {
+.generalForm {
   gap: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   align-items: flex-end;
   padding: 0.75rem;
+}
+
+.passwordContainer {
+  width: 100%;
+  position: relative;
+}
+
+.passwordContainer input {
+  width: 100%;
+  position: relative;
+  padding-right: 40px;
+}
+
+.togglePassword {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+}
+
+.authLogo {
+  height: 30px;
+  cursor: pointer;
+  width: 30px;
+  border-radius: 50%;
 }
 
 .inputGroup {
@@ -105,11 +133,11 @@
   font-weight: 100;
 }
 
-.sendResetLinkBTN {
+.formBTN {
   width: 100%;
 }
 
-.rememberPassword {
+.formHelperContainer {
   display: flex;
   font-size: 0.8rem;
   width: 100%;
@@ -117,14 +145,36 @@
   justify-content: center;
 }
 
-.rememberPassword p {
+.formHelperContainer p {
   font-weight: 300;
   color: var(--primary-bg);
 }
 
-.rememberPassword a {
+.formHelperContainer a {
   color: var(--primary-bg);
   font-weight: var(--fw-bold);
+}
+
+.alternativeAuthContainer {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.alternativeAuthContainer p {
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+.logoContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
 @media only screen and (min-width: 600px) {
@@ -132,14 +182,14 @@
     width: 450px;
     padding: 3rem 1.5rem;
   }
-  .mainContainer {
-    min-height: calc(100vh - 200px);
-  }
 }
 
 @media only screen and (min-width: 768px) {
   .pageHeader {
     height: 100px;
+  }
+  .mainContainer {
+    min-height: calc(100vh - 200px);
   }
   .formContainer {
     width: 570px;

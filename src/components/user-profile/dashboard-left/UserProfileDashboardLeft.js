@@ -2,23 +2,24 @@ import Link from 'next/link'
 import { FaFacebook, FaInstagram, FaYoutube  } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiEslgaming, SiPcgamingwiki, SiYoutubegaming  } from "react-icons/si";
+import profileStyles from "@/styles/user-profile/profile-page.module.css"
 import styles from './dashboard-left.module.css'
 
 const UserProfileDashboardLeft = () => {
   return (
-    <div className={`${styles.profileDashboardLeft} ${styles.middleLayerColor}`}>
+    <div className={`${styles.profileDashboardLeft} ${profileStyles.middleLayerColor}`}>
         <div className={`${styles.interestsContainer} ${styles.sectionContainer}`}>
             <h4 className={styles.sectionHeader}>Interests</h4>
             <div className={`${styles.interestsListContainer} ${styles.contentListContainer}`}>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Anime</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Uncharted</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>FIFA</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Elden Ring</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Mortal Kombat</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>God of War</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Manga</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Black Myth Wukong</span>
-                <span className={`${styles.interest} ${styles.topMostLayerColor}`}>Battle Royale</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Anime</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Uncharted</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>FIFA</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Elden Ring</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Mortal Kombat</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>God of War</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Manga</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Black Myth Wukong</span>
+                <span className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>Battle Royale</span>
             </div>
         </div>
 
@@ -53,16 +54,16 @@ const UserProfileDashboardLeft = () => {
         <div className={`${styles.socialLinksContainer} ${styles.sectionContainer}`}>
             <h4 className={styles.sectionHeader}>Social Links</h4>
             <div className={`${styles.socialLinksListContainer} ${styles.contentListContainer}`}>
-                <Link href={'./'} className={`${styles.socialLink} ${styles.topMostLayerColor}`}>
+                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
                     <FaFacebook className={styles.socialIcon} /> Facebook
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${styles.topMostLayerColor}`}>
+                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
                     <FaInstagram className={styles.socialIcon} /> Instagram
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${styles.topMostLayerColor}`}>
+                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
                     <FaXTwitter className={styles.socialIcon} /> X (Twitter)
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${styles.topMostLayerColor}`}>
+                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
                     <FaYoutube  className={styles.socialIcon} /> YouTube
                 </Link>
             </div>

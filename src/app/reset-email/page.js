@@ -1,18 +1,18 @@
 import Link from 'next/link'
-import styles from './reset-email.module.css'
+import generalStyles from "@/styles/auth/auth.module.css"
 
 const ResetEmail = () => {
   return (
-    <div className={styles.pageContainer}>
-        <header className={styles.pageHeader}>
+    <div className={generalStyles.pageContainer}>
+        <header className={generalStyles.pageHeader}>
             <h1>v-ent</h1>
         </header>
 
-        <main className={styles.mainContainer}>
-            <h3>Check your email</h3>
+        <main className={generalStyles.formContainer}>
+            <h3 className={generalStyles.formHeaderH3}>Check your email</h3>
             <p>We just sent you a link to reset your password.</p>
 
-            <div className={styles.rememberPassword}>
+            <div className={generalStyles.formHelperContainer}>
                 <p>Remember password?&nbsp;</p>
                 <Link href={'/login'}>Login</Link>
             </div>

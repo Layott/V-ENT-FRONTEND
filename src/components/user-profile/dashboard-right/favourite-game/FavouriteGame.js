@@ -6,19 +6,19 @@ import godOfWarRagnarok from "@/images/god_of_war.jpg"
 import callOfDuty from "@/images/call_of_duty.jpg"
 import tekken from "@/images/tekken_8.jpg"
 import playerUnknowns from "@/images/playerunknowns_battlegrounds.png"
-import dRightStyles from './../dashboard-right.module.css'
+import profileStyles from "@/styles/user-profile/profile-page.module.css"
 import styles from './favourite-game.module.css'
 
 
 const FavouriteGame = () => {
   return (
-    <div className={`${styles.favouriteGamesContainer} ${dRightStyles.middleLayerColor}`}>
+    <div className={`${styles.favouriteGamesContainer} ${profileStyles.middleLayerColor}`}>
         <h4 className={styles.statsHeader}>
             <GrGamepad className={styles.statsIcon} />Favourite Games
         </h4>
         <div className={styles.favouriteGameContainer}>
             <div className={`${styles.favouriteGameCard} ${styles.addFavouriteGameCard}`}>
-                <div className={`${styles.addGameIcons} ${dRightStyles.topMostLayerColor}`}>
+                <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
                     <span className={styles.plusIcon}><FiPlus /></span>
                     <span className={styles.addGameText}>Add Game</span>
                 </div>
