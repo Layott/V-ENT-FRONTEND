@@ -1,0 +1,39 @@
+.statsContainer {
+    padding: 1.25rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.statsHeader {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.statsDetailsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.statsDetails {
+    width: 25%;
+    padding: 0.8rem;  
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.statsDetailHeader {
+    font-size: 0.8rem;
+    font-weight: var(--fw-bold);
+    color: #B2B3BD;
+}
+
+.statsDetailValue {
+    font-size: 1.5rem;
+    font-weight: var(--fw-bold);
+}

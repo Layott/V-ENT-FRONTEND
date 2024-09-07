@@ -1,4 +1,4 @@
-import profileBannerImage from './../../../../public/images/profile-image-bg.jpeg'
+import profileBannerImage from "@/images/profile_image_bg.jpeg"
 import { FiCamera } from 'react-icons/fi';
 import Image from 'next/image';
 import styles from './banner.module.css'

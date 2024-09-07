@@ -1,16 +1,34 @@
 .pageContainer {
     width: 100%;
-    height: 200vh;
-    background-color: #212225;
+    min-height: 100vh;
+    background-color: #17181A;
+    overflow-x: hidden;
+    padding-bottom: 3rem;
 }
 
 .mainContainer {
-    min-height: calc(100vh - 60px);
     width: 100%;
-    margin-top: 60px;
 }
 
 .rightPaneContainer {
     width: calc(100% - 250px);
     margin-left: 250px;
+    margin-top: 60px;
+}
+
+.profileDashboard {
+    min-height: 200px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 1.5rem;
+}
+
+.middleLayerColor {
+    background-color: #212225;
+}
+
+.topMostLayerColor {
+    background-color: #28292D;
 }
