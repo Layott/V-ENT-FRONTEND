@@ -1,5 +1,5 @@
 import { ImStatsDots } from "react-icons/im"
-import profileStyles from "@/styles/user-profile/profile-page.module.css"
+import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './stats.module.css'
 
 const Stats = () => {

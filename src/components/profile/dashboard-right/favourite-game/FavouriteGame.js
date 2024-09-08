@@ -6,7 +6,7 @@ import godOfWarRagnarok from "@/images/god_of_war.jpg"
 import callOfDuty from "@/images/call_of_duty.jpg"
 import tekken from "@/images/tekken_8.jpg"
 import playerUnknowns from "@/images/playerunknowns_battlegrounds.png"
-import profileStyles from "@/styles/user-profile/profile-page.module.css"
+import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './favourite-game.module.css'
 
 

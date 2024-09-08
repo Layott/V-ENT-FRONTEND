@@ -1,19 +1,19 @@
 'use client'
 
 import Sidebar from '@/components/profile/profile-sidebar/ProfileSidebar';
-import UserProfileHeader from '@/components/profile/profile-header/ProfileHeader';
-import UserProfileBanner from '@/components/profile/profile-banner/Banner';
-import UserProfileBio from '@/components/profile/profile-bio/ProfileBio';
-import UserProfileDashboardLeft from "@/components/profile/dashboard-left/UserProfileDashboardLeft";
-import UserProfileDashboardRight from "@/components/profile/dashboard-right/UserProfileDashboardRight";
+import ProfileHeader from '@/components/profile/profile-header/ProfileHeader';
+import ProfileBanner from '@/components/profile/profile-banner/Banner';
+import ProfileBio from '@/components/profile/profile-bio/ProfileBio';
+import ProfileDashboardLeft from "@/components/profile/dashboard-left/ProfileDashboardLeft";
+import ProfileDashboardRight from "@/components/profile/dashboard-right/ProfileDashboardRight";
 import styles from './profile.module.css'
 
-const UserProfile = () => {
+const Profile = () => {
 
   return (
     <div className={styles.pageContainer}>
       
-      <UserProfileHeader />
+      <ProfileHeader />
       
       <main className={styles.mainContainer}>
 
@@ -21,13 +21,13 @@ const UserProfile = () => {
       
         <div className={styles.rightPaneContainer}>
 
-          <UserProfileBanner />
-          <UserProfileBio />
+          <ProfileBanner />
+          <ProfileBio />
 
           <div className={styles.profileDashboard}>
        
-            <UserProfileDashboardLeft />
-            <UserProfileDashboardRight />
+            <ProfileDashboardLeft />
+            <ProfileDashboardRight />
        
           </div>
       
@@ -39,4 +39,4 @@ const UserProfile = () => {
   )
 }
 
-export default UserProfile
+export default Profile
