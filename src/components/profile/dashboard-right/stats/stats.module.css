@@ -16,15 +16,20 @@
   flex-direction: row;
   justify-content: space-between;
   gap: 0.5rem;
+  border: 1px solid blue;
+  flex-wrap: wrap;
 }
 
 .statsDetails {
-  width: 25%;
   padding: 0.8rem;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  border: 1px solid red;
+  min-width: 135px;
+  width: 25%;
+  width: 24%;
 }
 
 .statsDetailHeader {

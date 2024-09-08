@@ -11,6 +11,11 @@ const Stats = () => {
         </h4>
         
         <div className={styles.statsDetailsContainer}>
+            
+            <div className={`${styles.globalRanking} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
+                <p className={styles.statsDetailHeader}>Ranking</p>
+                <p className={styles.statsDetailValue}>#1123</p>
+            </div>
 
             <div className={`${styles.tournamentPlayed} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <p className={styles.statsDetailHeader}>Tournament played</p>
@@ -27,11 +32,6 @@ const Stats = () => {
                 <p className={styles.statsDetailValue}>4</p>
             </div>
 
-            <div className={`${styles.globalRanking} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <p className={styles.statsDetailHeader}>Global Ranking</p>
-                <p className={styles.statsDetailValue}>1123</p>
-            </div>
-        
         </div>
 
     </div>
