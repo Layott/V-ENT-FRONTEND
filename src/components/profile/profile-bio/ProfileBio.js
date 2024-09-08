@@ -3,7 +3,7 @@ import { FaRegSave } from 'react-icons/fa'
 import { FiCamera, FiEdit3 } from 'react-icons/fi'
 import { IoLocationOutline } from 'react-icons/io5';
 import Image from 'next/image'
-import profileImageBig from "@/images/signed_in_user_big.jpeg" 
+import profileImageBig from "@/images/signed_in_user_big.webp" 
 import styles from './profile-bio.module.css'
 
 const UserProfileBio = () => {

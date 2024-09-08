@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FiArrowLeft } from "react-icons/fi";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
-import profileImageSmall from "@/images/signed_in_user_small.jpg"
+import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './header.module.css'
 
 const ProfileHeader = () => {
