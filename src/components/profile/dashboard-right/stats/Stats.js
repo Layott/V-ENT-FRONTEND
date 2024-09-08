@@ -13,22 +13,25 @@ const Stats = () => {
         <div className={styles.statsDetailsContainer}>
             
             <div className={`${styles.globalRanking} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <p className={styles.statsDetailHeader}>Ranking</p>
+                <div className={styles.rankingViewTable}>
+                    <h4 className={styles.statsDetailHeader}>Ranking</h4>
+                    <p className={styles.viewTable}>View Table</p>
+                </div>
                 <p className={styles.statsDetailValue}>#1123</p>
             </div>
 
             <div className={`${styles.tournamentPlayed} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <p className={styles.statsDetailHeader}>Tournament played</p>
+                <h4 className={styles.statsDetailHeader}>Tournament played</h4>
                 <p className={styles.statsDetailValue}>24</p>
             </div>
 
             <div className={`${styles.wins} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <p className={styles.statsDetailHeader}>Wins</p>
+                <h4 className={styles.statsDetailHeader}>Wins</h4>
                 <p className={styles.statsDetailValue}>22</p>
             </div>
 
             <div className={`${styles.losses} ${styles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <p className={styles.statsDetailHeader}>Losses</p>
+                <h4 className={styles.statsDetailHeader}>Losses</h4>
                 <p className={styles.statsDetailValue}>4</p>
             </div>
 
