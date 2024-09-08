@@ -19,8 +19,20 @@
 .profileDashboard {
     min-height: 200px;
     padding: 1.5rem;
+    border: 1px solid green;
+    // display: flex;
+    // align-items: flex-start;
+    // flex-direction: row;
+    // gap: 1.5rem;
+}
+
+.overviewContainer {
+    border: 1px solid red;
+    display: flex;
+    flex-direction: row;
     display: flex;
     align-items: flex-start;
     flex-direction: row;
     gap: 1.5rem;
+    display: none;
 }
