@@ -25,9 +25,11 @@ const Profile = () => {
           <ProfileBio />
 
           <div className={styles.profileDashboard}>
-       
-            <ProfileDashboardLeft />
-            <ProfileDashboardRight />
+
+            <div className={styles.overviewContainer}>
+              <ProfileDashboardLeft />
+              <ProfileDashboardRight />
+            </div>
        
           </div>
       
