@@ -4,7 +4,7 @@ import { FiCamera, FiEdit3 } from 'react-icons/fi'
 import { IoLocationOutline } from 'react-icons/io5';
 import Image from 'next/image'
 import profileImageBig from "@/images/signed_in_user_big.jpeg" 
-import styles from './user-profile-bio.module.css'
+import styles from './profile-bio.module.css'
 
 const UserProfileBio = () => {
     const [isEditing, setIsEditing] = useState(false)
