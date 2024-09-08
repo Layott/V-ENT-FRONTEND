@@ -7,7 +7,7 @@ import { CiSearch } from "react-icons/ci";
 import profileImageSmall from "@/images/signed_in_user_small.jpg"
 import styles from './header.module.css'
 
-const UserProfileHeader = () => {
+const ProfileHeader = () => {
     const [searchQuery, setSearchQuery] = useState('')
 
     const handleSearch = () => {
@@ -24,7 +24,7 @@ const UserProfileHeader = () => {
     }
   
   return (
-    <div className={styles.userProfileHeader}>
+    <div className={styles.profileHeader}>
       
         <div className={styles.headerContent}>
         <div className={styles.breadcrumbContainer}>
@@ -78,4 +78,4 @@ const UserProfileHeader = () => {
   )
 }
 
-export default UserProfileHeader
+export default ProfileHeader
