@@ -32,6 +32,19 @@
     width: calc(25% - 1rem);
 }
 
+.rankingViewTable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.viewTable {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #B2B3BD;
+    cursor: pointer;
+}
+
 .statsDetailHeader {
     font-size: 0.8rem;
     font-weight: var(--fw-bold);
