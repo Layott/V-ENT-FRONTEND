@@ -1,7 +1,7 @@
 import { RiCopperCoinLine } from 'react-icons/ri'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { FiFlag } from 'react-icons/fi'
-import profileStyles from "@/styles/user-profile/profile-page.module.css"
+import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './wallet-penalty.module.css'
 
 const WalletPenalty = () => {

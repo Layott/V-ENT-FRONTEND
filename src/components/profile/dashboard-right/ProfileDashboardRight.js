@@ -3,7 +3,7 @@ import Stats from "./stats/Stats";
 import FavouriteGame from "./favourite-game/FavouriteGame";
 import styles from './dashboard-right.module.css'
 
-const UserProfileDashboardRight = () => {
+const ProfileDashboardRight = () => {
   return (
     <div className={styles.profileDashboardRight}>
       <WalletPenalty />
@@ -13,4 +13,4 @@ const UserProfileDashboardRight = () => {
   )
 }
 
-export default UserProfileDashboardRight
+export default ProfileDashboardRight
