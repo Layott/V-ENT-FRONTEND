@@ -3,7 +3,7 @@ import { FiCamera } from 'react-icons/fi';
 import Image from 'next/image';
 import styles from './banner.module.css'
 
-const UserProfileBanner = () => {
+const ProfileBanner = () => {
     const handleBannerUploader = (event) => {
         const file = event.target.files[0]
         if (file) {
@@ -36,4 +36,4 @@ const UserProfileBanner = () => {
   )
 }
 
-export default UserProfileBanner
+export default ProfileBanner
