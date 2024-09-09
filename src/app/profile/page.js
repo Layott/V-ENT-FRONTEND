@@ -6,6 +6,7 @@ import ProfileBanner from '@/components/profile/profile-banner/Banner';
 import ProfileBio from '@/components/profile/profile-bio/ProfileBio';
 import ProfileDashboardLeft from "@/components/profile/dashboard-left/ProfileDashboardLeft";
 import ProfileDashboardRight from "@/components/profile/dashboard-right/ProfileDashboardRight";
+import Gallery from "@/components/profile/gallery/Gallery"
 import styles from './profile.module.css'
 
 const Profile = () => {
@@ -29,6 +30,10 @@ const Profile = () => {
             <div className={styles.overviewContainer}>
               <ProfileDashboardLeft />
               <ProfileDashboardRight />
+            </div>
+
+            <div className={styles.galleryContainer}>
+              <Gallery />
             </div>
        
           </div>
