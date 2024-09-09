@@ -11,8 +11,7 @@
 }
 
 .rightPaneContainer {
-  width: calc(100% - 250px);
-  margin-left: 250px;
+  width: 100%;
   margin-top: 60px;
 }
 
@@ -38,7 +37,11 @@
 
 .profileDashboard {
   min-height: 200px;
+  width: 1005;
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid purple;
 }
 
 .overviewContainer {
@@ -46,6 +49,24 @@
   flex-direction: row;
   display: flex;
   align-items: flex-start;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1.5rem;
+  border: 2px solid yellow;
+}
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+  }
+  .overviewContainer {
+    flex-direction: row;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+  }
 }
