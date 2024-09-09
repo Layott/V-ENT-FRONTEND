@@ -1,11 +1,11 @@
 import WalletPenalty from "./wallet-penalty/WalletPenalty";
 import Stats from "./stats/Stats";
 import FavouriteGame from "./favourite-game/FavouriteGame";
-import styles from './dashboard-right.module.css'
+import styles from './overview-right.module.css'
 
-const ProfileDashboardRight = () => {
+const OverviewRight = () => {
   return (
-    <div className={styles.profileDashboardRight}>
+    <div className={styles.overviewRight}>
       <WalletPenalty />
       <Stats />
       <FavouriteGame />
@@ -13,4 +13,4 @@ const ProfileDashboardRight = () => {
   )
 }
 
-export default ProfileDashboardRight
+export default OverviewRight
