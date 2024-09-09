@@ -1,0 +1,43 @@
+.galleryContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+}
+
+.imageContainer {
+    width: 300px;
+    height: 230px;
+    border-radius: 0.75rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.imageContainer img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0.75rem;
+}
+
+.addImage {
+    border: 1px dashed var(--primary-bg);
+    min-height: 230px;
+    border-radius: 7.5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.addImageBTN {
+    cursor: pointer;
+}
+
+.uploadImageText {
+    font-size: 1rem;
+}
+
+.plusIcon {
+    font-size: 1.75rem;
+}
