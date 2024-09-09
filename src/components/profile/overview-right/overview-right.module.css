@@ -10,13 +10,6 @@
 @media only screen and (min-width: 768px) {
   .overviewRight {
     order: 2;
-    border: 1px solid white;
-    width: 55%;
-  }
-}
-
-@media only screen and (min-width: 1024px) {
-  .overviewRight {
     width: 55%;
   }
 }
