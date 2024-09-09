@@ -10,13 +10,12 @@ import epicGames from '@/images/EpicGames.webp'
 import nintendoSwitch from '@/images/NintendoSwitch.webp'
 import { FaFacebook, FaInstagram, FaYoutube  } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { TbUnlink  } from "react-icons/tb";
 import { HiPlus } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './dashboard-left.module.css'
+import styles from './overview-left.module.css'
 
-const ProfileDashboardLeft = () => {
+const OverviewLeft = () => {
     const [showMoreInterests, setShowMoreInterests] = useState(false)
     const [showMoreGamingAccounts, setShowMoreGamingAccounts] = useState(false)
 
@@ -45,7 +44,7 @@ const ProfileDashboardLeft = () => {
     }
 
   return (
-    <div className={`${styles.profileDashboardLeft} ${profileStyles.middleLayerColor}`}>
+    <div className={`${styles.overviewLeft} ${profileStyles.middleLayerColor}`}>
         <div className={`${styles.interestsContainer} ${styles.sectionContainer}`}>
             <h4 className={styles.sectionHeader}>Interests</h4>
             <div className={`${styles.interestsListContainer} ${styles.contentListContainer}`}>
@@ -139,4 +138,4 @@ const ProfileDashboardLeft = () => {
   )
 }
 
-export default ProfileDashboardLeft
+export default OverviewLeft

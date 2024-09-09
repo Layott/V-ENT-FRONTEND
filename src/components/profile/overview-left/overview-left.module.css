@@ -1,16 +1,13 @@
-.profileDashboardLeft {
-  width: 340px;
-  width: 330px;
-  min-width: 340px;
-  min-width: 330px;
-  max-width: 340px;
-  max-width: 330px;
+.overviewLeft {
+  width: 100%;
   min-height: 200px;
   padding: 1.25rem;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  order: 2;
+  border: 1px solid red;
 }
 
 .sectionHr {
@@ -170,11 +167,41 @@
 .socialLinksListContainer {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   row-gap: 0.9rem;
   column-gap: 0.25rem;
 }
 
 .socialIcon {
   font-size: 0.95rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .overviewLeft {
+    border: 1px solid red;
+    width: 45%;
+    order: 1;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .overviewLeft {
+    border: 1px solid green;
+    width: 45%;
+  }
+  .overviewRight {
+    border: 1px solid white;
+    width: 55%;
+  }
+  .socialLinksListContainer {
+    justify-content: space-between;
+  }
+}
+
+@media only screen and (min-width: 1100px) {
+  .overviewLeft {
+    width: 330px;
+    min-width: 330px;
+    max-width: 330px;
+  }
 }

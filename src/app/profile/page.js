@@ -5,8 +5,8 @@ import Sidebar from '@/components/profile/profile-sidebar/ProfileSidebar';
 import ProfileHeader from '@/components/profile/profile-header/ProfileHeader';
 import ProfileBanner from '@/components/profile/profile-banner/Banner';
 import ProfileBio from '@/components/profile/profile-bio/ProfileBio';
-import ProfileDashboardLeft from "@/components/profile/dashboard-left/ProfileDashboardLeft";
-import ProfileDashboardRight from "@/components/profile/dashboard-right/ProfileDashboardRight";
+import OverviewLeft from "@/components/profile/overview-left/OverviewLeft";
+import OverviewRight from "@/components/profile/overview-right/OverviewRight";
 import Gallery from "@/components/profile/gallery/Gallery"
 import Activity from "@/components/profile/activity/Activity"
 import styles from './profile.module.css'
@@ -51,8 +51,8 @@ const Profile = () => {
           <div className={styles.profileDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
-                <ProfileDashboardLeft />
-                <ProfileDashboardRight />
+                <OverviewLeft />
+                <OverviewRight />
               </div>            
             )}
 
