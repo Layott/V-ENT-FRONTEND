@@ -18,6 +18,8 @@
 .buttonContainer {
   display: flex;
   margin-top: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .tabBTN {
@@ -29,6 +31,7 @@
   font-weight: var(--fw-bold);
   position: relative;
   outline: none;
+  width: 33.333%;
 }
 
 .activeTab {
@@ -41,7 +44,6 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  border: 1px solid purple;
 }
 
 .overviewContainer {
@@ -51,10 +53,12 @@
   align-items: flex-start;
   flex-direction: column;
   gap: 1.5rem;
-  border: 2px solid yellow;
 }
 
 @media only screen and (min-width: 768px) {
+  .tabBTN {
+    width: 100px;
+  }
   .rightPaneContainer {
     width: calc(100% - 180px);
     margin-left: 180px;
