@@ -21,7 +21,7 @@
 }
 
 .addGameIcons {
-  border: 1px dotted var(--primary-bg);
+  border: 1px dashed var(--primary-bg);
   min-height: 125px;
   border-radius: 10px;
   display: flex;
