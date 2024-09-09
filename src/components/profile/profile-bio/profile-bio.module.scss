@@ -100,13 +100,38 @@
 }
 
 .profileDescription {
-    margin-left: 1.5rem;
+    // margin-left: 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
-    width: 60%;
+    width: 100%;
+    border: 1px solid red;
 }
 
 .bioParagraph {
-    font-size: 0.9rem;
-    line-height: 1.75;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+
+@media only screen and (min-width: 600px) {
+    .profileDescription {
+        // margin-left: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .bioParagraph {
+        font-size: 0.9rem;
+        line-height: 1.75;
+    }     
+}
+
+@media only screen and (min-width: 768px) {
+    .profileDescription {
+        padding-left: 1.5rem;
+        width: 60%;
+    }
+ 
 }
