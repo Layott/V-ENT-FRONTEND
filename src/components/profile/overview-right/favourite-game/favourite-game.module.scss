@@ -7,8 +7,29 @@
 }
 
 .statsHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statsHeaderH4 {
     display: flex;
     gap: 0.5rem;
+}
+
+.seeMoreBTN {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+.rightArrowIcon {
+    font-size: 0.8rem;
 }
 
 .favouriteGameContainer {
