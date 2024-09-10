@@ -1,6 +1,7 @@
 import WalletPenalty from "./wallet-penalty/WalletPenalty";
 import Stats from "./stats/Stats";
 import FavouriteGame from "./favourite-game/FavouriteGame";
+import Achievements from "./achievements/Achievements";
 import styles from './overview-right.module.css'
 
 const OverviewRight = () => {
@@ -9,6 +10,7 @@ const OverviewRight = () => {
       <WalletPenalty />
       <Stats />
       <FavouriteGame />
+      <Achievements />
   </div>
   )
 }
