@@ -1,4 +1,5 @@
 .desktopSidebar {
+  background-color: #131316;
   display: none;
 }
 
@@ -59,7 +60,6 @@
     width: 180px;
     height: 100vh;
     position: fixed;
-    background-color: #131316;
     top: 0;
     display: flex;
     flex-direction: column;
