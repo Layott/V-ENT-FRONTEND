@@ -54,8 +54,8 @@ const FavouriteGame = () => {
               </div>
           </div>
           {favouriteGameData.slice(0, visibleGames).map((favouriteGame, index) => (
-            <div className={`${styles.favouriteGameCard}`}>
-                <div key={index} className={styles.gameImageContainer}>
+            <div key={index} className={`${styles.favouriteGameCard}`}>
+                <div className={styles.gameImageContainer}>
                   <Image
                     src={favouriteGame.src}
                     alt={favouriteGame.name}
