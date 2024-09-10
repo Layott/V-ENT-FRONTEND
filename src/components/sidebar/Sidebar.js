@@ -5,7 +5,7 @@ import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
 import styles from './sidebar.module.css'
 
-const UserProfileSidebar = () => {
+const Sidebar = () => {
   return (
     <div className={styles.desktopSidebar}>
         <div className={styles.logoContainer}>
@@ -75,4 +75,4 @@ const UserProfileSidebar = () => {
   )
 }
 
-export default UserProfileSidebar
+export default Sidebar
