@@ -1,84 +1,70 @@
+import { useState } from "react";
 import Image from "next/image"
 import { GrGamepad } from "react-icons/gr"
 import { FiPlus } from "react-icons/fi"
+import { FaArrowRight } from "react-icons/fa";
 import eldenRing from "@/images/elden_ring.webp"
 import godOfWarRagnarok from "@/images/god_of_war.webp"
 import callOfDuty from "@/images/call_of_duty.jpg"
 import tekken from "@/images/tekken_8.webp"
 import playerUnknowns from "@/images/playerunknowns_battlegrounds.webp"
+import witcher3 from "@/images/witcher_3.webp"
+import mortalKombat from "@/images/mortal_kombat_11.webp"
+import apexLegends from "@/images/apex_legends.webp"
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './favourite-game.module.css'
 
-
 const FavouriteGame = () => {
+  const [visibleGames, setVisibleGames] = useState(5)
+
+  const favouriteGameData = [
+    { name: "Elden Ring", src: eldenRing },
+    { name: "God of War Ragnarok", src: godOfWarRagnarok },
+    { name: "Call of Duty, Black Ops III", src: callOfDuty },
+    { name: "Tekken 8", src: tekken },
+    { name: "Playerunknown\u0027s Battleground", src: playerUnknowns },
+    { name: "The Witcher 3: Wild Hunt", src: witcher3 },
+    { name: "Mortal Kombat 11", src: mortalKombat },
+    { name: "Apex Legends", src: apexLegends },
+  ]
+  
+  const handleSeeMore = () => {
+    setVisibleGames(prevCount => prevCount + 5)     // Show 5 more games on click
+  }
+  
   return (
     <div className={`${styles.favouriteGamesContainer} ${profileStyles.middleLayerColor}`}>
-        <h4 className={styles.statsHeader}>
-            <GrGamepad className={styles.statsIcon} />Favourite Games
-        </h4>
+        <div className={styles.statsHeader}>
+          <h4 className={styles.statsHeaderH4}>
+              <GrGamepad className={styles.statsIcon} />Favourite Games
+          </h4>
+          <button
+            className={styles.seeMoreBTN}
+            onClick={handleSeeMore}
+          >
+            See more <FaArrowRight className={styles.rightArrowIcon} />
+          </button>
+        </div>
+
         <div className={styles.favouriteGameContainer}>
-            <div className={`${styles.favouriteGameCard} ${styles.addFavouriteGameCard}`}>
-                <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
-                    <span className={styles.plusIcon}><FiPlus /></span>
-                    <span className={styles.addGameText}>Add Game</span>
-                </div>
-            </div>
-
-        <div className={`${styles.favouriteGameCard}`}>
-            <div className={styles.gameImageContainer}>
-                <Image
-                    src={eldenRing}
-                    alt="Elden Ring"
+          <div className={`${styles.favouriteGameCard} ${styles.addFavouriteGameCard}`}>
+              <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
+                  <span className={styles.plusIcon}><FiPlus /></span>
+                  <span className={styles.addGameText}>Add Game</span>
+              </div>
+          </div>
+          {favouriteGameData.slice(0, visibleGames).map((favouriteGame, index) => (
+            <div className={`${styles.favouriteGameCard}`}>
+                <div key={index} className={styles.gameImageContainer}>
+                  <Image
+                    src={favouriteGame.src}
+                    alt={favouriteGame.name}
                     className={styles.gameImage}
-                    />
-                <p className={styles.gameName}>Elden Ring</p>
+                  />
+                  <p className={styles.gameName}>{favouriteGame.name}</p>
+                </div>     
             </div>
-        </div>
-        
-        <div className={`${styles.favouriteGameCard}`}>
-          <div className={styles.gameImageContainer}>
-            <Image
-              src={godOfWarRagnarok}
-              alt="God of War Ragnarok"
-              className={styles.gameImage}
-            />
-            <p className={styles.gameName}>God of WarRagnarök</p>
-          </div>
-        </div>
-
-        <div className={`${styles.favouriteGameCard}`}>
-          <div className={styles.gameImageContainer}>
-            <Image
-              src={callOfDuty}
-              alt="Call of Duty, Black Ops III"
-              className={styles.gameImage}
-            />
-            <p className={styles.gameName}>Call of Duty, Black Ops III</p>
-          </div>
-        </div>
-
-        <div className={`${styles.favouriteGameCard}`}>
-          <div className={styles.gameImageContainer}>
-            <Image
-              src={tekken}
-              alt="Tekken 8"
-              className={styles.gameImage}
-            />
-            <p className={styles.gameName}>Tekken 8</p>
-          </div>
-        </div>
-        
-        <div className={`${styles.favouriteGameCard}`}>
-          <div className={styles.gameImageContainer}>
-            <Image
-              src={playerUnknowns}
-              alt="Playerunknown’s Battleground"
-              className={styles.gameImage}
-            />
-            <p className={styles.gameName}>Playerunknown’s Battleground</p>
-          </div>
-        </div>
-        
+          ))}        
       </div>
 
     </div>
