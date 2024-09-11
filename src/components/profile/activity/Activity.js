@@ -1,7 +1,8 @@
 import React from "react";
 import { useState } from "react"
 import Image from "next/image"
-import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsChevronDown } from "react-icons/bs";
+import { TiArrowSortedDown } from "react-icons/ti";
 import { tournamentsList } from "./tournamentsList"
 import TournamentDetails from "./TournamentDetails";
 import profileStyles from "@/styles/profile/profile-page.module.css"
@@ -110,19 +111,25 @@ const Activity = () => {
       <div className={styles.paginationContainer}>
         <div className={styles.rowCountSelector}>
           <label htmlFor="rowsPerPage">Rows </label>
-          <select
-            id="rowsPerPage"
-            value={rowsPerPage}
-            onChange={handleRowsPerPageChange}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
+          <div className={styles.customSelectContainer}>
+            <select
+              id="rowsPerPage"
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className={styles.customSelect}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={200}>100</option>
+            </select>
+            <TiArrowSortedDown className={styles.dropDownIcon} />
+          </div>
         </div>
 
-        <p>
+        <p className={styles.showingNumber}>
           Showing {indexOfFirstTournament + 1} -{" "}
           {indexOfLastTournament > tournamentsList.length ? tournamentsList.length : indexOfLastTournament}{" "} of {tournamentsList.length}
         </p>
