@@ -7,10 +7,19 @@
     flex-direction: column;
     gap: 1rem;
     width: 100%;
+    position: relative;
 }
 
+// .topMostLayerColor {
+//     background-color: #303136;
+// }
+// border: 1px solid #131316;
+// .middleLayerColor {
+//     background-color: #212225;
+// }
+
 .historyBTN {
-    background-color: black;
+    background-color: #212225;
     outline: none;
     border: none;
     padding: 6.5px 15px;
@@ -27,7 +36,6 @@
 .tournamentsTable {
     min-height: 40px;
     width: 100%;
-    // border: 1px solid red;
     overflow-x: auto;
 }
 
@@ -79,7 +87,6 @@
 }
 
 .nameColumn {
-    // border: 1px solid red;
     display: flex;
     justify-content: flex-start;
     gap: 0.4rem;
@@ -102,7 +109,6 @@
     padding: 5px 10px;
     border-radius: 3px;
     width: 85px;
-    // width: 115px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,8 +139,199 @@
     border: 1px solid #FFFFFF;
 }
 
+.tournamentDetailsContainer {
+    border: 1px solid #d3d3d3;
+    min-width: 250px;
+    width: 90%;
+    max-width: 95%;
+    min-height: 10vh;
+    position: absolute;
+    z-index: 2;
+    background-color: #212225;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    gap: 1rem;
+    border: 1px solid #5C5C5f;
+}
+
+.tournamentDetailsH3 {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+    font-family: 'ClashGrotesk-Regular', sans-serif;
+}
+
+.tournamentDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.contents {
+    min-width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.tournamentRecord {
+    display: flex;
+    min-width: 180px;
+}
+
+.tournamentRecord p {
+    display: flex;
+    min-width: 100px;
+    font-size: 0.8rem;
+    justify-content: flex-start;
+}
+
+.tournamentRecord label {
+    display: flex;
+    min-width: 120px;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+    font-size: 0.8rem;
+    justify-content: flex-start;
+}
+
+.closeBTN {
+    position: absolute;
+    top: 0.15rem;
+    right: 0.15rem;
+    background-color: #212225;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 5px;
+    transition: all ease-in-out 0.5s;
+}
+
+.closeBTN:hover {
+    background-color: red;
+}
+
+.closeIcon {
+    display: flex;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.closeIcon path {
+    color: rgba(255, 255, 255, 0.7);
+    fill: rgba(255, 255, 255, 0.7);
+    transition: all ease-in-out 0.5s;
+}
+
+.closeIcon:hover path {
+    color: #FFFFFF;
+    fill: #FFFFFF;
+}
+
+.tournamentDetails {
+    display: flex;
+    justify-content: center;
+}
 
 
+.paginationContainer {
+    width: 100%;
+    border: 1px solid green;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    // flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.paginationBTNContainer {
+    border: 1px solid yellow;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    max-width: 100%;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navIconBTN,
+.navBTN,
+.pageBTN {
+    background-color: #131316;
+    outline: none;
+    border: 1px solid #131316;
+    width: 30px;
+    height: 30px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all ease-in-out 0.5s;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navIconBTN {
+    background-color: #303136;
+    border: 1px solid #303136;
+    padding: 0;
+    font-size: 1rem;
+    font-family: 'ClashGrotesk-Light', sans-serif;
+}
+
+.navIconBTN:hover {
+    border: 1px solid var(--v-ent-red);
+}
+
+
+.activePage:hover,
+.pageBTN:hover {
+    border: 1px solid #FFFFFF;
+}
+
+.activePage {
+    background-color: var(--v-ent-red);
+    border: 1px solid var(--v-ent-red);
+}
+
+.navIcon {
+    display: flex;
+}
+
+.navIcon path {
+    fill: red;
+    color: red;
+}
+
+.rowCountSelector {
+    border: 1px solid white;
+}
+
+.hidden {
+    display: none;
+}
+
+@media only screen and (min-width: 400px) {
+    .paginationContainer {
+        justify-content: flex-start;
+    }
+}
 
 @media only screen and (min-width: 450px) {
     .gridHeader,
@@ -162,7 +359,6 @@
     .gridRow > :nth-child(4) {
         display: grid;
     }
-
 }
 
 @media only screen and (min-width: 650px) {
@@ -190,6 +386,55 @@
      .gridRow > :nth-child(5) {
          display: grid;
      }
+}
+
+@media only screen and (min-width: 768px) {
+    .tournamentDetailsContainer {
+        min-width: 350px;
+        // max-width: calc(95% - 250px);
+        max-width: 95%;
+        width: 95%;
+        min-height: 10vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .tournamentDetailsH3 {
+        font-size: 1.25rem;
+    }
+    
+    .tournamentDetails {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+        align-items: center;
+    }
+    
+    .contents {
+        min-width: 300px;
+        flex-direction: column;
+        gap: 0.75em;
+        align-items: flex-start;
+    }
+    
+    .tournamentRecord {
+        display: flex;
+        min-width: 180px;
+    }
+    
+    .tournamentRecord p {
+        min-width: 100px;
+        font-size: 0.95rem;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    
+    .tournamentRecord label {
+        min-width: 150px;
+        font-size: 0.95rem;
+        justify-content: flex-start;
+        text-align: left;
+    }    
 }
 
 @media only screen and (min-width: 950px) {

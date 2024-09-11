@@ -5,7 +5,6 @@ import fortnite from "@/images/fortnite.jpg"
 
 export const tournamentsList = [
     {
-      id: 1,
       name: "PUBG Tournament",
       game: "Counter Strike",
       type: "Elimination",
@@ -16,7 +15,6 @@ export const tournamentsList = [
       src: pubg,
     },
     {
-      id: 2,
       name: "FIFA 2024 Championship",
       game: "FIFA 2024",
       type: "Knockout",
@@ -27,7 +25,6 @@ export const tournamentsList = [
       src: pubgTwo,
     },
     {
-      id: 3,
       name: "Fortnite Battle Royale",
       game: "Fortnite",
       type: "Battle Royale",
@@ -38,7 +35,6 @@ export const tournamentsList = [
       src: fortnite,
     },
     {
-      id: 4,
       name: "Call of Duty Showdown",
       game: "Call of Duty",
       type: "Team Deathmatch",
@@ -49,7 +45,6 @@ export const tournamentsList = [
       src: pubgThree,
     },
     {
-      id: 5,
       name: "Valorant Clash",
       game: "Valorant",
       type: "Elimination",
@@ -60,7 +55,6 @@ export const tournamentsList = [
       src: fortnite,
     },
     {
-      id: 6,
       name: "Rocket League World Cup",
       game: "Rocket League",
       type: "Knockout",
@@ -71,7 +65,6 @@ export const tournamentsList = [
       src: pubg,
     },
     {
-      id: 7,
       name: "League of Legends Masters",
       game: "League of Legends",
       type: "Double Elimination",
@@ -82,7 +75,6 @@ export const tournamentsList = [
       src: pubgTwo,
     },
     {
-      id: 8,
       name: "Apex Legends Showdown",
       game: "Apex Legends",
       type: "Battle Royale",
@@ -93,7 +85,6 @@ export const tournamentsList = [
       src: pubgThree,
     },
     {
-      id: 9,
       name: "Overwatch Championship",
       game: "Overwatch",
       type: "Elimination",
@@ -104,7 +95,6 @@ export const tournamentsList = [
       src: fortnite,
     },
     {
-      id: 10,
       name: "Rainbow Six Siege Invitational",
       game: "Rainbow Six Siege",
       type: "Knockout",
@@ -115,7 +105,6 @@ export const tournamentsList = [
       src: pubg,
     },
     {
-      id: 11,
       name: "Dota 2 World Series",
       game: "Dota 2",
       type: "Elimination",
@@ -126,7 +115,6 @@ export const tournamentsList = [
       src: pubgTwo,
     },
     {
-      id: 12,
       name: "CS:GO Champions Cup",
       game: "CS:GO",
       type: "Knockout",
@@ -137,7 +125,6 @@ export const tournamentsList = [
       src: pubgThree,
     },
     {
-      id: 13,
       name: "Smash Bros Ultimate",
       game: "Super Smash Bros",
       type: "Elimination",
@@ -148,7 +135,6 @@ export const tournamentsList = [
       src: fortnite,
     },
     {
-      id: 14,
       name: "Hearthstone Global Finals",
       game: "Hearthstone",
       type: "Knockout",
@@ -159,7 +145,6 @@ export const tournamentsList = [
       src: pubg,
     },
     {
-      id: 15,
       name: "Starcraft II Open",
       game: "Starcraft II",
       type: "Elimination",
@@ -170,7 +155,6 @@ export const tournamentsList = [
       src: pubgTwo,
     },
     {
-    id: 16,
     name: "PUBG Tournament",
     game: "Counter Strike",
     type: "Elimination",
@@ -181,7 +165,6 @@ export const tournamentsList = [
     src: pubg,
   },
   {
-    id: 17,
     name: "FIFA 2024 Championship",
     game: "FIFA 2024",
     type: "Knockout",
@@ -192,7 +175,6 @@ export const tournamentsList = [
     src: pubgTwo,
   },
   {
-    id: 18,
     name: "Fortnite Battle Royale",
     game: "Fortnite",
     type: "Battle Royale",
@@ -203,7 +185,6 @@ export const tournamentsList = [
     src: fortnite,
   },
   {
-    id: 19,
     name: "Call of Duty Showdown",
     game: "Call of Duty",
     type: "Team Deathmatch",
@@ -214,7 +195,56 @@ export const tournamentsList = [
     src: pubgThree,
   },
   {
-    id: 20,
+    name: "Valorant Clash",
+    game: "Valorant",
+    type: "Elimination",
+    price: "N400,000",
+    status: "Upcoming",
+    position: "-",
+    date: "12th - 16th Nov. 2024",
+    src: fortnite,
+  },
+    {
+    name: "PUBG Tournament",
+    game: "Counter Strike",
+    type: "Elimination",
+    price: "N500,000",
+    status: "In Progress",
+    position: "-",
+    date: "1st - 21st Oct. 2024",
+    src: pubg,
+  },
+  {
+    name: "FIFA 2024 Championship",
+    game: "FIFA 2024",
+    type: "Knockout",
+    price: "N1,000,000",
+    status: "Completed",
+    position: "1st",
+    date: "10th - 15th Sep. 2024",
+    src: pubgTwo,
+  },
+  {
+    name: "Fortnite Battle Royale",
+    game: "Fortnite",
+    type: "Battle Royale",
+    price: "N750,000",
+    status: "In Progress",
+    position: "2nd",
+    date: "5th - 10th Sep. 2024",
+    src: fortnite,
+  },
+  {
+    name: "Call of Duty Showdown",
+    game: "Call of Duty",
+    type: "Team Deathmatch",
+    price: "N600,000",
+    status: "Completed",
+    position: "1st",
+    date: "20th - 25th Aug. 2024",
+    src: pubgThree,
+  },
+  {
     name: "Valorant Clash",
     game: "Valorant",
     type: "Elimination",
@@ -225,7 +255,6 @@ export const tournamentsList = [
     src: fortnite,
   },
   {
-    id: 21,
     name: "Rocket League World Cup",
     game: "Rocket League",
     type: "Knockout",
@@ -236,7 +265,6 @@ export const tournamentsList = [
     src: pubg,
   },
   {
-    id: 22,
     name: "League of Legends Masters",
     game: "League of Legends",
     type: "Double Elimination",
@@ -247,7 +275,6 @@ export const tournamentsList = [
     src: pubgTwo,
   },
   {
-    id: 23,
     name: "Apex Legends Showdown",
     game: "Apex Legends",
     type: "Battle Royale",
@@ -258,7 +285,6 @@ export const tournamentsList = [
     src: pubgThree,
   },
   {
-    id: 24,
     name: "Overwatch Championship",
     game: "Overwatch",
     type: "Elimination",
@@ -269,7 +295,6 @@ export const tournamentsList = [
     src: fortnite,
   },
   {
-    id: 25,
     name: "Rainbow Six Siege Invitational",
     game: "Rainbow Six Siege",
     type: "Knockout",
@@ -280,7 +305,6 @@ export const tournamentsList = [
     src: pubg,
   },
   {
-    id: 26,
     name: "Dota 2 World Series",
     game: "Dota 2",
     type: "Elimination",
@@ -291,7 +315,6 @@ export const tournamentsList = [
     src: pubgTwo,
   },
   {
-    id: 27,
     name: "CS:GO Champions Cup",
     game: "CS:GO",
     type: "Knockout",
@@ -302,7 +325,6 @@ export const tournamentsList = [
     src: pubgThree,
   },
   {
-    id: 28,
     name: "Smash Bros Ultimate",
     game: "Super Smash Bros",
     type: "Elimination",
@@ -313,7 +335,6 @@ export const tournamentsList = [
     src: fortnite,
   },
   {
-    id: 29,
     name: "Hearthstone Global Finals",
     game: "Hearthstone",
     type: "Knockout",
@@ -324,7 +345,6 @@ export const tournamentsList = [
     src: pubg,
   },
   {
-    id: 30,
     name: "Starcraft II Open",
     game: "Starcraft II",
     type: "Elimination",
