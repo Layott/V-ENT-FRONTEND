@@ -4,6 +4,7 @@ import { GrTrophy } from "react-icons/gr"
 import { FaArrowRight } from "react-icons/fa";
 import killSpree from "@/images/badge.webp"
 import kingCache from "@/images/champion_arena.webp"
+import trophy from "@/images/trophy.webp"
 import premium from "@/images/champion_arena.webp"
 import silver from "@/images/champion_arena.webp"
 import threeKWins from "@/images/champion_arena.webp"
@@ -15,6 +16,7 @@ import ultimateSurvivor from "@/images/champion_arena.webp"
 import legendaryStreak from "@/images/champion_arena.webp"
 import conqueror from "@/images/champion_arena.webp"
 import profileStyles from "@/styles/profile/profile-page.module.css"
+import styleGame from './../favourite-game/favourite-game.module.css'
 import styles from './achievements.module.css'
 
 const Achievements = () => {
@@ -24,6 +26,7 @@ const Achievements = () => {
     { name: "Killing Spree 2024", src: killSpree },
     { name: "King Cache", src: kingCache },
     { name: "Premium 2024", src: premium },
+    { name: "Trophy", src: trophy },
     { name: "Silver", src: silver },
     { name: "3K Wins", src: threeKWins },
     { name: "Icarus", src: icarus },
@@ -53,19 +56,21 @@ const Achievements = () => {
         </button>
       </div>
 
-      <div className={styles.achievementsContainer}>
-        {achievementsData.slice(0, visibleGames).map((achievement, index) => (
-          <div key={index} className={`${styles.achievementCard}`}>
-              <div className={`${styles.achievementImageContainer}  ${profileStyles.topMostLayerColor}`}>
-                <Image
-                  src={achievement.src}
-                  alt={achievement.name}
-                  className={styles.achievementImage}
-                />
-              </div>
-              <p className={styles.achievementName}>{achievement.name}</p>     
-          </div>
-        ))}
+      <div className={styles.achievementContainer}>
+        <div className={styleGame.favouriteGameContainer}>
+          {achievementsData.slice(0, visibleGames).map((achievement, index) => (
+            <div key={index} className={`${styleGame.favouriteGameCard} ${styles.favouriteAchievementCard}`}>
+                <div className={`${styleGame.gameImageContainer} ${styles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
+                  <Image
+                    src={achievement.src}
+                    alt={achievement.name}
+                    className={`${styleGame.gameImage} ${styles.achievementImage}`}
+                  />
+                </div>
+                <p className={styleGame.gameName}>{achievement.name}</p>     
+            </div>
+          ))}        
+        </div>
 
       </div>
 
