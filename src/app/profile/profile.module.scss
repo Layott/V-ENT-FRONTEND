@@ -40,8 +40,8 @@
 
 .profileDashboard {
     min-height: 200px;
-    width: 1005;
-    padding: 1.5rem;
+    width: 100%;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
 }
@@ -74,5 +74,9 @@
     .rightPaneContainer {
         width: calc(100% - 250px);
         margin-left: 250px;
+    }
+
+    .profileDashboard {
+        padding: 1.5rem;
     }
 }
