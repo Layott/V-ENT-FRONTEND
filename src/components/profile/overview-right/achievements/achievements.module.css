@@ -42,8 +42,7 @@
   align-items: flex-start;
 }
 
-.favouriteAchievementCard {
-  min-height: 70px;
+.achievementCard {
   gap: 0.5rem;
 }
 
