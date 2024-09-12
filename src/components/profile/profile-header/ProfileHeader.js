@@ -46,16 +46,16 @@ const ProfileHeader = () => {
 
         <div className={styles.searchBar}>
             <CiSearch 
-            className={styles.searchIcon}
-            onClick={handleSearch}
+              className={styles.searchIcon}
+              onClick={handleSearch}
             />
             <input
-            type='text'
-            placeholder='Search tournaments, events, users...'
-            className={styles.searchInput}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
+              type='text'
+              placeholder='Search tournaments, events, users...'
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
         </div>
 
