@@ -7,8 +7,6 @@
     background-color: #17181A;
     top: 0;
     z-index: 100;
-
-    border: 1px solid red;
 }
 
 .breadcrumbContainer {
@@ -73,7 +71,7 @@
 }
 
 .searchBar {
-    position: relative;
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,6 +80,8 @@
     transition: all ease-in-out 0.5s;
     background-color: #303136;
     border: 1px solid #303136;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .searchBar:focus-within {
@@ -103,6 +103,7 @@
     border: none;
     outline: none;
     width: 250px;
+    width: 50px;
     padding: 0px 10px;
     transition:  width 0.5s ease-in-out, border 0.5s ease-in-out;
     margin-right: 5px;
@@ -111,7 +112,7 @@
 }
 
 .searchInput:focus {
-    width: 350px;
+    width: 80vw;
 }
 
 .searchInput::placeholder {
@@ -159,24 +160,52 @@
     border-radius: 50%;
 }
 
+@media only screen and (min-width: 550px) {
+    .searchBar {
+        width: 190px;
+    }
+
+    .searchInput {
+        width: 150px;
+    }
+
+    .searchBar:focus-within {
+        width: 280px;
+    }
+    
+    .searchInput:focus {
+        width: 250px;
+    }
+}
+
+@media only screen and (min-width: 650px) {
+    .searchBar {
+        width: 280px;
+    }
+
+    .searchInput {
+        width: 240px;
+    }
+
+    .searchBar:focus-within {
+        width: 380px;
+    }
+    
+    .searchInput:focus {
+        width: 350px;
+    }
+}
+
 @media only screen and (min-width: 768px) {
     .profileHeader {
         margin-left: 180px;
-    }
-
-    .headerContent {
         width: calc(100% - 180px);
     }
-    
 }
 
 @media only screen and (min-width: 1024px) {
     .profileHeader {
         margin-left: 250px;
-    }
-
-    .headerContent {
         width: calc(100% - 250px);
     }
-    
 }
