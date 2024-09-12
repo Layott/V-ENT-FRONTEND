@@ -369,6 +369,26 @@
   font-size: 0.85rem;
 }
 
+.tournamentFilterSearchContainer p {
+  font-size: 1rem;
+  font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+}
+
+.tournamentFilterSearchContainer {
+  border: 1px solid red;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filterSearchContainer {
+  border: 1px solid green;
+  display: flex;
+  min-width: calc(100% - 200px);
+  justify-content: flex-end;
+}
+
 @media only screen and (min-width: 400px) {
   .paginationContainer {
     justify-content: flex-start;
