@@ -1,10 +1,12 @@
 import React from "react";
 import { useState } from "react"
 import Image from "next/image"
-import { BsChevronLeft, BsChevronRight, BsChevronDown } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { TiArrowSortedDown } from "react-icons/ti";
+import { CiSearch } from "react-icons/ci";
 import { tournamentsList } from "./tournamentsList"
 import TournamentDetails from "./TournamentDetails";
+import headerStyles from './../profile-header/header.module.css'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './activity.module.css'
 
@@ -12,6 +14,7 @@ const Activity = () => {
   const [selectedTournament, setSelectedTournament] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const indexOfLastTournament = currentPage * rowsPerPage
   const indexOfFirstTournament = indexOfLastTournament - rowsPerPage
@@ -50,6 +53,18 @@ const Activity = () => {
     pageNumbers.push(i)
   }
 
+  const handleSearch = () => {
+    if (searchQuery.trim() != '') {
+      console.log(`Searching for: ${searchQuery}`)
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   return (
     <div className={styles.activityContainer}>
       <div className={styles.tabContainer}>
@@ -57,7 +72,32 @@ const Activity = () => {
         <button className={`${profileStyles.backLayerColor} ${styles.historyBTN} ${styles.eventBTN}`}>Event History</button>
       </div>
 
-      <p className={styles.tournamentNumber}>{tournamentsList.length} tournaments</p>
+      <div className={styles.tournamentFilterSearchContainer}>
+        <p className={styles.tournamentNumber}>{tournamentsList.length} tournaments</p>
+        <div className={styles.filterSearchContainer}>
+          
+          <div className={styles.filterContainer}>
+            Filter
+          </div>
+
+          <div className={headerStyles.searchContainer}>
+            <div className={headerStyles.searchBar}>
+              <CiSearch 
+                className={headerStyles.searchIcon}
+                onClick={handleSearch}
+              />
+              <input
+                type='text'
+                placeholder='Search tournaments'
+                className={headerStyles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className={`${styles.tournamentsTable}`}>
         <div className={`${styles.gridHeader} ${profileStyles.middleLayerColor}`}>
