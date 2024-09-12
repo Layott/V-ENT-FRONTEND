@@ -25,23 +25,101 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [formData, setFormData] = useState({
         username: '',
-        fullName: '',
+        full_name: '',
         email: '',
         country: '',
         password: '',
-        confirmPassword: '',
+        confirmPassword: '', 
     });
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const [loading, setLoading] = useState(false);
+    const [emailError, setEmailError] = useState('');
+    const [isEmailLoading, setIsEmailLoading] = useState(false); 
+    const [usernameError, setUsernameError] = useState('');
+    const [usernameEditable, setUsernameEditable] = useState(false);
+
+
     const router = useRouter();
+
 
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleCloseSnackbar = () => {
+        setOpen(false);
     };
+
+    const handleInputChange = async (e) => {
+        const { name, value } = e.target;
+    
+        setFormData({ ...formData, [name]: value });
+    
+        const clearError = (setErrorFunction) => {
+            setTimeout(() => {
+                setErrorFunction('');
+            }, 1500); 
+        };
+    
+        if (name === 'username') {
+            if (!usernameEditable) return;
+
+            if (value.length > 30) {
+                setUsernameError('Username cannot exceed 30 characters.');
+                clearError(setUsernameError);
+            } else {
+                setUsernameError('');
+            }
+        }
+    
+        if (name === 'email') {
+            setEmailError('');
+    
+            if (!emailRegex.test(value)) {
+                setEmailError('Invalid email address');
+                clearError(setEmailError);
+                return;
+            }
+    
+            setIsEmailLoading(true);
+    
+            try {
+                const response = await fetch(VENT.USER_VERIFICATION, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: value }),
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        username: data.username || '',
+                    }));
+
+                    if (data.message === 'The username does not exist') {
+                        setUsernameEditable(false);
+                    } else {
+                        setUsernameEditable(true);
+                    }
+                } else {
+                    setUsernameError(data.message || 'Failed to retrieve username');
+                    clearError(setUsernameError);
+                }
+            } catch (error) {
+                console.error('Error fetching username:', error);
+                setEmailError('Error occurred while fetching username');
+                clearError(setEmailError);
+            } finally {
+                setIsEmailLoading(false);
+            }
+        }
+    };
+    
+    
 
     const handleCountrySelection = (event) => {
         setSelectedCountry(event.target.value);
@@ -53,6 +131,7 @@ const Signup = () => {
         setPassword(value);
         setFormData({ ...formData, password: value });
     };
+
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -66,24 +145,29 @@ const Signup = () => {
             return;
         }
 
+        const { confirmPassword, ...dataToSend } = formData;
+
         try {
             const response = await fetch(VENT.SIGNUP, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(dataToSend), 
             });
 
-            const data = await response.json()
+            const data = await response.json();
 
             if (response.ok) {
-                setSnackbarMessage(data.message ||'Account created successfully!');
+                localStorage.setItem('signupData', JSON.stringify(dataToSend));
+
+                router.push('/verify-email');
+                setSnackbarMessage(data.message || 'Account created successfully!');
                 setSnackbarType('success');
                 setOpen(true);
-                router.push('/login');
+                
             } else {
-                setSnackbarMessage(data.error ||'Failed to create account');
+                setSnackbarMessage(data.error || 'Failed to create account');
                 setSnackbarType('error');
                 setOpen(true);
             }
@@ -97,55 +181,54 @@ const Signup = () => {
         }
     };
 
-    const handleOAuthSignUp = async (provider) => {
-        try {
-            setLoading(true);
-            const result = await signIn(provider, { redirect: false });
-            if (result?.error) {
-                console.error('Error during sign-in:', result.error);
-                setSnackbarMessage('Error during sign-in');
-                setSnackbarType('error');
-                setOpen(true);
-            } else {
-                const session = await getSession();
-                if (session) {
-                    const response = await fetch(VENT.SIGNUP, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            token: session.accessToken,
-                            provider,
-                        }),
-                    });
-                    if (response.ok) {
-                        setSnackbarMessage('Account created successfully!');
-                        setSnackbarType('success');
-                        setOpen(true);
-                        setTimeout(() => {
-                            window.location.href = '/login';
-                        }, 2000);
-                    } else {
-                        setSnackbarMessage('Failed to sign up with OAuth');
-                        setSnackbarType('error');
-                        setOpen(true);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error during OAuth signup:', error);
-            setSnackbarMessage('Error during OAuth signup');
-            setSnackbarType('error');
-            setOpen(true);
-        } finally {
-            setLoading(false); 
-        }
-    };
+    // COMMING BACK TO THIS
 
-    const handleCloseSnackbar = () => {
-        setOpen(false);
-    };
+    // const handleOAuthSignUp = async (provider) => {
+    //     try {
+    //         setLoading(true);
+    //         const result = await signIn(provider, { redirect: false });
+    //         if (result?.error) {
+    //             console.error('Error during sign-in:', result.error);
+    //             setSnackbarMessage('Error during sign-in');
+    //             setSnackbarType('error');
+    //             setOpen(true);
+    //         } else {
+    //             const session = await getSession();
+    //             if (session) {
+    //                 const response = await fetch(VENT.SIGNUP, {
+    //                     method: 'POST',
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                     },
+    //                     body: JSON.stringify({
+    //                         token: session.accessToken,
+    //                         provider,
+    //                     }),
+    //                 });
+    //                 if (response.ok) {
+    //                     setSnackbarMessage('Account created successfully!');
+    //                     setSnackbarType('success');
+    //                     setOpen(true);
+    //                     setTimeout(() => {
+    //                         window.location.href = '/login';
+    //                     }, 2000);
+    //                 } else {
+    //                     setSnackbarMessage('Failed to sign up with OAuth');
+    //                     setSnackbarType('error');
+    //                     setOpen(true);
+    //                 }
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error during OAuth signup:', error);
+    //         setSnackbarMessage('Error during OAuth signup');
+    //         setSnackbarType('error');
+    //         setOpen(true);
+    //     } finally {
+    //         setLoading(false); 
+    //     }
+    // };
+
 
     return (
         <div className={generalStyles.pageContainer}>
@@ -172,6 +255,11 @@ const Signup = () => {
                                 onChange={handleInputChange}
                                 required
                             />
+                                {isEmailLoading ? (
+                                    <CircularProgress size={20} sx={{ color: 'red' }} className={styles.emailLoader} />
+                                ) : (
+                                    emailError && <p className={styles.errorMessage}>{emailError}</p>
+                                )}
                         </div>
 
 
@@ -183,18 +271,23 @@ const Signup = () => {
                                 placeholder="Enter a username"
                                 value={formData.username}
                                 onChange={handleInputChange}
+                                disabled={!usernameEditable}
                                 required
                             />
-                            <p className={styles.toolTip}>This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)</p>
+                            {usernameError ? (
+                                <p className={styles.errorMessage}>{usernameError}</p>
+                            ) : (
+                                <p className={styles.toolTip}>This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)</p>
+                            )}
                         </div>
 
                         <div className={generalStyles.inputGroup}>
                             <label>Full name:</label>
                             <input
                                 type="text"
-                                name="fullName"
+                                name="full_name" 
                                 placeholder="Enter your name"
-                                value={formData.fullName}
+                                value={formData.full_name}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -210,7 +303,7 @@ const Signup = () => {
                             >
                                 <option value="">Select your country</option>
                                 {countries.map((country) => (
-                                    <option key={country.code} value={country.code}>
+                                    <option key={country.code} value={country.name}>
                                         {country.name}
                                     </option>
                                 ))}
