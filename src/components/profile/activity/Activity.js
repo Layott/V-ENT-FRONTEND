@@ -73,30 +73,32 @@ const Activity = () => {
       </div>
 
       <div className={styles.tournamentFilterSearchContainer}>
-        <p className={styles.tournamentNumber}>{tournamentsList.length} tournaments</p>
-        <div className={styles.filterSearchContainer}>
+        <div className={styles.tournamentFilterContainer}>
+          <p className={styles.tournamentNumber}>{tournamentsList.length} tournaments</p>
           
-          <div className={styles.filterContainer}>
+          <div className={`${styles.filterContainer} ${profileStyles.topMostLayerColor}`}>
             Filter
           </div>
 
-          <div className={headerStyles.searchContainer}>
-            <div className={headerStyles.searchBar}>
-              <CiSearch 
-                className={headerStyles.searchIcon}
-                onClick={handleSearch}
-              />
-              <input
-                type='text'
-                placeholder='Search tournaments'
-                className={headerStyles.searchInput}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-            </div>
+        </div>
+          
+        <div className={styles.searchContainer}>
+          <div className={styles.searchBar}>
+            <CiSearch 
+              className={styles.searchIcon}
+              onClick={handleSearch}
+            />
+            <input
+              type='text'
+              placeholder='Search tournaments'
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </div>
         </div>
+
       </div>
 
       <div className={`${styles.tournamentsTable}`}>
