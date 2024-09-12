@@ -12,7 +12,7 @@ import Activity from "@/components/profile/activity/Activity"
 import styles from './profile.module.css'
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState('gallery')
+  const [activeTab, setActiveTab] = useState('overview')
 
   return (
     <div className={styles.pageContainer}>

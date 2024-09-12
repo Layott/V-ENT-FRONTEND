@@ -32,18 +32,7 @@
   font-size: 0.8rem;
 }
 
-.achievementContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.favouriteAchievementCard {
-  min-height: 70px;
+.achievementCard {
   gap: 0.5rem;
 }
 
@@ -59,4 +48,10 @@
   height: 80px;
   object-fit: contain;
   border-radius: 10px;
+}
+
+@media only screen and (min-width: 768px) {
+  .achievementsContainer {
+    padding: 1.5rem;
+  }
 }
