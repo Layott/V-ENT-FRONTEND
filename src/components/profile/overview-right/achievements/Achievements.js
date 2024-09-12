@@ -55,23 +55,21 @@ const Achievements = () => {
         </button>
       </div>
 
-      <div className={styles.achievementContainer}>
-        <div className={profileStyles.gameOrAchievementContainer}>
-          {achievementsData.slice(0, visibleGames).map((achievement, index) => (
-            <div key={index} className={`${profileStyles.gameOrAchievementCard} ${styles.achievementCard}`}>
-                <div className={`${profileStyles.gameOrAchievementImageContainer} ${styles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
-                  <Image
-                    src={achievement.src}
-                    alt={achievement.name}
-                    className={`${profileStyles.gameOrAchievementImage} ${styles.achievementImage}`}
-                  />
-                </div>
-                <p className={profileStyles.gameOrAchievementName}>{achievement.name}</p>     
-            </div>
-          ))}        
-        </div>
-
+      <div className={profileStyles.gameOrAchievementContainer}>
+        {achievementsData.slice(0, visibleGames).map((achievement, index) => (
+          <div key={index} className={`${profileStyles.gameOrAchievementCard} ${styles.achievementCard}`}>
+              <div className={`${profileStyles.gameOrAchievementImageContainer} ${styles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
+                <Image
+                  src={achievement.src}
+                  alt={achievement.name}
+                  className={`${profileStyles.gameOrAchievementImage} ${styles.achievementImage}`}
+                />
+              </div>
+              <p className={profileStyles.gameOrAchievementName}>{achievement.name}</p>     
+          </div>
+        ))}        
       </div>
+
 
     </div>
   )
