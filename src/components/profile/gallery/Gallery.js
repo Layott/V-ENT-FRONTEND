@@ -5,6 +5,7 @@ import gallery1 from '@/images/gallery1.webp'
 import gallery2 from '@/images/gallery2.webp'
 import gallery3 from '@/images/gallery3.webp'
 import gallery4 from '@/images/gallery4.webp'
+import gamer from '@/images/gamer.webp'
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import styles from './gallery.module.css'
 
@@ -12,7 +13,8 @@ const initialGalleryData = [
     { src: gallery1, name: "Gallery 1" },
     { src: gallery2, name: "Gallery 2" },
     { src: gallery3, name: "Gallery 3" },
-    { src: gallery4, name: "Gallery 4" }
+    { src: gallery4, name: "Gallery 4" },
+    { src: gamer, name: "Gamer" }
 ]
 
 const Gallery = () => {
