@@ -16,7 +16,6 @@ import ultimateSurvivor from "@/images/champion_arena.webp"
 import legendaryStreak from "@/images/champion_arena.webp"
 import conqueror from "@/images/champion_arena.webp"
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styleGame from './../favourite-game/favourite-game.module.css'
 import styles from './achievements.module.css'
 
 const Achievements = () => {
@@ -57,17 +56,17 @@ const Achievements = () => {
       </div>
 
       <div className={styles.achievementContainer}>
-        <div className={styleGame.favouriteGameContainer}>
+        <div className={profileStyles.gameOrAchievementContainer}>
           {achievementsData.slice(0, visibleGames).map((achievement, index) => (
-            <div key={index} className={`${styleGame.favouriteGameCard} ${styles.favouriteAchievementCard}`}>
-                <div className={`${styleGame.gameImageContainer} ${styles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
+            <div key={index} className={`${profileStyles.gameOrAchievementCard} ${styles.achievementCard}`}>
+                <div className={`${profileStyles.gameOrAchievementImageContainer} ${styles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
                   <Image
                     src={achievement.src}
                     alt={achievement.name}
-                    className={`${styleGame.gameImage} ${styles.achievementImage}`}
+                    className={`${profileStyles.gameOrAchievementImage} ${styles.achievementImage}`}
                   />
                 </div>
-                <p className={styleGame.gameName}>{achievement.name}</p>     
+                <p className={profileStyles.gameOrAchievementName}>{achievement.name}</p>     
             </div>
           ))}        
         </div>

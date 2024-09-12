@@ -1,3 +1,4 @@
+// 
 import { useState } from "react";
 import Image from "next/image"
 import { GrGamepad } from "react-icons/gr"
@@ -46,22 +47,22 @@ const FavouriteGame = () => {
           </button>
         </div>
 
-        <div className={styles.favouriteGameContainer}>
-          <div className={`${styles.favouriteGameCard} ${styles.addFavouriteGameCard}`}>
+        <div className={profileStyles.gameOrAchievementContainer}>
+          <div className={`${profileStyles.gameOrAchievementCard} ${styles.addFavouriteGameCard}`}>
               <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
                   <span className={styles.plusIcon}><FiPlus /></span>
                   <span className={styles.addGameText}>Add Game</span>
               </div>
           </div>
           {favouriteGameData.slice(0, visibleGames).map((favouriteGame, index) => (
-            <div key={index} className={`${styles.favouriteGameCard}`}>
-                <div className={styles.gameImageContainer}>
+            <div key={index} className={`${profileStyles.gameOrAchievementCard}`}>
+                <div className={profileStyles.gameOrAchievementImageContainer}>
                   <Image
                     src={favouriteGame.src}
                     alt={favouriteGame.name}
-                    className={styles.gameImage}
+                    className={profileStyles.gameOrAchievementImage}
                   />
-                  <p className={styles.gameName}>{favouriteGame.name}</p>
+                  <p className={profileStyles.gameOrAchievementName}>{favouriteGame.name}</p>
                 </div>     
             </div>
           ))}        
