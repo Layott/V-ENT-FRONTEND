@@ -25,6 +25,60 @@
     gap: 0.45rem;
 }
 
+
+
+// .searchBar {
+//     position: relative;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     padding: 5px;
+//     border-radius: 5px;
+//     transition: all ease-in-out 0.5s;
+//     background-color: #303136;
+//     border: 1px solid #303136;
+// }
+
+// .searchBar:focus-within {
+//     border: 1px solid var(--primary-bg);
+// }
+
+// .searchBar:hover {
+//     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+// }
+
+// .searchIcon {
+//     font-size: 1.2rem;
+//     color: #888;
+//     margin-right: 0px;
+//     margin-left: 0.2rem;
+// }
+
+// .searchInput {
+//     border: none;
+//     outline: none;
+//     width: 250px;
+//     padding: 0px 10px;
+//     transition:  width 0.5s ease-in-out, border 0.5s ease-in-out;
+//     margin-right: 5px;
+//     background-color: transparent;
+//     font-size: 1rem;
+// }
+
+// .searchInput:focus {
+//     width: 350px;
+// }
+
+// .searchInput::placeholder {
+//     font-family: 'ClashGrotesk-Extralight', sans-serif;
+//     color: white;
+//     font-size: 0.85rem;
+// }
+
+
+
+
+
 .tournamentsTable {
     min-height: 40px;
     width: 100%;
@@ -371,6 +425,31 @@
 
 .showingNumber {
     font-size: 0.85rem;
+}
+
+// .tournamentFilterSearchContainer {
+//     font-family: 'ClashGrotesk-Light', sans-serif;
+//     font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+// }
+
+.tournamentFilterSearchContainer p {
+    font-size: 1rem;
+    font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+}
+
+.tournamentFilterSearchContainer {
+    border: 1px solid red;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filterSearchContainer {
+    border: 1px solid green;
+    display: flex;
+    min-width: calc(100% - 200px);
+    justify-content: flex-end;
 }
 
 
