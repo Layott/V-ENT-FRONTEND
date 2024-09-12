@@ -30,10 +30,11 @@ export default NextAuth({
 
 
 export const VENT= {
-    SIGNUP: ' ',
-    VERIFY: ' ',
-    LOGIN: ' ',
-    FORGOT_PASSWORD:' ',
-    FORGOT_PASSWORD_TOKEN:' ',
-    RESET_PASSWORD:' '
+  SIGNUP: 'https://vermillionent.pythonanywhere.com/auth/signup/',
+  USER_VERIFICATION: 'https://vermillionent.pythonanywhere.com/auth/get-username-with-email/',
+  VERIFY: ' ',
+  LOGIN: ' ',
+  FORGOT_PASSWORD:' ',
+  FORGOT_PASSWORD_TOKEN:' ',
+  RESET_PASSWORD:' '
 }
