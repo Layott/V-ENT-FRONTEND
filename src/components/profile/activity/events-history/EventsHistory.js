@@ -64,27 +64,27 @@ const EventsHistory = () => {
     }
 
   return (
-    <div className={styles.eventsContainer}>
-        <div className={styles.tournamentFilterSearchContainer}>
-            <div className={styles.tournamentFilterContainer}>
+    <div className={profileStyles.tournamentEventsContainer}>
+        <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
+            <div className={profileStyles.tournamentsEventsFilterContainer}>
                 <p className={styles.tournamentNumber}>{eventsList.length} events</p>
                 
-                <div className={`${styles.filterContainer} ${profileStyles.topMostLayerColor}`}>
+                <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>
                     Filter
                 </div>
 
             </div>
           
-            <div className={styles.searchContainer}>
-                <div className={styles.searchBar}>
+            <div className={profileStyles.searchContainer}>
+                <div className={profileStyles.searchBar}>
                     <CiSearch 
-                        className={styles.searchIcon}
+                        className={profileStyles.searchIcon}
                         onClick={handleSearch}
                     />
                         <input
                         type='text'
                         placeholder='Search events'
-                        className={styles.searchInput}
+                        className={profileStyles.searchInput}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -93,7 +93,7 @@ const EventsHistory = () => {
             </div>
       </div>
 
-      <div className={`${styles.tournamentsTable}`}>
+      <div className={`${profileStyles.tournamentsEventsTable}`}>
         <div className={`${styles.gridHeader} ${profileStyles.middleLayerColor}`}>
           <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Event Name</div>
           <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Type</div>
@@ -120,7 +120,7 @@ const EventsHistory = () => {
             <div className={styles.gridItem}>{tournament.game}</div>
             <div className={styles.gridItem}>{tournament.location}</div>
             <div className={styles.gridItem}>{tournament.date}</div>
-            
+
             <div
               className={`${styles.gridItem}`}
             >
@@ -163,7 +163,7 @@ const EventsHistory = () => {
           </div>
         </div>
 
-        <p className={styles.showingNumber}>
+        <p className={profileStyles.showingNumber}>
           Showing {indexOfFirstTournament + 1} -{" "}
           {indexOfLastTournament > eventsList.length ? eventsList.length : indexOfLastTournament}{" "} of {eventsList.length}
         </p>
