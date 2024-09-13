@@ -5,7 +5,7 @@ import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './activity.module.css'
 
 const Activity = () => {
-  const [selectedTab, setSelectedTab] = useState("events")
+  const [selectedTab, setSelectedTab] = useState("tournaments")
 
   return (
     <div className={styles.activityContainer}>
