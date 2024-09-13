@@ -35,7 +35,6 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  min-height: 50px;
 }
 
 .tournamentFilterContainer {
@@ -61,7 +60,6 @@
 .searchContainer {
   position: relative;
   width: 100%;
-  height: 100%;
   min-height: 50px;
 }
 
@@ -83,7 +81,7 @@
 
 .searchBar:focus-within {
   border: 1px solid var(--primary-bg);
-  width: 90%;
+  width: 95%;
 }
 
 .searchBar:hover {
@@ -94,7 +92,7 @@
   font-size: 1rem;
   color: #888;
   margin-right: 0.2rem;
-  margin-left: 0.2rem;
+  margin-left: 0;
 }
 
 .searchInput {
@@ -102,13 +100,10 @@
   outline: none;
   transition: width 0.5s ease-in-out, border 0.5s ease-in-out;
   margin-right: 5px;
+  margin-left: 2.5px;
   background-color: transparent;
   font-size: 0.85rem;
-  width: 60%;
-}
-
-.searchInput:focus {
-  width: 90%;
+  width: 100%;
 }
 
 .searchInput::placeholder {
@@ -227,7 +222,6 @@
 }
 
 .tournamentDetailsContainer {
-  border: 1px solid #d3d3d3;
   min-width: 250px;
   width: 90%;
   max-width: 95%;
@@ -495,23 +489,14 @@
     width: calc(100% - 250px);
   }
   .searchBar {
-    width: 190px;
-    width: calc(95% - 60px);
-  }
-  .searchInput {
-    width: 150px;
-    width: calc(95% - 40px);
+    width: 70%;
   }
   .searchBar:focus-within {
-    width: 260px;
     width: 95%;
-  }
-  .searchInput:focus {
-    width: 250px;
-    width: 90%;
   }
   .searchContainer {
     width: 250px;
+    min-height: 30px;
   }
 }
 
