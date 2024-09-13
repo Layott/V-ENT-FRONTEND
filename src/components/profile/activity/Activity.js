@@ -6,7 +6,6 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import { CiSearch } from "react-icons/ci";
 import { tournamentsList } from "./tournamentsList"
 import TournamentDetails from "./TournamentDetails";
-import headerStyles from './../profile-header/header.module.css'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './activity.module.css'
 
