@@ -16,11 +16,13 @@
 .gridHeader > :nth-child(4),
 .gridHeader > :nth-child(5),
 .gridHeader > :nth-child(6),
+.gridHeader > :nth-child(7),
 .gridRow > :nth-child(2),
 .gridRow > :nth-child(3),
 .gridRow > :nth-child(4),
 .gridRow > :nth-child(5),
-.gridRow > :nth-child(6) {
+.gridRow > :nth-child(6),
+.gridRow > :nth-child(7) {
   display: none;
 }
 
@@ -342,31 +344,60 @@
   }
   .gridHeader > :nth-child(2),
   .gridHeader > :nth-child(3),
-  .gridHeader > :nth-child(4),
   .gridHeader > :nth-child(5),
+  .gridHeader > :nth-child(6),
+  .gridHeader > :nth-child(7),
   .gridRow > :nth-child(2),
   .gridRow > :nth-child(3),
-  .gridRow > :nth-child(4),
-  .gridRow > :nth-child(5) {
+  .gridRow > :nth-child(5),
+  .gridRow > :nth-child(6),
+  .gridRow > :nth-child(7) {
     display: none;
   }
-  .gridHeader > :nth-child(6),
-  .gridRow > :nth-child(6) {
+  .gridHeader > :nth-child(4),
+  .gridRow > :nth-child(4) {
     display: grid;
+  }
+}
+
+@media only screen and (min-width: 550px) {
+  .tournamentsEventsFilterContainer {
+    width: calc(100% - 250px);
+  }
+  .searchBar {
+    width: 70%;
+  }
+  .searchBar:focus-within {
+    width: 95%;
+  }
+  .searchContainer {
+    width: 250px;
+    min-height: 30px;
+  }
+}
+
+@media only screen and (min-width: 650px) {
+  .tournamentsEventsFilterContainer {
+    width: calc(100% - 300px);
+  }
+  .searchContainer {
+    width: 300px;
   }
 }
 
 @media only screen and (min-width: 650px) {
   .gridHeader,
   .gridRow {
-    grid-template-columns: minmax(220px, 1.5fr) minmax(130px, 1.2fr) minmax(100px, 1fr) minmax(70px, 90px);
+    grid-template-columns: minmax(220px, 1fr) minmax(130px, 1fr) minmax(110px, 1fr) minmax(70px, 90px);
   }
   .gridHeader > :nth-child(2),
   .gridHeader > :nth-child(3),
-  .gridHeader > :nth-child(4),
+  .gridHeader > :nth-child(6),
+  .gridHeader > :nth-child(7),
   .gridRow > :nth-child(2),
   .gridRow > :nth-child(3),
-  .gridRow > :nth-child(4) {
+  .gridRow > :nth-child(6),
+  .gridRow > :nth-child(7) {
     display: none;
   }
   .gridHeader > :nth-child(5),
@@ -421,8 +452,8 @@
   .gridRow {
     grid-template-columns: minmax(250px, 1fr) minmax(150px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) minmax(70px, 90px);
   }
-  .gridHeader > :nth-child(4),
-  .gridRow > :nth-child(4) {
+  .gridHeader > :nth-child(7),
+  .gridRow > :nth-child(7) {
     display: grid;
   }
 }
@@ -430,10 +461,10 @@
 @media only screen and (min-width: 1115px) {
   .gridHeader,
   .gridRow {
-    grid-template-columns: minmax(200px, 1.25fr) minmax(100px, 1fr) minmax(110px, 1.2fr) minmax(100px, 1.2fr) minmax(110px, 1fr) minmax(70px, 90px);
+    grid-template-columns: minmax(250px, 1fr) minmax(150px, 1fr) minmax(110px, 1fr) minmax(80px, 100px) minmax(110px, 1fr) minmax(70px, 90px);
   }
-  .gridHeader > :nth-child(2),
-  .gridRow > :nth-child(2) {
+  .gridHeader > :nth-child(6),
+  .gridRow > :nth-child(6) {
     display: grid;
   }
 }
@@ -441,7 +472,18 @@
 @media only screen and (min-width: 1250px) {
   .gridHeader,
   .gridRow {
-    grid-template-columns: minmax(200px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(110px, 1fr) minmax(100px, 1fr) minmax(100px, 110px) minmax(70px, 90px);
+    grid-template-columns: minmax(250px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(80px, 100px) minmax(80px, 100px) minmax(110px, 1fr) minmax(70px, 90px);
+  }
+  .gridHeader > :nth-child(2),
+  .gridRow > :nth-child(2) {
+    display: grid;
+  }
+}
+
+@media only screen and (min-width: 1240px) {
+  .gridHeader,
+  .gridRow {
+    grid-template-columns: minmax(250px, 1fr) minmax(120px, 1fr) minmax(90px, 1fr) minmax(120px, 1fr) minmax(80px, 100px) minmax(70px, 100px) minmax(100px, 1fr) minmax(70px, 90px);
   }
   .gridHeader > :nth-child(3),
   .gridRow > :nth-child(3) {
