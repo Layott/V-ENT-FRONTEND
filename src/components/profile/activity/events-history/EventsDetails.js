@@ -1,23 +1,18 @@
 import { TfiClose } from "react-icons/tfi";
 import Image from "next/image";
-import styles from './activity.module.css'
+import styles from './events-history.module.css'
 
-const TournamentDetails = ({ selectedTournament, setSelectedTournament }) => {
+const EventsDetails = ({ selectedTournament, setSelectedTournament }) => {
     if (!selectedTournament) return null
 
   return (
     <div className={styles.tournamentDetailsContainer}>
-        <h3 className={styles.tournamentDetailsH3}>Tournament Details</h3>
+        <h3 className={styles.tournamentDetailsH3}>Event Details</h3>
         <div className={styles.tournamentDetails}>
           <div className={styles.contents}>
             <div className={styles.tournamentRecord}>
-              <label>Tournament Name:</label>
+              <label>Event Name:</label>
               <p>{selectedTournament.name}</p>
-            </div>
-            
-            <div className={styles.tournamentRecord}>
-              <label>Game:</label>
-              <p>{selectedTournament.game}</p>
             </div>
             
             <div className={styles.tournamentRecord}>
@@ -26,18 +21,18 @@ const TournamentDetails = ({ selectedTournament, setSelectedTournament }) => {
             </div>
             
             <div className={styles.tournamentRecord}>
-              <label>Price:</label>
-              <p>{selectedTournament.price}</p>
+              <label>Game:</label>
+              <p>{selectedTournament.game}</p>
+            </div>
+            
+            <div className={styles.tournamentRecord}>
+              <label>Location:</label>
+              <p>{selectedTournament.location}</p>
             </div>
             
             <div className={styles.tournamentRecord}>
               <label>Status:</label>
               <p>{selectedTournament.status}</p>
-            </div>
-            
-            <div className={styles.tournamentRecord}>
-              <label>Position:</label>
-              <p>{selectedTournament.position}</p>
             </div>
             
             <div className={styles.tournamentRecord}>
@@ -63,4 +58,4 @@ const TournamentDetails = ({ selectedTournament, setSelectedTournament }) => {
   )
 }
 
-export default TournamentDetails
+export default EventsDetails
