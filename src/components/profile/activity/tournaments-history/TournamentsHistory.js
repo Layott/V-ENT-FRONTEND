@@ -6,7 +6,7 @@ import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import TournamentsDetails from './TournamentsDetails'
 import { tournamentsList } from './tournamentsList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './../activity.module.css'
+import styles from './tournaments-history.module.css'
 
 const TournamentsHistory = () => {
     const [selectedTournament, setSelectedTournament] = useState(null)
@@ -64,27 +64,26 @@ const TournamentsHistory = () => {
     }
 
   return (
-    <div>
-        <div className={styles.tournamentFilterSearchContainer}>
-            <div className={styles.tournamentFilterContainer}>
+    <div className={profileStyles.tournamentEventsContainer}>
+        <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
+            <div className={profileStyles.tournamentsEventsFilterContainer}>
                 <p className={styles.tournamentNumber}>{tournamentsList.length} tournaments</p>
-                
-                <div className={`${styles.filterContainer} ${profileStyles.topMostLayerColor}`}>
+                <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>
                     Filter
                 </div>
 
             </div>
           
-            <div className={styles.searchContainer}>
-                <div className={styles.searchBar}>
+            <div className={profileStyles.searchContainer}>
+                <div className={profileStyles.searchBar}>
                     <CiSearch 
-                        className={styles.searchIcon}
+                        className={profileStyles.searchIcon}
                         onClick={handleSearch}
                     />
                         <input
                         type='text'
                         placeholder='Search tournaments'
-                        className={styles.searchInput}
+                        className={profileStyles.searchInput}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -93,7 +92,7 @@ const TournamentsHistory = () => {
             </div>
       </div>
 
-      <div className={`${styles.tournamentsTable}`}>
+      <div className={`${profileStyles.tournamentsEventsTable}`}>
         <div className={`${styles.gridHeader} ${profileStyles.middleLayerColor}`}>
           <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Tournament Name</div>
           <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Game</div>
@@ -163,7 +162,7 @@ const TournamentsHistory = () => {
           </div>
         </div>
 
-        <p className={styles.showingNumber}>
+        <p className={profileStyles.showingNumber}>
           Showing {indexOfFirstTournament + 1} -{" "}
           {indexOfLastTournament > tournamentsList.length ? tournamentsList.length : indexOfLastTournament}{" "} of {tournamentsList.length}
         </p>
