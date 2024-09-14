@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 import { FaRegSave } from 'react-icons/fa'
 import { FiCamera, FiEdit3 } from 'react-icons/fi'
@@ -52,9 +53,11 @@ const UserProfileBio = () => {
                 </div>
             </div>
             <div className={styles.profileEditButton}>
-                <button
+                <Link
+                    href={'/edit-profile'}
                     onClick={toggleEditMode}
-                    className={styles.editButton}
+                    className={styles.editButtonLink}
+                    // className={styles.editButton}
                 >
                     {isEditing ? (
                         <>
@@ -63,11 +66,15 @@ const UserProfileBio = () => {
                         </>
                     ) : (
                         <>
-                        <FiEdit3 className={styles.editIcon} />
-                        Edit Profile
-                        </>   
+                            <FiEdit3 className={styles.editIcon} />
+                            Edit Profile
+                        </>
+                        // <Link href={'/edit-profile'}>
+                        //     <FiEdit3 className={styles.editIcon} />
+                        //     Edit Profile
+                        // </Link>   
                     )}
-                </button>
+                </Link>
             </div>
         </div>
 
