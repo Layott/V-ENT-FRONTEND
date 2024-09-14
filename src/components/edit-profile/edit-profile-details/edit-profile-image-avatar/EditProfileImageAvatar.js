@@ -10,9 +10,9 @@ import avatarGreenEyes from "@/images/avatar_green_eye.webp"
 import avatarPaint from "@/images/avatar_paint.webp"
 import avatarRobotPC from "@/images/avatar_robot_pc.jpg"
 import avatarYellowRobot from "@/images/avatar_yellow_robot.webp"
-import styles from './edit-profile-details.module.css'
+import styles from './edit-profile-image-avatar.module.css'
 
-const ProfileImageAvatar = () => {
+const EditProfileImageAvatar = () => {
   return (
     <div className={styles.profileImageAvatarContainer}>
         <div className={styles.profileImageContainer}>
@@ -68,4 +68,4 @@ const ProfileImageAvatar = () => {
   )
 }
 
-export default ProfileImageAvatar
+export default EditProfileImageAvatar
