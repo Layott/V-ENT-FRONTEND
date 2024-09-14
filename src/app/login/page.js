@@ -16,7 +16,7 @@ import styles from './login.module.css'
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(true)
-    const [emailOrUsername, setEmailOrUsername] = useState('')
+    const [username_or_email, setEmailOrUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
@@ -30,7 +30,7 @@ const Login = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        if (name === 'emailOrUsername') setEmailOrUsername(value)
+        if (name === 'username_or_email') setEmailOrUsername(value)
         if (name === 'password') setPassword(value)
     }
 
@@ -44,17 +44,16 @@ const Login = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ emailOrUsername, password }),
+                body: JSON.stringify({ username_or_email, password }),
             })
 
             const data = await response.json()
 
             if (response.ok) {
+                router.replace('/');
                 setSnackbarMessage(data.message || 'Login successful!')
                 setSnackbarType('success')
-                setOpen(true)
-                router.push('/verify-email');
-                
+                setOpen(true)    
             } else {
                 setSnackbarMessage(data.message || 'Failed to log in')
                 setSnackbarType('error')
@@ -118,9 +117,9 @@ const Login = () => {
                             <label>Email or Username:</label>
                             <input
                                 type="text"
-                                name="emailOrUsername"
+                                name="username_or_email"
                                 placeholder="Enter your email address or username"
-                                value={emailOrUsername}
+                                value={username_or_email}
                                 onChange={handleInputChange}
                                 required
                             />
