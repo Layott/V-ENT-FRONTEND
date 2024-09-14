@@ -1,5 +1,5 @@
 .editProfileDetailsContainer {
-    min-height: 50vh;
+    min-height: 20vh;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -8,12 +8,13 @@
 .editProfileDetailsContainer h3 {
     margin-top: 0.5rem;
     font-size: 1.125rem;
-    border: 1px solid red;
+    // border: 1px solid red;
 }
 
 .profilePictureBannerContainer {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    border: 2px solid pink;
+    gap: 1.5rem;
+    // border: 2px solid pink;
+    margin-bottom: 0.5rem;
 }
