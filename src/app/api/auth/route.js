@@ -33,7 +33,7 @@ export const VENT= {
   SIGNUP: 'https://vermillionent.pythonanywhere.com/auth/signup/',
   USER_VERIFICATION: 'https://vermillionent.pythonanywhere.com/auth/get-username-with-email/',
   VERIFY: ' ',
-  LOGIN: ' ',
+  LOGIN: 'https://vermillionent.pythonanywhere.com/auth/login/',
   FORGOT_PASSWORD:' ',
   FORGOT_PASSWORD_TOKEN:' ',
   RESET_PASSWORD:' '
