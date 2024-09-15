@@ -57,7 +57,6 @@ const UserProfileBio = () => {
                     href={'/edit-profile'}
                     onClick={toggleEditMode}
                     className={styles.editButtonLink}
-                    // className={styles.editButton}
                 >
                     {isEditing ? (
                         <>
@@ -69,10 +68,6 @@ const UserProfileBio = () => {
                             <FiEdit3 className={styles.editIcon} />
                             Edit Profile
                         </>
-                        // <Link href={'/edit-profile'}>
-                        //     <FiEdit3 className={styles.editIcon} />
-                        //     Edit Profile
-                        // </Link>   
                     )}
                 </Link>
             </div>
