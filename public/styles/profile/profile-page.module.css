@@ -156,6 +156,10 @@
   overflow-x: auto;
 }
 
+.instructionText {
+  font-size: 0.8rem;
+}
+
 @media only screen and (min-width: 550px) {
   .tournamentsEventsFilterSearchContainer {
     width: 100%;
