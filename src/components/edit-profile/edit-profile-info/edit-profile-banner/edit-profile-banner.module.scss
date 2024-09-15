@@ -3,14 +3,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    position: relative;
-}
-
-.editProfileBannerContainer p {
-    font-size: 0.85rem;
 }
 
 .editProfileBannerImageContainer {
+    position: relative;
     width: 100%;
     height: 200px;
 }
