@@ -58,7 +58,6 @@
 }
 
 .selectedInterestsContainer {
-    // border: 1px solid red;
     width: 100%;
     min-height: 10px;
     display: flex;
@@ -86,10 +85,7 @@
 
 .suggestedInterestsList {
     margin-top: -1rem;
-    border: 1px solid green;
-    display: flex;
     display: inline-flex;
-    // flex-direction: column;
     gap: 0.5rem;
     min-height: 20px;
     flex-wrap: wrap;
