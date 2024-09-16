@@ -84,8 +84,6 @@
 
 .suggestedInterestsList {
   margin-top: -1rem;
-  border: 1px solid green;
-  display: flex;
   display: inline-flex;
   gap: 0.5rem;
   min-height: 20px;
