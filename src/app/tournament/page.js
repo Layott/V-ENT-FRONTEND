@@ -1,7 +1,7 @@
 'use client'
 
 // import { useState } from 'react';
-import ProfileHeader from '@/components/profile/profile-header/ProfileHeader';
+import Header from '@/components/header/Header';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Tournaments from '@/components/tournaments/Tournaments';
 import styles from './tournament.module.css'
@@ -11,7 +11,7 @@ const Tournament = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <ProfileHeader />
+      <Header />
       
       <main className={styles.mainContainer}>
         <Sidebar />
