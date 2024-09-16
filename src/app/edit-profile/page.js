@@ -11,7 +11,8 @@ import EditLinks from '@/components/edit-profile/edit-links/EditLinks';
 import styles from './edit-profile.module.css'
 
 const EditProfile = () => {
-  const [activeTab, setActiveTab] = useState('edit-profile-details')
+  // const [activeTab, setActiveTab] = useState('edit-profile-details')
+  const [activeTab, setActiveTab] = useState('web-social-links')
 
   return (
     <div className={styles.pageContainer}>
