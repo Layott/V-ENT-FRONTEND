@@ -74,7 +74,7 @@ const Sidebar = ({ customClass }) => {
                     </span>
                 </li>
             
-                <li className={`${styles.sidebarItem} ${isActive('settings') ? styles.activeLink : ''}`}>
+                <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
                         <FiSettings className={styles.sidebarIcon} /> Settings
                     </Link>
