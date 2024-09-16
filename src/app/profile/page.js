@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
-import ProfileHeader from '@/components/profile/profile-header/ProfileHeader';
+import Header from '@/components/header/Header';
 import ProfileBanner from '@/components/profile/profile-banner/Banner';
 import ProfileBio from '@/components/profile/profile-bio/ProfileBio';
 import OverviewLeft from "@/components/profile/overview-left/OverviewLeft";
@@ -16,7 +16,7 @@ const Profile = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <ProfileHeader />
+      <Header />
       
       <main className={styles.mainContainer}>
         <Sidebar />
