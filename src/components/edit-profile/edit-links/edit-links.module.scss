@@ -1,0 +1,56 @@
+.editLinksContainer {
+    // border: 1px solid red;
+    min-height: 20vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #212225;
+    padding: 1rem;
+    border-radius: 10px;
+    padding-bottom: 2rem;
+}
+
+.editLinksContainer h3 {
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.titleLinkContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.addInputGroup {
+    width: 100%;
+}
+
+.addAnotherLink {
+    color: var(--v-ent-red);
+    background-color: transparent;
+    outline: none;
+    border: none;
+    display: flex;
+    cursor: pointer;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.addLinkIcon path {
+    color: var(--v-ent-red);
+    fill: var(--v-ent-red);
+}
+
+.addLinkIcon {
+    font-size: 1rem;
+}
+
+@media only screen and (min-width: 768px) {
+    .titleLinkContainer {
+        flex-direction: row;
+    }
+
+    .addInputGroup {
+        width: 50%;
+    } 
+}
