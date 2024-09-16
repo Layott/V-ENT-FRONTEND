@@ -69,7 +69,7 @@ const Sidebar = ({ customClass }) => {
                             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
-                        <FaShoppingCart className={styles.sidebarIcon} /> Marketplace
+                        <span className={styles.iconMarketplaceSpan}><FaShoppingCart className={styles.sidebarIcon} /> Marketplace</span>
                         <span className={styles.comingSoon}>Coming Soon</span>
                     </span>
                 </li>
