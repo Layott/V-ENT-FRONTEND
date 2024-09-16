@@ -2,9 +2,9 @@
 
 import Header from '@/components/header/Header'
 import Sidebar from '@/components/sidebar/Sidebar'
-import styles from './page.module.css'
+import styles from './ranking.module.css'
 
-const page = () => {
+const Rankings = () => {
   return (
     <div className={styles.pageContainer}>
       <Header />
@@ -14,7 +14,7 @@ const page = () => {
 
             <div className={styles.rightPaneContainer}>
                 <div className={styles.header}>
-                    <h3>Home Page</h3>
+                    <h3>Rankings Page</h3>
 
                     <div className={styles.searchFilterContainer}>
                         Filter and Search
@@ -28,4 +28,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Rankings
