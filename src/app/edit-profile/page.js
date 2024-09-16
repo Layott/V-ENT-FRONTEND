@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
-import ProfileHeader from '@/components/profile/profile-header/ProfileHeader';
+import Header from '@/components/header/Header';
 import EditProfileInfo from '@/components/edit-profile/edit-profile-info/EditProfileInfo';
 import EditFavouriteGames from '@/components/edit-profile/edit-favourite-games/EditFavouriteGames';
 import EditGamingAccounts from '@/components/edit-profile/edit-gaming-accounts/EditGamingAccounts';
@@ -16,7 +16,7 @@ const EditProfile = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <ProfileHeader className={styles.customHeader} />
+      <Header className={styles.customHeader} />
       
       <main className={styles.mainContainer}>
         <Sidebar customClass={styles.customSidebar} />
