@@ -6,13 +6,16 @@
   padding-bottom: 3rem;
 }
 
+.customSidebar {
+  display: none;
+}
+
 .mainContainer {
   width: 100%;
 }
 
 .rightPaneEditProfileContainer {
   width: 100%;
-  margin-top: 60px;
   margin-top: 80px;
   display: flex;
   flex-direction: column;
@@ -109,11 +112,33 @@
 @media only screen and (min-width: 768px) {
   .rightPaneEditProfileContainer {
     width: calc(100% - 180px);
+    width: 100%;
+    flex-direction: row;
+  }
+  .profileEditDashboard {
+    width: calc(100% - 200px);
+  }
+  .customHeader {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 900px) {
+  .rightPaneEditProfileContainer {
+    width: calc(100% - 180px);
     margin-left: 180px;
     flex-direction: row;
   }
   .profileEditDashboard {
     width: calc(100% - 200px);
+  }
+  .customSidebar {
+    display: flex;
+  }
+  .customHeader {
+    margin-left: 180px;
+    width: calc(100% - 180px);
   }
 }
 
@@ -130,6 +155,10 @@
   }
   .profileEditDashboard {
     width: calc(100% - 245px);
+  }
+  .customHeader {
+    margin-left: 250px;
+    width: calc(100% - 250px);
   }
 }
 

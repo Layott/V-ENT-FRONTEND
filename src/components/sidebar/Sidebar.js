@@ -5,9 +5,9 @@ import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
 import styles from './sidebar.module.css'
 
-const Sidebar = () => {
+const Sidebar = ({ customClass }) => {
   return (
-    <div className={styles.desktopSidebar}>
+    <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`}>
         <div className={styles.logoContainer}>
             <h1>v-ent</h1>
         </div>
