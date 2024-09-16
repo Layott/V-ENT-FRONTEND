@@ -1,13 +1,13 @@
 'use client'
 
-import ProfileHeader from '@/components/profile/profile-header/ProfileHeader'
+import Header from '@/components/header/Header'
 import Sidebar from '@/components/sidebar/Sidebar'
 import styles from './events.module.css'
 
 const Events = () => {
   return (
     <div className={styles.pageContainer}>
-        <ProfileHeader />
+        <Header />
 
         <main className={styles.mainContainer}>
             <Sidebar />
