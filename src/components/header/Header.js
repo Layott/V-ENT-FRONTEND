@@ -7,7 +7,7 @@ import { CiSearch } from "react-icons/ci";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './header.module.css'
 
-const ProfileHeader = ({ className }) => {
+const Header = ({ className }) => {
     const [searchQuery, setSearchQuery] = useState('')
 
     const handleSearch = () => {
@@ -78,4 +78,4 @@ const ProfileHeader = ({ className }) => {
   )
 }
 
-export default ProfileHeader
+export default Header
