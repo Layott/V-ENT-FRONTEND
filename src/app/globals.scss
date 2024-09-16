@@ -55,18 +55,18 @@ a {
   text-decoration: none;
 }
 
-h1 {
-  font-size: var(--mobile-h1-size);
-  font-weight: var(--fw-bold);
-}
+// h1 {
+//   font-size: var(--mobile-h1-size);
+//   font-weight: var(--fw-bold);
+// }
 
-h3 {
-  font-size: var(--mobile-h3-size);
-}
+// h3 {
+//   font-size: var(--mobile-h3-size);
+// }
 
-h6 {
-  font-size: var(--desktop-h6-size);
-}
+// h6 {
+//   font-size: var(--desktop-h6-size);
+// }
 
 .btn {
   height: 37px;
@@ -118,16 +118,16 @@ select:active {
   --primary-text: #FFFFFF;  
 }
 
-@media only screen and (min-width: 500px) {
-  h1 {
-      font-size: var(--desktop-h1-size);
-  }
+// @media only screen and (min-width: 500px) {
+//   h1 {
+//       font-size: var(--desktop-h1-size);
+//   }
 
-  h3 {
-    font-size: var(--desktop-h3-size);
-  }
+//   h3 {
+//     font-size: var(--desktop-h3-size);
+//   }
   
-  h6 {
-    font-size: var(--desktop-h6-size);
-  }
-}
+//   h6 {
+//     font-size: var(--desktop-h6-size);
+//   }
+// }

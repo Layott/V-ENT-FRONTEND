@@ -3,10 +3,10 @@
 // import { useState } from 'react';
 import Header from '@/components/header/Header';
 import Sidebar from '@/components/sidebar/Sidebar';
-import Tournaments from '@/components/tournaments/Tournaments';
+import TournamentsComponent from '@/components/tournaments/TournamentsComponent';
 import styles from './tournament.module.css'
 
-const Tournament = () => {
+const Tournaments = () => {
 //   const [activeTab, setActiveTab] = useState('overview')
 
   return (
@@ -15,7 +15,7 @@ const Tournament = () => {
       
       <main className={styles.mainContainer}>
         <Sidebar />
-        <Tournaments />
+        <TournamentsComponent />
         
       </main>
 
@@ -23,4 +23,4 @@ const Tournament = () => {
   )
 }
 
-export default Tournament
+export default Tournaments

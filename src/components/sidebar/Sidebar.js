@@ -1,15 +1,27 @@
+// import Link from 'next/link';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiHome, FiSettings } from "react-icons/fi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
+import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
 
 const Sidebar = ({ customClass }) => {
   return (
     <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`}>
         <div className={styles.logoContainer}>
-            <h1>v-ent</h1>
+            <Link className={styles.logoLink} href={'./'}>
+                <div className={styles.innerLogoContainer}>
+                    <Image
+                        src={logoRed}
+                        alt='Logo'
+                        className={styles.logo}
+                    />
+                </div>
+                <h1>v-ent</h1>
+            </Link>
         </div>
 
         <nav className={styles.sidebarNav}>
@@ -55,12 +67,12 @@ const Sidebar = ({ customClass }) => {
                     </Link>
                     <Link href={'./teams'}>Teams</Link>
                 </li>
-                
+                            
                 <li className={styles.sidebarItem}>
-                    <Link href={'./marketplace'} className={styles.iconLink}>
+                    <span className={styles.iconLink}>
                         <FaShoppingCart className={styles.sidebarIcon} />
-                    </Link>
-                    <Link href={'./marketplace'}>Marketplace</Link> <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                    <span className={styles.disabledLink}>Marketplace</span> <span className={styles.comingSoon}>Coming Soon</span>
                 </li>
             
                 <li className={styles.sidebarItem}>

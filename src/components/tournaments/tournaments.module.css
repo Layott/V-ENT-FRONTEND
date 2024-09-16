@@ -1,8 +1,7 @@
 .pageContainer {
   width: calc(100% - 250px);
   min-height: 100vh;
-  border: 1px solid white;
-  border-top: none;
+  border: 1px solid red;
   margin-top: 60px;
   margin-left: 250px;
 }
