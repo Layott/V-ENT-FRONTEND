@@ -8,14 +8,33 @@
   height: 60px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .logoContainer h1 {
-  font-family: 'ClashGrotesk-Semibold', sans-serif;
-  margin-left: 1rem;
+  font-family: 'ClashGrotesk-Medium', sans-serif;
   font-weight: var(--fw-bold);
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   color: var(--v-ent-red);
+}
+
+.logoLink {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 0.25rem;
+  padding-left: 1.2rem;
+}
+
+.innerLogoContainer {
+  height: 25px;
+}
+
+.logo {
+  font-size: 1rem;
+  height: 100%;
+  width: 100%;
 }
 
 .sidebarNav {
@@ -55,6 +74,12 @@
   border-radius: 3px;
 }
 
+.sidebarItem span.disabledLink {
+  color: #A7A6A6;
+  font-family: 'ClashGrotesk-Light', sans-serif;
+  cursor: not-allowed;
+}
+
 @media only screen and (min-width: 768px) {
   .desktopSidebar {
     width: 180px;
@@ -64,10 +89,22 @@
     display: flex;
     flex-direction: column;
   }
+  .logoContainer {
+    width: 180px;
+  }
 }
 
 @media only screen and (min-width: 1024px) {
   .desktopSidebar {
     width: 250px;
+  }
+  .logoContainer {
+    width: 250px;
+  }
+  .logoContainer h1 {
+    font-size: 2.5rem;
+  }
+  .innerLogoContainer {
+    height: 35px;
   }
 }
