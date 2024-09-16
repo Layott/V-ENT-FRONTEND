@@ -8,7 +8,6 @@ import EditProfileInfo from '@/components/edit-profile/edit-profile-info/EditPro
 import EditFavouriteGames from '@/components/edit-profile/edit-favourite-games/EditFavouriteGames';
 import EditGamingAccounts from '@/components/edit-profile/edit-gaming-accounts/EditGamingAccounts';
 import EditLinks from '@/components/edit-profile/edit-links/EditLinks';
-import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './edit-profile.module.css'
 
 const EditProfile = () => {
@@ -16,10 +15,10 @@ const EditProfile = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <ProfileHeader />
+      <ProfileHeader className={styles.customHeader} />
       
       <main className={styles.mainContainer}>
-        <Sidebar />
+        <Sidebar customClass={styles.customSidebar} />
       
         <div className={styles.rightPaneEditProfileContainer}>
           <div className={styles.menuContainer}>
