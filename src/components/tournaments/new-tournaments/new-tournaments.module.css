@@ -1,0 +1,130 @@
+.newTournamentsContainer {
+  min-height: 10vh;
+  width: 100%;
+}
+
+.cardContainer {
+  width: 300px;
+  min-height: 200px;
+  border-radius: 7.5px;
+  background-color: #212225;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 130px;
+  border-top-left-radius: 7.5px;
+  border-top-right-radius: 7.5px;
+}
+
+.imageContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 7.5px;
+  border-top-right-radius: 7.5px;
+}
+
+.descriptionContainer {
+  min-height: 100px;
+  width: 100%;
+  padding: 0.5rem;
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.descriptionNameLocation p,
+.descriptionName,
+.descriptionLocation {
+  font-size: 0.8rem;
+  font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.teamsIndividualsContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.feeParagraph,
+.priceParagraph,
+.teamsIndividualsParagraph,
+.nameParagraph,
+.dateParagraph {
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.nameDateContainer,
+.priceFeeContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.priceParagraph,
+.feeParagraph,
+.nameParagraph,
+.dateParagraph {
+  display: flex;
+  width: 50%;
+}
+
+.playerNumber {
+  font-size: 0.7rem;
+}
+
+.coinIcon,
+.teamsIcon,
+.padIcon,
+.calendarIcon,
+.priceIcon,
+.feeIcon {
+  display: flex;
+}
+
+.coinIcon path {
+  fill: goldenrod;
+  color: goldenrod;
+  background-color: goldenrod;
+}
+
+.feeSpan {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.viewDetailsBTN,
+.registerBTN {
+  font-size: 0.8rem;
+  border-radius: 4px;
+  font-family: 'ClashGrotesk-Medium', sans-serif;
+  cursor: pointer;
+}
+
+.viewDetailsBTN {
+  background-color: transparent;
+  border: 1px solid #b1b1b1;
+  padding: 3px 6px;
+}
+
+.registerBTN {
+  background-color: #46484F;
+  border: 1px solid #46484F;
+  padding: 3px 1.75rem;
+}
