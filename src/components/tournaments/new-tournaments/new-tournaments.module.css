@@ -1,18 +1,28 @@
 .newTournamentsContainer {
   min-height: 10vh;
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .cardContainer {
-  width: 300px;
+  width: 400px;
+  min-width: 300px;
   min-height: 200px;
+  border: 1px solid white;
   border-radius: 7.5px;
   background-color: #212225;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .imageContainer {
   width: 100%;
   height: 130px;
+  height: 200px;
   border-top-left-radius: 7.5px;
   border-top-right-radius: 7.5px;
 }
@@ -50,7 +60,7 @@
 }
 
 .feeParagraph,
-.priceParagraph,
+.prizeParagraph,
 .teamsIndividualsParagraph,
 .nameParagraph,
 .dateParagraph {
@@ -61,12 +71,12 @@
 }
 
 .nameDateContainer,
-.priceFeeContainer {
+.prizeFeeContainer {
   display: flex;
   flex-direction: row;
 }
 
-.priceParagraph,
+.prizeParagraph,
 .feeParagraph,
 .nameParagraph,
 .dateParagraph {
@@ -82,7 +92,7 @@
 .teamsIcon,
 .padIcon,
 .calendarIcon,
-.priceIcon,
+.prizeIcon,
 .feeIcon {
   display: flex;
 }
