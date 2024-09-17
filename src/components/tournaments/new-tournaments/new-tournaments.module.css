@@ -20,9 +20,8 @@
 
 .cardContainer {
   width: 400px;
-  min-width: 300px;
+  min-width: 200px;
   min-height: 200px;
-  border: 1px solid white;
   border-radius: 7.5px;
   background-color: #212225;
   display: flex;
@@ -141,11 +140,33 @@
 .viewDetailsBTN {
   background-color: transparent;
   border: 1px solid #b1b1b1;
-  padding: 3px 6px;
+  padding: 5px 10px;
+  transition: all ease-in-out 0.5s;
+}
+
+.viewDetailsBTN:hover {
+  background-color: #46484F;
 }
 
 .registerBTN {
   background-color: #46484F;
   border: 1px solid #46484F;
-  padding: 3px 1.75rem;
+  padding: 5px 1.75rem;
+  transition: all ease-in-out 0.5s;
+}
+
+.registerBTN:hover {
+  border: 1px solid #b1b1b1;
+}
+
+@media only screen and (min-width: 900px) {
+  .cardContainer {
+    width: 300px;
+  }
+}
+
+@media only screen and (min-width: 1124px) {
+  .cardContainer {
+    width: 400px;
+  }
 }
