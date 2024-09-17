@@ -1,0 +1,148 @@
+.tournamentsFeaturedContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    // border: 1px solid green;
+    min-height: 200px;
+    // height: 100px;
+    width: 100%;
+
+
+    overflow: hidden;
+}
+
+.tournamentsFeaturedContainer h3 {
+    font-size: 1.125rem;
+    font-size: 1rem;
+}
+
+.slidersContainer {
+    // border: 1px solid blue;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-snap-type: x mandatory; /* Snapping effect on scroll */ 
+
+    /* Hide the Scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.slidersContainer::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+
+.sliderContainer {
+    // border: 1px solid yellow;
+
+
+    display: flex;
+    // display: inline-block;
+    // display: inline-flex;
+    flex-direction: column;
+    width: 350px;
+    min-height: 220px;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+}
+
+.imageContainer {
+    height: 200px;
+    width: 350px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 0.5px #FCFCFC;
+}
+
+.imageContainer img {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.viewDetailsLink {
+    font-size: 0.7rem;
+}
+
+.viewDetailsLink {
+    display: flex;
+    // border: 1px solid red;
+    gap: 0.25rem;
+    flex-direction: row;
+    align-items: center;
+}
+
+.rightArrowIcon {
+    display: flex;
+    font-size: 0.55rem;
+}
+
+.sliderDescriptionContainer {
+    // border: 2px solid pink;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.featuredName,
+.featuredLocation {
+    font-size: 0.9rem;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.datePriceContainer {
+    min-height: 40px;
+    min-height: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    // border: 1px solid red;
+    align-items: center;
+}
+
+.dateContainer {
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+}
+
+.priceParagraph,
+.dateParagraph {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.525rem;
+    align-items: center;
+    gap: 0.2rem;
+    // border: 1px solid green;
+    min-height: 10px;
+    // min-height: 10px;
+}
+
+.date {
+    min-height: 10px;
+    // border: 1px solid white;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.calendarLogo,
+.trophyLogo {
+    display: flex;
+    // height: 20px;
+    align-items: center;
+    margin-top: -1px;
+    // border: 1px solid red;
+}
