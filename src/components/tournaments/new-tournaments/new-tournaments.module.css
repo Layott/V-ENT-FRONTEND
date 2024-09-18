@@ -159,6 +159,13 @@
   border: 1px solid #b1b1b1;
 }
 
+@media only screen and (min-width: 450px) {
+  .descriptionContainer {
+    padding: 0.8rem;
+    padding-top: 1rem;
+  }
+}
+
 @media only screen and (min-width: 900px) {
   .cardContainer {
     width: 300px;
