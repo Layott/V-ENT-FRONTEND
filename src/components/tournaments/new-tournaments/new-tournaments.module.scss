@@ -54,7 +54,9 @@
     min-height: 100px;
     width: 100%;
     padding: 0.5rem;
+    // padding: 0.8rem;
     padding-top: 0.75rem;
+    // padding-top: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -172,6 +174,13 @@
 }
 
 
+@media only screen and (min-width: 450px) {
+    .descriptionContainer {
+        padding: 0.8rem;
+        padding-top: 1rem;
+    }
+    
+}
 @media only screen and (min-width: 900px) {
     .cardContainer {
         width: 300px;
