@@ -2,12 +2,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    // border: 1px solid green;
     min-height: 200px;
-    // height: 100px;
     width: 100%;
-
-
     overflow: hidden;
 }
 
@@ -16,7 +12,6 @@
 }
 
 .slidersContainer {
-    // border: 1px solid blue;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -36,22 +31,16 @@
 
 
 .sliderContainer {
-    // border: 1px solid yellow;
-
-
     display: flex;
-    // display: inline-block;
-    // display: inline-flex;
     flex-direction: column;
-    width: 350px;
-    min-height: 220px;
+    width: 250px;
+    min-height: 200px;
     flex: 0 0 auto;
     gap: 0.5rem;
 }
 
 .imageContainer {
-    height: 200px;
-    width: 350px;
+    height: 180px;
     width: 100%;
     border-radius: 10px;
     box-shadow: 0px 0px 0.5px #FCFCFC;
@@ -76,7 +65,6 @@
 
 .viewDetailsLink {
     display: flex;
-    // border: 1px solid red;
     gap: 0.25rem;
     flex-direction: row;
     align-items: center;
@@ -88,10 +76,10 @@
 }
 
 .sliderDescriptionContainer {
-    // border: 2px solid pink;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
+    gap: 0.5rem;
 }
 
 .featuredName,
@@ -101,12 +89,10 @@
 }
 
 .datePriceContainer {
-    min-height: 40px;
     min-height: 10px;
     display: flex;
     flex-direction: row;
     gap: 2rem;
-    // border: 1px solid red;
     align-items: center;
 }
 
@@ -124,14 +110,11 @@
     font-size: 0.525rem;
     align-items: center;
     gap: 0.2rem;
-    // border: 1px solid green;
     min-height: 10px;
-    // min-height: 10px;
 }
 
 .date {
     min-height: 10px;
-    // border: 1px solid white;
     display: inline-flex;
     flex-direction: row;
     align-items: center;
@@ -140,8 +123,26 @@
 .calendarLogo,
 .trophyLogo {
     display: flex;
-    // height: 20px;
     align-items: center;
     margin-top: -1px;
-    // border: 1px solid red;
+}
+
+@media only screen and (min-width: 450px) {
+    .sliderContainer {
+        width: 350px;
+        min-height: 220px;
+    }
+    
+    .imageContainer {
+        height: 200px;
+        // width: 350px;
+        width: 100%;
+    }
+
+    .sliderDescriptionContainer {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0rem;
+    }
+    
 }
