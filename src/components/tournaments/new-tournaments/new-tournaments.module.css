@@ -91,6 +91,7 @@
 .nameParagraph,
 .dateParagraph {
   display: flex;
+  flex-direction: row;
   width: 50%;
 }
 

@@ -1,90 +1,106 @@
-import moonFootball from "@/images/moon-football.jpg"
-import ballOne from "@/images/ball_1.jpg"
-import ballTwo from "@/images/ball_2.jpg"
-import ballTrophy from "@/images/ball_trophy.jpg"
-import ballboy from "@/images/ball_boy.jpg"
-import ballLeg from "@/images/ball_leg.jpg"
+import moonFootball from "@/images/moon-football.jpg";
+import ballOne from "@/images/ball_1.jpg";
+import ballTwo from "@/images/ball_2.jpg";
+import ballTrophy from "@/images/ball_trophy.jpg";
+import ballboy from "@/images/ball_boy.jpg";
+import ballLeg from "@/images/ball_leg.jpg";
+import girlFIFA from "@/images/girl_FIFA.jpg";
 
 export const fifaTournamentsList = [
-    {
-        image: {
-            src: ballboy,
-            alt: 'Ball Boy'
-        },
-        details: {
-            name: 'FIFA',
-            location: 'Unilag',
-            teamType: 'Teams',
-            players: '10-15 Players',
-            game: 'Counter Strike',
-            date: 'Oct. 1st - Oct. 21st 24',
-            prize: 'N500,000',
-            fee: 40
-        }
+  {
+    image: {
+      src: ballboy,
+      alt: "Ball Boy",
     },
-    {
-        image: {
-            src: ballOne,
-            alt: 'Ball One'
-        },
-        details: {
-            name: 'FIFA',
-            location: 'Unilag',
-            teamType: 'Individuals',
-            players: '10-15 Players',
-            game: 'Counter Strike',
-            date: 'Jan. 1st - Jan. 21st 25',
-            prize: 'N500,000',
-            fee: 40
-        }
+    details: {
+      name: "FIFA World Cup",
+      location: "Unilag",
+      teamType: "Teams",
+      players: "11 Players",
+      game: "eFootball PES 2024",
+      date: "Oct. 1st - Oct. 21st 2024",
+      prize: "₦1,000,000",
+      fee: 100,
     },
-    {
-        image: {
-            src: ballTwo,
-            alt: 'Ball Two'
-        },
-        details: {
-            name: 'FIFA',
-            location: 'Unilag',
-            teamType: 'Teams',
-            players: '10-15 Players',
-            game: 'Counter Strike',
-            date: 'Oct. 1st - Oct. 21st 24',
-            prize: 'N500,000',
-            fee: 40
-        }
+  },
+  {
+    image: {
+      src: ballOne,
+      alt: "Ball One",
     },
-    {
-        image: {
-            src: ballLeg,
-            alt: 'Ball Leg'
-        },
-        details: {
-            name: 'FIFA',
-            location: 'Unilag',
-            teamType: 'Teams',
-            players: '10-15 Players',
-            game: 'Counter Strike',
-            date: 'Oct. 1st - Oct. 21st 24',
-            prize: 'N500,000',
-            fee: 40
-        }
+    details: {
+      name: "FIFA Champions League",
+      location: "Unilag",
+      teamType: "Individuals",
+      players: "1 Player",
+      game: "FIFA 24",
+      date: "Jan. 5th - Jan. 15th 2025",
+      prize: "₦500,000",
+      fee: 50,
     },
-    {
-        image: {
-            src: ballTrophy,
-            alt: 'Ball Trophy'
-        },
-        details: {
-            name: 'FIFA',
-            location: 'Unilag',
-            teamType: 'Teams',
-            players: '10-15 Players',
-            game: 'Counter Strike',
-            date: 'Oct. 1st - Oct. 21st 24',
-            prize: 'N500,000',
-            fee: 40
-        }
+  },
+  {
+    image: {
+      src: ballTwo,
+      alt: "Ball Two",
     },
-    
-]
+    details: {
+      name: "FIFA International Cup",
+      location: "Unilag",
+      teamType: "Teams",
+      players: "11 Players",
+      game: "FIFA 24",
+      date: "Feb. 10th - Feb. 20th 2025",
+      prize: "₦750,000",
+      fee: 75,
+    },
+  },
+  {
+    image: {
+      src: ballLeg,
+      alt: "Ball Leg",
+    },
+    details: {
+      name: "FIFA Street Tournament",
+      location: "Unilag",
+      teamType: "Teams",
+      players: "5-a-side",
+      game: "FIFA Street",
+      date: "Mar. 15th - Mar. 25th 2025",
+      prize: "₦300,000",
+      fee: 30,
+    },
+  },
+  {
+    image: {
+      src: ballTrophy,
+      alt: "Ball Trophy",
+    },
+    details: {
+      name: "FIFA Invitational",
+      location: "Unilag",
+      teamType: "Teams",
+      players: "11 Players",
+      game: "FIFA 24",
+      date: "Apr. 1st - Apr. 10th 2025",
+      prize: "₦1,500,000",
+      fee: 120,
+    },
+  },
+  {
+    image: {
+      src: girlFIFA,
+      alt: "Girl FIFA",
+    },
+    details: {
+      name: "FIFA Invitational",
+      location: "Unilag",
+      teamType: "Teams",
+      players: "11 Players",
+      game: "Dream League Soccer",
+      date: "Apr. 1st - Apr. 10th 2025",
+      prize: "₦1,500,000",
+      fee: 150,
+    },
+  },
+];
