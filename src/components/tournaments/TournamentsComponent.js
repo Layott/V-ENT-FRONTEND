@@ -6,8 +6,8 @@ import styles from './tournaments.module.css'
 const TournamentsComponent = () => {
   return (
     <div className={styles.tournamentsComponentContainer}>
-      {/* <TournamentsFeatured />
-      <NewTournaments /> */}
+      <TournamentsFeatured />
+      <NewTournaments />
       <AllTournaments />
     </div>
   )
