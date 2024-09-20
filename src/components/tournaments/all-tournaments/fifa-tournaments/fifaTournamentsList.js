@@ -1,4 +1,3 @@
-import moonFootball from "@/images/moon-football.jpg";
 import ballOne from "@/images/ball_1.jpg";
 import ballTwo from "@/images/ball_2.jpg";
 import ballTrophy from "@/images/ball_trophy.jpg";

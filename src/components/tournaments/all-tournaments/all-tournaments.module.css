@@ -10,8 +10,8 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
   min-height: 300px;
-  min-width: 300px;
   min-width: 200px;
+  padding-bottom: 2rem;
 }
 
 .allTournamentsSlidersContainer::-webkit-scrollbar {
