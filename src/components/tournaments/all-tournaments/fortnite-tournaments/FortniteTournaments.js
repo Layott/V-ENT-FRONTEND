@@ -8,11 +8,11 @@ import { PiMoneyWavy } from "react-icons/pi";
 import { RiCopperCoinFill } from "react-icons/ri";
 import { LuArrowRight } from "react-icons/lu";
 import { LuArrowLeft } from "react-icons/lu";
-import { fifaTournamentsList } from './fifaTournamentsList'
+import { fortniteTournamentsList } from './fortniteTournamentsList'
 import newTournamentsStyles from './../../new-tournaments/new-tournaments.module.css';
 import allTournamentsStyles from './../all-tournaments.module.css'
 
-const FIFATournaments = () => {
+const FortniteTournaments = () => {
     const [showAll, setShowAll] = useState(false)
 
     const handleToggle = () => {
@@ -22,7 +22,7 @@ const FIFATournaments = () => {
   return (
     <div className={allTournamentsStyles.fifaTournamentsContainer}>
         <div className={allTournamentsStyles.header}>
-            <h3>FIFA Tournaments</h3>
+            <h3>Fortnite Tournaments</h3>
             {!showAll && (
             <button
                 className={allTournamentsStyles.seeMoreBTN}
@@ -35,7 +35,7 @@ const FIFATournaments = () => {
 
         <div className={allTournamentsStyles.cardsContainer}>
 
-            {fifaTournamentsList.slice(0, showAll ? fifaTournamentsList.length : 3).map((fifaTournament, index) => (
+            {fortniteTournamentsList.slice(0, showAll ? fortniteTournamentsList.length : 3).map((fifaTournament, index) => (
             <div key={index} className={allTournamentsStyles.cardContainer}>
                 <div className={allTournamentsStyles.imageContainer}>
                     <Image
@@ -102,4 +102,4 @@ const FIFATournaments = () => {
   )
 }
 
-export default FIFATournaments
+export default FortniteTournaments
