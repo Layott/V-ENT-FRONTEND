@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import tournamentDetailsBanner from "@/images/tournament_details_banner.jpg"
+import tournamentDetailsBanner from "@/images/tournament_details_banner.webp"
 import { LuClock3 } from "react-icons/lu";
 import { PiMoneyWavy } from "react-icons/pi";
 import { BsFillShareFill } from "react-icons/bs";
