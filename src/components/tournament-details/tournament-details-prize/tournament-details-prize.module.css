@@ -1,5 +1,6 @@
 .tournamentDetailsPrizeContainer {
   border: 1px solid gold;
+  border-top: none;
   min-height: 20vh;
   width: 100%;
 }
