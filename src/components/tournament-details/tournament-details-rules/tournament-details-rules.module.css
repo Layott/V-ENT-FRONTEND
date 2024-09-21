@@ -1,5 +1,6 @@
 .tournamentDetailsRulesContainer {
   border: 1px solid green;
+  border-top: none;
   min-height: 20vh;
   width: 100%;
 }
