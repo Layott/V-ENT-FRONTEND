@@ -4,11 +4,12 @@ import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import TournamentDetailsBanner from '@/components/tournament-details/tournament-details-banner/TournamentDetailsBanner';
+import TournamentDetailsOverview from '@/components/tournament-details/tournament-details-overview/TournamentDetailsOverview';
+import TournamentDetailsRules from '@/components/tournament-details/tournament-details-rules/TournamentDetailsRules';
+import TournamentDetailsBracket from '@/components/tournament-details/tournament-details-bracket/TournamentDetailsBracket';
+import TournamentDetailsParticipants from '@/components/tournament-details/tournament-details-participants/TournamentDetailsParticipants';
+import TournamentDetailsPrize from '@/components/tournament-details/tournament-details-prize/TournamentDetailsPrize';
 
-import OverviewLeft from "@/components/profile/overview-left/OverviewLeft";
-import OverviewRight from "@/components/profile/overview-right/OverviewRight";
-import Gallery from "@/components/profile/gallery/Gallery"
-import Activity from "@/components/profile/activity/Activity"
 import styles from './tournament-details.module.css'
 
 const TournamentDetails = () => {
@@ -33,37 +34,62 @@ const TournamentDetails = () => {
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'activity' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('activity')}
+              className={`${styles.tabBTN} ${activeTab === 'rules' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('rules')}
             >
-              Activity
+              Rules
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'gallery' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('gallery')}
+              className={`${styles.tabBTN} ${activeTab === 'bracket' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('bracket')}
             >
-              Gallery
+              Bracket
+            </button>
+
+            <button
+              className={`${styles.tabBTN} ${activeTab === 'participants' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('participants')}
+            >
+              Participants
+            </button>
+
+            <button
+              className={`${styles.tabBTN} ${activeTab === 'prize' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('prize')}
+            >
+              Prize
             </button>
           </div>
 
-          <div className={styles.profileDashboard}>
+          <div className={styles.tournamentDetailsDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
-                <OverviewLeft />
-                <OverviewRight />
+                <TournamentDetailsOverview />
               </div>            
             )}
 
-            {activeTab === 'activity' && (
-              <div className={styles.activityContainer}>
-                <Activity />
+            {activeTab === 'rules' && (
+              <div className={styles.rulesContainer}>
+                <TournamentDetailsRules />
               </div>
             )}
 
-            {activeTab === 'gallery' && (
-              <div className={styles.galleryContainer}>
-                <Gallery />
+            {activeTab === 'bracket' && (
+              <div className={styles.bracketContainer}>
+                <TournamentDetailsBracket />
+              </div>
+            )}
+
+            {activeTab === 'participants' && (
+              <div className={styles.participantsContainer}>
+                <TournamentDetailsParticipants />
+              </div>
+            )}
+
+            {activeTab === 'prize' && (
+              <div className={styles.prizeContainer}>
+                <TournamentDetailsPrize />
               </div>
             )}       
           </div>
