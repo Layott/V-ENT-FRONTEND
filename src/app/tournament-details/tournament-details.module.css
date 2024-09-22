@@ -20,7 +20,6 @@
   margin-top: 1rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-  gap: 1.5rem;
   gap: 1rem;
 }
 
@@ -54,7 +53,6 @@
 .overviewContainer {
   display: flex;
   flex-direction: row;
-  display: flex;
   align-items: flex-start;
   flex-direction: column;
   gap: 1.5rem;
@@ -62,7 +60,6 @@
 
 @media only screen and (min-width: 768px) {
   .tabBTN {
-    width: 100px;
     width: auto;
   }
   .rightPaneContainer {
