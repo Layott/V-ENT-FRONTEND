@@ -1,5 +1,4 @@
 .detailsBannerContainer {
-    border: 1px solid green;
     display: flex;
     flex-direction: column;
     min-height: 100px;
@@ -21,10 +20,10 @@
 
 .headerContainer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    border: 1px solid red;
     padding: 1.5rem;
+    gap: 1rem;
 }
 
 .headerLeft {
@@ -38,10 +37,15 @@
 }
 
 .headerDetails {
+    min-height: 20px;
+    flex-wrap: wrap;
+    width: 100%;
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
+    justify-content: flex-start;
+    row-gap: 0.5rem;
 }
 
 .headerDetails p {
@@ -76,8 +80,7 @@
 }
 
 .tournamentFee {
-    // border: 1px solid red;
-    padding: 0;
+    padding-left: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -93,11 +96,11 @@
 }
 
 .headerRight {
-    // display: inline-flex;
     display: flex;
     align-items: flex-start;
     flex-direction: row;
     gap: 0.65rem;
+    flex-wrap: wrap;
 }
 
 .shareBTN,
@@ -132,4 +135,16 @@
 
 .joinTournamentBTN:hover {
     border: 1px solid #FFFFFF;
+}
+
+@media only screen and (min-width: 650px) {
+    .headerDetails {
+        flex-direction: row;
+    }
+
+    .headerContainer {
+        flex-direction: row;
+        gap: 0rem;
+    }
+    
 }
