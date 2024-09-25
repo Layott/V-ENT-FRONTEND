@@ -12,6 +12,33 @@
   border-radius: 10px;
 }
 
+.prizeDistributionHeader,
+.participantsHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-items: flex-start;
+  row-gap: 0.4rem;
+}
+
+.viewAllBTN,
+.viewFullDistributionBTN {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #B2B3BD;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.forwardArrowIcon path {
+  color: #B2B3BD;
+  fill: #B2B3BD;
+}
+
 .format,
 .game,
 .entryFee,
@@ -67,11 +94,6 @@
 
 .participantsIcon {
   font-size: 1.2rem;
-}
-
-.participantsHeader {
-  display: flex;
-  align-items: center;
 }
 
 .headerH3 {
@@ -222,5 +244,14 @@
   .date p:last-of-type,
   .location p:last-of-type {
     width: calc(100% - 110px);
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .prizeDistributionHeader,
+  .participantsHeader {
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
   }
 }

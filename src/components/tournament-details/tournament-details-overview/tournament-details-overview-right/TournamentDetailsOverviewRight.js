@@ -5,6 +5,7 @@ import { FiCalendar } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
 import { AiOutlineTeam } from "react-icons/ai";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { IoMdArrowForward } from "react-icons/io";
 import tournamentDetailsOverviewStyles from './../tournament-details-overview.module.css'
 import styles from './tournament-details-overview-right.module.css'
 
@@ -45,6 +46,7 @@ const TournamentDetailsOverviewRight = () => {
       <div className={styles.prizeDistributionContainer}>
         <div className={styles.prizeDistributionHeader}>
           <h3 className={styles.headerH3}><GrTrophy className={styles.priceIcon} /> Prize</h3>
+          <button className={styles.viewFullDistributionBTN}>View full distribution <IoMdArrowForward className={styles.forwardArrowIcon} /></button>
         </div>
         <div className={styles.winnerContainer}>
           <p className={styles.winnerText}>Winner</p>
@@ -65,6 +67,7 @@ const TournamentDetailsOverviewRight = () => {
       <div className={styles.participantsContainer}>
         <div className={styles.participantsHeader}>
           <h3 className={styles.headerH3}><AiOutlineTeam className={styles.participantsIcon} /> Participants</h3>
+          <button className={styles.viewAllBTN}>View All <IoMdArrowForward className={styles.forwardArrowIcon} /></button>
         </div>
         <p className={styles.participantsParagraph}>
           Teams and Individuals can register for this tournament.
