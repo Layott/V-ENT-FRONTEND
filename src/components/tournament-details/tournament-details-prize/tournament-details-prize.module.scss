@@ -8,31 +8,34 @@
     gap: 1rem;
     width: 100%;
     position: relative;
-    padding: 1rem;
-    border: 1px solid red;
-    background-color: #212225;
+    margin-top: 1.5rem;
 }
 
-.tournamentsEventsTable {
+.tournamentsPrizeTable {
     min-height: 40px;
     width: 100%;
     overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #212225;
+    padding: 1rem;
+    border-radius: 10px;    
 }
 
-.gridRow,
-.gridHeader {
+.headerH3 {
+    font-size: 1rem;
+    font-weight: 100;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.tournamentsPrizeInnerTable {
+    min-height: 40px;
+    width: 100%;
+    overflow-x: visible;
     background-color: #303136;
-}
-
-
-
-.gridHeader,
-.gridRow {
-    display: grid;
-    grid-template-columns:
-        minmax(150px, 1fr)    
-        minmax(70px, 90px);
-    border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+    border-radius: 10px;
+    min-width: 300px;
 }
 
 .gridRow:last-child {
@@ -43,37 +46,26 @@
 
 .gridHeader,
 .gridRow {
+    display: grid;
     grid-template-columns:
-        minmax(200px, 1.5fr)    
-        minmax(100px, 1fr)
-        minmax(100px, 1fr);
+        minmax(80px, 1fr)    
+        minmax(80px, 1fr)
+        minmax(80px, 1fr);
+    border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+    background-color: #303136;
+    padding-left: 0.5rem;
+    min-width: 100%;
+    box-sizing: border-box;
+    overflow-x: visible;
 }
-
-
-// .gridHeader > :nth-child(2),
-// .gridHeader > :nth-child(3),
-// .gridHeader > :nth-child(4),
-// .gridHeader > :nth-child(5),
-// .gridHeader > :nth-child(6),
-// .gridHeader > :nth-child(7),
-// .gridRow > :nth-child(2),
-// .gridRow > :nth-child(3),
-// .gridRow > :nth-child(4),
-// .gridRow > :nth-child(5),
-// .gridRow > :nth-child(6),
-// .gridRow > :nth-child(7) {
-//     display: none;
-// }
 
 .gridItem {
     font-family: 'ClashGrotesk-Light', sans-serif;
     font-size: 0.8rem;
-}
-
-.gridItem {
     display: flex;
     align-items: center;
     padding: 10px;
+    min-width: 100%;
 }
 
 .gridItemHeader {
@@ -86,29 +78,6 @@
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
-
-
-.tournamentDetailsContainer {
-    min-width: 250px;
-    width: 90%;
-    max-width: 95%;
-    min-height: 10vh;
-    position: absolute;
-    z-index: 2;
-    background-color: #212225;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 10px;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    gap: 1rem;
-    border: 1px solid #5C5C5f;
-}
-
 
 .tournamentRecord {
     display: flex;
@@ -128,4 +97,51 @@
     font-family: 'ClashGrotesk-Medium', sans-serif;
     font-size: 0.8rem;
     justify-content: flex-start;
+}
+
+.dateContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    color: #B2B3BD;
+}
+
+.createdDateParagraph,
+.updatedDateParagraph {
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    color: #B2B3BD;
+}
+
+.createdDateParagraph span,
+.updatedDateParagraph span {
+    color: #B2B3BD;
+}
+
+.dotIcon {
+    display: none;
+}
+
+.horizontalLine {
+    height: 0.5px;
+    background-color:rgba(204, 204, 204, 0.3);
+}
+
+@media only screen and (min-width: 500px) {
+    .dotIcon {
+        font-size: 0.75rem;
+        display: inline-flex;
+    }
+    
+    .dotIcon path {
+        color: #B2B3BD;
+        fill: #B2B3BD;;
+    }
+
+    .dateContainer {
+        flex-direction: row;
+        align-items: center;
+    }   
 }
