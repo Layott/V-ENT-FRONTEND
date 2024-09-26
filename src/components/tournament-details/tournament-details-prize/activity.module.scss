@@ -1,3 +1,130 @@
+.activityContainer {
+    min-height: 200px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    position: relative;
+}
+
+.historyBTN {
+    background-color: #212225;
+    outline: none;
+    border: none;
+    padding: 6.5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.tabContainer {
+    display: flex;
+    gap: 0.45rem;
+}
+
+.activeTab {
+    background-color: #303136;
+}
+
+
+
+.showingNumber {
+    font-size: 0.85rem;
+}
+
+.tournamentFilterSearchContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    // min-height: 50px;
+}
+
+.tournamentFilterContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.tournamentFilterContainer p {
+    font-size: 1rem;
+    font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+}
+
+.filterContainer {
+    position: relative;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: center;
+    padding: 0.4rem 1.5rem;
+}
+
+.searchContainer {
+    position: relative;
+    width: 100%;
+    min-height: 50px;
+}
+
+.searchBar {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all ease-in-out 0.5s;
+    background-color: #303136;
+    border: 1px solid #303136;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+}
+
+.searchBar:focus-within {
+    border: 1px solid var(--primary-bg);
+    width: 95%;
+}
+
+.searchBar:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.searchIcon {
+    font-size: 1rem;
+    color: #888;
+    margin-right: 0.2rem;
+    margin-left: 0;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    transition:  width 0.5s ease-in-out, border 0.5s ease-in-out;
+    margin-right: 5px;
+    margin-left: 2.5px;
+    background-color: transparent;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.searchInput::placeholder {
+    font-family: 'ClashGrotesk-Extralight', sans-serif;
+    color: white;
+    font-size: 0.85rem;
+}
+
+.tournamentsTable {
+    min-height: 40px;
+    width: 100%;
+    overflow-x: auto;
+}
+
 .gridHeader,
 .gridRow {
     display: grid;
@@ -368,7 +495,12 @@
 }
 
 @media only screen and (min-width: 550px) {
-    .tournamentsEventsFilterContainer {
+    .tournamentFilterSearchContainer {
+        width: 100%;
+        flex-direction: row;
+    }
+
+    .tournamentFilterContainer {
         width: calc(100% - 250px);
     }    
 
@@ -384,10 +516,11 @@
         width: 250px;
         min-height: 30px;
     }
+
 }
 
 @media only screen and (min-width: 650px) {
-    .tournamentsEventsFilterContainer {
+    .tournamentFilterContainer {
         width: calc(100% - 300px);
     }    
 
@@ -395,6 +528,10 @@
         width: 300px;
     }
 }
+
+
+
+
 
 @media only screen and (min-width: 650px) {
     .gridHeader,
