@@ -46,7 +46,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  // overflow-x: hidden;
   font-family: 'ClashGrotesk-Regular', sans-serif;
   color: var(--primary-bg);
 }
@@ -54,21 +53,6 @@
 a {
   text-decoration: none;
 }
-
-// h1 {
-//   font-size: var(--mobile-h1-size);
-//   font-weight: var(--fw-bold);
-// }
-
-// h3 {
-//   font-size: var(--mobile-h3-size);
-// }
-
-// h6 {
-//   font-size: var(--desktop-h6-size);
-// }
-
-// font-family: 'ClashGrotesk-Light', sans-serif;
 
 .btn {
   height: 37px;
@@ -119,17 +103,3 @@ select:active {
   --primary-bg: #000000;
   --primary-text: #FFFFFF;  
 }
-
-// @media only screen and (min-width: 500px) {
-//   h1 {
-//       font-size: var(--desktop-h1-size);
-//   }
-
-//   h3 {
-//     font-size: var(--desktop-h3-size);
-//   }
-  
-//   h6 {
-//     font-size: var(--desktop-h6-size);
-//   }
-// }
