@@ -48,6 +48,7 @@
   flex-direction: column;
   border-top: 1px solid rgba(119, 119, 119, 0.5);
   margin: 0 auto;
+  padding: 1.5rem 0;
 }
 
 .overviewContainer {
@@ -75,8 +76,5 @@
   .rightPaneContainer {
     width: calc(100% - 250px);
     margin-left: 250px;
-  }
-  .tournamentDetailsDashboard {
-    padding: 1.5rem 0;
   }
 }
