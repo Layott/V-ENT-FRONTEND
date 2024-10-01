@@ -13,7 +13,7 @@ import TournamentDetailsPrize from '@/components/tournament-details/tournament-d
 import styles from './tournament-details.module.css'
 
 const TournamentDetails = () => {
-  const [activeTab, setActiveTab] = useState('prize')
+  const [activeTab, setActiveTab] = useState('participants')
 
   return (
     <div className={styles.pageContainer}>
