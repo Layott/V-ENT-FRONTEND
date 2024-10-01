@@ -139,9 +139,6 @@
 .gridItem {
   font-family: 'ClashGrotesk-Light', sans-serif;
   font-size: 0.8rem;
-}
-
-.gridItem {
   display: flex;
   align-items: center;
   padding: 10px;
@@ -447,9 +444,13 @@
   .gridRow > :nth-child(7) {
     display: none;
   }
-  .gridHeader > :nth-child(2),
-  .gridRow > :nth-child(2) {
+  .gridHeader > :nth-child(2) {
     display: grid;
+  }
+  .gridRow > :nth-child(2) {
+    display: flex;
+    gap: 0.25rem;
+    flex-direction: row;
   }
 }
 

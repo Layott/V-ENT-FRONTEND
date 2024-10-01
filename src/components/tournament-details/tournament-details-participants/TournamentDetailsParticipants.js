@@ -4,6 +4,7 @@ import { CiSearch } from 'react-icons/ci'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { LuUser, LuUsers2 } from "react-icons/lu";
 import { participantsList } from './participantsList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './tournament-details-participants.module.css'
@@ -112,7 +113,16 @@ const TournamentDetailsParticipants = () => {
               </div>
               <p className={styles.gameName}>{participant.participant}</p>
             </div>
-            <div className={styles.gridItem}>{participant.type}</div>
+
+            <div className={`${styles.gridItem} ${styles.participantDiv}`}>
+              {participant.type === "Individual" ? (
+                <LuUser className={styles.participantIcon} />
+              ) : (
+                <LuUsers2 className={styles.participantIcon} />
+              )}
+              {participant.type}
+            </div>
+            
             <div className={styles.gridItem}>{participant.ranking}</div>
             <div className={styles.gridItem}>{participant.location}</div>
             <div className={styles.gridItem}>{participant.tournaments}</div>
