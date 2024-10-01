@@ -8,7 +8,22 @@
   gap: 1rem;
   width: 100%;
   position: relative;
-  border: 1px solid red;
+}
+
+.informationArea {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.informationArea p {
+  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-size: 0.9rem;
+}
+
+.informationArea p:first-of-type {
+  display: flex;
 }
 
 .tournamentsEventsFilterSearchContainer {
@@ -29,14 +44,6 @@
 .tournamentsEventsFilterContainer p {
   font-size: 1rem;
   font-family: 'ClashGrotesk-ExtraLight', sans-serif;
-}
-
-.filterContainer {
-  position: relative;
-  font-size: 0.85rem;
-  display: flex;
-  justify-content: center;
-  padding: 0.4rem 1.5rem;
 }
 
 .searchContainer {
@@ -63,7 +70,7 @@
 
 .searchBar:focus-within {
   border: 1px solid var(--primary-bg);
-  width: 95%;
+  width: 100%;
 }
 
 .searchBar:hover {
@@ -74,7 +81,8 @@
   font-size: 1rem;
   color: #888;
   margin-right: 0.2rem;
-  margin-left: 0;
+  margin-left: 0.15rem;
+  cursor: pointer;
 }
 
 .searchInput {
@@ -456,9 +464,6 @@
   .searchBar {
     width: 70%;
   }
-  .searchBar:focus-within {
-    width: 95%;
-  }
   .searchContainer {
     width: 250px;
     min-height: 30px;
@@ -578,6 +583,12 @@
   .gridHeader > :nth-child(6),
   .gridRow > :nth-child(6) {
     display: grid;
+  }
+  .searchBar {
+    width: 80%;
+  }
+  .searchContainer {
+    width: 350px;
   }
 }
 

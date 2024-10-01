@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { CiSearch } from 'react-icons/ci'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+import { IoMdInformationCircleOutline } from "react-icons/io";
 import { participantsList } from './participantsList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './tournament-details-participants.module.css'
@@ -60,13 +61,13 @@ const TournamentDetailsParticipants = () => {
   return (
 
     <div className={styles.tournamentDetailsParticipantsContainer}>
+        <div className={styles.informationArea}>
+          <p><IoMdInformationCircleOutline /></p>
+          <p>Teams and Individuals can register for this tournament.</p>
+        </div>
         <div className={styles.tournamentsEventsFilterSearchContainer}>
             <div className={styles.tournamentsEventsFilterContainer}>
                 <p className={styles.tournamentNumber}>{participantsList.length} participants</p>
-                <div className={`${styles.filterContainer} ${profileStyles.topMostLayerColor}`}>
-                    Filter
-                </div>
-
             </div>
           
             <div className={styles.searchContainer}>
