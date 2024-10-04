@@ -3,10 +3,17 @@
 import Header from '@/components/header/Header'
 import Sidebar from '@/components/sidebar/Sidebar'
 import styles from './page.module.css'
+import { signOut, useSession } from 'next-auth/react'
+import Login from './login/page'
 
 const page = () => {
+  const {data: session} = useSession();
+
   return (
-    <div className={styles.pageContainer}>
+    <>
+      {session ? (
+        <>
+          <div className={styles.pageContainer}>
       <Header />
 
       <main className={styles.mainContainer}>
@@ -20,11 +27,21 @@ const page = () => {
                         Filter and Search
                     </div>
                 </div>
+                
+                {/* I Just put in a log out button just because one hasn't been made yet */}
+                <div>
+                    <button onClick={()=>signOut()} style={{backgroundColor:"red", padding:'1rem' }}>LOG OUT TEST</button>
+                </div>
 
             </div>
         </main>
 
     </div>
+        </>
+      ): (
+        <Login/>
+      )}
+    </>
   )
 }
 

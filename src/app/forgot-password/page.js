@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
-import { VENT } from '@/app/api/auth/route';
+import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar'
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
