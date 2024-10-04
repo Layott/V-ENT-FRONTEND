@@ -42,35 +42,44 @@ const UserProfileBio = () => {
                     </div>
 
                 </div>
-                <div className={styles.profileDetails}>
-                    <h1 className={styles.profileFullName}>Nathan Drake</h1>
-                    <p className={styles.profileUsernameHandle}>@frostbite</p>
-                    <p className={styles.userLocation}><IoLocationOutline />
-                        <span className={styles.userLocationState}>Lagos</span>,
-                        &nbsp;
-                        <span className={styles.userLocationCountry}>Nigeria</span>
-                    </p>
+                <div className={styles.profileDetailsContainer}>
+                    <div className={styles.profileDetails}>
+                        <h1 className={styles.profileFullName}>Nathan Drake Jonathan Emmanuel</h1>
+                        <p className={styles.profileUsernameHandle}>@frostbite</p>
+                        <p className={styles.userLocation}><IoLocationOutline />
+                            <span className={styles.userLocationState}>Lagos</span>,
+                            &nbsp;
+                            <span className={styles.userLocationCountry}>Nigeria</span>
+                        </p>
+                    </div>
+
+                    <div className={styles.profileEditButtonContainer}>
+                        <Link
+                            href={'/edit-profile'}
+                            onClick={toggleEditMode}
+                            className={styles.editButtonLink}
+                        >
+                            {isEditing ? (
+                                <>
+                                <FaRegSave className={styles.saveIcon} /> 
+                                Save Profile
+                                </>
+                            ) : (
+                                <>
+                                    <FiEdit3 className={styles.editIcon} />
+                                    Edit Profile
+                                </>
+                            )}
+                        </Link>
+                    </div>
+
+
                 </div>
+
             </div>
-            <div className={styles.profileEditButton}>
-                <Link
-                    href={'/edit-profile'}
-                    onClick={toggleEditMode}
-                    className={styles.editButtonLink}
-                >
-                    {isEditing ? (
-                        <>
-                        <FaRegSave className={styles.saveIcon} /> 
-                        Save Profile
-                        </>
-                    ) : (
-                        <>
-                            <FiEdit3 className={styles.editIcon} />
-                            Edit Profile
-                        </>
-                    )}
-                </Link>
-            </div>
+
+
+
         </div>
 
         <div className={styles.profileDescription}>
