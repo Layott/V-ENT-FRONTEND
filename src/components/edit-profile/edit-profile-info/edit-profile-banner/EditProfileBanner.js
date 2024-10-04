@@ -11,6 +11,7 @@ const EditProfileBanner = () => {
         if (file) {
         console.log(`Banner uploaded: ${file.name}`)
         // File upload logic
+        
         }
     }
 
