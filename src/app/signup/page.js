@@ -4,12 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import googleLogo from '../../../public/images/google.svg';
 import facebookLogo from '../../../public/images/facebook.svg';
-import { signIn, getSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { countries } from './countries';
 import PasswordStrength from './passwordStrength';
-import { VENT } from '@/app/api/auth/route';
+import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress'; 
 import { useRouter } from 'next/navigation';
@@ -181,53 +181,27 @@ const Signup = () => {
         }
     };
 
-    // COMMING BACK TO THIS
 
-    // const handleOAuthSignUp = async (provider) => {
-    //     try {
-    //         setLoading(true);
-    //         const result = await signIn(provider, { redirect: false });
-    //         if (result?.error) {
-    //             console.error('Error during sign-in:', result.error);
-    //             setSnackbarMessage('Error during sign-in');
-    //             setSnackbarType('error');
-    //             setOpen(true);
-    //         } else {
-    //             const session = await getSession();
-    //             if (session) {
-    //                 const response = await fetch(VENT.SIGNUP, {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Content-Type': 'application/json',
-    //                     },
-    //                     body: JSON.stringify({
-    //                         token: session.accessToken,
-    //                         provider,
-    //                     }),
-    //                 });
-    //                 if (response.ok) {
-    //                     setSnackbarMessage('Account created successfully!');
-    //                     setSnackbarType('success');
-    //                     setOpen(true);
-    //                     setTimeout(() => {
-    //                         window.location.href = '/login';
-    //                     }, 2000);
-    //                 } else {
-    //                     setSnackbarMessage('Failed to sign up with OAuth');
-    //                     setSnackbarType('error');
-    //                     setOpen(true);
-    //                 }
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error('Error during OAuth signup:', error);
-    //         setSnackbarMessage('Error during OAuth signup');
-    //         setSnackbarType('error');
-    //         setOpen(true);
-    //     } finally {
-    //         setLoading(false); 
-    //     }
-    // };
+    const handleOAuthSignUp = async (provider) => {
+        setLoading(true);
+        try {
+            const result = await signIn(provider, { redirect: false });
+            if (result.error) {
+                setSnackbarMessage('Failed to sign up with ' + provider);
+                setSnackbarType('error');
+                setOpen(true);
+            } else {
+                router.replace('/');
+            }
+        } catch (error) {
+            // setSnackbarMessage(`An error occurred with ${provider} sign-up.`);
+            setSnackbarType('error');
+            // setOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
 
     return (

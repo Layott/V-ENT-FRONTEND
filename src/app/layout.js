@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import SessionWrapper from "@/components/SessionWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,17 +19,20 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <meta name="description" content={metadata.description} />
-        <meta name="keywords" content={metadata.keywords} />
-        <meta name="author" content={metadata.author} />
-        <meta name="viewport" content={metadata.viewport} />
-        <meta charSet={metadata.charset} />
-        <meta name="viewport" content={`width=${viewport.width}, initial-scale=${viewport.initialScale}`} />
-        <title>{metadata.title}</title>
-      </head>
-      <body className={inter.className}>{children}</body>
-    </html>
+    <SessionWrapper>
+        <html lang="en">
+        <head>
+          <meta name="description" content={metadata.description} />
+          <meta name="keywords" content={metadata.keywords} />
+          <meta name="author" content={metadata.author} />
+          <meta name="viewport" content={metadata.viewport} />
+          <meta charSet={metadata.charset} />
+          <meta name="viewport" content={`width=${viewport.width}, initial-scale=${viewport.initialScale}`} />
+          <title>{metadata.title}</title>
+        </head>
+        <body className={inter.className}>{children}</body>
+      </html>
+    </SessionWrapper>
+    
   );
 }
