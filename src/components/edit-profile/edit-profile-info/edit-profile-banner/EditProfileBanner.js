@@ -33,6 +33,7 @@ const EditProfileBanner = () => {
                     onChange={handleBannerUploader}
                     id="bannerUpload"
                     className={bioStyles.uploadInput}
+                    
                 />
             </div>
 
