@@ -5,10 +5,11 @@
 }
 
 .tournamentDetailsBanner {
-    height: 250px;
+    height: 150px;
     width: 100%;
     overflow: hidden;
     position: relative;
+    border: 2px solid white;
 }
 
 .tournamentDetailsBanner img {
@@ -138,6 +139,10 @@
 }
 
 @media only screen and (min-width: 650px) {
+    .tournamentDetailsBanner {
+        height: 200px;
+    }
+
     .headerDetails {
         flex-direction: row;
     }
@@ -145,6 +150,23 @@
     .headerContainer {
         flex-direction: row;
         gap: 0rem;
+    }   
+}
+
+@media only screen and (min-width: 768px) {
+    .tournamentDetailsBanner {
+        height: 250px;
     }
-    
+}
+
+@media only screen and (min-width: 1200px) {
+    .tournamentDetailsBanner {
+        height: 300px;
+    }
+}
+
+@media only screen and (min-width: 1440px) {
+    .tournamentDetailsBanner {
+        height: 350px;
+    }
 }
