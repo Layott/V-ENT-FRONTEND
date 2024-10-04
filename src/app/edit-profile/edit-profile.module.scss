@@ -118,9 +118,7 @@
 
 @media only screen and (min-width: 768px) {
     .rightPaneEditProfileContainer {
-        width: calc(100% - 180px);
         width: 100%;
-        // margin-left: 180px;
         flex-direction: row;
     }
 
@@ -181,6 +179,12 @@
 }
 
 @media only screen and (min-width: 1124px) {
+    .profileEditDashboard {
+        width: calc(100% + 1rem);
+    }
+}
+
+@media only screen and (min-width: 1440px) {
     .profileEditDashboard {
         width: calc(100% - 345px);
     }
