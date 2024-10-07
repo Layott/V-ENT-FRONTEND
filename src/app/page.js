@@ -7,12 +7,12 @@ import { signOut, useSession } from 'next-auth/react'
 import Login from './login/page'
 
 const page = () => {
-  const {data: session} = useSession();
+  // const {data: session} = useSession();
 
   return (
     <>
-      {session ? (
-        <>
+      {session ? ( 
+         <>
           <div className={styles.pageContainer}>
       <Header />
 
@@ -27,11 +27,10 @@ const page = () => {
                         Filter and Search
                     </div>
                 </div>
-                
-                {/* I Just put in a log out button just because one hasn't been made yet */}
+
                 <div>
                     <button onClick={()=>signOut()} style={{backgroundColor:"red", padding:'1rem' }}>LOG OUT TEST</button>
-                </div>
+                </div> 
 
             </div>
         </main>
