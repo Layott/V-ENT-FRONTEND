@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Image from 'next/image'
+import Link from 'next/link';
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuGamepad2 } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
@@ -80,8 +81,8 @@ const PUBGTournaments = () => {
                     </div>
                 
                     <div className={`${newTournamentsStyles.buttonContainer} ${allTournamentsStyles.buttonContainer}`}>
-                        <button className={newTournamentsStyles.viewDetailsBTN}>View Details</button>
-                        <button className={newTournamentsStyles.registerBTN}>Register</button>
+                        <Link href={'/tournament-details'} className={newTournamentsStyles.viewDetailsBTN}>View Details</Link>
+                        <Link href={'/tournament-register'} className={newTournamentsStyles.registerBTN}>Register</Link>
                     </div>
                 </div>
                     

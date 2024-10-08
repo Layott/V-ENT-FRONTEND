@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link';
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuGamepad2 } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
@@ -60,8 +61,8 @@ const NewTournaments = () => {
                         </div>
             
                         <div className={styles.buttonContainer}>
-                            <button className={styles.viewDetailsBTN}>View Details</button>
-                            <button className={styles.registerBTN}>Register</button>
+                            <Link href={'/tournament-details'} className={styles.viewDetailsBTN}>View Details</Link>
+                            <Link href={'/tournament-register'} className={styles.registerBTN}>Register</Link>
                         </div>
                     </div>
             
