@@ -49,7 +49,6 @@ const UpcomingEvents = () => {
                                 <span className={styles.feeSpan}>Fee: <span><RiCopperCoinFill className={styles.coinIcon} /></span> {event.fee}</span>
                             </p>
 
-
                         </div>
                         
                         <div className={styles.buttonContainer}>

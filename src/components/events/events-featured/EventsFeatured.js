@@ -6,7 +6,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { eventsFeaturedList } from './eventsFeaturedList'
 import styles from './events-featured.module.css'
 
-const TournamentsFeatured = () => {
+const EventsFeatured = () => {
   return (
     <div className={styles.tournamentsFeaturedContainer}>
         <h3>Featured</h3>
@@ -60,4 +60,4 @@ const TournamentsFeatured = () => {
   )
 }
 
-export default TournamentsFeatured
+export default EventsFeatured

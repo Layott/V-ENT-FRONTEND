@@ -1,4 +1,4 @@
-import TournamentsFeatured from './events-featured/EventsFeatured'
+import EventsFeatured from './events-featured/EventsFeatured'
 import UpcomingEvents from './upcoming-events/UpcomingEvents'
 import AllEvents from './all-events/AllEvents'
 import styles from './events.module.css'
@@ -6,7 +6,7 @@ import styles from './events.module.css'
 const EventsComponent = () => {
   return (
     <div className={styles.eventsComponentContainer}>
-      <TournamentsFeatured />
+      <EventsFeatured />
       <UpcomingEvents />
       <AllEvents />
     </div>
