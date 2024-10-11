@@ -1,9 +1,9 @@
-import minecraftEventOne from "@/images/minecraft_1.jpg";
-import minecraftEventTwo from "@/images/minecraft_2.jpg";
-import minecraftEventThree from "@/images/minecraft_3.jpg";
-import minecraftEventFour from "@/images/minecraft_4.jpg";
-import minecraftEventFive from "@/images/minecraft_5.jpg";
-import minecraftEventSix from "@/images/minecraft_6.jpg";
+import minecraftEventOne from "@/images/minecraft_event_1.jpg";
+import minecraftEventTwo from "@/images/minecraft_event_2.jpg";
+import minecraftEventThree from "@/images/minecraft_event_3.jpg";
+import minecraftEventFour from "@/images/minecraft_event_4.jpg";
+import minecraftEventFive from "@/images/minecraft_event_5.jpg";
+import minecraftEventSix from "@/images/minecraft_event_6.jpg";
 
 export const minecraftEventsList = [
   {
