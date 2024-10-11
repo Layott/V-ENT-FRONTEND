@@ -1,81 +1,57 @@
-import ballOne from "@/images/ball_1.jpg";
-import ballTwo from "@/images/ball_2.jpg";
-import ballTrophy from "@/images/ball_trophy.jpg";
-import ballboy from "@/images/ball_boy.jpg";
-import ballLeg from "@/images/ball_leg.jpg";
-import girlFIFA from "@/images/girl_FIFA.jpg";
+import fifaEventOne from "@/images/fifa_event_1.jpg";
+import fifaEventTwo from "@/images/fifa_event_2.jpg";
+import fifaEventThree from "@/images/fifa_event_3.jpg";
+import fifaEventFour from "@/images/fifa_event_4.jpg";
+import fifaEventFive from "@/images/fifa_event_5.jpg";
+import fifaEventSix from "@/images/fifa_event_6.jpg";
 
 export const fifaEventsList = [
   {
-    src: ballboy,
-    alt: "Ball Boy",
+    src: fifaEventOne,
+    alt: "Fifa Event One",
     name: "FIFA World Cup",
-    location: "Unilag",
-    teamType: "Teams",
-    players: "11 Players",
-    game: "eFootball PES 2024",
+    eventType: "In-Person Event",
     date: "Oct. 1st - Oct. 21st 2024",
-    prize: "₦1,000,000",
     fee: 100,
   },
   {
-    src: ballOne,
-    alt: "Ball One",
+    src: fifaEventTwo,
+    alt: "Fifa Event Two",
     name: "FIFA Champions League",
-    location: "Unilag",
-    teamType: "Individuals",
-    players: "1 Player",
-    game: "FIFA 24",
+    eventType: "Virtual Event",
     date: "Jan. 5th - Jan. 15th 2025",
-    prize: "₦500,000",
     fee: 50,
   },
   {
-    src: ballTwo,
-    alt: "Ball Two",
+    src: fifaEventThree,
+    alt: "Fifa Event Three",
     name: "FIFA International Cup",
-    location: "Unilag",
-    teamType: "Teams",
-    players: "11 Players",
-    game: "FIFA 24",
+    eventType: "Virtual Event",
     date: "Feb. 10th - Feb. 20th 2025",
-    prize: "₦750,000",
     fee: 75,
   },
   {
-    src: ballLeg,
-    alt: "Ball Leg",
+    src: fifaEventFour,
+    alt: "Fifa Event Four",
     name: "FIFA Street Tournament",
-    location: "Unilag",
-    teamType: "Teams",
-    players: "5-a-side",
-    game: "FIFA Street",
+    eventType: "In-Person Event",
     date: "Mar. 15th - Mar. 25th 2025",
-    prize: "₦300,000",
     fee: 30,
   },
   {
-    src: ballTrophy,
-    alt: "Ball Trophy",
+    src: fifaEventFive,
+    alt: "Fifa Event Five",
     name: "FIFA Invitational",
-    location: "Unilag",
-    teamType: "Teams",
-    players: "11 Players",
-    game: "FIFA 24",
+    eventType: "In-Person Event",
     date: "Apr. 1st - Apr. 10th 2025",
-    prize: "₦1,500,000",
     fee: 120,
   },
   {
-    src: girlFIFA,
-    alt: "Girl FIFA",
+    src: fifaEventSix,
+    alt: "Fifa Event Six",
     name: "FIFA Invitational",
-    location: "Unilag",
-    teamType: "Teams",
-    players: "11 Players",
-    game: "Dream League Soccer",
+    eventType: "Virtual Event",
     date: "Apr. 1st - Apr. 10th 2025",
-    prize: "₦1,500,000",
     fee: 150,
   },
 ];
