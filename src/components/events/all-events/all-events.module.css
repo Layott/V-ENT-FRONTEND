@@ -1,0 +1,156 @@
+.allTournamentsSlidersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  scroll-snap-type: x mandatory;
+  /* Snapping effect on scroll */
+  /* Hide the Scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  min-height: 300px;
+  min-width: 200px;
+  padding-bottom: 2rem;
+}
+
+.allTournamentsSlidersContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.fifaTournamentsContainer {
+  min-width: 200px;
+  max-width: 100%;
+  flex-grow: 1;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.header h3 {
+  font-size: 1rem;
+}
+
+.seeMoreBTN {
+  border: none;
+  width: calc(100% - 170px);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-family: 'ClashGrotesk-Medium', sans-serif;
+  cursor: pointer;
+}
+
+.seeLessBTN {
+  display: flex;
+  justify-content: flex-end;
+  justify-self: flex-end;
+  width: 90%;
+}
+
+.cardsContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.cardContainer {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 7.5px;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.imageContainer {
+  min-width: 100px;
+  max-width: 100px;
+  height: 160px;
+  border-radius: 7.5px;
+}
+
+.imageContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 7.5px;
+}
+
+.descriptionContainer {
+  min-height: 50px;
+  padding: 0;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.nameDateContainer,
+.prizeFeeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+@media only screen and (min-width: 420px) {
+  .imageContainer {
+    min-width: 100px;
+    max-width: 100px;
+    height: 120px;
+  }
+  .buttonContainer {
+    flex-direction: row;
+  }
+  .nameDateContainer,
+  .prizeFeeContainer {
+    flex-direction: row;
+  }
+}
+
+@media only screen and (min-width: 500px) {
+  .imageContainer {
+    min-width: 150px;
+    max-width: 150px;
+  }
+}
+
+@media only screen and (min-width: 650px) {
+  .seeMoreBTN {
+    justify-content: flex-start;
+  }
+  .seeLessBTN {
+    justify-content: flex-end;
+  }
+  .allTournamentsSlidersContainer {
+    min-width: 500px;
+  }
+  .allTournamentsSlidersContainer {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  .header {
+    gap: 2rem;
+  }
+  .fifaTournamentsContainer {
+    min-width: 470px;
+    max-width: 470px;
+  }
+  .imageContainer {
+    min-width: 150px;
+    max-width: 150px;
+  }
+}
