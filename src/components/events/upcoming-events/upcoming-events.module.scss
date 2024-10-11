@@ -1,4 +1,4 @@
-.newTournamentsContainer {
+.upcomingEventsContainer {
     min-height: 10vh;
     width: 100%;
     display: flex;
@@ -6,7 +6,7 @@
     gap: 1rem;
 }
 
-.newTournamentsContainer h3 {
+.upcomingEventsContainer h3 {
     font-size: 1rem;
 }
 
@@ -32,7 +32,7 @@
 
 .imageContainer {
     width: 100%;
-    height: 150px;
+    height: 130px;
     border-top-left-radius: 7.5px;
     border-top-right-radius: 7.5px;
 }
@@ -48,64 +48,68 @@
 .descriptionContainer {
     min-height: 100px;
     width: 100%;
-    padding: 0.5rem;
-    padding-top: 0.75rem;
+    padding: 0.6rem;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
 }
 
-.descriptionNameLocation p,
-.descriptionName,
+.descriptionName {
+    font-size: 0.95rem;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.descriptionName p,
 .descriptionLocation {
     font-size: 0.8rem;
     font-family: 'ClashGrotesk-Medium', sans-serif;
 }
 
-.teamsIndividualsContainer {
+.detailsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.eventTypeAndLocationContainer {
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0.5rem;
+}
+
+.dotSpan {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.dotIcon {
+    font-size: 4px;
 }
 
 .feeParagraph,
-.prizeParagraph,
-.teamsIndividualsParagraph,
-.nameParagraph,
+.eventTypeParagraph,
 .dateParagraph {
-    font-size: 0.7rem;
     display: flex;
     align-items: center;
+    flex-direction: row;
     gap: 0.3rem;
 }
 
-.nameDateContainer,
-.prizeFeeContainer {
+.coinIcon,
+.calendarIcon,
+.feeIcon {
     display: flex;
-    flex-direction: row;
-}
-
-.prizeParagraph,
-.feeParagraph,
-.nameParagraph,
-.dateParagraph {
-    display: flex;
-    flex-direction: row;
-    width: 50%;
-}
-
-.playerNumber {
     font-size: 0.7rem;
 }
 
-.coinIcon,
-.teamsIcon,
-.padIcon,
-.calendarIcon,
-.prizeIcon,
-.feeIcon {
-    display: flex;
+.dotIcon path,
+.calendarIcon path,
+.feeIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
 }
 
 .coinIcon path {
@@ -114,11 +118,16 @@
     background-color: goldenrod;
 }
 
+.locationSpan,
+.eventTypeSpan,
+.dateSpan,
 .feeSpan {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.1rem;
+    color: #CCC;
+    font-size: 0.7rem;
 }
 
 .buttonContainer {
@@ -126,8 +135,8 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
-    margin-top: 0.4rem;
-    margin-bottom: 0.4rem;
+    // margin-top: 0.4rem;
+    // margin-bottom: 0.4rem;
 }
 
 .viewDetailsBTN,
@@ -160,14 +169,6 @@
     border: 1px solid #b1b1b1;
 }
 
-
-@media only screen and (min-width: 450px) {
-    .descriptionContainer {
-        padding: 0.8rem;
-        padding-top: 1rem;
-    }
-    
-}
 @media only screen and (min-width: 900px) {
     .cardContainer {
         width: 300px;
