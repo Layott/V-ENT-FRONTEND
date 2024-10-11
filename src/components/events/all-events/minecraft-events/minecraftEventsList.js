@@ -1,105 +1,57 @@
-import minecraftOne from "@/images/minecraft_1.jpg";
-import minecraftTwo from "@/images/minecraft_2.jpg";
-import minecraftThree from "@/images/minecraft_3.jpg";
-import minecraftFour from "@/images/minecraft_4.jpg";
-import minecraftFive from "@/images/minecraft_5.jpg";
-import minecraftSix from "@/images/minecraft_6.jpg";
+import minecraftEventOne from "@/images/minecraft_1.jpg";
+import minecraftEventTwo from "@/images/minecraft_2.jpg";
+import minecraftEventThree from "@/images/minecraft_3.jpg";
+import minecraftEventFour from "@/images/minecraft_4.jpg";
+import minecraftEventFive from "@/images/minecraft_5.jpg";
+import minecraftEventSix from "@/images/minecraft_6.jpg";
 
 export const minecraftEventsList = [
   {
-    image: {
-      src: minecraftOne,
-      alt: "Minecraft Tournament - Build Battle",
-    },
-    details: {
-      name: "Minecraft Build Championship",
-      location: "Lagos",
-      teamType: "Teams",
-      players: "5 Players",
-      game: "Minecraft",
-      date: "Nov. 10th - Nov. 20th 2024",
-      prize: "₦10,000,000",
-      fee: 1000,
-    },
+    src: minecraftEventOne,
+    alt: "Minecraft Event One",
+    name: "Minecraft Survival Challenge",
+    eventType: "In-Person Event",
+    date: "Oct. 1st - Oct. 21st 2024",
+    fee: 100,
   },
   {
-    image: {
-      src: minecraftTwo,
-      alt: "Minecraft Survival Challenge",
-    },
-    details: {
-      name: "Minecraft Survival Open",
-      location: "Abuja",
-      teamType: "Individuals",
-      players: "1 Player",
-      game: "Minecraft",
-      date: "Dec. 1st - Dec. 10th 2024",
-      prize: "₦3,000,000",
-      fee: 300,
-    },
+    src: minecraftEventTwo,
+    alt: "Minecraft Event Two",
+    name: "Minecraft Build-Off",
+    eventType: "Virtual Event",
+    date: "Jan. 5th - Jan. 15th 2025",
+    fee: 50,
   },
   {
-    image: {
-      src: minecraftThree,
-      alt: "Minecraft Redstone Mastery",
-    },
-    details: {
-      name: "Minecraft Redstone Showdown",
-      location: "Ibadan",
-      teamType: "Teams",
-      players: "5 Players",
-      game: "Minecraft",
-      date: "Jan. 5th - Jan. 15th 2025",
-      prize: "₦5,000,000",
-      fee: 500,
-    },
+    src: minecraftEventThree,
+    alt: "Minecraft Event Three",
+    name: "Minecraft PvP Tournament",
+    eventType: "Virtual Event",
+    date: "Feb. 10th - Feb. 20th 2025",
+    fee: 75,
   },
   {
-    image: {
-      src: minecraftFour,
-      alt: "Minecraft Speedrun Challenge",
-    },
-    details: {
-      name: "Minecraft Speedrun Invitational",
-      location: "Port Harcourt",
-      teamType: "Individuals",
-      players: "1 Player",
-      game: "Minecraft",
-      date: "Mar. 10th - Mar. 20th 2025",
-      prize: "₦6,000,000",
-      fee: 600,
-    },
+    src: minecraftEventFour,
+    alt: "Minecraft Event Four",
+    name: "Minecraft Redstone Challenge",
+    eventType: "In-Person Event",
+    date: "Mar. 15th - Mar. 25th 2025",
+    fee: 30,
   },
   {
-    image: {
-      src: minecraftFive,
-      alt: "Minecraft Creative Build Cup",
-    },
-    details: {
-      name: "Minecraft Creative Cup",
-      location: "Enugu",
-      teamType: "Teams",
-      players: "5 Players",
-      game: "Minecraft",
-      date: "Apr. 15th - Apr. 25th 2025",
-      prize: "₦4,000,000",
-      fee: 400,
-    },
+    src: minecraftEventFive,
+    alt: "Minecraft Event Five",
+    name: "Minecraft Parkour Cup",
+    eventType: "In-Person Event",
+    date: "Apr. 1st - Apr. 10th 2025",
+    fee: 120,
   },
   {
-    image: {
-      src: minecraftSix,
-      alt: "Minecraft PVP Arena",
-    },
-    details: {
-      name: "Minecraft PVP Arena Battle",
-      location: "Kano",
-      teamType: "Duos",
-      players: "2 Players",
-      game: "Minecraft",
-      date: "Feb. 1st - Feb. 10th 2025",
-      prize: "₦2,000,000",
-      fee: 200,
-    },
+    src: minecraftEventSix,
+    alt: "Minecraft Event Six",
+    name: "Minecraft Creative Showcase",
+    eventType: "Virtual Event",
+    date: "May 1st - May 10th 2025",
+    fee: 150,
   },
 ];
