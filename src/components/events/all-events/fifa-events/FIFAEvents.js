@@ -40,43 +40,43 @@ const FIFAEvents = () => {
             <div key={index} className={allEventsStyles.cardContainer}>
                 <div className={allEventsStyles.imageContainer}>
                     <Image
-                        src={fifaTournament.image.src}
-                        alt={fifaTournament.image.alt}
+                        src={fifaTournament.src}
+                        alt={fifaTournament.alt}
                     />
                 </div>
                             
                 <div className={`${upcomingEventsStyles.descriptionContainer} ${allEventsStyles.descriptionContainer}`}>
                     <div className={upcomingEventsStyles.descriptionNameLocation}>
-                        <p><span className={upcomingEventsStyles.descriptionName}>{fifaTournament.details.name}</span> - <span className={upcomingEventsStyles.descriptionLocation}>{fifaTournament.details.location}</span></p>
+                        <p><span className={upcomingEventsStyles.descriptionName}>{fifaTournament.name}</span> - <span className={upcomingEventsStyles.descriptionLocation}>{fifaTournament.location}</span></p>
                     </div>
             
                     <div className={upcomingEventsStyles.teamsIndividualsContainer}>
                         <p className={upcomingEventsStyles.teamsIndividualsParagraph}>
                             <span className={upcomingEventsStyles.teamsIndividualsIconSpan}><AiOutlineTeam className={upcomingEventsStyles.teamsIcon} /></span>
-                            <span className={upcomingEventsStyles.teamsIndividualsSpan}>{fifaTournament.details.teamType}</span>
+                            <span className={upcomingEventsStyles.teamsIndividualsSpan}>{fifaTournament.teamType}</span>
                         </p>
-                        <span className={upcomingEventsStyles.playerNumber}># {fifaTournament.details.players}</span>
+                        <span className={upcomingEventsStyles.playerNumber}># {fifaTournament.players}</span>
                     </div>
             
                     <div className={`${upcomingEventsStyles.nameDateContainer} ${allEventsStyles.nameDateContainer}`}>
                         <p className={`${upcomingEventsStyles.nameParagraph}`}>
                             <span className={upcomingEventsStyles.padIconSpan}><LuGamepad2 className={upcomingEventsStyles.padIcon} /></span>
-                            <span className={upcomingEventsStyles.nameSpan}>{fifaTournament.details.game}</span>
+                            <span className={upcomingEventsStyles.nameSpan}>{fifaTournament.game}</span>
                         </p>
                         <p className={`${upcomingEventsStyles.dateParagraph}`}>
                             <span className={upcomingEventsStyles.calendarIconSpan}><FiCalendar className={upcomingEventsStyles.calendarIcon} /></span>
-                            <span className={upcomingEventsStyles.dateSpan}>{fifaTournament.details.date}</span>
+                            <span className={upcomingEventsStyles.dateSpan}>{fifaTournament.date}</span>
                         </p>
                     </div>
                                         
                     <div className={`${upcomingEventsStyles.prizeFeeContainer} ${allEventsStyles.prizeFeeContainer}`}>
                         <p className={`${upcomingEventsStyles.prizeParagraph}`}>
                             <span className={upcomingEventsStyles.prizeIconSpan}><GrTrophy className={upcomingEventsStyles.prizeIcon} /></span>
-                            <span className={upcomingEventsStyles.prizeSpan}>Prize: {fifaTournament.details.prize}</span>
+                            <span className={upcomingEventsStyles.prizeSpan}>Prize: {fifaTournament.prize}</span>
                         </p>
                         <p className={`${upcomingEventsStyles.feeParagraph}`}>
                             <span className={upcomingEventsStyles.feeIconSpan}><PiMoneyWavy className={upcomingEventsStyles.feeIcon} /></span>
-                            <span className={upcomingEventsStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={upcomingEventsStyles.coinIcon} /></span> {fifaTournament.details.fee}</span>
+                            <span className={upcomingEventsStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={upcomingEventsStyles.coinIcon} /></span> {fifaTournament.fee}</span>
                         </p>
                     </div>
                 
