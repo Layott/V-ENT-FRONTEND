@@ -5,18 +5,19 @@ import { PiMoneyWavy } from "react-icons/pi";
 import { RiCopperCoinFill } from "react-icons/ri";
 import { GoDotFill } from "react-icons/go";
 import { upcomingEventsList } from './upcomingEventsList'
+import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css'
 import styles from './upcoming-events.module.css'
 
 const UpcomingEvents = () => {
   return (
-    <div className={styles.upcomingEventsContainer}>
+    <div className={newTournamentStyles.newTournamentsContainer}>
         <h3>Upcoming Events</h3>
         
-        <div className={styles.cardsContainer}>
+        <div className={newTournamentStyles.cardsContainer}>
             
             {upcomingEventsList.map((event, index) => (
-                <div key={index} className={styles.cardContainer}>
-                    <div className={styles.imageContainer}>
+                <div key={index} className={newTournamentStyles.cardContainer}>
+                    <div className={newTournamentStyles.imageContainer}>
                         <Image
                             src={event.image}
                             alt={event.alt}
@@ -51,9 +52,9 @@ const UpcomingEvents = () => {
 
                         </div>
                         
-                        <div className={styles.buttonContainer}>
-                            <Link href={'/tournament-details'} className={styles.viewDetailsBTN}>View Details</Link>
-                            <Link href={'/tournament-register'} className={styles.registerBTN}>Register</Link>
+                        <div className={newTournamentStyles.buttonContainer}>
+                            <Link href={'/tournament-details'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
+                            <Link href={'/tournament-register'} className={newTournamentStyles.registerBTN}>Register</Link>
                         </div>
                     </div>
             
