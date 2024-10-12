@@ -11,68 +11,27 @@
     font-size: 1rem;
 }
 
-.slidersContainer {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-
-    overflow-x: auto;
-    white-space: nowrap;
-    scroll-snap-type: x mandatory; /* Snapping effect on scroll */ 
-
-    /* Hide the Scrollbar */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.slidersContainer::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
-}
-
-.sliderContainer {
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-    min-height: 200px;
-    flex: 0 0 auto;
-    gap: 0.5rem;
-}
-
-.imageContainer {
-    height: 180px;
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0px 0px 0.5px #FCFCFC;
-}
-
-.imageContainer img {
-    height: 100%;
-    width: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
 .left {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
 }
 
-.viewDetailsLink {
-    font-size: 0.7rem;
-}
+// .viewDetailsLink {
+//     font-size: 0.7rem;
+// }
 
-.viewDetailsLink {
-    display: flex;
-    gap: 0.25rem;
-    flex-direction: row;
-    align-items: center;
-}
+// .viewDetailsLink {
+//     display: flex;
+//     gap: 0.25rem;
+//     flex-direction: row;
+//     align-items: center;
+// }
 
-.rightArrowIcon {
-    display: flex;
-    font-size: 0.55rem;
-}
+// .rightArrowIcon {
+//     display: flex;
+//     font-size: 0.55rem;
+// }
 
 .sliderDescriptionContainer {
     display: flex;
@@ -112,32 +71,22 @@
     min-height: 10px;
 }
 
-.date {
-    min-height: 10px;
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-}
+// .date {
+//     min-height: 10px;
+//     display: inline-flex;
+//     flex-direction: row;
+//     align-items: center;
+// }
 
-.calendarLogo,
-.trophyLogo {
-    display: flex;
-    align-items: center;
-    margin-top: -1px;
-}
+
+// .calendarLogo,
+// .trophyLogo {
+//     display: flex;
+//     align-items: center;
+//     margin-top: -1px;
+// }
 
 @media only screen and (min-width: 450px) {
-    .sliderContainer {
-        width: 350px;
-        min-height: 220px;
-    }
-    
-    .imageContainer {
-        height: 200px;
-        // width: 350px;
-        width: 100%;
-    }
-
     .sliderDescriptionContainer {
         flex-direction: row;
         justify-content: space-between;
