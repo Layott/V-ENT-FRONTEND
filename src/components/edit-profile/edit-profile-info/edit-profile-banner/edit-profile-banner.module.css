@@ -53,19 +53,16 @@
     line-height: 1.75;
   }
 }
-
 @media only screen and (min-width: 900px) {
   .editProfileBannerImageContainer {
     height: 180px;
   }
 }
-
 @media only screen and (min-width: 1220px) {
   .editProfileBannerImageContainer {
     height: 200px;
   }
 }
-
 @media only screen and (min-width: 1440px) {
   .editProfileBannerImageContainer {
     height: 240px;

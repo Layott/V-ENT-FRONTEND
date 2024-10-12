@@ -14,7 +14,7 @@
 .headerH3 {
   font-size: 1rem;
   font-weight: 100;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .tournamentsPrizeTable {
@@ -68,11 +68,11 @@
 .prizeRow h4 {
   font-size: 0.9rem;
   font-weight: 200;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .prizeRow p {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.9rem;
   font-weight: 100;
 }
@@ -96,7 +96,7 @@
 }
 
 .gridItem {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -105,7 +105,7 @@
 }
 
 .gridItemHeader {
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -130,7 +130,7 @@
 .tournamentRecord label {
   display: flex;
   min-width: 120px;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-size: 0.8rem;
   justify-content: flex-start;
 }
