@@ -139,7 +139,6 @@
     left: 0rem;
   }
 }
-
 @media only screen and (min-width: 600px) {
   .profileImageContainer {
     min-width: 75px;
@@ -157,7 +156,6 @@
     line-height: 1.75;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .profileImageContainer {
     min-width: 90px;
@@ -172,7 +170,6 @@
     font-size: 0.8rem;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .profileDescription {
     width: calc(60% + 4rem);
@@ -193,14 +190,12 @@
     font-size: 0.9rem;
   }
 }
-
 @media only screen and (min-width: 900px) {
   .profileImageUploadLabel {
     padding: 7px;
     font-size: 1rem;
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .profileImageContainer {
     min-width: 120px;
@@ -214,7 +209,6 @@
     font-size: 1.1rem;
   }
 }
-
 @media only screen and (min-width: 1200px) {
   .profileImageContainer {
     min-width: 130px;
@@ -232,7 +226,6 @@
     font-size: 1.25rem;
   }
 }
-
 @media only screen and (min-width: 1440px) {
   .profileImageContainer {
     min-width: 150px;
@@ -250,7 +243,6 @@
     font-size: 1.35rem;
   }
 }
-
 @media only screen and (min-width: 1660px) {
   .profileImageContainer {
     min-width: 175px;

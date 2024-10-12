@@ -38,7 +38,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
   color: var(--primary-bg);
 }
 
@@ -90,7 +90,7 @@ select:active {
   color: var(--primary-bg);
 }
 
-[data-theme="dark"] {
+[data-theme=dark] {
   --primary-bg: #000000;
   --primary-text: #FFFFFF;
 }

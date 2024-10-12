@@ -9,13 +9,13 @@
 
 .descriptionName {
   font-size: 0.95rem;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .descriptionName p,
 .descriptionLocation {
   font-size: 0.8rem;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .detailsContainer {

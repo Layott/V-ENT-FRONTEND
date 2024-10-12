@@ -58,7 +58,6 @@
     font-size: 0.75rem;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .profileBanner {
     height: 220px;
@@ -71,7 +70,6 @@
     font-size: 0.85rem;
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .bannerUploadLabel {
     padding: 10px;
@@ -81,13 +79,11 @@
     font-size: 0.95rem;
   }
 }
-
 @media only screen and (min-width: 1200px) {
   .profileBanner {
     height: 270px;
   }
 }
-
 @media only screen and (min-width: 1440px) {
   .profileBanner {
     height: 330px;
@@ -97,7 +93,6 @@
     margin-right: 1.125rem;
   }
 }
-
 @media only screen and (min-width: 1640px) {
   .profileBanner {
     height: 370px;
