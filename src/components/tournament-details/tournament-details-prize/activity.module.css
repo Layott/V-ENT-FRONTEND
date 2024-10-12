@@ -50,7 +50,7 @@
 
 .tournamentFilterContainer p {
   font-size: 1rem;
-  font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+  font-family: "ClashGrotesk-ExtraLight", sans-serif;
 }
 
 .filterContainer {
@@ -111,7 +111,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: 'ClashGrotesk-Extralight', sans-serif;
+  font-family: "ClashGrotesk-Extralight", sans-serif;
   color: white;
   font-size: 0.85rem;
 }
@@ -151,7 +151,7 @@
 }
 
 .gridItem {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.8rem;
 }
 
@@ -162,7 +162,7 @@
 }
 
 .gridItemHeader {
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -250,7 +250,7 @@
   margin-top: 0.5rem;
   font-size: 1rem;
   text-align: center;
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
 }
 
 .tournamentDetails {
@@ -283,7 +283,7 @@
 .tournamentRecord label {
   display: flex;
   min-width: 120px;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-size: 0.8rem;
   justify-content: flex-start;
 }
@@ -355,7 +355,7 @@
   cursor: pointer;
   border-radius: 6px;
   transition: all ease-in-out 0.5s;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -367,7 +367,7 @@
   width: 30px;
   padding: 0;
   font-size: 1rem;
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
 }
 
 .navIconBTN:hover {
@@ -460,7 +460,6 @@
     justify-content: flex-start;
   }
 }
-
 @media only screen and (min-width: 450px) {
   .gridHeader,
   .gridRow {
@@ -483,7 +482,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 550px) {
   .tournamentFilterSearchContainer {
     width: 100%;
@@ -503,7 +501,6 @@
     min-height: 30px;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .tournamentFilterContainer {
     width: calc(100% - 300px);
@@ -512,7 +509,6 @@
     width: 300px;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .gridHeader,
   .gridRow {
@@ -533,7 +529,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .tournamentDetailsContainer {
     max-width: 95%;
@@ -574,7 +569,6 @@
     text-align: left;
   }
 }
-
 @media only screen and (min-width: 950px) {
   .gridHeader,
   .gridRow {
@@ -585,7 +579,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 1115px) {
   .gridHeader,
   .gridRow {
@@ -596,7 +589,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 1250px) {
   .gridHeader,
   .gridRow {
@@ -607,7 +599,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 1240px) {
   .gridHeader,
   .gridRow {
