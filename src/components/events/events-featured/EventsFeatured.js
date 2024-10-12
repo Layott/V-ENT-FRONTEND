@@ -4,6 +4,7 @@ import { FiCalendar } from "react-icons/fi";
 import { LuBuilding2 } from "react-icons/lu";
 import { FaArrowRight } from "react-icons/fa";
 import { eventsFeaturedList } from './eventsFeaturedList'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import styles from './events-featured.module.css'
 
 const EventsFeatured = () => {
@@ -11,11 +12,11 @@ const EventsFeatured = () => {
     <div className={styles.tournamentsFeaturedContainer}>
         <h3>Featured</h3>
 
-        <div className={styles.slidersContainer}>
+        <div className={menuContentStyles.slidersContainer}>
             {eventsFeaturedList.map((tournamentFeatured, index) => (
-            <div key={index} className={styles.sliderContainer}>
+            <div key={index} className={menuContentStyles.sliderContainer}>
     
-                <div className={styles.imageContainer}>
+                <div className={menuContentStyles.imageContainer}>
                     <Image
                         src={tournamentFeatured.image}
                         alt={tournamentFeatured.alt}
@@ -28,24 +29,24 @@ const EventsFeatured = () => {
                         <div className={styles.dateEventTypeContainer}>
                             <div className={styles.dateContainer}>
                                 <p className={styles.dateParagraph}>
-                                    <span className={styles.dateLogoSpan}><FiCalendar className={styles.calendarIcon} /></span>
-                                    <span className={styles.date}>{tournamentFeatured.date}</span>
+                                    <span className={styles.dateLogoSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                                    <span className={menuContentStyles.date}>{tournamentFeatured.date}</span>
                                 </p>
                             </div>
                     
                             <div className={styles.eventTypeContainer}>
                                 <p className={styles.eventTypeParagraph}>
-                                    <span className={styles.eventTypeIconSpan}><LuBuilding2 className={styles.buildingIcon} /> Event Type: </span>
-                                    <span className={styles.eventType}>{tournamentFeatured.eventType}</span>
+                                    <span className={menuContentStyles.eventTypeIconSpan}><LuBuilding2 className={menuContentStyles.buildingIcon} /> Event Type: </span>
+                                    <span className={menuContentStyles.eventType}>{tournamentFeatured.eventType}</span>
                                 </p>
                             </div>
                         </div>
                     </div>
                         
                     <div className={styles.right}>
-                        <Link href={tournamentFeatured.link} className={styles.viewDetailsLink}>
-                            <span>View Details</span>
-                            <span><FaArrowRight className={styles.rightArrowIcon} /></span>
+                        <Link href={tournamentFeatured.link} className={menuContentStyles.viewDetailsLink}>
+                            <span className={menuContentStyles.viewDetails}>View Details</span>
+                            <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
                         </Link>
                     </div>
 
