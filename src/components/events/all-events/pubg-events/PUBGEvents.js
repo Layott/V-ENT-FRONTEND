@@ -7,7 +7,8 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { LuArrowRight } from "react-icons/lu";
 import { LuArrowLeft } from "react-icons/lu";
 import { pubgEventsList } from './pubgEventsList'
-import upcomingEventsStyles from './../../upcoming-events/upcoming-events.module.css'
+import newTournamentStyles from './../../../tournaments/new-tournaments/new-tournaments.module.css'
+import upcomingEventStyles from './../../upcoming-events/upcoming-events.module.css'
 import allEventsStyles from './../all-events.module.css'
 
 const PUBGEvents = () => {
@@ -42,33 +43,33 @@ const PUBGEvents = () => {
                     />
                 </div>
                             
-                <div className={`${upcomingEventsStyles.descriptionContainer} ${allEventsStyles.descriptionContainer}`}>
-                    <div className={upcomingEventsStyles.descriptionName}>
-                        <p><span className={upcomingEventsStyles.descriptionName}>{pubgEvent.name}</span></p>
+                <div className={`${newTournamentStyles.descriptionContainer} ${allEventsStyles.descriptionContainer}`}>
+                    <div className={newTournamentStyles.descriptionName}>
+                        <p><span className={newTournamentStyles.descriptionName}>{pubgEvent.name}</span></p>
                     </div>
 
-                    <div className={upcomingEventsStyles.detailsContainer}>
-                        <div className={upcomingEventsStyles.eventTypeAndLocationContainer}>
-                            <p className={upcomingEventsStyles.eventTypeParagraph}>
-                                <span className={upcomingEventsStyles.eventTypeSpan}>{pubgEvent.eventType}</span>
+                    <div className={newTournamentStyles.detailsContainer}>
+                        <div className={newTournamentStyles.eventTypeAndLocationContainer}>
+                            <p className={newTournamentStyles.eventTypeParagraph}>
+                                <span className={upcomingEventStyles.eventTypeSpan}>{pubgEvent.eventType}</span>
                             </p>
                         </div>
             
-                        <p className={upcomingEventsStyles.dateParagraph}>
-                            <span className={upcomingEventsStyles.calendarIconSpan}><FiCalendar className={upcomingEventsStyles.calendarIcon} /></span>
-                            <span className={upcomingEventsStyles.dateSpan}>{pubgEvent.date}</span>
+                        <p className={newTournamentStyles.dateParagraph}>
+                            <span className={newTournamentStyles.calendarIconSpan}><FiCalendar className={upcomingEventStyles.calendarIcon} /></span>
+                            <span className={upcomingEventStyles.dateSpan}>{pubgEvent.date}</span>
                         </p>
                             
-                        <p className={upcomingEventsStyles.feeParagraph}>
-                            <span className={upcomingEventsStyles.feeIconSpan}><PiMoneyWavy className={upcomingEventsStyles.feeIcon} /></span>
-                            <span className={upcomingEventsStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={upcomingEventsStyles.coinIcon} /></span> {pubgEvent.fee}</span>
+                        <p className={newTournamentStyles.feeParagraph}>
+                            <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={upcomingEventStyles.feeIcon} /></span>
+                            <span className={upcomingEventStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={newTournamentStyles.coinIcon} /></span> {pubgEvent.fee}</span>
                         </p>
 
                     </div>
                 
-                    <div className={`${upcomingEventsStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
-                        <Link href={'/event-details'} className={upcomingEventsStyles.viewDetailsBTN}>View Details</Link>
-                        <Link href={'/event-register'} className={upcomingEventsStyles.registerBTN}>Register</Link>
+                    <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
+                        <Link href={'/event-details'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
+                        <Link href={'/event-register'} className={newTournamentStyles.registerBTN}>Register</Link>
                     </div>
                 </div>
                     

@@ -31,16 +31,6 @@
   gap: 0.5rem;
 }
 
-.dotSpan {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.dotIcon {
-  font-size: 4px;
-}
-
 .feeParagraph,
 .eventTypeParagraph,
 .dateParagraph {
@@ -48,37 +38,4 @@
   align-items: center;
   flex-direction: row;
   gap: 0.3rem;
-}
-
-.coinIcon,
-.calendarIcon,
-.feeIcon {
-  display: flex;
-  font-size: 0.7rem;
-}
-
-.dotIcon path,
-.calendarIcon path,
-.feeIcon path {
-  fill: #b1b1b1;
-  color: #b1b1b1;
-  background-color: #b1b1b1;
-}
-
-.coinIcon path {
-  fill: goldenrod;
-  color: goldenrod;
-  background-color: goldenrod;
-}
-
-.locationSpan,
-.eventTypeSpan,
-.dateSpan,
-.feeSpan {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.1rem;
-  color: #CCC;
-  font-size: 0.7rem;
 }

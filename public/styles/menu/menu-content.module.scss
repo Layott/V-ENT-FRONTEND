@@ -1,0 +1,161 @@
+.slidersContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-snap-type: x mandatory; /* Snapping effect on scroll */ 
+
+    /* Hide the Scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.slidersContainer::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.sliderContainer {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    min-height: 200px;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+}
+
+.imageContainer {
+    height: 180px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 0.5px #FCFCFC;
+}
+
+.imageContainer img {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
+
+
+
+
+
+
+
+
+.viewDetailsLink {
+    font-size: 0.7rem;
+    display: flex;
+    gap: 0.25rem;
+    flex-direction: row;
+    align-items: center;
+    color: #b1b1b1;
+}
+
+.rightArrowIcon {
+    display: flex;
+    font-size: 0.55rem;
+}
+
+.rightArrowIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
+}
+
+.viewDetails {
+    color: #b1b1b1;
+}
+
+.trophyIcon,
+.buildingIcon,
+.coinIcon,
+.calendarIcon,
+.feeIcon {
+    display: flex;
+    font-size: 0.7rem;
+    align-items: center;
+}
+
+.dotIcon path,
+.calendarIcon path,
+.feeIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
+}
+
+.trophyIcon,
+.buildingIcon,
+.calendarIcon {
+    stroke: #b1b1b1;
+}
+
+.coinIcon path {
+    fill: goldenrod;
+    color: goldenrod;
+    background-color: goldenrod;
+}
+
+.dotSpan {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.dotIcon {
+    font-size: 4px;
+}
+
+.locationSpan,
+.eventTypeSpan,
+.dateSpan,
+.feeSpan {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.1rem;
+    color: #CCC;
+    font-size: 0.7rem;
+}
+
+.priceLogoSpan,
+.eventTypeIconSpan {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: #b1b1b1;
+}
+
+.date {
+    min-height: 10px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.7rem;
+    color: #b1b1b1;
+}
+
+.price,
+.eventType {
+    font-size: 0.7rem;
+    color: #b1b1b1;
+}
+
+@media only screen and (min-width: 450px) {
+    .sliderContainer {
+        width: 350px;
+        min-height: 220px;
+    }
+    
+    .imageContainer {
+        height: 200px;
+        width: 100%;
+    }    
+}
