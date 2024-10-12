@@ -60,7 +60,7 @@
 .descriptionName,
 .descriptionLocation {
   font-size: 0.8rem;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .teamsIndividualsContainer {
@@ -134,7 +134,7 @@
 .registerBTN {
   font-size: 0.8rem;
   border-radius: 4px;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   cursor: pointer;
 }
 
