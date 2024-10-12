@@ -4,7 +4,8 @@
   gap: 3rem;
   overflow-x: auto;
   white-space: nowrap;
-  scroll-snap-type: x mandatory; /* Snapping effect on scroll */
+  /* Snapping effect on scroll */
+  scroll-snap-type: x mandatory;
   /* Hide the Scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;

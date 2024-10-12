@@ -6,6 +6,7 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { GoDotFill } from "react-icons/go";
 import { upcomingEventsList } from './upcomingEventsList'
 import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import styles from './upcoming-events.module.css'
 
 const UpcomingEvents = () => {
@@ -32,22 +33,22 @@ const UpcomingEvents = () => {
                         <div className={styles.detailsContainer}>
                             <div className={styles.eventTypeAndLocationContainer}>
                                 <p className={styles.eventTypeParagraph}>
-                                    <span className={styles.eventTypeSpan}>{event.eventType}</span>
+                                    <span className={menuContentStyles.eventTypeSpan}>{event.eventType}</span>
                                 </p>
-                                <span className={styles.dotSpan}>
-                                    <GoDotFill className={styles.dotIcon} />
+                                <span className={menuContentStyles.dotSpan}>
+                                    <GoDotFill className={menuContentStyles.dotIcon} />
                                 </span>
-                                <span className={styles.locationSpan}> {event.location}</span>
+                                <span className={menuContentStyles.locationSpan}> {event.location}</span>
                             </div>
                 
                             <p className={styles.dateParagraph}>
-                                <span className={styles.calendarIconSpan}><FiCalendar className={styles.calendarIcon} /></span>
-                                <span className={styles.dateSpan}>{event.date}</span>
+                                <span className={styles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                                <span className={menuContentStyles.dateSpan}>{event.date}</span>
                             </p>
                                 
                             <p className={styles.feeParagraph}>
-                                <span className={styles.feeIconSpan}><PiMoneyWavy className={styles.feeIcon} /></span>
-                                <span className={styles.feeSpan}>Fee: <span><RiCopperCoinFill className={styles.coinIcon} /></span> {event.fee}</span>
+                                <span className={styles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                                <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {event.fee}</span>
                             </p>
 
                         </div>
