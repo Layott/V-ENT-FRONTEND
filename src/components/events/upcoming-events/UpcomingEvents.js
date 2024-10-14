@@ -7,7 +7,6 @@ import { GoDotFill } from "react-icons/go";
 import { upcomingEventsList } from './upcomingEventsList'
 import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css'
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
-import styles from './upcoming-events.module.css'
 
 const UpcomingEvents = () => {
   return (
@@ -25,14 +24,14 @@ const UpcomingEvents = () => {
                         />
                     </div>
             
-                    <div className={styles.descriptionContainer}>
-                        <div className={styles.descriptionName}>
-                            <p><span className={styles.descriptionName}>{event.name}</span></p>
+                    <div className={menuContentStyles.descriptionContainer}>
+                        <div className={menuContentStyles.descriptionNameOrLocation}>
+                            <p><span className={menuContentStyles.descriptionNameSpan}>{event.name}</span></p>
                         </div>
             
-                        <div className={styles.detailsContainer}>
-                            <div className={styles.eventTypeAndLocationContainer}>
-                                <p className={styles.eventTypeParagraph}>
+                        <div className={menuContentStyles.detailsContainer}>
+                            <div className={menuContentStyles.eventOrParticipantTypeContainer}>
+                                <p className={menuContentStyles.eventTypeParagraph}>
                                     <span className={menuContentStyles.eventTypeSpan}>{event.eventType}</span>
                                 </p>
                                 <span className={menuContentStyles.dotSpan}>
@@ -41,13 +40,13 @@ const UpcomingEvents = () => {
                                 <span className={menuContentStyles.locationSpan}> {event.location}</span>
                             </div>
                 
-                            <p className={styles.dateParagraph}>
-                                <span className={styles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                            <p className={menuContentStyles.dateParagraph}>
+                                <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
                                 <span className={menuContentStyles.dateSpan}>{event.date}</span>
                             </p>
                                 
-                            <p className={styles.feeParagraph}>
-                                <span className={styles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                            <p className={menuContentStyles.feeParagraph}>
+                                <span className={menuContentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
                                 <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {event.fee}</span>
                             </p>
 

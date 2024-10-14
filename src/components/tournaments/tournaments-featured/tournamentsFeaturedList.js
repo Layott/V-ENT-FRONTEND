@@ -9,7 +9,7 @@ export const tournamentsFeaturedList = [
         name: 'Tekken World Tour',
         location: 'Lagos',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: '300,000',
+        prize: '300,000',
         image: tekkenWorldTour,
         alt: 'Tekken World Tour',
         link: 'tournament-details'
@@ -18,7 +18,7 @@ export const tournamentsFeaturedList = [
         name: 'PUBG Elite Showdown',
         location: 'Abuja',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: '200,000',
+        prize: '200,000',
         image: pubgElite,
         alt: 'PUBG Elite Showdown',
         link: 'tournament-details'
@@ -27,7 +27,7 @@ export const tournamentsFeaturedList = [
         name: 'Mortal Kombat Battle',
         location: 'Port Harcourt',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: '300,000',
+        prize: '300,000',
         image: mortalKombat,
         alt: 'Mortal Kombat',
         link: 'tournament-details'
@@ -36,7 +36,7 @@ export const tournamentsFeaturedList = [
         name: 'Unnamed',
         location: 'New York',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: '300,000',
+        prize: '300,000',
         image: unnamed,
         alt: 'Unnamed',
         link: 'tournament-details'
@@ -45,7 +45,7 @@ export const tournamentsFeaturedList = [
         name: 'Unnamed',
         location: 'Amsterdam',
         date: 'Jan. 1st - Jan. 21st 2025',
-        price: '1,500,000',
+        prize: '1,500,000',
         image: battles,
         alt: 'Battles',
         link: 'tournament-details'

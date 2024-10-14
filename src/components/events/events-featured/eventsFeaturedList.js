@@ -12,7 +12,7 @@ export const eventsFeaturedList = [
         eventType: 'Physical',
         image: featuredEventOne,
         alt: 'Tekken World Tour',
-        link: '#'
+        link: 'event-details'
     },
     {
         name: 'Counter Striker Event',
@@ -21,7 +21,7 @@ export const eventsFeaturedList = [
         eventType: 'Virtual',
         image: featuredEventTwo,
         alt: 'PUBG Elite Showdown',
-        link: '#'
+        link: 'event-details'
     },
     {
         name: 'Counter Striker Event',
@@ -30,7 +30,7 @@ export const eventsFeaturedList = [
         eventType: 'Virtual',
         image: featuredEventThree,
         alt: 'Mortal Kombat',
-        link: '#'
+        link: 'event-details'
     },
     {
         name: 'Counter Striker Event',
@@ -39,7 +39,7 @@ export const eventsFeaturedList = [
         eventType: 'Physical',
         image: featuredEventFour,
         alt: 'Unnamed',
-        link: '#'
+        link: 'event-details'
     },
     {
         name: 'Counter Striker Event',
@@ -48,6 +48,6 @@ export const eventsFeaturedList = [
         eventType: 'Physical',
         image: featuredEventFive,
         alt: 'Battles',
-        link: '#'
+        link: 'event-details'
     }
 ];
