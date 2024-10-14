@@ -7,8 +7,8 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { LuArrowRight } from "react-icons/lu";
 import { LuArrowLeft } from "react-icons/lu";
 import { pubgEventsList } from './pubgEventsList'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import newTournamentStyles from './../../../tournaments/new-tournaments/new-tournaments.module.css'
-import upcomingEventStyles from './../../upcoming-events/upcoming-events.module.css'
 import allEventsStyles from './../all-events.module.css'
 
 const PUBGEvents = () => {
@@ -43,26 +43,26 @@ const PUBGEvents = () => {
                     />
                 </div>
                             
-                <div className={`${newTournamentStyles.descriptionContainer} ${allEventsStyles.descriptionContainer}`}>
-                    <div className={newTournamentStyles.descriptionName}>
-                        <p><span className={newTournamentStyles.descriptionName}>{pubgEvent.name}</span></p>
+                <div className={menuContentStyles.descriptionContainer}>
+                    <div className={menuContentStyles.descriptionNameLocationContainer}>
+                        <p><span className={menuContentStyles.descriptionNameSpan}>{pubgEvent.name}</span></p>
                     </div>
 
-                    <div className={newTournamentStyles.detailsContainer}>
+                    <div className={menuContentStyles.detailsContainer}>
                         <div className={newTournamentStyles.eventTypeAndLocationContainer}>
                             <p className={newTournamentStyles.eventTypeParagraph}>
-                                <span className={upcomingEventStyles.eventTypeSpan}>{pubgEvent.eventType}</span>
+                                <span className={menuContentStyles.eventTypeSpan}>{pubgEvent.eventType}</span>
                             </p>
                         </div>
             
-                        <p className={newTournamentStyles.dateParagraph}>
-                            <span className={newTournamentStyles.calendarIconSpan}><FiCalendar className={upcomingEventStyles.calendarIcon} /></span>
-                            <span className={upcomingEventStyles.dateSpan}>{pubgEvent.date}</span>
+                        <p className={menuContentStyles.dateParagraph}>
+                            <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                            <span className={menuContentStyles.dateSpan}>{pubgEvent.date}</span>
                         </p>
                             
-                        <p className={newTournamentStyles.feeParagraph}>
-                            <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={upcomingEventStyles.feeIcon} /></span>
-                            <span className={upcomingEventStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={newTournamentStyles.coinIcon} /></span> {pubgEvent.fee}</span>
+                        <p className={menuContentStyles.feeParagraph}>
+                            <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                            <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {pubgEvent.fee}</span>
                         </p>
 
                     </div>
