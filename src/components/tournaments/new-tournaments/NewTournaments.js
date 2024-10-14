@@ -53,8 +53,8 @@ const NewTournaments = () => {
                                 
                             <div className={menuContentStyles.prizeFeeContainer}>
                                 <p className={menuContentStyles.prizeParagraphHalf}>
-                                    <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.trophyIcon} /></span>
-                                    <span className={menuContentStyles.prizeSpan}>Prize: {tournament.prize}</span>
+                                    <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.prizeIcon} /></span>
+                                    <span className={menuContentStyles.prizeSpan}>Prize: N {tournament.prize}</span>
                                 </p>
                                 <p className={menuContentStyles.feeParagraphHalf}>
                                     <span className={menuContentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>

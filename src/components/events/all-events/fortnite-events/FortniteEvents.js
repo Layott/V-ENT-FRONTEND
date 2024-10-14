@@ -7,8 +7,8 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { LuArrowRight } from "react-icons/lu";
 import { LuArrowLeft } from "react-icons/lu";
 import { fortniteEventsList } from './fortniteEventsList'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import newTournamentStyles from './../../../tournaments/new-tournaments/new-tournaments.module.css'
-import upcomingEventStyles from './../../upcoming-events/upcoming-events.module.css'
 import allEventsStyles from './../all-events.module.css'
 
 const FortniteEvents = () => {
@@ -43,26 +43,26 @@ const FortniteEvents = () => {
                     />
                 </div>
                             
-                <div className={`${newTournamentStyles.descriptionContainer} ${allEventsStyles.descriptionContainer}`}>
-                    <div className={newTournamentStyles.descriptionName}>
-                        <p><span className={newTournamentStyles.descriptionName}>{fortniteEvent.name}</span></p>
+                <div className={menuContentStyles.descriptionContainer}>
+                    <div className={menuContentStyles.descriptionNameLocationContainer}>
+                        <p><span className={menuContentStyles.descriptionNameSpan}>{fortniteEvent.name}</span></p>
                     </div>
 
-                    <div className={newTournamentStyles.detailsContainer}>
-                        <div className={newTournamentStyles.eventTypeAndLocationContainer}>
-                            <p className={newTournamentStyles.eventTypeParagraph}>
-                                <span className={upcomingEventStyles.eventTypeSpan}>{fortniteEvent.eventType}</span>
+                    <div className={menuContentStyles.detailsContainer}>
+                        <div className={menuContentStyles.eventOrParticipantTypeContainer}>
+                            <p className={menuContentStyles.eventTypeParagraph}>
+                                <span className={menuContentStyles.eventTypeSpan}>{fortniteEvent.eventType}</span>
                             </p>
                         </div>
             
-                        <p className={newTournamentStyles.dateParagraph}>
-                            <span className={newTournamentStyles.calendarIconSpan}><FiCalendar className={upcomingEventStyles.calendarIcon} /></span>
-                            <span className={upcomingEventStyles.dateSpan}>{fortniteEvent.date}</span>
+                        <p className={menuContentStyles.dateParagraph}>
+                            <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                            <span className={menuContentStyles.dateSpan}>{fortniteEvent.date}</span>
                         </p>
                             
-                        <p className={newTournamentStyles.feeParagraph}>
-                            <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={upcomingEventStyles.feeIcon} /></span>
-                            <span className={upcomingEventStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={upcomingEventStyles.coinIcon} /></span> {fortniteEvent.fee}</span>
+                        <p className={menuContentStyles.feeParagraph}>
+                            <span className={menuContentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                            <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {fortniteEvent.fee}</span>
                         </p>
 
                     </div>
