@@ -17,7 +17,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '900,000',
         fee: 40
     },
     {
@@ -31,7 +31,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '500,000',
         fee: 40
     },
     {
@@ -45,7 +45,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '1,500,000',
         fee: 40
     },
     {
@@ -59,7 +59,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '5,000,000',
         fee: 40
     },
     {
@@ -73,7 +73,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '51,000,000',
         fee: 40
     },
     {
@@ -87,7 +87,7 @@ export const newTournamentsList = [
         },
         game: 'Counter Strike',
         date: 'Oct. 1st - 21st 2024',
-        prize: 'N500,000',
+        prize: '2,500,000',
         fee: 40
     },
 ]
