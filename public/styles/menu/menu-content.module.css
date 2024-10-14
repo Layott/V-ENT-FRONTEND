@@ -1,3 +1,22 @@
+.tournamentsFeaturedContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 200px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.tournamentsFeaturedContainer h3 {
+  font-size: 1rem;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .slidersContainer {
   display: flex;
   flex-direction: row;
@@ -37,6 +56,158 @@
   object-fit: cover;
 }
 
+.descriptionContainer {
+  min-height: 100px;
+  width: 100%;
+  padding: 0.5rem;
+  padding-left: 0.75rem;
+  padding-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.featuredName,
+.featuredLocation,
+.descriptionLocationSpan,
+.descriptionNameSpan {
+  font-size: 0.95rem;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.prizeContainer,
+.datePrizeContainer,
+.dateContainer,
+.dateEventTypeContainer,
+.eventOrParticipantTypeContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.datePrizeContainer,
+.dateEventTypeContainer {
+  gap: 2rem;
+}
+
+.nameDateContainer,
+.prizeFeeContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.prizeParagraph,
+.prizeParagraphHalf,
+.feeParagraphHalf,
+.feeParagraph,
+.nameParagraphHalf,
+.dateParagraphHalf,
+.dateParagraph,
+.participantTypeParagraph,
+.eventTypeParagraph {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.prizeParagraphHalf,
+.feeParagraphHalf,
+.nameParagraphHalf,
+.dateParagraphHalf {
+  width: 50%;
+}
+
+.eventTypeIconSpan,
+.prizeSpan,
+.prizeIconSpan,
+.nameSpan,
+.padIconSpan,
+.feeSpan,
+.feeIconSpan,
+.calendarIconSpan,
+.dateSpan,
+.playerSpan,
+.participantIconSpan,
+.locationSpan,
+.participantTypeSpan,
+.eventTypeSpan {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.1rem;
+  color: #b1b1b1;
+  font-size: 0.7rem;
+}
+
+.eventTypeIconSpan,
+.prizeIconSpan {
+  gap: 0.3rem;
+}
+
+.prizeIcon,
+.padIcon,
+.teamsIcon,
+.trophyIcon,
+.buildingIcon,
+.coinIcon,
+.calendarIcon,
+.feeIcon {
+  display: flex;
+  font-size: 0.7rem;
+  align-items: center;
+}
+
+.calendarIcon path,
+.feeIcon path {
+  fill: #b1b1b1;
+  color: #b1b1b1;
+  background-color: #b1b1b1;
+}
+
+.padIcon,
+.calendarIcon {
+  stroke: #b1b1b1;
+}
+
+.coinIcon path {
+  fill: goldenrod;
+  color: goldenrod;
+  background-color: goldenrod;
+}
+
+.teamsIcon path,
+.dotIcon path,
+.calendarIcon path,
+.feeIcon path {
+  fill: #b1b1b1;
+  color: #b1b1b1;
+  background-color: #b1b1b1;
+}
+
+.trophyIcon,
+.buildingIcon,
+.calendarIcon {
+  stroke: #b1b1b1;
+}
+
+.dotSpan {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.dotIcon {
+  font-size: 4px;
+}
+
 .viewDetailsLink {
   font-size: 0.7rem;
   display: flex;
@@ -57,81 +228,18 @@
   background-color: #b1b1b1;
 }
 
+.sliderDescriptionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .viewDetails {
   color: #b1b1b1;
 }
 
-.trophyIcon,
-.buildingIcon,
-.coinIcon,
-.calendarIcon,
-.feeIcon {
-  display: flex;
-  font-size: 0.7rem;
-  align-items: center;
-}
-
-.dotIcon path,
-.calendarIcon path,
-.feeIcon path {
-  fill: #b1b1b1;
-  color: #b1b1b1;
-  background-color: #b1b1b1;
-}
-
-.trophyIcon,
-.buildingIcon,
-.calendarIcon {
-  stroke: #b1b1b1;
-}
-
-.coinIcon path {
-  fill: goldenrod;
-  color: goldenrod;
-  background-color: goldenrod;
-}
-
-.dotSpan {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.dotIcon {
-  font-size: 4px;
-}
-
-.locationSpan,
-.eventTypeSpan,
-.dateSpan,
-.feeSpan {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.1rem;
-  color: #CCC;
-  font-size: 0.7rem;
-}
-
-.priceLogoSpan,
-.eventTypeIconSpan {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  color: #b1b1b1;
-}
-
-.date {
-  min-height: 10px;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 0.7rem;
-  color: #b1b1b1;
-}
-
-.price,
+.prize,
 .eventType {
   font-size: 0.7rem;
   color: #b1b1b1;
@@ -145,5 +253,10 @@
   .imageContainer {
     height: 200px;
     width: 100%;
+  }
+  .sliderDescriptionContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0rem;
   }
 }
