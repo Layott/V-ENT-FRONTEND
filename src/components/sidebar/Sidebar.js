@@ -69,7 +69,7 @@ const Sidebar = ({ customClass }) => {
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
+                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         <IoWalletOutline className={styles.sidebarIcon} /> Wallets
                     </Link>

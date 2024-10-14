@@ -35,7 +35,7 @@ const TournamentsFeatured = () => {
                     
                             <div className={menuContentStyles.prizeContainer}>
                                 <p className={menuContentStyles.prizeParagraph}>
-                                    <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.trophyIcon} /> N</span>
+                                    <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.prizeIcon} /> N</span>
                                     <span className={menuContentStyles.prize}>{tournamentFeatured.prize}</span>
                                 </p>
                             </div>
