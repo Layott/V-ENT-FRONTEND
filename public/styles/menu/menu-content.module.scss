@@ -21,18 +21,15 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
-
     overflow-x: auto;
     white-space: nowrap;
-    scroll-snap-type: x mandatory; /* Snapping effect on scroll */ 
-
-    /* Hide the Scrollbar */
+    scroll-snap-type: x mandatory;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
 
 .slidersContainer::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+    display: none;
 }
 
 .sliderContainer {
@@ -108,6 +105,8 @@
     flex-direction: row;
 }
 
+.memberParagraphHalf,
+.gameParagraphHalf,
 .prizeParagraph,
 .prizeParagraphHalf,
 .feeParagraphHalf,
@@ -130,6 +129,8 @@
     width: 50%;
 }
 
+.gameNameSpan,
+.gameIconSpan,
 .eventTypeIconSpan,
 .prizeSpan,
 .prizeIconSpan,
@@ -156,7 +157,7 @@
 .nameSpan {
     flex-wrap: wrap;
     padding-right: 0.3rem;
-    white-space: normal; /* Allow text to wrap */
+    white-space: normal;
     overflow-wrap: break-word; 
 }
 
