@@ -5,8 +5,6 @@
   overflow-x: auto;
   white-space: nowrap;
   scroll-snap-type: x mandatory;
-  /* Snapping effect on scroll */
-  /* Hide the Scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;
   min-height: 300px;
@@ -47,7 +45,7 @@
   justify-content: flex-end;
   gap: 0.25rem;
   font-size: 0.8rem;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   cursor: pointer;
 }
 
@@ -120,14 +118,12 @@
     flex-direction: row;
   }
 }
-
 @media only screen and (min-width: 500px) {
   .imageContainer {
     min-width: 150px;
     max-width: 150px;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .seeMoreBTN {
     justify-content: flex-start;

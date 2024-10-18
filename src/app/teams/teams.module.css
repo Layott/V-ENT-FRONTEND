@@ -9,30 +9,10 @@
 }
 
 .rightPaneContainer {
-  border: 1px solid red;
   width: 100%;
   margin-top: 60px;
   min-height: calc(100vh - 60px);
   padding: 1rem;
-}
-
-.header {
-  width: 100%;
-  min-height: 50px;
-  border: 1px solid white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header h3 {
-  font-size: 1.125rem;
-}
-
-.searchFilterContainer {
-  border: 1px solid green;
-  height: 100%;
-  width: 200px;
 }
 
 @media only screen and (min-width: 768px) {
@@ -41,7 +21,6 @@
     margin-left: 180px;
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .rightPaneContainer {
     width: calc(100% - 250px);

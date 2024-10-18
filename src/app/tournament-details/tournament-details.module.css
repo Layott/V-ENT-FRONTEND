@@ -34,7 +34,7 @@
 .tabBTN {
   background-color: transparent;
   border: none;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   cursor: pointer;
   font-size: 0.8rem;
   position: relative;
@@ -79,7 +79,6 @@
     flex-direction: row;
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .rightPaneContainer {
     width: calc(100% - 250px);

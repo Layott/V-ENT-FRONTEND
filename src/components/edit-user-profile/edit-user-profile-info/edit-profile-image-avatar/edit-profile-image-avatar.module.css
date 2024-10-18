@@ -1,0 +1,193 @@
+.profileImageAvatarContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profileImageContainer {
+  display: flex;
+  gap: 1rem;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  flex-direction: row;
+}
+
+.changeDeleteRecommendContainer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.editBTN {
+  background-color: #46484F;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 7px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+}
+
+.changeDeleteBTNContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.changeBTN {
+  gap: 0.4rem;
+  padding: 6px 10px;
+}
+
+.deleteIcon {
+  font-size: 1rem;
+}
+
+.changeDeleteRecommendContainer p {
+  font-size: 0.8rem;
+}
+
+.editProfileImageContainer {
+  width: 70px;
+  height: 70px;
+}
+
+.editProfileImageContainer img {
+  height: 100%;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.useAvatarAvatarContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.useAvatarContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.useAvatarContainer button,
+.useAvatarContainer p {
+  font-size: 0.8rem;
+}
+
+.useAvatarContainer p {
+  font-weight: 600;
+}
+
+.useAvatarContainer button {
+  background-color: transparent;
+  outline: none;
+  border: none;
+}
+
+.avatarContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.eachAvatarContainer {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
+.eachAvatarContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+@media only screen and (min-width: 550px) {
+  .profileImageAvatarContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .useAvatarAvatarContainer {
+    width: 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .avatarContainer,
+  .useAvatarContainer {
+    justify-content: space-between;
+  }
+  .changeDeleteRecommendContainer {
+    width: 200px;
+  }
+  .profileImageContainer {
+    width: 250px;
+  }
+}
+@media only screen and (min-width: 650px) {
+  .rightPaneEditProfileContainer {
+    flex-direction: row;
+  }
+  .profileImageAvatarContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  .useAvatarAvatarContainer {
+    width: 100%;
+    align-items: center;
+  }
+  .useAvatarContainer,
+  .avatarContainer {
+    justify-content: space-around;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 80%;
+  }
+  .profileImageContainer {
+    width: 100%;
+  }
+  .changeDeleteRecommendContainer {
+    width: 100%;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .profileImageAvatarContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .profileImageAvatarContainer {
+    flex-direction: row;
+  }
+  .useAvatarAvatarContainer {
+    align-items: flex-end;
+  }
+  .useAvatarContainer,
+  .avatarContainer {
+    min-width: 230px;
+    max-width: 230px;
+    justify-content: space-between;
+  }
+}
+@media only screen and (min-width: 1224px) {
+  .useAvatarContainer,
+  .avatarContainer {
+    min-width: 250px;
+    max-width: 350px;
+  }
+  .changeDeleteRecommendContainer {
+    width: 260px;
+  }
+}

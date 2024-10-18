@@ -202,7 +202,6 @@
     justify-content: flex-start;
   }
 }
-
 @media only screen and (min-width: 850px) {
   .format,
   .game,
@@ -220,7 +219,6 @@
     width: calc(100% - 90px);
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .requirementContainer {
     flex-direction: row;
@@ -246,7 +244,6 @@
     width: calc(100% - 110px);
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .prizeDistributionHeader,
   .participantsHeader {
