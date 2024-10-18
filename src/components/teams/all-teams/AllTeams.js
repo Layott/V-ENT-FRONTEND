@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link';
 import { LuGamepad2 } from "react-icons/lu";
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoDotFill } from "react-icons/go";
@@ -78,7 +79,8 @@ const AllTeams = () => {
                         </p>
                     </div>
                     <div className={styles.viewProfileContainer}>
-                        <button className={styles.viewProfileBTN}>View Profile</button>
+                        {/* <button className={styles.viewProfileBTN}>View Profile</button> */}
+                        <Link href={'/team-profile'} className={styles.viewProfileBTN}>View Profile</Link>
                         <button className={styles.threeDotsBTN}>
                             <GoDotFill className={styles.dotIcon} />
                             <GoDotFill className={styles.dotIcon} />
