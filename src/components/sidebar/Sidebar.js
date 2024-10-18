@@ -5,6 +5,8 @@ import { FiHome, FiSettings } from "react-icons/fi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
+import { IoWalletOutline } from "react-icons/io5";
+import { FiShoppingBag } from "react-icons/fi";
 import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
 
@@ -66,10 +68,23 @@ const Sidebar = ({ customClass }) => {
                         <FaUsers className={styles.sidebarIcon} /> Teams
                     </Link>
                 </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
+                    <Link href={'/wallets'} className={styles.iconTextLink}>
+                        <IoWalletOutline className={styles.sidebarIcon} /> Wallets
+                    </Link>
+                </li>
                             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
                         <span className={styles.iconMarketplaceSpan}><FaShoppingCart className={styles.sidebarIcon} /> Marketplace</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                </li>
+            
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconShopSpan}><FiShoppingBag className={styles.sidebarIcon} /> Shop</span>
                         <span className={styles.comingSoon}>Coming Soon</span>
                     </span>
                 </li>

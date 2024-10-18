@@ -4,48 +4,48 @@ import { FiCalendar } from "react-icons/fi";
 import { GrTrophy } from "react-icons/gr";
 import { FaArrowRight } from "react-icons/fa";
 import { tournamentsFeaturedList } from './tournamentsFeaturedList'
-import styles from './tournaments-featured.module.css'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 
 const TournamentsFeatured = () => {
   return (
-    <div className={styles.tournamentsFeaturedContainer}>
+    <div className={menuContentStyles.tournamentsFeaturedContainer}>
         <h3>Featured</h3>
 
-        <div className={styles.slidersContainer}>
+        <div className={menuContentStyles.slidersContainer}>
             {tournamentsFeaturedList.map((tournamentFeatured, index) => (
-            <div key={index} className={styles.sliderContainer}>
+            <div key={index} className={menuContentStyles.sliderContainer}>
     
-                <div className={styles.imageContainer}>
+                <div className={menuContentStyles.imageContainer}>
                     <Image
                         src={tournamentFeatured.image}
                         alt={tournamentFeatured.alt}
                     />
                 </div>
                 
-                <div className={styles.sliderDescriptionContainer}>
-                    <div className={styles.left}>
-                        <p><span className={styles.featuredName}>{tournamentFeatured.name}</span> - <span className={styles.featuredLocation}>{tournamentFeatured.location}</span></p>
-                        <div className={styles.datePriceContainer}>
-                            <div className={styles.dateContainer}>
-                                <p className={styles.dateParagraph}>
-                                    <span className={styles.dateLogoSpan}><FiCalendar className={styles.calendarLogo} /></span>
-                                    <span className={styles.date}>{tournamentFeatured.date}</span>
+                <div className={menuContentStyles.sliderDescriptionContainer}>
+                    <div className={menuContentStyles.left}>
+                        <p><span className={menuContentStyles.featuredName}>{tournamentFeatured.name}</span> - <span className={menuContentStyles.featuredLocation}>{tournamentFeatured.location}</span></p>
+                        <div className={menuContentStyles.datePrizeContainer}>
+                            <div className={menuContentStyles.dateContainer}>
+                                <p className={menuContentStyles.dateParagraph}>
+                                    <span className={menuContentStyles.dateIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                                    <span className={menuContentStyles.dateSpan}>{tournamentFeatured.date}</span>
                                 </p>
                             </div>
                     
-                            <div className={styles.priceContainer}>
-                                <p className={styles.priceParagraph}>
-                                    <span className={styles.priceLogoSpan}><GrTrophy className={styles.trophyLogo} /></span>
-                                    <span className={styles.price}>{tournamentFeatured.price}</span>
+                            <div className={menuContentStyles.prizeContainer}>
+                                <p className={menuContentStyles.prizeParagraph}>
+                                    <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.prizeIcon} /> N</span>
+                                    <span className={menuContentStyles.prize}>{tournamentFeatured.prize}</span>
                                 </p>
                             </div>
                         </div>
                     </div>
                         
-                    <div className={styles.right}>
-                        <Link href={tournamentFeatured.link} className={styles.viewDetailsLink}>
-                            <span>View Details</span>
-                            <span><FaArrowRight className={styles.rightArrowIcon} /></span>
+                    <div>
+                        <Link href={tournamentFeatured.link} className={menuContentStyles.viewDetailsLink}>
+                            <span className={menuContentStyles.viewDetails}>View Details</span>
+                            <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
                         </Link>
                     </div>
 

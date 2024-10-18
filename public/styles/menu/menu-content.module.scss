@@ -1,0 +1,278 @@
+.tournamentsFeaturedContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 200px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.tournamentsFeaturedContainer h3 {
+    font-size: 1rem;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.slidersContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.slidersContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.sliderContainer {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    min-height: 200px;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+}
+
+.imageContainer {
+    height: 180px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 0.5px #FCFCFC;
+}
+
+.imageContainer img {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.descriptionContainer {
+    min-height: 100px;
+    width: 100%;
+    padding: 0.5rem;
+    padding-left: 0.75rem;
+    padding-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+
+
+.featuredName,
+.featuredLocation,
+.descriptionLocationSpan,
+.descriptionNameSpan {
+    font-size: 0.95rem;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+}
+
+.descriptionNameLocationContainer,
+.prizeContainer,
+.datePrizeContainer,
+.dateContainer,
+.dateEventTypeContainer,
+.eventOrParticipantTypeContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.detailsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.datePrizeContainer,
+.dateEventTypeContainer {
+    gap: 2rem;
+}
+
+.nameDateContainer,
+.prizeFeeContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.memberParagraphHalf,
+.gameParagraphHalf,
+.prizeParagraph,
+.prizeParagraphHalf,
+.feeParagraphHalf,
+.feeParagraph,
+.nameParagraphHalf,
+.dateParagraphHalf,
+.dateParagraph,
+.participantTypeParagraph,
+.eventTypeParagraph {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.prizeParagraphHalf,
+.feeParagraphHalf,
+.nameParagraphHalf,
+.dateParagraphHalf {
+    width: 50%;
+}
+
+.gameNameSpan,
+.gameIconSpan,
+.eventTypeIconSpan,
+.prizeSpan,
+.prizeIconSpan,
+.nameSpan,
+.padIconSpan,
+.feeSpan,
+.feeIconSpan,
+.calendarIconSpan,
+.dateSpan,
+.playerSpan,
+.participantIconSpan,
+.locationSpan,
+.participantTypeSpan,
+.eventTypeSpan {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.1rem;
+    color: #b1b1b1;
+    font-size: 0.7rem;
+}
+
+.descriptionNameLocationContainer,
+.nameSpan {
+    flex-wrap: wrap;
+    padding-right: 0.3rem;
+    white-space: normal;
+    overflow-wrap: break-word; 
+}
+
+.eventTypeIconSpan,
+.prizeIconSpan {
+    gap: 0.3rem;
+}
+
+
+.prizeIcon,
+.padIcon,
+.teamsIcon,
+.buildingIcon,
+.coinIcon,
+.calendarIcon,
+.feeIcon {
+    display: flex;
+    font-size: 0.7rem;
+    align-items: center;
+}
+
+.calendarIcon path,
+.feeIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
+}
+
+.prizeIcon,
+.padIcon,
+.calendarIcon {
+    stroke: #b1b1b1;
+}
+
+.coinIcon path {
+    fill: goldenrod;
+    color: goldenrod;
+    background-color: goldenrod;
+}
+
+.teamsIcon path,
+.dotIcon path,
+.calendarIcon path,
+.feeIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
+}
+
+.buildingIcon,
+.calendarIcon {
+    stroke: #b1b1b1;
+}
+
+.dotSpan {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.dotIcon {
+    font-size: 4px;
+}
+
+.viewDetailsLink {
+    font-size: 0.7rem;
+    display: flex;
+    gap: 0.25rem;
+    flex-direction: row;
+    align-items: center;
+    color: #b1b1b1;
+}
+
+.rightArrowIcon {
+    display: flex;
+    font-size: 0.55rem;
+}
+
+.rightArrowIcon path {
+    fill: #b1b1b1;
+    color: #b1b1b1;
+    background-color: #b1b1b1;
+}
+
+.sliderDescriptionContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.viewDetails {
+    color: #b1b1b1;
+}
+
+.prize,
+.eventType {
+    font-size: 0.7rem;
+    color: #b1b1b1;
+}
+
+@media only screen and (min-width: 450px) {
+    .sliderContainer {
+        width: 350px;
+        min-height: 220px;
+    }
+    
+    .imageContainer {
+        height: 200px;
+        width: 100%;
+    }    
+
+    .sliderDescriptionContainer {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0rem;
+    }
+}
