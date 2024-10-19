@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Image from 'next/image'
+import Link from 'next/link';
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuGamepad2 } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
@@ -9,6 +10,7 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { LuArrowRight } from "react-icons/lu";
 import { LuArrowLeft } from "react-icons/lu";
 import { fifaTournamentsList } from './fifaTournamentsList'
+import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import newTournamentsStyles from './../../new-tournaments/new-tournaments.module.css';
 import allTournamentsStyles from './../all-tournaments.module.css'
 
@@ -44,44 +46,44 @@ const FIFATournaments = () => {
                     />
                 </div>
                             
-                <div className={`${newTournamentsStyles.descriptionContainer} ${allTournamentsStyles.descriptionContainer}`}>
-                    <div className={newTournamentsStyles.descriptionNameLocation}>
-                        <p><span className={newTournamentsStyles.descriptionName}>{fifaTournament.details.name}</span> - <span className={newTournamentsStyles.descriptionLocation}>{fifaTournament.details.location}</span></p>
+                <div className={menuContentStyles.descriptionContainer}>
+                    <div className={menuContentStyles.descriptionNameLocationContainer}>
+                        <p><span className={menuContentStyles.descriptionNameSpan}>{fifaTournament.details.name}</span> - <span className={menuContentStyles.descriptionLocationSpan}>{fifaTournament.details.location}</span></p>
                     </div>
             
-                    <div className={newTournamentsStyles.teamsIndividualsContainer}>
-                        <p className={newTournamentsStyles.teamsIndividualsParagraph}>
-                            <span className={newTournamentsStyles.teamsIndividualsIconSpan}><AiOutlineTeam className={newTournamentsStyles.teamsIcon} /></span>
-                            <span className={newTournamentsStyles.teamsIndividualsSpan}>{fifaTournament.details.teamType}</span>
+                    <div className={menuContentStyles.eventOrParticipantTypeContainer}>
+                        <p className={menuContentStyles.participantTypeParagraph}>
+                            <span className={menuContentStyles.participantIconSpan}><AiOutlineTeam className={menuContentStyles.teamsIcon} /></span>
+                            <span className={menuContentStyles.participantTypeSpan}>{fifaTournament.details.teamType}</span>
                         </p>
-                        <span className={newTournamentsStyles.playerNumber}># {fifaTournament.details.players}</span>
+                        <span className={menuContentStyles.playerSpan}># {fifaTournament.details.players}</span>
                     </div>
             
-                    <div className={`${newTournamentsStyles.nameDateContainer} ${allTournamentsStyles.nameDateContainer}`}>
-                        <p className={`${newTournamentsStyles.nameParagraph}`}>
-                            <span className={newTournamentsStyles.padIconSpan}><LuGamepad2 className={newTournamentsStyles.padIcon} /></span>
-                            <span className={newTournamentsStyles.nameSpan}>{fifaTournament.details.game}</span>
+                    <div className={menuContentStyles.nameDateContainer}>
+                        <p className={menuContentStyles.nameParagraphHalf}>
+                            <span className={menuContentStyles.padIconSpan}><LuGamepad2 className={menuContentStyles.padIcon} /></span>
+                            <span className={menuContentStyles.nameSpan}>{fifaTournament.details.game}</span>
                         </p>
-                        <p className={`${newTournamentsStyles.dateParagraph}`}>
-                            <span className={newTournamentsStyles.calendarIconSpan}><FiCalendar className={newTournamentsStyles.calendarIcon} /></span>
-                            <span className={newTournamentsStyles.dateSpan}>{fifaTournament.details.date}</span>
+                        <p className={menuContentStyles.dateParagraphHalf}>
+                            <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                            <span className={menuContentStyles.dateSpan}>{fifaTournament.details.date}</span>
                         </p>
                     </div>
                                         
-                    <div className={`${newTournamentsStyles.prizeFeeContainer} ${allTournamentsStyles.prizeFeeContainer}`}>
-                        <p className={`${newTournamentsStyles.prizeParagraph}`}>
-                            <span className={newTournamentsStyles.prizeIconSpan}><GrTrophy className={newTournamentsStyles.prizeIcon} /></span>
-                            <span className={newTournamentsStyles.prizeSpan}>Prize: {fifaTournament.details.prize}</span>
+                    <div className={menuContentStyles.prizeFeeContainer}>
+                        <p className={menuContentStyles.nameParagraphHalf}>
+                            <span className={menuContentStyles.prizeIconSpan}><GrTrophy className={menuContentStyles.prizeIcon} /></span>
+                            <span className={menuContentStyles.prizeSpan}>Prize: N {fifaTournament.details.prize}</span>
                         </p>
-                        <p className={`${newTournamentsStyles.feeParagraph}`}>
-                            <span className={newTournamentsStyles.feeIconSpan}><PiMoneyWavy className={newTournamentsStyles.feeIcon} /></span>
-                            <span className={newTournamentsStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={newTournamentsStyles.coinIcon} /></span> {fifaTournament.details.fee}</span>
+                        <p className={menuContentStyles.feeParagraphHalf}>
+                            <span className={menuContentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                            <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {fifaTournament.details.fee}</span>
                         </p>
                     </div>
                 
                     <div className={`${newTournamentsStyles.buttonContainer} ${allTournamentsStyles.buttonContainer}`}>
-                        <button className={newTournamentsStyles.viewDetailsBTN}>View Details</button>
-                        <button className={newTournamentsStyles.registerBTN}>Register</button>
+                        <Link href={'/tournament-details'} className={newTournamentsStyles.viewDetailsBTN}>View Details</Link>
+                        <Link href={'/tournament-register'} className={newTournamentsStyles.registerBTN}>Register</Link>
                     </div>
                 </div>
                     

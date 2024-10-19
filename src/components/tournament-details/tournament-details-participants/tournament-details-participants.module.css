@@ -18,7 +18,7 @@
 }
 
 .informationArea p {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -44,7 +44,7 @@
 
 .tournamentsEventsFilterContainer p {
   font-size: 1rem;
-  font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+  font-family: "ClashGrotesk-ExtraLight", sans-serif;
 }
 
 .searchContainer {
@@ -98,7 +98,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: 'ClashGrotesk-Extralight', sans-serif;
+  font-family: "ClashGrotesk-Extralight", sans-serif;
   color: white;
   font-size: 0.85rem;
 }
@@ -138,7 +138,7 @@
 }
 
 .gridItem {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -146,7 +146,7 @@
 }
 
 .gridItemHeader {
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -217,7 +217,7 @@
 .tournamentRecord label {
   display: flex;
   min-width: 120px;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-size: 0.8rem;
   justify-content: flex-start;
 }
@@ -251,7 +251,7 @@
   cursor: pointer;
   border-radius: 6px;
   transition: all ease-in-out 0.5s;
-  font-family: 'ClashGrotesk-Medium', sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -263,7 +263,7 @@
   width: 30px;
   padding: 0;
   font-size: 1rem;
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
 }
 
 .navIconBTN:hover {
@@ -366,7 +366,7 @@
 .gridHeaderExpanded,
 .gridRowExpanded {
   display: grid;
-  grid-template-columns: 220px 110px 100px 150px 110px 80px 80px 120px;
+  grid-template-columns: 220px 110px 100px 150px 110px 80px 80px 120px;
   border-bottom: 1px solid rgba(204, 204, 204, 0.3);
   width: max-content;
 }
@@ -378,7 +378,7 @@
 }
 
 .gridItemExpanded {
-  font-family: 'ClashGrotesk-Light', sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -386,7 +386,7 @@
 }
 
 .gridItemHeaderExpanded {
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: "ClashGrotesk-Regular", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -434,7 +434,6 @@
     justify-content: flex-start;
   }
 }
-
 @media only screen and (min-width: 450px) {
   .gridHeader,
   .gridRow {
@@ -461,7 +460,6 @@
     flex-direction: row;
   }
 }
-
 @media only screen and (min-width: 550px) {
   .tournamentsEventsFilterSearchContainer {
     width: 100%;
@@ -497,7 +495,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .tournamentsEventsFilterContainer {
     width: calc(100% - 300px);
@@ -522,7 +519,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .contents {
     min-width: 300px;
@@ -547,7 +543,6 @@
     text-align: left;
   }
 }
-
 @media only screen and (min-width: 950px) {
   .gridHeader,
   .gridRow {
@@ -564,7 +559,6 @@
     display: grid;
   }
 }
-
 @media only screen and (min-width: 1115px) {
   .gridHeader,
   .gridRow {
@@ -585,7 +579,6 @@
     width: 350px;
   }
 }
-
 @media only screen and (min-width: 1240px) {
   .gridHeader,
   .gridRow {

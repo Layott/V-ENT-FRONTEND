@@ -84,7 +84,7 @@
 
 .tournamentsEventsFilterContainer p {
   font-size: 1rem;
-  font-family: 'ClashGrotesk-ExtraLight', sans-serif;
+  font-family: "ClashGrotesk-ExtraLight", sans-serif;
 }
 
 .filterContainer {
@@ -145,7 +145,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: 'ClashGrotesk-Extralight', sans-serif;
+  font-family: "ClashGrotesk-Extralight", sans-serif;
   color: white;
   font-size: 0.85rem;
 }
@@ -179,7 +179,6 @@
     min-height: 30px;
   }
 }
-
 @media only screen and (min-width: 650px) {
   .tournamentsEventsFilterContainer {
     width: calc(100% - 300px);
@@ -188,7 +187,6 @@
     width: 300px;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .gameOrAchievementCard {
     width: 110px;

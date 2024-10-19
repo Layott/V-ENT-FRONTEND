@@ -9,45 +9,45 @@ export const tournamentsFeaturedList = [
         name: 'Tekken World Tour',
         location: 'Lagos',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: 'N300,000',
+        prize: '300,000',
         image: tekkenWorldTour,
         alt: 'Tekken World Tour',
-        link: '#'
+        link: 'tournament-details'
     },
     {
         name: 'PUBG Elite Showdown',
         location: 'Abuja',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: 'N200,000',
+        prize: '200,000',
         image: pubgElite,
         alt: 'PUBG Elite Showdown',
-        link: '#'
+        link: 'tournament-details'
     },
     {
         name: 'Mortal Kombat Battle',
         location: 'Port Harcourt',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: 'N300,000',
+        prize: '300,000',
         image: mortalKombat,
         alt: 'Mortal Kombat',
-        link: '#'
+        link: 'tournament-details'
     },
     {
         name: 'Unnamed',
         location: 'New York',
         date: 'Oct. 1st - Oct. 21st 2024',
-        price: 'N300,000',
+        prize: '300,000',
         image: unnamed,
         alt: 'Unnamed',
-        link: '#'
+        link: 'tournament-details'
     },
     {
         name: 'Unnamed',
         location: 'Amsterdam',
         date: 'Jan. 1st - Jan. 21st 2025',
-        price: 'N1,500,000',
+        prize: '1,500,000',
         image: battles,
         alt: 'Battles',
-        link: '#'
+        link: 'tournament-details'
     }
 ];
