@@ -45,7 +45,7 @@ const Header = ({ className }) => {
             <nav className={styles.breadcrumbNav}>
               <Link href={'./'}>Home</Link>
               <MdKeyboardArrowRight className={styles.arrowRightIcon} />
-              <Link href={'./user-profile'} className={styles.currentSectionLink}>My Profile</Link>
+              <Link href={'./profile'} className={styles.currentSectionLink}>My Profile</Link>
             </nav>
 
         </div>

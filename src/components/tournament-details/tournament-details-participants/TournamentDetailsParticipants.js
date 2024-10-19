@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { CiSearch } from 'react-icons/ci'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
@@ -152,11 +153,12 @@ const TournamentDetailsParticipants = () => {
               <div className={styles.gridItem}>{participant.wins}</div>
               <div className={styles.gridItem}>{participant.losses}</div>
               <div className={styles.gridItem}>
-                <button
+                <Link
+                  href={'/profile'}
                   className={`${styles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
                 >
                   View Profile
-                </button>
+                </Link>
               </div>
             </div>
           ))}
@@ -207,11 +209,12 @@ const TournamentDetailsParticipants = () => {
                   <div className={styles.gridItemExpanded}>{participant.wins}</div>
                   <div className={styles.gridItemExpanded}>{participant.losses}</div>
                   <div className={styles.gridItemExpanded}>
-                    <button
+                    <Link
+                      href={'/profile'}
                       className={`${styles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
                     >
                       View Profile
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}
