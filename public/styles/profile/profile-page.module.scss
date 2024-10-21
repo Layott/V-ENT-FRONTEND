@@ -19,6 +19,45 @@
     order: 1;
 }
 
+.overviewLeft {
+    width: 100%;
+    min-height: 200px;
+    padding: 1.25rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    order: 2;
+}
+
+.sectionHr {
+    height: 1px;
+    border: none;
+    background-color: rgba(204, 204, 204, 0.3);
+}
+
+
+
+
+
+
+
+.interestsListContainer {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100px;
+    align-items: flex-start;
+    margin-top: 1rem;
+}
+
+.interest {
+    padding: 8px 12px;
+    border-radius: 25px;
+}
+
+
+
+
 .gameOrAchievementContainer {
     display: flex;
     flex-direction: row;
@@ -340,6 +379,13 @@
 
 
 
+
+
+
+
+
+
+
 @media only screen and (min-width: 550px) {
     .tournamentsEventsFilterSearchContainer {
         width: 100%;
@@ -382,6 +428,11 @@
         width: 55%;
     }
 
+    .overviewLeft {
+        width: 45%;
+        order: 1;
+    }
+
     .gameOrAchievementCard {
         width: 110px;
         min-height: 150px;
@@ -403,9 +454,32 @@
     }
 }
 
+@media only screen and (min-width: 1024px) {
+    .overviewLeft {
+        width: 45%;
+    }
+
+    // .overviewRight {
+    //     width: 55%;
+    // }
+
+    .socialLinksListContainer {
+        justify-content: space-between;
+    }
+}
+
+
+
+
 @media only screen and (min-width: 1100px) {
     .overviewRight {
         width: 100%;
+    }
+
+    .overviewLeft {
+        width: 330px;
+        min-width: 330px;
+        max-width: 330px;
     }
 
     .walletContainer,
