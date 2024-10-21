@@ -187,16 +187,23 @@ const Signup = () => {
         try {
             const result = await signIn(provider, { redirect: false });
             if (result.error) {
-                setSnackbarMessage('Failed to sign up with ' + provider);
+                setSnackbarMessage(`Failed to sign up with ${provider}`);
                 setSnackbarType('error');
                 setOpen(true);
             } else {
-                router.replace('/');
+
+                if (provider === 'google') {
+                    router.replace('/google-profile');
+                } else if (provider === 'facebook') {
+                    router.replace('/facebook-dashboard');
+                } else {
+                    router.replace('/');
+                }
             }
         } catch (error) {
-            // setSnackbarMessage(`An error occurred with ${provider} sign-up.`);
+            setSnackbarMessage(`An error occurred with ${provider} sign-up.`);
             setSnackbarType('error');
-            // setOpen(true);
+            setOpen(true);
         } finally {
             setLoading(false);
         }
