@@ -45,12 +45,12 @@ const TeamProfileOverviewLeft = () => {
     }
 
   return (
-    <div className={`${styles.overviewLeft} ${profileStyles.middleLayerColor}`}>
+    <div className={`${profileStyles.overviewLeft} ${profileStyles.middleLayerColor}`}>
         <div className={`${styles.interestsContainer} ${styles.sectionContainer}`}>
-            <h4 className={styles.sectionHeader}>Interests</h4>
-            <div className={`${styles.interestsListContainer} ${styles.contentListContainer}`}>
+            <h4 className={profileStyles.profileH4Header}>Interests</h4>
+            <div className={`${profileStyles.interestsListContainer} ${styles.contentListContainer}`}>
                 {interestsData.slice(0, showMoreInterests ? interestsData.length: 9).map((interest, index) => (
-                    <span key={index} className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>
+                    <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
                         {interest}
                     </span>    
                 ))}
@@ -67,11 +67,11 @@ const TeamProfileOverviewLeft = () => {
             </div>
         </div>
 
-        <hr className={styles.sectionHr} />
+        <hr className={profileStyles.sectionHr} />
 
         <div className={`${styles.gamingAccountsContainer} ${styles.sectionContainer}`}>
             <div className={styles.sectionHeader}>
-                <h4>Gaming Accounts</h4>
+                <h4 className={profileStyles.profileH4Header}>Gaming Accounts</h4>
                 <button className={`${styles.addGameAccountBTN}`}>
                     <HiPlus  className={styles.plusIcon} /> Add
                 </button>
@@ -114,7 +114,7 @@ const TeamProfileOverviewLeft = () => {
 
         </div>
 
-        <hr className={styles.sectionHr} />
+        <hr className={profileStyles.sectionHr} />
 
         <div className={`${styles.socialLinksContainer} ${styles.sectionContainer}`}>
             <h4 className={styles.sectionHeader}>Social Links</h4>
