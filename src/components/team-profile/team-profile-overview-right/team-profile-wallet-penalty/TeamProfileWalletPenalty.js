@@ -2,30 +2,29 @@ import { RiCopperCoinLine } from 'react-icons/ri'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { FiFlag } from 'react-icons/fi'
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './team-profile-wallet-penalty.module.css'
 
 const TeamProfileWalletPenalty = () => {
   return (
-    <div className={styles.walletPenaltyContainer}>
+    <div className={profileStyles.walletPenaltyContainer}>
         
-        <div className={`${styles.walletContainer} ${profileStyles.middleLayerColor}`}>
+        <div className={`${profileStyles.walletContainer} ${profileStyles.middleLayerColor}`}>
             <h4 className={profileStyles.profileH4Header}>Team Wallet</h4>
-            <p className={styles.coinNumber}>
-                <span className={styles.coinSpan}><RiCopperCoinLine className={styles.coinIcon} /></span>
-                <span className={styles.coinNumberSpan}>526</span>
+            <p className={profileStyles.coinNumber}>
+                <span className={profileStyles.coinSpan}><RiCopperCoinLine className={profileStyles.coinIcon} /></span>
+                <span className={profileStyles.coinNumberSpan}>526</span>
             </p>
 
         </div>
         
-        <div className={`${styles.penaltyContainer} ${profileStyles.middleLayerColor}`}>
+        <div className={`${profileStyles.penaltyContainer} ${profileStyles.middleLayerColor}`}>
             <h4 className={profileStyles.profileH4Header}>Penalty Points
-                <span className={styles.infoIconSpan}>
-                <IoIosInformationCircleOutline className={styles.infoIcon} />
+                <span className={profileStyles.infoIconSpan}>
+                <IoIosInformationCircleOutline className={profileStyles.infoIcon} />
                 </span>
             </h4>
-            <p className={styles.penaltyPointNumber}>
-                <span className={styles.flagSpan}><FiFlag /></span>
-                <span className={styles.penaltyPointNumberSpan}>15</span>
+            <p className={profileStyles.penaltyPointNumber}>
+                <span className={profileStyles.flagSpan}><FiFlag /></span>
+                <span className={profileStyles.penaltyPointNumberSpan}>15</span>
             </p>
         </div>
     </div>

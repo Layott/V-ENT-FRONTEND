@@ -2,11 +2,11 @@ import TeamProfileWalletPenalty from "./team-profile-wallet-penalty/TeamProfileW
 import TeamProfileStats from "./team-profile-stats/TeamProfileStats";
 import TeamProfileFavouriteGames from "./team-profile-favourite-games/TeamProfileFavouriteGames";
 import TeamProfileAchievements from "./team-profile-achievements/TeamProfileAchievements";
-import styles from './team-profile-overview-right.module.css'
+import profileStyles from '@/styles/profile/profile-page.module.css'
 
 const TeamProfileOverviewRight = () => {
   return (
-    <div className={styles.overviewRight}>
+    <div className={profileStyles.overviewRight}>
       <TeamProfileWalletPenalty />
       <TeamProfileStats />
       <TeamProfileFavouriteGames />

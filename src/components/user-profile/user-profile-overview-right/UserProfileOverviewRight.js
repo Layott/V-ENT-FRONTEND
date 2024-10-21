@@ -2,11 +2,11 @@ import UserProfileWalletPenalty from "./user-profile-wallet-penalty/UserProfileW
 import UserProfileStats from "./user-profile-stats/UserProfileStats";
 import UserProfileFavouriteGames from "./user-profile-favourite-games/UserProfileFavouriteGames";
 import UserProfileAchievements from "./user-profile-achievements/UserProfileAchievements";
-import styles from './user-profile-overview-right.module.css'
+import profileStyles from '@/styles/profile/profile-page.module.css'
 
 const UserProfileOverviewRight = () => {
   return (
-    <div className={styles.overviewRight}>
+    <div className={profileStyles.overviewRight}>
       <UserProfileWalletPenalty />
       <UserProfileStats />
       <UserProfileFavouriteGames />
