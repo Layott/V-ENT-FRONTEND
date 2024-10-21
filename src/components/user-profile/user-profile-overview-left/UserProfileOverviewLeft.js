@@ -21,6 +21,7 @@ const UserProfileOverviewLeft = () => {
 
     // Simulating Database
     // Interests Data
+    
     const interestsList = [
         'Anime', 'Uncharted', 'FIFA', 'Elden Ring', 'Mortal Kombat',
         'God of War', 'Manga', 'Black Myth Wukong', 'Battle Royale',
