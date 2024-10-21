@@ -8,27 +8,27 @@ import fc25 from '@/images/fc25.webp'
 import steam from '@/images/steam.webp'
 import epicGames from '@/images/EpicGames.webp'
 import nintendoSwitch from '@/images/NintendoSwitch.webp'
-import { FaFacebook, FaInstagram, FaYoutube, FaArrowLeft } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaYoutube  } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { HiPlus } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './user-profile-overview-left.module.css'
+import styles from './team-profile-overview-left.module.css'
 
-const UserProfileOverviewLeft = () => {
+const TeamProfileOverviewLeft = () => {
     const [showMoreInterests, setShowMoreInterests] = useState(false)
     const [showMoreGamingAccounts, setShowMoreGamingAccounts] = useState(false)
 
     // Simulating Database
     // Interests Data
-    const interestsList = [
+    const interestsData = [
         'Anime', 'Uncharted', 'FIFA', 'Elden Ring', 'Mortal Kombat',
         'God of War', 'Manga', 'Black Myth Wukong', 'Battle Royale',
         'Cyberpunk 2077', 'League of Legends', 'The Legend of Zelda', 'Call of Duty'
     ]
 
     // Gaming Accounts Data
-    const gamingAccountsList = [
+    const gamingAccountsData = [
         { logo: playStation, name: 'PlayStation', handle: '@frostbite_psn' },
         { logo: xBox, name: 'XBox', handle: '@frostbite_xbox' },
         { logo: godOfWar, name: 'God of War', handle: '@frostbite_gow' },
@@ -48,24 +48,20 @@ const UserProfileOverviewLeft = () => {
         <div className={`${styles.interestsContainer} ${styles.sectionContainer}`}>
             <h4 className={styles.sectionHeader}>Interests</h4>
             <div className={`${styles.interestsListContainer} ${styles.contentListContainer}`}>
-                {interestsList.slice(0, showMoreInterests ? interestsList.length: 9).map((interest, index) => (
+                {interestsData.slice(0, showMoreInterests ? interestsData.length: 9).map((interest, index) => (
                     <span key={index} className={`${styles.interest} ${profileStyles.topMostLayerColor}`}>
                         {interest}
                     </span>    
                 ))}
 
-                <button
-                    onClick={() => setShowMoreInterests(prev => !prev)}
-                    className={`${profileStyles.topMostLayerColor} ${styles.showMoreBTN}`}
-                >
-                    {showMoreInterests ? (
-                        <>
-                            <FaArrowLeft className={styles.rightOrLeftArrowIcon} /> See less
-                        </>
-                    ) : (
-                        `See more +${interestsList.length - 9}`
-                    )}
-                </button>
+                {!showMoreInterests && interestsData.length > 9 && (
+                    <button
+                        onClick={() => setShowMoreInterests(true)}
+                        className={`${profileStyles.topMostLayerColor} ${styles.showMoreBTN}`}
+                    >
+                        See more +{interestsData.length - 9}
+                    </button>
+                )}
 
             </div>
         </div>
@@ -80,7 +76,7 @@ const UserProfileOverviewLeft = () => {
                 </button>
             </div>
             <div className={`${styles.gamingAccountsListContainer} ${styles.contentListContainer}`}>
-                {gamingAccountsList.slice(0, showMoreGamingAccounts ? gamingAccountsList.length : 4).map((account, index) => (
+                {gamingAccountsData.slice(0, showMoreGamingAccounts ? gamingAccountsData.length : 4).map((account, index) => (
                     <div key={index} className={styles.gamingAccount}>
                         <div className={styles.gameDetails}>
                             <div className={styles.gameLogoAndName}>
@@ -106,18 +102,14 @@ const UserProfileOverviewLeft = () => {
                 ))}                
             </div>
 
-            <button
-                onClick={() => setShowMoreGamingAccounts(prev => !prev)}
-                className={`${profileStyles.topMostLayerColor} ${styles.seeMoreAccountsBTN}`}
-            >
-                {showMoreGamingAccounts ? (
-                    <>
-                        <FaArrowLeft className={styles.rightOrLeftArrowIcon} /> See less
-                    </>
-                ) : (
-                    `See more +${gamingAccountsList.length - 4}`
-                )}
-            </button>
+            {!showMoreGamingAccounts && gamingAccountsData.length > 4 && (
+                <button
+                    className={`${styles.seeMoreAccountsBTN} ${profileStyles.topMostLayerColor}`}
+                    onClick={() => setShowMoreGamingAccounts(true)}
+                >
+                    See more +{gamingAccountsData.length - 4}
+                </button>
+            )}
 
         </div>
 
@@ -145,4 +137,4 @@ const UserProfileOverviewLeft = () => {
   )
 }
 
-export default UserProfileOverviewLeft
+export default TeamProfileOverviewLeft

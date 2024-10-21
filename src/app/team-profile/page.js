@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
-import ProfileBanner from '@/components/user-profile/user-profile-banner/UserProfileBanner';
-import ProfileBio from '@/components/user-profile/user-profile-bio/UserProfileBio';
-import OverviewLeft from "@/components/user-profile/user-profile-overview-left/UserProfileOverviewLeft";
-import OverviewRight from "@/components/user-profile/user-profile-overview-right/UserProfileOverviewRight";
-import Gallery from "@/components/user-profile/user-profile-gallery/UserProfileGallery"
-import Activity from "@/components/user-profile/user-profile-activity/UserProfileActivity"
+import TeamProfileBanner from '@/components/team-profile/team-profile-banner/TeamProfileBanner';
+import TeamProfileBio from '@/components/team-profile/team-profile-bio/TeamProfileBio';
+import TeamProfileOverviewLeft from '@/components/team-profile/team-profile-overview-left/TeamProfileOverviewLeft';
+import TeamProfileOverviewRight from '@/components/team-profile/team-profile-overview-right/TeamProfileOverviewRight';
+import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/TeamProfileGallery';
+import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
+
 import styles from './user-profile.module.css'
 
 const TeamProfile = () => {
@@ -22,8 +23,8 @@ const TeamProfile = () => {
         <Sidebar />
       
         <div className={styles.rightPaneContainer}>
-          <ProfileBanner />
-          <ProfileBio />
+          <TeamProfileBanner />
+          <TeamProfileBio />
 
           <div className={styles.buttonContainer}>
             <button
@@ -51,20 +52,20 @@ const TeamProfile = () => {
           <div className={styles.profileDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
-                <OverviewLeft />
-                <OverviewRight />
+                <TeamProfileOverviewLeft />
+                <TeamProfileOverviewRight />
               </div>            
             )}
 
             {activeTab === 'activity' && (
               <div className={styles.activityContainer}>
-                <Activity />
+                <TeamProfileActivity />
               </div>
             )}
 
             {activeTab === 'gallery' && (
               <div className={styles.galleryContainer}>
-                <Gallery />
+                <TeamProfileGallery />
               </div>
             )}       
           </div>
