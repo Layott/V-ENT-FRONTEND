@@ -1,7 +1,7 @@
 import { ImStatsDots } from "react-icons/im"
 import profileStyles from "@/styles/profile/profile-page.module.css"
 
-const UserProfileStats = () => {
+const TeamProfileStats = () => {
   return (
     <div className={`${profileStyles.statsContainer} ${profileStyles.middleLayerColor}`}>
         
@@ -11,27 +11,27 @@ const UserProfileStats = () => {
         
         <div className={profileStyles.statsDetailsContainer}>
             
-            <div className={`${profileStyles.globalRanking} ${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
+            <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <div className={profileStyles.rankingViewTable}>
                     <h5 className={profileStyles.profileH5Header}>Ranking</h5>
                     <p className={profileStyles.viewTable}>View Table</p>
                 </div>
-                <p className={profileStyles.profileDetailValue}>#1123</p>
+                <p className={profileStyles.statsDetailValue}>#1123</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Tournament played</h5>
-                <p className={profileStyles.profileDetailValue}>24</p>
+                <p className={profileStyles.statsDetailValue}>24</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Wins</h5>
-                <p className={profileStyles.profileDetailValue}>22</p>
+                <p className={profileStyles.statsDetailValue}>22</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Losses</h5>
-                <p className={profileStyles.profileDetailValue}>4</p>
+                <p className={profileStyles.statsDetailValue}>4</p>
             </div>
 
         </div>
@@ -40,4 +40,4 @@ const UserProfileStats = () => {
   )
 }
 
-export default UserProfileStats
+export default TeamProfileStats
