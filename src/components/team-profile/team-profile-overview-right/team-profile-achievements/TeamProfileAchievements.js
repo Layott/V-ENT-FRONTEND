@@ -10,12 +10,12 @@ import nbaThreeKWinBadge from '@/images/nba_three_k_wins_badge.webp'
 import icarusBadge from '@/images/counter_striker_icarus_badge.webp'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 
-const UserProfileAchievements = () => {
+const TeamProfileAchievements = () => {
   const [showAll, setShowAll] = useState(false);
   const [visibleGames, setVisibleGames] = useState(6)
 
   const achievementsList = [
-    { name: "Killing Spree 2024", src: killSpreeBadge },
+    { name: "Call of Duty - Killing Spree 100 Kills", src: killSpreeBadge },
     { name: "Counter Strike - King Cache", src: killSpreeBadge },
     { name: "Mortal Kombat - Premium", src: mortalKombatBadge },
     { name: "Mario Kart - King Banana", src: marioKartBadge },
@@ -48,7 +48,7 @@ const UserProfileAchievements = () => {
           onClick={handleSeeMoreAndLess}
         >
           {showAll ? 'See less' : 'See more'}
-          {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} /> }
+          {showAll ? <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> : <FaArrowRight className={profileStyles.rightOrLeftArrowIcon} /> }
         </button>
       </div>
 
@@ -67,9 +67,8 @@ const UserProfileAchievements = () => {
         ))}        
       </div>
 
-
     </div>
   )
 }
 
-export default UserProfileAchievements
+export default TeamProfileAchievements

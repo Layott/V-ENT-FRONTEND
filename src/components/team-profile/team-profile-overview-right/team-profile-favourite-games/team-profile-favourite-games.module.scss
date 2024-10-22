@@ -1,23 +1,22 @@
-.achievementsContainer {
+.favouriteGamesContainer {
     display: flex;
     flex-direction: column;
     padding: 1rem;
     border-radius: 10px;
     gap: 1.5rem;
-    // border: 1px solid green;
 }
 
-.achievementsHeader {
+.statsHeader {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.achievementsHeaderH4 {
-    display: flex;
-    gap: 0.5rem;
-}
+// .statsHeaderH4 {
+//     display: flex;
+//     gap: 0.5rem;
+// }
 
 .seeMoreBTN {
     background-color: transparent;
@@ -33,26 +32,30 @@
     font-size: 0.8rem;
 }
 
-.achievementCard {
-    gap: 0.5rem;
+.addGameIcons {
+    border: 1px dashed var(--primary-bg);
+    min-height: 115px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
-.achievementImageContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 125px;
-}   
+.addGameText {
+    font-size: 0.8rem;
+}
 
-.achievementImage {
-    width: 100%;
-    height: 80px;
-    object-fit: contain;
-    border-radius: 10px;
+.plusIcon {
+    font-size: 1.5rem;
 }
 
 @media only screen and (min-width: 768px) {
-    .achievementsContainer {
+    .favouriteGamesContainer {
         padding: 1.5rem;
+    }
+
+    .addGameIcons {
+        min-height: 130px;
     }
 }
