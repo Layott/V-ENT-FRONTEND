@@ -7,7 +7,7 @@ import Image from 'next/image'
 import profileImageBig from "@/images/signed_in_user_big.webp" 
 import styles from './user-profile-bio.module.css'
 
-const UserProfileBio = () => {
+const UserProfileBio = ({full_name, username, profile_picture, description, country}) => {
     const [isEditing, setIsEditing] = useState(false)
 
     const handleProfileImageUploader = () => {
@@ -44,12 +44,12 @@ const UserProfileBio = () => {
                 </div>
                 <div className={styles.profileDetailsContainer}>
                     <div className={styles.profileDetails}>
-                        <h1 className={styles.profileFullName}>Nathan Drake Jonathan Emmanuel</h1>
-                        <p className={styles.profileUsernameHandle}>@frostbite</p>
+                        <h1 className={styles.profileFullName}>{full_name}</h1>
+                        <p className={styles.profileUsernameHandle}>@{username}</p>
                         <p className={styles.userLocation}><IoLocationOutline />
-                            <span className={styles.userLocationState}>Lagos</span>,
-                            &nbsp;
-                            <span className={styles.userLocationCountry}>Nigeria</span>
+                            {/* <span className={styles.userLocationState}>Lagos</span>,
+                            &nbsp; */}
+                            <span className={styles.userLocationCountry}>{country}</span>
                         </p>
                     </div>
 
@@ -97,7 +97,7 @@ const UserProfileBio = () => {
 
         <div className={styles.profileDescription}>
             <p className={styles.bioParagraph}>
-                Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it&#39;s dominating in-game or leveling up your project with killer design, I&#39;m here to make it happen. Let&#39;s team up and create something epic!
+                {description}
             </p>
         </div>
 
