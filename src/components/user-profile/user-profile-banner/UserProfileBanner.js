@@ -3,7 +3,7 @@ import { FiCamera } from 'react-icons/fi';
 import profileBannerImage from "@/images/profile_image_bg.webp"
 import styles from './user-profile-banner.module.css'
 
-const UserProfileBanner = () => {
+const UserProfileBanner = ({banner, }) => {
     const handleBannerUploader = (event) => {
         const file = event.target.files[0]
         if (file) {

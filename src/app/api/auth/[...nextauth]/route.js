@@ -14,5 +14,6 @@ export const VENT= {
   FORGOT_PASSWORD:' ',
   FORGOT_PASSWORD_TOKEN:' ',
   RESET_PASSWORD:' ',
-  EDIT_PROFILE:'',
-}
+  USER_PROFILE:'https://vermillionent.pythonanywhere.com/auth/get-user-informations/',
+  EDIT_PROFILE:'https://vermillionent.pythonanywhere.com/auth/edit-profile-info/',
+} 

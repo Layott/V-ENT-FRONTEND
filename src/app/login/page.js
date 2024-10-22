@@ -54,7 +54,7 @@ const Login = () => {
                 localStorage.setItem('user_id', data.user_id);
 
                 // Redirect to profile
-                router.replace('/profile');
+                router.replace('/user-profile');
 
                 // Show success message
                 setSnackbarMessage(data.message || 'Login successful!');
