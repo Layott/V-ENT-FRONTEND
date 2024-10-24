@@ -36,17 +36,134 @@
   background-color: rgba(204, 204, 204, 0.3);
 }
 
-.interestsListContainer {
+.sectionHeader {
+  margin-bottom: 1rem;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.interestsListContainer,
+.gamingAccountsListContainer,
+.socialLinksListContainer {
+  display: flex;
+  width: 100%;
+  min-height: 20px;
+  font-size: 0.8rem;
+}
+
+.interestsListContainer {
   flex-wrap: wrap;
-  min-height: 100px;
+  gap: 0.5rem;
   align-items: flex-start;
   margin-top: 1rem;
+}
+
+.socialLinksListContainer {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 0.9rem;
+  column-gap: 0.25rem;
+}
+
+.gamingAccountsListContainer {
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .interest {
   padding: 8px 12px;
   border-radius: 25px;
+}
+
+.seeMoreAccountsBTN,
+.showMoreBTN {
+  outline: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 25px;
+  transition: all ease-in-out 0.5s;
+  border: 1px solid #28292D;
+}
+
+.seeMoreAccountsBTN {
+  float: right;
+  margin-top: 0.5rem;
+}
+
+.seeMoreAccountsBTN:hover,
+.showMoreBTN:hover {
+  border: 1px solid var(--primary-bg);
+}
+
+.gamingAccount {
+  display: flex;
+  align-items: center;
+  min-height: 10px;
+  gap: 0.8rem;
+  justify-content: space-between;
+}
+
+.gamingAccountIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.gameLogoAndName {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.gameLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+}
+
+.gameLogo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.gameName {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.socialLink {
+  padding: 8px 0;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 1px solid #28292D;
+  transition: all ease-in-out 0.6s;
+  width: 135px;
+  flex-grow: 1;
+}
+
+.socialLink:hover {
+  border: 1px solid var(--primary-bg);
+}
+
+.socialIcon {
+  font-size: 0.95rem;
+}
+
+.sectionContainer {
+  min-height: 100px;
 }
 
 .gameOrAchievementContainer {
@@ -274,14 +391,15 @@
   align-items: center;
 }
 
+.addGameAccountBTN,
 .seeMoreBTN {
   background-color: transparent;
   border: none;
   outline: none;
   display: flex;
-  gap: 0.4rem;
   align-items: center;
   cursor: pointer;
+  gap: 0.4rem;
 }
 
 .rightOrLeftArrowIcon {

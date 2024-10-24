@@ -13,7 +13,6 @@ import { FaXTwitter } from "react-icons/fa6";
 import { HiPlus } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './user-profile-overview-left.module.css'
 
 const UserProfileOverviewLeft = () => {
     const [showMoreInterests, setShowMoreInterests] = useState(false)
@@ -46,9 +45,9 @@ const UserProfileOverviewLeft = () => {
 
   return (
     <div className={`${profileStyles.overviewLeft} ${profileStyles.middleLayerColor}`}>
-        <div className={`${styles.interestsContainer} ${styles.sectionContainer}`}>
+        <div className={profileStyles.sectionContainer}>
             <h4 className={profileStyles.profileH4Header}>Interests</h4>
-            <div className={`${profileStyles.interestsListContainer} ${styles.contentListContainer}`}>
+            <div className={profileStyles.interestsListContainer}>
                 {interestsList.slice(0, showMoreInterests ? interestsList.length: 9).map((interest, index) => (
                     <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
                         {interest}
@@ -57,11 +56,11 @@ const UserProfileOverviewLeft = () => {
 
                 <button
                     onClick={() => setShowMoreInterests(prev => !prev)}
-                    className={`${profileStyles.topMostLayerColor} ${styles.showMoreBTN}`}
+                    className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
                 >
                     {showMoreInterests ? (
                         <>
-                            <FaArrowLeft className={styles.rightOrLeftArrowIcon} /> See less
+                            <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
                         </>
                     ) : (
                         `See more +${interestsList.length - 9}`
@@ -73,35 +72,35 @@ const UserProfileOverviewLeft = () => {
 
         <hr className={profileStyles.sectionHr} />
 
-        <div className={`${styles.gamingAccountsContainer} ${styles.sectionContainer}`}>
-            <div className={styles.sectionHeader}>
+        <div className={profileStyles.sectionContainer}>
+            <div className={profileStyles.sectionHeader}>
                 <h4 className={profileStyles.profileH4Header}>Gaming Accounts</h4>
-                <button className={`${styles.addGameAccountBTN}`}>
-                    <HiPlus  className={styles.plusIcon} /> Add
+                <button className={`${profileStyles.addGameAccountBTN}`}>
+                    <HiPlus  className={profileStyles.profileH4Icons} /> Add
                 </button>
             </div>
-            <div className={`${styles.gamingAccountsListContainer} ${styles.contentListContainer}`}>
+            <div className={profileStyles.gamingAccountsListContainer}>
                 {gamingAccountsList.slice(0, showMoreGamingAccounts ? gamingAccountsList.length : 4).map((account, index) => (
-                    <div key={index} className={styles.gamingAccount}>
-                        <div className={styles.gameDetails}>
-                            <div className={styles.gameLogoAndName}>
-                                <div className={styles.gameLogo}>
+                    <div key={index} className={profileStyles.gamingAccount}>
+                        <div>
+                            <div className={profileStyles.gameLogoAndName}>
+                                <div className={profileStyles.gameLogo}>
                                     <Image
                                         src={account.logo}
                                         alt={account.name}
                                     />
                                 </div>
-                                <div className={styles.gameName}>
+                                <div className={profileStyles.gameName}>
                                     <h4>{account.name}</h4>
-                                    <p className={styles.gamingAccountHandle}>{account.handle}</p>
+                                    <p>{account.handle}</p>
                                 </div>
                             </div>
                         </div>
                         <div
-                            className={`${profileStyles.topMostLayerColor} ${styles.gamingAccountIcon}`}
+                            className={`${profileStyles.topMostLayerColor} ${profileStyles.gamingAccountIcon}`}
                             onClick={() => deleteGamingAccount(index)}
                         >
-                            <MdDelete className={styles.deleteIcon} />
+                            <MdDelete className={profileStyles.profileH4Icons} />
                         </div>
                     </div>
                 ))}                
@@ -109,11 +108,11 @@ const UserProfileOverviewLeft = () => {
 
             <button
                 onClick={() => setShowMoreGamingAccounts(prev => !prev)}
-                className={`${profileStyles.topMostLayerColor} ${styles.seeMoreAccountsBTN}`}
+                className={`${profileStyles.topMostLayerColor} ${profileStyles.seeMoreAccountsBTN}`}
             >
                 {showMoreGamingAccounts ? (
                     <>
-                        <FaArrowLeft className={styles.rightOrLeftArrowIcon} /> See less
+                        <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
                     </>
                 ) : (
                     `See more +${gamingAccountsList.length - 4}`
@@ -124,20 +123,20 @@ const UserProfileOverviewLeft = () => {
 
         <hr className={profileStyles.sectionHr} />
 
-        <div className={`${styles.socialLinksContainer} ${styles.sectionContainer}`}>
-            <h4 className={styles.sectionHeader}>Social Links</h4>
-            <div className={`${styles.socialLinksListContainer} ${styles.contentListContainer}`}>
-                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                    <FaFacebook className={styles.socialIcon} /> Facebook
+        <div className={profileStyles.sectionContainer}>
+            <h4 className={profileStyles.sectionHeader}>Social Links</h4>
+            <div className={profileStyles.socialLinksListContainer}>
+                <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
+                    <FaFacebook className={profileStyles.socialIcon} /> Facebook
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                    <FaInstagram className={styles.socialIcon} /> Instagram
+                <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
+                    <FaInstagram className={profileStyles.socialIcon} /> Instagram
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                    <FaXTwitter className={styles.socialIcon} /> X (Twitter)
+                <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
+                    <FaXTwitter className={profileStyles.socialIcon} /> X (Twitter)
                 </Link>
-                <Link href={'./'} className={`${styles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                    <FaYoutube  className={styles.socialIcon} /> YouTube
+                <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
+                    <FaYoutube  className={profileStyles.socialIcon} /> YouTube
                 </Link>
             </div>
         </div>
