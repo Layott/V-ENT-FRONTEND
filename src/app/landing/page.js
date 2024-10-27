@@ -1,11 +1,17 @@
-import React from 'react'
+import BelowHero from '@/components/landing/below-hero/BelowHero'
+import LandingHero from '@/components/landing/landing-hero/LandingHero'
 import styles from './landing.module.css'
 
 const LandingPage = () => {
   return (
     <div className={styles.pageContainer}>
-        <h1>Landing Page</h1>
-        <p>Hello</p>
+
+        <div className={styles.heroContainer}>
+            <LandingHero />
+        </div>
+
+        <BelowHero />
+
     </div>
   )
 }

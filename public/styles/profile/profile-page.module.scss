@@ -78,6 +78,7 @@
     border-radius: 25px;
 }
 
+.waitlistBTN,
 .seeMoreAccountsBTN,
 .showMoreBTN {
     outline: none;
@@ -93,6 +94,7 @@
     margin-top: 0.5rem;
 }
 
+.waitlistBTN:hover,
 .seeMoreAccountsBTN:hover,
 .showMoreBTN:hover {
     border: 1px solid var(--primary-bg);
