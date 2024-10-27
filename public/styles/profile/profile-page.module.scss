@@ -10,6 +10,164 @@
     background-color: #131316;
 }
 
+.overviewRight {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    gap: 1rem;
+    order: 1;
+}
+
+.overviewLeft {
+    width: 100%;
+    min-height: 200px;
+    padding: 1.25rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    order: 2;
+}
+
+.sectionHr {
+    height: 1px;
+    border: none;
+    background-color: rgba(204, 204, 204, 0.3);
+}
+
+.sectionHeader {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.interestsListContainer,
+.gamingAccountsListContainer,
+.socialLinksListContainer {
+    display: flex;
+    width: 100%;
+    min-height: 20px;
+    font-size: 0.8rem;
+}
+
+.interestsListContainer {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+}
+
+.socialLinksListContainer {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 0.9rem;
+    column-gap: 0.25rem;
+}
+
+
+.gamingAccountsListContainer {
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+
+.interest {
+    padding: 8px 12px;
+    border-radius: 25px;
+}
+
+.seeMoreAccountsBTN,
+.showMoreBTN {
+    outline: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 25px;
+    transition: all ease-in-out 0.5s;
+    border: 1px solid #28292D;    
+}
+
+.seeMoreAccountsBTN {
+    float: right;
+    margin-top: 0.5rem;
+}
+
+.seeMoreAccountsBTN:hover,
+.showMoreBTN:hover {
+    border: 1px solid var(--primary-bg);
+}
+
+.gamingAccount {
+    display: flex;
+    align-items: center;
+    min-height: 10px;
+    gap: 0.8rem;
+    justify-content: space-between;
+}
+
+.gamingAccountIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+}
+
+.gameLogoAndName {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.gameLogo {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.gameLogo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.gameName {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.socialLink {
+    padding: 8px 0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    border: 1px solid #28292D;
+    transition: all ease-in-out 0.6s;
+    width: 135px;
+    flex-grow: 1;
+}
+
+.socialLink:hover {
+    border: 1px solid var(--primary-bg);
+}
+
+.socialIcon {
+    font-size: 0.95rem;
+}
+
+.sectionContainer {
+    min-height: 100px;
+}
+
 .gameOrAchievementContainer {
     display: flex;
     flex-direction: row;
@@ -35,7 +193,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    justify-content: space-between;    
+    justify-content: space-between;
 }
 
 .gameOrAchievementImage {
@@ -160,6 +318,181 @@
     font-size: 0.8rem;
 }
 
+.profileH4Header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'ClashGrotesk-Light', sans-serif;
+}
+
+.profileH4Icons {
+    font-size: 0.9rem;
+}
+
+.profileH5Header {
+    font-size: 0.8rem;
+    font-weight: var(--fw-bold);
+    color: #B2B3BD;
+}
+
+.profileDetailValue {
+    font-size: 1.5rem;
+    font-weight: var(--fw-bold);
+}
+
+.statsContainer {
+    padding: 1.25rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.statsDetailsContainer {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    row-gap: 1.25rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.statsDetails {
+    padding: 0.8rem;  
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 135px;
+    flex-grow: 1;
+}
+
+.rankingViewTable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.statsDetailValue {
+    font-size: 1.5rem;
+    font-weight: var(--fw-bold);
+}
+
+.achievementsContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: 10px;
+    gap: 1.5rem;
+}
+
+.achievementsHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.addGameAccountBTN,
+.seeMoreBTN {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 0.4rem;
+}
+
+.rightOrLeftArrowIcon {
+    font-size: 0.8rem;
+}
+
+.achievementImageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 125px;
+    padding: 0 0.75rem;
+}   
+
+.achievementImage {
+    width: 100%;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.achievementCard {
+    gap: 0.5rem;
+}
+
+.walletPenaltyContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.walletContainer,
+.penaltyContainer {
+    min-width: 200px;
+    min-height: 50px;
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.coinNumber,
+.penaltyPointNumber {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.infoIconSpan {
+    display: flex;
+}
+
+.infoIcon {
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.coinNumberSpan,
+.penaltyPointNumberSpan {
+    font-size: 1.5rem;
+}
+
+.coinSpan,
+.flagSpan {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+.coinIcon {
+    border-radius: 50%;
+    background-color: #F7931A;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @media only screen and (min-width: 550px) {
     .tournamentsEventsFilterSearchContainer {
         width: 100%;
@@ -197,6 +530,16 @@
 
 
 @media only screen and (min-width: 768px) {
+    .overviewRight {
+        order: 2;
+        width: 55%;
+    }
+
+    .overviewLeft {
+        width: 45%;
+        order: 1;
+    }
+
     .gameOrAchievementCard {
         width: 110px;
         min-height: 150px;
@@ -212,4 +555,43 @@
         width: 100%;
         height: 130px;
     }
+
+    .achievementsContainer {
+        padding: 1.5rem;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .overviewLeft {
+        width: 45%;
+    }
+
+    // .overviewRight {
+    //     width: 55%;
+    // }
+
+    .socialLinksListContainer {
+        justify-content: space-between;
+    }
+}
+
+
+
+
+@media only screen and (min-width: 1100px) {
+    .overviewRight {
+        width: 100%;
+    }
+
+    .overviewLeft {
+        width: 330px;
+        min-width: 330px;
+        max-width: 330px;
+    }
+
+    .walletContainer,
+    .penaltyContainer {
+        width: calc(50% - 1rem);
+        flex-grow: 0;
+    }    
 }

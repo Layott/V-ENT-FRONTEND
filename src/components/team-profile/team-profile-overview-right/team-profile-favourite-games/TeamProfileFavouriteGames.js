@@ -3,7 +3,6 @@ import Image from "next/image"
 import { GrGamepad } from "react-icons/gr"
 import { FiPlus } from "react-icons/fi"
 import { FaArrowRight } from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
 import eldenRing from "@/images/elden_ring.webp"
 import godOfWarRagnarok from "@/images/god_of_war.webp"
 import callOfDuty from "@/images/call_of_duty.jpg"
@@ -13,13 +12,12 @@ import witcher3 from "@/images/witcher_3.webp"
 import mortalKombat from "@/images/mortal_kombat_11.webp"
 import apexLegends from "@/images/apex_legends.webp"
 import profileStyles from "@/styles/profile/profile-page.module.css"
-import styles from './user-profile-favourite-games.module.css'
+import styles from './team-profile-favourite-games.module.css'
 
-const UserProfileFavouriteGames = () => {
-  const [showAll, setShowAll] = useState(false);
+const TeamProfileFavouriteGames = () => {
   const [visibleGames, setVisibleGames] = useState(5)
 
-  const favouriteGameList = [
+  const favouriteGameData = [
     { name: "Elden Ring", src: eldenRing },
     { name: "God of War Ragnarok", src: godOfWarRagnarok },
     { name: "Call of Duty, Black Ops III", src: callOfDuty },
@@ -30,9 +28,8 @@ const UserProfileFavouriteGames = () => {
     { name: "Apex Legends", src: apexLegends },
   ]
   
-  const handleSeeMoreAndLess = () => {
-    setShowAll(prevState => !prevState);
-    setVisibleGames(prevState => (prevState === favouriteGameList.length ? 6 : favouriteGameList.length))
+  const handleSeeMore = () => {
+    setVisibleGames(prevCount => prevCount + 5)     // Show 5 more games on click
   }
   
   return (
@@ -43,10 +40,9 @@ const UserProfileFavouriteGames = () => {
           </h4>
           <button
             className={styles.seeMoreBTN}
-            onClick={handleSeeMoreAndLess}
+            onClick={handleSeeMore}
           >
-            {showAll ? 'See less' : 'See more'}
-            {showAll ? <FaArrowLeft className={styles.rightArrowIcon} /> : <FaArrowRight className={styles.rightArrowIcon} />}
+            See more <FaArrowRight className={styles.rightArrowIcon} />
           </button>
         </div>
 
@@ -57,7 +53,7 @@ const UserProfileFavouriteGames = () => {
                   <span className={styles.addGameText}>Add Game</span>
               </div>
           </div>
-          {favouriteGameList.slice(0, visibleGames).map((favouriteGame, index) => (
+          {favouriteGameData.slice(0, visibleGames).map((favouriteGame, index) => (
             <div key={index} className={`${profileStyles.gameOrAchievementCard}`}>
                 <div className={profileStyles.gameOrAchievementImageContainer}>
                   <Image
@@ -75,4 +71,4 @@ const UserProfileFavouriteGames = () => {
   )
 }
 
-export default UserProfileFavouriteGames
+export default TeamProfileFavouriteGames

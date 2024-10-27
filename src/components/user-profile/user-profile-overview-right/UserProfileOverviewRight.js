@@ -1,16 +1,16 @@
-import WalletPenalty from "./user-profile-wallet-penalty/UserProfileWalletPenalty";
-import Stats from "./user-profile-stats/UserProfileStats";
-import FavouriteGame from "./user-profile-favourite-games/UserProfileFavouriteGames";
-import Achievements from "./user-profile-achievements/UserProfileAchievements";
-import styles from './user-profile-overview-right.module.css'
+import UserProfileWalletPenalty from "./user-profile-wallet-penalty/UserProfileWalletPenalty";
+import UserProfileStats from "./user-profile-stats/UserProfileStats";
+import UserProfileFavouriteGames from "./user-profile-favourite-games/UserProfileFavouriteGames";
+import UserProfileAchievements from "./user-profile-achievements/UserProfileAchievements";
+import profileStyles from '@/styles/profile/profile-page.module.css'
 
 const UserProfileOverviewRight = () => {
   return (
-    <div className={styles.overviewRight}>
-      <WalletPenalty />
-      <Stats />
-      <FavouriteGame />
-      <Achievements />
+    <div className={profileStyles.overviewRight}>
+      <UserProfileWalletPenalty />
+      <UserProfileStats />
+      <UserProfileFavouriteGames />
+      <UserProfileAchievements />
   </div>
   )
 }
