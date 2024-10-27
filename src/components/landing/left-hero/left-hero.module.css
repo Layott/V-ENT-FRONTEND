@@ -1,0 +1,38 @@
+.leftHeroContainer {
+  border: 2px solid orange;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.h1Container {
+  border: 2px solid pink;
+}
+
+.h1Container h1 {
+  font-size: 4rem;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.gaming {
+  margin-left: 4.5rem;
+}
+
+.anime {
+  margin-left: 9rem;
+}
+
+.tribe {
+  margin-left: 13.5rem;
+}
+
+.waitlistBTN {
+  background-color: var(--v-ent-red);
+  border-radius: 5px;
+}

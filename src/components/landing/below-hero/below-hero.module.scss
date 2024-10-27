@@ -1,0 +1,234 @@
+.belowHeroContainer {
+    background-color: black;
+    min-height: 200px;
+    min-height: 100px;
+    width: 100%;
+    // border: 2px solid green;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.curveVectorContainer {
+    width: auto;
+    height: 100px;
+    // border: 1px solid yellow;
+    // height: 100px;
+}
+
+.curveVectorContainer img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.curveVectorText {
+    position: absolute;
+    width: 90%;
+    // width: 70%;
+    max-width: 480px;
+    // border: 1px solid pink;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.curveVectorText p {
+    line-height: 1.5;
+    text-align: center;
+    font-size: 0.4rem;
+    padding: 1rem;
+    // border: 3px solid white;
+    color: #FFF;
+}
+
+@media only screen and (min-width: 230px) {
+    .belowHeroContainer {
+        padding-top: 2rem;
+        padding-bottom: 2rem;    
+    }
+
+    .curveVectorText p {
+        font-size: 0.5rem;
+        // color: red;
+    }
+
+    .belowHeroContainer {
+        height: 150px;
+    }    
+}
+
+@media only screen and (min-width: 310px) {
+    .curveVectorText {
+        width: 85%;
+
+    }
+    
+    .curveVectorText p {
+        font-size: 0.6rem;
+        // color: yellow;
+    }
+}
+
+@media only screen and (min-width: 380px) {
+    .curveVectorText {
+        width: 70%;
+        // border: 1px solid red;
+    }
+
+    .curveVectorText p {
+        font-size: 0.65rem;
+        // color: orange;
+    }
+}
+
+@media only screen and (min-width: 450px) {
+    .curveVectorText {
+        width: 55%;
+        max-width: 480px;
+    }
+}
+
+@media only screen and (min-width: 500px) {
+    .curveVectorText {
+        width: 50%;
+        width: 53%;
+        max-width: 480px;
+    }
+}
+
+@media only screen and (min-width: 550px) {
+    .belowHeroContainer {
+        height: 175px;
+        // border: 1px solid red;
+    }
+
+    .curveVectorContainer {
+        height: 120px;
+    }
+
+    .curveVectorText {
+        width: 56%;
+        max-width: 480px;
+    }
+
+    .curveVectorText p {
+        font-size: 0.7rem;
+        // color: green;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .belowHeroContainer {
+        height: 200px;
+        // border: 1px solid purple;
+    }
+
+    .curveVectorText {
+        width: 50%;
+        max-width: 480px;
+        // border: 1px solid red;
+    }
+}
+
+@media only screen and (min-width: 650px) {
+    .belowHeroContainer {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+     .curveVectorText {
+        width: 330px;
+        // border: 1px solid orange;
+    }
+
+    .curveVectorText p {
+        font-size: 0.75rem;
+        // color: yellow;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .belowHeroContainer {
+        height: 250px;
+        // border: 1px solid purple;
+    }
+
+    .curveVectorContainer {
+        height: 150px;
+    }
+
+     .curveVectorText {
+        width: 50%;
+        max-width: 480px;
+        // border: 1px solid white;
+    }
+
+    .curveVectorText p {
+        font-size: 0.85rem;
+        // color: yellow;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    .belowHeroContainer {
+        height: 300px;
+    }
+
+    .curveVectorContainer {
+        height: 175px;
+    }
+
+    .curveVectorText {
+        width: 460px;
+        max-width: 460px;
+        // border: 1px solid red;
+    }
+
+    .curveVectorText p {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .curveVectorContainer {
+        height: 200px;
+    }
+
+    .curveVectorText {
+        width: 500px;
+        max-width: 500px;
+        // border: 1px solid red;
+    }
+
+    .curveVectorText p {
+        font-size: 1.25rem;
+    }
+
+}
+
+@media only screen and (min-width: 1224px) {
+    .belowHeroContainer {
+        height: 400px;
+    }
+
+    .curveVectorContainer {
+        height: 250px;
+    }
+
+    .curveVectorText {
+        width: 650px;
+        max-width: 650px;
+        // border: 1px solid yellow;
+    }
+
+    .curveVectorText p {
+        font-size: 1.5rem;
+    }
+}

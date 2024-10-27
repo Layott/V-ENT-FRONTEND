@@ -1,0 +1,176 @@
+.belowHeroContainer {
+  background-color: black;
+  min-height: 200px;
+  min-height: 100px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.curveVectorContainer {
+  width: auto;
+  height: 100px;
+}
+
+.curveVectorContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.curveVectorText {
+  position: absolute;
+  width: 90%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.curveVectorText p {
+  line-height: 1.5;
+  text-align: center;
+  font-size: 0.4rem;
+  padding: 1rem;
+  color: #FFF;
+}
+
+@media only screen and (min-width: 230px) {
+  .belowHeroContainer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .curveVectorText p {
+    font-size: 0.5rem;
+  }
+  .belowHeroContainer {
+    height: 150px;
+  }
+}
+@media only screen and (min-width: 310px) {
+  .curveVectorText {
+    width: 85%;
+  }
+  .curveVectorText p {
+    font-size: 0.6rem;
+  }
+}
+@media only screen and (min-width: 380px) {
+  .curveVectorText {
+    width: 70%;
+  }
+  .curveVectorText p {
+    font-size: 0.65rem;
+  }
+}
+@media only screen and (min-width: 450px) {
+  .curveVectorText {
+    width: 55%;
+    max-width: 480px;
+  }
+}
+@media only screen and (min-width: 500px) {
+  .curveVectorText {
+    width: 50%;
+    width: 53%;
+    max-width: 480px;
+  }
+}
+@media only screen and (min-width: 550px) {
+  .belowHeroContainer {
+    height: 175px;
+  }
+  .curveVectorContainer {
+    height: 120px;
+  }
+  .curveVectorText {
+    width: 56%;
+    max-width: 480px;
+  }
+  .curveVectorText p {
+    font-size: 0.7rem;
+  }
+}
+@media only screen and (min-width: 600px) {
+  .belowHeroContainer {
+    height: 200px;
+  }
+  .curveVectorText {
+    width: 50%;
+    max-width: 480px;
+  }
+}
+@media only screen and (min-width: 650px) {
+  .belowHeroContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .curveVectorText {
+    width: 330px;
+  }
+  .curveVectorText p {
+    font-size: 0.75rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .belowHeroContainer {
+    height: 250px;
+  }
+  .curveVectorContainer {
+    height: 150px;
+  }
+  .curveVectorText {
+    width: 50%;
+    max-width: 480px;
+  }
+  .curveVectorText p {
+    font-size: 0.85rem;
+  }
+}
+@media only screen and (min-width: 800px) {
+  .belowHeroContainer {
+    height: 300px;
+  }
+  .curveVectorContainer {
+    height: 175px;
+  }
+  .curveVectorText {
+    width: 460px;
+    max-width: 460px;
+  }
+  .curveVectorText p {
+    font-size: 1rem;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .curveVectorContainer {
+    height: 200px;
+  }
+  .curveVectorText {
+    width: 500px;
+    max-width: 500px;
+  }
+  .curveVectorText p {
+    font-size: 1.25rem;
+  }
+}
+@media only screen and (min-width: 1224px) {
+  .belowHeroContainer {
+    height: 400px;
+  }
+  .curveVectorContainer {
+    height: 250px;
+  }
+  .curveVectorText {
+    width: 650px;
+    max-width: 650px;
+  }
+  .curveVectorText p {
+    font-size: 1.5rem;
+  }
+}
