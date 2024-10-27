@@ -8,7 +8,7 @@ import { CiSearch } from "react-icons/ci";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './header.module.css'
 
-const Header = ({ className }) => {
+const Header = ({fullName, username, className = ''}) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
 
@@ -90,8 +90,8 @@ const Header = ({ className }) => {
 
         <div className={styles.userDetails}>
             <div className={styles.userInfo}>
-            <p className={styles.userName}>Nathan Drake</p>    
-            <p className={styles.userUsername}>@frostbite</p>
+            <p className={styles.userName}>{fullName}</p>    
+            <p className={styles.userUsername}>@{username}</p>
             </div>
             <div className={styles.userAvatar}>
             <Image

@@ -3,12 +3,12 @@ import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { FiFlag } from 'react-icons/fi'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 
-const UserProfileWalletPenalty = () => {
+const TeamProfileWalletPenalty = () => {
   return (
     <div className={profileStyles.walletPenaltyContainer}>
         
         <div className={`${profileStyles.walletContainer} ${profileStyles.middleLayerColor}`}>
-            <h4 className={profileStyles.profileH4Header}>Wallet Balance</h4>
+            <h4 className={profileStyles.profileH4Header}>Team Wallet</h4>
             <p className={profileStyles.coinNumber}>
                 <span className={profileStyles.coinSpan}><RiCopperCoinLine className={profileStyles.coinIcon} /></span>
                 <span className={profileStyles.coinNumberSpan}>526</span>
@@ -32,4 +32,4 @@ const UserProfileWalletPenalty = () => {
   )
 }
 
-export default UserProfileWalletPenalty
+export default TeamProfileWalletPenalty

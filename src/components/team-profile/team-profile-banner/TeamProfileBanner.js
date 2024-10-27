@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import { FiCamera } from 'react-icons/fi';
-import profileBannerImage from "@/images/profile_image_bg.webp"
-import styles from './user-profile-banner.module.css'
+import teamProfileBanner from '@/images/team_profile_banner.webp'
+import styles from './team-profile-banner.module.css'
 
-const UserProfileBanner = ({banner, }) => {
+const TeamProfileBanner = () => {
     const handleBannerUploader = (event) => {
         const file = event.target.files[0]
         if (file) {
@@ -28,7 +28,7 @@ const UserProfileBanner = ({banner, }) => {
             />
         </div>
         <Image
-            src={profileBannerImage}
+            src={teamProfileBanner}
             alt='Profile Banner Image'
         />
   </div>
@@ -36,4 +36,4 @@ const UserProfileBanner = ({banner, }) => {
   )
 }
 
-export default UserProfileBanner
+export default TeamProfileBanner
