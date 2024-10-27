@@ -1,0 +1,71 @@
+.rightHeroContainer {
+    border: 2px solid orange;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.imageContainer {
+    border: 1px solid white;
+    min-height: 200px;
+    width: calc(100% - 3rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+    gap: 1rem;
+}
+
+.bottomImageContainer,
+.topImageContainer {
+    border: 1px solid blue;
+    min-height: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 1.25rem;
+}
+
+.bottomImageContainer {
+    border: 1px solid orange;
+    min-height: 100px;
+}
+
+.bottomRightImageContainer,
+.topLeftImageContainer {
+    width: calc(40% - 0.75rem);
+    // width: 200px;
+}
+
+.bottomLeftImageContainer,
+.topRightImageContainer {
+    width: calc(60% - 0.75rem);
+    // width: 350px;
+}
+
+
+.bottomLeftImageContainer,
+.bottomRightImageContainer,
+.topRightImageContainer,
+.topLeftImageContainer {
+    height: 200px;
+    height: 210px;
+    border-radius: 20px;
+}
+
+.bottomLeftImageContainer img,
+.bottomRightImageContainer img,
+.topRightImageContainer img,
+.topLeftImageContainer img {
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
+}
+
