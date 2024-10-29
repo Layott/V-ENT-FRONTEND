@@ -1,5 +1,7 @@
-import BelowHero from '@/components/landing/below-hero/BelowHero'
 import LandingHero from '@/components/landing/landing-hero/LandingHero'
+import BelowHero from '@/components/landing/below-hero/BelowHero'
+import TournamentsGamers from '@/components/landing/tournaments-gamers/TournamentsGamers'
+import ManageEvents from '@/components/landing/manage-events/ManageEvents'
 import styles from './landing.module.css'
 
 const LandingPage = () => {
@@ -11,6 +13,8 @@ const LandingPage = () => {
         </div>
 
         <BelowHero />
+        <TournamentsGamers />
+        <ManageEvents />
 
     </div>
   )
