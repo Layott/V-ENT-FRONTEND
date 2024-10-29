@@ -1,0 +1,55 @@
+.leftTournamentsGamers,
+.rightTournamentsGamers {
+  border: 1px solid yellow;
+  width: 50%;
+  height: inherit;
+  min-height: inherit;
+}
+
+.leftTournamentsGamers {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.rightTournamentsGamers {
+  border: 2px solid blue;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  min-height: 305px;
+}
+
+.innerRightTournamentsGamers {
+  width: 80%;
+  width: 90%;
+  position: relative;
+  border: 2px solid orange;
+}
+
+.fifaCardContainer,
+.counterStrikeCardContainer {
+  width: 300px;
+  height: 251px;
+  border-radius: 10px;
+  position: absolute;
+}
+
+.fifaCardContainer {
+  top: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.counterStrikeCardContainer {
+  left: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.fifaCardContainer img,
+.counterStrikeCardContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
