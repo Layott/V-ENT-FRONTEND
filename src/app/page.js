@@ -4,7 +4,7 @@ import Header from '@/components/header/Header'
 import Sidebar from '@/components/sidebar/Sidebar'
 import styles from './page.module.css'
 import { signOut, useSession } from 'next-auth/react'
-import Login from './login/page'
+import Landing from './landing/page'
 
 const Page = () => {
   const { data: session } = useSession();
@@ -13,12 +13,12 @@ const Page = () => {
   if (session) {
     console.log("Session Data:", session); // Log the full session object to inspect what data is available
     const sessionId = session?.id || session?.sessionToken; // Adjust based on how session ID is stored
-    console.log("This is the Session ID/Token:", sessionId);
+    // console.log("This is the Session ID/Token:", sessionId);
   }
 
   return (
     <>
-      {session ? (
+      {session ? ( <Landing />) : (
         <>
           <div className={styles.pageContainer}>
             <Header />
@@ -37,20 +37,19 @@ const Page = () => {
 
                 {/* Logout button */}
                 <div>
-                  <button
+                  {/* <button
                     onClick={() => signOut()}
                     style={{ backgroundColor: 'red', padding: '1rem' }}
                   >
                     LOG OUT TEST
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </main>
           </div>
         </>
-      ) : (
-        <Login />
       )}
+
     </>
   );
 };
