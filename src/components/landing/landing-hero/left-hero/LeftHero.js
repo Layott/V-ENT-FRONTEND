@@ -1,6 +1,7 @@
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import styles from './left-hero.module.css'
 
+
 const LeftHero = () => {
   return (
     <div className={styles.leftHeroContainer}>
@@ -14,7 +15,7 @@ const LeftHero = () => {
             <div className={styles.belowH1Container}>
                 <div>
                     <p className={styles.landingPageParagraph}>
-                        Welcome to V-ENT, the ultimate platform where gaming, anime, and community converge. Whether you&#39;re a competitive esports player, a casual gamer, or an anime enthusiast, V-ENT offers tournaments, a vibrant marketplace, and unique features to help you immerse yourself in what you love most. Connect, compete, and engage in a community built for fans by fans. 
+                        Welcome to V-ENT, the ultimate platform where gaming, anime and community converge. Whether you&#39;re a competitive esports player, a casual gamer, or an anime enthusiast, V-ENT offers tournaments, a vibrant marketplace and unique features to help you immerse yourself in what you love most. Connect, compete and engage in a community built for fans by fans. 
                     </p>
                 </div>
                 <div className={styles.joinWaitListContainer}>

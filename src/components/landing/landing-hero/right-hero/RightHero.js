@@ -5,9 +5,12 @@ import bottomLeftImage from '@/images/bottom_left.jpg'
 import Image from "next/image"
 import styles from './right-hero.module.css'
 
+
 const RightHero = () => {
   return (
     <div className={styles.rightHeroContainer}>
+      <div className={styles.rightHeroInnerContainer}>
+      
         <div className={styles.imageContainer}>
 
           <div className={styles.topImageContainer}>
@@ -28,24 +31,24 @@ const RightHero = () => {
 
           </div>
 
-          <div className={styles.bottomImageContainer}>
-            <div className={styles.bottomLeftImageContainer}>
-              <Image
-                src={bottomLeftImage}
-                alt="Bottom Left Image"
-              />
-            </div>
+            <div className={styles.bottomImageContainer}>
+              <div className={styles.bottomLeftImageContainer}>
+                <Image
+                  src={bottomLeftImage}
+                  alt="Bottom Left Image"
+                />
+              </div>
 
-            <div className={styles.bottomRightImageContainer}>
-              <Image
-                src={bottomRightImage}
-                alt="Bottom Right Image"
-              />
-            </div>
-
+              <div className={styles.bottomRightImageContainer}>
+                <Image
+                  src={bottomRightImage}
+                  alt="Bottom Right Image"
+                />
+              </div>
           </div>
 
         </div>
+      </div>
     </div>
   )
 }
