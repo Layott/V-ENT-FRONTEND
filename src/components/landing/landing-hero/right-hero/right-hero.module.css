@@ -1,20 +1,33 @@
 .rightHeroContainer {
-  border: 2px solid orange;
-  width: 50%;
-  height: 100%;
+  border: 5px solid pink;
+  width: 100%;
+  min-height: 70%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   position: absolute;
-  top: 0;
   right: 0;
+  top: 0;
+  left: 0;
+  bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rightHeroInnerContainer {
+  border: 2px solid green;
+  width: 85%;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .imageContainer {
   border: 1px solid white;
   min-height: 200px;
-  width: calc(100% - 3rem);
   display: flex;
   flex-direction: column;
   gap: 1.125rem;
@@ -64,4 +77,21 @@
   height: 100%;
   width: 100%;
   border-radius: 20px;
+}
+
+@media only screen and (min-width: 768px) {
+  .rightHeroContainer {
+    border: 1px solid yellow;
+    width: 50%;
+    min-height: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    top: 0;
+    right: 0;
+    left: auto;
+    bottom: auto;
+  }
 }
