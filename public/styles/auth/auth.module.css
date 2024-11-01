@@ -177,6 +177,18 @@
   gap: 1rem;
 }
 
+.errorMessageContainer {
+  width: 100%;
+  float: right;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.errorMessage {
+  color: rgb(255, 179, 179);
+  font-size: 0.85rem;
+}
+
 @media only screen and (min-width: 600px) {
   .formContainer {
     width: 450px;
