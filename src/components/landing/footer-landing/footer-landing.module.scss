@@ -1,0 +1,197 @@
+.footerContainer {
+    min-height: 200px;
+    border: 1px solid red;
+    border-top: 1px solid #CCC;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4rem 3rem;
+    padding: 4rem 1rem;
+    gap: 5rem;
+}
+
+.footerTop {
+    width: auto;
+    // width: 270px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+    gap: 2rem;
+    border: 2px solid pink;
+}
+
+.footerBottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.footerBottom p {
+    font-size: 0.7rem;
+    color: #EEEEF0;
+}
+
+.aboutVENTParagraphContainer {
+    width: 100%;
+    border: 1px solid pink;
+}
+
+.aboutVENTParagraphContainer p {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    color: #EEEEF0;
+    text-align: center;
+}
+
+.contactFollowUsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid blue;
+    min-width: calc(180px + 4rem);
+    min-width: 100%;
+    flex-wrap: wrap;
+    // max-width: calc(400px + 4rem);
+    gap: 2rem;
+}
+
+.footerLogoContainer,
+.socialsContainer h3,
+.contactContainer h3 {
+    margin-bottom: 2rem;
+}
+
+.footerLogoContainer {
+    display: flex;
+    justify-content: center;
+    border: 1px solid white;
+}
+
+.socialsContainer h3,
+.contactContainer h3 {
+    font-family: 'ClashGrotesk-Light', sans-serif;
+    font-family: 'ClashGrotesk-Regular', sans-serif;
+    // font-size: 1.125rem;
+    // font-size: 1.125rem;
+    font-size: 1rem;
+    color: #EEEEF0;
+    text-align: center;
+}
+
+.innerContactContainer,
+.innerSocialsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid yellow;
+}
+
+.emailParagraph {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.emailParagraph span {
+    font-size: 0.8rem;
+    color: #EEEEF0;
+}
+
+.envelopeSpan {
+    display: flex;
+    color: #EEEEF0;
+}
+
+
+@media only screen and (min-width: 350px) {
+    .aboutVENTParagraphContainer {
+        width: 220px;
+        border: 1px solid pink;
+    }
+
+    .contactFollowUsContainer {
+        min-width: calc(180px + 4rem);
+        flex-direction: row;
+        // gap: 2rem;
+    }
+
+    .socialsContainer h3,
+    .contactContainer h3 {
+        text-align: left;
+    }
+}
+
+@media only screen and (min-width: 550px) {
+    .footerTop {
+        flex-direction: row;
+    } 
+
+    .footerBottom {
+        flex-direction: row;
+        gap: 0.75rem;   
+    }
+
+    .footerBottom p {
+        font-size: 0.8rem;
+    }
+
+    .aboutVENTParagraphContainer p {
+        text-align: left;
+    }
+
+    .socialsContainer h3,
+    .contactContainer h3 {
+        font-size: 1.125rem;
+    }
+
+    .footerLogoContainer {
+        justify-content: flex-start;
+    }
+
+}
+
+@media only screen and (min-width: 630px) {
+    .footerTop {
+        gap: 3rem;
+        justify-content: flex-start;
+        align-items: flex-end;
+    }
+
+    .contactFollowUsContainer {
+        min-width: calc(220px + 4rem);
+    }
+    
+}
+
+@media only screen and (min-width: 768px) {
+    .footerContainer {
+        min-height: 200px;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 4rem 3rem;
+        gap: 5rem;
+    }
+    
+    .footerTop {
+        // flex-direction: row;
+        gap: 6rem;
+    }
+    
+    .footerBottom {
+        flex-direction: row;
+        gap: 0.75rem;
+    }
+    
+    .aboutVENTParagraphContainer {
+        width: 280px;
+    }    
+}
+  
