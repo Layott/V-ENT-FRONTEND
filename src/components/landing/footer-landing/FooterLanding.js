@@ -6,7 +6,6 @@ import { BsEnvelope } from "react-icons/bs";
 import { SiFacebook } from "react-icons/si";
 import { FaInstagram } from "react-icons/fa";
 import { IoCallOutline } from "react-icons/io5";
-import sidebarStyles from './../../sidebar/sidebar.module.css'
 import styles from './footer-landing.module.css'
 
 const FooterLanding = () => {
@@ -16,18 +15,16 @@ const FooterLanding = () => {
         <div className={styles.footerTop}>
             <div className={styles.aboutVENTContainer}>
                 <div className={styles.footerLogoContainer}>
-                    <div className={sidebarStyles.logoContainer}>
-                        <Link className={sidebarStyles.logoLink} href={'/'}>
-                            <div className={sidebarStyles.innerLogoContainer}>
-                                <Image
-                                    src={logoRed}
-                                    alt='Logo'
-                                    className={sidebarStyles.logo}
-                                />
-                            </div>
-                            <h1>v-ent</h1>
-                        </Link>
-                    </div>
+                    <Link className={styles.logoLink} href={'/'}>
+                        <div className={styles.innerLogoContainer}>
+                            <Image
+                                src={logoRed}
+                                alt='Logo'
+                                className={styles.logo}
+                            />
+                        </div>
+                        <h1>v-ent</h1>
+                    </Link>
                 </div>
 
                 <div className={styles.aboutVENTParagraphContainer}>
@@ -61,7 +58,7 @@ const FooterLanding = () => {
                         </p>
                         <p className={styles.emailParagraph}>
                             <span className={styles.envelopeSpan}><FaInstagram /></span>
-                            <span>InstagramInstagram</span>
+                            <span>Instagram</span>
                         </p>
                     </div>
                 </div>
