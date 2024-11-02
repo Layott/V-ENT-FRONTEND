@@ -1,8 +1,10 @@
+.otherFeaturesContainer,
 .joinThousandsGamersContainer,
 .manageEventsContainer,
 .tournamentsGamersContainer {
     width: 100%;
     min-height: calc(200px + 3rem);
+    min-height: calc(100px + 3rem);
     // border: 3px solid red;
     background-color: #131316;
     display: flex;
@@ -11,6 +13,7 @@
     padding: 3.5rem 0;
 }
 
+.innerOtherFeaturesContainer,
 .innerManageEventsContainer,
 .innerTournamentsGamersContainer {
     min-height: 200px;
