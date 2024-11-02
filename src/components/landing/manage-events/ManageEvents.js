@@ -29,8 +29,8 @@ const ManageEvents = () => {
               </h1>
             </div>
             
-            <div className={landingStyles.descriptionContainer}>
-              <p className={landingStyles.descriptionParagraph}>
+            <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
+              <p className={`${landingStyles.descriptionParagraph} ${styles.descriptionParagraph}`}>
                 Host gaming events or anime screenings with ease using our powerful event management tools. From ticketing to attendee tracking, V-ENT empowers you to organize memorable events for your audience.
               </p>
 
