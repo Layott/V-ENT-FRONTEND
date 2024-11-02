@@ -1,6 +1,6 @@
 .rightManageEventsContainer,
 .leftManageEventsContainer {
-    width: 50%;
+    width: 100%;
 }
 
 .rightManageEventsContainer {
@@ -18,4 +18,16 @@
     height: 100%;
     width: 100%;
     object-fit: contain;
+}
+
+@media only screen and (min-width: 768px) {
+    .manageEventsImageContainer {
+        border: 1px solid red;
+        height: 400px;
+    }  
+    
+    .rightManageEventsContainer,
+    .leftManageEventsContainer {
+        width: 50%;
+    }
 }
