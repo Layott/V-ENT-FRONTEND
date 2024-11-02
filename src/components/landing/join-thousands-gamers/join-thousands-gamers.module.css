@@ -1,0 +1,171 @@
+.joinThousandsGamersContainer {
+  padding-bottom: 6rem;
+  padding-top: 1rem;
+}
+
+.innerJoinThousandsGamersContainer {
+  min-height: calc(300px - 2rem);
+  width: 85%;
+  border-radius: 10px;
+  margin: 0 auto;
+  background-position: center;
+}
+
+.joinThousandsGamersContent {
+  background-color: rgba(0, 0, 0, 0.6);
+  min-height: inherit;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: 4rem 0;
+}
+
+.joinThousandsGamersTop {
+  max-width: 430px;
+}
+
+.joinThousandsGamersTop h1 {
+  text-align: center;
+  font-size: 2rem;
+  line-height: 1.125;
+  font-family: "ClashGrotesk-Regular", sans-serif;
+}
+
+.joinThousandsGamersBottom {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.joinThousandsGamersInputContainer,
+.joinThousandsGamersTextContainer {
+  width: 100%;
+  height: inherit;
+  display: flex;
+  justify-content: center;
+}
+
+.joinThousandsGamersTextContainer p {
+  display: flex;
+  width: 320px;
+  font-size: 1.45rem;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+  text-align: center;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0 0.5rem;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+}
+
+.inputGroup input {
+  border: 1px solid #303136;
+  outline: none;
+  padding: calc(0.55rem - 1px) 1rem;
+  padding-left: 0.8rem;
+  background-color: #303136;
+  font-size: 0.8rem;
+  width: 100%;
+  border-radius: 5px;
+  transition: border ease-in-out 0.5s;
+}
+
+.inputGroup input::placeholder {
+  font-family: "ClashGrotesk-Light", sans-serif;
+  color: #CCC;
+  font-size: 0.8rem;
+}
+
+.inputGroup input:focus,
+.inputGroup input:active {
+  border: 1px solid #FFF;
+}
+
+@media only screen and (min-width: 500px) {
+  .formContainer {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+  .inputGroup {
+    width: auto;
+  }
+  .inputGroup input {
+    width: 240px;
+  }
+}
+@media only screen and (min-width: 850px) {
+  .joinThousandsGamersBottom {
+    gap: 2rem;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .inputGroup {
+    padding: 0rem;
+  }
+  .inputGroup input {
+    width: 180px;
+  }
+  .formContainer {
+    justify-content: flex-start;
+  }
+  .joinThousandsGamersTextContainer {
+    justify-content: flex-end;
+  }
+  .joinThousandsGamersTextContainer p {
+    text-align: left;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .joinThousandsGamersTop {
+    max-width: 520px;
+  }
+  .joinThousandsGamersTop h1 {
+    font-size: 2.5rem;
+  }
+  .joinThousandsGamersBottom {
+    gap: 5rem;
+  }
+  .joinThousandsGamersTextContainer p {
+    width: 380px;
+    font-size: 1.65rem;
+  }
+  .joinThousandsGamersInputContainer,
+  .joinThousandsGamersTextContainer {
+    width: 400px;
+  }
+  .inputGroup input {
+    width: 250px;
+    font-size: 0.95rem;
+    padding: calc(0.48rem - 1px) 1rem;
+  }
+  .inputGroup label {
+    font-size: 0.95rem;
+  }
+  .inputGroup input::placeholder {
+    font-size: 0.95rem;
+  }
+}
