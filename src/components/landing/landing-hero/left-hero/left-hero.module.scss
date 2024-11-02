@@ -66,23 +66,31 @@
 }
 
 .joinWaitListContainer {
-    border: 2px solid pink;
+    // border: 2px solid pink;
     display: flex;
     flex-direction: row;
     gap: 1rem;
     width: 100%;
     justify-content: center;
+    align-items: flex-end;
 }
 
 .enterEmailInput {
     border: none;
     outline: none;
-    padding: 0px 1rem;
+    padding: 10px 0;
     padding-left: 0.8rem;
     background-color: #303136;
+    border: 1px solid #303136;
     font-size: 1rem;
     width: 100%;
     max-width: 500px;
+    transition: border ease-in-out 0.5s;
+}
+
+.enterEmailInput:focus,
+.enterEmailInput:active {
+    border: 1px solid #FFF;
 }
 
 .enterEmailInput::placeholder {
@@ -94,9 +102,10 @@
 .waitlistBTN {
     background-color: var(--v-ent-red);
     border-radius: 5px;
-    // margin-right: 3rem;
     max-width: 120px;
     min-width: 120px;
+    padding: 10px 12px;
+    // border: 1px solid red;
 }
 
 
@@ -175,13 +184,9 @@
         font-size: 1rem;
     }
 
-    // .waitlistBTN {
-    //     margin-right: 3rem;
-    // }
-
     .enterEmailInput {
         width: calc(100% - 120px);
-        border: 2px solid blue;
+        // border: 2px solid blue;
         font-size: 0.85rem;
     }
 
