@@ -28,6 +28,7 @@ const RightHero = () => {
                 alt="Top Right Image"
               />
             </div>
+            
 
           </div>
 

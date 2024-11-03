@@ -1,7 +1,6 @@
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import styles from './left-hero.module.css'
 
-
 const LeftHero = () => {
   return (
     <div className={styles.leftHeroContainer}>
