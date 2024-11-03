@@ -11,16 +11,16 @@ const LandingPage = () => {
   return (
     <div className={styles.pageContainer}>
 
-        {/* <div className={styles.heroContainer}>
+        <div className={styles.heroContainer}>
             <LandingHero />
         </div>
 
         <BelowHero />
         <TournamentsGamers />
-        <ManageEvents /> */}
+        <ManageEvents />
         <OtherFeatures />
-        {/* <JoinThousandsGamers />
-        <FooterLanding /> */}
+        <JoinThousandsGamers />
+        <FooterLanding />
 
     </div>
   )
