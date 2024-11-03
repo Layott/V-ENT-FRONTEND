@@ -1,0 +1,38 @@
+.innerBrandsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rem;
+}
+
+.brandHeader {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.brandHeader h1 {
+    font-size: 1.5rem;
+}
+
+.brandsLogoContainer {
+    width: 100%;
+    max-width: 550px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    row-gap: 2.5rem;
+    column-gap: 1.5rem;
+}
+
+.brandLogoContainer {
+    width: auto;
+    height: 33px;
+}
+
+.brandLogoContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
