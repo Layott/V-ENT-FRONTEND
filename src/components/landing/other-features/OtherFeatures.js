@@ -1,6 +1,6 @@
 import { TbUsers } from "react-icons/tb";
 import { LiaWalletSolid } from "react-icons/lia";
-// import { IoWalletOutline  } from "react-icons/io5";
+import { IoAnalyticsSharp } from "react-icons/io5";
 import landingStyles from '@/styles/landing/landing.module.css'
 import styles from './other-features.module.css'
 
@@ -16,7 +16,6 @@ const OtherFeatures = () => {
                 <div className={styles.cardContainer}>
                     <div className={styles.iconContainer}>
                         <LiaWalletSolid className={styles.walletIcon} />
-                        {/* <IoWalletOutline className={styles.walletIcon} /> */}
                     </div>
 
                     <h2>Wallet System</h2>
@@ -31,15 +30,14 @@ const OtherFeatures = () => {
 
                 <div className={styles.cardContainer}>
                     <div className={styles.iconContainer}>
-                        {/* <LiaWalletSolid className={styles.walletIcon} /> */}
-                        <TbUsers className={styles.walletIcon} />
+                        <TbUsers className={styles.communityIcon} />
                     </div>
 
-                    <h2>Wallet System</h2>
+                    <h2>Community</h2>
 
                     <div className={styles.paragraphContainer}>
                         <p>
-                            Secure, multi-functional wallets for teams, users, and organizations.
+                            Join thriving communities based on your favorite games and anime genres.
                         </p>
                     </div>
 
@@ -47,15 +45,14 @@ const OtherFeatures = () => {
                 
                 <div className={styles.cardContainer}>
                     <div className={styles.iconContainer}>
-                        <LiaWalletSolid className={styles.walletIcon} />
-                        {/* <IoWalletOutline className={styles.walletIcon} /> */}
+                        <IoAnalyticsSharp className={styles.analyticIcon} />
                     </div>
 
-                    <h2>Wallet System</h2>
+                    <h2>Analytics</h2>
 
                     <div className={styles.paragraphContainer}>
                         <p>
-                            Secure, multi-functional wallets for teams, users, and organizations.
+                            Track team and individual performance metrics in real-time.
                         </p>
                     </div>
 
