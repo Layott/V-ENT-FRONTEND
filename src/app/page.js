@@ -17,14 +17,14 @@ const LandingPage = () => {
             <LandingHero />
         </div>
 
-        <BelowHero />
+        {/* <BelowHero />
         <TournamentsGamers />
         <ManageEvents />
         <LandingShop />
         <LandingBrands />
         <OtherFeatures />
         <JoinThousandsGamers />
-        <FooterLanding />
+        <FooterLanding /> */}
 
     </div>
   )
