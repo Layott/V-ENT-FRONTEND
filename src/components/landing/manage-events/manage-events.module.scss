@@ -10,8 +10,6 @@
 }
 
 .manageEventsImageContainer {
-    border: 1px solid pink;
-    // height: 400px;
     min-height: 200px;
 }
 
@@ -23,10 +21,8 @@
 
 .descriptionParagraph {
     text-align: center;
-    border: 1px solid white;
 }
 
-// @media only screen and (min-width: 768px) {}
 @media only screen and (min-width: 850px) {    
     .rightManageEventsContainer,
     .leftManageEventsContainer {
