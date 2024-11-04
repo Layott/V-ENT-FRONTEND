@@ -1,0 +1,118 @@
+.innerAutomatedTournamentsContainer {
+  justify-content: space-between;
+  gap: 2rem;
+  flex-direction: column;
+}
+
+.leftAutomatedTournaments,
+.rightAutomatedTournaments {
+  width: 50%;
+  height: inherit;
+  min-height: inherit;
+}
+
+.leftAutomatedTournaments {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.rightAutomatedTournaments {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  min-height: 340px;
+  height: inherit;
+  height: 100%;
+  width: 100%;
+}
+
+.innerLeftAutomatedTournaments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.innerRightAutomatedTournaments {
+  width: 100%;
+  position: relative;
+}
+
+.fifaCardContainer,
+.counterStrikeCardContainer {
+  width: 60%;
+  height: auto;
+  border-radius: 10px;
+  position: absolute;
+}
+
+.fifaCardContainer {
+  top: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.counterStrikeCardContainer {
+  left: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.fifaCardContainer img,
+.counterStrikeCardContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.descriptionContainer {
+  width: 100%;
+}
+
+.descriptionContainer p {
+  text-align: center;
+}
+
+.headingContainer {
+  width: 100%;
+}
+
+@media only screen and (min-width: 650px) {
+  .rightAutomatedTournaments {
+    width: 600px;
+  }
+}
+@media only screen and (min-width: 850px) {
+  .leftAutomatedTournaments {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .innerAutomatedTournamentsContainer {
+    flex-direction: row;
+  }
+  .rightAutomatedTournaments {
+    width: 100%;
+  }
+  .innerRightAutomatedTournaments {
+    width: 100%;
+  }
+  .innerLeftAutomatedTournaments {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .headingContainer {
+    width: 80%;
+  }
+  .descriptionContainer p {
+    text-align: left;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .innerLeftAutomatedTournaments {
+    width: 100%;
+    max-width: 450px;
+  }
+}
