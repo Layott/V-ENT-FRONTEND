@@ -3,15 +3,16 @@ import counterStrikeCard from '@/images/counter_strike_card.webp'
 import fifaCard from '@/images/fifa_card.webp'
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import landingStyles from '@/styles/landing/landing.module.css'
-import styles from './tournaments_gamers.module.css'
+import styles from './automated-tournaments.module.css'
 
-const TournamentsGamers = () => {
+
+const AutomatedTournaments = () => {
   return (
-    <div className={landingStyles.tournamentsGamersContainer}>
-        <div className={landingStyles.innerTournamentsGamersContainer}>
-            <div className={styles.leftTournamentsGamers}>
-                <div className={landingStyles.innerLeftTournamentsGamers}>
-                    <div className={landingStyles.headingContainer}>
+    <div className={landingStyles.automatedTournamentsContainer}>
+        <div className={`${landingStyles.innerAutomatedTournamentsContainer} ${styles.innerAutomatedTournamentsContainer}`}>
+            <div className={styles.leftAutomatedTournaments}>
+                <div className={styles.innerLeftAutomatedTournaments}>
+                    <div className={`${landingStyles.headingContainer} ${styles.headingContainer}`}>
                         <h4 className={landingStyles.subHeadingText}>
                             Automated Tournaments
                         </h4>
@@ -20,7 +21,7 @@ const TournamentsGamers = () => {
                         </h1>
                     </div>
                     
-                    <div className={landingStyles.descriptionContainer}>
+                    <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
                         <p className={landingStyles.descriptionParagraph}>
                             Compete in exciting, automated tournaments for your favorite games. From registration to scoring, our AI-driven system ensures smooth management and real-time updates so you can focus on winning.
                         </p>
@@ -30,8 +31,8 @@ const TournamentsGamers = () => {
                 </div>
             </div>
 
-            <div className={styles.rightTournamentsGamers}>
-                <div className={styles.innerRightTournamentsGamers}>
+            <div className={styles.rightAutomatedTournaments}>
+                <div className={styles.innerRightAutomatedTournaments}>
                     <div className={styles.counterStrikeCardContainer}>
                         <Image
                             src={counterStrikeCard}
@@ -52,4 +53,4 @@ const TournamentsGamers = () => {
   )
 }
 
-export default TournamentsGamers
+export default AutomatedTournaments
