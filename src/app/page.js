@@ -2,6 +2,7 @@ import LandingHero from '@/components/landing/landing-hero/LandingHero'
 import BelowHero from '@/components/landing/below-hero/BelowHero'
 import TournamentsGamers from '@/components/landing/automated-tournaments/AutomatedTournaments'
 import ManageEvents from '@/components/landing/manage-events/ManageEvents'
+import LandingMarketplace from '@/components/landing/landing-marketplace/LandingMarketplace'
 import LandingAnimeHub from '@/components/landing/landing-anime-hub/LandingAnimeHub'
 import LandingShop from '@/components/landing/landing-shop/LandingShop'
 import LandingBrands from '@/components/landing/landing-brands/LandingBrands'
@@ -21,6 +22,7 @@ const LandingPage = () => {
         <BelowHero />
         <TournamentsGamers />
         <ManageEvents />
+        <LandingMarketplace />
         <LandingAnimeHub />
         <LandingShop />
         <LandingBrands />
