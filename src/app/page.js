@@ -1,6 +1,6 @@
 import LandingHero from '@/components/landing/landing-hero/LandingHero'
 import BelowHero from '@/components/landing/below-hero/BelowHero'
-import TournamentsGamers from '@/components/landing/tournaments-gamers/TournamentsGamers'
+import TournamentsGamers from '@/components/landing/automated-tournaments/AutomatedTournaments'
 import ManageEvents from '@/components/landing/manage-events/ManageEvents'
 import LandingAnimeHub from '@/components/landing/landing-anime-hub/LandingAnimeHub'
 import LandingShop from '@/components/landing/landing-shop/LandingShop'
