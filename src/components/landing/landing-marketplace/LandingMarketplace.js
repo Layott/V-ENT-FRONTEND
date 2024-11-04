@@ -33,7 +33,7 @@ const LandingMarketplace = () => {
 
             <div className={styles.rightAutomatedTournaments}>
                 <div className={styles.innerRightAutomatedTournaments}>
-                    <div className={styles.counterStrikeCardContainer}>
+                    <div className={`${styles.counterStrikeCardContainer} ${styles.marketPlaceImageLeftContainer}`}>
                         <Image
                             src={marketPlaceLeft}
                             alt='Market Place Left'
