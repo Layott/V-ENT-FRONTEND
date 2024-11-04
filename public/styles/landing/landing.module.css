@@ -4,7 +4,7 @@
 .otherFeaturesContainer,
 .joinThousandsGamersContainer,
 .manageEventsContainer,
-.tournamentsGamersContainer {
+.automatedTournamentsContainer {
   width: 100%;
   min-height: calc(100px + 3rem);
   background-color: #131316;
@@ -19,7 +19,7 @@
 .innerBrandsContainer,
 .innerOtherFeaturesContainer,
 .innerManageEventsContainer,
-.innerTournamentsGamersContainer {
+.innerAutomatedTournamentsContainer {
   min-height: 100px;
   width: 90%;
   display: flex;
@@ -44,8 +44,7 @@
   width: 80%;
 }
 
-.innerRightManageEvents,
-.innerLeftTournamentsGamers {
+.innerRightManageEvents {
   display: flex;
   flex-direction: column;
   gap: 1rem;

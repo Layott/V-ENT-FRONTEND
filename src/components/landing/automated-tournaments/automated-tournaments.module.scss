@@ -1,0 +1,149 @@
+.innerAutomatedTournamentsContainer {
+    // border: 1px solid red;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-direction: column;
+}
+
+.leftAutomatedTournaments,
+.rightAutomatedTournaments {
+    // border: 1px solid yellow;
+    width: 50%;
+    height: inherit;
+    min-height: inherit;
+}
+
+.leftAutomatedTournaments {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.rightAutomatedTournaments {
+    // border: 4px solid white;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    // min-height: 305px;
+    min-height: 340px;
+    height: inherit;
+    height: 100%;
+    // width: 500px;
+    // width: 80%;
+    width: 100%;
+}
+
+.innerLeftAutomatedTournaments {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    // border: 2px solid white;
+}
+
+.innerRightAutomatedTournaments {
+    // width: 80%;
+    width: 100%;
+    position: relative;
+    // border: 2px solid orange;
+}
+
+.fifaCardContainer,
+.counterStrikeCardContainer {
+    // width: 300px;
+    width: 60%;
+    // height: 251px;
+    height: auto;
+    border-radius: 10px;
+    position: absolute;
+    // border: 1px solid white;
+}
+
+.fifaCardContainer {
+    top: 0;
+    right: 0;
+    // right: 50%;
+    // transform: translateX(-50%);
+    z-index: 2;
+}
+
+.counterStrikeCardContainer {
+    left: 0;
+
+    // transform: translateX(-50%);
+    bottom: 0;
+    z-index: 3;
+}
+
+.fifaCardContainer img,
+.counterStrikeCardContainer img {
+    height: 100%;
+    width: 100%;
+    // object-fit: cover;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.descriptionContainer {
+    width: 100%;
+    // border: 2px solid yellow;
+}
+
+.descriptionContainer p {
+    text-align: center;
+}
+
+.headingContainer {
+    width: 100%;
+}
+
+@media only screen and (min-width: 650px) {
+    .rightAutomatedTournaments {
+        width: 600px;
+
+    }
+}
+
+@media only screen and (min-width: 850px) {
+    .leftAutomatedTournaments {
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .innerAutomatedTournamentsContainer {
+        flex-direction: row;
+    }
+
+    .rightAutomatedTournaments {
+        width: 100%;
+    }
+
+    .innerRightAutomatedTournaments {
+        width: 100%;
+        // border: 3px solid yellow;
+    }
+
+    .innerLeftAutomatedTournaments {
+        // border: 5px solid green;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .headingContainer {
+        width: 80%;
+    }
+    
+    .descriptionContainer p {
+        text-align: left;
+    }    
+    
+}
+  
+@media only screen and (min-width: 1024px) {
+    .innerLeftAutomatedTournaments {
+        width: 100%;
+        max-width: 450px;
+        // border: 2px solid white;
+    }    
+}
