@@ -1,5 +1,4 @@
 .innerAutomatedTournamentsContainer {
-    // border: 1px solid red;
     justify-content: space-between;
     gap: 2rem;
     flex-direction: column;
@@ -7,7 +6,6 @@
 
 .leftAutomatedTournaments,
 .rightAutomatedTournaments {
-    // border: 1px solid yellow;
     width: 50%;
     height: inherit;
     min-height: inherit;
@@ -20,17 +18,12 @@
 }
 
 .rightAutomatedTournaments {
-    // border: 4px solid white;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    // min-height: 305px;
-    min-height: 340px;
-    height: inherit;
-    height: 100%;
-    // width: 500px;
-    // width: 80%;
+    min-height: 180px;
     width: 100%;
+    transition: all ease-in-out 0.5s;
 }
 
 .innerLeftAutomatedTournaments {
@@ -39,39 +32,33 @@
     gap: 1rem;
     width: 100%;
     max-width: 100%;
-    // border: 2px solid white;
 }
 
 .innerRightAutomatedTournaments {
-    // width: 80%;
     width: 100%;
     position: relative;
-    // border: 2px solid orange;
 }
 
 .fifaCardContainer,
 .counterStrikeCardContainer {
-    // width: 300px;
     width: 60%;
-    // height: 251px;
     height: auto;
     border-radius: 10px;
     position: absolute;
-    // border: 1px solid white;
+}
+
+.marketPlaceImageLeftContainer {
+    width: 70%;
 }
 
 .fifaCardContainer {
     top: 0;
     right: 0;
-    // right: 50%;
-    // transform: translateX(-50%);
     z-index: 2;
 }
 
 .counterStrikeCardContainer {
     left: 0;
-
-    // transform: translateX(-50%);
     bottom: 0;
     z-index: 3;
 }
@@ -80,14 +67,12 @@
 .counterStrikeCardContainer img {
     height: 100%;
     width: 100%;
-    // object-fit: cover;
     object-fit: contain;
     border-radius: 10px;
 }
 
 .descriptionContainer {
     width: 100%;
-    // border: 2px solid yellow;
 }
 
 .descriptionContainer p {
@@ -96,6 +81,48 @@
 
 .headingContainer {
     width: 100%;
+}
+
+@media only screen and (min-width: 300px) {
+    .rightAutomatedTournaments {
+        min-height: 200px;
+    }
+}
+
+@media only screen and (min-width: 350px) {
+    .rightAutomatedTournaments {
+        min-height: 230px;
+    }
+}
+
+@media only screen and (min-width: 400px) {
+    .rightAutomatedTournaments {
+        min-height: 250px;
+    }
+}
+
+@media only screen and (min-width: 450px) {
+    .rightAutomatedTournaments {
+        min-height: 280px;
+    }
+}
+
+@media only screen and (min-width: 500px) {
+    .rightAutomatedTournaments {
+        min-height: 310px;
+    }
+}
+
+@media only screen and (min-width: 550px) {
+    .rightAutomatedTournaments {
+        min-height: 350px;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .rightAutomatedTournaments {
+        min-height: 380px;
+    }
 }
 
 @media only screen and (min-width: 650px) {
@@ -117,15 +144,14 @@
 
     .rightAutomatedTournaments {
         width: 100%;
+        min-height: 250px;
     }
 
     .innerRightAutomatedTournaments {
         width: 100%;
-        // border: 3px solid yellow;
     }
 
     .innerLeftAutomatedTournaments {
-        // border: 5px solid green;
         justify-content: flex-start;
         align-items: flex-start;
     }
@@ -136,8 +162,13 @@
     
     .descriptionContainer p {
         text-align: left;
+    }
+}
+
+@media only screen and (min-width: 950px) {
+    .rightAutomatedTournaments {
+        min-height: 280px;
     }    
-    
 }
   
 @media only screen and (min-width: 1024px) {
@@ -145,5 +176,45 @@
         width: 100%;
         max-width: 450px;
         // border: 2px solid white;
-    }    
+    }
+
+    .rightAutomatedTournaments {
+        min-height: 310px;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .rightAutomatedTournaments {
+        min-height: 350px;
+    }
+}
+
+@media only screen and (min-width: 1350px) {
+    .rightAutomatedTournaments {
+        min-height: 380px;
+    }
+}
+
+@media only screen and (min-width: 1450px) {
+    .rightAutomatedTournaments {
+        min-height: 420px;
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+    .rightAutomatedTournaments {
+        min-height: 490px;
+    }
+}
+
+@media only screen and (min-width: 1800px) {
+    .rightAutomatedTournaments {
+        min-height: 530px;
+    }
+}
+
+@media only screen and (min-width: 2050px) {
+    .rightAutomatedTournaments {
+        min-height: 580px;
+    }
 }
