@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import logoRed from "@/images/logo_mark_red.svg"
-// import logoRed from '@/images/'
 import { BsEnvelope } from "react-icons/bs";
 import { SiFacebook } from "react-icons/si";
 import { FaInstagram } from "react-icons/fa";
