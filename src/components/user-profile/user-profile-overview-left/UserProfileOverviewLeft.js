@@ -14,18 +14,18 @@ import { HiPlus } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css"
 
-const UserProfileOverviewLeft = () => {
+const UserProfileOverviewLeft = ({interest}) => {
     const [showMoreInterests, setShowMoreInterests] = useState(false)
     const [showMoreGamingAccounts, setShowMoreGamingAccounts] = useState(false)
 
     // Simulating Database
     // Interests Data
 
-    const interestsList = [
-        'Anime', 'Uncharted', 'FIFA', 'Elden Ring', 'Mortal Kombat',
-        'God of War', 'Manga', 'Black Myth Wukong', 'Battle Royale',
-        'Cyberpunk 2077', 'League of Legends', 'The Legend of Zelda', 'Call of Duty'
-    ]
+    // const interestsList = [
+    //     'Anime', 'Uncharted', 'FIFA', 'Elden Ring', 'Mortal Kombat',
+    //     'God of War', 'Manga', 'Black Myth Wukong', 'Battle Royale',
+    //     'Cyberpunk 2077', 'League of Legends', 'The Legend of Zelda', 'Call of Duty'
+    // ]
 
     // Gaming Accounts Data
     const gamingAccountsList = [
@@ -48,24 +48,25 @@ const UserProfileOverviewLeft = () => {
         <div className={profileStyles.sectionContainer}>
             <h4 className={profileStyles.profileH4Header}>Interests</h4>
             <div className={profileStyles.interestsListContainer}>
-                {interestsList.slice(0, showMoreInterests ? interestsList.length: 9).map((interest, index) => (
-                    <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
-                        {interest}
-                    </span>    
-                ))}
+            {interest.slice(0, showMoreInterests ? intrest.length : 9).map((interest, index) => (
+                <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
+                    {interest}
+                </span>
+            ))}
 
-                <button
-                    onClick={() => setShowMoreInterests(prev => !prev)}
-                    className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
-                >
-                    {showMoreInterests ? (
-                        <>
-                            <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
-                        </>
-                    ) : (
-                        `See more +${interestsList.length - 9}`
-                    )}
-                </button>
+
+            <button
+                onClick={() => setShowMoreInterests(prev => !prev)}
+                className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
+            >
+                {showMoreInterests ? (
+                    <>
+                        <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
+                    </>
+                ) : (
+                    `See more +${interest.length - 9}`
+                )}
+            </button>
 
             </div>
         </div>

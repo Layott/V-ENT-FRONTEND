@@ -5,16 +5,14 @@ import profileStyles from "@/styles/profile/profile-page.module.css"
 import bioStyles from "./../../../user-profile/user-profile-bio/user-profile-bio.module.css"
 import styles from './edit-profile-banner.module.css'
 
-const EditUserProfileBanner = () => {
+const EditUserProfileBanner = ({ onChange }) => {  // Destructure onChange from props
     const handleBannerUploader = (event) => {
-        const file = event.target.files[0]
+        const file = event.target.files[0];
         if (file) {
-        console.log(`Banner uploaded: ${file.name}`)
-        // File upload logic
-        
+          onChange(file); // Pass the file to the parent component
         }
-    }
-
+      };
+      
   return (
     <div className={styles.editProfileBannerContainer}>
         <div className={styles.editProfileBannerImageContainer}>
@@ -30,17 +28,15 @@ const EditUserProfileBanner = () => {
                 <input
                     type="file"
                     accept="image/*"
-                    onChange={handleBannerUploader}
+                    onChange={handleBannerUploader}  // Use handleBannerUploader
                     id="bannerUpload"
                     className={bioStyles.uploadInput}
-                    
                 />
             </div>
-
         </div>
         <p className={profileStyles.instructionText}>We recommend an image that is 1256 x 256 px</p>
     </div>
   )
 }
 
-export default EditUserProfileBanner
+export default EditUserProfileBanner;

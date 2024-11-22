@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useSession } from "next-auth/react";
+import Cookies from 'js-cookie';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import ProfileBanner from '@/components/user-profile/user-profile-banner/UserProfileBanner';
@@ -13,6 +15,7 @@ import { VENT } from '../api/auth/[...nextauth]/route';
 import styles from './user-profile.module.css';
 
 const UserProfile = () => {
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,42 +23,47 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Retrieve the login session token from localStorage (or a source where it is stored)
-      const loginSessionToken = localStorage.getItem('session_token'); 
+      if (status === "authenticated" && session?.user?.sessionToken) {
+        const sessionToken = session.user.sessionToken; // Ensure the token exists
   
-      if (!loginSessionToken) {
-        setError('No session token found. Please log in.');
-        setLoading(false);
-        return;
-      }
+        try {
+          const response = await fetch(VENT.USER_PROFILE, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sessionToken}`, // Send the token as Bearer Authorization
+            },
+            body: JSON.stringify({
+              login_session_token: sessionToken,  // Sending the session token in the body 
+            }),
+          });
   
-      try {
-        const response = await fetch(VENT.USER_PROFILE, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            login_session_token: loginSessionToken  // Post the session token
-          }),
-        });
+          if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+          }
   
-        if (!response.ok) {
-          throw new Error('Failed to fetch user profile');
+          const data = await response.json();
+          setUserData(data.data); // Set the user data
+          // console.log("The int data is: ", data.interests);
+          // console.log("The description data is: ", data.description);
+          // console.log("The Profile Picture data is: ", userData.profile_picture);
+          
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-  
-        const data = await response.json();
-        setUserData(data.data);  // Store user data from response
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
   
-    fetchUserProfile();
-  }, []);
-  
+    // Only call the fetch function if the user is authenticated
+    if (status === "authenticated") {
+      fetchUserProfile();
+    } else {
+      setLoading(false);  // If not authenticated, stop loading
+    }
+  }, [status, session]);  // Dependency on status and session to trigger when authenticated
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   
@@ -113,7 +121,7 @@ const UserProfile = () => {
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
                 {/* Pass user data to Overview components */}
-                <OverviewLeft country={userData.country} />
+                <OverviewLeft interest={userData.interests}/>
                 <OverviewRight penaltyPoints={userData.penalty_point} walletBalance={userData.wallet_balance} />
               </div>            
             )}
@@ -128,7 +136,7 @@ const UserProfile = () => {
             {activeTab === 'gallery' && (
               <div className={styles.galleryContainer}>
                 {/* Pass user data to Gallery component */}
-                <Gallery interests={userData.interests} />
+                <Gallery/>
               </div>
             )}       
           </div>
