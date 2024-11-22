@@ -8,11 +8,10 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 
 const VerifyEmail = () => {
   const [resendLoading, setResendLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
-  const router = useRouter(); 
+
 
   const handleResend = async () => {
     setResendLoading(true); 
@@ -55,44 +54,6 @@ const VerifyEmail = () => {
     }
   };
 
-  const handleLogin = async () => {
-    setLoginLoading(true); 
-
-    const storedSignupData = JSON.parse(localStorage.getItem('signupData'));
-
-    if (!storedSignupData) {
-      setSnackbarMessage('No signup data found. Please try signing up again.');
-      setSnackbarType('error');
-      setOpen(true);
-      setLoginLoading(false); 
-      return;
-    }
-
-    try {
-      const response = await fetch(VENT.VERIFY, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: storedSignupData.email }),
-      });
-
-      if (response.ok) {
-        router.push('/login'); 
-      } else {
-        const data = await response.json();
-        setSnackbarMessage(data.error || 'Failed to proceed to login.');
-        setSnackbarType('error');
-      }
-    } catch (error) {
-      console.error('Error during login process:', error);
-      setSnackbarMessage('An error occurred. Please try again.');
-      setSnackbarType('error');
-    } finally {
-      setOpen(true);
-      setLoginLoading(false); 
-    }
-  };
 
   const handleCloseSnackbar = () => {
     setOpen(false);
@@ -108,23 +69,13 @@ const VerifyEmail = () => {
         <h3>Verify your email</h3>
         <p>A verification email has been sent to the provided email. Click on the link to verify your account.</p>
 
-        {/* Resend Link Button */}
         <button
           className={`btn redBTN ${styles.resendBTN}`}
           onClick={handleResend}
           disabled={resendLoading} 
           >
           {resendLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Resend Link'}
-        </button>
-
-        {/* Proceed to Login Button */}
-        <button
-          className={`btn redBTN ${styles.resendBTN}`}
-          onClick={handleLogin}
-          disabled={loginLoading} 
-        >
-          {loginLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Proceed to Login'}
-        </button>
+        </button> 
       </main>
 
       <MessageSnackbar

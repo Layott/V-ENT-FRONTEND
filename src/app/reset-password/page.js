@@ -5,6 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { useRouter } from 'next/navigation';
 import generalStyles from "@/styles/auth/auth.module.css"
+import { VENT } from '../api/auth/[...nextauth]/route';
 
 const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(true)
@@ -24,9 +25,8 @@ const ResetPassword = () => {
         if (name === 'confirmPassword') setConfirmPassword(value)
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const handleSubmit = async (e) =>  {
+        e.preventDefault(); 
         setShowError(false)
 
         if (password !== confirmPassword){
@@ -35,9 +35,31 @@ const ResetPassword = () => {
             return;
         }
 
-        setLoading(false);
-        router.push('./login');
-    }
+        try {
+            const response = await fetch (VENT.RESET_PASSWORD, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            });
+
+            if (response.ok) {
+                setSnackbarMessage(data.message || 'Done!');
+                setSnackbarType('success');
+              } else {
+                setSnackbarMessage(data.error || 'Failed!');
+                setSnackbarType('error');
+              }
+            } catch (error) {
+              console.error('Error reseting password:', error);
+              setSnackbarMessage('An error occurred. Please try again.');
+              setSnackbarType('error');
+            } finally {
+              setOpen(true);
+              setResendLoading(false); 
+            }
+    };
 
     return (
         <div className={generalStyles.pageContainer}>
