@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Cookies from 'js-cookie';
 import Link from 'next/link'
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
@@ -35,74 +36,49 @@ const Login = () => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-
-        try {
-            const response = await fetch(VENT.LOGIN, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username_or_email, password }),
-            })
-
-            const data = await response.json();
-            if (response.ok) {
-                // Save session details
-                localStorage.setItem('session_token', data.session_token);
-                localStorage.setItem('user_id', data.user_id);
-
-                // Redirect to profile
-                router.replace('/user-profile');
-
-                // Show success message
-                setSnackbarMessage(data.message || 'Login successful!');
-                setSnackbarType('success');
-                setOpen(true);
-            } else {
-                // Show error message
-                setSnackbarMessage(data.message || 'Failed to log in');
-                setSnackbarType('error');
-                setOpen(true);
-            }
-        } catch (error) {
-            console.error('Error during login:', error);
-            setSnackbarMessage('An error occurred. Please try again.');
+        e.preventDefault();
+        setLoading(true);
+    
+        // Call NextAuth's signIn method with the credentials provider
+        const result = await signIn('credentials', {
+            redirect: false,
+            email: username_or_email,
+            password,
+        });
+    
+        if (result?.error) {
+            setSnackbarMessage('Login failed. Please check your credentials.');
             setSnackbarType('error');
             setOpen(true);
-        } finally {
-            setLoading(false);
+        } else {
+            // Redirect to profile or dashboard
+            router.replace('/user-profile');
+            setSnackbarMessage('Login successful!');
+            setSnackbarType('success');
+            setOpen(true);
         }
-    }
+    
+        setLoading(false);
+    };
 
     const handleOAuthSignIn = async (provider) => {
         setLoading(true);
-        try {
-            const result = await signIn(provider, { redirect: false });
-            if (result.error) {
-                setSnackbarMessage(`Failed to log in with ${provider}`);
-                setSnackbarType('error');
-                setOpen(true);
-            } else {
-                // Customize redirection based on provider if needed
-                if (provider === 'google') {
-                    router.replace('/google-profile');
-                } else if (provider === 'facebook') {
-                    router.replace('/facebook-dashboard');
-                } else {
-                    router.replace('/');
-                }
-            }
-        } catch (error) {
-            setSnackbarMessage(`An error occurred with ${provider} sign-in.`);
+        const result = await signIn(provider, { redirect: false });
+    
+        if (result?.error) {
+            setSnackbarMessage(`Failed to log in with ${provider}`);
             setSnackbarType('error');
             setOpen(true);
-        } finally {
-            setLoading(false);
+        } else {
+            router.replace('/user-profile');
+            setSnackbarMessage(`${provider} login successful!`);
+            setSnackbarType('success');
+            setOpen(true);
         }
+    
+        setLoading(false);
     };
-
+    
     const handleCloseSnackbar = () => {
         setOpen(false)
     }

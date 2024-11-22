@@ -101,13 +101,14 @@ const Signup = () => {
                     }));
 
                     if (data.message === 'The username does not exist') {
-                        setUsernameEditable(false);
-                    } else {
                         setUsernameEditable(true);
+                    } else {
+                        setUsernameEditable(false);
                     }
                 } else {
                     setUsernameError(data.message || 'Failed to retrieve username');
                     clearError(setUsernameError);
+                    setUsernameEditable(true);
                 }
             } catch (error) {
                 console.error('Error fetching username:', error);
