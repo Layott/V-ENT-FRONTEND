@@ -7,9 +7,11 @@ import Image from 'next/image'
 import profileImageBig from "@/images/signed_in_user_big.webp" 
 import styles from './user-profile-bio.module.css'
 
-const UserProfileBio = ({full_name, username, profile_picture, description, country}) => {
+const UserProfileBio = ({fullName, username, profilePicture,  bio, country}) => {
     const [isEditing, setIsEditing] = useState(false)
-
+    const defaultProfilePicture = profileImageBig;
+    const profilePic = profilePicture || defaultProfilePicture;
+    
     const handleProfileImageUploader = () => {
       // 
     }
@@ -24,8 +26,10 @@ const UserProfileBio = ({full_name, username, profile_picture, description, coun
             <div className={styles.profileBioInfo}>
                 <div className={styles.profileImageContainer}>
                     <Image
-                        src={profileImageBig}
+                        src={profilePic}
                         alt='Bigger Profile Image'
+                        width={200} 
+                        height={200}
                     />
 
                     <div className={styles.profileImageUpload}>
@@ -44,7 +48,7 @@ const UserProfileBio = ({full_name, username, profile_picture, description, coun
                 </div>
                 <div className={styles.profileDetailsContainer}>
                     <div className={styles.profileDetails}>
-                        <h1 className={styles.profileFullName}>{full_name}</h1>
+                        <h1 className={styles.profileFullName}>{fullName}</h1>
                         <p className={styles.profileUsernameHandle}>@{username}</p>
                         <p className={styles.userLocation}><IoLocationOutline />
                             {/* <span className={styles.userLocationState}>Lagos</span>,
@@ -97,8 +101,7 @@ const UserProfileBio = ({full_name, username, profile_picture, description, coun
 
         <div className={styles.profileDescription}>
             <p className={styles.bioParagraph}>
-                {description}
-            </p>
+                {bio} || Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod</p>
         </div>
 
     </div>

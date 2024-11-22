@@ -3,7 +3,7 @@ import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { FiFlag } from 'react-icons/fi'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 
-const UserProfileWalletPenalty = () => {
+const UserProfileWalletPenalty = ({penaltyPoints, walletBalance}) => {
   return (
     <div className={profileStyles.walletPenaltyContainer}>
         
@@ -11,7 +11,7 @@ const UserProfileWalletPenalty = () => {
             <h4 className={profileStyles.profileH4Header}>Wallet Balance</h4>
             <p className={profileStyles.coinNumber}>
                 <span className={profileStyles.coinSpan}><RiCopperCoinLine className={profileStyles.coinIcon} /></span>
-                <span className={profileStyles.coinNumberSpan}>526</span>
+                <span className={profileStyles.coinNumberSpan}>{walletBalance}</span>
             </p>
 
         </div>
@@ -24,7 +24,7 @@ const UserProfileWalletPenalty = () => {
             </h4>
             <p className={profileStyles.penaltyPointNumber}>
                 <span className={profileStyles.flagSpan}><FiFlag /></span>
-                <span className={profileStyles.penaltyPointNumberSpan}>15</span>
+                <span className={profileStyles.penaltyPointNumberSpan}>{penaltyPoints}</span>
             </p>
         </div>
     </div>

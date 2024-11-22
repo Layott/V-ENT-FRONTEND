@@ -25,3 +25,12 @@
   gap: 1.5rem;
   margin-bottom: 0.5rem;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resendBTN {
+  width: 150px;
+}

@@ -29,6 +29,8 @@ const LandingHero = () => {
     e.preventDefault();
     setLoading(true);  // Start loading
 
+  
+
     try {
       const response = await axios.post(VENT.WAITLIST, { email });
       setSnackbarMessage(response.data.message || 'Successfully joined the waitlist!');

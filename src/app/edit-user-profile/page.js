@@ -10,8 +10,11 @@ import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-u
 import EditLinks from '@/components/edit-user-profile/edit-user-profile-links/EditUserProfileLinks';
 import styles from './edit-user-profile.module.css'
 
+
 const EditUserProfile = () => {
   const [activeTab, setActiveTab] = useState('edit-profile-details')
+
+
   
   return (
     <div className={styles.pageContainer}>

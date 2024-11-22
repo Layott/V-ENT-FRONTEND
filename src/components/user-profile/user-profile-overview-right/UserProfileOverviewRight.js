@@ -4,10 +4,10 @@ import UserProfileFavouriteGames from "./user-profile-favourite-games/UserProfil
 import UserProfileAchievements from "./user-profile-achievements/UserProfileAchievements";
 import profileStyles from '@/styles/profile/profile-page.module.css'
 
-const UserProfileOverviewRight = () => {
+const UserProfileOverviewRight = ({penaltyPoints, walletBalance}) => {
   return (
     <div className={profileStyles.overviewRight}>
-      <UserProfileWalletPenalty />
+      <UserProfileWalletPenalty penaltyPoints={penaltyPoints} walletBalance={walletBalance} />
       <UserProfileStats />
       <UserProfileFavouriteGames />
       <UserProfileAchievements />
