@@ -43,11 +43,11 @@ const UserProfile = () => {
           }
   
           const data = await response.json();
-          setUserData(data.data); // Set the user data
-          // console.log("The int data is: ", data.interests);
-          // console.log("The description data is: ", data.description);
-          // console.log("The Profile Picture data is: ", userData.profile_picture);
-          
+          setUserData(data.data); 
+
+          // Saving the user data into the local storage
+        localStorage.setItem('userProfile', JSON.stringify(data.data));
+
         } catch (err) {
           setError(err.message);
         } finally {
@@ -74,6 +74,7 @@ const UserProfile = () => {
       <Header
           fullName={userData.full_name} 
           username={userData.username} 
+          profilePicture={userData.profile_picture} 
       />
       
       <main className={styles.mainContainer}>

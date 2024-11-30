@@ -48,7 +48,7 @@ const UserProfileOverviewLeft = ({interest}) => {
         <div className={profileStyles.sectionContainer}>
             <h4 className={profileStyles.profileH4Header}>Interests</h4>
             <div className={profileStyles.interestsListContainer}>
-            {interest.slice(0, showMoreInterests ? intrest.length : 9).map((interest, index) => (
+            {interest.slice(0, showMoreInterests ? interest.length : 9).map((interest, index) => (
                 <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
                     {interest}
                 </span>

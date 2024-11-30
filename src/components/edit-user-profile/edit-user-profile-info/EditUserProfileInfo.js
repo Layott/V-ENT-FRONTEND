@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 import EditProfileImageAvatar from './edit-profile-image-avatar/EditProfileImageAvatar';
 import EditProfileBanner from './edit-user-profile-banner/EditUserProfileBanner';
 import EditUserProfileDetails from './edit-user-profile-details/EditUserProfileDetails';
@@ -9,6 +10,7 @@ import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 
 const EditUserProfileInfo = () => {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [profileData, setProfileData] = useState({
     login_session_token: '',
@@ -18,7 +20,7 @@ const EditUserProfileInfo = () => {
     fullname: '',
     description: '',
     country: '',
-    interest_ids: [],
+    interests: [],
   });
 
   const [open, setOpen] = useState(false);
@@ -47,7 +49,7 @@ const EditUserProfileInfo = () => {
   const handleInterestsChange = (newInterests) => {
     setProfileData((prevData) => ({
       ...prevData,
-      interest_ids: newInterests,
+      interests: newInterests,
     }));
   };
 
@@ -79,7 +81,7 @@ const EditUserProfileInfo = () => {
       formData.append('fullname', profileData.fullname);
       formData.append('description', profileData.description);
       formData.append('country', profileData.country);
-      formData.append('interest_ids', JSON.stringify(profileData.interest_ids));
+      formData.append('interests', JSON.stringify(profileData.interests));
 
       try {
         const response = await fetch(VENT.EDIT_PROFILE, {
@@ -93,6 +95,7 @@ const EditUserProfileInfo = () => {
         const data = await response.json();
 
         if (response.ok) {
+          router.push('/user-profile');
           setSnackbarMessage(data.message || 'Profile updated successfully!');
           setSnackbarType('success');
           setProfileData({
@@ -103,7 +106,7 @@ const EditUserProfileInfo = () => {
             fullname: '',
             description: '',
             country: '',
-            interest_ids: [],
+            interests: [],
           });
         } else {
           setSnackbarMessage(data.message || 'Failed to update profile.');
@@ -141,7 +144,7 @@ const EditUserProfileInfo = () => {
           handleInputChange={handleInputChange}
         />
         <EditInterests
-          selectedInterests={profileData.interest_ids}
+          selectedInterests={profileData.interests}
           handleInterestsChange={handleInterestsChange}
         />
         <div className={styles.buttonContainer}>

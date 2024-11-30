@@ -16,7 +16,7 @@ const UserProfileBanner = ({banner, }) => {
   return (
     <div className={styles.profileBanner}>
         <div className={styles.bannerUploader}>
-            <label htmlFor="bannerUpload" className={styles.bannerUploadLabel}>
+            {/* <label htmlFor="bannerUpload" className={styles.bannerUploadLabel}>
                 <FiCamera className={styles.uploadIcon} /> Upload banner
             </label>
             <input
@@ -25,10 +25,12 @@ const UserProfileBanner = ({banner, }) => {
                 onChange={handleBannerUploader}
                 id="bannerUpload"
                 className={styles.uploadInput}
-            />
+            /> */}
         </div>
         <Image
-            src={profileBannerImage}
+            src={banner || profileBannerImage}
+            width={500}
+            height={500}
             alt='Profile Banner Image'
         />
   </div>
