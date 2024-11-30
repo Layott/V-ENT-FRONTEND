@@ -8,7 +8,7 @@ import { CiSearch } from "react-icons/ci";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './header.module.css'
 
-const Header = ({fullName, username, className = ''}) => {
+const Header = ({fullName, username, profilePicture,className = ''}) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
 
@@ -95,7 +95,9 @@ const Header = ({fullName, username, className = ''}) => {
             </div>
             <div className={styles.userAvatar}>
             <Image
-                src={profileImageSmall}
+                src={profilePicture}
+                width={500}
+                height={500}
                 alt='Signed in user'
             />
             </div>

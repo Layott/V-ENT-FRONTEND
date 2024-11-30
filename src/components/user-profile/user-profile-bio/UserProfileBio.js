@@ -28,8 +28,8 @@ const UserProfileBio = ({fullName, username, profilePicture,  bio, country}) => 
                     <Image
                         src={profilePic}
                         alt='Bigger Profile Image'
-                        width={200} 
-                        height={200}
+                        width={100} 
+                        height={100}
                     />
 
                     <div className={styles.profileImageUpload}>
@@ -101,7 +101,7 @@ const UserProfileBio = ({fullName, username, profilePicture,  bio, country}) => 
 
         <div className={styles.profileDescription}>
             <p className={styles.bioParagraph}>
-                {bio} || Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod</p>
+                {bio}</p>
         </div>
 
     </div>

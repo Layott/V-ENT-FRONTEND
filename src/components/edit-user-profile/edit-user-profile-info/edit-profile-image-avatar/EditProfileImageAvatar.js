@@ -1,7 +1,7 @@
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { MdDelete } from "react-icons/md";
 import { FiCamera } from 'react-icons/fi';
-import smallProfileImage from "@/images/signed_in_user_big.webp";
 import avatarAnkara from "@/images/avatar_ankara.jpg";
 import avatarColor from "@/images/avatar_color.webp";
 import avatarBlackHair from "@/images/avatar_black_hair.webp";
@@ -9,19 +9,41 @@ import avatarPaint from "@/images/avatar_paint.webp";
 import styles from './edit-profile-image-avatar.module.css';
 
 const EditProfileImageAvatar = ({ onChange }) => {
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem('userProfile');
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        setProfileImage(parsedData?.profile_picture || null);
+      }
+    } catch (error) {
+      console.error("Failed to load profile picture from localStorage:", error);
+    }
+  }, []);
   
-  const handleImageSelect = (newImage) => {
-    if (newImage.target?.files?.[0]) {
-      const file = newImage.target.files[0];
-      onChange((prevData) => ({
-        ...prevData,
-        newProfileImageURL: URL.createObjectURL(file),
-      }));
-    } else if (typeof newImage === "string" || typeof newImage === "object") {
-      onChange((prevData) => ({
-        ...prevData,
-        newProfileImageURL: newImage,
-      }));
+
+  // Handle image file selection
+  const handleImageSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+      onChange(file); // Pass the file directly
+    }
+  };
+
+  // Handle avatar selection and convert to a binary File object
+  const handleAvatarSelect = async (avatarSrc) => {
+    try {
+      const response = await fetch(avatarSrc);
+      const blob = await response.blob();
+      const file = new File([blob], "avatar.jpg", { type: blob.type });
+      setProfileImage(avatarSrc); // Update the preview
+      onChange(file); // Send the binary file to the parent
+    } catch (error) {
+      console.error("Failed to fetch avatar as binary:", error);
     }
   };
 
@@ -30,9 +52,11 @@ const EditProfileImageAvatar = ({ onChange }) => {
       <div className={styles.profileImageContainer}>
         <div className={styles.editProfileImageContainer}>
           <Image
-            src={smallProfileImage}
+            src={profileImage || avatarAnkara}
             alt="Profile Image"
             className={styles.editProfileImage}
+            width={256}
+            height={256}
           />
         </div>
         <div className={styles.changeDeleteRecommendContainer}>
@@ -46,7 +70,10 @@ const EditProfileImageAvatar = ({ onChange }) => {
                 onChange={handleImageSelect}
               />
             </label>
-            <button className={`${styles.deleteBTN} ${styles.editBTN}`}>
+            <button
+              className={`${styles.deleteBTN} ${styles.editBTN}`}
+              onClick={() => setProfileImage(null)} // Reset profile image
+            >
               <MdDelete className={styles.deleteIcon} />
             </button>
           </div>
@@ -63,9 +90,9 @@ const EditProfileImageAvatar = ({ onChange }) => {
             <div
               key={index}
               className={styles.eachAvatarContainer}
-              onClick={() => handleImageSelect(avatar)}
+              onClick={() => handleAvatarSelect(avatar.src)} // Convert the avatar to binary
             >
-              <Image src={avatar} alt={`Avatar ${index}`} />
+              <Image src={avatar} alt={`Avatar ${index}`} width={64} height={64} />
             </div>
           ))}
         </div>
