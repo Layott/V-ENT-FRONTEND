@@ -13,7 +13,6 @@ import { useRouter } from 'next/navigation';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import generalStyles from "@/styles/auth/auth.module.css"
 import styles from './login.module.css'
-import { VENT } from '@/app/api/auth/[...nextauth]/route';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(true)

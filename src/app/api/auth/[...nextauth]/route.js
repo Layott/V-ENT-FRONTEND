@@ -17,7 +17,9 @@ export const VENT= {
   RESET_PASSWORD:'',
   USER_PROFILE:'https://vermillionent.pythonanywhere.com/auth/get-user-informations/',
   EDIT_PROFILE:'https://vermillionent.pythonanywhere.com/auth/edit-profile-info/',
+  EDIT_LINKS:'https://vermillionent.pythonanywhere.com/auth/update-web-and-social-links/',
   CREATE_EVENT:'https://vermillionent.pythonanywhere.com/event/create-event/',
   GET_EVENTS:'https://vermillionent.pythonanywhere.com/event/get-all-events/',
+  
 } 
 

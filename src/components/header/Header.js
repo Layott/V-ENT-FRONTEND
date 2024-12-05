@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image'
 import Link from 'next/link';
 import { FiArrowLeft } from "react-icons/fi";
@@ -8,9 +8,26 @@ import { CiSearch } from "react-icons/ci";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './header.module.css'
 
-const Header = ({fullName, username, profilePicture,className = ''}) => {
+const Header = ({className = ''}) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+    const [fullName, setFullName] = useState(null);
+    const [username, setUsername] = useState(null);
+    
+    useEffect(() => {
+      try {
+        const storedData = localStorage.getItem('userProfile');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          setProfileImage(parsedData?.profile_picture || null);
+          setFullName(parsedData?.full_name || null);
+          setUsername(parsedData?.username || null);
+        }
+      } catch (error) {
+        console.error("Failed to load profile picture from localStorage:", error);
+      }
+    }, []);
 
     const handleSearch = () => {
       if (searchQuery.trim() != '') {
@@ -90,14 +107,14 @@ const Header = ({fullName, username, profilePicture,className = ''}) => {
 
         <div className={styles.userDetails}>
             <div className={styles.userInfo}>
-            <p className={styles.userName}>{fullName}</p>    
-            <p className={styles.userUsername}>@{username}</p>
+            <p className={styles.userName}>{fullName ||'Signed in user'}</p>    
+            <p className={styles.userUsername}>@{username || 'username'}</p>
             </div>
             <div className={styles.userAvatar}>
             <Image
-                src={profilePicture}
-                width={500}
-                height={500}
+                src={profileImage || profileImageSmall}
+                width={100}
+                height={100}
                 alt='Signed in user'
             />
             </div>

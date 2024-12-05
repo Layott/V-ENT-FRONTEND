@@ -8,12 +8,13 @@ import EditInterests from './edit-user-profile-interests/EditUserProfileInterest
 import styles from './edit-user-profile-info.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const EditUserProfileInfo = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [profileData, setProfileData] = useState({
-    login_session_token: '',
+    // login_session_token: '',
     profile_pic: null,
     banner: null,
     username: '',
@@ -26,6 +27,7 @@ const EditUserProfileInfo = () => {
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
+  const [loading, setLoading] = useState(false);
 
   // Update login_session_token in profileData when session data is available
   useEffect(() => {
@@ -69,6 +71,7 @@ const EditUserProfileInfo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
@@ -148,8 +151,8 @@ const EditUserProfileInfo = () => {
           handleInterestsChange={handleInterestsChange}
         />
         <div className={styles.buttonContainer}>
-          <button className={`btn redBTN ${styles.resendBTN}`} type="submit">
-            Save Changes
+        <button className={`btn redBTN ${styles.resendBTN}`} type="submit" disabled={loading}>
+            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
           </button>
         </div>
       </form>
