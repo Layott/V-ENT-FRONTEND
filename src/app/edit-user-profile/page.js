@@ -20,7 +20,7 @@ const EditUserProfile = () => {
     <div className={styles.pageContainer}>
       <Header className={styles.customHeader} />
       
-      <main className={styles.mainContainer}>
+      <main className={styles.mainContainer}> 
         <Sidebar customClass={styles.customSidebar} />
       
         <div className={styles.rightPaneEditProfileContainer}>

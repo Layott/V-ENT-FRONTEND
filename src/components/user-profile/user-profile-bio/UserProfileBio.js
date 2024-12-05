@@ -26,7 +26,7 @@ const UserProfileBio = ({fullName, username, profilePicture,  bio, country}) => 
             <div className={styles.profileBioInfo}>
                 <div className={styles.profileImageContainer}>
                     <Image
-                        src={profilePic}
+                        src={profilePic || profileImageBig}
                         alt='Bigger Profile Image'
                         width={100} 
                         height={100}
@@ -48,8 +48,8 @@ const UserProfileBio = ({fullName, username, profilePicture,  bio, country}) => 
                 </div>
                 <div className={styles.profileDetailsContainer}>
                     <div className={styles.profileDetails}>
-                        <h1 className={styles.profileFullName}>{fullName}</h1>
-                        <p className={styles.profileUsernameHandle}>@{username}</p>
+                        <h1 className={styles.profileFullName}>{fullName || 'Unknown'}</h1>
+                        <p className={styles.profileUsernameHandle}>@{username || 'unknown'}</p>
                         <p className={styles.userLocation}><IoLocationOutline />
                             {/* <span className={styles.userLocationState}>Lagos</span>,
                             &nbsp; */}

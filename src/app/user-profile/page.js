@@ -24,75 +24,67 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
-        const sessionToken = session.user.sessionToken; // Ensure the token exists
-  
+        const sessionToken = session.user.sessionToken;
+
         try {
           const response = await fetch(VENT.USER_PROFILE, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${sessionToken}`, // Send the token as Bearer Authorization
-            },
-            body: JSON.stringify({
-              login_session_token: sessionToken,  // Sending the session token in the body 
-            }),
+              'Authorization': `Bearer ${sessionToken}`,
+            }
           });
-  
+
           if (!response.ok) {
             throw new Error('Failed to fetch user profile');
           }
-  
+
           const data = await response.json();
-          setUserData(data.data); 
+          setUserData(data.data);
 
-          // Saving the user data into the local storage
-        localStorage.setItem('userProfile', JSON.stringify(data.data));
-
+          // Save the user data into localStorage for persistence
+          localStorage.setItem('userProfile', JSON.stringify(data.data));
         } catch (err) {
           setError(err.message);
         } finally {
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
-  
-    // Only call the fetch function if the user is authenticated
+
     if (status === "authenticated") {
       fetchUserProfile();
-    } else {
-      setLoading(false);  // If not authenticated, stop loading
     }
-  }, [status, session]);  // Dependency on status and session to trigger when authenticated
+  }, [status, session]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  
 
-  // Render user data if available
+  // Conditional rendering to handle the null `userData` case
+  if (!userData) return <p>No user data available</p>;
+
   return (
     <div className={styles.pageContainer}>
       <Header
-          fullName={userData.full_name} 
-          username={userData.username} 
-          profilePicture={userData.profile_picture} 
+        fullName={userData?.full_name || 'Unknown'}
+        username={userData?.username || 'Unknown'}
+        profilePicture={userData?.profile_picture}
       />
       
       <main className={styles.mainContainer}>
         <Sidebar />
       
         <div className={styles.rightPaneContainer}>
-          {/* Pass user data to ProfileBanner */}
-          <ProfileBanner 
-            banner={userData.banner} 
-          />
+          <ProfileBanner banner={userData?.banner} />
           
-          {/* Pass user data to ProfileBio */}
-          <ProfileBio 
-            fullName={userData.full_name} 
-            username={userData.username} 
-            profilePicture={userData.profile_picture} 
-            bio={userData.description} 
-            country={userData.country} 
+          <ProfileBio
+            fullName={userData?.full_name || 'Unknown'}
+            username={userData?.username || 'Unknown'}
+            profilePicture={userData?.profile_picture}
+            bio={userData?.description}
+            country={userData?.country || 'Unknown'}
           />
 
           <div className={styles.buttonContainer}>
@@ -121,30 +113,36 @@ const UserProfile = () => {
           <div className={styles.profileDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
-                {/* Pass user data to Overview components */}
-                <OverviewLeft interest={userData.interests}/>
-                <OverviewRight penaltyPoints={userData.penalty_point} walletBalance={userData.wallet_balance} />
+                <OverviewLeft 
+               interest={userData?.interests || []} 
+               socialLinks={userData?.social_links || []} 
+                 />
+                <OverviewRight
+                  penaltyPoints={userData?.penalty_point || 0}
+                  walletBalance={userData?.wallet_balance || 0}
+                />
               </div>            
             )}
 
             {activeTab === 'activity' && (
               <div className={styles.activityContainer}>
-                {/* Pass user data to Activity component */}
-                <Activity achievements={userData.achievements} favoriteGames={userData.favorite_games} />
+                <Activity
+                  achievements={userData?.achievements || []}
+                  favoriteGames={userData?.favorite_games || []}
+                />
               </div>
             )}
 
             {activeTab === 'gallery' && (
               <div className={styles.galleryContainer}>
-                {/* Pass user data to Gallery component */}
-                <Gallery/>
+                <Gallery />
               </div>
-            )}       
+            )}
           </div>
         </div>
       </main>
     </div>
   );
-}
+};
 
 export default UserProfile;
