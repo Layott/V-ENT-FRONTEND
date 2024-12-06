@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
@@ -12,16 +13,23 @@ import OverviewRight from "@/components/user-profile/user-profile-overview-right
 import Gallery from "@/components/user-profile/user-profile-gallery/UserProfileGallery";
 import Activity from "@/components/user-profile/user-profile-activity/UserProfileActivity";
 import { VENT } from '../api/auth/[...nextauth]/route';
+import profileStyles from '@/styles/profile/profile-page.module.css'
 import styles from './user-profile.module.css';
 
 const UserProfile = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push('/login');
+      return;
+    }
+
     const fetchUserProfile = async () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
         const sessionToken = session.user.sessionToken;
@@ -40,11 +48,21 @@ const UserProfile = () => {
           }
 
           const data = await response.json();
-          setUserData(data.data);
 
+          // if (!data.data) {
+          //   router.push('/login');
+          //   return;
+          // }
+
+          if (!data?.data) {
+            throw new Error("User profile data is missing. Please log in again.");
+          }
+
+          setUserData(data.data);
           // Save the user data into localStorage for persistence
           localStorage.setItem('userProfile', JSON.stringify(data.data));
         } catch (err) {
+          console.error("Error fetching user profile:", error.message);
           setError(err.message);
         } finally {
           setLoading(false);
@@ -57,13 +75,32 @@ const UserProfile = () => {
     if (status === "authenticated") {
       fetchUserProfile();
     }
-  }, [status, session]);
+  }, [status, session, router]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return (
+    <div
+      className={profileStyles.errorContainer}
+    >
+      Loadings<span className={profileStyles.blinkingDots}></span>
+    </div>
+  )
+
+  if (error) return (
+    <div
+      className={profileStyles.errorContainer}
+    >
+      {error}
+    </div>
+  )
 
   // Conditional rendering to handle the null `userData` case
-  if (!userData) return <p>No user data available</p>;
+  if (!userData) return (
+    <div
+      className={profileStyles.errorContainer}
+    >
+      No user data available!
+    </div>
+  )
 
   return (
     <div className={styles.pageContainer}>
