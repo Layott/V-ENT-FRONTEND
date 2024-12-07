@@ -1,7 +1,7 @@
 'use client'
+
 import { useState } from 'react'
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
 import facebookLogo from '../../../public/images/facebook.svg'
@@ -11,6 +11,7 @@ import { signIn } from 'next-auth/react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
+import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from "@/styles/auth/auth.module.css"
 import styles from './login.module.css'
 
@@ -85,12 +86,9 @@ const Login = () => {
     return (
         <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
-                <Link
-                    href={'/'}
-                >
-                    <h1>v-ent</h1>
-                </Link>
+                <AuthHeader />
             </header>
+
 
             <main className={generalStyles.mainContainer}>
                 <div className={generalStyles.formContainer}>
