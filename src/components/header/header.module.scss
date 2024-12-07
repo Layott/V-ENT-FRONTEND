@@ -144,9 +144,6 @@
 
 .userDetails {
     display: flex;
-    // border: 1px solid red;
-    // height: 80px;
-    display: flex;
     align-items: center;
 }
 
@@ -156,7 +153,6 @@
     flex-direction: column;
     align-items: flex-end;
     padding-right: 0.4rem;
-    // border: 1px solid pink;
 }
 
 .userName {
@@ -175,8 +171,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    // border: 1px solid red;
     position: relative;
 }
 
@@ -200,7 +194,6 @@
 }
 
 .dropdownMenu {
-    // border: 1px solid red;
     background-color: #303136;
     width: 170px;
     min-height: 40px;

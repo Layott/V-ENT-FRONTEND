@@ -75,9 +75,7 @@ const LandingHero = ({ formRef }) => {
           <div className={styles.headerJoinTournamentsBTNContainer}>
             <Link
               href={'/login'}
-              // className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN} ${styles.waitlistBTN}`}
               className={`${profileStyles.waitlistBTN} ${styles.loginBTN}`}
-              // className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN} ${styles.waitlistBTN}`}
             >
               Login
             </Link>

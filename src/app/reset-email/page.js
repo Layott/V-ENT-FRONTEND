@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import AuthHeader from '@/components/auth-header/AuthHeader'
 import generalStyles from "@/styles/auth/auth.module.css"
 
 const ResetEmail = () => {
   return (
     <div className={generalStyles.pageContainer}>
         <header className={generalStyles.pageHeader}>
-            <h1>v-ent</h1>
+            <AuthHeader />
         </header>
 
         <main className={generalStyles.formContainer}>
