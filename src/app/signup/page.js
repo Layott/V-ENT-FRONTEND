@@ -13,6 +13,7 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress'; 
 import { useRouter } from 'next/navigation';
+import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from "@/styles/auth/auth.module.css"
 import styles from './signup.module.css';
 
@@ -215,7 +216,7 @@ const Signup = () => {
     return (
         <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
-                <h1>v-ent</h1>
+                <AuthHeader />
             </header>
 
             <main className={generalStyles.mainContainer}>

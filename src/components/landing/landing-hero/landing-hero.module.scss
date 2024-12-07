@@ -6,7 +6,6 @@
     position: relative;
     min-height: calc(100vh + 100px);
     max-height: calc(100vh + 200px);
-    // border: 2px solid red;
 }
 
 .landingHeroContainer img {
@@ -30,7 +29,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1rem;
-    // border: 2px solid white;
 }
 
 
@@ -42,7 +40,6 @@
     height: 50px;
     align-items: center;
     justify-content: flex-start;
-    // border: 2px solid pink;
 }
 
 .headerLogoContainer h1 {
@@ -362,7 +359,6 @@
 
 @media only screen and (min-width: 1150px) {
     .landingHeroContainer {
-        // border: 10px solid white;
         min-height: 100vh;
         max-height: 100vh;
     }

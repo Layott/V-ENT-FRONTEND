@@ -4,6 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { useRouter } from 'next/navigation';
+import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from "@/styles/auth/auth.module.css"
 import { VENT } from '../api/auth/[...nextauth]/route';
 
@@ -64,7 +65,7 @@ const ResetPassword = () => {
     return (
         <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
-                <h1>v-ent</h1>
+                <AuthHeader />
             </header>
 
             <main className={generalStyles.mainContainer}>
