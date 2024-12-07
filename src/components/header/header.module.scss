@@ -144,6 +144,10 @@
 
 .userDetails {
     display: flex;
+    // border: 1px solid red;
+    // height: 80px;
+    display: flex;
+    align-items: center;
 }
 
 .userInfo {
@@ -152,6 +156,7 @@
     flex-direction: column;
     align-items: flex-end;
     padding-right: 0.4rem;
+    // border: 1px solid pink;
 }
 
 .userName {
@@ -164,22 +169,84 @@
 }
 
 .userAvatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+    width: 50px;
+    height: 35px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    // border: 1px solid red;
+    position: relative;
 }
 
 .userAvatar img {
-    width: 100%;
-    height: auto;
+    width: 30px;
+    height: 30px;
     display: block;
     object-fit: cover;
     border-radius: 50%;
 }
+
+.profileImage {
+    cursor: pointer;
+}
+
+.dropdownArrow {
+    position: absolute;
+    right: -2.5px;
+    bottom: -2.5px;
+    cursor: pointer;
+}
+
+.dropdownMenu {
+    // border: 1px solid red;
+    background-color: #303136;
+    width: 170px;
+    min-height: 40px;
+    position: absolute;
+    top: 55px;
+    right: 1.5rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.6rem;
+}
+
+.logoutBTN,
+.viewProfile {
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 4px;
+    transition: border 0.5s ease-in-out;
+}
+
+.viewProfile {
+    border: 1px solid var(--v-ent-red);
+    margin-top: 0.5rem;
+}
+
+.logoutBTN {
+    outline: none;
+    border: 1px solid var(--v-ent-red);
+    width: 80px;
+    margin-bottom: 0.6rem;
+    background-color: var(--v-ent-red);
+    color: #FFF;
+}
+
+.viewProfile:hover {
+    border: 1px solid #FFF;
+}
+
+.logoutBTN:hover {
+    border: 1px solid #FFF;
+}
+
 
 @media only screen and (min-width: 550px) {
     .searchBar {
@@ -229,6 +296,32 @@
         margin-left: 180px;
         width: calc(100% - 180px);
     }
+
+    .userAvatar {
+        width: 60px;
+        height: 35px;
+    }    
+
+    .userAvatar img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .dropdownMenu {
+        width: 200px;
+        gap: 1rem;
+    }
+    
+    .logoutBTN,
+    .viewProfile {
+        font-size: 0.95rem;
+        padding: 5px 15px;
+        border-radius: 6px;
+    }
+
+    .logoutBTN {
+        width: 110px;
+    }    
 }
 
 @media only screen and (min-width: 1024px) {
