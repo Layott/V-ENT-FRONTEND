@@ -8,6 +8,8 @@ import { CiSearch } from "react-icons/ci";
 import { FaCaretDown } from "react-icons/fa";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import styles from './header.module.css';
+import { useRouter } from 'next/navigation';
+import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 
 const Header = ({ className = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,6 +18,7 @@ const Header = ({ className = '' }) => {
   const [fullName, setFullName] = useState(null);
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter();
 
   const dropdownRef = useRef(null);
 
@@ -76,11 +79,13 @@ const Header = ({ className = '' }) => {
     setIsDropdownOpen((prev) => !prev);
   }
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    
+  const handleLogout = () => {    
+    // Remove the user profile and session data from localStorage
     localStorage.removeItem('userProfile');
-    window.location.reload();
+    localStorage.removeItem('authToken');
+    
+    // Sign out the user using NextAuth's signOut function
+    signOut({ callbackUrl: '/login' }); // Redirect to home page after logout
   }
 
   return (
