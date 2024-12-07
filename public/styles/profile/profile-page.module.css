@@ -76,15 +76,50 @@
   border-radius: 25px;
 }
 
+.noGamingAccountsListContainer,
+.noInterestsContainer {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.85em;
+}
+
+.emptyParagraphContent {
+  text-align: center;
+  color: #B2B3BD;
+}
+
+.addInterestsBTN,
 .waitlistBTN,
 .seeMoreAccountsBTN,
 .showMoreBTN {
   outline: none;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 25px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-weight: 500;
   transition: all ease-in-out 0.5s;
   border: 1px solid #28292D;
+}
+
+.waitlistBTN,
+.seeMoreAccountsBTN,
+.showMoreBTN {
+  padding: 8px 12px;
+  border-radius: 25px;
+}
+
+.addInterestsBTN {
+  padding: 6px;
+  font-size: 0.85rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1.125rem;
 }
 
 .seeMoreAccountsBTN {
@@ -92,6 +127,7 @@
   margin-top: 0.5rem;
 }
 
+.addInterestsBTN:hover,
 .waitlistBTN:hover,
 .seeMoreAccountsBTN:hover,
 .showMoreBTN:hover {
@@ -318,6 +354,7 @@
   font-size: 0.8rem;
 }
 
+.profileH4HeaderEmptyContent,
 .profileH4Header {
   display: inline-flex;
   align-items: center;
@@ -325,8 +362,16 @@
   font-family: "ClashGrotesk-Light", sans-serif;
 }
 
+.profileH4HeaderEmptyContent {
+  font-size: 0.9rem;
+}
+
 .profileH4Icons {
   font-size: 0.9rem;
+}
+
+.profileH4IconsEmptyContent {
+  font-size: 0.75rem;
 }
 
 .profileH5Header {
