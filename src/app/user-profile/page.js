@@ -151,9 +151,11 @@ const UserProfile = () => {
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
                 <OverviewLeft 
-               interest={userData?.interests || []} 
-               socialLinks={userData?.social_links || []} 
+                  interest={userData?.interests || []}
+                  gamingAccounts={userData?.gamingAccounts || []}
+                  socialLinks={userData?.social_links || []} 
                  />
+
                 <OverviewRight
                   penaltyPoints={userData?.penalty_point || 0}
                   walletBalance={userData?.wallet_balance || 0}

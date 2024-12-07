@@ -151,7 +151,7 @@ const EditUserProfileInfo = () => {
           handleInterestsChange={handleInterestsChange}
         />
         <div className={styles.buttonContainer}>
-        <button className={`btn redBTN ${styles.resendBTN}`} type="submit" disabled={loading}>
+        <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
           </button>
         </div>
