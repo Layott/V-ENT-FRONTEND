@@ -1,9 +1,13 @@
 import Image from 'next/image'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import { brandLogos } from './BrandLogosList'
 import landingStyles from '@/styles/landing/landing.module.css'
+import observerStyle from '@/styles/intersection/intersection.module.css'
 import styles from './landing-brands.module.css'
 
 const LandingBrands = () => {
+    const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
+
   return (
     <div className={`${landingStyles.brandsContainer} ${styles.brandsContainer}`}>
         <div className={`${landingStyles.innerBrandsContainer} ${styles.innerBrandsContainer}`}>
@@ -13,7 +17,11 @@ const LandingBrands = () => {
 
             <div className={styles.brandsLogoContainer}>
                 {brandLogos.map((brandLogo, index) => (
-                <div key={index} className={styles.brandLogoContainer}>
+                <div
+                    key={index}
+                    ref={ref}
+                    className={`${styles.brandLogoContainer} ${observerStyle.brandLogoContainer} ${isVisible ? observerStyle.fadeInDissolve : ''}`}
+                >
                     <Image
                         src={brandLogo.src}
                         alt={brandLogo.alt}

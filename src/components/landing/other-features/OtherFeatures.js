@@ -5,6 +5,7 @@ import landingStyles from '@/styles/landing/landing.module.css'
 import styles from './other-features.module.css'
 
 const OtherFeatures = () => {
+
   return (
     <div className={`${landingStyles.otherFeaturesContainer} ${styles.otherFeaturesContainer}`}>
         <div className={`${landingStyles.innerOtherFeaturesContainer} ${styles.innerOtherFeaturesContainer}`}>
@@ -13,7 +14,7 @@ const OtherFeatures = () => {
             </div>
 
             <div className={styles.cardsContainer}>
-                <div className={styles.cardContainer}>
+                <div className={`${styles.cardContainer}`}>
                     <div className={styles.iconContainer}>
                         <LiaWalletSolid className={styles.walletIcon} />
                     </div>
@@ -28,7 +29,7 @@ const OtherFeatures = () => {
 
                 </div>
 
-                <div className={styles.cardContainer}>
+                <div className={`${styles.cardContainer}`}>
                     <div className={styles.iconContainer}>
                         <TbUsers className={styles.communityIcon} />
                     </div>
@@ -43,7 +44,7 @@ const OtherFeatures = () => {
 
                 </div>
                 
-                <div className={styles.cardContainer}>
+                <div className={`${styles.cardContainer}`}>
                     <div className={styles.iconContainer}>
                         <IoAnalyticsSharp className={styles.analyticIcon} />
                     </div>

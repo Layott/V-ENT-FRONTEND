@@ -1,0 +1,95 @@
+@keyframes fadeInDissolve {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInFromDown {
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInFromUp {
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fadeInDissolve {
+    opacity: 0;
+    animation: fadeInDissolve 1.5s ease-in-out forwards;
+    animation-fill-mode: forwards;
+}
+
+.fadeInFromDown {
+    opacity: 1;
+    animation: fadeInFromDown 1s ease-in-out forwards;
+}
+
+.fadeInFromUp {
+    opacity: 1;
+    animation: fadeInFromUp 1s ease-in-out forwards;
+}
+
+.fadeInFromRight {
+    opacity: 1;
+    animation: fadeInFromRight 1s ease-in-out forwards;
+}
+
+.fadeInFromLeft {
+    opacity: 1;
+    animation: fadeInFromLeft 1s ease-in-out forwards;
+}
+
+// .heroContentTop,
+// .topLeftImageContainer,
+// .topRightImageContainer,
+.circledShirtImageContainer,
+.manageEventsImageContainer,
+.landingAnimeHubRightContainer,
+.brandLogoContainer,
+.landingShopLeftContainer,
+.innerRightManageEvents,
+.innerLeftAutomatedTournaments,
+.fifaCardContainer,
+.counterStrikeCardContainer,
+.belowHeroContainer {
+    opacity: 0;
+    transition: opacity 2s ease, transform 2s ease;
+}
