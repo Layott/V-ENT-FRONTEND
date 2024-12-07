@@ -2,9 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import logoRed from "@/images/logo_mark_red.svg"
 import { BsEnvelope } from "react-icons/bs";
-import { SiFacebook } from "react-icons/si";
-import { FaInstagram } from "react-icons/fa";
 import { IoCallOutline } from "react-icons/io5";
+import { socialLinks } from "./SocialList";
 import styles from './footer-landing.module.css'
 
 const FooterLanding = () => {
@@ -51,26 +50,21 @@ const FooterLanding = () => {
                 <div className={styles.socialsContainer}>
                     <h3>Follow Us</h3>
                     <div className={styles.innerSocialsContainer}>
-                        <p className={styles.emailParagraph}>
-                            <span className={styles.envelopeSpan}><SiFacebook /></span>
-                            <span>Facebook</span>
-                        </p>
-                        <p className={styles.emailParagraph}>
-                            <span className={styles.envelopeSpan}><FaInstagram /></span>
-                            <span>Instagram</span>
-                        </p>
+                    {socialLinks.map((socialLink, index) => (
+                        <a key={index} href={socialLink.href} target="_blank" rel="noopener noreferrer" className={styles.socialParagraph}>
+                            <span className={styles.envelopeSpan}>{socialLink.icon}</span>
+                            <span>{socialLink.name}</span>
+                        </a>
+                        ))}
                     </div>
                 </div>
             </div>
-
-
         </div>
 
         <div className={styles.footerBottom}>
             <p>
-                &copy; 2024 V-ent  Esports
+                &copy; 2024 Vermillion Enterprise (V-ENT)
             </p>
-            
             <p>
                 All rights reserved
             </p>

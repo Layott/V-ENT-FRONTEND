@@ -3,10 +3,16 @@
   width: 100%;
 }
 
+.leftManageEventsContainer {
+  order: 2;
+  margin-top: 4rem;
+}
+
 .rightManageEventsContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  order: 1;
 }
 
 .manageEventsImageContainer {
@@ -30,5 +36,12 @@
   }
   .descriptionParagraph {
     text-align: left;
+  }
+  .leftManageEventsContainer {
+    order: 1;
+    margin-top: 0rem;
+  }
+  .rightManageEventsContainer {
+    order: 2;
   }
 }

@@ -4,9 +4,9 @@
     background-position: left center;
     background-size: 130%;
     position: relative;
-    // border: 10px solid yellow;
-    min-height: 550px;
-    max-height: 850px;
+    min-height: calc(100vh + 100px);
+    max-height: calc(100vh + 200px);
+    // border: 2px solid red;
 }
 
 .landingHeroContainer img {
@@ -19,18 +19,18 @@
     top: 0;
     height: 100%;
     width: 100%;
-    // border: 5px solid blue;
     position: absolute;
 }
 
 .headerContainer {
-    // border: 2px solid red;
-    min-height: 50px;
+    height: 100px;
+    height: 70px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
+    padding: 1rem 1rem;
+    // border: 2px solid white;
 }
 
 
@@ -39,6 +39,7 @@
     justify-content: center;
     width: auto;
     display: flex;
+    height: 50px;
     align-items: center;
     justify-content: flex-start;
     // border: 2px solid pink;
@@ -62,23 +63,33 @@
 
 .innerLogoContainer {
     height: 25px;
-    // border: 1px solid yellow;
 }
 
-.logo {
-    font-size: 1rem;
-    height: 100%;
-    width: 100%;
+.vEntLogo {
+    height: 25px;
+    width: 24px;
+    object-fit: contain;
 }
 
-.waitlistBTN {
+.waitlistBTN:nth-child(2) {
     border-radius: 5px;
     width: 120px;
 }
 
+.loginBTN {
+    border-radius: 5px;
+    width: 80px;
+    background-color: var(--v-ent-red);
+}
+
+.headerJoinTournamentsBTNContainer button:first-of-type {
+    border-radius: 50px;
+}
+
 .heroContent {
-    height: calc(100% - 50px);
-    // border: 2px solid orange;
+    height: calc(100% - 100px);
+    height: auto;
+    // border: 2px solid seagreen;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,6 +103,7 @@
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
+    // border: 2px solid green;
 }
 
 .gamingAnimeTribeContainer {
@@ -124,9 +136,9 @@
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
-    // border: 1px solid white;
     width: 100%;
     justify-content: center;
+    // border: 1px solid white;
 }
 
 
@@ -185,21 +197,15 @@
     width: 90%;
 }
 
-
-// .bottomImageContainer {
-//     border: 1px solid orange;
-// }
-
 .bottomRightImageContainer,
 .topLeftImageContainer {
-    width: calc(40% - 0.75rem);
+    width: 40%;
 }
 
 .bottomLeftImageContainer,
 .topRightImageContainer {
-    width: calc(60% - 0.75rem);
+    width: 60%;
 }
-
 
 .bottomLeftImageContainer,
 .bottomRightImageContainer,
@@ -207,7 +213,6 @@
 .topLeftImageContainer {
     height: 120px;
     border-radius: 20px;
-    // border: 2px solid white;
     transition: all ease-in-out 0.5s;
 }
 
@@ -223,8 +228,8 @@
 
 @media only screen and (min-width: 450px) {
     .landingHeroContainer {
-        min-height: 920px;
-        max-height: 1100px;
+        min-height: 900px;
+        max-height: 1000px;
         // border: 10px solid orange;
     }
 
@@ -238,7 +243,7 @@
 
 @media only screen and (min-width: 550px) {
     .headerContainer {
-        padding: 0 1.5rem;
+        padding: 1rem 1.5rem;
     }
 }
 
@@ -246,7 +251,7 @@
     .landingHeroContainer {
         // border: 10px solid pink;
         min-height: 1000px;
-        max-height: 1100px;
+        max-height: 1000px;
     }
 
     .gamingAnimeTribeContainer h1 {
@@ -273,13 +278,9 @@
 @media only screen and (min-width: 768px) {
     .landingHeroContainer {
         // border: 10px solid purple;
-        min-height: 1100px;
+        min-height: 1130px;
         max-height: 1200px;
     }
-
-    // .innerLandingHeroContainer {
-    //     border: 5px solid green;
-    // }
 
     .headerContainer {
         min-height: 60px;
@@ -288,6 +289,11 @@
     .innerLogoContainer {
         height: 35px;
     }
+
+    .vEntLogo {
+        height: 35px;
+        width: 34px;
+    }    
 
     .headerLogoContainer h1 {
         font-size: 2.5rem;
@@ -298,6 +304,13 @@
         min-width: 140px;
         width: 140px;
         max-width: 140px;
+    }
+
+    .loginBTN {
+        font-size: 1rem;
+        min-width: 90px;
+        width: 90px;
+        max-width: 90px;
     }
 
     .gamingAnimeTribeContainer h1 {
@@ -317,14 +330,23 @@
     .topRightImageContainer,
     .topLeftImageContainer {
         height: 240px;
+        // border: 2px solid blue;
     }
+
+    .heroWelcomeTextContainer p {
+        text-align: left;
+    }
+
+    .heroWelcomeTextContainer p {
+        font-size: 1rem;
+    }  
 }
 
 @media only screen and (min-width: 850px) {
     .landingHeroContainer {
         // border: 10px solid red;
-        min-height: 900px;
-        max-height: 1000px;
+        min-height: 950px;
+        max-height: 950px;
     }
 
     .heroContentTop {
@@ -345,33 +367,35 @@
         max-height: 100vh;
     }
 
+    .headerContainer {
+        height: 100px;
+    }
+
+    .innerLogoContainer {
+        height: 45px;
+    }
+
+    .vEntLogo {
+        height: 45px;
+        width: 43px;
+    }    
+
     .heroContent {
         flex-direction: row;
         width: 95%;
         margin: 0 auto;
+        height: 80%;
     }
 
     .heroContentTop {
         flex-direction: column;
-        width: 100%;
+        width: 45%;
     }
 
-    .bottomLeftImageContainer,
-    .bottomRightImageContainer,
-    .topRightImageContainer,
-    .topLeftImageContainer {
-        height: 200px;
-    }
-
-}
-
-@media only screen and (min-width: 1220px) {
-    // .landingHeroContainer {
-    //     border: 10px solid black;
-    // }
-
-    .heroContent {
-        width: 85%;
+    .heroContentBottom {
+        width: 55%;
+        // border: 2px solid yellow;
+        align-items: flex-end;
     }
 
     .bottomLeftImageContainer,
@@ -381,4 +405,57 @@
         height: 210px;
     }
 
+    .gamingAnimeTribeContainer h1 {
+        font-size: 5rem;
+        line-height: 1.125;
+    }
+}
+
+@media only screen and (min-width: 1220px) {
+    // .landingHeroContainer {
+    //     border: 10px solid brown;
+    // }
+
+    .heroContent {
+        width: 90%;
+    }
+
+    .bottomLeftImageContainer,
+    .bottomRightImageContainer,
+    .topRightImageContainer,
+    .topLeftImageContainer {
+        height: 230px;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .gamingAnimeTribeContainer h1 {
+        font-size: 7rem;
+        line-height: 1;
+    }
+
+    .bottomLeftImageContainer,
+    .bottomRightImageContainer,
+    .topRightImageContainer,
+    .topLeftImageContainer {
+        height: 250px;
+    }
+
+    .heroWelcomeTextContainer p {
+        font-size: 1.125rem;
+    }
+}
+
+
+@media only screen and (min-width: 1550px) {
+    // .landingHeroContainer {
+    //     border: 10px solid pink;
+    // }
+
+    .bottomLeftImageContainer,
+    .bottomRightImageContainer,
+    .topRightImageContainer,
+    .topLeftImageContainer {
+        height: 270px;
+    }
 }

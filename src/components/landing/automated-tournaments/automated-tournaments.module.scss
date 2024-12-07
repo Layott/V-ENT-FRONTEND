@@ -12,6 +12,7 @@
     transition: ease;
 }
 
+
 .leftAutomatedTournaments {
     display: flex;
     justify-content: center;
@@ -25,6 +26,7 @@
     min-height: 180px;
     width: 100%;
     transition: all ease-in-out 0.5s;
+    margin-top: 4rem;
 }
 
 .innerLeftAutomatedTournaments {
@@ -146,6 +148,7 @@
     .rightAutomatedTournaments {
         width: 100%;
         min-height: 250px;
+        margin-top: 0;
     }
 
     .innerRightAutomatedTournaments {
@@ -176,7 +179,6 @@
     .innerLeftAutomatedTournaments {
         width: 100%;
         max-width: 450px;
-        // border: 2px solid white;
     }
 
     .rightAutomatedTournaments {
