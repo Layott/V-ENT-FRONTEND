@@ -1,3 +1,5 @@
+"use client"
+
 import LandingHero from '@/components/landing/landing-hero/LandingHero'
 import BelowHero from '@/components/landing/below-hero/BelowHero'
 import TournamentsGamers from '@/components/landing/automated-tournaments/AutomatedTournaments'

@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link';
 import Cookies from 'js-cookie';
-import Link from 'next/link'
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
 import facebookLogo from '../../../public/images/facebook.svg'
@@ -85,7 +85,11 @@ const Login = () => {
     return (
         <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
-                <h1>v-ent</h1>
+                <Link
+                    href={'/'}
+                >
+                    <h1>v-ent</h1>
+                </Link>
             </header>
 
             <main className={generalStyles.mainContainer}>
