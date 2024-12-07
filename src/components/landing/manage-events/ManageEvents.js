@@ -1,16 +1,24 @@
 import Image from "next/image"
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import manageEvents from '@/images/manage_events.webp'
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import landingStyles from '@/styles/landing/landing.module.css'
+import observerStyle from '@/styles/intersection/intersection.module.css'
 import styles from './manage-events.module.css';
 
-const ManageEvents = () => {
+const ManageEvents = ({ scrollToForm }) => {
+  const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
+  const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
+
   return (
-    <div className={landingStyles.manageEventsContainer}>
+    <div className={`${landingStyles.manageEventsContainer} ${styles.manageEventsContainer}`}>
       <div className={landingStyles.innerManageEventsContainer}>
       
         <div className={styles.leftManageEventsContainer}>
-            <div className={styles.manageEventsImageContainer}>
+            <div
+              ref={ref}
+              className={`${styles.manageEventsImageContainer} ${observerStyle.manageEventsImageContainer} ${isVisible ? observerStyle.fadeInFromLeft : ''}`}
+            >
                 <Image
                   src={manageEvents}
                   alt="Manage Events"
@@ -19,7 +27,10 @@ const ManageEvents = () => {
         </div>
 
         <div className={styles.rightManageEventsContainer}>
-          <div className={landingStyles.innerRightManageEvents}>
+          <div
+            ref={refText}
+            className={`${landingStyles.innerRightManageEvents} ${observerStyle.innerRightManageEvents} ${isTextVisible ? observerStyle.fadeInDissolve : ''}`}
+          >
             <div className={landingStyles.headingContainer}>
               <h4 className={landingStyles.subHeadingText}>
                 Event Creation & Ticketing
@@ -34,7 +45,11 @@ const ManageEvents = () => {
                 Host gaming events or anime screenings with ease using our powerful event management tools. From ticketing to attendee tracking, V-ENT empowers you to organize memorable events for your audience.
               </p>
 
-              <button className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}>Join the waitlist</button>
+              <button
+                className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
+                onClick={scrollToForm}
+              >
+                Join the waitlist</button>
             </div>
 
           </div>
@@ -43,6 +58,5 @@ const ManageEvents = () => {
     </div>
   )
 }
-
 
 export default ManageEvents
