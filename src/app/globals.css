@@ -94,3 +94,56 @@ select:active {
   --primary-bg: #000000;
   --primary-text: #FFFFFF;
 }
+
+.ql-toolbar {
+  padding: 5px;
+  border-radius: 0 !important;
+}
+
+.ql-editor {
+  min-height: 270px;
+  max-height: 450px;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  background-color: #303136;
+  background-color: #393A40;
+}
+
+.ql-toolbar .ql-stroke,
+.ql-toolbar .ql-fill {
+  stroke: #FFF !important;
+}
+
+.ql-snow .ql-picker-options {
+  background-color: #303136 !important;
+}
+
+.ql-toolbar .ql-picker .ql-picker-item {
+  background-color: #303136 !important;
+  width: 100% !important;
+}
+
+.ql-toolbar .ql-picker .ql-picker-item:hover {
+  color: #808080 !important;
+  width: 100% !important;
+}
+
+.ql-toolbar .ql-picker.ql-align .ql-picker-item:hover {
+  background-color: #000 !important;
+  width: 100% !important;
+}
+
+@media only screen and (min-width: 450px) {
+  .ql-editor {
+    min-height: 350px;
+    max-height: 550px;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .ql-editor {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
