@@ -28,6 +28,6 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/staging.vermillionent.com:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/staging.vermillionent.com:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/staging.vermillionent.com:buildcache,mode=max
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/staging.app.v-ent.co:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/staging.app.v-ent.co:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/staging.app.v-ent.co:buildcache,mode=max
