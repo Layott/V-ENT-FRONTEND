@@ -5,8 +5,6 @@
     min-height: 200px;
     width: 100%;
     overflow: hidden;
-
-    border: 1px solid red;
 }
 
 .tournamentsFeaturedContainer h3 {
@@ -28,8 +26,6 @@
     scroll-snap-type: x mandatory;
     -ms-overflow-style: none;
     scrollbar-width: none;
-
-    border: 1px solid orange;
 }
 
 .slidersContainer::-webkit-scrollbar {

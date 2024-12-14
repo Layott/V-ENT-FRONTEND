@@ -142,6 +142,17 @@ select:active {
   width: 100% !important; 
 }
 
+
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  background-color: #eaeaea;
+  padding: 3px;
+  cursor: pointer;
+  transition: background-color ease-in-out 0.5s;
+}
+
+
+
 @media only screen and (min-width: 450px) {
   .ql-editor {
     min-height: 350px;

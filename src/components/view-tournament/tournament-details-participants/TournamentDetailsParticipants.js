@@ -7,7 +7,7 @@ import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { RiGalleryView2 } from "react-icons/ri";
 import { IoGridOutline } from "react-icons/io5";
-import { LuUser, LuUsers2 } from "react-icons/lu";
+import { LuUser, LuUsers } from "react-icons/lu";
 import { participantsList } from './participantsList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './tournament-details-participants.module.css'
@@ -141,7 +141,7 @@ const TournamentDetailsParticipants = () => {
                 {participant.type === "Individual" ? (
                   <LuUser className={styles.participantIcon} />
                 ) : (
-                  <LuUsers2 className={styles.participantIcon} />
+                  <LuUsers className={styles.participantIcon} />
                 )}
                 {participant.type}
               </div>
@@ -197,7 +197,7 @@ const TournamentDetailsParticipants = () => {
                     {participant.type === "Individual" ? (
                       <LuUser className={styles.participantIcon} />
                     ) : (
-                      <LuUsers2 className={styles.participantIcon} />
+                      <LuUsers className={styles.participantIcon} />
                     )}
                     {participant.type}
                   </div>

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import { FaAsterisk } from "react-icons/fa6";
-import ReactQuill from 'react-quill';
+// import ReactQuill from 'react-quill';
 // import 'react-quill/dist/quill.snow.css'
 import { FiInfo } from "react-icons/fi";
 import modules from '@/components/react-quill/reactQuillModule';
+import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-title.module.css'
 
 const CreateTournamentTitle = () => {
@@ -35,30 +35,31 @@ const CreateTournamentTitle = () => {
   return (
     <div className={`${createTournamentStyles.createSubSectionContainer} ${styles.createSubSectionContainer}`}>
         <div className={styles.tournamentTitleContainer}>
-            <label htmlFor="" className={styles.titleLabel}>Tournament Title
-                <span className={styles.asteriskSpan}>
-                    <FaAsterisk className={styles.asteriskIcon} />
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Tournament Title
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
             </label>
             <input
                 type="text"
-                className={styles.inputText}
+                className={createTournamentStyles.inputText}
                 placeholder='Enter title'
             />
         </div>
 
-        <div className={styles.gameAndModeContainer}>
-            <div className={styles.gameContainer}>
-                <label htmlFor="" className={styles.gameLabel}>Game
-                    <span className={styles.asteriskSpan}>
-                        <FaAsterisk className={styles.asteriskIcon} />
+        <div className={createTournamentStyles.twoInputContainer}>
+            <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Game
+                    <span className={createTournamentStyles.asteriskSpan}>
+                        <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                     </span>
                 </label>
+
                 
                 <select
                     value={selectedGame}
                     onChange={handleGameChange}
-                    className={styles.gameDropdown}
+                    className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select Game</option>
                     <option value="FREEFIRE">FREEFIRE</option>
@@ -68,17 +69,17 @@ const CreateTournamentTitle = () => {
                 </select>
             </div>
 
-            <div className={styles.gameModeContainer}>
-                <label htmlFor="" className={styles.gameLabel}>Game Mode
-                    <span className={styles.asteriskSpan}>
-                        <FaAsterisk className={styles.asteriskIcon} />
+            <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Game Mode
+                    <span className={createTournamentStyles.asteriskSpan}>
+                        <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                     </span>
                 </label>
 
                 <select
                     value={selectedGameMode}
                     onChange={handleGameModeChange}
-                    className={styles.gameModeDropdown}
+                    className={createTournamentStyles.inputWithDropdown}
                     disabled={!selectedGame}
                 >
                     <option value="">Select Game Mode</option>
@@ -91,18 +92,18 @@ const CreateTournamentTitle = () => {
         </div>
 
         <div className={styles.tournamentDescriptionContainer}>
-            <label htmlFor="" className={styles.titleLabel}>Tournament Description
-                <span className={styles.asteriskSpan}>
-                    <FaAsterisk className={styles.asteriskIcon} />
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Tournament Description
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
             </label>
-            <ReactQuill
+            {/* <ReactQuill
                 type={description}
                 className={styles.richTextEditor}
                 onChange={handleDescriptionChange}
                 modules={modules}
                 theme='snow'
-            />
+            /> */}
 
             <p className={styles.infoParagraph}>
                 <span className={styles.infoSpan}>
