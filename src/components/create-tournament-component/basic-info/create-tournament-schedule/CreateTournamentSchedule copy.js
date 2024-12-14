@@ -1,0 +1,194 @@
+import { useState } from 'react';
+import { FaAsterisk } from "react-icons/fa6";
+import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
+import styles from './create-tournament-schedule.module.css'
+
+const CreateTournamentSchedule = () => {
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+  }
+
+  return (
+    <div className={createTournamentStyles.createSubSectionContainer}>
+      <div className={createTournamentStyles.innerCreateSubSectionContainer}>
+        <h3 className={createTournamentStyles.tournamentTypeH3}>Tournament Schedule</h3>
+
+        <div className={createTournamentStyles.twoBoxesInRowContainer}>
+          <div
+            className={`${createTournamentStyles.halfBoxContainer} ${selectedOption === 'one-time' ? createTournamentStyles.activeBox : ''}`}
+          >
+            <div
+              className={`${createTournamentStyles.option} ${selectedOption === 'one-time' ? createTournamentStyles.selected : ''}`}
+              onClick={() => handleOptionClick('one-time')}
+            ></div>
+            <div className={createTournamentStyles.boxTextContainer}>
+              <h4>One Time</h4>
+              <p>Host tournaments once, After tournament ends it doesn&#39;t reoccur.</p>
+            </div>
+          </div>
+          
+          <div
+            className={`${createTournamentStyles.halfBoxContainer} ${selectedOption === 'recurring' ? createTournamentStyles.activeBox : ''}`}
+          >
+            <div
+              className={`${createTournamentStyles.option} ${selectedOption === 'recurring' ? createTournamentStyles.selected : ''}`}
+              onClick={() => handleOptionClick('recurring')}
+            ></div>
+            <div className={createTournamentStyles.boxTextContainer}>
+              <h4>Recurring</h4>
+              <p> Tournaments reoccurs at given dates and is ongoing till a final end date.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.tournamentStartEndDateContainer}>
+          <div className={createTournamentStyles.inputGroup}>
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Tournament Start Date & Time
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                </span>
+            </label>
+
+            <input type="datetime-local" className={styles.dateInput} />
+            
+          </div>
+
+          <div className={createTournamentStyles.inputGroup}>
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Tournament End Date & Time 
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                </span>
+            </label>
+
+            <input type="datetime-local" className={styles.dateInput} />
+          </div>
+
+        </div>
+        
+        <div className={styles.tournamentStartEndDateContainer}>
+          <div className={createTournamentStyles.inputGroup}>
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Registration Start Date & Time 
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                </span>
+            </label>
+
+            <input type="datetime-local" className={styles.dateInput} style={{ color: selectedOption ? "white" : ""}} />
+            
+          </div>
+
+          <div className={createTournamentStyles.inputGroup}>
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Registration End Date  & Time 
+                <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                </span>
+            </label>
+            <input type="datetime-local" className={styles.dateInput} />
+            
+          </div>
+
+        </div>
+        
+      </div>
+
+      <hr className={styles.hrLine} />
+
+      <div className={styles.moreDetails}>
+        <div className={styles.monthlyYearlyContainer}>
+          <p className={styles.howOftenParagraph}>How often do you want this tournament to reoccur?
+            <span className={createTournamentStyles.asteriskSpan}>
+                <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+            </span>
+          </p>
+        </div>
+
+        <div className={styles.optionContainer}>
+          <label className={styles.optionLabel}>
+            <input
+              type="radio"
+              name="recurrenceFrequency"
+              value="monthly"
+              className={styles.optionInput}
+            />
+            Monthly
+          </label>
+
+          <label className={styles.optionLabel}>
+            <input
+              type="radio"
+              name="recurrenceFrequency"
+              value="yearly"
+              className={styles.optionInput}
+            />
+            Yearly
+          </label>
+        </div>
+
+        <div className={styles.nextCycleContainer}>
+          <p className={styles.nextCycleParagraph}>
+            <span>Next Cycle Start Date:</span>
+            <span>21st November 2024</span>
+          </p>
+
+          <div className={styles.recurringTournamentMoreDetails}>
+            <p>Recurring tournaments will inherit start dates (including registration dates) and duration from the first cycle.</p>
+            <p>For cases where the start/end date is not available e.g months with 30 days and February (28/29 days), the start date will be on the next day. Example: if a recurring tournament start date is on the 30th, for February, it will be moved to the 2nd of March..</p>
+          </div>
+        </div>
+
+        <div className={styles.monthlyYearlyContainer}>
+          <p className={styles.howOftenParagraph}>When do you want the recurring tournaments to end?
+            <span className={createTournamentStyles.asteriskSpan}>
+                <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+            </span>
+          </p>
+        </div>
+
+        <div className={styles.optionContainer}>
+          <label className={styles.optionLabel}>
+            <input
+              type="radio"
+              name="endCriteria"
+              value="after-cycles"
+              className={styles.optionInput}
+            />
+            After number of cycles
+          </label>
+
+          <label className={styles.optionLabel}>
+            <input
+              type="radio"
+              name="endCriteria"
+              value="indefinite"
+              className={styles.optionInput}
+            />
+            Indefinite
+          </label>
+        </div>
+
+        <div className={styles.maxNumberCycleContainer}>
+          <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Max Number of Cycles 
+            <span className={createTournamentStyles.asteriskSpan}>
+                <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+            </span>
+          </label>
+          
+          <input type="number" className={styles.maxNumberCycleInput} />
+        </div>
+
+        <p className={styles.nextCycleParagraph}>
+          <span>Last Cycle End Date:</span>
+          <span>21st November 2026</span>
+        </p>
+
+
+          
+      </div>
+
+    </div>
+  )
+}
+
+export default CreateTournamentSchedule
