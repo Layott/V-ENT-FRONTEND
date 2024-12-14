@@ -12,7 +12,6 @@ const UserProfileBanner = ({banner, }) => {
         }
     }
 
-      
   return (
     <div className={styles.profileBanner}>
         <div className={styles.bannerUploader}>

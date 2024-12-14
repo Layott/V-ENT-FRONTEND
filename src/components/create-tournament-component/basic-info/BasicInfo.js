@@ -1,14 +1,15 @@
+import { IoMdArrowForward  } from "react-icons/io";
 import CreateTournamentTitle from './create-tournament-title/CreateTournamentTitle'
 import CreateTournamentType from './create-tournament-type/CreateTournamentType'
 import CreateTournamentSchedule from './create-tournament-schedule/CreateTournamentSchedule'
 import CreateTournamentVisibility from './create-tournament-visibility/CreateTournamentVisibility'
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo'
-import styles from './basic-info.module.css'
+import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 
 const BasicInfo = () => {
   return (
-    <div className={styles.basicInfoContainer}>
-        <header className={styles.createTournamentHeader}>
+    <div className={createTournamentStyles.generalTabContainer}>
+        <header>
             <h1>Basic Info</h1>
         </header>
 
@@ -21,6 +22,21 @@ const BasicInfo = () => {
         <CreateTournamentVisibility />
         
         <CreateTournamentLogo />
+
+        <div className={createTournamentStyles.buttonContainer}>
+          <button
+            className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
+          >
+            Save Draft
+          </button>
+          
+          <button
+            className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
+          >
+            Proceed
+            <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />
+          </button>
+        </div>
     </div>
   )
 }

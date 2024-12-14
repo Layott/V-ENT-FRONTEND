@@ -3,16 +3,15 @@
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
-import TournamentDetailsBanner from '@/components/tournament-details/tournament-details-banner/TournamentDetailsBanner';
-import TournamentDetailsOverview from '@/components/tournament-details/tournament-details-overview/TournamentDetailsOverview';
-import TournamentDetailsRules from '@/components/tournament-details/tournament-details-rules/TournamentDetailsRules';
-import TournamentDetailsBracket from '@/components/tournament-details/tournament-details-bracket/TournamentDetailsBracket';
-import TournamentDetailsParticipants from '@/components/tournament-details/tournament-details-participants/TournamentDetailsParticipants';
-import TournamentDetailsPrize from '@/components/tournament-details/tournament-details-prize/TournamentDetailsPrize';
+import TournamentDetailsBanner from '@/components/view-tournament/tournament-details-banner/TournamentDetailsBanner';
+import TournamentDetailsOverview from '@/components/view-tournament/tournament-details-overview/TournamentDetailsOverview';
+import TournamentDetailsRules from '@/components/view-tournament/tournament-details-rules/TournamentDetailsRules';
+import TournamentDetailsBracket from '@/components/view-tournament/tournament-details-bracket/TournamentDetailsBracket';
+import TournamentDetailsParticipants from '@/components/view-tournament/tournament-details-participants/TournamentDetailsParticipants';
+import TournamentDetailsPrize from '@/components/view-tournament/tournament-details-prize/TournamentDetailsPrize';
+import styles from './view-tournament.module.css'
 
-import styles from './tournament-details.module.css'
-
-const TournamentDetails = () => {
+const ViewTournament = () => {
   const [activeTab, setActiveTab] = useState('overview')
 
   return (
@@ -102,4 +101,4 @@ const TournamentDetails = () => {
   )
 }
 
-export default TournamentDetails
+export default ViewTournament
