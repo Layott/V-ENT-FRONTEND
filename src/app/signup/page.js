@@ -294,6 +294,22 @@ const Signup = () => {
                         </div>
 
                         <div className={generalStyles.inputGroup}>
+                            <label>State/Area/Province:</label>
+                            <div className={generalStyles.passwordContainer}>
+                                <input
+                                    type='text'
+                                    placeholder="Enter your state/area/province"
+                                    required
+                                />
+                                <span
+                                    onClick={togglePasswordVisibility}
+                                    className={generalStyles.togglePassword}>
+                                    {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className={generalStyles.inputGroup}>
                             <label>Password:</label>
                             <div className={generalStyles.passwordContainer}>
                                 <input
