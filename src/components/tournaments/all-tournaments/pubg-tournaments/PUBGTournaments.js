@@ -82,8 +82,8 @@ const PUBGTournaments = () => {
                     </div>
                 
                     <div className={`${newTournamentsStyles.buttonContainer} ${allTournamentsStyles.buttonContainer}`}>
-                        <Link href={'/tournament-details'} className={newTournamentsStyles.viewDetailsBTN}>View Details</Link>
-                        <Link href={'/tournament-register'} className={newTournamentsStyles.registerBTN}>Register</Link>
+                        <Link href={'/tournaments/view-tournament'} className={newTournamentsStyles.viewDetailsBTN}>View Details</Link>
+                        <Link href={'/tournaments/register-tournament'} className={newTournamentsStyles.registerBTN}>Register</Link>
                     </div>
                 </div>
                     

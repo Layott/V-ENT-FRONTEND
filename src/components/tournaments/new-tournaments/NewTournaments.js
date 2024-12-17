@@ -64,8 +64,8 @@ const NewTournaments = () => {
                         </div>
             
                         <div className={styles.buttonContainer}>
-                            <Link href={'/tournament-details'} className={styles.viewDetailsBTN}>View Details</Link>
-                            <Link href={'/tournament-register'} className={styles.registerBTN}>Register</Link>
+                            <Link href={'/tournaments/view-tournament'} className={styles.viewDetailsBTN}>View Details</Link>
+                            <Link href={'/tournaments/register-tournament'} className={styles.registerBTN}>Register</Link>
                         </div>
                     </div>
             

@@ -12,7 +12,7 @@ export const tournamentsFeaturedList = [
         prize: '300,000',
         image: tekkenWorldTour,
         alt: 'Tekken World Tour',
-        link: 'tournament-details'
+        link: 'tournaments/view-tournament'
     },
     {
         name: 'PUBG Elite Showdown',
@@ -21,7 +21,7 @@ export const tournamentsFeaturedList = [
         prize: '200,000',
         image: pubgElite,
         alt: 'PUBG Elite Showdown',
-        link: 'tournament-details'
+        link: 'tournaments/view-tournament'
     },
     {
         name: 'Mortal Kombat Battle',
@@ -30,7 +30,7 @@ export const tournamentsFeaturedList = [
         prize: '300,000',
         image: mortalKombat,
         alt: 'Mortal Kombat',
-        link: 'tournament-details'
+        link: 'tournaments/view-tournament'
     },
     {
         name: 'Unnamed',
@@ -39,7 +39,7 @@ export const tournamentsFeaturedList = [
         prize: '300,000',
         image: unnamed,
         alt: 'Unnamed',
-        link: 'tournament-details'
+        link: 'tournaments/view-tournament'
     },
     {
         name: 'Unnamed',
@@ -48,6 +48,6 @@ export const tournamentsFeaturedList = [
         prize: '1,500,000',
         image: battles,
         alt: 'Battles',
-        link: 'tournament-details'
+        link: 'tournaments/view-tournament'
     }
 ];
