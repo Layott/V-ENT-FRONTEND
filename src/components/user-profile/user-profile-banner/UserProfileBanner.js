@@ -9,6 +9,7 @@ const UserProfileBanner = ({banner, }) => {
         if (file) {
         console.log(`Banner uploaded: ${file.name}`)
         // File upload logic
+        
         }
     }
 
