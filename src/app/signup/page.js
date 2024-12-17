@@ -29,6 +29,7 @@ const Signup = () => {
         full_name: '',
         email: '',
         country: '',
+        state:'',
         password: '',
         confirmPassword: '', 
     });
@@ -295,12 +296,15 @@ const Signup = () => {
 
                         <div className={generalStyles.inputGroup}>
                             <label>State/Area/Province:</label>
-                            <div className={generalStyles.passwordContainer}>
-                                <input
-                                    type='text'
-                                    placeholder="Enter your state/area/province"
-                                    required
-                                />
+                            <div className={generalStyles.inputGroup}>
+                            <input
+                                type='text'
+                                name="state"
+                                placeholder="Enter your state/area/province"
+                                required
+                                value={formData.state}
+                                onChange={handleInputChange} 
+                            />
                                 <span
                                     onClick={togglePasswordVisibility}
                                     className={generalStyles.togglePassword}>
