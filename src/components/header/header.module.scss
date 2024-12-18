@@ -96,7 +96,7 @@
 }
 
 .moveRight {
-    left: 2.5rem;
+    left: calc(5% + 0.5rem);
     position: absolute;
 }
 
@@ -116,9 +116,7 @@
 .searchIcon {
     font-size: 1.2rem;
     color: #888;
-    margin-right: 0px;
     position: absolute;
-    right: 1rem;
     right: 0.5rem;
     cursor: pointer;
 }
@@ -129,6 +127,7 @@
     width: 50px;
     padding: 0px 2rem;
     padding-right: 1.5rem;
+    padding-left: 1.5rem;
     transition:  width 0.5s ease-in-out, border 0.5s ease-in-out;
     margin-right: 5px;
     background-color: transparent;
@@ -144,9 +143,6 @@
 
 .userDetails {
     display: flex;
-    // border: 1px solid red;
-    // height: 80px;
-    display: flex;
     align-items: center;
 }
 
@@ -156,7 +152,6 @@
     flex-direction: column;
     align-items: flex-end;
     padding-right: 0.4rem;
-    // border: 1px solid pink;
 }
 
 .userName {
@@ -175,8 +170,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    // border: 1px solid red;
     position: relative;
 }
 
@@ -200,14 +193,12 @@
 }
 
 .dropdownMenu {
-    // border: 1px solid red;
     background-color: #303136;
     width: 170px;
     min-height: 40px;
     position: absolute;
     top: 55px;
     right: 1.5rem;
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -247,6 +238,34 @@
     border: 1px solid #FFF;
 }
 
+@media only screen and (min-width: 300px) {
+    .moveRight {
+        left: calc(7% + 0.5rem);
+    }
+}
+
+@media only screen and (min-width: 400px) {
+    .moveRight {
+        left: 2.5rem;
+    }
+}
+
+@media only screen and (min-width: 450px) {
+    .searchIconMobileContainer {
+        margin-left: 5%;
+    }
+
+    .moveRight {
+        left: 1.3rem;
+    }
+}
+
+@media only screen and (min-width: 500px) {
+    .moveRight {
+        left: 1.5rem;
+    }
+}
+
 
 @media only screen and (min-width: 550px) {
     .searchBar {
@@ -270,6 +289,10 @@
     
     .searchInput:focus {
         width: 250px;
+    }
+
+    .moveRight {
+        left: 1.5rem;
     }
 }
 
