@@ -1,4 +1,5 @@
 import { IoMdArrowForward  } from "react-icons/io";
+import Sponsor from "./sponsors/Sponsors";
 import WebSocialLink from "./web-social-links/WebSocialLink";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 
@@ -9,6 +10,8 @@ const SponsorsLinks = () => {
             <h1>Sponsors & Links</h1>
         </header>
 
+        <Sponsor />
+        
         <WebSocialLink />
 
         <div className={createTournamentStyles.buttonContainer}>

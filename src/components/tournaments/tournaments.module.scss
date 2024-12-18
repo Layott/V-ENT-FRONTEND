@@ -9,13 +9,22 @@
     padding-bottom: 2rem;
 }
 
+.searchContainer {
+    display: flex;
+}
+
+.createTournamentBTN {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+    font-size: 1rem;
+    border-radius: 5px;
+}
 
 @media only screen and (min-width: 768px) {
     .tournamentsComponentContainer {
         margin-left: 180px;
         width: calc(100% - 180px);
     }
- 
 }
 
 @media only screen and (min-width: 1024px) {
@@ -23,5 +32,61 @@
         margin-left: 250px;
         width: calc(100% - 250px);
     }
+}
 
+.searchFilterCreateTournamentContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    border: 1px solid yellow;
+    gap: 0.75rem;
+}
+
+.searchIconTrigger {
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #000;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #303136;
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
+    position: relative;
+    transition: all 0.5s ease-in-out;
+    border: 1px solid #303136;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    padding: 0 0.5rem;
+    flex-grow: 1;
+    font-size: 0.95rem;
+    transition: all ease-in-out 0.5s;
+    // border: 1px solid red;
+}
+
+.searchBar:focus-within {
+    border: 1px solid #FFF;
+}
+
+.closeIcon {
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+
+.searchIconInside {
+    font-size: 1.25rem;
+    cursor: pointer;
 }
