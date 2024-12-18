@@ -69,6 +69,7 @@ a {
   border: 1px solid var(--v-ent-red);
   transform: scale(1);
   transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
+  cursor: pointer;
 }
 
 .redBTN:hover {
