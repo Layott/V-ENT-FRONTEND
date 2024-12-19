@@ -14,24 +14,53 @@
 }
 
 .createTournamentBTN {
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.55rem;
     font-size: 0.9rem;
-    font-size: 1rem;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 28px;
 }
 
-@media only screen and (min-width: 768px) {
-    .tournamentsComponentContainer {
-        margin-left: 180px;
-        width: calc(100% - 180px);
-    }
+.plusIcon {
+    display: flex;
+    height: 100%;
+    font-size: 0.9rem;
 }
 
-@media only screen and (min-width: 1024px) {
-    .tournamentsComponentContainer {
-        margin-left: 250px;
-        width: calc(100% - 250px);
-    }
+.filterContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 0;
+    background-color: #303136;
+}
+
+.inputWithDropdown {
+    padding-right: 1rem;
+    background-size: 0.4rem;
+    height: 30px !important;
+    cursor: pointer;
+    outline: none !important;
+    border: 1px solid #303136 !important;
+    transition: all 0.5s ease-in-out; 
+}
+
+.inputWithDropdown:hover,
+.inputWithDropdown:focus,
+.inputWithDropdown:focus-within,
+.inputWithDropdown:active {
+    outline: none !important;
+    border-bottom: 1px solid #FFF !important;
+}
+
+.filterIcon {
+    font-size: 1rem;
+    cursor: pointer;
+    height: 28px;
+    width: 100%;
+    padding: 6px;
 }
 
 .searchFilterCreateTournamentContainer {
@@ -39,8 +68,8 @@
     justify-content: flex-end;
     align-items: center;
     width: 100%;
-    border: 1px solid yellow;
     gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .searchIconTrigger {
@@ -54,31 +83,29 @@
     align-items: center;
     justify-content: space-between;
     background-color: #303136;
-    padding: 0.5rem 0.75rem;
+    padding: 0.25rem 0.6rem;
     border-radius: 5px;
     position: relative;
     transition: all 0.5s ease-in-out;
-    border: 1px solid #303136;
-    width: 100%;
-    display: flex;
-    align-items: center;
+    border: 0.5px solid #303136;
     gap: 0;
+    width: 100%;
+    flex-grow: 1;
 }
 
 .searchInput {
     border: none;
     outline: none;
     background-color: transparent;
-    color: white;
+    color: #FFF;
     padding: 0 0.5rem;
     flex-grow: 1;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all ease-in-out 0.5s;
-    // border: 1px solid red;
 }
 
 .searchBar:focus-within {
-    border: 1px solid #FFF;
+    border: 0.5px solid #FFF;
 }
 
 .closeIcon {
@@ -89,4 +116,68 @@
 .searchIconInside {
     font-size: 1.25rem;
     cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+    .tournamentsComponentContainer {
+        margin-left: 180px;
+        width: calc(100% - 180px);
+    }
+
+    .searchBar {
+        min-width: 400px;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .searchInput {
+        padding: 0.0625rem 0.5rem;
+    }
+    
+    .createTournamentBTN {
+        height: 32px !important;
+    }
+    
+    .plusIcon {
+        display: flex;
+        height: 100%;
+    }
+    
+    .inputWithDropdown {
+        height: 32px !important;
+    }
+    
+    .filterIcon {
+        font-size: 1.2rem;
+        height: 32px;
+        padding: 6px;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .tournamentsComponentContainer {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+    }
+
+    .searchBar {
+        padding: 0.35rem 0.75rem;
+    }
+
+    .searchInput {
+        padding: 0.185rem 0.5rem;
+    }
+
+    .createTournamentBTN {
+        height: 35px !important;
+        font-size: 1rem;
+    }
+        
+    .inputWithDropdown {
+        height: 35px !important;
+    }
+    
+    .filterIcon {
+        height: 35px;
+        padding: 5px;
+    }
 }
