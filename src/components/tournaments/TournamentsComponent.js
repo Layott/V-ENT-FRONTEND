@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { MdOutlineClose } from "react-icons/md";
-import { FcSearch } from "react-icons/fc";
+import { HiPlus } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
+import { FiSearch } from "react-icons/fi";
+import { BiFilter } from "react-icons/bi";
 import TournamentsFeatured from './tournaments-featured/TournamentsFeatured';
 import NewTournaments from './new-tournaments/NewTournaments';
 import AllTournaments from './all-tournaments/AllTournaments';
+import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './tournaments.module.css';
 
 const TournamentsComponent = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
+  const [selectedTournamentType, setSelectedTournamentType] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false); 
 
   const toggleSearchBar = () => {
     setIsSearchBarVisible((prev) => !prev);
@@ -21,12 +26,21 @@ const TournamentsComponent = () => {
     }
   };
 
+  const handleFilterChange = (event) => {
+    setSelectedTournamentType(event.target.value);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible((prev) => !prev); // Toggle dropdown visibility
+  };
+
   return (
     <div className={styles.tournamentsComponentContainer}>
       <div className={styles.searchFilterCreateTournamentContainer}>
+        {/* Search Bar */}
         <div className={styles.searchContainer}>
           {!isSearchBarVisible && (
-            <FcSearch
+            <FiSearch
               className={styles.searchIconTrigger}
               onClick={toggleSearchBar}
             />
@@ -51,11 +65,36 @@ const TournamentsComponent = () => {
               />
             </div>
           )}
-
         </div>
 
-        <button className={`${styles.createTournamentBTN} redBTN`}>Create Tournament</button>
+        {/* Filter Dropdown */}
+        <div className={styles.filterContainer}>
+          <BiFilter 
+            className={styles.filterIcon} 
+            onClick={toggleDropdown} 
+          />
+          {isDropdownVisible && (
+            <select
+              value={selectedTournamentType}
+              onChange={handleFilterChange}
+              className={`${createTournamentStyles.inputWithDropdown} ${styles.inputWithDropdown}`}
+            >
+              <option value="">Filter</option>
+              <option value="battle-royale">Battle Royale</option>
+              <option value="sports">Sports</option>
+              <option value="strategy">Strategy</option>
+            </select>
+          )}
+        </div>
+
+        {/* Create Tournament Button */}
+        <button className={`${styles.createTournamentBTN} redBTN`}>
+          <HiPlus className={styles.plusIcon} />
+          Create Tournament
+        </button>
       </div>
+
+      {/* Tournaments Sections */}
       <TournamentsFeatured />
       <NewTournaments />
       <AllTournaments />
