@@ -171,26 +171,7 @@
     min-height: 17px;
     border-radius: 50%;
     background-color: #28292D;
-    border: 1px solid #FFFF;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.option:hover {
-    background-color: #AAA;
-}
-
-.option.selected {
-    background-color: #FFF;
-    border: 3px solid var(--v-ent-red);
-}
-
-.option {
-    min-width: 17px;
-    min-height: 17px;
-    border-radius: 50%;
-    background-color: #28292D;
-    border: 1px solid #FFFF;
+    // border: 1px solid #FFFF;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
 }

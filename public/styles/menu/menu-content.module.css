@@ -5,6 +5,7 @@
   min-height: 200px;
   width: 100%;
   overflow: hidden;
+  margin-top: -3rem;
 }
 
 .tournamentsFeaturedContainer h3 {
@@ -269,5 +270,8 @@
     flex-direction: row;
     justify-content: space-between;
     gap: 0rem;
+  }
+  .tournamentsFeaturedContainer {
+    margin-top: -3rem;
   }
 }
