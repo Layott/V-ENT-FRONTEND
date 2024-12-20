@@ -1,105 +1,158 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { FaAsterisk } from "react-icons/fa6";
+import { BiUpload } from "react-icons/bi";
+import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './sponsors.module.css';
 
-const Sponsor = () => {
-  const [logo, setLogo] = useState(null);
+const SponsorsTwo = () => {
+  const [fields, setFields] = useState([
+    { name: '', username: '', logo: null },
+  ]);
+  
+  const handleAddField = () => {
+    setFields([...fields, { name: '', username: '', logo: null }]);
+  };
 
-  const handleLogoUpload = (event) => {
+  const handleDeleteField = (index) => {
+    setFields(fields.filter((_, i) => i !== index));
+  };
+
+  const handleFieldChange = (index, key, value) => {
+    const updatedFields = [...fields];
+    updatedFields[index][key] = value;
+    setFields(updatedFields);
+  };
+
+  const handleLogoUpload = (index, event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setLogo(e.target.result); // Save the image preview URL
+        const updatedFields = [...fields];
+        updatedFields[index].logo = e.target.result; // Save the image preview URL
+        setFields(updatedFields);
       };
       reader.readAsDataURL(file);
     }
+    event.target.value = '';
   };
 
-  const handleResetLogo = () => {
-    setLogo(null); // Clear the uploaded logo
+  const handleResetLogo = (index, e) => {
+    e.stopPropagation();    // Prevent parent handlers from firing
+    const updatedFields = [...fields];
+    updatedFields[index].logo = null; // Clear the uploaded logo
+    setFields(updatedFields);
   };
+
+  const triggerFileUpload = (index, e) => {
+    e.stopPropagation();
+    document.getElementById(`logoUpload-${index}`).click();
+  }
+
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
         <h3 className={createTournamentStyles.tournamentTypeH3}>Sponsors</h3>
 
-        <div className={styles.threeBoxesContainer}>
-          <div className={`${createTournamentStyles.twoBoxesInRowContainer} ${styles.twoBoxesInRowContainer}`}>
-            <div className={createTournamentStyles.inputGroup}>
-              <label htmlFor="sponsorName" className={createTournamentStyles.labelWithAsterisk}>
-                Sponsor Name
-                <span className={createTournamentStyles.asteriskSpan}>
-                  <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              </label>
-              <input
-                id="sponsorName"
-                type="text"
-                placeholder="Enter sponsor name"
-                className={createTournamentStyles.inputText}
-              />
+        {fields.map((field, index) => (
+          <div key={index} className={styles.threeBoxesContainer}>
+            <div className={`${createTournamentStyles.twoBoxesInRowContainer} ${styles.twoBoxesInRowContainer}`}>
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor={`sponsorName-${index}`} className={createTournamentStyles.labelWithAsterisk}>
+                  Sponsor Name
+                  <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                  </span>
+                </label>
+                <input
+                  id={`sponsorName-${index}`}
+                  type="text"
+                  placeholder="Enter sponsor name"
+                  className={createTournamentStyles.inputText}
+                  value={field.name}
+                  onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
+                />
+              </div>
+
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor={`sponsorUsername-${index}`} className={createTournamentStyles.labelWithAsterisk}>
+                  Username
+                </label>
+                <input
+                  id={`sponsorUsername-${index}`}
+                  type="text"
+                  placeholder="Enter sponsor username"
+                  className={createTournamentStyles.inputText}
+                  value={field.username}
+                  onChange={(e) => handleFieldChange(index, 'username', e.target.value)}
+                />
+              </div>
             </div>
 
-            <div className={createTournamentStyles.inputGroup}>
-              <label htmlFor="sponsorUsername" className={createTournamentStyles.labelWithAsterisk}>
-                Username
-              </label>
-              <input
-                id="sponsorUsername"
-                type="text"
-                placeholder="Enter sponsor username"
-                className={createTournamentStyles.inputText}
-              />
-            </div>
-          </div>
-
-          <div className={styles.logoUploadContainer}>
-            <div
-              className={styles.logoUploadBox}
-              onClick={() => document.getElementById("logoUpload").click()} // Trigger file input click
-            >
-              {logo ? (
-                <div className={styles.logoPreview}>
-                  <Image
-                    src={logo}
-                    alt="Uploaded Logo"
-                    className={styles.logoImage} 
-                    width={80}
-                    height={50}
+            <div className={styles.uploaderAndDeleteFieldBTNContainer}>
+              <div className={styles.logoUploadContainer}>
+                <div
+                  className={styles.logoUploadBox}
+                  onClick={() => document.getElementById(`logoUpload-${index}`).click()} 
+                >
+                  {field.logo ? (
+                    <div className={styles.logoPreview}>
+                      <Image
+                        src={field.logo}
+                        alt="Uploaded Logo"
+                        className={styles.logoImage} 
+                        width={60}
+                        height={40}
+                      />
+                      <div className={styles.resetAndRemoveContainer}>
+                        <button className={styles.removeImageContainer} onClick={(e) => handleResetLogo(index, e)}>
+                          Cancel
+                        </button>
+                        <button type="button" onClick={(e) => triggerFileUpload(index, e)} className={styles.resetButton}>
+                          Change
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.logoUploadPlaceholder}>
+                      <span>
+                        <BiUpload className={styles.uploadIcon} />
+                        Upload Logo</span>
+                    </div>
+                  )}
+                  <input
+                    id={`logoUpload-${index}`}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleLogoUpload(index, e)}
+                    className={styles.hiddenInput}
                   />
-                  <button
-                    type="button"
-                    onClick={handleResetLogo}
-                    className={styles.resetButton}
-                  >
-                    Change
-                  </button>
                 </div>
-              ) : (
-                <div className={styles.logoUploadPlaceholder}>
-                  <span>Upload Logo</span>
-                </div>
-              )}
-              {/* Completely hidden file input */}
-              <input
-                id="logoUpload"
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className={styles.hiddenInput}
-              />
+              </div>
+
+              <button
+                className={styles.deleteFieldBTN}
+                onClick={() => handleDeleteField(index)}
+              >
+                <FaTrash className={styles.deleteFieldIcon} />
+              </button>
             </div>
           </div>
+        ))}
 
-
-        </div>
+        <button
+          type="button"
+          className={styles.addButton}
+          onClick={handleAddField}
+        >
+          Add Another Sponsor
+        </button>
       </div>
     </div>
   );
 };
 
-export default Sponsor;
+export default SponsorsTwo;
