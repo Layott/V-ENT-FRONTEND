@@ -6,7 +6,11 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo'
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 
-const BasicInfo = () => {
+const BasicInfo = ({ setSelectedTab }) => {
+  const handleProceed = () => {
+    setSelectedTab((prevTab) => prevTab + 1);
+  }
+
   return (
     <div className={createTournamentStyles.generalTabContainer}>
         <header>
@@ -32,6 +36,7 @@ const BasicInfo = () => {
           
           <button
             className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
+            onClick={handleProceed}
           >
             Proceed
             <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />

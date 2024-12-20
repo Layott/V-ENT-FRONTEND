@@ -11,37 +11,32 @@ const CreateTournamentComponent = () => {
   // const [selectedTab, setSelectedTab] = useState(1);
   // const [selectedTab, setSelectedTab] = useState(2);
   // const [selectedTab, setSelectedTab] = useState(3);
-  const [selectedTab, setSelectedTab] = useState(4);
+  // const [selectedTab, setSelectedTab] = useState(4);
+  const [selectedTab, setSelectedTab] = useState(5);
 
   const renderTabContent = () => {
-    switch(selectedTab) {
+    switch (selectedTab) {
       case 1:
-        return <BasicInfo />
+        return <BasicInfo setSelectedTab={setSelectedTab} />;
       case 2:
-        return <FormatParticipants />
+        return <FormatParticipants setSelectedTab={setSelectedTab} />;
       case 3:
-        return <PrizeDistribution />
+        return <PrizeDistribution setSelectedTab={setSelectedTab} />;
       case 4:
-        return <SponsorsLinks />
+        return <SponsorsLinks setSelectedTab={setSelectedTab} />;
       case 5:
-        return <Review />
+        return <Review setSelectedTab={setSelectedTab} />;
       default:
-        return <BasicInfo />
+        return <BasicInfo setSelectedTab={setSelectedTab} />;
     }
-  }
+  };
 
   return (
     <div className={styles.createTournamentContainer}>
-        <ProgressMenu
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-        />
-        
-        <div className={styles.renderTabContent}>
-          {renderTabContent()}
-        </div>
+      <ProgressMenu selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      <div className={styles.renderTabContent}>{renderTabContent()}</div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateTournamentComponent
+export default CreateTournamentComponent;
