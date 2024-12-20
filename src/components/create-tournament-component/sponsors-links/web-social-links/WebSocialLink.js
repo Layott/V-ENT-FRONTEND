@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './web-social-link.module.css';
 
@@ -36,6 +37,10 @@ const WebSocialLink = () => {
     setNewLabel('');
   }
 
+  const handleDeleteField = (index) => {
+    setFields(fields.filter((_, i) => i !== index));
+  }
+
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
@@ -51,6 +56,13 @@ const WebSocialLink = () => {
                 placeholder={placeholder}
                 className={`${createTournamentStyles.inputText} ${styles.inputText}`}
               />
+              <button 
+                className={styles.deleteBTN}
+                onClick={() => handleDeleteField(index)}
+              >
+                <FaTrash className={styles.deleteIcon} />
+              </button>
+
             </div>
           ))}
         </div>
