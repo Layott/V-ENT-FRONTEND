@@ -251,6 +251,138 @@
   color: #B2B3BD;
 }
 
+.reviewContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: #212225;
+  padding: 1rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: 10px;
+}
+
+.reviewHeader {
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.reviewContentOuterContainer {
+  min-height: 100px;
+  border: 2px solid red;
+}
+
+.reviewContentContainer {
+  border: 2px solid blue;
+}
+
+.reviewHR {
+  height: 0;
+  border-bottom: 0.5px solid #B2B3BD;
+}
+
+.toggleContentBTN {
+  display: flex;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  font-size: 1.125rem;
+  gap: 0.5rem;
+  align-items: center;
+  height: 100%;
+  padding-right: 1.5rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.completeAndEditContainer {
+  border: 1px solid red;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: auto;
+}
+
+.completionStatusContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.inCompleteParagraph,
+.completeParagraph {
+  font-size: 1rem;
+  padding: 0.45rem;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.completeParagraph {
+  background-color: #C2F5DA;
+  color: #178C4E;
+}
+
+.inCompleteParagraph {
+  background-color: #f4d4d4;
+  color: #A83232;
+}
+
+.unCheckIconSpan,
+.checkIconSpan {
+  display: flex;
+  border-radius: 50%;
+  height: 1rem;
+  width: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5px;
+}
+
+.checkIconSpan {
+  border: 1px solid #178C4E;
+  background-color: #178C4E;
+}
+
+.unCheckIconSpan {
+  border: 1px solid #A83232;
+  background-color: #A83232;
+}
+
+.checkIcon {
+  font-size: 1rem;
+  stroke: #FFF;
+}
+
+.editBTN {
+  background-color: #303136;
+  border: 1px solid #303136;
+  outline: none;
+  padding: 0.5rem 0.7rem;
+  font-size: 1rem;
+  border-radius: 7.5px;
+  display: flex;
+  flex-direction: row;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all ease-in-out 0.5s;
+}
+
+.editBTN:hover {
+  border: 1px solid #FFF;
+}
+
+.editBTNIcon {
+  display: flex;
+  font-size: 0.9rem;
+}
+
 @media only screen and (min-width: 450px) {
   .createSubSectionContainer {
     padding: 1.25rem 1.5rem 1rem 1.5rem;
