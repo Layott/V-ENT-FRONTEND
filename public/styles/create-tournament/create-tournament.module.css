@@ -255,27 +255,25 @@
   display: flex;
   flex-direction: column;
   background-color: #212225;
-  padding: 1rem;
+  padding: 0.5rem;
   padding-top: 0;
   padding-bottom: 0;
-  border-radius: 10px;
+  border-radius: 7.5px;
 }
 
 .reviewHeader {
-  height: 60px;
+  min-height: 60px;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   cursor: pointer;
+  gap: 0.75rem;
 }
 
 .reviewContentOuterContainer {
   min-height: 100px;
-  border: 2px solid red;
-}
-
-.reviewContentContainer {
-  border: 2px solid blue;
 }
 
 .reviewHR {
@@ -288,21 +286,21 @@
   outline: none;
   border: none;
   background-color: transparent;
-  font-size: 1.125rem;
+  font-size: 1rem;
   gap: 0.5rem;
   align-items: center;
   height: 100%;
   padding-right: 1.5rem;
   cursor: pointer;
   width: 100%;
+  text-align: left;
 }
 
 .completeAndEditContainer {
-  border: 1px solid red;
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.7rem;
   cursor: auto;
 }
 
@@ -313,12 +311,12 @@
 
 .inCompleteParagraph,
 .completeParagraph {
-  font-size: 1rem;
-  padding: 0.45rem;
+  font-size: 0.8rem;
+  padding: 0.4rem;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
+  gap: 0.4rem;
   align-items: center;
 }
 
@@ -354,7 +352,7 @@
 }
 
 .checkIcon {
-  font-size: 1rem;
+  font-size: 0.8rem;
   stroke: #FFF;
 }
 
@@ -362,9 +360,10 @@
   background-color: #303136;
   border: 1px solid #303136;
   outline: none;
-  padding: 0.5rem 0.7rem;
-  font-size: 1rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.95rem;
   border-radius: 7.5px;
+  border-radius: 5px;
   display: flex;
   flex-direction: row;
   gap: 0.35rem;
@@ -383,6 +382,13 @@
   font-size: 0.9rem;
 }
 
+@media only screen and (min-width: 350px) {
+  .reviewHeader {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+}
 @media only screen and (min-width: 450px) {
   .createSubSectionContainer {
     padding: 1.25rem 1.5rem 1rem 1.5rem;
@@ -393,12 +399,46 @@
   .buttonContainer {
     justify-content: flex-end;
   }
+  .reviewContainer {
+    padding: 0.6rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 10px;
+  }
+  .reviewHeader {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
 }
 @media only screen and (min-width: 500px) {
   .halfBoxContainer {
     min-width: calc(50% - 1rem);
     width: calc(50% - 1rem);
     max-width: calc(50% - 1rem);
+  }
+  .inCompleteParagraph,
+  .completeParagraph {
+    font-size: 0.9rem;
+  }
+  .editBTN {
+    padding: 0.5rem 0.7rem;
+    font-size: 1rem;
+  }
+  .checkIcon {
+    font-size: 1rem;
+    stroke: #FFF;
+  }
+  .toggleContentBTN {
+    font-size: 1.125rem;
+  }
+  .inCompleteParagraph,
+  .completeParagraph {
+    font-size: 1rem;
+    padding: 0.45rem;
+    gap: 0.5rem;
+  }
+  .completeAndEditContainer {
+    gap: 0.85rem;
   }
 }
 @media only screen and (min-width: 600px) {
@@ -415,6 +455,11 @@
     min-width: calc(50% - 1rem);
     width: calc(50% - 1rem);
     max-width: calc(50% - 1rem);
+  }
+  .reviewContainer {
+    padding: 1rem;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 @media only screen and (min-width: 768px) {
