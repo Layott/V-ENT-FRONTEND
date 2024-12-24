@@ -8,11 +8,7 @@ import Review from './review/Review'
 import styles from './create-tournament-component.module.css'
 
 const CreateTournamentComponent = () => {
-  // const [selectedTab, setSelectedTab] = useState(1);
-  // const [selectedTab, setSelectedTab] = useState(2);
-  // const [selectedTab, setSelectedTab] = useState(3);
-  // const [selectedTab, setSelectedTab] = useState(4);
-  const [selectedTab, setSelectedTab] = useState(5);
+  const [selectedTab, setSelectedTab] = useState(1);
 
   const renderTabContent = () => {
     switch (selectedTab) {
