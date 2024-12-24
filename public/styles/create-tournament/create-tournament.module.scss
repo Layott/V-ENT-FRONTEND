@@ -262,46 +262,63 @@
 }
 
 .reviewHeader {
-    min-height: 60px;
+    min-height: 40px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    // padding-top: 0.5rem;
+    // padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
     cursor: pointer;
     gap: 0.75rem;
-}
 
-.reviewContentOuterContainer {
-    min-height: 100px;
-}
-
-.reviewHR {
-    height: 0;
-    border-bottom: 0.5px solid #B2B3BD;
+    // padding-left: 1rem;
+    padding-right: 1rem;
+    // border: 1px solid red;
 }
 
 .toggleContentBTN {
     display: flex;
+    flex-direction: row;
     outline: none;
     border: none;
     background-color: transparent;
     font-size: 1rem;
     gap: 0.5rem;
     align-items: center;
-    height: 100%;
-    padding-right: 1.5rem;
+    // justify-content: center;
+    padding-right: 0;
     cursor: pointer;
     width: 100%;
     text-align: left;
+    // border: 1px solid white;
+    height: auto;
+    min-height: 50px;
+    // padding-left: 1rem;
+}
+
+.reviewContentOuterContainer {
+    min-height: 100px;
+
+    // border: 2px solid orange;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.reviewHR {
+    height: 0;
+    border: none;
+    border-bottom: 0.5px solid #B2B3BD;
 }
 
 .completeAndEditContainer {
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.25rem;
     cursor: auto;
+
+    // border: 1px solid green;
 }
 
 .completionStatusContainer {
@@ -382,12 +399,27 @@
     font-size: 0.9rem;
 }
 
+.reviewContentContainer {
+    // border: 1px solid yellow;
+    padding-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1.75rem;
+}
+
 @media only screen and (min-width: 350px) {
     .reviewHeader {
+        min-height: 60px;
         flex-direction: row;
         align-items: center;
-        gap: 0;
-    }    
+        gap: 0.25rem;
+        padding-bottom: 0;
+    }
+
+    .toggleContentBTN {
+        min-height: 70px;
+    }
 }
 
 @media only screen and (min-width: 450px) {
@@ -410,10 +442,15 @@
         border-radius: 10px;
     }
 
-    .reviewHeader {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
+    .toggleContentBTN {
+        padding-left: 1rem;
+        // padding-left: 1.5rem;
+        // border: 2px solid yellow;
     }
+
+    .completeAndEditContainer {
+        gap: 0.7rem;
+    }    
 }
 
 @media only screen and (min-width: 500px) {
