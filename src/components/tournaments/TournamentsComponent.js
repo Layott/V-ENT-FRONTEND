@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { MdOutlineClose } from "react-icons/md";
 import { HiPlus } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
@@ -88,10 +89,10 @@ const TournamentsComponent = () => {
         </div>
 
         {/* Create Tournament Button */}
-        <button className={`${styles.createTournamentBTN} redBTN`}>
+        <Link href={'./tournaments/create-tournament'} className={`${styles.createTournamentBTN} redBTN`}>
           <HiPlus className={styles.plusIcon} />
           Create Tournament
-        </button>
+        </Link>
       </div>
 
       {/* Tournaments Sections */}
