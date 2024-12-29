@@ -14,7 +14,12 @@ const MobileSidebar = () => {
     const pathname = usePathname()      // Gets the current pathname
 
     // Function to Check if the Route is Active
-    const isActive = (href) => pathname === href
+    const isActive = (href) => {
+        if (href === '/') {
+            return pathname === '/';
+        }
+        return pathname === href || pathname.startsWith(href);
+    }
 
   return (
     <div className={styles.desktopSidebar}>
