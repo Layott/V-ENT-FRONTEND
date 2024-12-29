@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
+// import MobileSidebar from '@/components/mobile-sidebar/MobileSidebar';
 import Header from '@/components/header/Header';
 import TournamentDetailsBanner from '@/components/view-tournament/tournament-details-banner/TournamentDetailsBanner';
 import TournamentDetailsOverview from '@/components/view-tournament/tournament-details-overview/TournamentDetailsOverview';
@@ -20,6 +21,7 @@ const ViewTournament = () => {
       
       <main className={styles.mainContainer}>
         <Sidebar />
+        {/* <MobileSidebar /> */}
       
         <div className={styles.rightPaneContainer}>
           <TournamentDetailsBanner />

@@ -1,0 +1,169 @@
+.desktopSidebar {
+  background-color: #131316;
+  border-right: 0.5px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid red;
+  position: absolute;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  top: 60px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoContainer {
+  width: 250px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.logoContainer h1 {
+  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-weight: var(--fw-bold);
+  font-size: 1.5rem;
+  color: var(--v-ent-red);
+}
+
+.logoLink {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 0.25rem;
+  padding-left: 1rem;
+}
+
+.innerLogoContainer {
+  height: 25px;
+}
+
+.logo {
+  font-size: 1rem;
+  height: 100%;
+  width: 100%;
+}
+
+.sidebarNav {
+  margin-top: 0.25rem;
+}
+
+.sidebarList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebarItem {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 0.5rem;
+  width: calc(100% - 1.5rem);
+  border-radius: 5px;
+  transition: all ease-in-out 0.5s;
+  border: 1px solid transparent;
+}
+
+.sidebarItem:hover {
+  border: 1px solid #6e6e6e;
+}
+
+.activeLink {
+  background-color: rgba(237, 28, 36, 0.2392156863);
+  border: 1px solid transparent;
+}
+
+.iconTextLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.iconShopSpan,
+.iconMarketplaceSpan {
+  color: #A7A6A6;
+  font-family: "ClashGrotesk-Light", sans-serif;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.sidebarItem span.disabledLink {
+  cursor: not-allowed;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.sidebarItem a {
+  font-family: "ClashGrotesk-Light", sans-serif;
+  font-size: 0.9rem;
+}
+
+.sidebarIcon {
+  font-size: 0.9rem;
+}
+
+.comingSoon {
+  font-size: 0.6rem;
+  background-color: rgba(251, 198, 75, 0.24);
+  padding: 3px 5px;
+  border-radius: 3px;
+}
+
+@media only screen and (min-width: 768px) {
+  .desktopSidebar {
+    width: 180px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .logoContainer {
+    width: 180px;
+  }
+  .sidebarItem span.disabledLink {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .iconShopSpan,
+  .iconMarketplaceSpan {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .desktopSidebar {
+    width: 250px;
+  }
+  .logoContainer {
+    width: 250px;
+  }
+  .sidebarItem span.disabledLink {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .logoContainer h1 {
+    font-size: 1.75rem;
+  }
+  .innerLogoContainer {
+    height: 25px;
+  }
+}
