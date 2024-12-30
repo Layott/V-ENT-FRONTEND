@@ -36,6 +36,7 @@
   font-weight: var(--fw-bold);
   gap: 2rem;
   padding-left: 0.4rem;
+  cursor: pointer;
 }
 
 .backArrowIcon {
