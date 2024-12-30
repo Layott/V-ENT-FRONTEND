@@ -7,8 +7,10 @@ import { FcSearch } from "react-icons/fc";
 import { CiSearch } from "react-icons/ci";
 import { FaCaretDown } from "react-icons/fa";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
+import breadCrumbTitles from './BreadCrumbData';
 import styles from './header.module.css';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 
 const Header = ({ className = '' }) => {
@@ -18,9 +20,25 @@ const Header = ({ className = '' }) => {
   const [fullName, setFullName] = useState(null);
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const router = useRouter();
-
+  // const router = useRouter();
+  const pathname = usePathname();
   const dropdownRef = useRef(null);
+
+  // const { pathname } = router;
+
+  const { title: currentSection, showBackArrow, fallbackURL } = breadCrumbTitles[pathname] || {
+    title: '',
+    showBackArrow: false,
+    fallbackURL: '/'
+  } 
+
+  const handleBackNavigation = (fallbackURL = '/') => {
+    if (document.referrer) {
+      window.history.back();
+    } else {
+      window.location.href = fallbackURL
+    }
+  }
 
   useEffect(() => {
     try {
@@ -71,13 +89,9 @@ const Header = ({ className = '' }) => {
     }
   };
 
-  const toggleSearchBar = () => {
-    setIsSearchBarVisible((prev) => !prev);
-  };
+  const toggleSearchBar = () => setIsSearchBarVisible((prev) => !prev);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  }
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const handleLogout = () => {    
     // Remove the user profile and session data from localStorage
@@ -93,33 +107,31 @@ const Header = ({ className = '' }) => {
       <div className={styles.headerContent}>
         <div className={styles.breadcrumbContainer}>
           <h3 className={styles.breadcrumbTitle}>
-            <span className={styles.backArrow}>
-              <FiArrowLeft className={styles.backArrowIcon} />
-            </span>
-            <span className={styles.currentSection}>My Profile</span>
+            {showBackArrow && (
+              <span 
+                className={styles.backArrow} 
+                onClick={() => handleBackNavigation(fallbackURL)}
+              >
+                
+                <FiArrowLeft className={styles.backArrowIcon} />
+              </span>
+            )}
+            <span className={styles.currentSection}>{currentSection}</span>
           </h3>
-
-          <nav className={styles.breadcrumbNav}>
-            <Link href={'./'}>Home</Link>
-            <MdKeyboardArrowRight className={styles.arrowRightIcon} />
-            <Link
-              href={'./user-profile'}
-              className={styles.currentSectionLink}
-            >
-              My Profile
-            </Link>
-          </nav>
+          
+          {pathname === '/user-profile' && (
+            <nav className={styles.breadcrumbNav}>
+              <Link href={'./'}>Home</Link>
+              <MdKeyboardArrowRight className={styles.arrowRightIcon} />
+              <Link href={'./user-profile'} className={styles.currentSectionLink}>
+                My Profile
+              </Link>
+            </nav>
+          )}
         </div>
 
-        <div
-          className={`${styles.searchBar} ${
-            isSearchBarVisible ? styles.showSearchBar : ''
-          }`}
-        >
-          <CiSearch
-            className={styles.searchIcon}
-            onClick={handleSearch}
-          />
+        <div className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}>
+          <CiSearch className={styles.searchIcon} onClick={handleSearch}/>
           <input
             type="text"
             placeholder="Search tournaments, events, users..."
@@ -130,11 +142,7 @@ const Header = ({ className = '' }) => {
           />
         </div>
 
-        <div
-          className={`${styles.searchIconMobileContainer} ${
-            isSearchBarVisible ? styles.moveRight : ''
-          }`}
-        >
+        <div className={`${styles.searchIconMobileContainer} ${isSearchBarVisible ? styles.moveRight : ''}`}>
           {isSearchBarVisible ? (
             <MdOutlineClose
               className={styles.searchIconMobile}
@@ -162,24 +170,15 @@ const Header = ({ className = '' }) => {
               className={styles.profileImage}
               onClick={toggleDropdown}
             />
-            <FaCaretDown
-              className={styles.dropdownArrow}
-              onClick={toggleDropdown}
-            />
+            <FaCaretDown className={styles.dropdownArrow} onClick={toggleDropdown}/>
           </div>
             {isDropdownOpen && (
               <div className={styles.dropdownMenu}>
-                <Link
-                  href={'/user-profile'}
-                  className={styles.viewProfile}
-                >
+                <Link href={'/user-profile'} className={styles.viewProfile}>
                   View Profile
                 </Link>
 
-                <button
-                  className={styles.logoutBTN}
-                  onClick={handleLogout}
-                >
+                <button className={styles.logoutBTN} onClick={handleLogout}>
                   Logout
                 </button>
               </div>
