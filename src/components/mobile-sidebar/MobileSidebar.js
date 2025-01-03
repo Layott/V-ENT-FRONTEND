@@ -10,7 +10,7 @@ import { FiShoppingBag } from "react-icons/fi";
 import logoRed from "@/images/logo_mark_red.svg"
 import styles from './mobile-sidebar.module.css'
 
-const MobileSidebar = () => {
+const MobileSidebar = ({ isOpen }) => {
     const pathname = usePathname()      // Gets the current pathname
 
     // Function to Check if the Route is Active
@@ -22,8 +22,9 @@ const MobileSidebar = () => {
     }
 
   return (
-    <div className={styles.desktopSidebar}>
-        <div className={styles.logoContainer}>
+    <div className={`${styles.mobileSidebar} ${isOpen ? styles.open : ''}`}>
+    {/* <div className={styles.mobileSidebar}> */}
+        {/* <div className={styles.logoContainer}>
             <Link className={styles.logoLink} href={'/'}>
                 <div className={styles.innerLogoContainer}>
                     <Image
@@ -34,69 +35,69 @@ const MobileSidebar = () => {
                 </div>
                 <h1>v-ent</h1>
             </Link>
-        </div>
+        </div> */}
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
                     <Link href={'/'} className={styles.iconTextLink}>
-                        <FiHome className={styles.sidebarIcon} /> Home
+                        Home <FiHome className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        <FaTrophy className={styles.sidebarIcon} /> Tournaments
+                        Tournaments <FaTrophy className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
-                        <MdOutlineEvent className={styles.sidebarIcon} /> Events
+                        Events <MdOutlineEvent className={styles.sidebarIcon} />
                     </Link>
                 </li>
                 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
-                        <FaTv className={styles.sidebarIcon} /> Anime
+                        Animne <FaTv className={styles.sidebarIcon} />
                     </Link>
                 </li>
                 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
-                        <PiRankingBold className={styles.sidebarIcon} /> Rankings
+                        Rankings <PiRankingBold className={styles.sidebarIcon} />
                     </Link>
                 </li>
                 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
-                        <FaUsers className={styles.sidebarIcon} /> Teams
+                        Teams <FaUsers className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
-                        <IoWalletOutline className={styles.sidebarIcon} /> Wallets
+                        Wallets <IoWalletOutline className={styles.sidebarIcon} />
                     </Link>
                 </li>
                             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
-                        <span className={styles.iconMarketplaceSpan}><FaShoppingCart className={styles.sidebarIcon} /> Marketplace</span>
                         <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Marketplace <FaShoppingCart className={styles.sidebarIcon} /></span>
                     </span>
                 </li>
             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
-                        <span className={styles.iconShopSpan}><FiShoppingBag className={styles.sidebarIcon} /> Shop</span>
                         <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconShopSpan}>Shop <FiShoppingBag className={styles.sidebarIcon} /></span>
                     </span>
                 </li>
             
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        <FiSettings className={styles.sidebarIcon} /> Settings
+                        Settings <FiSettings className={styles.sidebarIcon} />
                     </Link>
                 </li>
             </ul>
