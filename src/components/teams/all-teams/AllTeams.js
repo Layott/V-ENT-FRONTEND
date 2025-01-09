@@ -79,8 +79,7 @@ const AllTeams = () => {
                         </p>
                     </div>
                     <div className={styles.viewProfileContainer}>
-                        {/* <button className={styles.viewProfileBTN}>View Profile</button> */}
-                        <Link href={'/team-profile'} className={styles.viewProfileBTN}>View Profile</Link>
+                        <Link href={'/teams/team-profile'} className={styles.viewProfileBTN}>View Profile</Link>
                         <button className={styles.threeDotsBTN}>
                             <GoDotFill className={styles.dotIcon} />
                             <GoDotFill className={styles.dotIcon} />
