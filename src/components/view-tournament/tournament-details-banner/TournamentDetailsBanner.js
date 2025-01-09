@@ -2,7 +2,8 @@ import Image from 'next/image';
 import tournamentDetailsBanner from "@/images/tournament_details_banner.webp"
 import { LuClock3 } from "react-icons/lu";
 import { PiMoneyWavy } from "react-icons/pi";
-import { BsFillShareFill } from "react-icons/bs";
+import { RiShare2Fill } from "react-icons/ri";
+
 import styles from './tournament-details-banner.module.css'
 
 const TournamentDetailsBanner = () => {
@@ -26,7 +27,7 @@ const TournamentDetailsBanner = () => {
                 </div>
             </div>
             <div className={styles.headerRight}>
-                <button className={styles.shareBTN}><BsFillShareFill /> Share</button>
+                <button className={styles.shareBTN}><RiShare2Fill className={styles.shareIcon} /> Share</button>
                 <button className={styles.joinTournamentBTN}>Join Tournament</button>
             </div>
         </div>

@@ -6,6 +6,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import { AiOutlineTeam } from "react-icons/ai";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
+import tournamentStyles from '@/styles/tournament/tournament.module.css'
 import tournamentDetailsOverviewStyles from './../tournament-details-overview.module.css'
 import styles from './tournament-details-overview-right.module.css'
 
@@ -35,8 +36,9 @@ const TournamentDetailsOverviewRight = () => {
         </div>
       </div>
 
+
       <div className={styles.totalPrizeContainer}>
-        <h3 className={styles.headerH3}><GrTrophy className={styles.priceIcon} /> Prize</h3>
+        <h3 className={`${styles.headerH3} ${tournamentStyles.headerH3}`}><GrTrophy className={styles.priceIcon} /> Prize</h3>
         <p>N2,500,000</p>
         <p>
           <IoMdInformationCircleOutline /> Winner takes all
@@ -45,7 +47,7 @@ const TournamentDetailsOverviewRight = () => {
 
       <div className={styles.prizeDistributionContainer}>
         <div className={styles.prizeDistributionHeader}>
-          <h3 className={styles.headerH3}><GrTrophy className={styles.priceIcon} /> Prize</h3>
+          <h3 className={`${styles.headerH3} ${tournamentStyles.headerH3}`}><GrTrophy className={styles.priceIcon} /> Prize</h3>
           <button className={styles.viewFullDistributionBTN}>View full distribution <IoMdArrowForward className={styles.forwardArrowIcon} /></button>
         </div>
         <div className={styles.winnerContainer}>
@@ -66,7 +68,7 @@ const TournamentDetailsOverviewRight = () => {
 
       <div className={styles.participantsContainer}>
         <div className={styles.participantsHeader}>
-          <h3 className={styles.headerH3}><AiOutlineTeam className={styles.participantsIcon} /> Participants</h3>
+          <h3 className={`${styles.headerH3} ${tournamentStyles.headerH3}`}><AiOutlineTeam className={styles.participantsIcon} /> Participants</h3>
           <button className={styles.viewAllBTN}>View All <IoMdArrowForward className={styles.forwardArrowIcon} /></button>
         </div>
         <p className={styles.participantsParagraph}>
