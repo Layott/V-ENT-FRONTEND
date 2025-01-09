@@ -1,6 +1,7 @@
 const breadCrumbTitles = {
     "/user-profile": { title: "My Profile", showBackArrow: false },
     "/tournaments": { title: "Tournaments", showBackArrow: false },
+    "/teams": { title: "Teams", showBackArrow: false },
     "/tournaments/create-tournament": { 
         title: "Create Tournament", 
         showBackArrow: true,
