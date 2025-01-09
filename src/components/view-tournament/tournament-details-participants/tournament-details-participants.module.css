@@ -143,12 +143,14 @@
   display: flex;
   align-items: center;
   padding: 10px;
+  color: red;
 }
 
 .gridItemHeader {
   font-family: "ClashGrotesk-Regular", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
+  color: #797B86;
 }
 
 .gridHeader {

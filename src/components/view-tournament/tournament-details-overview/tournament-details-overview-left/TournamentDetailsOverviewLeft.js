@@ -4,6 +4,7 @@ import { GoDotFill } from "react-icons/go";
 import tournamentDetailsOverviewStyles from './../tournament-details-overview.module.css'
 import styles from './tournament-details-overview-left.module.css'
 
+
 const TournamentDetailsOverviewLeft = () => {
   return (
     <div className={tournamentDetailsOverviewStyles.overviewLeft}>
