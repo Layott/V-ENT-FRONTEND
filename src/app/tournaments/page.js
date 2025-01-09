@@ -3,7 +3,6 @@
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
-import MobileSidebar from '@/components/mobile-sidebar/MobileSidebar';
 import TournamentsComponent from '@/components/tournaments/TournamentsComponent';
 import styles from './tournament.module.css'
 
@@ -16,7 +15,6 @@ const Tournaments = () => {
       
       <main className={styles.mainContainer}>
         <Sidebar />
-        <MobileSidebar />
 
         <TournamentsComponent />
       </main>
