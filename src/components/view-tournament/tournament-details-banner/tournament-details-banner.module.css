@@ -63,16 +63,18 @@
   border: 1px solid #FFE097;
   background-color: #FFE097;
   color: #000000;
+  padding: 3px;
 }
 
 .tournamentTimeRemaining {
-  border: 0.5px solid #FCFCFC;
-  background-color: #46484F;
-  color: #FFFFFF;
+  border: 0.5px solid #28292D;
+  background-color: #28292D;
+  color: #EEEEF0;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.35rem;
+  padding: 3px;
 }
 
 .clockIcon {
@@ -85,14 +87,18 @@
   flex-direction: row;
   align-items: center;
   gap: 0.2rem;
+  color: #B2B3BD;
+  font-size: 0.8rem;
 }
 
 .moneyIcon {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  fill: #B2B3BD;
 }
 
 .feeSpan {
-  font-weight: 600;
+  font-weight: 500;
+  padding-left: 0.25rem;
 }
 
 .headerRight {
@@ -108,22 +114,30 @@
   padding: 5.5px 7px;
   outline: none;
   background-color: transparent;
-  color: #FCFCFC;
+  color: #B2B3BD;
   cursor: pointer;
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 0.3rem;
-  border-radius: 2.5px;
+  border-radius: 5px;
   transition: all ease-in-out 0.5s;
 }
 
 .shareBTN {
-  border: 1px solid #FFFFFF;
+  border: 1px solid #797B86;
+}
+
+.shareIcon {
+  fill: #B2B3BD;
+}
+
+.joinTournamentBTN {
+  color: #FFFFFF;
 }
 
 .shareBTN:hover {
-  border: 1px solid var(--v-ent-red);
+  border: 1px solid #FFFFFF;
 }
 
 .joinTournamentBTN {
