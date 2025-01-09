@@ -1,19 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { FaAsterisk, FaTrash, FaPlus } from "react-icons/fa6";
 import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './prize-distribution-inside.module.css';
 
-const PrizeDistributionInside = () => {
-  const [selectedOption, setSelectedOption] = useState("");
+const PrizeDistributionInside = ({ formData, updateFormData }) => {
+  const [selectedOption, setSelectedOption] = useState(formData?.prizeOption || "");
   const [positions, setPositions] = useState([1, 2, 3]);
-  const [prizes, setPrizes] = useState({});
+  const [prizes, setPrizes] = useState(formData?.prizes || {});
+  const [extraBonuses, setExtraBonuses] = useState({});
+
+  // Sync formData whenever local state changes
+  useEffect(() => {
+    updateFormData('prizeOption', selectedOption);
+    updateFormData('prizes', prizes);
+    updateFormData('extraBonuses', extraBonuses);
+  }, [selectedOption, prizes, extraBonuses, updateFormData]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    if (option !== 'distributed') {
+      setPrizes({});
+      setExtraBonuses({});
+    }
   };
 
-  const addAnotherPositions = () => {
+  const addAnotherPosition = () => {
     setPositions((prevPositions) => [...prevPositions, positions.length + 1]);
   };
 
@@ -23,6 +36,10 @@ const PrizeDistributionInside = () => {
       const newPrizes = { ...prizes };
       delete newPrizes[`prizePosition${position}`];
       setPrizes(newPrizes);
+      
+      const newExtras = { ...extraBonuses };
+      delete newExtras[`extraBonus${position}`];
+      setExtraBonuses(newExtras);
     }
   };
 
@@ -33,11 +50,16 @@ const PrizeDistributionInside = () => {
     }));
   };
 
+  const handleBonusChange = (position, value) => {
+    setExtraBonuses((prevExtras) => ({
+      ...prevExtras,
+      [`extraBonus${position}`]: value,
+    }));
+  };
+
   const totalPrize = Object.values(prizes).reduce((total, prize) => total + (parseFloat(prize) || 0), 0);
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat().format(num);
-  }
+  const formatNumber = (num) => new Intl.NumberFormat().format(num);
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
@@ -45,7 +67,7 @@ const PrizeDistributionInside = () => {
         <p>How should the prize be distributed between participants?</p>
 
         <div className={createTournamentStyles.threeBoxesInRowContainer}>
-          {[ 
+          {[
             { id: "distributed", title: "Distributed", description: "Reward is distributed between winners." },
             { id: "winner-takes-all", title: "Winner takes all", description: "Winner takes the whole reward." },
             { id: "no-prize", title: "No Prize", description: "No reward is given to winners." }
@@ -91,6 +113,7 @@ const PrizeDistributionInside = () => {
                     onChange={(e) => handlePrizeChange(position, e.target.value)}
                   />
                 </div>
+
                 <div className={createTournamentStyles.inputGroup}>
                   <label htmlFor={`extraBonus${position}`} className={createTournamentStyles.labelWithAsterisk}>
                     Extras (e.g., Bonuses)
@@ -103,6 +126,8 @@ const PrizeDistributionInside = () => {
                     type="text"
                     placeholder="Enter Extra Bonus (Text)"
                     className={`${createTournamentStyles.inputText} ${styles.inputText}`}
+                    value={extraBonuses[`extraBonus${position}`] || ""}
+                    onChange={(e) => handleBonusChange(position, e.target.value)}
                   />
                 </div>
 
@@ -119,10 +144,10 @@ const PrizeDistributionInside = () => {
             ))}
 
             <div className={styles.addBTNContainer}>
-                <button type="button" className={styles.addAnotherBTN} onClick={addAnotherPositions}>
-                    <FaPlus className={styles.plusIcon} />
-                    Add Another
-                </button>
+              <button type="button" className={styles.addAnotherBTN} onClick={addAnotherPosition}>
+                <FaPlus className={styles.plusIcon} />
+                Add Another
+              </button>
             </div>
           </div>
         )}
@@ -168,6 +193,15 @@ const PrizeDistributionInside = () => {
       </div>
     </div>
   );
+};
+
+PrizeDistributionInside.propTypes = {
+  formData: PropTypes.shape({
+    prizeOption: PropTypes.string,
+    prizes: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+    extraBonuses: PropTypes.objectOf(PropTypes.string),
+  }).isRequired,
+  updateFormData: PropTypes.func.isRequired,
 };
 
 export default PrizeDistributionInside;

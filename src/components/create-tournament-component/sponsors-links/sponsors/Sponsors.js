@@ -6,23 +6,24 @@ import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './sponsors.module.css';
 
-const SponsorsTwo = () => {
-  const [fields, setFields] = useState([
-    { name: '', username: '', logo: null },
-  ]);
-  
+const SponsorsTwo = ({ formData, updateFormData }) => {
+  const [fields, setFields] = useState([{ name: '', username: '', logo: null }]);
+
   const handleAddField = () => {
     setFields([...fields, { name: '', username: '', logo: null }]);
   };
 
   const handleDeleteField = (index) => {
-    setFields(fields.filter((_, i) => i !== index));
+    const updatedFields = fields.filter((_, i) => i !== index);
+    setFields(updatedFields);
+    updateFormData('sponsors', updatedFields); // Update parent formData
   };
 
   const handleFieldChange = (index, key, value) => {
     const updatedFields = [...fields];
     updatedFields[index][key] = value;
     setFields(updatedFields);
+    updateFormData('sponsors', updatedFields); // Update parent formData
   };
 
   const handleLogoUpload = (index, event) => {
@@ -31,32 +32,27 @@ const SponsorsTwo = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const updatedFields = [...fields];
-        updatedFields[index].logo = e.target.result; // Save the image preview URL
+        updatedFields[index].logo = e.target.result; // Preview URL
         setFields(updatedFields);
+        updateFormData('sponsors', updatedFields); // Update parent formData
       };
       reader.readAsDataURL(file);
     }
     event.target.value = '';
   };
 
-  const handleResetLogo = (index, e) => {
-    e.stopPropagation();    // Prevent parent handlers from firing
+  const handleResetLogo = (index, event) => {
+    event.stopPropagation();
     const updatedFields = [...fields];
-    updatedFields[index].logo = null; // Clear the uploaded logo
+    updatedFields[index].logo = null;
     setFields(updatedFields);
+    updateFormData('sponsors', updatedFields); // Update parent formData
   };
-
-  const triggerFileUpload = (index, e) => {
-    e.stopPropagation();
-    document.getElementById(`logoUpload-${index}`).click();
-  }
-
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
         <h3 className={createTournamentStyles.tournamentTypeH3}>Sponsors</h3>
-
         {fields.map((field, index) => (
           <div key={index} className={styles.threeBoxesContainer}>
             <div className={`${createTournamentStyles.twoBoxesInRowContainer} ${styles.twoBoxesInRowContainer}`}>
@@ -76,7 +72,6 @@ const SponsorsTwo = () => {
                   onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                 />
               </div>
-
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor={`sponsorUsername-${index}`} className={createTournamentStyles.labelWithAsterisk}>
                   Username
@@ -91,28 +86,27 @@ const SponsorsTwo = () => {
                 />
               </div>
             </div>
-
             <div className={styles.uploaderAndDeleteFieldBTNContainer}>
               <div className={styles.logoUploadContainer}>
                 <div
                   className={styles.logoUploadBox}
-                  onClick={() => document.getElementById(`logoUpload-${index}`).click()} 
+                  onClick={() => document.getElementById(`logoUpload-${index}`).click()}
                 >
                   {field.logo ? (
                     <div className={styles.logoPreview}>
                       <Image
                         src={field.logo}
                         alt="Uploaded Logo"
-                        className={styles.logoImage} 
+                        className={styles.logoImage}
                         width={60}
                         height={40}
                       />
                       <div className={styles.resetAndRemoveContainer}>
-                        <button className={styles.removeImageContainer} onClick={(e) => handleResetLogo(index, e)}>
+                        <button
+                          className={styles.removeImageContainer}
+                          onClick={(e) => handleResetLogo(index, e)}
+                        >
                           Cancel
-                        </button>
-                        <button type="button" onClick={(e) => triggerFileUpload(index, e)} className={styles.resetButton}>
-                          Change
                         </button>
                       </div>
                     </div>
@@ -120,7 +114,8 @@ const SponsorsTwo = () => {
                     <div className={styles.logoUploadPlaceholder}>
                       <span>
                         <BiUpload className={styles.uploadIcon} />
-                        Upload Logo</span>
+                        Upload Logo
+                      </span>
                     </div>
                   )}
                   <input
@@ -132,7 +127,6 @@ const SponsorsTwo = () => {
                   />
                 </div>
               </div>
-
               <button
                 className={styles.deleteFieldBTN}
                 onClick={() => handleDeleteField(index)}
@@ -142,7 +136,6 @@ const SponsorsTwo = () => {
             </div>
           </div>
         ))}
-
         <button
           type="button"
           className={styles.addButton}

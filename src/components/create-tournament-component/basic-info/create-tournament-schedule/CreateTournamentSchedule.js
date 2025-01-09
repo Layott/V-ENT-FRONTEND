@@ -3,24 +3,32 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-schedule.module.css'
 
-const CreateTournamentSchedule = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState(null);
-  const [endCriteria, setEndCriteria] = useState(null);
-  const [showMaxCyclesInput, setShowMaxCyclesInput] = useState(false);
+const CreateTournamentSchedule = ({formData, updateFormData}) => {
+  const [selectedOption, setSelectedOption] = useState(formData?.scheduleType || null);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState(formData?.recurrenceFrequency || null);
+  const [endCriteria, setEndCriteria] = useState(formData?.endCriteria || null);
+  const [showMaxCyclesInput, setShowMaxCyclesInput] = useState(endCriteria === "after-cycles");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    updateFormData({ ...formData, scheduleType: option });
   }
 
   const handleRecurrenceFrequencyChange = (e) => {
-    setRecurrenceFrequency(e.target.value);
+    const newValue = e.target.value; 
+    setRecurrenceFrequency(newValue); 
+    updateFormData({ ...formData, recurrenceFrequency: newValue });
   }
 
   const handleEndCriteriaChange = (e) => {
     const value = e.target.value;
     setEndCriteria(value);
     setShowMaxCyclesInput(value === "after-cycles")
+    updateFormData({ ...formData, endCriteria: value });
+  }
+  
+  const handleInputChange = (key, value) => {
+    updateFormData({ ...formData, [key]: value });
   }
 
   return (
@@ -64,7 +72,8 @@ const CreateTournamentSchedule = () => {
                 </span>
             </label>
 
-            <input type="datetime-local" className={styles.dateInput} />
+            
+            <input id='start_date_and_time' type="datetime-local" className={styles.dateInput}  onChange={(e) => handleInputChange('start_date_and_time', e.target.value)} />
             
           </div>
 
@@ -75,7 +84,7 @@ const CreateTournamentSchedule = () => {
                 </span>
             </label>
 
-            <input type="datetime-local" className={styles.dateInput} />
+            <input id='end_date_and_time' type="datetime-local" className={styles.dateInput} onChange={(e) => handleInputChange('end_date_and_time', e.target.value)}/>
           </div>
 
         </div>
@@ -88,7 +97,7 @@ const CreateTournamentSchedule = () => {
                 </span>
             </label>
 
-            <input type="datetime-local" className={styles.dateInput} style={{ color: selectedOption ? "white" : ""}} />
+            <input id='reg_start_date_and_time' type="datetime-local" className={styles.dateInput} style={{ color: selectedOption ? "white" : ""}} onChange={(e) => handleInputChange('reg_start_date_and_time', e.target.value)} />
             
           </div>
 
@@ -98,7 +107,7 @@ const CreateTournamentSchedule = () => {
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
             </label>
-            <input type="datetime-local" className={styles.dateInput} />
+            <input id='reg_end_date_and_time' type="datetime-local" className={styles.dateInput} onChange={(e) => handleInputChange('reg_end_date_and_time', e.target.value)} />
             
           </div>
 
@@ -199,7 +208,8 @@ const CreateTournamentSchedule = () => {
                   </span>
                 </label>
                 
-                <input type="number" className={styles.maxNumberCycleInput} />
+                <input type="number" className={styles.maxNumberCycleInput} value={formData?.number_cycle || ""}
+              onChange={(e) => handleInputChange('date_and_time', e.target.value)} />
               </div>
             )}
 

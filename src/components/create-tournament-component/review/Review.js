@@ -7,14 +7,14 @@ import ReviewSponsorLinks from "./review-sponsor-links/ReviewSponsorLinks";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './review.module.css'
 
-const Review = ({ setSelectedTab }) => {
+const Review = ({ setSelectedTab, handleSubmit}) => {
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
   }
 
   const handlePublish = () => {
-    // Code to Handle Publish
-  }
+    handleSubmit(); 
+  };
 
   return (
     <div className={`${createTournamentStyles.generalTabContainer} ${styles.generalTabContainer}`}>

@@ -3,12 +3,34 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-visibility.module.css'
 
-const CreateTournamentVisibility = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const CreateTournamentVisibility = ({formData, updateFormData}) => {
+  const [selectedOption, setSelectedOption] = useState(formData.tournament_visibility || null);
+  const [event, setEvent] = useState(formData.event || '');
+  const [entryType, setEntryType] = useState(formData.entry_type || '');
+  const [entryFee, setEntryFee] = useState(formData.entry_fee || '');
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-  }
+    updateFormData({ ...formData, tournament_visibility: option });
+  };
+
+  const handleEventChange = (e) => {
+    const selectedEvent = e.target.value;
+    setEvent(selectedEvent);
+    updateFormData({ ...formData, event: selectedEvent });
+  };
+
+  const handleEntryTypeChange = (e) => {
+    const selectedEntryType = e.target.value;
+    setEntryType(selectedEntryType);
+    updateFormData({ ...formData, entry_type: selectedEntryType });
+  };
+
+  const handleEntryFeeChange = (e) => {
+    const fee = e.target.value;
+    setEntryFee(fee);
+    updateFormData({ ...formData, entry_fee: fee });
+  };
 
 
   return (
@@ -70,7 +92,7 @@ const CreateTournamentVisibility = () => {
                 
                 <select
                     // value={selectedEvent}
-                    // onChange={handleEventChange}
+                    // onChange={handleEntryTypeChange}
                     className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select</option>
@@ -93,8 +115,8 @@ const CreateTournamentVisibility = () => {
                 </label>
                 
                 <select
-                    // value={selectedGame}
-                    // onChange={handleGameChange}
+                    value={entryType}
+                    onChange={handleEntryTypeChange}
                     className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select</option>
@@ -111,7 +133,9 @@ const CreateTournamentVisibility = () => {
               <input
                 type="number"
                 placeholder='Enter amount'
+                value={entryFee}
                 className={createTournamentStyles.inputText}
+                onChange={handleEntryFeeChange}                
               />
             </div>
 

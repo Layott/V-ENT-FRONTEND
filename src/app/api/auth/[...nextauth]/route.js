@@ -20,6 +20,8 @@ export const VENT= {
   EDIT_LINKS:'https://vermillionent.pythonanywhere.com/auth/update-web-and-social-links/',
   CREATE_EVENT:'https://vermillionent.pythonanywhere.com/event/create-event/',
   GET_EVENTS:'https://vermillionent.pythonanywhere.com/event/get-all-events/',
+  GET_TOURNAMENTS:'https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/',
+  CREATE_TOURNAMENT:'https://vermillionent.pythonanywhere.com/tournament/create-tournament/',
   
 } 
 
