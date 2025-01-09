@@ -22,7 +22,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+ 
         try {
             const response = await fetch(VENT.FORGOT_PASSWORD, {
                 method: 'POST',

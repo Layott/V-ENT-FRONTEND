@@ -1,28 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaAsterisk } from "react-icons/fa6";
 import { FiInfo } from "react-icons/fi";
-import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
-import styles from './participants.module.css'
+import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
+import styles from './participants.module.css';
 
-const Participants = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [teamSizeOption, setTeamSizeOption] = useState('');
-  const [customTeamSize, setCustomTeamSize] = useState('');
+const Participants = ({ formData, updateFormData }) => {
+  const [selectedOption, setSelectedOption] = useState(formData?.selectedOption || null);
+  const [teamSizeOption, setTeamSizeOption] = useState(formData?.teamSizeOption || '');
+  const [customTeamSize, setCustomTeamSize] = useState(formData?.customTeamSize || '');
+  const [minIndividuals, setMinIndividuals] = useState(formData?.minIndividuals || '');
+  const [maxIndividuals, setMaxIndividuals] = useState(formData?.maxIndividuals || '');
+
+  // Synchronize local state with formData
+  useEffect(() => {
+    updateFormData({...formData,
+      selectedOption,
+      teamSizeOption,
+      customTeamSize,
+      minIndividuals,
+      maxIndividuals,
+    });
+  }, [selectedOption, teamSizeOption, customTeamSize, minIndividuals, maxIndividuals]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-  }
+  };
 
   const handleTeamSizeChange = (event) => {
-    setTeamSizeOption(event.target.value);
-    if (event.target.value !== 'custom') {
+    const value = event.target.value;
+    setTeamSizeOption(value);
+    if (value !== 'custom') {
       setCustomTeamSize('');
     }
-  }
+  };
 
   const handleCustomTeamSizeChange = (event) => {
     setCustomTeamSize(event.target.value);
-  }
+  };
+
+  const handleMinIndividualsChange = (event) => {
+    setMinIndividuals(event.target.value);
+  };
+
+  const handleMaxIndividualsChange = (event) => {
+    setMaxIndividuals(event.target.value);
+  };
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
@@ -32,153 +54,135 @@ const Participants = () => {
         <p>Who can register for this tournament?</p>
 
         <div className={createTournamentStyles.threeBoxesInRowContainer}>
-          
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'teams' ? createTournamentStyles.activeBox : ''}`}
-          >
+          {['teams', 'individuals', 'both'].map((option) => (
             <div
-              className={`${createTournamentStyles.option} ${selectedOption === 'teams' ? createTournamentStyles.selected : ''}`}
-              onClick={() => handleOptionClick('teams')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Teams</h4>
-              <p>Participants will only be limited to teams.</p>
+              key={option}
+              className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === option ? createTournamentStyles.activeBox : ''}`}
+              onClick={() => handleOptionClick(option)}
+            >
+              <div
+                className={`${createTournamentStyles.option} ${selectedOption === option ? createTournamentStyles.selected : ''}`}
+              ></div>
+              <div className={createTournamentStyles.boxTextContainer}>
+                <h4>{option.charAt(0).toUpperCase() + option.slice(1)}</h4>
+                <p>{`Participants limited to ${option}.`}</p>
+              </div>
             </div>
-          </div>
-          
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'individuals' ? createTournamentStyles.activeBox : ''}`}
-          >
-            <div
-              className={`${createTournamentStyles.option} ${selectedOption === 'individuals' ? createTournamentStyles.selected : ''}`}
-              onClick={() => handleOptionClick('individuals')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Individuals</h4>
-              <p>Only individuals can participate in the tournament.</p>
-            </div>
-          </div>
-
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'both' ? createTournamentStyles.activeBox : ''}`}
-          >
-            <div
-              className={`${createTournamentStyles.option} ${selectedOption === 'both' ? createTournamentStyles.selected : ''}`}
-              onClick={() => handleOptionClick('both')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Both</h4>
-              <p>Both team and  individuals can participate in the tournament.</p>
-            </div>
-          </div>
-
+          ))}
         </div>
 
-        <div className={`${styles.howManyTeamsContainer} ${selectedOption === 'teams' || selectedOption === 'both' ? '' : styles.hidden}`}>
-          <div className={styles.tournamentTitleContainer}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>How many teams are required?
+        {['teams', 'both'].includes(selectedOption) && (
+          <div className={styles.howManyTeamsContainer}>
+            <div className={styles.tournamentTitleContainer}>
+              <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>
+                How many teams are required?
                 <span className={createTournamentStyles.asteriskSpan}>
-                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                  <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
-            </label>
-            <input
+              </label>
+              <input
+                id="numberOfTeams"
                 type="number"
                 className={createTournamentStyles.inputText}
-                placeholder='Enter number of team'
-            />
+                placeholder="Enter number of teams"
+              />
 
-            <p className={styles.infoParagraph}>
+              <p className={styles.infoParagraph}>
                 <span className={styles.infoSpan}>
-                    <FiInfo className={styles.infoIcon} />
+                  <FiInfo className={styles.infoIcon} />
                 </span>
                 This must be an even number for single elimination tournaments.
-            </p>
-          </div>
+              </p>
+            </div>
 
-          <div className={`${createTournamentStyles.inputGroup} ${styles.inputGroup}`}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>How many players in a team is required?
+            <div className={`${createTournamentStyles.inputGroup} ${styles.inputGroup}`}>
+              <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>
+                How many players in a team are required?
                 <span className={createTournamentStyles.asteriskSpan}>
-                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                  <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
-            </label>
-
-          
-            <select
+              </label>
+              <select
+                id = {teamSizeOption}
                 value={teamSizeOption}
                 onChange={handleTeamSizeChange}
                 className={createTournamentStyles.inputWithDropdown}
-            >
+              >
                 <option value="">Select Number of Players</option>
                 <option value="duo">Duo (2 players)</option>
-                <option value="trio">Trio (3 Players)</option>
-                <option value="quad">Quad (4 Players)</option>
+                <option value="trio">Trio (3 players)</option>
+                <option value="quad">Quad (4 players)</option>
                 <option value="custom">Custom</option>
-            </select>
+              </select>
 
-            {teamSizeOption === 'custom' && (
-              <input
-                type="number"
-                className={`${createTournamentStyles.inputText} ${styles.inputCustomNumber}`}
-                placeholder='Enter Number of Player'
-                value={customTeamSize}
-                onChange={handleCustomTeamSizeChange}
-              />
-        
-            )}
-          </div>
-
-        </div>  
-
-        <div className={`${styles.minAndMaxNumberContainer} ${selectedOption === 'individuals' || selectedOption === 'both' ? '' : styles.hidden}`}>
-          <div className={createTournamentStyles.twoInputContainer}>
-            <div className={createTournamentStyles.inputGroup}>
-              <label htmlFor="minNumber" className={createTournamentStyles.labelWithAsterisk}>Min Number of Individuals
-                <span className={createTournamentStyles.asteriskSpan}>
-                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              </label>
-
-              <input
-                id="minNumber"
-                type="number"
-                placeholder="Enter Minimum Number"
-                className={createTournamentStyles.inputNumber}
-              />
+              {teamSizeOption === 'custom' && (
+                <input
+                  id = "customTeamSize"
+                  type="number"
+                  className={`${createTournamentStyles.inputText} ${styles.inputCustomNumber}`}
+                  placeholder="Enter number of players"
+                  value={customTeamSize}
+                  onChange={handleCustomTeamSizeChange}
+                />
+              )}
             </div>
+          </div>
+        )}
 
-            <div className={createTournamentStyles.inputGroup}>
-              <label htmlFor="maxNumber" className={createTournamentStyles.labelWithAsterisk}>Max Number of Individuals
-                <span className={createTournamentStyles.asteriskSpan}>
+        {['individuals', 'both'].includes(selectedOption) && (
+          <div className={styles.minAndMaxNumberContainer}>
+            <div className={createTournamentStyles.twoInputContainer}>
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="minNumber" className={createTournamentStyles.labelWithAsterisk}>
+                  Min Number of Individuals
+                  <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              </label>
+                  </span>
+                </label>
+                <input
+                  id="minNumber"
+                  type="number"
+                  placeholder="Enter minimum number"
+                  className={createTournamentStyles.inputNumber}
+                  value={minIndividuals}
+                  onChange={handleMinIndividualsChange}
+                />
+              </div>
 
-              <input
-                id="maxNumber"
-                type="number"
-                placeholder="Enter Maximum Number"
-                className={createTournamentStyles.inputNumber}
-              />
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="maxNumber" className={createTournamentStyles.labelWithAsterisk}>
+                  Max Number of Individuals
+                  <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                  </span>
+                </label>
+                <input
+                  id="maxNumber"
+                  type="number"
+                  placeholder="Enter maximum number"
+                  className={createTournamentStyles.inputNumber}
+                  value={maxIndividuals}
+                  onChange={handleMaxIndividualsChange}
+                />
                 <p className={styles.infoParagraph}>
                   <span className={styles.infoSpan}>
-                      <FiInfo className={styles.infoIcon} />
+                    <FiInfo className={styles.infoIcon} />
                   </span>
                   The maximum number of individuals allowed is 64.
                 </p>
+              </div>
             </div>
-          </div>
-          <p className={styles.infoParagraph} style={{marginTop: '0.5rem'}}>
-            <span className={styles.infoSpan}>
+            <p className={styles.infoParagraph} style={{ marginTop: '0.5rem' }}>
+              <span className={styles.infoSpan}>
                 <FiInfo className={styles.infoIcon} />
-            </span>
-            Minimum and maximum must be an even number for single elimination tournaments.
-          </p>
-        </div>
-
+              </span>
+              Minimum and maximum must be an even number for single elimination tournaments.
+            </p>
+          </div>
+        )}
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Participants
+export default Participants;

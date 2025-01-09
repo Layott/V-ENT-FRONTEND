@@ -3,11 +3,25 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './create-tournament-type.module.css';
 
-const CreateTournamentType = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const CreateTournamentType = ({ formData, updateFormData }) => {
+  const [selectedOption, setSelectedOption] = useState(formData?.tournament_type || null);
+  const [isLinkedToEvent, setIsLinkedToEvent] = useState(false);
+  const [hideLocation, setHideLocation] = useState(false);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    updateFormData('tournament_type', option);
+  };
+
+  const handleHideLocationChange = (event) => {
+    setHideLocation(event.target.checked);
+    if (event.target.checked) {
+      updateFormData('venue', 'Location hidden');
+    }
+  };
+
+  const handleEventLinkChange = (value) => {
+    setIsLinkedToEvent(value === 'yes');
   };
 
   return (
@@ -16,61 +30,35 @@ const CreateTournamentType = () => {
         <h3 className={createTournamentStyles.tournamentTypeH3}>Tournament Type</h3>
 
         <div className={createTournamentStyles.threeBoxesInRowContainer}>
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${
-              selectedOption === 'virtual' ? createTournamentStyles.activeBox : ''
-            }`}
-          >
+          {['virtual', 'physical', 'hybrid'].map((option) => (
             <div
-              className={`${createTournamentStyles.option} ${
-                selectedOption === 'virtual' ? createTournamentStyles.selected : ''
+              key={option}
+              className={`${createTournamentStyles.oneThirdBoxContainer} ${
+                selectedOption === option ? createTournamentStyles.activeBox : ''
               }`}
-              onClick={() => handleOptionClick('virtual')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Virtual</h4>
-              <p>Your tournament will be held only as a virtual tournament.</p>
+              onClick={() => handleOptionClick(option)}
+            >
+              <div
+                className={`${createTournamentStyles.option} ${
+                  selectedOption === option ? createTournamentStyles.selected : ''
+                }`}
+              ></div>
+              <div className={createTournamentStyles.boxTextContainer}>
+                <h4>{option.charAt(0).toUpperCase() + option.slice(1)}</h4>
+                <p>
+                  {option === 'virtual'
+                    ? 'Your tournament will be held only as a virtual tournament.'
+                    : option === 'physical'
+                    ? 'Your tournament will be held as a physical event in a physical space.'
+                    : 'Your tournament will be both virtual and physical.'}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${
-              selectedOption === 'physical' ? createTournamentStyles.activeBox : ''
-            }`}
-          >
-            <div
-              className={`${createTournamentStyles.option} ${
-                selectedOption === 'physical' ? createTournamentStyles.selected : ''
-              }`}
-              onClick={() => handleOptionClick('physical')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Physical</h4>
-              <p>Your tournament will be held as a physical event in a physical space.</p>
-            </div>
-          </div>
-
-          <div
-            className={`${createTournamentStyles.oneThirdBoxContainer} ${
-              selectedOption === 'hybrid' ? createTournamentStyles.activeBox : ''
-            }`}
-          >
-            <div
-              className={`${createTournamentStyles.option} ${
-                selectedOption === 'hybrid' ? createTournamentStyles.selected : ''
-              }`}
-              onClick={() => handleOptionClick('hybrid')}
-            ></div>
-            <div className={createTournamentStyles.boxTextContainer}>
-              <h4>Hybrid</h4>
-              <p>Your tournament will be both virtual and physical.</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         <div className={styles.outerVenueVirtualLinkContainer}>
           <div className={createTournamentStyles.twoInputContainer}>
-            {/* Virtual Link Input */}
             {selectedOption !== 'physical' && (
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="virtualLink">Virtual Link</label>
@@ -79,11 +67,12 @@ const CreateTournamentType = () => {
                   type="text"
                   placeholder="Paste link here"
                   className={createTournamentStyles.inputText}
+                  onChange={(e) => updateFormData('virtual_link', e.target.value)}
+                  disabled={hideLocation}
                 />
               </div>
             )}
 
-            {/* Venue Input */}
             {selectedOption !== 'virtual' && (
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="venue">Venue</label>
@@ -92,14 +81,21 @@ const CreateTournamentType = () => {
                   type="text"
                   placeholder="Enter physical location"
                   className={createTournamentStyles.inputText}
+                  onChange={(e) => updateFormData('venue', e.target.value)}
+                  disabled={hideLocation}
                 />
               </div>
             )}
           </div>
 
           <div className={styles.hideLocationContainer}>
-            <input type="checkbox" className={styles.hideCheckbox} />
-            <label htmlFor="">Hide location</label>
+            <input
+              type="checkbox"
+              className={styles.hideCheckbox}
+              checked={hideLocation}
+              onChange={handleHideLocationChange}
+            />
+            <label>Hide location</label>
           </div>
 
           <div className={styles.outerQuestionContainer}>
@@ -107,45 +103,43 @@ const CreateTournamentType = () => {
               <p>Is this tournament linked to an event?</p>
 
               <div className={styles.optionContainer}>
-                <label className={styles.optionLabel}>
-                  <input
-                    type="radio"
-                    name="linkedToEvent"
-                    value="yes"
-                    className={styles.optionInput}
-                  />
-                  Yes
-                </label>
-
-                <label className={styles.optionLabel}>
-                  <input
-                    type="radio"
-                    name="linkedToEvent"
-                    value="no"
-                    className={styles.optionInput}
-                  />
-                  No
-                </label>
+                {['yes', 'no'].map((value) => (
+                  <label key={value} className={styles.optionLabel}>
+                    <input
+                      type="radio"
+                      name="linkedToEvent"
+                      value={value}
+                      className={styles.optionInput}
+                      checked={isLinkedToEvent === (value === 'yes')}
+                      onChange={() => handleEventLinkChange(value)}
+                    />
+                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                  </label>
+                ))}
               </div>
             </div>
 
-
-            <div className={styles.eventContainer}>
-              <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>
-                Select Event
-                <span className={createTournamentStyles.asteriskSpan}>
-                  <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              </label>
-
-              <select className={createTournamentStyles.inputWithDropdown}>
-                <option value="">Select Event</option>
-                <option value="FREEFIRE">FREEFIRE</option>
-                <option value="PUBGM">PUBGM</option>
-                <option value="CODM">CODM</option>
-                <option value="EAFC">EAFC</option>
-              </select>
-            </div>
+            {isLinkedToEvent && (
+              <div className={styles.eventContainer}>
+                <label htmlFor="selectEvent" className={createTournamentStyles.labelWithAsterisk}>
+                  Select Event
+                  <span className={createTournamentStyles.asteriskSpan}>
+                    <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+                  </span>
+                </label>
+                <select
+                  id="selectEvent"
+                  className={createTournamentStyles.inputWithDropdown}
+                  onChange={(e) => updateFormData('event', e.target.value)}
+                >
+                  <option value="">Select Event</option>
+                  <option value="FREEFIRE">FREEFIRE</option>
+                  <option value="PUBGM">PUBGM</option>
+                  <option value="CODM">CODM</option>
+                  <option value="EAFC">EAFC</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
       </div>

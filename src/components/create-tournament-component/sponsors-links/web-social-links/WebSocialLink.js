@@ -3,43 +3,61 @@ import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './web-social-link.module.css';
 
-const WebSocialLink = () => {
+const WebSocialLink = ({ formData, updateFormData }) => {
   const [fields, setFields] = useState([
-    { label: 'Facebook', placeholder: 'https://www.facebook.com/' },
-    { label: 'X (Twitter)', placeholder: 'https://www.x.com/' },
-    { label: 'Instagram', placeholder: 'https://www.instagram.com/' },
-    { label: 'TikTok', placeholder: 'https://www.tiktok.com/' },
-    { label: 'YouTube', placeholder: 'https://www.youtube.com/' },
-    { label: 'Bigo Live', placeholder: 'https://www.bigo.tv/' },
-    { label: 'Twitch', placeholder: 'https://www.twitch.tv/' },
-    { label: 'Kick', placeholder: 'https://www.kick.com/' },
+    { label: 'Facebook', key: 'facebook_link', placeholder: 'https://facebook.com/tournamentpage', value: '' },
+    { label: 'X (Twitter)', key: 'twitter_link', placeholder: 'https://twitter.com/tournamentpage', value: '' },
+    { label: 'Instagram', key: 'instagram_link', placeholder: 'https://instagram.com/tournamentpage', value: '' },
+    { label: 'YouTube', key: 'youtube_link', placeholder: 'https://youtube.com/tournamentpage', value: '' },
+    { label: 'Twitch', key: 'twitch_link', placeholder: 'https://twitch.tv/tournamentpage', value: '' },
+    { label: 'Kick', key: 'kick_link', placeholder: 'https://kick.com/tournamentpage', value: '' },
+    { label: 'TikTok', key: 'tiktok_link', placeholder: 'https://tiktok.com/tournamentpage', value: '' },
+    { label: 'Bigo Live', key: 'bigolive_link', placeholder: 'https://bigolive.com/tournamentpage', value: '' },
   ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newLabel, setNewLabel] = useState('');
 
+  const syncWithFormData = (updatedFields) => {
+    setFields(updatedFields);
+    const updatedData = {};
+    updatedFields.forEach(({ key, value }) => {
+      updatedData[key] = value;
+    });
+    updateFormData('webSocialLinks', updatedData);
+  };
+
   const handleAddField = () => {
     setIsModalOpen(true);
-  }
+  };
 
   const handleModalOkay = () => {
     if (newLabel.trim()) {
-      setFields([
+      const formattedKey = `${newLabel.trim().toLowerCase().replace(/\s+/g, '_')}_link`;
+      const updatedFields = [
         ...fields,
-        { label: newLabel, placeholder: 'https://examples.com/' },
-      ]);
+        { label: newLabel, key: formattedKey, placeholder: 'https://examples.com/', value: '' },
+      ];
+      syncWithFormData(updatedFields);
     }
     setIsModalOpen(false);
     setNewLabel('');
-  }
+  };
 
   const handleModalCancel = () => {
     setIsModalOpen(false);
     setNewLabel('');
-  }
+  };
 
   const handleDeleteField = (index) => {
-    setFields(fields.filter((_, i) => i !== index));
-  }
+    const updatedFields = fields.filter((_, i) => i !== index);
+    syncWithFormData(updatedFields);
+  };
+
+  const handleFieldChange = (index, value) => {
+    const updatedFields = [...fields];
+    updatedFields[index].value = value;
+    syncWithFormData(updatedFields);
+  };
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
@@ -47,44 +65,46 @@ const WebSocialLink = () => {
         <h3 className={createTournamentStyles.tournamentTypeH3}>Web and Social Links</h3>
 
         <div className={styles.outerInputContainer}>
-          {fields.map(({ label, placeholder }, index) => (
+          {fields.map(({ label, placeholder, value }, index) => (
             <div key={index} className={styles.inputGroup}>
               <label htmlFor={`field-${index}`}>{label}</label>
               <input
                 id={`field-${index}`}
                 type="text"
                 placeholder={placeholder}
+                value={value}
+                onChange={(e) => handleFieldChange(index, e.target.value)}
                 className={`${createTournamentStyles.inputText} ${styles.inputText}`}
               />
-              <button 
+              <button
                 className={styles.deleteBTN}
                 onClick={() => handleDeleteField(index)}
               >
                 <FaTrash className={styles.deleteIcon} />
               </button>
-
             </div>
           ))}
         </div>
 
-        <button 
-          type="button" 
-          className={styles.addButton} 
+        <button
+          type="button"
+          className={styles.addButton}
           onClick={handleAddField}
         >
           Add Another Field
         </button>
       </div>
-      
+
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <h3>Enter Name for the Field</h3>
             <input
+              id={newLabel}
               type="text"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
-              placeholder='Enter Field Name'
+              placeholder="Enter Field Name"
               className={`${styles.modalInput} ${createTournamentStyles.inputText}`}
             />
             <div className={styles.modalBTNContainer}>
@@ -94,7 +114,6 @@ const WebSocialLink = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
