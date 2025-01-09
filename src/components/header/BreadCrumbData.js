@@ -1,7 +1,6 @@
 const breadCrumbTitles = {
     "/user-profile": { title: "My Profile", showBackArrow: false },
     "/tournaments": { title: "Tournaments", showBackArrow: false },
-    "/teams": { title: "Teams", showBackArrow: false },
     "/tournaments/create-tournament": { 
         title: "Create Tournament", 
         showBackArrow: true,
@@ -28,6 +27,15 @@ const breadCrumbTitles = {
         showBackArrow: true,
         fallbackURL: '/events'
     },
+    "/anime": { title: "Anime", showBackArrow: false },
+    "/rankings": { title: "Rankings", showBackArrow: false },
+    "/teams": { title: "Teams", showBackArrow: false },
+    "/teams/team-profile": { 
+        title: "Team Profile", 
+        showBackArrow: true,
+        fallbackURL: '/teams'
+    },
+    "/wallets": { title: "Wallets", showBackArrow: false },
     "/settings": { title: "Settings", showBackArrow: false },
 }
 
