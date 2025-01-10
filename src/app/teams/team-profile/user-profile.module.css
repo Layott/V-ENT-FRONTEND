@@ -48,8 +48,6 @@
 
 .overviewContainer {
   display: flex;
-  flex-direction: row;
-  display: flex;
   align-items: flex-start;
   flex-direction: column;
   gap: 1.5rem;

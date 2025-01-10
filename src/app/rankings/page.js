@@ -12,19 +12,19 @@ const Rankings = () => {
       <MobileHeader />
 
       <main className={styles.mainContainer}>
-            <Sidebar />
+        <Sidebar />
 
-            <div className={styles.rightPaneContainer}>
-                <div className={styles.header}>
-                    <h3>Rankings Page</h3>
+        <div className={styles.rightPaneContainer}>
+          <div className={styles.header}>
+            <h3>Rankings Page</h3>
 
-                    <div className={styles.searchFilterContainer}>
-                        Filter and Search
-                    </div>
-                </div>
-
+            <div className={styles.searchFilterContainer}>
+                Filter and Search
             </div>
-        </main>
+          </div>
+
+        </div>
+      </main>
 
     </div>
   )

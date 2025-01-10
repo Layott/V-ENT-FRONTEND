@@ -7,7 +7,6 @@ import EventsComponent from '@/components/events/EventsComponent';
 import styles from './events.module.css'
 
 const Events = () => {
-
   return (
     <div className={styles.pageContainer}>
       <Header />
@@ -15,10 +14,8 @@ const Events = () => {
       
       <main className={styles.mainContainer}>
         <Sidebar />
-        <EventsComponent />
-        
+        <EventsComponent />   
       </main>
-
     </div>
   )
 }
