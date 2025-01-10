@@ -27,6 +27,11 @@ const breadCrumbTitles = {
         showBackArrow: true,
         fallbackURL: '/events'
     },
+    "/events/register-event": { 
+        title: "Register Event", 
+        showBackArrow: true,
+        fallbackURL: '/events'
+    },
     "/anime": { title: "Anime", showBackArrow: false },
     "/rankings": { title: "Rankings", showBackArrow: false },
     "/teams": { title: "Teams", showBackArrow: false },
