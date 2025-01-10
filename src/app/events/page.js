@@ -12,6 +12,7 @@ const Events = () => {
       <Header />
       <MobileHeader />
       
+      
       <main className={styles.mainContainer}>
         <Sidebar />
         <EventsComponent />   
