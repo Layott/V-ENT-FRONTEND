@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaAsterisk } from "react-icons/fa6";
-// import ReactQuill from 'react-quill';
-// import 'react-quill/dist/quill.snow.css'
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'
 import { FiInfo } from "react-icons/fi";
 import modules from '@/components/react-quill/reactQuillModule';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
@@ -119,6 +119,30 @@ const CreateTournamentTitle = ({ formData, updateFormData }) => {
             maxLength={1000}
           ></textarea>
         </div>
+
+        {/* Description Using ReactQuill */}
+        <div className={styles.tournamentDescriptionContainer}>
+          <label htmlFor="description" className={createTournamentStyles.labelWithAsterisk}>
+            Tournament Description
+            <span className={createTournamentStyles.asteriskSpan}>
+              <FaAsterisk className={createTournamentStyles.asteriskIcon} />
+            </span>
+          </label>
+          <ReactQuill
+              type={description}
+              className={styles.richTextEditor}
+              onChange={handleDescriptionChange}
+              modules={modules}
+              theme='snow'
+          />
+          <p className={styles.infoParagraph}>
+              <span className={styles.infoSpan}>
+                  <FiInfo className={styles.infoIcon} />
+              </span>
+              Max of 1,000 characters.
+          </p>
+        </div>
+
       </div>
     );
   };
