@@ -83,7 +83,7 @@ const CreateTournamentComponent = () => {
       case 4:
         return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:
-        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} />;
+        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} />;
       default:
         return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
     }
