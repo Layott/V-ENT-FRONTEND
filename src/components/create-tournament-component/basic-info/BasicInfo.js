@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import CreateTournamentTitle from './create-tournament-title/CreateTournamentTitle';
 import CreateTournamentType from './create-tournament-type/CreateTournamentType';
@@ -6,12 +7,22 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const BasicInfo = ({ formData, setFormData, setSelectedTab }) => {
+const BasicInfo = ({ setSelectedTab }) => {
+  const [formData, setFormData] = useState({});
+
+  // Load initial data from localStorage
+  useEffect(() => {
+    const savedData = localStorage.getItem('createTournamentData');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
   // Function to handle form data updates and localStorage sync
   const updateFormData = (field, value) => {
     const updatedData = { ...formData, [field]: value };
     setFormData(updatedData);
-    localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
+    localStorage.setItem('createTournamentData', JSON.stringify(updatedData)); // Save to localStorage
   };
 
   const handleProceed = () => {
@@ -24,15 +35,11 @@ const BasicInfo = ({ formData, setFormData, setSelectedTab }) => {
         <h1>Basic Info</h1>
       </header>
 
-      <CreateTournamentTitle formData={formData} updateFormData={updateFormData} />
-
-      <CreateTournamentType formData={formData} updateFormData={updateFormData} />
-
-      <CreateTournamentSchedule formData={formData} updateFormData={updateFormData} />
-
-      <CreateTournamentVisibility formData={formData} updateFormData={updateFormData} />
-
-      <CreateTournamentLogo formData={formData} updateFormData={updateFormData} />
+      <CreateTournamentTitle updateFormData={updateFormData} formData={formData} />
+      <CreateTournamentType updateFormData={updateFormData} formData={formData} />
+      <CreateTournamentSchedule updateFormData={updateFormData} formData={formData} />
+      <CreateTournamentVisibility updateFormData={updateFormData} formData={formData} />
+      <CreateTournamentLogo updateFormData={updateFormData} formData={formData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button

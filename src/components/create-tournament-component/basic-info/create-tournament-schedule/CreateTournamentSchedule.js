@@ -3,7 +3,7 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-schedule.module.css'
 
-const CreateTournamentSchedule = ({formData, updateFormData}) => {
+const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   const [selectedOption, setSelectedOption] = useState(formData?.scheduleType || null);
   const [recurrenceFrequency, setRecurrenceFrequency] = useState(formData?.recurrenceFrequency || null);
   const [endCriteria, setEndCriteria] = useState(formData?.endCriteria || null);
@@ -11,24 +11,24 @@ const CreateTournamentSchedule = ({formData, updateFormData}) => {
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    updateFormData({ ...formData, scheduleType: option });
+    updateFormData('scheduleType', option );
   }
 
   const handleRecurrenceFrequencyChange = (e) => {
     const newValue = e.target.value; 
     setRecurrenceFrequency(newValue); 
-    updateFormData({ ...formData, recurrenceFrequency: newValue });
+    updateFormData( 'recurrenceFrequency', newValue);
   }
 
   const handleEndCriteriaChange = (e) => {
     const value = e.target.value;
     setEndCriteria(value);
     setShowMaxCyclesInput(value === "after-cycles")
-    updateFormData({ ...formData, endCriteria: value });
+    updateFormData('endCriteria', value);
   }
   
   const handleInputChange = (key, value) => {
-    updateFormData({ ...formData, [key]: value });
+    updateFormData([key], value );
   }
 
   return (

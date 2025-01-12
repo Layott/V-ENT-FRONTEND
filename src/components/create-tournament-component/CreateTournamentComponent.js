@@ -16,6 +16,8 @@ const CreateTournamentComponent = () => {
     tournament_title: '',
     game: '',
     game_mode: '',
+    tournament_banner: '',
+    tournament_logo:'',
     tournament_description: '',
     tournament_type: '',
     start_date_and_time: '',
@@ -75,17 +77,17 @@ const CreateTournamentComponent = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} />;
       case 2:
-        return <FormatParticipants formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <FormatParticipants setSelectedTab={setSelectedTab} />;
       case 3:
-        return <PrizeDistribution formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <PrizeDistribution setSelectedTab={setSelectedTab} />;
       case 4:
-        return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <SponsorsLinks setSelectedTab={setSelectedTab} />;
       case 5:
-        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} />;
+        return <Review handleSubmit={handleSubmit} />;
       default:
-        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} />;
     }
   };
 

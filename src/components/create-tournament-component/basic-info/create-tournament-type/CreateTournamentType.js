@@ -3,7 +3,7 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './create-tournament-type.module.css';
 
-const CreateTournamentType = ({ formData, updateFormData }) => {
+const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [selectedOption, setSelectedOption] = useState(formData?.tournament_type || null);
   const [isLinkedToEvent, setIsLinkedToEvent] = useState(false);
   const [hideLocation, setHideLocation] = useState(false);
@@ -12,12 +12,13 @@ const CreateTournamentType = ({ formData, updateFormData }) => {
     setSelectedOption(option);
     updateFormData('tournament_type', option);
   };
-
+  
   const handleHideLocationChange = (event) => {
     setHideLocation(event.target.checked);
     if (event.target.checked) {
-      updateFormData('venue', 'Location hidden');
-    }
+      updateFormData('hide_location', 'true');
+    }else {
+      updateFormData('hide_location', 'false');}
   };
 
   const handleEventLinkChange = (value) => {
@@ -81,7 +82,7 @@ const CreateTournamentType = ({ formData, updateFormData }) => {
                   type="text"
                   placeholder="Enter physical location"
                   className={createTournamentStyles.inputText}
-                  onChange={(e) => updateFormData('venue', e.target.value)}
+                  onChange={(e) => updateFormData('tournament_location', e.target.value)}
                   disabled={hideLocation}
                 />
               </div>
