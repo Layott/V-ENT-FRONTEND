@@ -4,7 +4,7 @@ import { FiCamera } from 'react-icons/fi'
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-logo.module.css'
 
-const CreateTournamentLogo = ({ formData, updateFormData }) => {
+const CreateTournamentLogo = ({ updateFormData }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
 
@@ -14,11 +14,11 @@ const CreateTournamentLogo = ({ formData, updateFormData }) => {
       const reader = new FileReader();
       reader.onload = () => {
         setLogoPreview(reader.result); // Preview the uploaded logo
+        
+        // Save the data URL to localStorage (instead of the file object)
+        updateFormData('tournament_logo', reader.result);
       };
       reader.readAsDataURL(file);
-
-      // Update formData
-      updateFormData({ ...formData, logo: file });
     }
   };
 
@@ -28,11 +28,11 @@ const CreateTournamentLogo = ({ formData, updateFormData }) => {
       const reader = new FileReader();
       reader.onload = () => {
         setBannerPreview(reader.result); // Preview the uploaded banner
+
+        // Save the data URL to localStorage (instead of the file object)
+        updateFormData('tournament_banner', reader.result);
       };
       reader.readAsDataURL(file);
-
-      // Update formData
-      updateFormData({ ...formData, banner: file });
     }
   };
 
@@ -45,9 +45,9 @@ const CreateTournamentLogo = ({ formData, updateFormData }) => {
           <div className={styles.logoContainer}>
             {logoPreview && (
               <Image
-                src={logoPreview}
+                src={logoPreview} // Use the data URL directly
                 width={100}
-                height={100}  v
+                height={100}
                 alt="Logo Preview"
               />
             )}
@@ -85,7 +85,7 @@ const CreateTournamentLogo = ({ formData, updateFormData }) => {
           </div>
           {bannerPreview && (
             <Image
-              src={bannerPreview}
+              src={bannerPreview} // Use the data URL directly
               width={500}
               height={250}
               alt="Banner Preview"

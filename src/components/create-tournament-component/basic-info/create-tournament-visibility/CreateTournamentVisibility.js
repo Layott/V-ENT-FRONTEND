@@ -3,7 +3,7 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-visibility.module.css'
 
-const CreateTournamentVisibility = ({formData, updateFormData}) => {
+const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
   const [selectedOption, setSelectedOption] = useState(formData.tournament_visibility || null);
   const [event, setEvent] = useState(formData.event || '');
   const [entryType, setEntryType] = useState(formData.entry_type || '');
@@ -11,25 +11,21 @@ const CreateTournamentVisibility = ({formData, updateFormData}) => {
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    updateFormData({ ...formData, tournament_visibility: option });
+    updateFormData('tournament_visibility', option );
   };
 
-  const handleEventChange = (e) => {
-    const selectedEvent = e.target.value;
-    setEvent(selectedEvent);
-    updateFormData({ ...formData, event: selectedEvent });
-  };
+
 
   const handleEntryTypeChange = (e) => {
     const selectedEntryType = e.target.value;
     setEntryType(selectedEntryType);
-    updateFormData({ ...formData, entry_type: selectedEntryType });
+    updateFormData('entry_type', selectedEntryType );
   };
 
   const handleEntryFeeChange = (e) => {
     const fee = e.target.value;
     setEntryFee(fee);
-    updateFormData({ ...formData, entry_fee: fee });
+    updateFormData('entry_fee', fee );
   };
 
 
@@ -96,7 +92,7 @@ const CreateTournamentVisibility = ({formData, updateFormData}) => {
                     className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select</option>
-                    <option value="FREEFIRE">FREEFIRE</option>
+                    <option value="FREE FIRE">FREE FIRE</option>
                     <option value="PUBGM">PUBGM</option>
                     <option value="CODM">CODM</option>
                     <option value="EAFC">EAFC</option>
