@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
+import MobileHeader from '@/components/mobile-header/MobileHeader';
 import TeamProfileBanner from '@/components/team-profile/team-profile-banner/TeamProfileBanner';
 import TeamProfileBio from '@/components/team-profile/team-profile-bio/TeamProfileBio';
 import TeamProfileOverviewLeft from '@/components/team-profile/team-profile-overview-left/TeamProfileOverviewLeft';
@@ -18,6 +19,7 @@ const TeamProfile = () => {
   return (
     <div className={styles.pageContainer}>
       <Header />
+      <MobileHeader />
       
       <main className={styles.mainContainer}>
         <Sidebar />
@@ -71,9 +73,7 @@ const TeamProfile = () => {
           </div>
       
         </div>
-      
       </main>
-
     </div>
   )
 }

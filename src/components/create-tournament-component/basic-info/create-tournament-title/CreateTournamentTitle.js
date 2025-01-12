@@ -134,7 +134,7 @@ const CreateTournamentTitle = ({ formData= {}, updateFormData }) => {
           <ReactQuill
               type={description}
               className={styles.richTextEditor}
-              // onChange={handleDescriptionChange}
+              onChange={handleDescriptionChange}
               modules={modules}
               theme='snow'
           />

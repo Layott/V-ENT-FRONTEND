@@ -19,7 +19,6 @@ const Teams = () => {
               <AllTeams />
             </div>
         </main>
-
     </div>
   )
 }
