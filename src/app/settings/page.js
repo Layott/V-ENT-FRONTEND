@@ -1,6 +1,7 @@
 'use client'
 
 import Header from "@/components/header/Header"
+import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from "@/components/sidebar/Sidebar"
 import styles from './settings.module.css'
 
@@ -8,6 +9,7 @@ const Settings = () => {
     return (
       <div className={styles.pageContainer}>
         <Header />
+        <MobileHeader />
   
         <main className={styles.mainContainer}>
               <Sidebar />

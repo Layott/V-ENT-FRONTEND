@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
-// import MobileSidebar from '@/components/mobile-sidebar/MobileSidebar';
 import Header from '@/components/header/Header';
+import MobileHeader from '@/components/mobile-header/MobileHeader';
 import TournamentDetailsBanner from '@/components/view-tournament/tournament-details-banner/TournamentDetailsBanner';
 import TournamentDetailsOverview from '@/components/view-tournament/tournament-details-overview/TournamentDetailsOverview';
 import TournamentDetailsRules from '@/components/view-tournament/tournament-details-rules/TournamentDetailsRules';
@@ -18,10 +18,10 @@ const ViewTournament = () => {
   return (
     <div className={styles.pageContainer}>
       <Header />
+      <MobileHeader />
       
       <main className={styles.mainContainer}>
         <Sidebar />
-        {/* <MobileSidebar /> */}
       
         <div className={styles.rightPaneContainer}>
           <TournamentDetailsBanner />
@@ -96,9 +96,7 @@ const ViewTournament = () => {
           </div>
       
         </div>
-      
       </main>
-
     </div>
   )
 }

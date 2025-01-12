@@ -7,7 +7,7 @@ import ReviewSponsorLinks from "./review-sponsor-links/ReviewSponsorLinks";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './review.module.css'
 
-const Review = ({ setSelectedTab, handleSubmit}) => {
+const Review = ({ setSelectedTab }) => {
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
   }
@@ -81,9 +81,11 @@ const Review = ({ setSelectedTab, handleSubmit}) => {
             Publish
           </button>
         </div>
+        
       </div>
     </div>
   )
 }
+
 
 export default Review
