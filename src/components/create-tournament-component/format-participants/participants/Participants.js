@@ -4,46 +4,55 @@ import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './participants.module.css';
 
-const Participants = ({ formData, updateFormData }) => {
-  const [selectedOption, setSelectedOption] = useState(formData?.selectedOption || null);
-  const [teamSizeOption, setTeamSizeOption] = useState(formData?.teamSizeOption || '');
-  const [customTeamSize, setCustomTeamSize] = useState(formData?.customTeamSize || '');
-  const [minIndividuals, setMinIndividuals] = useState(formData?.minIndividuals || '');
-  const [maxIndividuals, setMaxIndividuals] = useState(formData?.maxIndividuals || '');
+const Participants = ({ formData = {}, updateFormData }) => {
+  const [selectedOption, setSelectedOption] = useState(formData?.tournament_access || null);
+  const [teamSizeOption, setTeamSizeOption] = useState(formData?.team_size || '');
+  const [customTeamSize, setCustomTeamSize] = useState(formData?.custom_team_size || '');
+  const [minIndividuals, setMinIndividuals] = useState(formData?.min_number_of_participants || '');
+  const [maxIndividuals, setMaxIndividuals] = useState(formData?.max_number_of_participants || '');
+  const [error, setError] = useState('');
 
-  // Synchronize local state with formData
-  useEffect(() => {
-    updateFormData({...formData,
-      selectedOption,
-      teamSizeOption,
-      customTeamSize,
-      minIndividuals,
-      maxIndividuals,
-    });
-  }, [selectedOption, teamSizeOption, customTeamSize, minIndividuals, maxIndividuals]);
+
+  const validateEvenNumber = (value, fieldName, updateFormData) => {
+  const parsedValue = parseInt(value, 10);
+  
+    if (isNaN(parsedValue) || parsedValue % 2 !== 0) {
+      setError('Please enter an even number.');
+      updateFormData(fieldName, ''); // Reset invalid input
+      return false;
+    }
+    setError('');
+    return true;
+  };
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    updateFormData('tournament_access', option);
   };
 
   const handleTeamSizeChange = (event) => {
     const value = event.target.value;
     setTeamSizeOption(value);
-    if (value !== 'custom') {
-      setCustomTeamSize('');
-    }
+    updateFormData('team_size', value !== 'custom' ? value : customTeamSize);
   };
 
   const handleCustomTeamSizeChange = (event) => {
-    setCustomTeamSize(event.target.value);
+    const value = event.target.value;
+    setCustomTeamSize(value);
+    updateFormData('custom_team_size', value);
+    updateFormData('team_size', value);
   };
 
   const handleMinIndividualsChange = (event) => {
-    setMinIndividuals(event.target.value);
+    const value = event.target.value;
+    setMinIndividuals(value);
+    updateFormData('min_number_of_participants', value);
   };
 
   const handleMaxIndividualsChange = (event) => {
-    setMaxIndividuals(event.target.value);
+    const value = event.target.value;
+    setMaxIndividuals(value);
+    updateFormData('max_number_of_participants', value);
   };
 
   return (
@@ -74,7 +83,7 @@ const Participants = ({ formData, updateFormData }) => {
         {['teams', 'both'].includes(selectedOption) && (
           <div className={styles.howManyTeamsContainer}>
             <div className={styles.tournamentTitleContainer}>
-              <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>
+              <label htmlFor="numberOfTeams" className={createTournamentStyles.labelWithAsterisk}>
                 How many teams are required?
                 <span className={createTournamentStyles.asteriskSpan}>
                   <FaAsterisk className={createTournamentStyles.asteriskIcon} />
@@ -82,10 +91,20 @@ const Participants = ({ formData, updateFormData }) => {
               </label>
               <input
                 id="numberOfTeams"
-                type="number"
+                type="text"
                 className={createTournamentStyles.inputText}
                 placeholder="Enter number of teams"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || /^[0-9]+$/.test(value)) {
+                    updateFormData('number_of_teams', value); // Update value
+                  }
+                }}
+                onBlur={(e) => {
+                  validateEvenNumber(e.target.value, 'number_of_teams', updateFormData);
+                }}
               />
+              {error && <p className={styles.errorText}>{error}</p>} 
 
               <p className={styles.infoParagraph}>
                 <span className={styles.infoSpan}>
@@ -96,14 +115,14 @@ const Participants = ({ formData, updateFormData }) => {
             </div>
 
             <div className={`${createTournamentStyles.inputGroup} ${styles.inputGroup}`}>
-              <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>
+              <label htmlFor="teamSizeOption" className={createTournamentStyles.labelWithAsterisk}>
                 How many players in a team are required?
                 <span className={createTournamentStyles.asteriskSpan}>
                   <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
               </label>
               <select
-                id = {teamSizeOption}
+                id="teamSizeOption"
                 value={teamSizeOption}
                 onChange={handleTeamSizeChange}
                 className={createTournamentStyles.inputWithDropdown}
@@ -117,7 +136,7 @@ const Participants = ({ formData, updateFormData }) => {
 
               {teamSizeOption === 'custom' && (
                 <input
-                  id = "customTeamSize"
+                  id="customTeamSize"
                   type="number"
                   className={`${createTournamentStyles.inputText} ${styles.inputCustomNumber}`}
                   placeholder="Enter number of players"
@@ -176,7 +195,7 @@ const Participants = ({ formData, updateFormData }) => {
               <span className={styles.infoSpan}>
                 <FiInfo className={styles.infoIcon} />
               </span>
-              Minimum and maximum must be an even number for single elimination tournaments.
+              Minimum and maximum must be even numbers for single elimination tournaments.
             </p>
           </div>
         )}

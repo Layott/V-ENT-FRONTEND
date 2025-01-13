@@ -6,7 +6,7 @@ import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import tournamentTitleStyles from './../../basic-info/create-tournament-title/create-tournament-title.module.css';
 
-const TournamentRules = ({ formData, updateFormData }) => {
+const TournamentRules = ({ formData={}, updateFormData }) => {
   const [description, setDescription] = useState(formData?.tournament_rules|| '');
 
   // Update parent formData whenever description changes
