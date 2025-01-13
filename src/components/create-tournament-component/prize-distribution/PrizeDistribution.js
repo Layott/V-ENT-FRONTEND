@@ -1,13 +1,22 @@
+import { useState, useEffect } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import PrizeDistributionInside from "./prize-distribution-inside/PrizeDistributionInside";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const PrizeDistribution = ({ formData, setFormData, setSelectedTab }) => {
-  // Function to handle form data updates and localStorage sync
-  const updateFormData = (field, value) => {
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-    localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
+const PrizeDistribution = ({ setSelectedTab }) => {
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('createTournamentData');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
+  const updateFormData = (key, value) => {
+    const savedData = JSON.parse(localStorage.getItem('createTournamentData')) || {};
+    savedData[key] = value;
+    localStorage.setItem('createTournamentData', JSON.stringify(savedData));
   };
 
   const handleProceed = () => {
@@ -24,7 +33,7 @@ const PrizeDistribution = ({ formData, setFormData, setSelectedTab }) => {
         <h1>Prize Distribution</h1>
       </header>
 
-      <PrizeDistributionInside formData={formData} updateFormData={updateFormData} />
+      <PrizeDistributionInside updateFormData={updateFormData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button

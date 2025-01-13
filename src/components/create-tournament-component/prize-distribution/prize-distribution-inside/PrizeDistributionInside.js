@@ -5,18 +5,22 @@ import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './prize-distribution-inside.module.css';
 
-const PrizeDistributionInside = ({ formData, updateFormData }) => {
+const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
   const [selectedOption, setSelectedOption] = useState(formData?.prizeOption || "");
   const [positions, setPositions] = useState([1, 2, 3]);
   const [prizes, setPrizes] = useState(formData?.prizes || {});
   const [extraBonuses, setExtraBonuses] = useState({});
 
-  // Sync formData whenever local state changes
   useEffect(() => {
-    updateFormData('prizeOption', selectedOption);
-    updateFormData('prizes', prizes);
-    updateFormData('extraBonuses', extraBonuses);
-  }, [selectedOption, prizes, extraBonuses, updateFormData]);
+    const formattedPrizeDistribution = positions.map((position) => ({
+      position,
+      prize: prizes[`prizePosition${position}`] || null,
+      extras: extraBonuses[`extraBonus${position}`] || null,
+    })).filter(entry => entry.prize !== null || entry.extras !== null);
+
+    updateFormData('prize_distribution_type', selectedOption);
+    updateFormData('prize_distribution', formattedPrizeDistribution);
+  }, [selectedOption, prizes, extraBonuses, positions, updateFormData]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -36,7 +40,7 @@ const PrizeDistributionInside = ({ formData, updateFormData }) => {
       const newPrizes = { ...prizes };
       delete newPrizes[`prizePosition${position}`];
       setPrizes(newPrizes);
-      
+
       const newExtras = { ...extraBonuses };
       delete newExtras[`extraBonus${position}`];
       setExtraBonuses(newExtras);
