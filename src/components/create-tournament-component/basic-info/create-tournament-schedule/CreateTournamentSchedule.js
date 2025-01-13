@@ -209,7 +209,7 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
                 </label>
                 
                 <input type="number" className={styles.maxNumberCycleInput} value={formData?.number_cycle || ""}
-              onChange={(e) => handleInputChange('date_and_time', e.target.value)} />
+              onChange={(e) => handleInputChange('number_cycle', e.target.value)} />
               </div>
             )}
 

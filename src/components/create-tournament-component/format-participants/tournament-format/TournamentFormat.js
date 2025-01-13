@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 
-const TournamentFormat = ({formData, updateFormData}) => {
+const TournamentFormat = ({formData={}, updateFormData}) => {
   const [selectedOption, setSelectedOption] = useState(formData.bracket_type || null);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    updateFormData({ ...formData, bracket_type: option });
+    updateFormData( 'bracket_type', option);
   }
 
   return (
