@@ -4,9 +4,9 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import CreateTournamentComponent from '@/components/create-tournament-component/CreateTournamentComponent';
-import styles from './create-tournament.module.css';
+import styles from './create-event.module.css';
 
-const TournamentCreation = () => {
+const EventCreation = () => {
   return (
     <div className={styles.pageContainer}>
         <Header />
@@ -21,4 +21,4 @@ const TournamentCreation = () => {
   )
 }
 
-export default TournamentCreation
+export default EventCreation
