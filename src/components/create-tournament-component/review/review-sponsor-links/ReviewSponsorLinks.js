@@ -10,7 +10,7 @@ import styles from './review-sponsor-links.module.css';
 
 const sponsors = [
   {
-    name: "TechCrunch",
+    name: "V-ENT",
     username: "@V-ENT",
     logo: ventLogo,
   },

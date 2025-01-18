@@ -1,0 +1,6 @@
+.tournamentDetailsBracketContainer {
+  border: 1px solid purple;
+  border-top: none;
+  min-height: 20vh;
+  width: 100%;
+}

@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import tournamentDetailsBanner from "@/images/tournament_details_banner.webp"
+import tournamentDetailsBanner from "@/images/event_details_banner.webp"
 import { LuClock3 } from "react-icons/lu";
 import { PiMoneyWavy } from "react-icons/pi";
 import { RiShare2Fill } from "react-icons/ri";
 import bannerDetailsStyles from '@/view-/details-banner/tournament-details-banner.module.css'
 
-const TournamentDetailsBanner = () => {
+const EventDetailsBanner = () => {
       
   return (
     <div className={bannerDetailsStyles.tournamentDetailsBannerContainer}>
@@ -28,11 +28,11 @@ const TournamentDetailsBanner = () => {
             </div>
             <div className={bannerDetailsStyles.headerRight}>
                 <button className={bannerDetailsStyles.shareBTN}><RiShare2Fill className={bannerDetailsStyles.shareIcon} /> Share</button>
-                <Link href={'/tournament/register-tournament'} className={bannerDetailsStyles.joinTournamentBTN}>Join Tournament</Link>
+                <Link href={'/events/register-event'} className={bannerDetailsStyles.joinTournamentBTN}>Register for Event</Link>
             </div>
         </div>
     </div>
   )
 }
 
-export default TournamentDetailsBanner
+export default EventDetailsBanner

@@ -1,0 +1,48 @@
+.headerH3 {
+  font-size: 0.8rem;
+  font-family: "ClashGrotesk-Regular", sans-serif;
+  font-weight: 300;
+}
+
+.sponsorOuterContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #212225;
+}
+
+.sponsorsContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.sponsorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: center;
+  background-color: #28292D;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.logoImageContainer {
+  height: 40px;
+  width: 100px;
+}
+
+.logoImageContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.username {
+  color: #B2B3BD;
+  font-size: 0.7rem;
+}
