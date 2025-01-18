@@ -1,0 +1,87 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #17181A;
+  overflow-x: hidden;
+  padding-bottom: 3rem;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+}
+
+.buttonContainer {
+  display: flex;
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 0.5rem;
+  gap: 1.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.buttonContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.tabBTN {
+  background-color: transparent;
+  border: none;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+  cursor: pointer;
+  font-size: 0.8rem;
+  position: relative;
+  outline: none;
+  width: auto;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-bottom: 0.3rem;
+}
+
+.activeTab {
+  border-bottom: 2px solid var(--v-ent-red);
+}
+
+.tournamentDetailsDashboard {
+  min-height: 200px;
+  width: calc(100% - 3rem);
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(119, 119, 119, 0.5);
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+.overviewContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .tabBTN {
+    width: auto;
+  }
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+  }
+  .overviewContainer {
+    flex-direction: row;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+  }
+}

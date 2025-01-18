@@ -68,8 +68,8 @@ const MinecraftEvents = () => {
                     </div>
                 
                     <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
-                        <Link href={'/event-details'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
-                        <Link href={'/event-register'} className={newTournamentStyles.registerBTN}>Register</Link>
+                        <Link href={'/events/view-event'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
+                        <Link href={'/events/register-event'} className={newTournamentStyles.registerBTN}>Register</Link>
                     </div>
                 </div>
                     

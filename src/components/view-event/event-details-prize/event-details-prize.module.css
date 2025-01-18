@@ -1,0 +1,187 @@
+.prizeContainer {
+  min-height: 200px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.headerH3 {
+  font-size: 1rem;
+  font-weight: 100;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.tournamentsPrizeTable {
+  min-height: 40px;
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #212225;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+}
+
+.tournamentsPrizeInnerTable {
+  min-height: 40px;
+  width: 100%;
+  overflow-x: visible;
+  background-color: #28292D;
+  border-radius: 10px;
+  min-width: 300px;
+  display: none;
+}
+
+.tournamentsPrizeInnerTableMobile {
+  min-height: 100px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tournamentsPrizeBoxMobile {
+  padding: 1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-radius: 10px;
+  background-color: #28292D;
+  box-shadow: 0.5px 0px 1px #28292D;
+}
+
+.prizeRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.prizeRow h4 {
+  font-size: 0.9rem;
+  font-weight: 200;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.prizeRow p {
+  font-family: "ClashGrotesk-Light", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 100;
+}
+
+.gridRow:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.gridHeader,
+.gridRow {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+  background-color: #303136;
+  padding-left: 0.5rem;
+  min-width: 100%;
+  box-sizing: border-box;
+  overflow-x: visible;
+}
+
+.gridItem {
+  font-family: "ClashGrotesk-Light", sans-serif;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  min-width: 100%;
+}
+
+.gridItemHeader {
+  font-family: "ClashGrotesk-Regular", sans-serif;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.gridHeader {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.tournamentRecord {
+  display: flex;
+  min-width: 180px;
+}
+
+.tournamentRecord p {
+  display: flex;
+  min-width: 100px;
+  font-size: 0.8rem;
+  justify-content: flex-start;
+}
+
+.tournamentRecord label {
+  display: flex;
+  min-width: 120px;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-size: 0.8rem;
+  justify-content: flex-start;
+}
+
+.dateContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  color: #B2B3BD;
+}
+
+.createdDateParagraph,
+.updatedDateParagraph {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  color: #B2B3BD;
+}
+
+.createdDateParagraph span,
+.updatedDateParagraph span {
+  color: #B2B3BD;
+}
+
+.dotIcon {
+  display: none;
+}
+
+.horizontalLine {
+  height: 0.5px;
+  background-color: rgba(204, 204, 204, 0.3);
+}
+
+@media only screen and (min-width: 500px) {
+  .tournamentsPrizeInnerTable {
+    display: block;
+  }
+  .tournamentsPrizeInnerTableMobile {
+    display: none;
+  }
+  .dotIcon {
+    font-size: 0.75rem;
+    display: inline-flex;
+  }
+  .dotIcon path {
+    color: #B2B3BD;
+    fill: #B2B3BD;
+  }
+  .dateContainer {
+    flex-direction: row;
+    align-items: center;
+  }
+}
