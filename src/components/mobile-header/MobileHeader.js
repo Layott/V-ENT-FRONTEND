@@ -35,7 +35,7 @@ const MobileHeader = ({ className = '' }) => {
   } 
 
   const handleBackNavigation = (fallbackURL = '/') => {
-    if (document.referrer) {
+    if (window.document.referrer) {
       window.history.back();
     } else {
       window.location.href = fallbackURL
@@ -64,17 +64,17 @@ const MobileHeader = ({ className = '' }) => {
     }
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      if (window.document.visibilityState === 'hidden') {
         setIsDropdownOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('mousedown', handleOutsideClick);
+    window.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('mousedown', handleOutsideClick)
+      window.removeEventListener('visibilitychange', handleVisibilityChange)
     };
   }, [isDropdownOpen]);
 

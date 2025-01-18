@@ -9,7 +9,6 @@ import { FaCaretDown } from "react-icons/fa";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import breadCrumbTitles from './BreadCrumbData';
 import styles from './header.module.css';
-// import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 
@@ -20,11 +19,8 @@ const Header = ({ className = '' }) => {
   const [fullName, setFullName] = useState(null);
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef(null);
-
-  // const { pathname } = router;
 
   const { title: currentSection, showBackArrow, fallbackURL } = breadCrumbTitles[pathname] || {
     title: '',
@@ -33,7 +29,7 @@ const Header = ({ className = '' }) => {
   } 
 
   const handleBackNavigation = (fallbackURL = '/') => {
-    if (document.referrer) {
+    if (window.document.referrer) {
       window.history.back();
     } else {
       window.location.href = fallbackURL
@@ -62,17 +58,17 @@ const Header = ({ className = '' }) => {
     }
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      if (window.document.visibilityState === 'hidden') {
         setIsDropdownOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('mousedown', handleOutsideClick);
+    window.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('mousedown', handleOutsideClick)
+      window.removeEventListener('visibilitychange', handleVisibilityChange)
     };
   }, [isDropdownOpen]);
 
