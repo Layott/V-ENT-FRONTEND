@@ -29,11 +29,11 @@ const UserProfile = () => {
       router.push('/login');
       return;
     }
-
+  
     const fetchUserProfile = async () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
         const sessionToken = session.user.sessionToken;
-
+  
         try {
           const response = await fetch(VENT.USER_PROFILE, {
             method: 'POST',
@@ -42,28 +42,23 @@ const UserProfile = () => {
               'Authorization': `Bearer ${sessionToken}`,
             }
           });
-
+  
           if (!response.ok) {
             throw new Error('Failed to fetch user profile');
           }
-
+  
           const data = await response.json();
-
-          // if (!data.data) {
-          //   router.push('/login');
-          //   return;
-          // }
-
+  
           if (!data?.data) {
             throw new Error("User profile data is missing. Please log in again.");
           }
-
+  
           setUserData(data.data);
           // Save the user data into localStorage for persistence
           localStorage.setItem('userProfile', JSON.stringify(data.data));
         } catch (err) {
-          console.error("Error fetching user profile:", error.message);
-          setError(err.message);
+          console.error("Error fetching user profile:", err.message); // Directly log `err.message`
+          setError(err.message); // Update state with error message
         } finally {
           setLoading(false);
         }
@@ -71,11 +66,12 @@ const UserProfile = () => {
         setLoading(false);
       }
     };
-
+  
     if (status === "authenticated") {
       fetchUserProfile();
     }
   }, [status, session, router]);
+  
 
   if (loading) return (
     <div
