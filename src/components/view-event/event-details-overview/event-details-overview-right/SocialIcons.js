@@ -6,6 +6,7 @@ import profileStyles from "@/styles/profile/profile-page.module.css";
 
 export const socialIcons = {
     facebook: <FaFacebook className={profileStyles.socialIcon} />,
+    twitter: <FaXTwitter className={profileStyles.socialIcon} />,
     x: <FaXTwitter className={profileStyles.socialIcon} />,
     instagram: <FaInstagram className={profileStyles.socialIcon} />,
     youtube: <FaYoutube className={profileStyles.socialIcon} />,

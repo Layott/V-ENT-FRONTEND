@@ -1,12 +1,12 @@
 import TournamentDetailsOverviewLeft from './tournament-details-overview-left/TournamentDetailsOverviewLeft'
 import TournamentDetailsOverviewRight from './tournament-details-overview-right/TournamentDetailsOverviewRight'
-import styles from './tournament-details-overview.module.css'
+import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 
 const TournamentDetailsOverview = () => {
   return (
-    <div className={styles.tournamentDetailsOverviewContainer}>
-        <TournamentDetailsOverviewLeft />
-        <TournamentDetailsOverviewRight />
+    <div className={overviewLtStyles.tournamentDetailsOverviewContainer}>
+      <TournamentDetailsOverviewLeft />
+      <TournamentDetailsOverviewRight />
     </div>
   )
 }

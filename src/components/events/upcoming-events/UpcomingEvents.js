@@ -53,8 +53,8 @@ const UpcomingEvents = () => {
                         </div>
                         
                         <div className={newTournamentStyles.buttonContainer}>
-                            <Link href={'/tournament-details'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
-                            <Link href={'/tournament-register'} className={newTournamentStyles.registerBTN}>Register</Link>
+                            <Link href={'/events/view-event'} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
+                            <Link href={'/events/register-event'} className={newTournamentStyles.registerBTN}>Register</Link>
                         </div>
                     </div>
             
