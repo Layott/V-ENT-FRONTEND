@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { FaAsterisk } from "react-icons/fa6";
 import { BiUpload } from "react-icons/bi";
@@ -6,8 +6,10 @@ import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './sponsors.module.css';
 
-const SponsorsTwo = ({ formData, updateFormData }) => {
+
+const Sponsors = ({ formData, updateFormData }) => {
   const [fields, setFields] = useState([{ name: '', username: '', logo: null }]);
+  const fileInputs = useRef([]);
 
   const handleAddField = () => {
     setFields([...fields, { name: '', username: '', logo: null }]);
@@ -48,6 +50,10 @@ const SponsorsTwo = ({ formData, updateFormData }) => {
     setFields(updatedFields);
     updateFormData('sponsors', updatedFields); // Update parent formData
   };
+
+  const triggerFileInput = (index) => {
+    fileInputs.current[index].click();
+  }
 
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
@@ -90,7 +96,7 @@ const SponsorsTwo = ({ formData, updateFormData }) => {
               <div className={styles.logoUploadContainer}>
                 <div
                   className={styles.logoUploadBox}
-                  onClick={() => document.getElementById(`logoUpload-${index}`).click()}
+                  onClick={() => triggerFileInput(index)}
                 >
                   {field.logo ? (
                     <div className={styles.logoPreview}>
@@ -148,4 +154,4 @@ const SponsorsTwo = ({ formData, updateFormData }) => {
   );
 };
 
-export default SponsorsTwo;
+export default Sponsors;
