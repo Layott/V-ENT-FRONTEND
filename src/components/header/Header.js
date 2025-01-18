@@ -29,10 +29,10 @@ const Header = ({ className = '' }) => {
   } 
 
   const handleBackNavigation = (fallbackURL = '/') => {
-    if (window.document.referrer) {
+    if (typeof window !== 'undefined' && window.referrer) {
       window.history.back();
     } else {
-      window.location.href = fallbackURL
+      window.location.href = fallbackURL;
     }
   }
 
@@ -57,18 +57,20 @@ const Header = ({ className = '' }) => {
       }
     }
 
-    const handleVisibilityChange = () => {
-      if (window.document.visibilityState === 'hidden') {
-        setIsDropdownOpen(false);
+    if (typeof document !== 'undefined') {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+          setIsDropdownOpen(false);
+        }
       }
-    }
 
-    window.addEventListener('mousedown', handleOutsideClick);
-    window.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('mousedown', handleOutsideClick);
+      window.addEventListener('visibilitychange', handleVisibilityChange);
 
-    return () => {
-      window.removeEventListener('mousedown', handleOutsideClick)
-      window.removeEventListener('visibilitychange', handleVisibilityChange)
+      return () => {
+        window.removeEventListener('mousedown', handleOutsideClick)
+        window.removeEventListener('visibilitychange', handleVisibilityChange)
+      }
     };
   }, [isDropdownOpen]);
 
