@@ -122,6 +122,7 @@
   gap: 0.3rem;
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
+  font-size: 0.9rem;
 }
 
 .shareBTN {

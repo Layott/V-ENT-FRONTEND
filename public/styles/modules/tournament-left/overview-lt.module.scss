@@ -1,3 +1,45 @@
+.tournamentDetailsOverviewContainer {
+    min-height: 20vh;
+    width: 100%;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.overviewLeft,
+.overviewRight {
+    min-height: 10vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.overviewLeft {
+    width: 100%;
+}
+
+.overviewRight {
+    width: 100%;
+}
+
+@media only screen and (min-width: 650px) {
+    .tournamentDetailsOverviewContainer {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .overviewLeft {
+        width: calc(60% - 1px);
+    }
+    
+    .overviewRight {
+        width: calc(40% - 1rem);
+    }
+}
+
+
+
+.sponsorContainer,
 .organizerContainer,
 .descriptionContainer {
     min-height: 100px;
@@ -6,6 +48,11 @@
     border-radius: 10px;
     padding: 1rem;
     display: flex;
+}
+
+.sponsorContainer {
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .descriptionContainer {
@@ -18,11 +65,20 @@
 .headerH3 {
     font-size: 1rem;
     font-family: 'ClashGrotesk-Light', sans-serif;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.descriptionContainer p {
+.descriptionSubHeading,
+.descriptionParagraph {
     font-size: 0.9rem;
     color: #B2B3BD;
+}
+
+.descriptionSubHeading {
+    font-weight: 700;
 }
 
 .fairPlayContainer {
