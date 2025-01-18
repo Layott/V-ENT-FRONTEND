@@ -1,0 +1,50 @@
+.reviewImageContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 3rem;
+    row-gap: 2.5rem;
+    justify-content: center;
+}
+
+.sponsorsContainer p {
+    color: #B2B3BD;
+    font-size: 0.9rem;
+}
+
+.sponsorNameAndUsernameContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.sponsorNameAndUsernameContainer p {
+    color: #B2B3BD;
+    font-size: 0.7rem;
+}
+
+.logoImageContainer {
+    height: 40px;
+    width: 100px;
+}
+
+.logoImageContainer img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.sponsorsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sponsorContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
