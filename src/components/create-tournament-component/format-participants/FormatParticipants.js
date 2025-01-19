@@ -5,6 +5,7 @@ import Participants from "./participants/Participants";
 import TournamentRules from "./tournament-rules/TournamentRules";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
+
 const FormatParticipants = ({ setSelectedTab }) => {
   // Function to handle form data updates and localStorage sync
    const [formData, setFormData] = useState({});
