@@ -14,13 +14,13 @@ const TeamProfileStats = () => {
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <div className={profileStyles.rankingViewTable}>
                     <h5 className={profileStyles.profileH5Header}>Ranking</h5>
-                    <p className={profileStyles.viewTable}>View Table</p>
+                    <button className={profileStyles.viewBTN}>View</button>
                 </div>
                 <p className={profileStyles.statsDetailValue}>#1123</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
-                <h5 className={profileStyles.profileH5Header}>Tournament played</h5>
+                <h5 className={profileStyles.profileH5Header}>Tournaments</h5>
                 <p className={profileStyles.statsDetailValue}>24</p>
             </div>
 
