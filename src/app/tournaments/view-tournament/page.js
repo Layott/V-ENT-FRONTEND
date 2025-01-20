@@ -10,6 +10,7 @@ import TournamentDetailsRules from '@/components/view-tournament/tournament-deta
 import TournamentDetailsBracket from '@/components/view-tournament/tournament-details-bracket/TournamentDetailsBracket';
 import TournamentDetailsParticipants from '@/components/view-tournament/tournament-details-participants/TournamentDetailsParticipants';
 import TournamentDetailsPrize from '@/components/view-tournament/tournament-details-prize/TournamentDetailsPrize';
+import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './view-tournament.module.css'
 
 const ViewTournament = () => {
@@ -26,44 +27,44 @@ const ViewTournament = () => {
         <div className={styles.rightPaneContainer}>
           <TournamentDetailsBanner />
 
-          <div className={styles.buttonContainer}>
+          <div className={tabStyles.buttonContainer}>
             <button
-              className={`${styles.tabBTN} ${activeTab === 'overview' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'overview' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('overview')}
             >
               Overview
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'rules' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'rules' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('rules')}
             >
               Rules
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'bracket' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'bracket' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('bracket')}
             >
               Bracket
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'participants' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'participants' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('participants')}
             >
               Participants
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'prize' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'prize' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('prize')}
             >
               Prize
             </button>
           </div>
 
-          <div className={styles.tournamentDetailsDashboard}>
+          <div className={tabStyles.detailsDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
                 <TournamentDetailsOverview />

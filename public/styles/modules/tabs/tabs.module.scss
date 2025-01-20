@@ -1,0 +1,57 @@
+.buttonContainer {
+    display: flex;
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.5rem;
+    gap: 1.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.buttonContainer::-webkit-scrollbar {
+    display: none; 
+}
+
+.tabBTN {
+    background-color: transparent;
+    border: none;
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+    cursor: pointer;
+    font-size: 0.8rem;
+    position: relative;
+    outline: none;
+    width: auto;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-bottom: 0.3rem;
+}
+
+.activeTab {
+    border-bottom: 2px solid var(--v-ent-red);
+}
+
+.detailsDashboard {
+    min-height: 200px;
+    width: calc(100% - 3rem);
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(119, 119, 119, 0.5);
+    margin: 0 auto;
+    padding: 1.5rem 0;
+
+    // border: 2px solid red;
+}
+
+@media only screen and (min-width: 768px) {
+    .tabBTN {
+        width: auto;
+    }
+}
+
+// @media only screen and (min-width: 1024px) {
+//     .detailsDashboard {
+//         padding: 1.5rem;
+//     }
+// }

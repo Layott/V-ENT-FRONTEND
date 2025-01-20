@@ -10,7 +10,7 @@ import TeamProfileOverviewLeft from '@/components/team-profile/team-profile-over
 import TeamProfileOverviewRight from '@/components/team-profile/team-profile-overview-right/TeamProfileOverviewRight';
 import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/TeamProfileGallery';
 import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
-
+import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './user-profile.module.css'
 
 const TeamProfile = () => {
@@ -28,35 +28,48 @@ const TeamProfile = () => {
           <TeamProfileBanner />
           <TeamProfileBio />
 
-          <div className={styles.buttonContainer}>
+          <div className={tabStyles.buttonContainer}>
             <button
-              className={`${styles.tabBTN} ${activeTab === 'overview' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'overview' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('overview')}
             >
               Overview
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'activity' ? styles.activeTab : ''}`}
+              className={`${tabStyles.tabBTN} ${activeTab === 'members' ? tabStyles.activeTab : ''}`}
+              onClick={() => setActiveTab('members')}
+            >
+              Members
+            </button>
+
+            <button
+              className={`${tabStyles.tabBTN} ${activeTab === 'activity' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('activity')}
             >
               Activity
             </button>
 
             <button
-              className={`${styles.tabBTN} ${activeTab === 'gallery' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('gallery')}
+              className={`${tabStyles.tabBTN} ${activeTab === 'stats' ? tabStyles.activeTab : ''}`}
+              onClick={() => setActiveTab('stats')}
             >
-              Gallery
+              Stats
             </button>
           </div>
 
-          <div className={styles.profileDashboard}>
+          <div className={tabStyles.detailsDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
                 <TeamProfileOverviewLeft />
                 <TeamProfileOverviewRight />
               </div>            
+            )}
+
+            {activeTab === 'members' && (
+              <div className={styles.membersContainer}>
+                <TeamProfileActivity />
+              </div>
             )}
 
             {activeTab === 'activity' && (
@@ -65,8 +78,8 @@ const TeamProfile = () => {
               </div>
             )}
 
-            {activeTab === 'gallery' && (
-              <div className={styles.galleryContainer}>
+            {activeTab === 'stats' && (
+              <div className={styles.statsContainer}>
                 <TeamProfileGallery />
               </div>
             )}       

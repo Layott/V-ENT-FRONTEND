@@ -1,8 +1,7 @@
 import { useState } from "react";
 import Image from "next/image"
 import { GrTrophy } from "react-icons/gr"
-import { FaArrowRight } from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import killSpreeBadge from "@/images/killing_spree_badge.webp"
 import mortalKombatBadge from "@/images/mortal_kombat_badge.webp"
 import marioKartBadge from '@/images/mario_kart_badge.webp'
@@ -36,6 +35,7 @@ const UserProfileAchievements = () => {
     setShowAll(prevState => !prevState);
     setVisibleGames(prevState => (prevState === achievementsList.length ? 6 : achievementsList.length)) 
   }
+
   
   return (
     <div className={`${profileStyles.achievementsContainer} ${profileStyles.middleLayerColor}`}>
