@@ -67,7 +67,6 @@ const TeamProfileBio = () => {
                 </div>
 
             </div>
-
         </div>
 
         <div className={styles.profileDescription}>
