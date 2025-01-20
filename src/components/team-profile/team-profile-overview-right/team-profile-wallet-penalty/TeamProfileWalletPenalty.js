@@ -8,7 +8,12 @@ const TeamProfileWalletPenalty = () => {
     <div className={profileStyles.walletPenaltyContainer}>
         
         <div className={`${profileStyles.walletContainer} ${profileStyles.middleLayerColor}`}>
-            <h4 className={profileStyles.profileH4Header}>Team Wallet</h4>
+            <div className={profileStyles.membersHeader}>
+                <h4 className={profileStyles.profileH4Header}>Team Wallet</h4>
+                <button className={profileStyles.manageBTN}>Manage</button>
+            </div>
+
+            {/* <h4 className={profileStyles.profileH4Header}>Team Wallet</h4> */}
             <p className={profileStyles.coinNumber}>
                 <span className={profileStyles.coinSpan}><RiCopperCoinLine className={profileStyles.coinIcon} /></span>
                 <span className={profileStyles.coinNumberSpan}>526</span>
