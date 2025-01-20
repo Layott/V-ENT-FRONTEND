@@ -13,6 +13,7 @@
   padding-bottom: 1rem;
   transform: translateX(100%);
   transition: transform 0.5s ease-in-out;
+  height: 100vh;
 }
 
 .mobileSidebar.open {
@@ -106,16 +107,6 @@
 @media only screen and (min-width: 300px) {
   .mobileSidebar {
     width: 80%;
-  }
-}
-@media only screen and (min-width: 350px) {
-  .mobileSidebar {
-    width: 60%;
-  }
-}
-@media only screen and (min-width: 550px) {
-  .mobileSidebar {
-    width: 300px;
   }
 }
 @media only screen and (min-width: 768px) {
