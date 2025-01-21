@@ -10,11 +10,12 @@ import TeamProfileOverviewLeft from '@/components/team-profile/team-profile-over
 import TeamProfileOverviewRight from '@/components/team-profile/team-profile-overview-right/TeamProfileOverviewRight';
 import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/TeamProfileGallery';
 import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
+import TeamProfileMembers from '@/components/team-profile/team-profile-members/TeamProfileMembers';
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './user-profile.module.css'
 
 const TeamProfile = () => {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('members')
 
   return (
     <div className={styles.pageContainer}>
@@ -44,6 +45,13 @@ const TeamProfile = () => {
             </button>
 
             <button
+              className={`${tabStyles.tabBTN} ${activeTab === 'members-old' ? tabStyles.activeTab : ''}`}
+              onClick={() => setActiveTab('members-old')}
+            >
+              Members Old
+            </button>
+
+            <button
               className={`${tabStyles.tabBTN} ${activeTab === 'activity' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('activity')}
             >
@@ -67,6 +75,12 @@ const TeamProfile = () => {
             )}
 
             {activeTab === 'members' && (
+              <div className={styles.membersContainer}>
+                <TeamProfileMembers />
+              </div>
+            )}
+
+            {activeTab === 'members-old' && (
               <div className={styles.membersContainer}>
                 <TeamProfileActivity />
               </div>
