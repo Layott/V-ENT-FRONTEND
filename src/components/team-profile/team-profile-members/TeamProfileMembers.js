@@ -8,6 +8,7 @@ import { RiGalleryView2 } from "react-icons/ri";
 import { IoGridOutline } from "react-icons/io5";
 import { membersList } from './membersList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
+import tableStyles from "@/styles/modules/tables/tables.module.css"
 import styles from './team-members.module.css'
 
 const TeamProfileMembers = () => {
@@ -67,36 +68,36 @@ const TeamProfileMembers = () => {
 
   return (
 
-    <div className={styles.tournamentDetailsParticipantsContainer}>
-        <div className={styles.tournamentsEventsFilterSearchContainer}>
-          <div className={styles.tournamentsEventsFilterContainer}>
+    <div className={tableStyles.tournamentDetailsParticipantsContainer}>
+        <div className={tableStyles.tournamentsEventsFilterSearchContainer}>
+          <div className={tableStyles.tournamentsEventsFilterContainer}>
             <p className={styles.tournamentNumber}>{membersList.length} members</p>
 
-            <div className={styles.toggleTableView} onClick={toggleTableView}>
+            <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
               {showGalleryView ? (
-                <button className={styles.galleryViewBTN}>
+                <button className={tableStyles.galleryViewBTN}>
                   Less fields
-                  <RiGalleryView2 className={styles.galleryViewIcon} />
+                  <RiGalleryView2 className={tableStyles.galleryViewIcon} />
                 </button>
               ) : (
-                <button className={styles.galleryViewBTN}>
+                <button className={tableStyles.galleryViewBTN}>
                   All fields
-                  <IoGridOutline className={styles.galleryViewIcon} />
+                  <IoGridOutline className={tableStyles.galleryViewIcon} />
                 </button>
               )}
             </div>
           </div>
 
-          <div className={styles.searchContainer}>
-            <div className={styles.searchBar}>
+          <div className={tableStyles.searchContainer}>
+            <div className={tableStyles.searchBar}>
               <CiSearch 
-                className={styles.searchIcon}
+                className={tableStyles.searchIcon}
                 onClick={handleSearch}
               />
               <input
                 type='text'
                 placeholder='Search tournaments'
-                className={styles.searchInput}
+                className={tableStyles.searchInput}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -106,24 +107,24 @@ const TeamProfileMembers = () => {
       </div>
 
       {!showGalleryView ? (
-        <div className={`${styles.participantsTable}`}>
-          <div className={`${styles.gridHeader} ${profileStyles.middleLayerColor}`}>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Member</div>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Role</div>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Ranking</div>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Location</div>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Status</div>
-            <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Actions</div>
+        <div className={`${styles.participantsTable} ${tableStyles.participantsTable}`}>
+          <div className={`${styles.gridHeader} ${tableStyles.gridHeader} ${profileStyles.middleLayerColor}`}>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Member</div>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Role</div>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Ranking</div>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Location</div>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Status</div>
+            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Actions</div>
           </div>
 
           {currentParticipants.map((participant, index) => (
-            <div key={index} className={`${styles.gridRow} ${profileStyles.middleLayerColor}`}>
-              <div className={`${styles.gridItem} ${styles.nameColumn}`}>
-                <div className={styles.gameImageContainer}>
+            <div key={index} className={`${styles.gridRow} ${tableStyles.gridRow} ${profileStyles.middleLayerColor}`}>
+              <div className={`${tableStyles.gridItem} ${tableStyles.nameColumn}`}>
+                <div className={tableStyles.gameImageContainer}>
                   <Image
                     src={participant.src}
                     alt={participant.participant}
-                    className={styles.gameImage}
+                    className={tableStyles.gameImage}
                   />
                 </div>
                 <div class name={styles.memberNamesContainer}>
@@ -132,28 +133,28 @@ const TeamProfileMembers = () => {
                 </div>
               </div>
 
-              <div className={`${styles.gridItem} ${styles.participantDiv}`}>
+              <div className={`${tableStyles.gridItem} ${styles.participantDiv}`}>
                 {participant.role}
               </div>
               
-              <div className={styles.gridItem}>{participant.ranking}</div>
-              <div className={styles.gridItem}>{participant.location}</div>
+              <div className={tableStyles.gridItem}>{participant.ranking}</div>
+              <div className={tableStyles.gridItem}>{participant.location}</div>
 
-              <div className={`${styles.gridItemExpanded}`}>
+              <div className={`${tableStyles.gridItemExpanded} ${styles.gridItemStatusExpanded}`}>
                   <span className={`${styles.statusSpan} ${participant.status === 'Confirmed' ? styles.confirmedStatus : styles.invitedStatus}`}>
                     {participant.status}
                   </span>
                 </div>
 
-              <div className={`${styles.gridItem} ${styles.viewProfileBTNContainer}`}>
+              <div className={`${tableStyles.gridItem} ${tableStyles.viewProfileBTNContainer}`}>
                 <Link
                   href={'/user-profile'}
-                  className={`${styles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
+                  className={`${tableStyles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
                 >
                   View Profile
                 </Link>
 
-                <button className={`${styles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
+                <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
                   <BsThreeDots className={styles.iconThreeDots} />
                 </button>
               </div>
@@ -163,25 +164,25 @@ const TeamProfileMembers = () => {
         
         ) : (
         
-        <div className={styles.participantsTableExpandedContainer}>
-          <div className={`${styles.participantsTableExpanded}`}>
-            <div className={`${styles.gridHeaderExpanded} ${profileStyles.middleLayerColor}`}>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Member</div>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Role</div>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Ranking</div>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Location</div>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Status</div>
-              <div className={`${styles.gridItemExpanded} ${styles.gridItemHeaderExpanded}`}>Actions</div>
+        <div className={tableStyles.participantsTableExpandedContainer}>
+          <div className={`${tableStyles.participantsTableExpanded}`}>
+            <div className={`${styles.gridHeaderExpanded} ${tableStyles.gridHeaderExpanded} ${profileStyles.middleLayerColor}`}>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Member</div>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Role</div>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Ranking</div>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Location</div>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Status</div>
+              <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Actions</div>
             </div>
 
             {currentParticipants.map((participant, index) => (
-                <div key={index} className={`${styles.gridRowExpanded} ${profileStyles.middleLayerColor}`}>
-                  <div className={`${styles.gridItemExpanded} ${styles.nameColumn}`}>
-                    <div className={styles.gameImageContainer}>
+                <div key={index} className={`${styles.gridRowExpanded} ${tableStyles.gridRowExpanded} ${profileStyles.middleLayerColor}`}>
+                  <div className={`${tableStyles.gridItemExpanded} ${tableStyles.nameColumn}`}>
+                    <div className={tableStyles.gameImageContainer}>
                       <Image
                         src={participant.src}
                         alt={participant.participant}
-                        className={styles.gameImage}
+                        className={tableStyles.gameImage}
                       />
                     </div>
                     <div class name={styles.memberNamesContainer}>
@@ -191,28 +192,28 @@ const TeamProfileMembers = () => {
 
                   </div>
 
-                  <div className={`${styles.gridItemExpanded} ${styles.participantDiv}`}>
+                  <div className={`${tableStyles.gridItemExpanded} ${styles.participantDiv}`}>
                     {participant.role}
                   </div>
                 
-                  <div className={styles.gridItemExpanded}>{participant.ranking}</div>
-                  <div className={styles.gridItemExpanded}>{participant.location}</div>
+                  <div className={tableStyles.gridItemExpanded}>{participant.ranking}</div>
+                  <div className={tableStyles.gridItemExpanded}>{participant.location}</div>
 
-                  <div className={`${styles.gridItemExpanded}`}>
+                  <div className={`${tableStyles.gridItemExpanded}`}>
                     <span className={`${styles.statusSpan} ${participant.status === 'Confirmed' ? styles.confirmedStatus : styles.invitedStatus}`}>
                       {participant.status}
                     </span>
                   </div>
 
-                  <div className={`${styles.gridItemExpanded} ${styles.viewProfileBTNContainer}`}>
+                  <div className={`${tableStyles.gridItemExpanded} ${tableStyles.viewProfileBTNContainer}`}>
                     <Link
                       href={'/user-profile'}
-                      className={`${styles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
+                      className={`${tableStyles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
                     >
                       View Profile
                     </Link>
 
-                    <button className={`${styles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
+                    <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
                       <BsThreeDots className={styles.iconThreeDots} />
                     </button>
                   </div>
@@ -223,15 +224,15 @@ const TeamProfileMembers = () => {
       )}
 
 
-      <div className={styles.paginationContainer}>
-        <div className={styles.rowCountSelector}>
+      <div className={tableStyles.paginationContainer}>
+        <div className={tableStyles.rowCountSelector}>
           <label htmlFor="rowsPerPage">Rows </label>
-          <div className={styles.customSelectContainer}>
+          <div className={tableStyles.customSelectContainer}>
             <select
               id="rowsPerPage"
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
-              className={styles.customSelect}
+              className={tableStyles.customSelect}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -240,7 +241,7 @@ const TeamProfileMembers = () => {
               <option value={100}>100</option>
               <option value={200}>100</option>
             </select>
-            <TiArrowSortedDown className={styles.dropDownIcon} />
+            <TiArrowSortedDown className={tableStyles.dropDownIcon} />
           </div>
         </div>
 
@@ -249,29 +250,29 @@ const TeamProfileMembers = () => {
           {indexOfLastParticipant > membersList.length ? membersList.length : indexOfLastParticipant}{" "} of {membersList.length}
         </p>
 
-        <div className={styles.pagination}>
+        <div className={tableStyles.pagination}>
           <button
-            className={`${styles.navIconBTN} ${currentPage === 1 ? styles.hidden : ''}`}
+            className={`${tableStyles.navIconBTN} ${currentPage === 1 ? tableStyles.hidden : ''}`}
             onClick={handlePrevClick}
             disabled={currentPage === 1}
           >
-            <BsChevronLeft className={styles.navIcon} />
+            <BsChevronLeft className={tableStyles.navIcon} />
           </button>
           {pageNumbers.map(number => (
             <button
               key={number}
-              className={`${styles.pageBTN} ${currentPage === number ? styles.activePage : ''}`}
+              className={`${tableStyles.pageBTN} ${currentPage === number ? tableStyles.activePage : ''}`}
               onClick={() => handlePageChange(number)}
             >
               {number}
             </button>
           ))}
           <button
-            className={`${styles.navIconBTN} ${currentPage === Math.ceil(membersList.length / rowsPerPage) ? styles.hidden : ''}`}
+            className={`${tableStyles.navIconBTN} ${currentPage === Math.ceil(membersList.length / rowsPerPage) ? tableStyles.hidden : ''}`}
             onClick={handleNextClick}
             disabled={currentPage === Math.ceil(membersList.length / rowsPerPage)}
           >
-            <BsChevronRight className={styles.navIcon}/>
+            <BsChevronRight className={tableStyles.navIcon}/>
           </button>
         </div>
       </div>
