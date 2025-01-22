@@ -1,112 +1,3 @@
-.tournamentDetailsParticipantsContainer {
-  min-height: 200px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  position: relative;
-}
-
-.tournamentsEventsFilterSearchContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tournamentsEventsFilterContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-}
-
-.tournamentsEventsFilterContainer p {
-  font-size: 1rem;
-  font-family: "ClashGrotesk-ExtraLight", sans-serif;
-}
-
-.searchContainer {
-  position: relative;
-  width: 100%;
-  min-height: 50px;
-}
-
-.searchBar {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  border-radius: 5px;
-  transition: all ease-in-out 0.5s;
-  background-color: #303136;
-  border: 1px solid #303136;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 75%;
-}
-
-.searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
-  width: 100%;
-}
-
-.searchBar:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.searchIcon {
-  font-size: 1rem;
-  color: #888;
-  margin-right: 0.2rem;
-  margin-left: 0.15rem;
-  cursor: pointer;
-}
-
-.searchInput {
-  border: none;
-  outline: none;
-  transition: width 0.5s ease-in-out, border 0.5s ease-in-out;
-  margin-right: 5px;
-  margin-left: 2.5px;
-  background-color: transparent;
-  font-size: 0.85rem;
-  width: 100%;
-}
-
-.searchInput::placeholder {
-  font-family: "ClashGrotesk-Extralight", sans-serif;
-  color: white;
-  font-size: 0.85rem;
-}
-
-.participantsTable {
-  min-height: 40px;
-  width: 100%;
-  overflow-x: auto;
-  max-width: 1100px;
-}
-
-.gridHeader,
-.gridRow {
-  display: grid;
-  grid-template-columns: minmax(150px, 1.1fr) minmax(100px, 1fr);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
-}
-
-.gridRow:last-child {
-  border-bottom: none;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
 .gridHeader > :nth-child(2),
 .gridHeader > :nth-child(3),
 .gridHeader > :nth-child(4),
@@ -118,239 +9,6 @@
   display: none;
 }
 
-.gridItem {
-  font-family: "ClashGrotesk-Light", sans-serif;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-.gridItemHeaderExpanded,
-.gridItemHeader {
-  font-family: "ClashGrotesk-Regular", sans-serif;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  color: #797B86;
-  font-weight: 600;
-}
-
-.gridItemHeaderExpanded:last-child,
-.gridItemHeader:last-child {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.gridHeader {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.nameColumn {
-  display: flex;
-  justify-content: flex-start;
-  gap: 0.5rem;
-}
-
-.gameImageContainer {
-  min-width: 40px;
-  width: 40px;
-  max-width: 40px;
-  min-height: 40px;
-  height: 40px;
-  max-height: 40px;
-  border-radius: 50%;
-}
-
-.gameImage {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
-
-.viewProfileBTNContainer {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.threeDotsBTN,
-.viewProfileBTN {
-  padding: 5px 7px;
-  border: none;
-  outline: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all ease-in-out 0.5s;
-  border: 1px solid #303136;
-  min-width: 80px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
-.threeDotsBTN {
-  padding: 6.2px 10px;
-  min-width: auto;
-}
-
-.threeDotsBTN:hover,
-.viewProfileBTN:hover {
-  background-color: #212225;
-  border: 1px solid #FFFFFF;
-}
-
-.contents {
-  min-width: 90%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.paginationContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  flex-wrap: wrap;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.navIconBTN,
-.navBTN,
-.pageBTN {
-  background-color: #131316;
-  outline: none;
-  border: 1px solid #131316;
-  width: 28px;
-  height: 30px;
-  padding: 5px 9px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all ease-in-out 0.5s;
-  font-family: "ClashGrotesk-Medium", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.navIconBTN {
-  background-color: #303136;
-  border: 1px solid #303136;
-  width: 30px;
-  padding: 0;
-  font-size: 1rem;
-  font-family: "ClashGrotesk-Light", sans-serif;
-}
-
-.navIconBTN:hover {
-  border: 1px solid var(--v-ent-red);
-}
-
-.activePage:hover,
-.pageBTN:hover {
-  border: 1px solid #FFFFFF;
-}
-
-.activePage {
-  background-color: var(--v-ent-red);
-  border: 1px solid var(--v-ent-red);
-}
-
-.navIcon {
-  display: flex;
-}
-
-.navIcon path {
-  fill: #ff0000;
-  color: #ff0000;
-}
-
-.hidden {
-  display: none;
-}
-
-.customSelectContainer {
-  position: relative;
-  display: inline-block;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  margin-left: -2px;
-  z-index: 1;
-}
-
-.customSelect {
-  border: 1px solid #303136;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  appearance: none;
-  padding: 0px 30px 0px 10px;
-  color: white;
-  font-size: 0.8rem;
-  height: 24px;
-  outline: none;
-}
-
-.customSelect:focus-within,
-.customSelect:focus,
-.customSelect:active {
-  border: 1px solid #303136;
-  outline: none;
-}
-
-.customSelect option {
-  background-color: #303136;
-}
-
-.rowCountSelector {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: #303136;
-  border-radius: 5px;
-}
-
-.rowCountSelector label {
-  font-size: 0.8rem;
-  z-index: 2;
-  padding-left: 0.6rem;
-  display: flex;
-  align-items: center;
-}
-
-.dropDownIcon {
-  position: absolute;
-  pointer-events: none;
-  right: 10px;
-  font-size: 0.85rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.participantsTableExpandedContainer {
-  overflow-x: auto;
-  width: 100%;
-  max-width: 1100px;
-}
-
-.participantsTableExpanded {
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
 .gridHeaderExpanded,
 .gridRowExpanded {
   display: grid;
@@ -360,60 +18,10 @@
   width: max-content;
 }
 
-.gridRowExpanded:last-child {
-  border-bottom: none;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-.gridItemExpanded {
-  font-family: "ClashGrotesk-Light", sans-serif;
-  font-size: 0.8rem;
+.gridItemStatusExpanded {
   display: flex;
+  padding-left: 10px;
   align-items: center;
-  padding: 10px;
-}
-
-.gridItemHeaderExpanded {
-  font-family: "ClashGrotesk-Regular", sans-serif;
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-
-.gridHeaderExpanded {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.galleryViewBTN {
-  cursor: pointer;
-  border: 1px solid rgba(204, 204, 204, 0.5);
-  background-color: #303136;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 4px 4px;
-  width: 95px;
-  border-radius: 4px;
-  transition: all ease-in-out 0.5s;
-}
-
-.galleryViewBTN:hover {
-  border: 1px solid #FFF;
-}
-
-.toggleTableView {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.galleryViewIcon {
-  cursor: pointer;
-  font-size: 1rem;
 }
 
 .memberNamesContainer {
@@ -434,10 +42,11 @@
   padding: 4px 7px;
   border-radius: 5px;
   font-weight: 600;
-  min-width: 60px;
-  max-width: 85px;
+  width: 95px;
+  height: 30px;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .confirmedStatus {
@@ -450,31 +59,7 @@
   background-color: #FFF7C2;
 }
 
-@media only screen and (min-width: 400px) {
-  .paginationContainer {
-    justify-content: flex-start;
-  }
-}
-.threeDots {
-  background-color: transparent;
-}
-
 @media only screen and (min-width: 550px) {
-  .tournamentsEventsFilterSearchContainer {
-    width: 100%;
-    flex-direction: row;
-  }
-  .tournamentsEventsFilterContainer {
-    justify-content: space-between;
-    width: calc(100% - 250px);
-  }
-  .searchBar {
-    width: 70%;
-  }
-  .searchContainer {
-    width: 250px;
-    min-height: 30px;
-  }
   .gridHeader,
   .gridRow {
     grid-template-columns: minmax(150px, 1.5fr) minmax(90px, 120px) minmax(100px, 1.2fr);
@@ -482,14 +67,6 @@
   .gridHeader > :nth-child(2),
   .gridRow > :nth-child(2) {
     display: grid;
-  }
-}
-@media only screen and (min-width: 650px) {
-  .tournamentsEventsFilterContainer {
-    width: calc(100% - 300px);
-  }
-  .searchContainer {
-    width: 300px;
   }
 }
 @media only screen and (min-width: 700px) {
@@ -500,30 +77,6 @@
   .gridHeader > :nth-child(5),
   .gridRow > :nth-child(5) {
     display: grid;
-  }
-}
-@media only screen and (min-width: 768px) {
-  .contents {
-    min-width: 300px;
-    flex-direction: column;
-    gap: 0.75em;
-    align-items: flex-start;
-  }
-  .tournamentRecord {
-    display: flex;
-    min-width: 180px;
-  }
-  .tournamentRecord p {
-    min-width: 100px;
-    font-size: 0.95rem;
-    justify-content: flex-start;
-    text-align: left;
-  }
-  .tournamentRecord label {
-    min-width: 150px;
-    font-size: 0.95rem;
-    justify-content: flex-start;
-    text-align: left;
   }
 }
 @media only screen and (min-width: 950px) {
@@ -545,19 +98,10 @@
   .gridRow > :nth-child(4) {
     display: grid;
   }
-  .searchBar {
-    width: 80%;
-  }
-  .searchContainer {
-    width: 350px;
-  }
 }
 @media only screen and (min-width: 1240px) {
   .gridHeader,
   .gridRow {
     grid-template-columns: minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr);
-  }
-  .galleryViewBTN {
-    display: none;
   }
 }
