@@ -12,7 +12,7 @@ import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/T
 import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
 import TeamProfileMembers from '@/components/team-profile/team-profile-members/TeamProfileMembers';
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
-import styles from './user-profile.module.css'
+import styles from './team-profile.module.css'
 
 const TeamProfile = () => {
   const [activeTab, setActiveTab] = useState('members')
