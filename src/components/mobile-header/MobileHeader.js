@@ -148,6 +148,15 @@ const MobileHeader = ({ className = '' }) => {
                 </Link>
               </nav>
             )}
+            {pathname === '/edit-user-profile' && (
+              <nav className={styles.breadcrumbNav}>
+                <Link href={'./'}>Home</Link>
+                <MdKeyboardArrowRight className={styles.arrowRightIcon} />
+                <Link href={'./edit-user-profile'} className={styles.currentSectionLink}>
+                  Edit My Profile
+                </Link>
+              </nav>
+            )}
           </div>
         </div>
 
