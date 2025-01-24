@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
+import MobileHeader from '@/components/mobile-header/MobileHeader';
 import EditUserProfileInfo from '@/components/edit-user-profile/edit-user-profile-info/EditUserProfileInfo';
 import EditUserProfileFavouriteGames from '@/components/edit-user-profile/edit-user-profile-favourite-games/EditUserProfileFavouriteGames';
 import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-user-profile-gaming-accounts/EditUserProfileGamingAccounts';
@@ -19,6 +20,7 @@ const EditUserProfile = () => {
   return (
     <div className={styles.pageContainer}>
       <Header className={styles.customHeader} />
+      <MobileHeader />
       
       <main className={styles.mainContainer}> 
         <Sidebar customClass={styles.customSidebar} />
