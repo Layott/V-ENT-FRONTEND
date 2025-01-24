@@ -1,5 +1,11 @@
 const breadCrumbTitles = {
     "/user-profile": { title: "My Profile", showBackArrow: false },
+    "/edit-user-profile": { 
+        title: "Edit My Profile", 
+        showBackArrow: true,
+        fallbackURL: '/user-profile'
+    },
+
     "/tournaments": { title: "Tournaments", showBackArrow: false },
     "/tournaments/create-tournament": { 
         title: "Create Tournament", 
