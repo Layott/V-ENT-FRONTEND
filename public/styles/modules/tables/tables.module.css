@@ -38,7 +38,7 @@
 .tournamentsEventsFilterContainer {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -66,12 +66,11 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 75%;
+  width: 100%;
 }
 
 .searchBar:focus-within {
   border: 1px solid var(--primary-bg);
-  width: 100%;
 }
 
 .searchBar:hover {
@@ -247,9 +246,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
   padding: 4px 4px;
-  width: 95px;
   border-radius: 4px;
   transition: all ease-in-out 0.5s;
 }
@@ -407,36 +404,24 @@
     width: 100%;
     flex-direction: row;
   }
-  .tournamentsEventsFilterContainer {
-    justify-content: space-between;
-    width: calc(100% - 250px);
-  }
   .searchContainer {
     width: 250px;
     min-height: 30px;
   }
   .searchBar {
-    width: 70%;
+    width: 100%;
   }
 }
 @media only screen and (min-width: 650px) {
-  .tournamentsEventsFilterContainer {
-    width: calc(100% - 300px);
-  }
   .searchContainer {
     width: 300px;
-  }
-}
-@media only screen and (min-width: 1115px) {
-  .searchContainer {
-    width: 350px;
-  }
-  .searchBar {
-    width: 80%;
   }
 }
 @media only screen and (min-width: 1240px) {
   .galleryViewBTN {
     display: none;
+  }
+  .searchContainer {
+    width: 350px;
   }
 }
