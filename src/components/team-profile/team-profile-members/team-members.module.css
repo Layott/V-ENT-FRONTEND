@@ -1,3 +1,65 @@
+.tabsAndDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.tabsContainer {
+  border: 1px solid red;
+  background-color: #303136;
+  min-width: 150px;
+  min-height: 35px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border-radius: 7.5px;
+}
+
+.membersBTN,
+.requestsBTN {
+  background-color: #46484F;
+  outline: none;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.tournamentsEventsFilterSearchContainer {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inviteAndSearchContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.inviteNewMemberBTN {
+  height: 30px;
+  width: 150px;
+  border-radius: 5px;
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.personIcon {
+  display: flex;
+  font-size: 1rem;
+}
+
 .gridHeader > :nth-child(2),
 .gridHeader > :nth-child(3),
 .gridHeader > :nth-child(4),
@@ -59,6 +121,15 @@
   background-color: #FFF7C2;
 }
 
+@media only screen and (min-width: 450px) {
+  .tournamentsEventsFilterSearchContainer {
+    gap: 1rem;
+  }
+  .inviteAndSearchContainer {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
 @media only screen and (min-width: 550px) {
   .gridHeader,
   .gridRow {
@@ -69,6 +140,11 @@
     display: grid;
   }
 }
+@media only screen and (min-width: 600px) {
+  .tournamentsEventsFilterSearchContainer {
+    flex-direction: row;
+  }
+}
 @media only screen and (min-width: 700px) {
   .gridHeader,
   .gridRow {
@@ -77,6 +153,16 @@
   .gridHeader > :nth-child(5),
   .gridRow > :nth-child(5) {
     display: grid;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .tournamentsEventsFilterSearchContainer {
+    flex-direction: column;
+  }
+}
+@media only screen and (min-width: 800px) {
+  .tournamentsEventsFilterSearchContainer {
+    flex-direction: row;
   }
 }
 @media only screen and (min-width: 950px) {
