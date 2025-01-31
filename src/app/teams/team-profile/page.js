@@ -45,13 +45,6 @@ const TeamProfile = () => {
             </button>
 
             <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'members-old' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('members-old')}
-            >
-              Members Old
-            </button>
-
-            <button
               className={`${tabStyles.tabBTN} ${activeTab === 'activity' ? tabStyles.activeTab : ''}`}
               onClick={() => setActiveTab('activity')}
             >
@@ -77,12 +70,6 @@ const TeamProfile = () => {
             {activeTab === 'members' && (
               <div className={styles.membersContainer}>
                 <TeamProfileMembers />
-              </div>
-            )}
-
-            {activeTab === 'members-old' && (
-              <div className={styles.membersContainer}>
-                <TeamProfileActivity />
               </div>
             )}
 

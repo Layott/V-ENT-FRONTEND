@@ -6,6 +6,7 @@ import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight, BsThreeDots } from 'react-icons/bs'
 import { RiGalleryView2 } from "react-icons/ri";
 import { IoGridOutline } from "react-icons/io5";
+import { LuUserRoundPlus } from "react-icons/lu";
 import { membersList } from './membersList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import tableStyles from "@/styles/modules/tables/tables.module.css"
@@ -69,27 +70,40 @@ const TeamProfileMembers = () => {
   return (
 
     <div className={tableStyles.tournamentDetailsParticipantsContainer}>
-        <div className={tableStyles.tournamentsEventsFilterSearchContainer}>
-          <div className={tableStyles.tournamentsEventsFilterContainer}>
+      <div className={styles.tabsAndDetailsContainer}>
+        <div className={styles.tabsContainer}>
+          <button className={`${styles.membersBTN} ${styles.activeBTN}`}>Members</button>
+          <button className={`${styles.requestsBTN} ${styles.activeBTN}`}>Requests
+            <span className={styles.requestNumberSpan}>2</span>
+          </button>
+        </div>
+
+        <div className={`${tableStyles.tournamentsEventsFilterSearchContainer} ${styles.tournamentsEventsFilterSearchContainer}`}>
+          
+          <div className={styles.inviteAndSearchContainer}>
+          <div className={`${tableStyles.tournamentsEventsFilterContainer} ${styles.tournamentsEventsFilterContainer}`}>
             <p className={styles.tournamentNumber}>{membersList.length} members</p>
 
             <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
               {showGalleryView ? (
                 <button className={tableStyles.galleryViewBTN}>
-                  Less fields
                   <RiGalleryView2 className={tableStyles.galleryViewIcon} />
                 </button>
               ) : (
                 <button className={tableStyles.galleryViewBTN}>
-                  All fields
                   <IoGridOutline className={tableStyles.galleryViewIcon} />
                 </button>
               )}
             </div>
           </div>
+          <div className={styles.inviteNewMembersContainer}>
+              <button className={`${styles.inviteNewMemberBTN} redBTN`}><LuUserRoundPlus className={styles.personIcon} /> Invite new member</button>
+            </div>
 
-          <div className={tableStyles.searchContainer}>
-            <div className={tableStyles.searchBar}>
+          </div>
+          
+          <div className={`${tableStyles.searchContainer} ${styles.searchContainer}`}>
+            <div className={`${tableStyles.searchBar} ${styles.searchBar}`}>
               <CiSearch 
                 className={tableStyles.searchIcon}
                 onClick={handleSearch}
@@ -104,6 +118,9 @@ const TeamProfileMembers = () => {
               />
             </div>
           </div>
+
+        </div>
+        
       </div>
 
       {!showGalleryView ? (
