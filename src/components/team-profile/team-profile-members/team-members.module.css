@@ -6,28 +6,30 @@
   width: 100%;
 }
 
-.tabsContainer {
-  border: 1px solid red;
-  background-color: #303136;
-  min-width: 150px;
-  min-height: 35px;
+.requestsBTN {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
-  padding: 0.35rem;
-  border-radius: 7.5px;
+  gap: 0.4rem;
 }
 
-.membersBTN,
-.requestsBTN {
-  background-color: #46484F;
-  outline: none;
-  border: none;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 0.9rem;
+.requestNumberParagraph {
+  background-color: var(--v-ent-red);
+  display: flex;
+  font-size: 0.6rem;
+  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  width: 16px;
+  border-radius: 4px;
+}
+
+.requestNumberSpan {
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tournamentsEventsFilterSearchContainer {
@@ -121,6 +123,145 @@
   background-color: #FFF7C2;
 }
 
+.teamProfileLink {
+  font-style: italic;
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.requestsContainer {
+  min-height: 200px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.requestBoxesContainer {
+  min-height: 60px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.requestBox {
+  min-height: 50px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+  padding: 0.75rem;
+  background-color: #212225;
+  border-radius: 10px;
+}
+
+.imageContainer {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+}
+
+.imageContainer img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.requestBoxUserDetailsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.requestBoxUserDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.btnsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1rem;
+  width: auto;
+  max-width: 150px;
+  align-items: flex-start;
+}
+
+.acceptBTN,
+.declineBTN {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #FFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-family: "ClashGrotesk-Light", sans-serif;
+  transition: all ease-in-out 0.5s;
+}
+
+.acceptBTN {
+  background-color: #178C4E;
+  border: 0.5px solid #178C4E;
+}
+
+.declineBTN {
+  background-color: #FF0000;
+  border: 0.5px solid #FF0000;
+}
+
+.acceptBTN:hover,
+.declineBTN:hover {
+  border: 0.5px solid #FFF;
+  background-color: #303136;
+}
+
+.requestBoxUserDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+
+.name {
+  font-family: "ClashGrotesk-Medium", sans-serif;
+}
+
+.timeAgo {
+  font-size: 0.85rem;
+  color: #B2B3BD;
+}
+
+.viewProfileBTN {
+  border: 0.5px solid #303136;
+  background-color: #303136;
+  transition: all 0.5s ease-in-out;
+  margin-top: 0.1rem;
+}
+
+.viewProfileBTN:hover {
+  border: 0.5px solid #FFF;
+}
+
+@media only screen and (min-width: 350px) {
+  .btnsContainer {
+    flex-direction: column;
+  }
+}
 @media only screen and (min-width: 450px) {
   .tournamentsEventsFilterSearchContainer {
     gap: 1rem;
@@ -128,6 +269,26 @@
   .inviteAndSearchContainer {
     flex-direction: row;
     gap: 1rem;
+  }
+  .btnsContainer {
+    flex-direction: row;
+  }
+}
+@media only screen and (min-width: 500px) {
+  .requestBox {
+    padding: 1.25rem;
+  }
+  .btnsContainer {
+    justify-content: space-between;
+    height: inherit;
+  }
+  .acceptBTN,
+  .declineBTN {
+    font-size: 0.9rem;
+  }
+  .imageContainer {
+    height: 90px;
+    width: 90px;
   }
 }
 @media only screen and (min-width: 550px) {
@@ -144,6 +305,13 @@
   .tournamentsEventsFilterSearchContainer {
     flex-direction: row;
   }
+  .btnsContainer {
+    gap: 0.75rem;
+  }
+  .acceptBTN,
+  .declineBTN {
+    font-size: 0.95rem;
+  }
 }
 @media only screen and (min-width: 700px) {
   .gridHeader,
@@ -159,10 +327,27 @@
   .tournamentsEventsFilterSearchContainer {
     flex-direction: column;
   }
+  .btnsContainer {
+    gap: 1rem;
+  }
 }
 @media only screen and (min-width: 800px) {
   .tournamentsEventsFilterSearchContainer {
     flex-direction: row;
+  }
+}
+@media only screen and (min-width: 850px) {
+  .requestBoxesContainer {
+    flex-direction: row;
+    gap: 1.25rem;
+  }
+  .requestBox {
+    max-width: calc(50% - 1rem);
+    flex-grow: 1;
+  }
+  .imageContainer {
+    height: 70px;
+    width: 70px;
   }
 }
 @media only screen and (min-width: 950px) {
