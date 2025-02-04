@@ -22,36 +22,6 @@
   font-family: "ClashGrotesk-Medium, sans-serif";
 }
 
-.tabsContainer {
-  display: inline-flex;
-  background-color: #1E1E1E;
-  padding: 0.4rem;
-  border-radius: 7.5px;
-  max-width: fit-content;
-  gap: 0.5rem;
-}
-
-.btn {
-  cursor: pointer;
-  outline: none;
-  border: none;
-  padding: 5px 1rem;
-  border-radius: 5px;
-  background-color: #1E1E1E;
-  font-size: 1rem;
-  transition: all ease-in-out 0.5s;
-  border: 1px solid transparent;
-}
-
-.btn.active {
-  background-color: #46484F;
-  padding: 4px 1rem;
-}
-
-.btn:hover {
-  border: 1px solid #FFF;
-}
-
 .createTeamBTN {
   background-color: var(--v-ent-red);
   border: 1px solid var(--v-ent-red);
