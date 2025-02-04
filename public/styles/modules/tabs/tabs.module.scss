@@ -32,6 +32,39 @@
     border-bottom: 2px solid var(--v-ent-red);
 }
 
+.borderTabBTNContainer {
+    display: flex;
+    padding: 0.35rem;
+    max-width: fit-content;
+    gap: 0.5rem;
+    background-color: #303136;
+    min-width: 150px;
+    min-height: 35px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7.5px;
+}
+
+.borderTabBTN {
+    cursor: pointer;
+    transition: all ease-in-out 0.5s;
+    border: 1px solid transparent;
+    background-color: #303136;
+    outline: none;
+    padding: 0.35rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.borderTabBTN.active {
+    background-color: #46484F;
+}
+
+.borderTabBTN:hover {
+    border: 1px solid #CCC;
+}
+
 .detailsDashboard {
     min-height: 200px;
     width: calc(100% - 3rem);
@@ -40,8 +73,6 @@
     border-top: 1px solid rgba(119, 119, 119, 0.5);
     margin: 0 auto;
     padding: 1.5rem 0;
-
-    // border: 2px solid red;
 }
 
 @media only screen and (min-width: 768px) {
@@ -49,9 +80,3 @@
         width: auto;
     }
 }
-
-// @media only screen and (min-width: 1024px) {
-//     .detailsDashboard {
-//         padding: 1.5rem;
-//     }
-// }
