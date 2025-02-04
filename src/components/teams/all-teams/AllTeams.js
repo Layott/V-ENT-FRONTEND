@@ -7,6 +7,7 @@ import { GoDotFill } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { cardsData } from './cardDataList';
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
+import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './all-teams.module.css'
 
 const AllTeams = () => {
@@ -15,6 +16,7 @@ const AllTeams = () => {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     }
+
 
   return (
     <div className={styles.allTeamsContainer}>
@@ -27,23 +29,23 @@ const AllTeams = () => {
             </div>
         </div>
 
-        <div className={styles.tabsContainer}>
+        <div className={tabStyles.borderTabBTNContainer}>
             <button
-                className={`${styles.btn} ${activeTab === 'all' ? styles.active : ''}`}
+                className={`${tabStyles.borderTabBTN} ${activeTab === 'all' ? tabStyles.active : ''}`}
                 onClick={() => handleTabClick('all')}
             >
                 All
             </button>
 
             <button
-                className={`${styles.btn} ${activeTab === 'owned-by-me' ? styles.active : ''}`}
+                className={`${tabStyles.borderTabBTN} ${activeTab === 'owned-by-me' ? tabStyles.active : ''}`}
                 onClick={() => handleTabClick('owned-by-me')}
             >
                 Owned by me
             </button>
 
             <button
-                className={`${styles.btn} ${activeTab === 'other-teams' ? styles.active : ''}`}
+                className={`${tabStyles.borderTabBTN} ${activeTab === 'other-teams' ? tabStyles.active : ''}`}
                 onClick={() => handleTabClick('other-teams')}
             >
                 Other teams
