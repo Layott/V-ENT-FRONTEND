@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from './edit-user-profile-details.module.css';
 
-const EditUserProfileDetails = ({ fullname, username, description, country, handleInputChange }) => {
+const EditUserProfileDetails = ({ fullname, username, description, state, country, handleInputChange }) => {
 
 
   return (
@@ -44,11 +44,22 @@ const EditUserProfileDetails = ({ fullname, username, description, country, hand
         </div>
 
         <div className={styles.inputGroup}>
+          <label htmlFor="state">State/Province</label>
+          <input
+            type="text"
+            name="country"
+            placeholder="State/Province"
+            value={state}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className={styles.inputGroup}>
           <label htmlFor="country">Country</label>
           <input
             type="text"
             name="country"
-            placeholder="Lagos, Nigeria"
+            placeholder="Lagos"
             value={country}
             onChange={handleInputChange}
           />

@@ -144,6 +144,7 @@ const EditUserProfileInfo = () => {
           username={profileData.username}
           description={profileData.description}
           country={profileData.country}
+          state={profileData.state}
           handleInputChange={handleInputChange}
         />
         <EditInterests
