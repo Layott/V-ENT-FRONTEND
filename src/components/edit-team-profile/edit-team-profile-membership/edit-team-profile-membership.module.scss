@@ -1,0 +1,82 @@
+.editTeamProfileMembershipContainer {
+    width: 100%;
+    min-height: 200px;
+    background-color: #212225;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+.editTeamProfileMembershipContainer h3 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.profileDetailsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h4 {
+    font-family: 'ClashGrotesk-Medium', sans-serif;
+    font-size: 1rem;
+    font-weight: 100;
+}
+
+.onOffBTNContainer {
+    height: inherit;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.content p {
+    color: #B2B3BD;
+}
+
+.sliderSwitch {
+    position: relative;
+    width: 36px;
+    height: 24px;
+    border-radius: 11px;
+    background-color: #FF0000;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.sliderSwitch:focus {
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.sliderSwitch.on {
+    background-color: #38A851;
+}
+
+.sliderThumb {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: #FFF;
+    transition: transform 0.3s;
+}
+
+.sliderSwitch.on .sliderThumb {
+    transform: translateX(12px);
+}
