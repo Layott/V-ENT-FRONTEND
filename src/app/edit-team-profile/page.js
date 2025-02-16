@@ -11,8 +11,7 @@ import Membership from '@/components/edit-team-profile/edit-team-profile-members
 import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css'
 
 const EditTeamProfile = () => {
-  // const [activeTab, setActiveTab] = useState('edit-profile-details')
-  const [activeTab, setActiveTab] = useState('membership')
+  const [activeTab, setActiveTab] = useState('edit-profile-details')
   
   return (
     <div className={editProfileStyles.pageContainer}>
