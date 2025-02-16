@@ -1,5 +1,6 @@
 import styles from './event-details-tournaments-left.module.css'
 
+
 const EventDetailsTournamentsLeft = () => {
   return (
     <div className={styles.tournamentDetailsRulesLeft}>
@@ -22,7 +23,7 @@ const EventDetailsTournamentsLeft = () => {
                 </div>
 
                 <div className={styles.matchFormat}>
-                    <h4>Match Format:</h4>
+                    <h4 className={styles.matchFormatH4}>Match Format:</h4>
                     <p className={styles.mapSelectionParagraph}>
                         <span className={styles.mapSelectionTitle}>Map Selection:</span> &nbsp;
                         <span className={styles.mapSelectionText}>Chosen via veto process.</span>

@@ -4,84 +4,75 @@ import { useState } from 'react';
 import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
-import EditUserProfileInfo from '@/components/edit-user-profile/edit-user-profile-info/EditUserProfileInfo';
-import EditUserProfileFavouriteGames from '@/components/edit-user-profile/edit-user-profile-favourite-games/EditUserProfileFavouriteGames';
-import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-user-profile-gaming-accounts/EditUserProfileGamingAccounts';
-import EditLinks from '@/components/edit-user-profile/edit-user-profile-links/EditUserProfileLinks';
-import styles from './edit-user-profile.module.css'
+import MobileHeader from '@/components/mobile-header/MobileHeader';
+import EditTeamProfileInfo from '@/components/edit-team-profile/edit-team-profile-info/EditTeamProfileInfo';
+import EditLinks from '@/components/edit-team-profile/edit-team-profile-links/EditTeamProfileLinks';
+import Membership from '@/components/edit-team-profile/edit-team-profile-membership/EditTeamProfileMembership';
+import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css'
 
-const EditUserProfile = () => {
-  const [activeTab, setActiveTab] = useState('edit-profile-details')
+const EditTeamProfile = () => {
+  // const [activeTab, setActiveTab] = useState('edit-profile-details')
+  const [activeTab, setActiveTab] = useState('membership')
   
   return (
-    <div className={styles.pageContainer}>
-      <Header className={styles.customHeader} />
+    <div className={editProfileStyles.pageContainer}>
+      <Header className={editProfileStyles.customHeader} />
+      <MobileHeader />
       
-      <main className={styles.mainContainer}>
-        <Sidebar customClass={styles.customSidebar} />
+      <main className={editProfileStyles.mainContainer}>
+        <Sidebar customClass={editProfileStyles.customSidebar} />
       
-        <div className={styles.rightPaneEditProfileContainer}>
-          <div className={styles.menuContainer}>
-            <div className={styles.nameMenu}>
+        <div className={editProfileStyles.rightPaneEditProfileContainer}>
+          <div className={editProfileStyles.menuContainer}>
+            <div className={editProfileStyles.nameMenu}>
               <p>Menu</p>
             </div>
 
-            <div className={styles.buttonContainer}>
+            <div className={editProfileStyles.buttonContainer}>
               <button
-                className={`${styles.tabBTN} ${activeTab === 'edit-profile-details' ? styles.activeTab : ''}`}
+                className={`${editProfileStyles.tabBTN} ${activeTab === 'edit-profile-details' ? editProfileStyles.activeTab : ''}`}
                 onClick={() => setActiveTab('edit-profile-details')}
               >
-                Profile Info {activeTab === 'edit-profile-details' && <SlArrowRight className={styles.rightArrowIcon} />}
+                Profile Info {activeTab === 'edit-profile-details' && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
               </button>
 
               <button
-                className={`${styles.tabBTN} ${activeTab === 'favourite-games' ? styles.activeTab : ''}`}
-                onClick={() => setActiveTab('favourite-games')}
-              >
-                Favourite Games {activeTab === "favourite-games" && <SlArrowRight className={styles.rightArrowIcon} />}
-              </button>
-
-              <button
-                className={`${styles.tabBTN} ${activeTab === 'gaming-accounts' ? styles.activeTab : ''}`}
-                onClick={() => setActiveTab('gaming-accounts')}
-              >
-                Gaming Accounts {activeTab === "gaming-accounts" && <SlArrowRight className={styles.rightArrowIcon} />}
-              </button>
-
-              <button
-                className={`${styles.tabBTN} ${activeTab === 'web-social-links' ? styles.activeTab : ''}`}
+                className={`${editProfileStyles.tabBTN} ${activeTab === 'web-social-links' ? editProfileStyles.activeTab : ''}`}
                 onClick={() => setActiveTab('web-social-links')}
               >
-                Web and Social Links {activeTab === "web-social-links" && <SlArrowRight className={styles.rightArrowIcon} />}
+                Web and Social Links {activeTab === "web-social-links" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
               </button>
+
+              <button
+                className={`${editProfileStyles.tabBTN} ${activeTab === 'membership' ? editProfileStyles.activeTab : ''}`}
+                onClick={() => setActiveTab('membership')}
+              >
+                Membership {activeTab === "membership" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
+              </button>
+
             </div>
           </div>
 
 
-          <div className={styles.profileEditDashboard}>
+          <div className={editProfileStyles.profileEditDashboard}>
             {activeTab === 'edit-profile-details' && (
-              <div className={styles.editProfileDetailsContainer}>
-                <EditUserProfileInfo />
+              <div className={editProfileStyles.editProfileDetailsContainer}>
+                <EditTeamProfileInfo />
               </div>            
             )}
 
-            {activeTab === 'favourite-games' && (
-              <div className={styles.editFavouriteGamesContainer}>
-                <EditUserProfileFavouriteGames />
-              </div>
-            )}
-
-            {activeTab === 'gaming-accounts' && (
-              <div className={styles.editGamingAccountsContainer}>
-                <EditUserProfileGamingAccounts />
-              </div>
-            )}
-
             {activeTab === 'web-social-links' && (
-              <div className={styles.editLinksContainer}>
+              <div className={editProfileStyles.editLinksContainer}>
                 <EditLinks />
               </div>
             )}
+
+            {activeTab === 'membership' && (
+              <div className={editProfileStyles.editFavouriteGamesContainer}>
+                <Membership />
+              </div>
+            )}
+
           </div>
       
         </div>
@@ -92,4 +83,4 @@ const EditUserProfile = () => {
   )
 }
 
-export default EditUserProfile
+export default EditTeamProfile

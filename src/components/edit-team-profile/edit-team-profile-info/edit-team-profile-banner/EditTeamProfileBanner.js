@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FiCamera } from 'react-icons/fi';
-import defaultBanner from "@/images/profile_image_bg.webp"; 
+import defaultBanner from "@/images/team_profile_banner.webp";
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import bioStyles from "./../../../user-profile/user-profile-bio/user-profile-bio.module.css";
 import styles from './edit-profile-banner.module.css';
 
-const EditUserProfileBanner = ({ onChange }) => {
+const EditTeamProfileBanner = ({ onChange }) => {
   const [uploadedBannerImage, setUploadedBannerImage] = useState(null);
   const [bannerImage, setBannerImage] = useState(null);
 
@@ -66,4 +66,4 @@ const EditUserProfileBanner = ({ onChange }) => {
   );
 };
 
-export default EditUserProfileBanner;
+export default EditTeamProfileBanner;

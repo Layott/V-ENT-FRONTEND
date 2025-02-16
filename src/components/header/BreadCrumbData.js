@@ -5,7 +5,6 @@ const breadCrumbTitles = {
         showBackArrow: true,
         fallbackURL: '/user-profile'
     },
-
     "/tournaments": { title: "Tournaments", showBackArrow: false },
     "/tournaments/create-tournament": { 
         title: "Create Tournament", 
@@ -45,6 +44,11 @@ const breadCrumbTitles = {
         title: "Team Profile", 
         showBackArrow: true,
         fallbackURL: '/teams'
+    },
+    "/edit-team-profile": { 
+        title: "Edit Team Profile", 
+        showBackArrow: true,
+        fallbackURL: '/team-profile'
     },
     "/wallets": { title: "Wallets", showBackArrow: false },
     "/settings": { title: "Settings", showBackArrow: false },
