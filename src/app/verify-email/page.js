@@ -67,7 +67,7 @@ const VerifyEmail = () => {
 
       <main className={styles.mainContainer}>
         <h3>Verify your email</h3>
-        <p>A verification email has been sent to the provided email. Click on the link to verify your account.</p>
+        <p>A verification email has been sent to the provided email. Click on the link in your email to verify your account.</p>
 
         <button
           className={`btn redBTN ${styles.resendBTN}`}
