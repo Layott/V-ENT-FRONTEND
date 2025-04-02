@@ -6,22 +6,23 @@ const handler = NextAuth(authOptions)
 export {handler as GET, handler as POST}
 
 
-export const VENT= {
-  WAITLIST: 'https://vermillionent.pythonanywhere.com/auth/add-email-to-waitlist/',
-  SIGNUP: 'https://vermillionent.pythonanywhere.com/auth/signup/',
-  USER_VERIFICATION: 'https://vermillionent.pythonanywhere.com/auth/get-username-with-email/',
-  VERIFY: 'https://vermillionent.pythonanywhere.com/auth/get-user-status/',
-  LOGIN: 'https://vermillionent.pythonanywhere.com/auth/login/',
-  FORGOT_PASSWORD:'https://vermillionent.pythonanywhere.com/auth/forgot-password/send-token/',
-  FORGOT_PASSWORD_TOKEN:'https://vermillionent.pythonanywhere.com/auth/forgot-password/verify-token/',
-  RESET_PASSWORD:'',
-  USER_PROFILE:'https://vermillionent.pythonanywhere.com/auth/get-user-informations/',
-  EDIT_PROFILE:'https://vermillionent.pythonanywhere.com/auth/edit-profile-info/',
-  EDIT_LINKS:'https://vermillionent.pythonanywhere.com/auth/update-web-and-social-links/',
-  CREATE_EVENT:'https://vermillionent.pythonanywhere.com/event/create-event/',
-  GET_EVENTS:'https://vermillionent.pythonanywhere.com/event/get-all-events/',
-  GET_TOURNAMENTS:'https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/',
-  CREATE_TOURNAMENT:'https://vermillionent.pythonanywhere.com/tournament/create-tournament/',
-  
-} 
+const BASE_URL = 'https://vermillionent.pythonanywhere.com';
+
+export const VENT = {
+  WAITLIST: `${BASE_URL}/auth/add-email-to-waitlist/`,
+  SIGNUP: `${BASE_URL}/auth/signup/`,
+  USER_VERIFICATION: `${BASE_URL}/auth/get-username-with-email/`,
+  VERIFY: `${BASE_URL}/auth/get-user-status/`,
+  LOGIN: `${BASE_URL}/auth/login/`,
+  FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password/send-token/`,
+  FORGOT_PASSWORD_TOKEN: `${BASE_URL}/auth/forgot-password/verify-token/`,
+  RESET_PASSWORD: '',
+  USER_PROFILE: `${BASE_URL}/auth/get-user-informations/`,
+  EDIT_PROFILE: `${BASE_URL}/auth/edit-profile-info/`,
+  EDIT_LINKS: `${BASE_URL}/auth/update-web-and-social-links/`,
+  CREATE_EVENT: `${BASE_URL}/event/create-event/`,
+  GET_EVENTS: `${BASE_URL}/event/get-all-events/`,
+  GET_TOURNAMENTS: `${BASE_URL}/tournament/get-all-tournaments/`,
+  CREATE_TOURNAMENT: `${BASE_URL}/tournament/create-tournament/`,
+};
 
