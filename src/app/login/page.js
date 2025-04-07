@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link';
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
@@ -44,6 +44,7 @@ const Login = () => {
             redirect: false,
             email: username_or_email,
             password,
+            callbackUrl: `${window.location.origin}/events`,
         });
     
         if (result?.error) {
@@ -52,7 +53,8 @@ const Login = () => {
             setOpen(true);
         } else {
             // Redirect to profile or dashboard
-            router.replace('/user-profile');
+            
+            
             setSnackbarMessage('Login successful!');
             setSnackbarType('success');
             setOpen(true);
@@ -63,14 +65,18 @@ const Login = () => {
 
     const handleOAuthSignIn = async (provider) => {
         setLoading(true);
-        const result = await signIn(provider, { redirect: false });
+        const result = await signIn(provider, { redirect: false ,
+            
+
+            
+        });
     
         if (result?.error) {
             setSnackbarMessage(`Failed to log in with ${provider}`);
             setSnackbarType('error');
             setOpen(true);
         } else {
-            router.replace('/user-profile');
+            
             setSnackbarMessage(`${provider} login successful!`);
             setSnackbarType('success');
             setOpen(true);
@@ -143,13 +149,17 @@ const Login = () => {
                                 src={googleLogo}
                                 alt="Google Logo"
                                 className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                                onClick={() => handleOAuthSignIn('google')}
+                                onClick={() => handleOAuthSignIn('google',{
+                                    callbackUrl: `${window.location.origin}/events`, // ✅ redirect to /events after login
+                                  })}
                             />
                             <Image
                                 src={facebookLogo}
                                 alt="Facebook Logo"
                                 className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
-                                onClick={() => handleOAuthSignIn('facebook')}
+                                onClick={() => handleOAuthSignIn('facebook',{
+                                    callbackUrl: `${window.location.origin}/events`, // ✅ redirect to /events after login
+                                  })}
                             />
                         </div>
                     </div>
