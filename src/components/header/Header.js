@@ -91,13 +91,20 @@ const Header = ({ className = '' }) => {
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
-  const handleLogout = () => {    
-    // Remove the user profile and session data from localStorage
+  const handleLogout = async () => {    
+    // Clear all authentication data from localStorage
     localStorage.removeItem('userProfile');
     localStorage.removeItem('authToken');
+    sessionStorage.clear();
     
-    // Sign out the user using NextAuth's signOut function
-    signOut({ callbackUrl: '/login' }); // Redirect to home page after logout
+    // Set a cookie to indicate logged out state (will be read by middleware)
+    document.cookie = "isLoggedOut=true; path=/; max-age=60";
+    
+    // Use NextAuth's signOut with redirect
+    await signOut({ 
+      callbackUrl: '/login',
+      redirect: true,
+    });
   }
 
   return (
