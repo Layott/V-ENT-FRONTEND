@@ -183,7 +183,7 @@ const Header = ({ className = '' }) => {
                   View Profile
                 </Link>
 
-                <button className={styles.logoutBTN} onClick={handleLogout}>
+                <button className={styles.logoutBTN} onClick={handleLogout} >
                   Logout
                 </button>
               </div>
