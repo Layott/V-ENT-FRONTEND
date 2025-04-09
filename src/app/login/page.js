@@ -51,13 +51,16 @@ const Login = () => {
             setSnackbarMessage('Login failed. Please check your credentials.');
             setSnackbarType('error');
             setOpen(true);
+            
         } else {
-            // Redirect to profile or dashboard
+            
             
             
             setSnackbarMessage('Login successful!');
             setSnackbarType('success');
             setOpen(true);
+            window.location.href = '/events';
+            
         }
     
         setLoading(false);
