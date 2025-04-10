@@ -25,6 +25,8 @@ const Login = () => {
     const [snackbarType, setSnackbarType] = useState('success')
     const router = useRouter();
 
+    
+
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState)
     }
@@ -68,24 +70,26 @@ const Login = () => {
 
     const handleOAuthSignIn = async (provider) => {
         setLoading(true);
-        const result = await signIn(provider, { redirect: false ,
+        
+        try {
+            // Add error handling with a callback
+            await signIn(provider, {
+                redirect: true,
+                callbackUrl: `${window.location.origin}/events`
+            });
             
-
-            
-        });
-    
-        if (result?.error) {
-            setSnackbarMessage(`Failed to log in with ${provider}`);
-            setSnackbarType('error');
-            setOpen(true);
-        } else {
-            
+            // This code will only run if redirect: false
             setSnackbarMessage(`${provider} login successful!`);
             setSnackbarType('success');
             setOpen(true);
+            
+        } catch (error) {
+            console.error(`Error during ${provider} sign-in:`, error);
+            setSnackbarMessage(`Failed to log in with ${provider}: ${error.message || 'Unknown error'}`);
+            setSnackbarType('error');
+            setOpen(true);
+            setLoading(false);
         }
-    
-        setLoading(false);
     };
     
     const handleCloseSnackbar = () => {
