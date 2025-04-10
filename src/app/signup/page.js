@@ -74,15 +74,15 @@ const Signup = () => {
 
     if (name === "email") {
       setEmailError("");
-
+    
       if (!emailRegex.test(value)) {
         setEmailError("Invalid email address");
         clearError(setEmailError);
         return;
       }
-
+    
       setIsEmailLoading(true);
-
+    
       try {
         const response = await fetch(VENT.USER_VERIFICATION, {
           method: "POST",
@@ -91,15 +91,15 @@ const Signup = () => {
           },
           body: JSON.stringify({ email: value }),
         });
-
+    
         const data = await response.json();
-
+    
         if (response.ok) {
           setFormData((prevFormData) => ({
             ...prevFormData,
             username: data.username || "",
           }));
-
+    
           if (data.message === "The username does not exist") {
             setUsernameEditable(true);
           } else {
@@ -118,6 +118,7 @@ const Signup = () => {
         setIsEmailLoading(false);
       }
     }
+    
   };
 
   const handleCountrySelection = (event) => {
@@ -178,23 +179,32 @@ const Signup = () => {
     }
   };
 
+  
+
   const handleOAuthSignUp = async (provider, options = {}) => {
     setLoading(true);
-
-    const result = await signIn(provider, { ...options, redirect: true });
-
-    if (result?.error) {
-      setSnackbarMessage(`Failed to sign up with ${provider}`);
+    
+    try {
+      // We're going to simplify this function and let NextAuth handle the redirect
+      // with proper error parameters
+      await signIn(provider, {
+        ...options,
+        callbackUrl: "/events",
+        redirect: true, // Allow redirect, errors will be handled on the login page
+      });
+      
+      // Note: This code below will likely not run due to redirect
+      setLoading(false);
+    } catch (error) {
+      console.error("Error during OAuth signup:", error);
+      setSnackbarMessage("An error occurred during signup. Please try again.");
       setSnackbarType("error");
       setOpen(true);
-    } else {
-      setSnackbarMessage(`${provider} sign up successful!`);
-      setSnackbarType("success");
-      setOpen(true);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+  
+  
 
   return (
     <div className={generalStyles.pageContainer}>
