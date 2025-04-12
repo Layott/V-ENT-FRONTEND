@@ -61,7 +61,7 @@ const Login = () => {
             setSnackbarMessage('Login successful!');
             setSnackbarType('success');
             setOpen(true);
-            window.location.href = '/events';
+            window.location.href = '/user-profile';
             
         }
     
@@ -75,7 +75,7 @@ const Login = () => {
             // Add error handling with a callback
             await signIn(provider, {
                 redirect: true,
-                callbackUrl: `${window.location.origin}/events`
+                callbackUrl: `${window.location.origin}/user-profile`
             });
             
             // This code will only run if redirect: false
@@ -157,7 +157,7 @@ const Login = () => {
                                 alt="Google Logo"
                                 className={`${styles.googleLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignIn('google',{
-                                    callbackUrl: `${window.location.origin}/events`, // ✅ redirect to /events after login
+                                    callbackUrl: `${window.location.origin}/user-profile`, // ✅ redirect to /events after login
                                   })}
                             />
                             <Image
@@ -165,7 +165,7 @@ const Login = () => {
                                 alt="Facebook Logo"
                                 className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
                                 onClick={() => handleOAuthSignIn('facebook',{
-                                    callbackUrl: `${window.location.origin}/events`, // ✅ redirect to /events after login
+                                    callbackUrl: `${window.location.origin}/user-profile`, // ✅ redirect to /events after login
                                   })}
                             />
                         </div>

@@ -26,6 +26,8 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("Current session status:", status);
+  console.log("Session data:", session);
     if (status === "unauthenticated") {
       router.push('/login');
       return;
@@ -34,36 +36,86 @@ const UserProfile = () => {
     const fetchUserProfile = async () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
         const sessionToken = session.user.sessionToken;
-  
+        const userId = session.user.id;
+        
+        console.log("==== PROFILE API DEBUG ====");
+        console.log("Session token:", sessionToken);
+        console.log("User ID:", userId);
+        console.log("API Endpoint:", VENT.USER_PROFILE);
+    
         try {
-          const response = await fetch(VENT.USER_PROFILE, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${sessionToken}`,
+          // Try different request formats
+          const requestFormats = [
+            { 
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${sessionToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userId })
+            },
+            { 
+              method: 'POST',
+              headers: { 'Authorization': `Token ${sessionToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userId })
+            },
+            { 
+              method: 'POST',
+              headers: { 'session_token': sessionToken, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userId })
+            },
+            { 
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userId, session_token: sessionToken })
+            },
+            { 
+              method: 'GET',
+              headers: { 'Authorization': `Bearer ${sessionToken}` }
             }
-          });
-  
-          if (!response.ok) {
-            throw new Error('Failed to fetch user profile');
+          ];
+    
+          for (let i = 0; i < requestFormats.length; i++) {
+            const format = requestFormats[i];
+            console.log(`\nTrying request format ${i+1}:`, format);
+            
+            try {
+              const response = await fetch(VENT.USER_PROFILE, format);
+              console.log(`Format ${i+1} response status:`, response.status);
+              
+              const responseText = await response.text();
+              console.log(`Format ${i+1} raw response:`, responseText);
+              
+              try {
+                const data = JSON.parse(responseText);
+                console.log(`Format ${i+1} parsed data:`, data);
+                
+                if (data?.data || data?.user || data?.status === 'success') {
+                  console.log(`Format ${i+1} SUCCESSFUL!`);
+                  
+                  // Try different data structures
+                  const userData = data.data || data.user || (data.status === 'success' ? data : null);
+                  
+                  if (userData) {
+                    setUserData(userData);
+                    return; // Exit the function if successful
+                  }
+                }
+              } catch (parseError) {
+                console.log(`Format ${i+1} parse error:`, parseError.message);
+              }
+            } catch (fetchError) {
+              console.log(`Format ${i+1} fetch error:`, fetchError.message);
+            }
           }
-  
-          const data = await response.json();
-  
-          if (!data?.data) {
-            throw new Error("User profile data is missing. Please log in again.");
-          }
-  
-          setUserData(data.data);
-          // Save the user data into localStorage for persistence
-          localStorage.setItem('userProfile', JSON.stringify(data.data));
+          
+          // If we get here, all formats failed
+          throw new Error("All API request formats failed");
         } catch (err) {
-          console.error("Error fetching user profile:", err.message); // Directly log `err.message`
-          setError(err.message); // Update state with error message
+          console.error("Final error:", err.message);
+          setError(err.message);
         } finally {
           setLoading(false);
         }
       } else {
+        console.log("Not authenticated or missing session token");
         setLoading(false);
       }
     };

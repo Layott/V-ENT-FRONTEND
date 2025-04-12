@@ -189,7 +189,7 @@ const Signup = () => {
       // with proper error parameters
       await signIn(provider, {
         ...options,
-        callbackUrl: "/events",
+        callbackUrl: "/user-profile",
         redirect: true, // Allow redirect, errors will be handled on the login page
       });
       
