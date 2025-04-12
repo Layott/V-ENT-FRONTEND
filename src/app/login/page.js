@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link';
 import Image from 'next/image'
 import googleLogo from '../../../public/images/google.svg'
@@ -25,6 +25,8 @@ const Login = () => {
     const [snackbarType, setSnackbarType] = useState('success')
     const router = useRouter();
 
+    
+
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState)
     }
@@ -44,18 +46,23 @@ const Login = () => {
             redirect: false,
             email: username_or_email,
             password,
+            callbackUrl: `${window.location.origin}/events`,
         });
     
         if (result?.error) {
             setSnackbarMessage('Login failed. Please check your credentials.');
             setSnackbarType('error');
             setOpen(true);
+            
         } else {
-            // Redirect to profile or dashboard
-            router.replace('/user-profile');
+            
+            
+            
             setSnackbarMessage('Login successful!');
             setSnackbarType('success');
             setOpen(true);
+            window.location.href = '/user-profile';
+            
         }
     
         setLoading(false);
@@ -63,20 +70,26 @@ const Login = () => {
 
     const handleOAuthSignIn = async (provider) => {
         setLoading(true);
-        const result = await signIn(provider, { redirect: false });
-    
-        if (result?.error) {
-            setSnackbarMessage(`Failed to log in with ${provider}`);
-            setSnackbarType('error');
-            setOpen(true);
-        } else {
-            router.replace('/user-profile');
+        
+        try {
+            // Add error handling with a callback
+            await signIn(provider, {
+                redirect: true,
+                callbackUrl: `${window.location.origin}/user-profile`
+            });
+            
+            // This code will only run if redirect: false
             setSnackbarMessage(`${provider} login successful!`);
             setSnackbarType('success');
             setOpen(true);
+            
+        } catch (error) {
+            console.error(`Error during ${provider} sign-in:`, error);
+            setSnackbarMessage(`Failed to log in with ${provider}: ${error.message || 'Unknown error'}`);
+            setSnackbarType('error');
+            setOpen(true);
+            setLoading(false);
         }
-    
-        setLoading(false);
     };
     
     const handleCloseSnackbar = () => {
@@ -143,13 +156,17 @@ const Login = () => {
                                 src={googleLogo}
                                 alt="Google Logo"
                                 className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                                onClick={() => handleOAuthSignIn('google')}
+                                onClick={() => handleOAuthSignIn('google',{
+                                    callbackUrl: `${window.location.origin}/user-profile`, // ✅ redirect to /events after login
+                                  })}
                             />
                             <Image
                                 src={facebookLogo}
                                 alt="Facebook Logo"
                                 className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
-                                onClick={() => handleOAuthSignIn('facebook')}
+                                onClick={() => handleOAuthSignIn('facebook',{
+                                    callbackUrl: `${window.location.origin}/user-profile`, // ✅ redirect to /events after login
+                                  })}
                             />
                         </div>
                     </div>
