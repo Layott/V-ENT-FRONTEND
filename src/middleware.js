@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/events", "/anima", "/user-profile"];  
+const protectedRoutes = ["/events", "/anime", "/user-profile", "/edit-user-profile","/teams","/edit-team-profile"];  
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 export default async function middleware(req) {
