@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 const protectedRoutes = ["/events", "/anime", "/user-profile", "/edit-user-profile", "/teams", "/edit-team-profile"];  
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
-// Helper function to get cookies from request
+
 function getCookie(req, name) {
   const cookie = req.cookies.get(name);
   return cookie?.value;
@@ -15,7 +15,7 @@ export async function middleware(req) {
   const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
   const isPublicRoute = publicRoutes.some(route => path === route);
   
-  // Handle OAuth error redirects first
+  
   const { searchParams } = req.nextUrl;
   const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl");
