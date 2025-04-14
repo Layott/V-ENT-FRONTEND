@@ -72,10 +72,13 @@ const Login = () => {
         setLoading(true);
         
         try {
-            // Add error handling with a callback
+            const currentOrigin = typeof window !== 'undefined' 
+                ? window.location.origin 
+                : process.env.NEXTAUTH_URL || 'https://test.app.v-ent.co';
+                
             await signIn(provider, {
                 redirect: true,
-                callbackUrl: `${window.location.origin}/user-profile`
+                callbackUrl: `${currentOrigin}/user-profile`
             });
             
             // This code will only run if redirect: false
@@ -91,6 +94,7 @@ const Login = () => {
             setLoading(false);
         }
     };
+    
     
     const handleCloseSnackbar = () => {
         setOpen(false)
