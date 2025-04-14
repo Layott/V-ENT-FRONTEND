@@ -20,7 +20,7 @@ export async function middleware(req) {
   const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl");
   
-  // If we have an OAuth error and a localhost callback, fix it
+  
   if (error === "OAuthCallback" && callbackUrl && callbackUrl.includes("localhost")) {
     // Get host from request or use NEXTAUTH_URL
     const host = req.headers.get("host") || new URL(process.env.NEXTAUTH_URL).host;
