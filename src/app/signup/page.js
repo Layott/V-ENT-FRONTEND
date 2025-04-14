@@ -38,7 +38,7 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [usernameError, setUsernameError] = useState("");
-  const [usernameEditable, setUsernameEditable] = useState(false);
+  const [usernameEditable, setUsernameEditable] = useState(true);
 
   const router = useRouter();
 
@@ -135,7 +135,7 @@ const Signup = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     if (formData.password !== formData.confirmPassword) {
       setSnackbarMessage("Passwords do not match");
       setSnackbarType("error");
@@ -143,35 +143,67 @@ const Signup = () => {
       setLoading(false);
       return;
     }
-
-    const { confirmPassword, ...dataToSend } = formData;
-
+  
+    // Create payload exactly matching the expected format
+    const payload = {
+      email: formData.email,
+      username: formData.username,
+      country: formData.country,
+      state: formData.state,
+      password: formData.password,
+      full_name: formData.full_name
+    };
+  
+    console.log("Data being sent to API:", payload);
+  
     try {
       const response = await fetch(VENT.SIGNUP, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
+  
+      const responseText = await response.text();
+      console.log("Raw response from server:", responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Parsed response data:", data);
+      } catch (e) {
+        console.error("Failed to parse response:", e);
+        data = { error: "Invalid server response format" };
+      }
+  
       if (response.ok) {
-        localStorage.setItem("signupData", JSON.stringify(dataToSend));
-
+        localStorage.setItem("signupData", JSON.stringify(payload));
         router.push("/verify-email");
         setSnackbarMessage(data.message || "Account created successfully!");
         setSnackbarType("success");
         setOpen(true);
       } else {
-        setSnackbarMessage(data.error || "Failed to create account");
+        // Extract specific error fields if they exist
+        const errorMessage = data.error || 
+                            data.message || 
+                            data.detail || 
+                            (data.errors ? JSON.stringify(data.errors) : "Failed to create account");
+        
+        console.error("Signup error:", {
+          status: response.status,
+          statusText: response.statusText,
+          errorMessage,
+          data
+        });
+        
+        setSnackbarMessage(errorMessage);
         setSnackbarType("error");
         setOpen(true);
       }
     } catch (error) {
       console.error("Error during signup:", error);
-      setSnackbarMessage("An error occurred. Please try again.");
+      setSnackbarMessage("An network error occurred. Please try again.");
       setSnackbarType("error");
       setOpen(true);
     } finally {
@@ -311,7 +343,6 @@ const Signup = () => {
                   onClick={togglePasswordVisibility}
                   className={generalStyles.togglePassword}
                 >
-                  {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                 </span>
               </div>
             </div>
