@@ -38,7 +38,7 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [usernameError, setUsernameError] = useState("");
-  const [usernameEditable, setUsernameEditable] = useState(false);
+  const [usernameEditable, setUsernameEditable] = useState(true);
 
   const router = useRouter();
 
@@ -52,37 +52,66 @@ const Signup = () => {
 
   const handleInputChange = async (e) => {
     const { name, value } = e.target;
-
+    
     setFormData({ ...formData, [name]: value });
-
+    
+    // Clear error after some time
     const clearError = (setErrorFunction) => {
       setTimeout(() => {
         setErrorFunction("");
       }, 1500);
     };
-
+    
     if (name === "username") {
       if (!usernameEditable) return;
-
+      
       if (value.length > 30) {
         setUsernameError("Username cannot exceed 30 characters.");
         clearError(setUsernameError);
       } else {
         setUsernameError("");
+        
+        // You might want to add username availability check here too
+        if (value.trim() !== "") {
+          try {
+            const response = await fetch(VENT.USER_VERIFICATION, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username: value }),
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+              if (data.message === "The username does not exist") {
+                // Username is available
+                setUsernameError("");
+              } else {
+                // Username is already taken
+                setUsernameError("This username is already taken");
+                clearError(setUsernameError);
+              }
+            }
+          } catch (error) {
+            console.error("Error checking username:", error);
+          }
+        }
       }
     }
-
+    
     if (name === "email") {
       setEmailError("");
-    
+      
       if (!emailRegex.test(value)) {
         setEmailError("Invalid email address");
         clearError(setEmailError);
         return;
       }
-    
+      
       setIsEmailLoading(true);
-    
+      
       try {
         const response = await fetch(VENT.USER_VERIFICATION, {
           method: "POST",
@@ -91,34 +120,41 @@ const Signup = () => {
           },
           body: JSON.stringify({ email: value }),
         });
-    
+        
         const data = await response.json();
-    
+        console.log("Username verification response:", data);
+        
         if (response.ok) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            username: data.username || "",
-          }));
-    
+          // If a username is suggested from the email
+          if (data.username) {
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              username: data.username || "",
+            }));
+          }
+          
+          // Check if username is available or not
           if (data.message === "The username does not exist") {
-            setUsernameEditable(true);
+            setUsernameEditable(true);  // Allow editing if username doesn't exist
+            setUsernameError("");
           } else {
-            setUsernameEditable(false);
+            setUsernameEditable(false); // Don't allow editing if username exists
+            setUsernameError("This username is already taken");
+            clearError(setUsernameError);
           }
         } else {
-          setUsernameError(data.message || "Failed to retrieve username");
+          setUsernameError(data.message || "Failed to verify username");
           clearError(setUsernameError);
-          setUsernameEditable(true);
+          setUsernameEditable(true); // Allow editing if verification fails
         }
       } catch (error) {
         console.error("Error fetching username:", error);
-        setEmailError("Error occurred while fetching username");
+        setEmailError("Error occurred while verifying email");
         clearError(setEmailError);
       } finally {
         setIsEmailLoading(false);
       }
     }
-    
   };
 
   const handleCountrySelection = (event) => {
@@ -135,7 +171,8 @@ const Signup = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setSnackbarMessage("Passwords do not match");
       setSnackbarType("error");
@@ -143,29 +180,62 @@ const Signup = () => {
       setLoading(false);
       return;
     }
-
-    const { confirmPassword, ...dataToSend } = formData;
-
+    
+    // Check if username is valid (not already taken)
+    if (usernameError) {
+      setSnackbarMessage("Please choose a different username");
+      setSnackbarType("error");
+      setOpen(true);
+      setLoading(false);
+      return;
+    }
+    
+    // Create payload to match expected format
+    const payload = {
+      email: formData.email,
+      username: formData.username,
+      country: formData.country,
+      state: formData.state,
+      password: formData.password,
+      full_name: formData.full_name
+    };
+    
+    console.log("Data being sent to API:", payload);
+    
     try {
       const response = await fetch(VENT.SIGNUP, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
+      
+      const responseText = await response.text();
+      console.log("Raw server response:", responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse response:", e);
+        data = { error: "Invalid server response" };
+      }
+      
       if (response.ok) {
-        localStorage.setItem("signupData", JSON.stringify(dataToSend));
-
+        localStorage.setItem("signupData", JSON.stringify(payload));
         router.push("/verify-email");
         setSnackbarMessage(data.message || "Account created successfully!");
         setSnackbarType("success");
         setOpen(true);
       } else {
-        setSnackbarMessage(data.error || "Failed to create account");
+        const errorMessage = data.error || 
+                            data.message || 
+                            data.detail || 
+                            "Failed to create account";
+        
+        console.error("Signup error:", data);
+        setSnackbarMessage(errorMessage);
         setSnackbarType("error");
         setOpen(true);
       }
@@ -311,7 +381,6 @@ const Signup = () => {
                   onClick={togglePasswordVisibility}
                   className={generalStyles.togglePassword}
                 >
-                  {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                 </span>
               </div>
             </div>
