@@ -453,7 +453,7 @@ const Signup = () => {
                 className={`${styles.googleLogo} ${generalStyles.authLogo}`}
                 onClick={() =>
                   handleOAuthSignUp("google", {
-                    callbackUrl: `${window.location.origin}/events`,
+                    callbackUrl: `${window.location.origin}/user-profile`,
                   })
                 }
               />
@@ -464,7 +464,7 @@ const Signup = () => {
                 className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
                 onClick={() =>
                   handleOAuthSignUp("facebook", {
-                    callbackUrl: `${window.location.origin}/events`,
+                    callbackUrl: `${window.location.origin}/user-profile`,
                   })
                 }
               />
