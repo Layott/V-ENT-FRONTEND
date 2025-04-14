@@ -15,7 +15,7 @@ export async function middleware(req) {
   const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
   const isPublicRoute = publicRoutes.some(route => path === route);
   
-  // Handle OAuth error redirects first
+  
   const { searchParams } = req.nextUrl;
   const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl");
