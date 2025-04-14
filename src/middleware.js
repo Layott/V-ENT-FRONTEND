@@ -4,7 +4,6 @@ import { getToken } from "next-auth/jwt";
 const protectedRoutes = ["/events", "/anime", "/user-profile", "/edit-user-profile", "/teams", "/edit-team-profile"];  
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
-
 function getCookie(req, name) {
   const cookie = req.cookies.get(name);
   return cookie?.value;
