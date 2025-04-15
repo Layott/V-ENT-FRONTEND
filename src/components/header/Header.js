@@ -91,20 +91,28 @@ const Header = ({ className = '' }) => {
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
-  const handleLogout = async () => {    
-    // Clear all authentication data from localStorage
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('authToken');
-    sessionStorage.clear();
-    
-    // Set a cookie to indicate logged out state (will be read by middleware)
-    document.cookie = "isLoggedOut=true; path=/; max-age=60";
-    
-    // Use NextAuth's signOut with redirect
-    await signOut({ 
-      callbackUrl: '/login',
-      redirect: true,
-    });
+  const handleLogout = async () => {
+    try {
+      // First clear all local storage items
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('authToken');
+      sessionStorage.clear();
+      
+      // Set the logged out cookie
+      document.cookie = "isLoggedOut=true; path=/; max-age=60";
+      
+      // Use NextAuth signOut but handle it properly
+      await signOut({ 
+        redirect: false // Change this to false
+      }).then(() => {
+        // Manual redirect after successful signOut
+        window.location.href = '/login';
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Still redirect even if there was an error
+      window.location.href = '/login';
+    }
   }
 
   return (
