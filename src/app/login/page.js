@@ -72,7 +72,7 @@ const Login = () => {
         setLoading(true);
         
         try {
-            // Add error handling with a callback
+            // Use window.location.origin to get the current domain dynamically
             await signIn(provider, {
                 redirect: true,
                 callbackUrl: `${window.location.origin}/user-profile`
@@ -85,12 +85,13 @@ const Login = () => {
             
         } catch (error) {
             console.error(`Error during ${provider} sign-in:`, error);
-            setSnackbarMessage(`Failed to log in with ${provider}: ${error.message || 'Unknown error'}`);
+            setSnackbarMessage(`Failed to log in with ${provider}`);
             setSnackbarType('error');
             setOpen(true);
             setLoading(false);
         }
     };
+
     
     const handleCloseSnackbar = () => {
         setOpen(false)
