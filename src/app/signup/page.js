@@ -255,24 +255,20 @@ const Signup = () => {
     setLoading(true);
     
     try {
-      // We're going to simplify this function and let NextAuth handle the redirect
-      // with proper error parameters
-      await signIn(provider, {
-        ...options,
-        callbackUrl: "/user-profile",
-        redirect: true, // Allow redirect, errors will be handled on the login page
-      });
-      
-      // Note: This code below will likely not run due to redirect
-      setLoading(false);
+        await signIn(provider, {
+            callbackUrl: `${window.location.origin}/user-profile`,
+            redirect: true,
+        });
+        
+        setLoading(false);
     } catch (error) {
-      console.error("Error during OAuth signup:", error);
-      setSnackbarMessage("An error occurred during signup. Please try again.");
-      setSnackbarType("error");
-      setOpen(true);
-      setLoading(false);
+        console.error("Error during OAuth signup:", error);
+        setSnackbarMessage("An error occurred during signup. Please try again.");
+        setSnackbarType("error");
+        setOpen(true);
+        setLoading(false);
     }
-  };
+};
   
   
 
