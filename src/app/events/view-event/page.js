@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import EventDetailsBanner from '@/components/view-event/event-details-banner/EventDetailsBanner';
 import EventDetailsOverview from '@/components/view-event/event-details-overview/EventDetailsOverview';
 import EventDetailsTournaments from '@/components/view-event/event-details-tournament/EventDetailsTournaments';
@@ -96,7 +97,11 @@ const ViewEvent = () => {
           </div>
       
         </div>
+        
       </main>
+
+      <BottomMenu />
+
     </div>
   )
 }

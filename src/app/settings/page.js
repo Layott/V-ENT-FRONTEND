@@ -3,6 +3,7 @@
 import Header from "@/components/header/Header"
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from "@/components/sidebar/Sidebar"
+import BottomMenu from "@/components/bottom-menu/BottomMenu"
 import styles from './settings.module.css'
 
 const Settings = () => {
@@ -24,7 +25,10 @@ const Settings = () => {
                   </div>
   
               </div>
+
           </main>
+
+          <BottomMenu />
   
       </div>
     )

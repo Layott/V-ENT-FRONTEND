@@ -11,6 +11,7 @@ import TeamProfileOverviewRight from '@/components/team-profile/team-profile-ove
 import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/TeamProfileGallery';
 import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
 import TeamProfileMembers from '@/components/team-profile/team-profile-members/TeamProfileMembers';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './team-profile.module.css'
 
@@ -87,7 +88,11 @@ const TeamProfile = () => {
           </div>
       
         </div>
+
       </main>
+
+      <BottomMenu />
+      
     </div>
   )
 }

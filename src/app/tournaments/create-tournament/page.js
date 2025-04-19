@@ -3,6 +3,7 @@
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import CreateTournamentComponent from '@/components/create-tournament-component/CreateTournamentComponent';
 import styles from './create-tournament.module.css';
 
@@ -17,6 +18,9 @@ const TournamentCreation = () => {
           <CreateTournamentComponent />
 
         </main>
+        
+        <BottomMenu />
+
     </div>
   )
 }

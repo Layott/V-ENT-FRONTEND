@@ -3,6 +3,7 @@
 import Header from '@/components/header/Header'
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar'
+import BottomMenu from '@/components/bottom-menu/BottomMenu'
 import AllTeams from '@/components/teams/all-teams/AllTeams'
 import styles from './teams.module.css'
 
@@ -19,6 +20,9 @@ const Teams = () => {
               <AllTeams />
             </div>
         </main>
+
+      <BottomMenu />
+      
     </div>
   )
 }
