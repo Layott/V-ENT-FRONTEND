@@ -5,6 +5,7 @@ import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import EditUserProfileInfo from '@/components/edit-user-profile/edit-user-profile-info/EditUserProfileInfo';
 import EditUserProfileFavouriteGames from '@/components/edit-user-profile/edit-user-profile-favourite-games/EditUserProfileFavouriteGames';
 import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-user-profile-gaming-accounts/EditUserProfileGamingAccounts';
@@ -89,6 +90,8 @@ const EditUserProfile = () => {
         </div>
       
       </main>
+
+      <BottomMenu />
 
     </div>
   )

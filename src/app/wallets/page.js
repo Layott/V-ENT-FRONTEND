@@ -2,6 +2,7 @@
 
 import Header from '@/components/header/Header'
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu'
 import Sidebar from '@/components/sidebar/Sidebar'
 import styles from './wallets.module.css'
 
@@ -24,7 +25,10 @@ const Wallets = () => {
                 </div>
 
             </div>
+
         </main>
+
+        <BottomMenu />
         
     </div>
   )

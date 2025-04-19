@@ -3,6 +3,7 @@
 import Header from '@/components/header/Header'
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar'
+import BottomMenu from '@/components/bottom-menu/BottomMenu'
 import styles from './ranking.module.css'
 
 const Rankings = () => {
@@ -24,8 +25,11 @@ const Rankings = () => {
           </div>
 
         </div>
+
       </main>
 
+      <BottomMenu />
+      
     </div>
   )
 }

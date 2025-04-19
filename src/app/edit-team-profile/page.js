@@ -5,6 +5,7 @@ import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import EditTeamProfileInfo from '@/components/edit-team-profile/edit-team-profile-info/EditTeamProfileInfo';
 import EditLinks from '@/components/edit-team-profile/edit-team-profile-links/EditTeamProfileLinks';
 import Membership from '@/components/edit-team-profile/edit-team-profile-membership/EditTeamProfileMembership';
@@ -77,6 +78,8 @@ const EditTeamProfile = () => {
         </div>
       
       </main>
+
+      <BottomMenu />
 
     </div>
   )

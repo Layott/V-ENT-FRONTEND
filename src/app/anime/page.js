@@ -3,6 +3,7 @@
 import Header from "@/components/header/Header"
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from "@/components/sidebar/Sidebar"
+import BottomMenu from "@/components/bottom-menu/BottomMenu"
 import styles from './anime.module.css'
 
 const Anime = () => {
@@ -25,6 +26,8 @@ const Anime = () => {
   
               </div>
           </main>
+
+          <BottomMenu />
   
       </div>
     )

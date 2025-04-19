@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ProfileBanner from '@/components/user-profile/user-profile-banner/UserProfileBanner';
 import ProfileBio from '@/components/user-profile/user-profile-bio/UserProfileBio';
 import OverviewLeft from "@/components/user-profile/user-profile-overview-left/UserProfileOverviewLeft";
@@ -230,6 +231,7 @@ const UserProfile = () => {
           </div>
         </div>
       </main>
+      <BottomMenu />
     </div>
   );
 };

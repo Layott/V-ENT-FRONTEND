@@ -1,13 +1,14 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
-import { FiHome, FiSettings } from "react-icons/fi";
+import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
-import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
+import { FaUsers, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
 import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
-import logoRed from "@/images/logo_mark_red.svg"
+import { RiShoppingCart2Line } from "react-icons/ri";
+import { MdOutlineSettings } from "react-icons/md";
+import { LuGamepad2 } from "react-icons/lu";
 import styles from './mobile-sidebar.module.css'
 
 const MobileSidebar = ({ isOpen }) => {
@@ -23,31 +24,18 @@ const MobileSidebar = ({ isOpen }) => {
 
   return (
     <div className={`${styles.mobileSidebar} ${isOpen ? styles.open : ''}`}>
-    {/* <div className={styles.mobileSidebar}> */}
-        {/* <div className={styles.logoContainer}>
-            <Link className={styles.logoLink} href={'/'}>
-                <div className={styles.innerLogoContainer}>
-                    <Image
-                        src={logoRed}
-                        alt='Logo'
-                        className={styles.logo}
-                    />
-                </div>
-                <h1>v-ent</h1>
-            </Link>
-        </div> */}
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
                     <Link href={'/'} className={styles.iconTextLink}>
-                        Home <FiHome className={styles.sidebarIcon} />
+                        Home <BiHomeCircle className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        Tournaments <FaTrophy className={styles.sidebarIcon} />
+                        Tournaments <LuGamepad2 className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
@@ -84,7 +72,7 @@ const MobileSidebar = ({ isOpen }) => {
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
                         <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Marketplace <FaShoppingCart className={styles.sidebarIcon} /></span>
+                        <span className={styles.iconMarketplaceSpan}>Marketplace <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
                     </span>
                 </li>
             
@@ -97,7 +85,7 @@ const MobileSidebar = ({ isOpen }) => {
             
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        Settings <FiSettings className={styles.sidebarIcon} />
+                        Settings <MdOutlineSettings className={styles.sidebarIcon} />
                     </Link>
                 </li>
             </ul>

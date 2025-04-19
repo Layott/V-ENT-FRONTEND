@@ -46,7 +46,7 @@ const Login = () => {
             redirect: false,
             email: username_or_email,
             password,
-            callbackUrl: `${window.location.origin}/events`,
+            callbackUrl: `${window.location.origin}/user-profile` // Redirect to user profile after login,
         });
     
         if (result?.error) {
@@ -62,6 +62,7 @@ const Login = () => {
             setSnackbarType('success');
             setOpen(true);
             window.location.href = '/user-profile';
+            // router.push('/user-profile');
             
         }
     
