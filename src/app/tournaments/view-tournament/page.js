@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import TournamentDetailsBanner from '@/components/view-tournament/tournament-details-banner/TournamentDetailsBanner';
 import TournamentDetailsOverview from '@/components/view-tournament/tournament-details-overview/TournamentDetailsOverview';
 import TournamentDetailsRules from '@/components/view-tournament/tournament-details-rules/TournamentDetailsRules';
@@ -97,7 +98,11 @@ const ViewTournament = () => {
           </div>
       
         </div>
+
       </main>
+
+      <BottomMenu />
+      
     </div>
   )
 }

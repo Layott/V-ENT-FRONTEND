@@ -1,12 +1,15 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiHome, FiSettings } from "react-icons/fi";
+import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
-import { FaTrophy, FaUsers, FaShoppingCart, FaTv } from 'react-icons/fa';
+import { FaUsers, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
 import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
+import { RiShoppingCart2Line } from "react-icons/ri";
+import { LuGamepad2 } from "react-icons/lu";
+import { MdOutlineSettings } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
 
@@ -40,13 +43,13 @@ const Sidebar = ({ customClass }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
                     <Link href={'/'} className={styles.iconTextLink}>
-                        <FiHome className={styles.sidebarIcon} /> Home
+                        <BiHomeCircle className={styles.sidebarIcon} /> Home
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        <FaTrophy className={styles.sidebarIcon} /> Tournaments
+                        <LuGamepad2 className={styles.sidebarIcon} /> Tournaments
                     </Link>
                 </li>
 
@@ -82,7 +85,7 @@ const Sidebar = ({ customClass }) => {
                             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>
-                        <span className={styles.iconMarketplaceSpan}><FaShoppingCart className={styles.sidebarIcon} /> Marketplace</span>
+                        <span className={styles.iconMarketplaceSpan}><RiShoppingCart2Line className={styles.sidebarIcon} /> Marketplace</span>
                         <span className={styles.comingSoon}>Coming Soon</span>
                     </span>
                 </li>
@@ -96,7 +99,7 @@ const Sidebar = ({ customClass }) => {
             
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        <FiSettings className={styles.sidebarIcon} /> Settings
+                        <MdOutlineSettings className={styles.sidebarIcon} /> Settings
                     </Link>
                 </li>
             </ul>
