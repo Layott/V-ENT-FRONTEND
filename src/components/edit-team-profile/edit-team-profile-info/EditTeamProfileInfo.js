@@ -87,6 +87,7 @@ const EditTeamProfileInfo = () => {
       formData.append('country', profileData.country);
       formData.append('interests', JSON.stringify(profileData.interests));
 
+
       try {
         const response = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
