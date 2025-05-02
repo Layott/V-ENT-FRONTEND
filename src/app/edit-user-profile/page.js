@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
@@ -10,10 +12,33 @@ import EditUserProfileInfo from '@/components/edit-user-profile/edit-user-profil
 import EditUserProfileFavouriteGames from '@/components/edit-user-profile/edit-user-profile-favourite-games/EditUserProfileFavouriteGames';
 import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-user-profile-gaming-accounts/EditUserProfileGamingAccounts';
 import EditLinks from '@/components/edit-user-profile/edit-user-profile-links/EditUserProfileLinks';
-import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css'
+import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css';
 
 const EditUserProfile = () => {
-  const [activeTab, setActiveTab] = useState('edit-profile-details')
+  const [activeTab, setActiveTab] = useState('edit-profile-details');
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  // Check if user is authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login?callbackUrl=/edit-profile');
+    }
+  }, [status, router]);
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className={editProfileStyles.loadingContainer}>
+        <p>Loading profile editor...</p>
+      </div>
+    );
+  }
+
+  // Only render the profile editor if authenticated
+  if (!session) {
+    return null; // Don't render anything while redirecting
+  }
 
   return (
     <div className={editProfileStyles.pageContainer}>
@@ -94,7 +119,7 @@ const EditUserProfile = () => {
       <BottomMenu />
 
     </div>
-  )
-}
+  );
+};
 
-export default EditUserProfile
+export default EditUserProfile;

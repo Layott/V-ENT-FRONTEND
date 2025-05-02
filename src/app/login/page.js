@@ -73,10 +73,11 @@ const Login = () => {
         setLoading(true);
         
         try {
-            // Use window.location.origin to get the current domain dynamically
+            // Force redirection to Google's auth page
             await signIn(provider, {
                 redirect: true,
-                callbackUrl: `${window.location.origin}/user-profile`
+                callbackUrl: `${window.location.origin}/user-profile`,
+                prompt: 'select_account consent' // Explicitly request prompt and consent
             });
             
             // This code will only run if redirect: false
@@ -154,14 +155,12 @@ const Login = () => {
                     <div className={generalStyles.alternativeAuthContainer}>
                         <p>Or sign in with</p>
                         <div className={generalStyles.logoContainer}>
-                            <Image
-                                src={googleLogo}
-                                alt="Google Logo"
-                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                                onClick={() => handleOAuthSignIn('google',{
-                                    callbackUrl: `${window.location.origin}/user-profile`, // ✅ redirect to /events after login
-                                  })}
-                            />
+                        <Image
+    src={googleLogo}
+    alt="Google Logo"
+    className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+    onClick={() => handleOAuthSignIn('google')}
+/>
                             <Image
                                 src={facebookLogo}
                                 alt="Facebook Logo"
