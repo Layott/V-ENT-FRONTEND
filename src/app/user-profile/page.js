@@ -81,115 +81,78 @@ const UserProfile = () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
         const sessionToken = session.user.sessionToken;
         const userId = session.user.id;
-
+    
         console.log("==== PROFILE API DEBUG ====");
         console.log("Session token:", sessionToken);
         console.log("User ID:", userId);
         console.log("API Endpoint:", VENT.USER_PROFILE);
-
+    
         try {
-          // Try different request formats
-          const requestFormats = [
-            {
+          // Try with GET method first
+          const timestamp = new Date().getTime();
+          console.log("Attempting GET request...");
+          let response = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            }
+          });
+          
+          // If GET fails, try again with POST method
+          if (response.status === 405) {
+            console.log("GET method not allowed, trying POST...");
+            response = await fetch(`${VENT.USER_PROFILE}?t=${timestamp}`, {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
                 "Content-Type": "application/json",
-                // Add strong cache busting headers
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                Pragma: "no-cache",
-                Expires: "0",
               },
               body: JSON.stringify({ user_id: userId }),
-            },
-            {
-              method: "POST",
+            });
+          }
+          
+          console.log("Profile response status:", response.status);
+          
+          if (!response.ok) {
+            // Try with Token prefix instead of Bearer
+            console.log("Trying with Token prefix instead of Bearer");
+            const tokenResponse = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
+              method: "GET",
               headers: {
                 Authorization: `Token ${sessionToken}`,
                 "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ user_id: userId }),
-            },
-            {
-              method: "POST",
-              headers: {
-                session_token: sessionToken,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ user_id: userId }),
-            },
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                user_id: userId,
-                session_token: sessionToken,
-              }),
-            },
-            {
-              method: "GET",
-              headers: { Authorization: `Bearer ${sessionToken}` },
-            },
-          ];
-
-          for (let i = 0; i < requestFormats.length; i++) {
-            const format = requestFormats[i];
-            console.log(`\nTrying request format ${i + 1}:`, format);
-
-            try {
-              // Add timestamp to prevent caching
-              const timestamp = new Date().getTime();
-              const response = await fetch(
-                `${VENT.USER_PROFILE}?t=${timestamp}`,
-                format
-              );
-              console.log(`Format ${i + 1} response status:`, response.status);
-
-              const responseText = await response.text();
-              console.log(`Format ${i + 1} raw response:`, responseText);
-
-              try {
-                const data = JSON.parse(responseText);
-                console.log(`Format ${i + 1} parsed data:`, data);
-
-                if (data?.data || data?.user || data?.status === "success") {
-                  console.log(`Format ${i + 1} SUCCESSFUL!`);
-
-                  // Try different data structures
-                  const rawUserData =
-                    data.data ||
-                    data.user ||
-                    (data.status === "success" ? data : null);
-
-                  if (rawUserData) {
-                    // Process to ensure absolute URLs
-                    const processedData = processUserData(rawUserData);
-                    setUserData(processedData);
-                    
-                    // Set interests state
-                    if (processedData.interests && Array.isArray(processedData.interests)) {
-                      setInterests(processedData.interests);
-                    }
-
-                    // Also update localStorage with processed URLs
-                    localStorage.setItem(
-                      "userProfile",
-                      JSON.stringify(processedData)
-                    );
-
-                    return; // Exit the function if successful
+              }
+            });
+            
+            if (!tokenResponse.ok) {
+              // Try with session_token as a query param
+              console.log("Trying with session_token as query param");
+              const tokenParamResponse = await fetch(
+                `${VENT.USER_PROFILE}?user_id=${userId}&session_token=${sessionToken}&t=${timestamp}`, 
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
                   }
                 }
-              } catch (parseError) {
-                console.log(`Format ${i + 1} parse error:`, parseError.message);
+              );
+              
+              if (!tokenParamResponse.ok) {
+                throw new Error(`Failed to fetch profile: ${tokenParamResponse.status}`);
               }
-            } catch (fetchError) {
-              console.log(`Format ${i + 1} fetch error:`, fetchError.message);
+              
+              const responseText = await tokenParamResponse.text();
+              return handleProfileResponse(responseText);
             }
+            
+            const responseText = await tokenResponse.text();
+            return handleProfileResponse(responseText);
           }
-
-          // If we get here, all formats failed
-          throw new Error("All API request formats failed");
+          
+          const responseText = await response.text();
+          return handleProfileResponse(responseText);
+          
         } catch (err) {
           console.error("Final error:", err.message);
           setError(err.message);
@@ -199,6 +162,44 @@ const UserProfile = () => {
       } else {
         console.log("Not authenticated or missing session token");
         setLoading(false);
+      }
+    };
+    
+    // Helper function to handle the profile response
+    const handleProfileResponse = (responseText) => {
+      console.log("Raw response:", responseText);
+      
+      try {
+        const data = JSON.parse(responseText);
+        console.log("Parsed data:", data);
+        
+        // Try different data structures
+        const rawUserData =
+          data.data ||
+          data.user ||
+          (data.status === "success" ? data : null);
+          
+        if (rawUserData) {
+          // Process to ensure absolute URLs
+          const processedData = processUserData(rawUserData);
+          setUserData(processedData);
+          
+          // Set interests state
+          if (processedData.interests && Array.isArray(processedData.interests)) {
+            setInterests(processedData.interests);
+          }
+          
+          // Also update localStorage with processed URLs
+          localStorage.setItem(
+            "userProfile",
+            JSON.stringify(processedData)
+          );
+        } else {
+          throw new Error("Invalid user data format");
+        }
+      } catch (parseError) {
+        console.log("Parse error:", parseError.message);
+        throw parseError;
       }
     };
 

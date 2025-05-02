@@ -43,6 +43,7 @@ const EditUserProfileInfo = () => {
         }));
         
         try {
+          console.log('Fetching user profile data...');
           const response = await fetch(VENT.GET_USER_PROFILE, {
             method: 'GET',
             headers: {
@@ -56,6 +57,9 @@ const EditUserProfileInfo = () => {
           
           if (response.ok) {
             const userData = await response.json();
+            
+            // Log the interests specifically to check if they're coming from the backend
+            console.log('FETCH - Received interests from backend:', userData.interests);
             
             // Clear any existing data before setting new data
             setProfileData({
@@ -107,6 +111,7 @@ const EditUserProfileInfo = () => {
   };
 
   const handleInterestsChange = (newInterests) => {
+    console.log('Interests changed to:', newInterests);
     setProfileData((prevData) => ({
       ...prevData,
       interests: newInterests,
@@ -134,6 +139,8 @@ const EditUserProfileInfo = () => {
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
 
+      console.log('SUBMIT - Current interests before sending to backend:', profileData.interests);
+      
       const formData = new FormData();
       formData.append('login_session_token', profileData.login_session_token);
       if (profileData.profile_pic) formData.append('profile_pic', profileData.profile_pic);
@@ -142,9 +149,19 @@ const EditUserProfileInfo = () => {
       formData.append('fullname', profileData.fullname);
       formData.append('description', profileData.description);
       formData.append('country', profileData.country);
+      
+      // Log the interests as they're being added to FormData
+      console.log('SUBMIT - Adding interests to FormData:', JSON.stringify(profileData.interests));
       formData.append('interests', JSON.stringify(profileData.interests));
+      
+      // Debug FormData contents
+      console.log('SUBMIT - FormData entries:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
 
       try {
+        console.log('SUBMIT - Sending profile update to:', VENT.EDIT_PROFILE);
         const response = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
           headers: {
@@ -154,6 +171,7 @@ const EditUserProfileInfo = () => {
         });
 
         const data = await response.json();
+        console.log('SUBMIT - Backend response:', data);
 
         if (response.ok) {
           console.log('Updated profile with interests:', profileData.interests);
@@ -161,6 +179,7 @@ const EditUserProfileInfo = () => {
           setSnackbarMessage(data.message || 'Profile updated successfully!');
           setSnackbarType('success');
         } else {
+          console.error('Backend returned error:', data);
           setSnackbarMessage(data.message || 'Failed to update profile.');
           setSnackbarType('error');
         }
