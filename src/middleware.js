@@ -33,7 +33,7 @@ export default async function middleware(req) {
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
     console.log("Redirecting to events (already authenticated)");
-    return NextResponse.redirect(new URL("/events", req.url));
+    return NextResponse.redirect(new URL("/user-profile", req.url));
   }
 
   return NextResponse.next();
