@@ -21,8 +21,8 @@ const allInterests = [
     "Among Us", "Phasmophobia", "Rust", "Terraria", "ARK: Survival Evolved"
     ];
 
-export const fetchInterests = async (query) => {
-    return allInterests.filter(interest => 
-        interest.toLowerCase().includes(query.toLowerCase())
-    )
-}
+    const fetchInterests = (query) => {
+        return allInterests.filter(interest => 
+            interest.toLowerCase().includes(query.toLowerCase())
+        );
+    };

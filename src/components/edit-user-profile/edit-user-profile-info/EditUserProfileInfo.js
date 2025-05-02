@@ -14,7 +14,7 @@ const EditUserProfileInfo = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [profileData, setProfileData] = useState({
-    // login_session_token: '',
+    login_session_token: '',
     profile_pic: null,
     banner: null,
     username: '',
@@ -28,16 +28,78 @@ const EditUserProfileInfo = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
   const [loading, setLoading] = useState(false);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
-  // Update login_session_token in profileData when session data is available
+  // Fetch current user profile data when component mounts or session changes
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.sessionToken) {
-      const sessionToken = session.user.sessionToken;
-      setProfileData((prevData) => ({
-        ...prevData,
-        login_session_token: sessionToken,
-      }));
-    }
+    const fetchUserProfile = async () => {
+      if (status === "authenticated" && session?.user?.sessionToken) {
+        setIsLoadingUserData(true);
+        const sessionToken = session.user.sessionToken;
+        
+        setProfileData((prevData) => ({
+          ...prevData,
+          login_session_token: sessionToken,
+        }));
+        
+        try {
+          console.log('Fetching user profile data...');
+          const response = await fetch(VENT.GET_USER_PROFILE, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              // Add cache-busting parameter to prevent browser caching
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            },
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            
+            // Log the interests specifically to check if they're coming from the backend
+            console.log('FETCH - Received interests from backend:', userData.interests);
+            
+            // Clear any existing data before setting new data
+            setProfileData({
+              login_session_token: sessionToken,
+              profile_pic: userData.profile_pic || null,
+              banner: userData.banner || null,
+              username: userData.username || '',
+              fullname: userData.fullname || '',
+              description: userData.description || '',
+              country: userData.country || '',
+              interests: userData.interests || [],
+            });
+            
+            console.log('Fetched user profile data:', userData);
+          } else {
+            console.error('Failed to fetch user profile data');
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        } finally {
+          setIsLoadingUserData(false);
+        }
+      }
+    };
+
+    fetchUserProfile();
+    
+    // Add a refresh when the component becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchUserProfile();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [session, status]);
 
   const handleInputChange = (e) => {
@@ -49,6 +111,7 @@ const EditUserProfileInfo = () => {
   };
 
   const handleInterestsChange = (newInterests) => {
+    console.log('Interests changed to:', newInterests);
     setProfileData((prevData) => ({
       ...prevData,
       interests: newInterests,
@@ -76,6 +139,8 @@ const EditUserProfileInfo = () => {
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
 
+      console.log('SUBMIT - Current interests before sending to backend:', profileData.interests);
+      
       const formData = new FormData();
       formData.append('login_session_token', profileData.login_session_token);
       if (profileData.profile_pic) formData.append('profile_pic', profileData.profile_pic);
@@ -84,9 +149,19 @@ const EditUserProfileInfo = () => {
       formData.append('fullname', profileData.fullname);
       formData.append('description', profileData.description);
       formData.append('country', profileData.country);
+      
+      // Log the interests as they're being added to FormData
+      console.log('SUBMIT - Adding interests to FormData:', JSON.stringify(profileData.interests));
       formData.append('interests', JSON.stringify(profileData.interests));
+      
+      // Debug FormData contents
+      console.log('SUBMIT - FormData entries:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
 
       try {
+        console.log('SUBMIT - Sending profile update to:', VENT.EDIT_PROFILE);
         const response = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
           headers: {
@@ -96,22 +171,15 @@ const EditUserProfileInfo = () => {
         });
 
         const data = await response.json();
+        console.log('SUBMIT - Backend response:', data);
 
         if (response.ok) {
+          console.log('Updated profile with interests:', profileData.interests);
           router.push('/user-profile');
           setSnackbarMessage(data.message || 'Profile updated successfully!');
           setSnackbarType('success');
-          setProfileData({
-            login_session_token: '',
-            profile_pic: null,
-            banner: null,
-            username: '',
-            fullname: '',
-            description: '',
-            country: '',
-            interests: [],
-          });
         } else {
+          console.error('Backend returned error:', data);
           setSnackbarMessage(data.message || 'Failed to update profile.');
           setSnackbarType('error');
         }
@@ -121,6 +189,8 @@ const EditUserProfileInfo = () => {
         setSnackbarMessage('An error occurred while updating your profile.');
         setSnackbarType('error');
         setOpen(true);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -129,14 +199,29 @@ const EditUserProfileInfo = () => {
     setOpen(false);
   };
 
+  if (isLoadingUserData) {
+    return (
+      <div className={styles.loadingContainer}>
+        <CircularProgress />
+        <p>Loading profile data...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <form className={styles.editProfileInfoContainer} onSubmit={handleSubmit}>
         <div className={styles.editProfilePictureBannerContainer}>
           <h3>Profile Picture & Banner</h3>
           <div className={styles.profilePictureBannerContainer}>
-            <EditProfileImageAvatar onChange={handleProfilePicChange} />
-            <EditProfileBanner onChange={handleBannerChange} />
+            <EditProfileImageAvatar 
+              onChange={handleProfilePicChange} 
+              currentProfilePic={profileData.profile_pic}
+            />
+            <EditProfileBanner 
+              onChange={handleBannerChange} 
+              currentBanner={profileData.banner}
+            />
           </div>
         </div>
         <EditUserProfileDetails
@@ -152,7 +237,7 @@ const EditUserProfileInfo = () => {
           handleInterestsChange={handleInterestsChange}
         />
         <div className={styles.buttonContainer}>
-        <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
+          <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
           </button>
         </div>
