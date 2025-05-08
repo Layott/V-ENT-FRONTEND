@@ -1,22 +1,12 @@
-
-import FIFATournaments from './fifa-tournaments/FIFATournaments';
-import PUBGTournaments from './pubg-tournaments/PUBGTournaments';
-import FortniteTournaments from './fortnite-tournaments/FortniteTournaments';
-import MinecraftTournaments from './minecraft-tournaments/MinecraftTournaments';
-import styles from './all-tournaments.module.css'
+import TournamentsByGame from './tournaments-by-game/TournamentByGame';
+import styles from './all-tournaments.module.css';
 
 const AllTournaments = () => {
   return (
     <div className={styles.allTournamentsSlidersContainer}>
-
-        <FIFATournaments />
-        <PUBGTournaments />
-        <FortniteTournaments />
-        <MinecraftTournaments />
-        
+      <TournamentsByGame />
     </div>
+  );
+};
 
-  )
-}
-
-export default AllTournaments
+export default AllTournaments;
