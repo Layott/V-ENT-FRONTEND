@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation';
 import Image from 'next/image'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react' // Added this import
 import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers, FaTv } from 'react-icons/fa';
@@ -40,6 +41,30 @@ const BottomMenu = ({ customClass }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogout = async () => {
+      try {
+        // First clear all local storage items
+        localStorage.removeItem('userProfile');
+        localStorage.removeItem('authToken');
+        sessionStorage.clear();
+        
+        // Set the logged out cookie
+        document.cookie = "isLoggedOut=true; path=/; max-age=60";
+        
+        // Use NextAuth signOut but handle it properly
+        await signOut({ 
+          redirect: false // Change this to false
+        }).then(() => {
+          // Manual redirect after successful signOut
+          window.location.href = '/login';
+        });
+      } catch (error) {
+        console.error("Error during logout:", error);
+        // Still redirect even if there was an error
+        window.location.href = '/login';
+      }
+    }
   
   return (
     <div className={styles.bottomMenuContainer}>
@@ -130,7 +155,7 @@ const BottomMenu = ({ customClass }) => {
             {menuOpen && (
                 <div className={styles.openUpMenu}>
                     <Link href="/user-profile" className={styles.openUpItem}>User Profile</Link>
-                    <Link href={'/'} className={styles.openUpItem}>Logout</Link>
+                    <Link href={'/login'} className={styles.openUpItem} onClick={handleLogout}>Logout</Link>
                 </div>
             )}
 
@@ -140,4 +165,4 @@ const BottomMenu = ({ customClass }) => {
   )
 }
 
-export default BottomMenu
+export default BottomMenu;
