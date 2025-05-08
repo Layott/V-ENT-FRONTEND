@@ -89,7 +89,7 @@ const UserProfile = () => {
     
         try {
           // Try with GET method first
-          const timestamp = new Date().getTime();
+          const timestamp = new Date().getTime(); 
           console.log("Attempting GET request...");
           let response = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
             method: "GET",
