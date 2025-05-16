@@ -5,7 +5,7 @@ import styles from './create-tournament-type.module.css';
 
 const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [selectedOption, setSelectedOption] = useState(formData?.tournament_type || null);
-  const [isLinkedToEvent, setIsLinkedToEvent] = useState(false);
+  const [isLinkedToEvent, setIsLinkedToEvent] = useState(true);
   const [hideLocation, setHideLocation] = useState(false);
 
   const handleOptionClick = (option) => {
