@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import ReviewHeaderComponent from "@/components/create-tournament-component/review/review-header-component/ReviewHeaderComponent";
 import ReviewBasicInfo from "@/components/create-tournament-component/review/review-basic-info/ReviewBasicInfo";
@@ -7,19 +8,26 @@ import ReviewSponsorLinks from "./review-sponsor-links/ReviewSponsorLinks";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './review.module.css'
 
-const Review = ({ setSelectedTab }) => {
+const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
+  const [formData, setFormData] = useState({});
+  const [submitError, setSubmitError] = useState(null);
+
+  useEffect(() => {
+    // Load form data from localStorage
+    const savedData = localStorage.getItem('createTournamentData');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
-  }
-
-  const handlePublish = () => {
-    handleSubmit(); 
   };
 
   return (
     <div className={`${createTournamentStyles.generalTabContainer} ${styles.generalTabContainer}`}>
       <header>
-          <h1>Review</h1>
+        <h1>Review</h1>
       </header>
 
       <ReviewHeaderComponent
@@ -33,7 +41,7 @@ const Review = ({ setSelectedTab }) => {
 
       <ReviewHeaderComponent
         title="Format & Participants"
-        isCompleted={false}
+        isCompleted={true}
         editTabIndex={2}
         setSelectedTab={setSelectedTab}
       >
@@ -42,7 +50,7 @@ const Review = ({ setSelectedTab }) => {
 
       <ReviewHeaderComponent
         title="Prize Distribution"
-        isCompleted={false}
+        isCompleted={true}
         editTabIndex={3}
         setSelectedTab={setSelectedTab}
       >
@@ -58,6 +66,12 @@ const Review = ({ setSelectedTab }) => {
         <ReviewSponsorLinks />
       </ReviewHeaderComponent>
 
+      {submitError && (
+        <div className={styles.errorMessage}>
+          Error: {submitError}
+        </div>
+      )}
+
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
@@ -69,6 +83,7 @@ const Review = ({ setSelectedTab }) => {
           <button
             className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
             onClick={handleBack}
+            disabled={isSubmitting}
           >
             <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
             Back
@@ -76,16 +91,15 @@ const Review = ({ setSelectedTab }) => {
 
           <button
             className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
-            onClick={handlePublish}
+            onClick={handleSubmit}
+            disabled={isSubmitting}
           >
-            Publish
+            {isSubmitting ? 'Publishing...' : 'Publish'}
           </button>
         </div>
-        
       </div>
     </div>
-  )
-}
+  );
+};
 
-
-export default Review
+export default Review;
