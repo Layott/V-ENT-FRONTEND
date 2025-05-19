@@ -8,6 +8,8 @@ const PasswordStrength = ({ password }) => {
         { label: 'One uppercase character', isValid: /[A-Z]/.test(password) },
     ];
 
+    const allValid = criteria.every(criterion => criterion.isValid);
+
     return (
         <div className={styles.criteriaContainer}>
             {criteria.map((criterion, index) => (
@@ -19,6 +21,12 @@ const PasswordStrength = ({ password }) => {
                     <span>{criterion.label}</span>
                 </div>
             ))}
+
+            {!allValid && (
+                <p className={styles.errorMessage}>
+                    Password doesn't fit required criteria
+                </p>
+            )}
         </div>
     );
 };
