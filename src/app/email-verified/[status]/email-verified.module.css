@@ -1,0 +1,68 @@
+.pageContainer {
+    width: 100%;
+    background-color: var(--primary-text);
+    min-height: 100vh;
+    color: var(--primary-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 100px;
+  }
+  
+  .pageHeader {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pageHeader h1 {
+    color: var(--v-ent-red);
+  }
+  
+  .mainContainer {
+    padding: 2.5rem 1.5rem;
+    background-color: var(--overlay-gray);
+    width: 90%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .mainContainer h3 {
+    text-align: center;
+  }
+  
+  .mainContainer p {
+    font-weight: var(--fw-light);
+    font-size: var(--fs-p-size-sm-desktop);
+    font-weight: var(--fw-extra-light);
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 1rem;
+  }
+  
+  .resendBTN {
+    width: 100%;
+  }
+  
+  @media only screen and (min-width: 600px) {
+    .mainContainer {
+      width: 450px;
+      padding: 3rem 1.5rem;
+    }
+  }
+  @media only screen and (min-width: 768px) {
+    .pageHeader {
+      height: 100px;
+    }
+    .mainContainer {
+      width: 570px;
+      padding: 3rem 3.5rem;
+    }
+  }
