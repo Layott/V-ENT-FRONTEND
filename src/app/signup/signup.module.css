@@ -71,3 +71,9 @@
   align-items: center;
   font-weight: var(--fw-bold);
 }
+
+.errorMessage {
+  color: red;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
