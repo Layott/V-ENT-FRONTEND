@@ -1,19 +1,26 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaRegEyeSlash } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { useRouter } from 'next/navigation';
+import PasswordStrength from './passwordStrength';
+import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from "@/styles/auth/auth.module.css"
 import { VENT } from '../api/auth/[...nextauth]/route';
+import styles from './reset-password.module.css';
 
 const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(true)
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [resendLoading, setResendLoading] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarType, setSnackbarType] = useState('success');
     const router = useRouter();
 
     const togglePasswordVisibility = () => {
@@ -36,31 +43,55 @@ const ResetPassword = () => {
             return;
         }
 
-        try {
-            const response = await fetch (VENT.RESET_PASSWORD, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password }),
-            });
+        // try {
+        //     const response = await fetch (VENT.RESET_PASSWORD, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ password }),
+        //     });
 
-            if (response.ok) {
-                setSnackbarMessage(data.message || 'Done!');
-                setSnackbarType('success');
-              } else {
-                setSnackbarMessage(data.error || 'Failed!');
-                setSnackbarType('error');
-              }
-            } catch (error) {
-              console.error('Error reseting password:', error);
-              setSnackbarMessage('An error occurred. Please try again.');
-              setSnackbarType('error');
-            } finally {
-              setOpen(true);
-              setResendLoading(false); 
-            }
+        //     if (response.ok) {
+        //         setSnackbarMessage(data.message || 'Done!');
+        //         setSnackbarType('success');
+        //       } else {
+        //         setSnackbarMessage(data.error || 'Failed!');
+        //         setSnackbarType('error');
+        //       }
+        //     } catch (error) {
+        //       console.error('Error reseting password:', error);
+        //       setSnackbarMessage('An error occurred. Please try again.');
+        //       setSnackbarType('error');
+        //     } finally {
+        //       setOpen(true);
+        //       setResendLoading(false); 
+        //     }
+
+        setSnackbarMessage('Token submitted');
+    setSnackbarType('success');
+    setOpen(true);
     };
+
+    useEffect(() => {
+        if (open && snackbarType === 'success') {
+          const timer = setTimeout(() => {
+            router.push('/login');
+          }, 1500);
+      
+          return () => clearTimeout(timer);
+        }
+      }, [open, snackbarType]);
+
+    const isPasswordValid = (password) => {
+        return (
+          password.length >= 8 &&
+          /[a-z]/.test(password) &&
+          /[A-Z]/.test(password)
+        );
+      };
+
+    const handleCloseSnackbar = () => setOpen(false);
 
     return (
         <div className={generalStyles.pageContainer}>
@@ -90,11 +121,11 @@ const ResetPassword = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className={generalStyles.togglePassword}
-                                >
+                                    className={generalStyles.togglePassword}>
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
                             </div>
+                            {password && <PasswordStrength password={password} />}
                         </div>
 
                         <div className={generalStyles.inputGroup}>
@@ -107,6 +138,7 @@ const ResetPassword = () => {
                                     value={confirmPassword}
                                     onChange={handleInputChange}
                                     required
+                                    disabled={!isPasswordValid(password)} 
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
@@ -117,8 +149,8 @@ const ResetPassword = () => {
                             </div>
 
                             {showError && (
-                                <div className={generalStyles.errorMessageContainer}>
-                                    <p className={generalStyles.errorMessage}>Passwords do not match!</p>
+                                <div className={styles.errorMessageContainer}>
+                                    <p className={styles.errorMessage}>Passwords do not match!</p>
                                 </div>                            
                             )}
                         </div>
@@ -129,6 +161,12 @@ const ResetPassword = () => {
                     </form>
                 </div>
             </main>
+            <MessageSnackbar
+                open={open}
+                handleClose={handleCloseSnackbar}
+                message={snackbarMessage}
+                type={snackbarType}
+            />
         </div>
     )
 }
