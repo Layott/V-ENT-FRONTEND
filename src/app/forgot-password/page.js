@@ -35,6 +35,10 @@ const ForgotPassword = () => {
             const data = await response.json();
 
             if (response.ok) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('forgotPasswordEmail', email);
+                }
+
                 setSnackbarMessage(data.message);
                 setSnackbarType('success');
                 router.push('/reset-email');
@@ -56,6 +60,7 @@ const ForgotPassword = () => {
     const handleCloseSnackbar = () => {
         setOpen(false);
     };
+
 
     return (
         <div className={generalStyles.pageContainer}>
