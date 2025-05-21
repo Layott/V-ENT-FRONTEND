@@ -269,218 +269,209 @@ const Signup = () => {
         setLoading(false);
     }
 };
-  
-  
 
-  return (
-    <div className={generalStyles.pageContainer}>
-      <header className={generalStyles.pageHeader}>
-        <AuthHeader />
-      </header>
+const isPasswordValid = (password) => {
+    return (
+      password.length >= 8 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password)
+    );
+};
 
-      <main className={generalStyles.mainContainer}>
-        <div className={generalStyles.formContainer}>
-          <section className={generalStyles.formHeader}>
-            <h3 className={generalStyles.formHeaderH3}>Create an account</h3>
-            <p>Please complete your account details</p>
-          </section>
+return (
+        <div className={generalStyles.pageContainer}>
+            <header className={generalStyles.pageHeader}>
+                <AuthHeader />
+            </header>
 
-          <form
-            className={generalStyles.generalForm}
-            onSubmit={handleFormSubmit}
-          >
-            <div className={generalStyles.inputGroup}>
-              <label>Email Address:</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-              {isEmailLoading ? (
-                <CircularProgress
-                  size={20}
-                  sx={{ color: "red" }}
-                  className={styles.emailLoader}
-                />
-              ) : (
-                emailError && (
-                  <p className={styles.errorMessage}>{emailError}</p>
-                )
-              )}
-            </div>
+            <main className={generalStyles.mainContainer}>
+                <div className={generalStyles.formContainer}>
+                    <section className={generalStyles.formHeader}>
+                        <h3 className={generalStyles.formHeaderH3}>Create an account</h3>
+                        <p>Please complete your account details</p>
+                    </section>
 
-            <div className={generalStyles.inputGroup}>
-              <label>Username:</label>
-              <input
-                type="text"
-                name="username"
-                placeholder="Enter a username"
-                value={formData.username}
-                onChange={handleInputChange}
-                disabled={!usernameEditable}
-                required
-              />
-              {usernameError ? (
-                <p className={styles.errorMessage}>{usernameError}</p>
-              ) : (
-                <p className={styles.toolTip}>
-                  This will be your display name across V-ent, so choose a cool
-                  one! (Max. 30 characters)
-                </p>
-              )}
-            </div>
+                    <form className={generalStyles.generalForm} onSubmit={handleFormSubmit}>
 
-            <div className={generalStyles.inputGroup}>
-              <label>Full name:</label>
-              <input
-                type="text"
-                name="full_name"
-                placeholder="Enter your name"
-                value={formData.full_name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+                        <div className={generalStyles.inputGroup}>
+                            <label>Email Address:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                            />
+                                {isEmailLoading ? (
+                                    <CircularProgress size={20} sx={{ color: 'red' }} className={styles.emailLoader} />
+                                ) : (
+                                    emailError && <p className={styles.errorMessage}>{emailError}</p>
+                                )}
+                        </div>
 
-            <div className={generalStyles.inputGroup}>
-              <label>Country:</label>
-              <select
-                value={selectedCountry}
-                onChange={handleCountrySelection}
-                className={styles.countryDropdown}
-                required
-              >
-                <option value="">Select your country</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.name}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            <div className={generalStyles.inputGroup}>
-              <label>State/Area/Province:</label>
-              <div className={generalStyles.inputGroup}>
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="Enter your state/area/province"
-                  required
-                  value={formData.state}
-                  onChange={handleInputChange}
-                />
-                <span
-                  onClick={togglePasswordVisibility}
-                  className={generalStyles.togglePassword}
-                >
-                </span>
-              </div>
-            </div>
+                        <div className={generalStyles.inputGroup}>
+                            <label>Username:</label>
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Enter a username"
+                                value={formData.username}
+                                onChange={handleInputChange}
+                                disabled={!usernameEditable}
+                                required
+                            />
+                            {usernameError ? (
+                                <p className={styles.errorMessage}>{usernameError}</p>
+                            ) : (
+                                <p className={styles.toolTip}>This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)</p>
+                            )}
+                        </div>
 
-            <div className={generalStyles.inputGroup}>
-              <label>Password:</label>
-              <div className={generalStyles.passwordContainer}>
-                <input
-                  type={showPassword ? "password" : "text"}
-                  name="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  required
-                />
-                <span
-                  onClick={togglePasswordVisibility}
-                  className={generalStyles.togglePassword}
-                >
-                  {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
-                </span>
-              </div>
-              {password && <PasswordStrength password={password} />}
-            </div>
+                        <div className={generalStyles.inputGroup}>
+                            <label>Full name:</label>
+                            <input
+                                type="text"
+                                name="full_name" 
+                                placeholder="Enter your name"
+                                value={formData.full_name}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
 
-            <div className={generalStyles.inputGroup}>
-              <label>Confirm Password:</label>
-              <div className={generalStyles.passwordContainer}>
-                <input
-                  type={showPassword ? "password" : "text"}
-                  name="confirmPassword"
-                  placeholder="Re-enter your password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  required
-                />
-                <span
-                  onClick={togglePasswordVisibility}
-                  className={generalStyles.togglePassword}
-                >
-                  {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
-                </span>
-              </div>
-            </div>
+                        <div className={generalStyles.inputGroup}>
+                            <label>Country:</label>
+                            <select
+                                value={selectedCountry}
+                                onChange={handleCountrySelection}
+                                className={styles.countryDropdown}
+                                required
+                            >
+                                <option value="">Select your country</option>
+                                {countries.map((country) => (
+                                    <option key={country.code} value={country.name}>
+                                        {country.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-            <button
-              type="submit"
-              className={`btn redBTN ${generalStyles.formBTN}`}
-            >
-              {loading ? (
-                <CircularProgress size={24} sx={{ color: "white" }} />
-              ) : (
-                "Create account"
-              )}
-            </button>
-            <p className={styles.termsAndPrivacy}>
-              By creating an account, you agree to our&nbsp;
-              <Link href={"/term-of-use"}>Terms of Use</Link>
-              &nbsp;&amp;&nbsp;
-              <Link href={"/privacy-policy"}>Privacy Policy</Link>
-            </p>
-          </form>
+                        <div className={generalStyles.inputGroup}>
+                            <label>State/Area/Province:</label>
+                            <div className={generalStyles.inputGroup}>
+                            <input
+                                type='text'
+                                name="state"
+                                placeholder="Enter your state/area/province"
+                                required
+                                value={formData.state}
+                                onChange={handleInputChange} 
+                            />
+                                <span
+                                    onClick={togglePasswordVisibility}
+                                    className={generalStyles.togglePassword}>
+                                    {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
+                                </span>
+                            </div>
+                        </div>
 
-          <div className={generalStyles.alternativeAuthContainer}>
-            <p>Or sign up with</p>
-            <div className={generalStyles.logoContainer}>
-              <Image
-                src={googleLogo}
-                alt="Google Logo"
-                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                onClick={() =>
-                  handleOAuthSignUp("google", {
-                    callbackUrl: `${window.location.origin}/user-profile`,
-                  })
-                }
-              />
+                        <div className={generalStyles.inputGroup}>
+                            <label>Password:</label>
+                            <div className={generalStyles.passwordContainer}>
+                                <input
+                                    type={showPassword ? "password" : "text"}
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    required
+                                />
+                                <span
+                                    onClick={togglePasswordVisibility}
+                                    className={generalStyles.togglePassword}>
+                                    {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
+                                </span>
+                            </div>
+                            {password && <PasswordStrength password={password} />}
+                        </div>
 
-              <Image
-                src={facebookLogo}
-                alt="Facebook Logo"
-                className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
-                onClick={() =>
-                  handleOAuthSignUp("facebook", {
-                    callbackUrl: `${window.location.origin}/user-profile`,
-                  })
-                }
-              />
-            </div>
-          </div>
+                        <div className={generalStyles.inputGroup}> 
+                            <label>Confirm Password:</label>
+                            <div className={generalStyles.passwordContainer}>
+                                <input
+                                    type={showPassword ? "password" : "text"}
+                                    name="confirmPassword"
+                                    placeholder="Re-enter your password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleInputChange}
+                                    required
+                                    disabled={!isPasswordValid(password)}
+                                />
+                                <span
+                                    onClick={togglePasswordVisibility}
+                                    className={generalStyles.togglePassword}
+                                >
+                                    {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
+                                </span>
+                            </div>
+                        </div>
 
-          <div className={generalStyles.formHelperContainer}>
-            <p>Already have an account?&nbsp;</p>
-            <Link href={"/login"}>Login</Link>
-          </div>
+                        <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
+                            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create account'}
+                        </button>
+                        <p className={styles.termsAndPrivacy}>By creating an account, you agree to our&nbsp;
+                            <Link href={'/term-of-use'}>Terms of Use</Link>
+                            &nbsp;&amp;&nbsp;
+                            <Link href={'/privacy-policy'}>Privacy Policy</Link>
+                        </p>
+                    </form>
+
+                    <div className={generalStyles.alternativeAuthContainer}>
+                        <p>Or sign up with</p>
+                        <div className={generalStyles.logoContainer}>
+                            <Image
+                                src={googleLogo}
+                                alt="Google Logo"
+                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+                                // onClick={() => handleOAuthSignUp('google')}
+                                onClick={() =>
+                                handleOAuthSignUp("google", {
+                                    callbackUrl: `${window.location.origin}/user-profile`,
+                                    })
+                                }
+                            />
+
+                            <Image
+                                src={facebookLogo}
+                                alt="Facebook Logo"
+                                className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
+                                // onClick={() => handleOAuthSignUp('facebook')}
+                                onClick={() =>
+                                    handleOAuthSignUp("facebook", {
+                                      callbackUrl: `${window.location.origin}/user-profile`,
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    <div className={generalStyles.formHelperContainer}>
+                        <p>Already have an account?&nbsp;</p>
+                        <Link href={'/login'}>Login</Link>
+                    </div>
+
+                </div>
+            </main>
+
+            <MessageSnackbar
+                open={open}
+                handleClose={handleCloseSnackbar}
+                message={snackbarMessage}
+                type={snackbarType}
+            />
         </div>
-      </main>
-
-      <MessageSnackbar
-        open={open}
-        handleClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        type={snackbarType}
-      />
-    </div>
   );
 };
 

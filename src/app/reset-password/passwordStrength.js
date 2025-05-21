@@ -1,5 +1,5 @@
 import { FaCheckCircle, FaMinusCircle } from 'react-icons/fa'
-import styles from './signup.module.css';
+import styles from './reset-password.module.css';
 
 const PasswordStrength = ({ password }) => {
     const criteria = [
