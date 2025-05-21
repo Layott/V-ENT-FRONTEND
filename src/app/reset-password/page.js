@@ -1,19 +1,26 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaRegEyeSlash } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { useRouter } from 'next/navigation';
+import PasswordStrength from './passwordStrength';
+import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from "@/styles/auth/auth.module.css"
 import { VENT } from '../api/auth/[...nextauth]/route';
+import styles from './reset-password.module.css';
 
 const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(true)
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [resendLoading, setResendLoading] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarType, setSnackbarType] = useState('success');
     const router = useRouter();
 
     const togglePasswordVisibility = () => {
@@ -29,6 +36,14 @@ const ResetPassword = () => {
     const handleSubmit = async (e) =>  {
         e.preventDefault(); 
         setShowError(false)
+        const email = typeof window !== 'undefined' ? localStorage.getItem('forgotPasswordEmail') : '';
+
+        if (!email) {
+            setSnackbarMessage('Email not found. Please try again from the Forgot Password page.');
+            setSnackbarType('error');
+            setOpen(true);
+            return;
+        }
 
         if (password !== confirmPassword){
             setShowError(true);
@@ -42,8 +57,10 @@ const ResetPassword = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({ email, new_password: password }),
             });
+
+            const data = await response.json();
 
             if (response.ok) {
                 setSnackbarMessage(data.message || 'Done!');
@@ -60,7 +77,31 @@ const ResetPassword = () => {
               setOpen(true);
               setResendLoading(false); 
             }
+
+    //     setSnackbarMessage('Password reset successfuly!');
+    // setSnackbarType('success');
+    // setOpen(true);
     };
+
+    useEffect(() => {
+        if (open && snackbarType === 'success') {
+          const timer = setTimeout(() => {
+            router.push('/login');
+          }, 1500);
+      
+          return () => clearTimeout(timer);
+        }
+      }, [open, snackbarType]);
+
+    const isPasswordValid = (password) => {
+        return (
+          password.length >= 8 &&
+          /[a-z]/.test(password) &&
+          /[A-Z]/.test(password)
+        );
+      };
+
+    const handleCloseSnackbar = () => setOpen(false);
 
     return (
         <div className={generalStyles.pageContainer}>
@@ -90,11 +131,11 @@ const ResetPassword = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className={generalStyles.togglePassword}
-                                >
+                                    className={generalStyles.togglePassword}>
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
                             </div>
+                            {password && <PasswordStrength password={password} />}
                         </div>
 
                         <div className={generalStyles.inputGroup}>
@@ -107,6 +148,7 @@ const ResetPassword = () => {
                                     value={confirmPassword}
                                     onChange={handleInputChange}
                                     required
+                                    disabled={!isPasswordValid(password)} 
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
@@ -117,8 +159,8 @@ const ResetPassword = () => {
                             </div>
 
                             {showError && (
-                                <div className={generalStyles.errorMessageContainer}>
-                                    <p className={generalStyles.errorMessage}>Passwords do not match!</p>
+                                <div className={styles.errorMessageContainer}>
+                                    <p className={styles.errorMessage}>Passwords do not match!</p>
                                 </div>                            
                             )}
                         </div>
@@ -129,6 +171,12 @@ const ResetPassword = () => {
                     </form>
                 </div>
             </main>
+            <MessageSnackbar
+                open={open}
+                handleClose={handleCloseSnackbar}
+                message={snackbarMessage}
+                type={snackbarType}
+            />
         </div>
     )
 }

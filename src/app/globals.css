@@ -5,6 +5,8 @@
   --white: #FFFFFF;
   --black: #000000;
   --green: #008000;
+  --v-ent-grn: #1CED24;
+  --v-ent-light-grn: #00FF08;
   --v-ent-red: #ED1C24;
   --v-ent-light-red: #FF0008;
   --overlay-gray: #212225;
@@ -53,6 +55,25 @@ a {
   outline: none;
   border: none;
   cursor: pointer;
+}
+
+.grnBTN {
+  color: var(--primary-bg);
+  background-color: var(--v-ent-grn);
+  border: 1px solid var(--v-ent-grn);
+  transform: scale(1);
+  transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
+  cursor: pointer;
+}
+
+.grnBTN:hover {
+  color: var(--primary-bg);
+  background-color: var(--v-ent-light-grn);
+  border: 1px solid var(--primary-bg);
+}
+
+.grnBTN:active {
+  transform: scale(1.01);
 }
 
 .redBTN {

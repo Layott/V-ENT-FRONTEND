@@ -16,7 +16,7 @@ export const VENT = {
   LOGIN: `${BASE_URL}/auth/login/`,
   FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password/send-token/`,
   FORGOT_PASSWORD_TOKEN: `${BASE_URL}/auth/forgot-password/verify-token/`,
-  RESET_PASSWORD: '',
+  RESET_PASSWORD: `${BASE_URL}/auth/forgot-password/change-password/`,
   USER_PROFILE: `${BASE_URL}/auth/get-user-informations/`,
   EDIT_PROFILE: `${BASE_URL}/auth/edit-profile-info/`,
   EDIT_LINKS: `${BASE_URL}/auth/update-web-and-social-links/`,
