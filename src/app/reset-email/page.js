@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import AuthHeader from '@/components/auth-header/AuthHeader'
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import generalStyles from "@/styles/auth/auth.module.css"
@@ -34,9 +35,17 @@ const ResetEmail = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const token = values.join('');
+    const email = typeof window !== 'undefined' ? localStorage.getItem('forgotPasswordEmail') : '';
+
+    if (!email) {
+      setSnackbarMessage('Email not found. Please try again from the Forgot Password page.');
+      setSnackbarType('error');
+      setOpen(true);
+      return;
+    }
 
     if (token.length !== 6) {
       setSnackbarMessage('Please enter a 6-digit token');
@@ -45,36 +54,36 @@ const ResetEmail = () => {
       return;
     }
 
-    // try {
-    //   const response = await fetch('', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ token }), // include email if needed
-    //   });
+    try {
+      const response = await fetch(VENT.FORGOT_PASSWORD_TOKEN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, token }),
+      });
   
-    //   const data = await response.json();
+      const data = await response.json();
   
-    //   if (response.ok) {
-    //     setSnackbarMessage('Token verified successfully');
-    //     setSnackbarType('success');
-    //     setOpen(true);
-    //   } else {
-    //     setSnackbarMessage(data.message || 'Invalid token');
-    //     setSnackbarType('error');
-    //     setOpen(true);
-    //   }
-    // } catch (error) {
-    //   console.error('Error verifying token:', error);
-    //   setSnackbarMessage('Something went wrong. Please try again.');
-    //   setSnackbarType('error');
-    //   setOpen(true);
-    // }
+      if (response.ok) {
+        setSnackbarMessage('Token verified successfully');
+        setSnackbarType('success');
+        setOpen(true);
+      } else {
+        setSnackbarMessage(data.message || 'Invalid token');
+        setSnackbarType('error');
+        setOpen(true);
+      }
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      setSnackbarMessage('Something went wrong. Please try again.');
+      setSnackbarType('error');
+      setOpen(true);
+    }
 
-    setSnackbarMessage(`Token submitted: ${token}`);
-    setSnackbarType('success');
-    setOpen(true);
+    // setSnackbarMessage(`Token submitted: ${token}  Successful`);
+    // setSnackbarType('success');
+    // setOpen(true);
   };
 
   useEffect(() => {

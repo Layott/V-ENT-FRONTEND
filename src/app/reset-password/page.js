@@ -36,6 +36,14 @@ const ResetPassword = () => {
     const handleSubmit = async (e) =>  {
         e.preventDefault(); 
         setShowError(false)
+        const email = typeof window !== 'undefined' ? localStorage.getItem('forgotPasswordEmail') : '';
+
+        if (!email) {
+            setSnackbarMessage('Email not found. Please try again from the Forgot Password page.');
+            setSnackbarType('error');
+            setOpen(true);
+            return;
+        }
 
         if (password !== confirmPassword){
             setShowError(true);
@@ -43,34 +51,36 @@ const ResetPassword = () => {
             return;
         }
 
-        // try {
-        //     const response = await fetch (VENT.RESET_PASSWORD, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({ password }),
-        //     });
+        try {
+            const response = await fetch (VENT.RESET_PASSWORD, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, new_password: password }),
+            });
 
-        //     if (response.ok) {
-        //         setSnackbarMessage(data.message || 'Done!');
-        //         setSnackbarType('success');
-        //       } else {
-        //         setSnackbarMessage(data.error || 'Failed!');
-        //         setSnackbarType('error');
-        //       }
-        //     } catch (error) {
-        //       console.error('Error reseting password:', error);
-        //       setSnackbarMessage('An error occurred. Please try again.');
-        //       setSnackbarType('error');
-        //     } finally {
-        //       setOpen(true);
-        //       setResendLoading(false); 
-        //     }
+            const data = await response.json();
 
-        setSnackbarMessage('Token submitted');
-    setSnackbarType('success');
-    setOpen(true);
+            if (response.ok) {
+                setSnackbarMessage(data.message || 'Done!');
+                setSnackbarType('success');
+              } else {
+                setSnackbarMessage(data.error || 'Failed!');
+                setSnackbarType('error');
+              }
+            } catch (error) {
+              console.error('Error reseting password:', error);
+              setSnackbarMessage('An error occurred. Please try again.');
+              setSnackbarType('error');
+            } finally {
+              setOpen(true);
+              setResendLoading(false); 
+            }
+
+    //     setSnackbarMessage('Password reset successfuly!');
+    // setSnackbarType('success');
+    // setOpen(true);
     };
 
     useEffect(() => {
