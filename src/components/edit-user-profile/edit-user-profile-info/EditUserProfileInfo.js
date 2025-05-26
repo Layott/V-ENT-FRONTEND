@@ -10,6 +10,7 @@ import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
 
+
 const EditUserProfileInfo = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -87,7 +88,7 @@ const EditUserProfileInfo = () => {
 
     fetchUserProfile();
     
-    // Add a refresh when the component becomes visible again
+    
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         fetchUserProfile();
@@ -96,7 +97,7 @@ const EditUserProfileInfo = () => {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Clean up the event listener
+    
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -135,45 +136,60 @@ const EditUserProfileInfo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
-
+  
       console.log('SUBMIT - Current interests before sending to backend:', profileData.interests);
       
-      const formData = new FormData();
-      formData.append('login_session_token', profileData.login_session_token);
-      if (profileData.profile_pic) formData.append('profile_pic', profileData.profile_pic);
-      if (profileData.banner) formData.append('banner', profileData.banner);
-      formData.append('username', profileData.username);
-      formData.append('fullname', profileData.fullname);
-      formData.append('description', profileData.description);
-      formData.append('country', profileData.country);
-      
-      // Log the interests as they're being added to FormData
-      console.log('SUBMIT - Adding interests to FormData:', JSON.stringify(profileData.interests));
-      formData.append('interests', JSON.stringify(profileData.interests));
-      
-      // Debug FormData contents
-      console.log('SUBMIT - FormData entries:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
-
       try {
-        console.log('SUBMIT - Sending profile update to:', VENT.EDIT_PROFILE);
-        const response = await fetch(VENT.EDIT_PROFILE, {
+        // First API call: Send images as FormData
+        if (profileData.profile_pic || profileData.banner) {
+          const imageFormData = new FormData();
+          imageFormData.append('login_session_token', profileData.login_session_token);
+          if (profileData.profile_pic) imageFormData.append('profile_pic', profileData.profile_pic);
+          if (profileData.banner) imageFormData.append('banner', profileData.banner);
+          
+          console.log('SUBMIT - Sending images as FormData...');
+          const imageResponse = await fetch(VENT.EDIT_PROFILE, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              // Don't include Content-Type for FormData
+            },
+            body: imageFormData,
+          });
+          
+          if (!imageResponse.ok) {
+            const imageError = await imageResponse.json();
+            throw new Error(imageError.message || 'Failed to upload images');
+          }
+        }
+  
+        // Second API call: Send other data as JSON
+        const jsonData = {
+          login_session_token: profileData.login_session_token,
+          username: profileData.username,
+          fullname: profileData.fullname,
+          description: profileData.description,
+          country: profileData.country,
+          interests: profileData.interests,
+        };
+        
+        console.log('SUBMIT - Sending other data as JSON:', jsonData);
+        const dataResponse = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${sessionToken}`, // Don't include 'Content-Type'; FormData handles it.
+            Authorization: `Bearer ${sessionToken}`,
+            'Content-Type': 'application/json',
           },
-          body: formData,
+          body: JSON.stringify(jsonData),
         });
-
-        const data = await response.json();
+  
+        const data = await dataResponse.json();
         console.log('SUBMIT - Backend response:', data);
-
-        if (response.ok) {
+  
+        if (dataResponse.ok) {
           console.log('Updated profile with interests:', profileData.interests);
           router.push('/user-profile');
           setSnackbarMessage(data.message || 'Profile updated successfully!');
