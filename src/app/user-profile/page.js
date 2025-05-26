@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
 import Header from "@/components/header/Header";
@@ -69,6 +69,20 @@ const UserProfile = () => {
     return processed;
   };
 
+  // Function to handle session expiration and logout
+  const handleSessionExpiration = async () => {
+    console.log("Session expired or invalid, logging out...");
+    // Clear local storage data
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userProfilePicture");
+    
+    // Sign out from NextAuth
+    await signOut({ redirect: false });
+    
+    // Redirect to login page
+    router.push("/login");
+  };
+
   useEffect(() => {
     console.log("Current session status:", status);
     console.log("Session data:", session);
@@ -99,6 +113,13 @@ const UserProfile = () => {
             }
           });
           
+          // Check for unauthorized, token expired, or bad request responses
+          if (response.status === 401 || response.status === 403 || response.status === 400) {
+            console.log("Session expired, unauthorized, or bad request:", response.status);
+            await handleSessionExpiration();
+            return;
+          }
+          
           // If GET fails, try again with POST method
           if (response.status === 405) {
             console.log("GET method not allowed, trying POST...");
@@ -110,11 +131,24 @@ const UserProfile = () => {
               },
               body: JSON.stringify({ user_id: userId }),
             });
+            
+            // Check for unauthorized, token expired, or bad request responses
+            if (response.status === 401 || response.status === 403 || response.status === 400) {
+              console.log("Session expired, unauthorized, or bad request:", response.status);
+              await handleSessionExpiration();
+              return;
+            }
           }
           
           console.log("Profile response status:", response.status);
           
           if (!response.ok) {
+            // Handle 400 error by logging out user
+            if (response.status === 400) {
+              console.log("Bad request error (400), likely invalid or expired session");
+              await handleSessionExpiration();
+              return;
+            }
             // Try with Token prefix instead of Bearer
             console.log("Trying with Token prefix instead of Bearer");
             const tokenResponse = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
@@ -125,7 +159,20 @@ const UserProfile = () => {
               }
             });
             
+            // Check for unauthorized, token expired, or bad request responses
+            if (tokenResponse.status === 401 || tokenResponse.status === 403 || tokenResponse.status === 400) {
+              console.log("Session expired, unauthorized, or bad request:", tokenResponse.status);
+              await handleSessionExpiration();
+              return;
+            }
+            
             if (!tokenResponse.ok) {
+              // Handle 400 error by logging out user
+              if (tokenResponse.status === 400) {
+                console.log("Bad request error (400), likely invalid or expired session");
+                await handleSessionExpiration();
+                return;
+              }
               // Try with session_token as a query param
               console.log("Trying with session_token as query param");
               const tokenParamResponse = await fetch(
@@ -138,7 +185,20 @@ const UserProfile = () => {
                 }
               );
               
+              // Check for unauthorized, token expired, or bad request responses
+              if (tokenParamResponse.status === 401 || tokenParamResponse.status === 403) {
+                console.log("Session expired or unauthorized:", tokenParamResponse.status);
+                await handleSessionExpiration();
+                return;
+              }
+              
               if (!tokenParamResponse.ok) {
+                // Handle 400 error by logging out user
+                if (tokenParamResponse.status === 400) {
+                  console.log("Bad request error (400), likely invalid or expired session");
+                  await handleSessionExpiration();
+                  return;
+                }
                 throw new Error(`Failed to fetch profile: ${tokenParamResponse.status}`);
               }
               
@@ -155,6 +215,18 @@ const UserProfile = () => {
           
         } catch (err) {
           console.error("Final error:", err.message);
+          
+          // Check if error is related to authentication/authorization or bad request
+          if (err.message.includes("401") || 
+              err.message.includes("403") || 
+              err.message.includes("400") ||
+              err.message.includes("unauthorized") || 
+              err.message.includes("token") || 
+              err.message.includes("expired")) {
+            await handleSessionExpiration();
+            return;
+          }
+          
           setError(err.message);
         } finally {
           setLoading(false);
@@ -172,6 +244,18 @@ const UserProfile = () => {
       try {
         const data = JSON.parse(responseText);
         console.log("Parsed data:", data);
+        
+        // Check for error status or messages indicating session expiration
+        if (data.status === "error" || data.error) {
+          const errorMsg = data.message || data.error || "";
+          if (errorMsg.toLowerCase().includes("token") || 
+              errorMsg.toLowerCase().includes("expired") || 
+              errorMsg.toLowerCase().includes("session") ||
+              errorMsg.toLowerCase().includes("auth")) {
+            handleSessionExpiration();
+            return;
+          }
+        }
         
         // Try different data structures
         const rawUserData =
@@ -313,6 +397,13 @@ const UserProfile = () => {
           body: JSON.stringify({ user_id: userId }),
         });
 
+        // Check for token expiration or bad request during refresh
+        if (response.status === 401 || response.status === 403 || response.status === 400) {
+          console.log("Session expired or invalid during refresh:", response.status);
+          await handleSessionExpiration();
+          return;
+        }
+
         if (!response.ok) {
           throw new Error(`Failed to refresh user data: ${response.status}`);
         }
@@ -322,6 +413,18 @@ const UserProfile = () => {
 
         const data = JSON.parse(responseText);
         console.log("Profile refresh parsed data:", data);
+
+        // Check for error messages indicating expired token
+        if (data.status === "error" || data.error) {
+          const errorMsg = data.message || data.error || "";
+          if (errorMsg.toLowerCase().includes("token") || 
+              errorMsg.toLowerCase().includes("expired") || 
+              errorMsg.toLowerCase().includes("session") ||
+              errorMsg.toLowerCase().includes("auth")) {
+            await handleSessionExpiration();
+            return;
+          }
+        }
 
         const rawUserData =
           data.data || data.user || (data.status === "success" ? data : null);
@@ -343,6 +446,17 @@ const UserProfile = () => {
         }
       } catch (error) {
         console.error("Error refreshing user data:", error);
+        
+        // Check if error is related to authentication or bad request
+        if (error.message.includes("401") || 
+            error.message.includes("403") || 
+            error.message.includes("400") ||
+            error.message.includes("unauthorized") || 
+            error.message.includes("token") || 
+            error.message.includes("expired")) {
+          await handleSessionExpiration();
+          return;
+        }
       } finally {
         setLoading(false);
       }
@@ -410,6 +524,13 @@ const UserProfile = () => {
           body: formData,
         });
 
+        // Check for token expiration or bad request
+        if (response.status === 401 || response.status === 403 || response.status === 400) {
+          console.log("Session expired or invalid during banner update:", response.status);
+          await handleSessionExpiration();
+          return null;
+        }
+
         if (!response.ok) {
           throw new Error("Failed to upload banner");
         }
@@ -445,6 +566,16 @@ const UserProfile = () => {
       } catch (error) {
         console.error("Error uploading banner:", error);
         
+        // Check if error is related to authentication or bad request
+        if (error.message.includes("401") || 
+            error.message.includes("403") || 
+            error.message.includes("400") ||
+            error.message.includes("unauthorized") || 
+            error.message.includes("token") || 
+            error.message.includes("expired")) {
+          await handleSessionExpiration();
+          return null;
+        }
       } finally {
         setLoading(false);
       }
@@ -464,7 +595,7 @@ const UserProfile = () => {
   if (!userData)
     return (
       <div className={profileStyles.errorContainer}>
-        No user data available!
+        Please login again!
       </div>
     );
 
@@ -488,6 +619,13 @@ const UserProfile = () => {
         },
         body: formData,
       });
+
+      // Check for token expiration or bad request
+      if (uploadResponse.status === 401 || uploadResponse.status === 403 || uploadResponse.status === 400) {
+        console.log("Session expired or invalid during profile picture update:", uploadResponse.status);
+        await handleSessionExpiration();
+        return null;
+      }
 
       if (!uploadResponse.ok) {
         throw new Error(`Upload failed with status ${uploadResponse.status}`);
@@ -535,6 +673,18 @@ const UserProfile = () => {
       }
     } catch (error) {
       console.error("Profile picture update failed:", error);
+      
+      // Check if error is related to authentication or bad request
+      if (error.message.includes("401") || 
+          error.message.includes("403") || 
+          error.message.includes("400") ||
+          error.message.includes("unauthorized") || 
+          error.message.includes("token") || 
+          error.message.includes("expired")) {
+        await handleSessionExpiration();
+        return null;
+      }
+      
       throw error;
     }
   };
@@ -590,7 +740,9 @@ const UserProfile = () => {
               className={`${styles.tabBTN} ${
                 activeTab === "activity" ? styles.activeTab : ""
               }`}
-              onClick={() => setActiveTab("activity")}
+              // onClick={() => setActiveTab("activity")}
+              style={{color: "gray", cursor: "not-allowed"}}
+              
             >
               Activity
             </button>

@@ -32,7 +32,11 @@ const UserProfileFavouriteGames = () => {
   
   const handleSeeMoreAndLess = () => {
     setShowAll(prevState => !prevState);
-    setVisibleGames(prevState => (prevState === favouriteGameList.length ? 6 : favouriteGameList.length))
+    if (showAll) {
+      setVisibleGames(6);
+    } else {
+      setVisibleGames(favouriteGameList.length);
+    }
   }
   
   return (
@@ -50,29 +54,34 @@ const UserProfileFavouriteGames = () => {
           </button>
         </div>
 
-        <div className={profileStyles.gameOrAchievementContainer}>
-          <div className={`${profileStyles.gameOrAchievementCard} ${styles.addFavouriteGameCard}`}>
-              <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
-                  <span className={styles.plusIcon}><FiPlus /></span>
-                  <span className={styles.addGameText}>Add Game</span>
-              </div>
-          </div>
-          {favouriteGameList.slice(0, visibleGames).map((favouriteGame, index) => (
-            <div key={index} className={`${profileStyles.gameOrAchievementCard}`}>
-                <div className={profileStyles.gameOrAchievementImageContainer}>
-                  <Image
-                    src={favouriteGame.src}
-                    alt={favouriteGame.name}
-                    className={profileStyles.gameOrAchievementImage}
-                  />
-                  <p className={profileStyles.gameOrAchievementName}>{favouriteGame.name}</p>
-                </div>     
+        <div className={styles.gamesWrapper}>
+          <div className={`${profileStyles.gameOrAchievementContainer} ${styles.blurredContainer}`}>
+            <div className={`${profileStyles.gameOrAchievementCard} ${styles.addFavouriteGameCard}`}>
+                <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
+                    <span className={styles.plusIcon}><FiPlus /></span>
+                    <span className={styles.addGameText}>Add Game</span>
+                </div>
             </div>
-          ))}        
+            {favouriteGameList.slice(0, visibleGames).map((favouriteGame, index) => (
+              <div key={`game-${index}-${favouriteGame.name}`} className={`${profileStyles.gameOrAchievementCard}`}>
+                  <div className={profileStyles.gameOrAchievementImageContainer}>
+                    <Image
+                      src={favouriteGame.src}
+                      alt={favouriteGame.name}
+                      className={profileStyles.gameOrAchievementImage}
+                    />
+                    <p className={profileStyles.gameOrAchievementName}>{favouriteGame.name}</p>
+                  </div>     
+              </div>
+            ))}        
+          </div>
+          <div className={styles.notAvailableOverlay}>
+            <span>Coming soon</span>
+          </div>
         </div>
 
     </div>
   )
 }
 
-export default UserProfileFavouriteGames
+export default UserProfileFavouriteGames;

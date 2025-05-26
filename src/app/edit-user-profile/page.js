@@ -65,15 +65,19 @@ const EditUserProfile = () => {
               <button
                 className={`${editProfileStyles.tabBTN} ${activeTab === 'favourite-games' ? editProfileStyles.activeTab : ''}`}
                 onClick={() => setActiveTab('favourite-games')}
+                disabled={true}
+                style={{ cursor: 'not-allowed', color: 'gray' }}  
               >
-                Favourite Games {activeTab === "favourite-games" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
+                Favourite Games <span style={{ marginLeft: 'auto', fontSize: '0.675rem', opacity: 0.7, backgroundColor:'rgba(251, 198, 75, 0.24)',padding:'3px' ,borderRadius:'2px'  }}>Coming Soon</span> {activeTab === "favourite-games" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
               </button>
 
               <button
                 className={`${editProfileStyles.tabBTN} ${activeTab === 'gaming-accounts' ? editProfileStyles.activeTab : ''}`}
                 onClick={() => setActiveTab('gaming-accounts')}
+                disabled={true}
+                style={{ cursor: 'not-allowed', color: 'gray' }}
               >
-                Gaming Accounts {activeTab === "gaming-accounts" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
+                Gaming Accounts <span style={{ marginLeft: 'auto', fontSize: '0.675rem', opacity: 0.7, cursor: 'not-allowed',backgroundColor:'rgba(251, 198, 75, 0.24)', padding:'3px' ,borderRadius:'2px' }}>Coming Soon</span> {activeTab === "gaming-accounts" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
               </button>
 
               <button
