@@ -41,8 +41,8 @@ const Sidebar = ({ customClass }) => {
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
-                <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
-                    <Link href={'/'} className={styles.iconTextLink}>
+                <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
+                    <Link href={'/user-profile'} className={styles.iconTextLink}>
                         <BiHomeCircle className={styles.sidebarIcon} /> Home
                     </Link>
                 </li>
@@ -59,7 +59,7 @@ const Sidebar = ({ customClass }) => {
                     </Link>
                 </li>
                 
-                <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
                         <FaTv className={styles.sidebarIcon} /> Anime
                     </Link>
@@ -72,7 +72,8 @@ const Sidebar = ({ customClass }) => {
                 </li>
                 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
-                    <Link href={'/teams'} className={styles.iconTextLink}>
+                
+                    <Link href={''} className={styles.iconTextLink}>
                         <FaUsers className={styles.sidebarIcon} /> Teams
                     </Link>
                 </li>
@@ -81,6 +82,30 @@ const Sidebar = ({ customClass }) => {
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         <IoWalletOutline className={styles.sidebarIcon} /> Wallets
                     </Link>
+                </li> */}
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><FaTv className={styles.sidebarIcon} /> Anime</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                </li>
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><PiRankingBold className={styles.sidebarIcon} /> Ranking</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                </li>
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><FaUsers className={styles.sidebarIcon} /> Teams</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                </li>
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><IoWalletOutline className={styles.sidebarIcon} /> Wallets</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
                 </li>
                             
                 <li className={styles.sidebarItem}>
@@ -96,12 +121,18 @@ const Sidebar = ({ customClass }) => {
                         <span className={styles.comingSoon}>Coming Soon</span>
                     </span>
                 </li>
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><MdOutlineSettings className={styles.sidebarIcon} /> Settings</span>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                    </span>
+                </li>
             
-                <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
                         <MdOutlineSettings className={styles.sidebarIcon} /> Settings
                     </Link>
-                </li>
+                </li> */}
             </ul>
         </nav>
     </div>

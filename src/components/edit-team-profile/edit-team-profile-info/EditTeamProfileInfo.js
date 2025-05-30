@@ -11,11 +11,30 @@ import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
 
+// Improved utility function to parse interests from backend format
+const parseInterests = (interestsString) => {
+  if (!interestsString) return [];
+  console.log("Parsing interests string:", interestsString);
+  try {
+    // Handle case where it's already an array
+    if (Array.isArray(interestsString)) {
+      return interestsString;
+    }
+    
+    // Parse string representation
+    const parsed = JSON.parse(interestsString);
+    console.log("Parsed interests:", parsed);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.error("Failed to parse interests:", e, "Original string:", interestsString);
+    return [];
+  }
+};
+
 const EditTeamProfileInfo = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [profileData, setProfileData] = useState({
-    // login_session_token: '',
     profile_pic: null,
     banner: null,
     username: '',
@@ -24,7 +43,8 @@ const EditTeamProfileInfo = () => {
     country: '',
     interests: [],
   });
-
+  
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
@@ -38,8 +58,55 @@ const EditTeamProfileInfo = () => {
         ...prevData,
         login_session_token: sessionToken,
       }));
+      
+      // Load initial profile data if not already loaded
+      if (!initialLoaded) {
+        fetchUserProfile(sessionToken);
+      }
     }
-  }, [session, status]);
+  }, [session, status, initialLoaded]);
+  
+  // Function to fetch user profile data including interests
+  const fetchUserProfile = async (sessionToken) => {
+    try {
+      console.log("Fetching user profile...");
+      const response = await fetch(VENT.GET_PROFILE, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("PROFILE - Received raw profile data:", data);
+        
+        // Parse interests from the backend format
+        let parsedInterests = [];
+        if (data.data && data.data.interests) {
+          parsedInterests = parseInterests(data.data.interests);
+          console.log("PROFILE - Parsed interests from profile:", parsedInterests);
+        }
+        
+        // Update profile data with fetched data
+        setProfileData(prevData => ({
+          ...prevData,
+          username: data.data?.username || '',
+          fullname: data.data?.fullname || '',
+          description: data.data?.description || '',
+          country: data.data?.country || '',
+          interests: parsedInterests,
+        }));
+        
+        setInitialLoaded(true);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,6 +117,7 @@ const EditTeamProfileInfo = () => {
   };
 
   const handleInterestsChange = (newInterests) => {
+    console.log("Interests changed to:", newInterests);
     setProfileData((prevData) => ({
       ...prevData,
       interests: newInterests,
@@ -77,52 +145,113 @@ const EditTeamProfileInfo = () => {
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
 
-      const formData = new FormData();
-      formData.append('login_session_token', profileData.login_session_token);
-      if (profileData.profile_pic) formData.append('profile_pic', profileData.profile_pic);
-      if (profileData.banner) formData.append('banner', profileData.banner);
-      formData.append('username', profileData.username);
-      formData.append('fullname', profileData.fullname);
-      formData.append('description', profileData.description);
-      formData.append('country', profileData.country);
-      formData.append('interests', JSON.stringify(profileData.interests));
-
-
       try {
+        console.log("SUBMIT - Current interests before sending to backend:", profileData.interests);
+        
+        // APPROACH 1: Try with direct URL parameters
+        // Create query string for interests
+        const interestsQuery = encodeURIComponent(JSON.stringify(profileData.interests));
+        
+        // Create the request data
+        const formData = new FormData();
+        formData.append('login_session_token', session.user.sessionToken);
+        if (profileData.profile_pic) formData.append('profile_pic', profileData.profile_pic);
+        if (profileData.banner) formData.append('banner', profileData.banner);
+        formData.append('username', profileData.username || '');
+        formData.append('fullname', profileData.fullname || '');
+        formData.append('description', profileData.description || '');
+        formData.append('country', profileData.country || '');
+        
+        // Try a direct string approach
+        const stringifiedInterests = JSON.stringify(profileData.interests);
+        console.log("SUBMIT - Stringified interests being sent:", stringifiedInterests);
+        formData.append('interests', stringifiedInterests);
+        
+        // Also try a more explicit approach
+        formData.append('interests_array', stringifiedInterests);
+        
+        // Debug the interests data
+        console.log("SUBMIT - Interests array length:", profileData.interests.length);
+        console.log("SUBMIT - Interests array content type:", typeof profileData.interests);
+        console.log("SUBMIT - Stringified interests type:", typeof stringifiedInterests);
+        
+        // Debug FormData entries
+        console.log("SUBMIT - FormData entries:");
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
+        
+        // Create URL with query params for interests
+        const urlWithParams = `${VENT.EDIT_PROFILE}?interests_query=${interestsQuery}`;
+        
+        console.log("SUBMIT - Sending profile update to:", VENT.EDIT_PROFILE);
+        
+        // Also prepare JSON for alternative approach
+        const plainObj = {
+          login_session_token: session.user.sessionToken,
+          username: profileData.username || '',
+          fullname: profileData.fullname || '',
+          description: profileData.description || '',
+          country: profileData.country || '',
+          interests: profileData.interests // Direct array
+        };
+        console.log("SUBMIT - Plain object alternatives:", plainObj);
+        
+        // Log URL with params approach
+        console.log("SUBMIT - URL with interests param:", urlWithParams);
+
+        // APPROACH 2: Try with FormData first
         const response = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${sessionToken}`, // Don't include 'Content-Type'; FormData handles it.
+            Authorization: `Bearer ${sessionToken}`,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
           },
           body: formData,
         });
 
         const data = await response.json();
+        console.log("SUBMIT - Backend response:", data);
 
         if (response.ok) {
-          router.push('/user-profile');
-          setSnackbarMessage(data.message || 'Profile updated successfully!');
-          setSnackbarType('success');
-          setProfileData({
-            login_session_token: '',
-            profile_pic: null,
-            banner: null,
-            username: '',
-            fullname: '',
-            description: '',
-            country: '',
-            interests: [],
-          });
+          // CRITICAL: Verify if the interests were actually updated
+          if (data && data.data && data.data.interests) {
+            console.log("Updated profile with interests:", data.data.interests);
+            
+            // Check if returned interests match what we sent
+            const sentInterests = JSON.stringify(profileData.interests);
+            const receivedInterests = JSON.stringify(data.data.interests);
+            
+            if (sentInterests !== receivedInterests) {
+              console.error("WARNING: Interests mismatch between sent and received data!");
+              console.error(`Sent: ${sentInterests}, Received: ${receivedInterests}`);
+            }
+          }
+          
+          // CRITICAL: After successful update, force a fresh fetch of profile data
+          await fetchUserProfile(sessionToken);
+          
+          // Delay navigation slightly to ensure fetch completes
+          setTimeout(() => {
+            router.push('/user-profile');
+            setSnackbarMessage(data.message || 'Profile updated successfully!');
+            setSnackbarType('success');
+            setOpen(true);
+          }, 1000);
         } else {
           setSnackbarMessage(data.message || 'Failed to update profile.');
           setSnackbarType('error');
+          setOpen(true);
         }
-        setOpen(true);
       } catch (error) {
         console.error('Error updating profile:', error);
         setSnackbarMessage('An error occurred while updating your profile.');
         setSnackbarType('error');
         setOpen(true);
+      } finally {
+        setLoading(false);
       }
     }
   };

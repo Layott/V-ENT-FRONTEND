@@ -38,38 +38,45 @@ const UserProfileAchievements = () => {
 
   
   return (
-    <div className={`${profileStyles.achievementsContainer} ${profileStyles.middleLayerColor}`}>
-      <div className={profileStyles.achievementsHeader}>
-        <h4 className={profileStyles.profileH4Header}>
-            <GrTrophy className={profileStyles.achievementsIcon} />Achievements ({achievementsList.length})
-        </h4>
-        <button
-          className={profileStyles.seeMoreBTN}
-          onClick={handleSeeMoreAndLess}
-        >
-          {showAll ? 'See less' : 'See more'}
-          {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} /> }
-        </button>
+    <div className={`${profileStyles.achievementsContainer} ${profileStyles.middleLayerColor}`} style={{ position: 'relative' }}>
+      
+        <div className={profileStyles.achievementsHeader}>
+          <h4 className={profileStyles.profileH4Header}>
+              <GrTrophy className={profileStyles.achievementsIcon} />Achievements ({achievementsList.length})
+          </h4>
+          <button
+            className={profileStyles.seeMoreBTN}
+            onClick={handleSeeMoreAndLess}
+          >
+            {showAll ? 'See less' : 'See more'}
+            {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} /> }
+          </button>
+        </div>
+
+        <div className={profileStyles.blurredContainer}>
+
+        <div className={profileStyles.gameOrAchievementContainer}>
+          {achievementsList.slice(0, visibleGames).map((achievement, index) => (
+            <div key={index} className={`${profileStyles.gameOrAchievementCard} ${profileStyles.achievementCard}`}>
+                <div className={`${profileStyles.gameOrAchievementImageContainer} ${profileStyles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
+                  <Image
+                    src={achievement.src}
+                    alt={achievement.name}
+                    className={`${profileStyles.gameOrAchievementImage} ${profileStyles.achievementImage}`}
+                  />
+                </div>
+                <p className={profileStyles.gameOrAchievementName}>{achievement.name}</p>     
+            </div>
+
+          ))}        
+        </div>
       </div>
-
-      <div className={profileStyles.gameOrAchievementContainer}>
-        {achievementsList.slice(0, visibleGames).map((achievement, index) => (
-          <div key={index} className={`${profileStyles.gameOrAchievementCard} ${profileStyles.achievementCard}`}>
-              <div className={`${profileStyles.gameOrAchievementImageContainer} ${profileStyles.achievementImageContainer} ${profileStyles.topMostLayerColor}`}>
-                <Image
-                  src={achievement.src}
-                  alt={achievement.name}
-                  className={`${profileStyles.gameOrAchievementImage} ${profileStyles.achievementImage}`}
-                />
-              </div>
-              <p className={profileStyles.gameOrAchievementName}>{achievement.name}</p>     
-          </div>
-        ))}        
+      
+      <div className={profileStyles.notAvailableOverlay}>
+        <span>Coming soon</span>
       </div>
-
-
     </div>
   )
 }
 
-export default UserProfileAchievements
+export default UserProfileAchievements;
