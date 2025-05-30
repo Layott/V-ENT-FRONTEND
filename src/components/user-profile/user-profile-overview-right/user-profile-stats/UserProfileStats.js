@@ -16,22 +16,22 @@ const UserProfileStats = () => {
                     <h5 className={profileStyles.profileH5Header}>Ranking</h5>
                     <p className={profileStyles.viewTable}>View Table</p>
                 </div>
-                <p className={profileStyles.profileDetailValue}>#1123</p>
+                <p className={profileStyles.profileDetailValue}>#0</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Tournament played</h5>
-                <p className={profileStyles.profileDetailValue}>24</p>
+                <p className={profileStyles.profileDetailValue}>0</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Wins</h5>
-                <p className={profileStyles.profileDetailValue}>22</p>
+                <p className={profileStyles.profileDetailValue}>0</p>
             </div>
 
             <div className={`${profileStyles.statsDetails} ${profileStyles.topMostLayerColor}`}>
                 <h5 className={profileStyles.profileH5Header}>Losses</h5>
-                <p className={profileStyles.profileDetailValue}>4</p>
+                <p className={profileStyles.profileDetailValue}>0</p>
             </div>
 
         </div>
