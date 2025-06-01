@@ -503,7 +503,25 @@
     padding: 1rem;
     border-radius: 10px;
     gap: 1.5rem;
-    
+  position: relative;
+}
+.notAvailableOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 24px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none; 
+}
+
+.blurredContainer {
+  filter: blur(5px);    
 }
 
 .membersHeader,
@@ -702,15 +720,11 @@
     border-radius: 50%;
 }
 
-
-
-
-
-
-
-
-
-
+.loginBTN {
+    border-radius: 5px;
+    width: 80px;
+    background-color: var(--v-ent-red);
+}
 
 
 @media only screen and (min-width: 550px) {
@@ -781,6 +795,13 @@
         font-size: 1.25rem;
         padding: 1.25rem;
     }    
+
+    .loginBTN {
+        font-size: 1rem;
+        min-width: 90px;
+        width: 90px;
+        max-width: 90px;
+    }
 }
 
 @media only screen and (min-width: 1024px) {
