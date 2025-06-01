@@ -5,6 +5,7 @@ import landingStyles from '@/styles/landing/landing.module.css'
 import styles from './join-thousands-gamers.module.css'
 import axios from 'axios';
 import React, { useState } from 'react';
+import Link from 'next/link';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -82,13 +83,12 @@ const JoinThousandsGamers = () => {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
-                  <button
-                    type="submit"
-                    className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                    disabled={loading}  // Disable button while loading 
-                  >
-                    {loading ? <CircularProgress size={12} color="inherit" /> : 'Join the waitlist'}
-                  </button>
+                  <Link
+                      href={'/login'}
+                      className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                    >
+                    Login
+                  </Link>
                 </form>
               </div>
             </div>
