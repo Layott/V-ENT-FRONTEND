@@ -3,10 +3,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import styles from './email-verified.module.css';
 import CircularProgress from '@mui/material/CircularProgress';
-// import MessageSnackbar from '../../../components/Snackbar/MessageSnackbar';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
-import { VENTT } from "c:/Users/Chinedu/Desktop/Projects/V-ENT-FRONTEND/src/constants/vent";
+import { VENTT } from '@/constants/vent';
 
 const EmailVerified = () => {
   const params = useParams(); 
@@ -14,7 +13,7 @@ const EmailVerified = () => {
   const key = params?.key;
   const value = params?.value;
 
-  // const token = status && status.length >= 5 ? status[4] : null;
+  
 
   const [resendLoading, setResendLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,11 +24,7 @@ const EmailVerified = () => {
   const [snackbarType, setSnackbarType] = useState('success');
 
   
-  // useEffect(() => {
-  //   if (token) {
-  //     verifyToken(token);
-  //   }
-  // }, [token]);
+  
   useEffect(() => {
     // For a route like /email-verified/1234/abcd
     const keys = Object.values(params);
@@ -53,17 +48,15 @@ const EmailVerified = () => {
         },
       });
 
+//       console.log('URL:', `${VENTT.EMAIL_VERIFICATION}/${key}/${value}`);
+// console.log('Response status:', response.status);
+// const text = await response.text();
+// console.log('Raw response:', text);
+
+
       const data = await response.json();
 
-    //   if (data.success) {
-    //     setVerificationStatus("success");
-    //   } else {
-    //     setVerificationStatus("error");
-    //   }
-    // } catch (error) {
-    //   console.error('Error verifying token:', error);
-    //   setVerificationStatus("error");
-    // }
+    
 
     if (response.ok) {
       setVerificationStatus('success');
@@ -84,17 +77,6 @@ const EmailVerified = () => {
   }
 };
 
-  // const handleAction = () => {
-  //   setResendLoading(true);
-
-  //   setTimeout(() => {
-  //     if (verificationStatus === "success") {
-  //       router.push('/login');
-  //     } else if (verificationStatus === "error") {
-  //       router.push('/verify-email');
-  //     }
-  //   }, 1000);
-  // };
 
   const handleAction = () => {
     if (verificationStatus === 'success') {
@@ -109,6 +91,9 @@ const EmailVerified = () => {
 
     const storedSignupData = JSON.parse(localStorage.getItem('signupData'));
 
+    console.log('Email used for resend:', storedSignupData.email);
+
+
     if (!storedSignupData) {
       setSnackbarMessage('No signup data found. Please try signing up again.');
       setSnackbarType('error');
@@ -118,7 +103,7 @@ const EmailVerified = () => {
     }
 
     try {
-      const response = await fetch(VENT.SIGNUP, {
+      const response = await fetch(VENT.RESEND_LINK, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,6 +112,9 @@ const EmailVerified = () => {
       });
 
       const data = await response.json();
+
+      console.log('RESEND LINK URL:', VENT.RESEND_LINK);
+
 
       if (response.ok) {
         setSnackbarMessage(data.message || 'Verification email sent!');
