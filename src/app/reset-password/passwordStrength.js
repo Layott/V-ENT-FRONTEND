@@ -24,7 +24,7 @@ const PasswordStrength = ({ password }) => {
 
             {!allValid && (
                 <p className={styles.errorMessage}>
-                    Password doesn't fit required criteria
+                    Password doesn&apos;t fit required criteria
                 </p>
             )}
         </div>
