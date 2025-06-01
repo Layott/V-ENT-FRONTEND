@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import topLeftAnimeHub from '@/images/top_left_2.jpg'
 import topRightAnimeHub from '@/images/top_right_2.jpg'
@@ -69,11 +70,12 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                     V-ENT isn&#39;t just about gaming. Explore anime features like manga uploads, collaborative viewing, and even official anime character battles. Engage with other fans, upload your own work, or vote on fan-favorite AMVs—there&#39;s something for every anime lover.
                     </p>
 
-                    <button
-                        className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                        onClick={scrollToForm}
-                    >
-                        Join the waitlist</button>
+                    <Link
+                        href={'/login'}
+                        className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                        >
+                        Login
+                    </Link>
                 </div>
 
             </div>
