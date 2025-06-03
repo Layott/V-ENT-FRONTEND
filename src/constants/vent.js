@@ -9,6 +9,6 @@ export {handler as GET, handler as POST}
 const BASE_URL = 'https://vermillionent.pythonanywhere.com';
 
 export const VENTT = {
-    EMAIL_VERIFICATION: `${BASE_URL}/api/auth/verify`, 
+    EMAIL_VERIFICATION: `${BASE_URL}/auth/verify`, 
   };
   
