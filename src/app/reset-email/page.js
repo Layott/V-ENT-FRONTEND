@@ -138,7 +138,7 @@ const ResetEmail = () => {
 
           </form>
               <div className={generalStyles.formHelperContainer}>
-                  <p>Didn't get the code?&nbsp;<Link href={'/forgot-password'}>Resend Code</Link></p>
+                  <p>Didn&apos;t get the code?&nbsp;<Link href={'/forgot-password'}>Resend Code</Link></p>
               </div>
 
               <div className={generalStyles.formHelperContainer}>

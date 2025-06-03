@@ -152,7 +152,7 @@ const Login = () => {
             </button>
           </form>
 
-          <div className={generalStyles.alternativeAuthContainer}>
+          {/* <div className={generalStyles.alternativeAuthContainer}>
             <p>Or sign in with</p>
             <div className={generalStyles.logoContainer}>
               <Image
@@ -172,7 +172,7 @@ const Login = () => {
                 }
               />
             </div>
-          </div>
+          </div> */}
 
           <div className={generalStyles.formHelperContainer}>
             <p>Don&#39;t have an account?&nbsp;</p>

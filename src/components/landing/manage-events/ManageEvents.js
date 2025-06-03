@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import manageEvents from '@/images/manage_events.webp'
 import profileStyles from '@/styles/profile/profile-page.module.css'
@@ -45,11 +46,12 @@ const ManageEvents = ({ scrollToForm }) => {
                 Host gaming events or anime screenings with ease using our powerful event management tools. From ticketing to attendee tracking, V-ENT empowers you to organize memorable events for your audience.
               </p>
 
-              <button
-                className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                onClick={scrollToForm}
-              >
-                Join the waitlist</button>
+              <Link
+                  href={'/login'}
+                  className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                >
+                  Login
+              </Link>
             </div>
 
           </div>

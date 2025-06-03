@@ -1,6 +1,7 @@
 "use client"
 
 import Image from 'next/image'
+import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import counterStrikeCard from '@/images/counter_strike_card.webp'
 import fifaCard from '@/images/fifa_card.webp'
@@ -35,11 +36,12 @@ const AutomatedTournaments = ({ scrollToForm }) => {
                             Compete in exciting, automated tournaments for your favorite games. From registration to scoring, our AI-driven system ensures smooth management and real-time updates so you can focus on winning.
                         </p>
 
-                        <button
-                            className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                            onClick={scrollToForm}
-                        >
-                            Join the waitlist</button>
+                        <Link
+                            href={'/login'}
+                                className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                            >
+                            Login
+                        </Link>
                     </div>
                 </div>
             </div>

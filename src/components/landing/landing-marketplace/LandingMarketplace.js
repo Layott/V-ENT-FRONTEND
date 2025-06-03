@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import marketPlaceLeft from '@/images/market_place_left.png'
 import marketPlaceRight from '@/images/market_place_right.png'
@@ -34,11 +35,12 @@ const LandingMarketplace = ({ scrollToForm }) => {
                             Explore Vermillion City, our exclusive marketplace for buying, selling, or trading game accounts, virtual items, and anime merchandise. Whether it’s rare in-game gear or collectibles, you’ll find it here.
                         </p>
 
-                        <button
-                            className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                            onClick={scrollToForm}
-                        >
-                            Join the waitlist</button>
+                        <Link
+                            href={'/login'}
+                            className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                            >
+                            Login
+                        </Link>
                     </div>
                 </div>
             </div>
