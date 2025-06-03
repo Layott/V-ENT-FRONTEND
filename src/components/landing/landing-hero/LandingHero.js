@@ -100,13 +100,12 @@ const LandingHero = ({ formRef }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <button
-                    type="submit"
-                    className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN} ${styles.waitlistBTN}`}
-                    disabled={loading}  
-                  >
-                    {loading ? <CircularProgress size={12} color="inherit" /> : 'Join the waitlist'}
-                  </button>
+                  <Link
+                    href={'/login'}
+                      className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                    >
+                    Login
+                  </Link>
                 </form>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import circledShirt from '@/images/circled_shirt.png';
 import observerStyle from '@/styles/intersection/intersection.module.css'
@@ -32,11 +33,12 @@ const LandingShop = ({ scrollToForm }) => {
                         Find everything from gaming equipment to anime merchandise in our V-ENT shop. Enjoy exclusive deals, digital items, and fast shipping so you never miss out on the latest gear.
                     </p>
 
-                    <button
-                        className={`${profileStyles.waitlistBTN} ${landingStyles.waitlistBTN}`}
-                        onClick={scrollToForm}
-                    >
-                        Join the waitlist</button>
+                    <Link
+                        href={'/login'}
+                        className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                        >
+                        Login
+                    </Link>
                 </div>
 
             </div>

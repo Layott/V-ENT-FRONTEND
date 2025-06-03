@@ -709,6 +709,12 @@
   border-radius: 50%;
 }
 
+.loginBTN {
+  border-radius: 5px;
+  width: 80px;
+  background-color: var(--v-ent-red);
+}
+
 @media only screen and (min-width: 550px) {
   .tournamentsEventsFilterSearchContainer {
     width: 100%;
@@ -761,6 +767,12 @@
   .errorContainer {
     font-size: 1.25rem;
     padding: 1.25rem;
+  }
+  .loginBTN {
+    font-size: 1rem;
+    min-width: 90px;
+    width: 90px;
+    max-width: 90px;
   }
 }
 @media only screen and (min-width: 1024px) {
