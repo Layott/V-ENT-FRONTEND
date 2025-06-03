@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import { VENTT } from '@/constants/vent';
+import { signOut } from "next-auth/react";
 
 const EmailVerified = () => {
   const params = useParams(); 
@@ -48,17 +49,9 @@ const EmailVerified = () => {
         },
       });
 
-//       console.log('URL:', `${VENTT.EMAIL_VERIFICATION}/${key}/${value}`);
-// console.log('Response status:', response.status);
-// const text = await response.text();
-// console.log('Raw response:', text);
-
-
       const data = await response.json();
 
-    
-
-    if (response.ok) {
+     if (response.ok) {
       setVerificationStatus('success');
     } else {
       setVerificationStatus('error');
@@ -77,8 +70,8 @@ const EmailVerified = () => {
   }
 };
 
-
-  const handleAction = () => {
+  const handleAction = async () => {
+    await signOut({ redirect: false });
     if (verificationStatus === 'success') {
       router.push('/login');
     } else {
