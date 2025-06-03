@@ -27,7 +27,7 @@ const VerifyEmail = () => {
     }
 
     try {
-      const response = await fetch(VENT.SIGNUP, {
+      const response = await fetch(VENT.RESEND_LINK, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
