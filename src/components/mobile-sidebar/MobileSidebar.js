@@ -44,12 +44,14 @@ const MobileSidebar = ({ isOpen }) => {
                         Events <MdOutlineEvent className={styles.sidebarIcon} />
                     </Link>
                 </li>
-                
+                {/* 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
                         Animne <FaTv className={styles.sidebarIcon} />
                     </Link>
                 </li>
+                
+                
                 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
@@ -67,7 +69,36 @@ const MobileSidebar = ({ isOpen }) => {
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         Wallets <IoWalletOutline className={styles.sidebarIcon} />
                     </Link>
+                </li> */}
+
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Anime <FaTv className={styles.sidebarIcon} /> </span>
+                    </span>
                 </li>
+                 
+                 <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Ranking <PiRankingBold className={styles.sidebarIcon} /> </span>
+                    </span>
+                </li>
+
+                 <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Team <FaUsers className={styles.sidebarIcon} /></span>
+                    </span>
+                </li>
+
+                 <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Wallet <IoWalletOutline className={styles.sidebarIcon} /></span>
+                    </span>
+                </li>
+
                             
                 <li className={styles.sidebarItem}>
                     <span className={styles.disabledLink}>

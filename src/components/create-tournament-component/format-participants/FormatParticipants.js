@@ -5,10 +5,9 @@ import Participants from "./participants/Participants";
 import TournamentRules from "./tournament-rules/TournamentRules";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-
-const FormatParticipants = ({ setSelectedTab }) => {
-  // Function to handle form data updates and localStorage sync
-   const [formData, setFormData] = useState({});
+const FormatParticipants = ({ setSelectedTab, updateLocalStorage }) => {
+  const [formData, setFormData] = useState({});
+  
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
     if (savedData) {
@@ -17,18 +16,21 @@ const FormatParticipants = ({ setSelectedTab }) => {
   }, []);
 
   const updateFormData = (key, value) => {
-    // Get the current data in localStorage, or initialize it if it doesn't exist
-    const savedData = JSON.parse(localStorage.getItem('createTournamentData')) || {};
-  
-    // Add/Update the specific key-value pair
-    savedData[key] = value;
-  
-    // Save the updated data back to localStorage
-    localStorage.setItem('createTournamentData', JSON.stringify(savedData));
+    console.log(`FormatParticipants - Updating ${key}:`, value);
+    
+    // Update local state
+    const updatedData = { ...formData, [key]: value };
+    setFormData(updatedData);
+    
+    // Update localStorage using centralized function
+    if (updateLocalStorage) {
+      updateLocalStorage(key, value);
+    }
   };
-  
 
   const handleProceed = () => {
+    // Force save current state before proceeding
+    localStorage.setItem('createTournamentData', JSON.stringify(formData));
     setSelectedTab((prevTab) => prevTab + 1);
   };
 
@@ -43,15 +45,16 @@ const FormatParticipants = ({ setSelectedTab }) => {
       </header>
 
       <TournamentFormat updateFormData={updateFormData} />
-
       <Participants updateFormData={updateFormData} />
-
       <TournamentRules updateFormData={updateFormData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => alert('Draft saved')}
+          onClick={() => {
+            localStorage.setItem('createTournamentData', JSON.stringify(formData));
+            alert('Draft saved');
+          }}
         >
           Save Draft
         </button>
