@@ -71,7 +71,7 @@ const BottomMenu = ({ customClass }) => {
         <nav className={styles.bottomNavContainer}>
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
-                    <Link href={'/'} className={styles.iconTextLink}>
+                    <Link href={'/user-profile'} className={styles.iconTextLink}>
                         <BiHomeCircle className={`${styles.sidebarIcon} `} /> Home
                     </Link>
                 </li>

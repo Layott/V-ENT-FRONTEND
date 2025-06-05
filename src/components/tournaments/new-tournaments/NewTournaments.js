@@ -113,10 +113,10 @@ const NewTournaments = ({ data = [] }) => {
                         </div>
             
                         <div className={styles.buttonContainer}>
-                            <Link href={`/tournaments/view-tournament/${tournament.tournament_id}`} className={styles.viewDetailsBTN}>
+                            <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`} className={styles.viewDetailsBTN}>
                               View Details
                             </Link>
-                            <Link href={`/tournaments/register-tournament/${tournament.tournament_id}`} className={styles.registerBTN}>
+                            <Link href={`/tournaments/register-tournament?id=${tournament.tournament_id}`} className={styles.registerBTN}>
                               Register
                             </Link>
                         </div>
@@ -133,4 +133,4 @@ const NewTournaments = ({ data = [] }) => {
   )
 }
 
-export default NewTournaments
+export default NewTournaments;

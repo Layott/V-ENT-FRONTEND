@@ -44,15 +44,15 @@ const EditUserProfileDetails = ({ fullname, username, description, state, countr
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="state">State/Province</label>
-          <input
-            type="text"
-            name="country"
-            placeholder="State/Province"
-            value={state}
-            onChange={handleInputChange}
-          />
-        </div>
+  <label htmlFor="state">State/Province</label>
+  <input
+    type="text"
+    name="state"
+    placeholder="State/Province"
+    value={state}
+    onChange={handleInputChange}
+  />
+</div>
 
         <div className={styles.inputGroup}>
           <label htmlFor="country">Country</label>
