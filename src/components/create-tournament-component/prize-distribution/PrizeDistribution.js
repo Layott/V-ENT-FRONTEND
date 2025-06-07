@@ -3,7 +3,7 @@ import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import PrizeDistributionInside from "./prize-distribution-inside/PrizeDistributionInside";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const PrizeDistribution = ({ setSelectedTab }) => {
+const PrizeDistribution = ({ setSelectedTab, updateLocalStorage }) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -14,12 +14,21 @@ const PrizeDistribution = ({ setSelectedTab }) => {
   }, []);
 
   const updateFormData = (key, value) => {
-    const savedData = JSON.parse(localStorage.getItem('createTournamentData')) || {};
-    savedData[key] = value;
-    localStorage.setItem('createTournamentData', JSON.stringify(savedData));
+    console.log(`PrizeDistribution - Updating ${key}:`, value);
+    
+    // Update local state
+    const updatedData = { ...formData, [key]: value };
+    setFormData(updatedData);
+    
+    // Update localStorage using centralized function
+    if (updateLocalStorage) {
+      updateLocalStorage(key, value);
+    }
   };
 
   const handleProceed = () => {
+    // Force save current state before proceeding
+    localStorage.setItem('createTournamentData', JSON.stringify(formData));
     setSelectedTab((prevTab) => prevTab + 1);
   };
 
@@ -38,7 +47,10 @@ const PrizeDistribution = ({ setSelectedTab }) => {
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => alert('Draft saved')}
+          onClick={() => {
+            localStorage.setItem('createTournamentData', JSON.stringify(formData));
+            alert('Draft saved');
+          }}
         >
           Save Draft
         </button>

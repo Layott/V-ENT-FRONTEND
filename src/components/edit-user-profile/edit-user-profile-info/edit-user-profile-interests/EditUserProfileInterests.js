@@ -8,7 +8,7 @@ import styles from './edit-user-profile-interests.module.css';
 // Define all interests and the filtering function directly in this component
 // No need to import from another file
 const allInterests = [
-    "Battle Royale", "God of War", "Uncharted", "Sonic", "Tekken", "Manga", "Anime", "PUBG", 
+    "Battle Royale", "God of War", "Uncharted", "Sonic", "Tekken", "Manga", "Anime","Free Fire", "Bloodstrike", "PUBG", 
     "Sniper", "Casual", "Call of Duty", "Fortnite", "Assassin's Creed", "RPG", "eSports", 
     "FIFA", "Apex Legends", "Zelda", "Street Fighter", "Dota 2", "Minecraft", "Overwatch", 
     "Valorant", "Racing Games", "Final Fantasy", "Horror Games", "Cyberpunk 2077", 
@@ -68,9 +68,11 @@ const EditUserProfileInterests = ({ selectedInterests = [], handleInterestsChang
     };
 
     const removeInterest = (interest) => {
-        handleInterestsChange(selectedInterests.filter(i => i !== interest));
-        setErrorMessage('');
-    };
+    const updatedInterests = selectedInterests.filter(i => i !== interest);
+    handleInterestsChange([...updatedInterests]); // Force new reference even if empty
+    setErrorMessage('');
+};
+    
 
     return (
         <div className={styles.editInterestsContainer}>

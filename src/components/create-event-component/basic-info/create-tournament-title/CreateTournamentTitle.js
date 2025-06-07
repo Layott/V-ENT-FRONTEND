@@ -10,8 +10,8 @@ const CreateTournamentTitle = ({ formData= {}, updateFormData }) => {
     const [description, setDescription] = useState(formData.tournament_description || '');
   
     const gameModes = {
-      'FREEFIRE': ['Battle Royale', 'Clash Squad'],
-      'PUBGM': ['Battle Royale', 'Multiplayer'],
+      'Free Fire': ['Battle Royale', 'Clash Squad'],
+      'PUBG': ['Battle Royale', 'Multiplayer'],
       'CODM': ['Battle Royale', 'Multiplayer'],
       'EAFC': ['1 vs 1', '2 vs 2'],
     };

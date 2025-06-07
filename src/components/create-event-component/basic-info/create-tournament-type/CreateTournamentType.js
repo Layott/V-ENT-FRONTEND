@@ -134,8 +134,8 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
                   onChange={(e) => updateFormData('event', e.target.value)}
                 >
                   <option value="">Select Event</option>
-                  <option value="FREEFIRE">FREEFIRE</option>
-                  <option value="PUBGM">PUBGM</option>
+                  <option value="FREEFIRE">Free Fire</option>
+                  <option value="PUBGM">PUBG</option>
                   <option value="CODM">CODM</option>
                   <option value="EAFC">EAFC</option>
                 </select>

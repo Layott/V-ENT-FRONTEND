@@ -66,7 +66,7 @@ const TournamentsFeatured = ({ data }) => {
                         </div>
                             
                         <div>
-                            <Link href={`/tournaments/${tournament.tournament_id}`} className={menuContentStyles.viewDetailsLink}>
+                            <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`} className={menuContentStyles.viewDetailsLink}>
                                 <span className={menuContentStyles.viewDetails}>View Details</span>
                                 <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
                             </Link>
@@ -82,4 +82,4 @@ const TournamentsFeatured = ({ data }) => {
   )
 }
 
-export default TournamentsFeatured
+export default TournamentsFeatured;
