@@ -92,8 +92,8 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
                     className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select</option>
-                    <option value="FREE FIRE">FREE FIRE</option>
-                    <option value="PUBGM">PUBGM</option>
+                    <option value="FREE FIRE">Free Fire</option>
+                    <option value="PUBGM">PUBG</option>
                     <option value="CODM">CODM</option>
                     <option value="EAFC">EAFC</option>
                 </select>
@@ -116,8 +116,8 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
                     className={createTournamentStyles.inputWithDropdown}
                 >
                     <option value="">Select</option>
-                    <option value="FREEFIRE">FREEFIRE</option>
-                    <option value="PUBGM">PUBGM</option>
+                    <option value="FREEFIRE">Free Fire</option>
+                    <option value="PUBGM">PUBG</option>
                     <option value="CODM">CODM</option>
                     <option value="EAFC">EAFC</option>
                 </select>

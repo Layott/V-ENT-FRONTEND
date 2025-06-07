@@ -37,76 +37,189 @@ const CreateTournamentComponent = () => {
     };
   }, []);
 
+  const fetchAvailableGames = async () => {
+  try {
+    const response = await fetch('https://vermillionent.pythonanywhere.com/get-all-tournaments/', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session?.user?.sessionToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (response.ok) {
+      const games = await response.json();
+      console.log("Available games from API:", games);
+      return games;
+    } else {
+      console.error("Failed to fetch games:", response.status);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching available games:", error);
+    return null;
+  }
+};
+
+// Add this to your useEffect to load available games when component mounts
+useEffect(() => {
+  if (session?.user?.sessionToken) {
+    fetchAvailableGames();
+  }
+}, [session]);
+
+const updateLocalStorage = (key, value) => {
+  try {
+    // Get existing data from localStorage
+    const savedData = localStorage.getItem('createTournamentData');
+    const existingData = savedData ? JSON.parse(savedData) : {};
+    
+    // Update the specific field
+    existingData[key] = value;
+    
+    // Save updated data to localStorage
+    localStorage.setItem('createTournamentData', JSON.stringify(existingData));
+    
+    // Update state to reflect changes
+    setFormData(existingData);
+    
+    // Debug log
+    console.log(`Updated localStorage - ${key}:`, value);
+    console.log('New localStorage data:', existingData);
+    
+    return existingData;
+  } catch (error) {
+    console.error('Error updating localStorage:', error);
+    return null;
+  }
+};
   
 const handleSubmit = async () => {
   try {
     setIsSubmitting(true);
     
-    // Check if user is authenticated
     if (!session?.user?.sessionToken) {
       alert('You must be logged in to create a tournament');
       return;
     }
     
-    // Read the latest data from localStorage
     const savedData = localStorage.getItem('createTournamentData');
     const latestFormData = savedData ? JSON.parse(savedData) : formData;
     
-    console.log("Sending data to API:", latestFormData); // Debug log
-    
-    // Debug: Check the date values before formatting
-    console.log("Start date from form:", latestFormData.start_date_and_time);
-    console.log("End date from form:", latestFormData.end_date_and_time);
-    
-    // Validate that required fields are filled
+    // Validate required fields
     if (!latestFormData.tournament_title) {
       alert('Please fill in the tournament title');
-      setSelectedTab(1); // Go back to Basic Info tab
+      setSelectedTab(1);
       return;
     }
     
+    if (!latestFormData.game || latestFormData.game.trim() === '') {
+      alert('Please select a game for your tournament');
+      setSelectedTab(1);
+      return;
+    }
+    
+    // Game name mapping - Add common variations here
+    const gameNameMapping = {
+      'FREEFIRE': 'Free Fire',
+      'FREE FIRE': 'Free Fire',
+      'free fire': 'Free Fire',
+      'FreeFire': 'Free Fire',
+      'Freefire': 'Free Fire',
+      'GARENA FREE FIRE': 'Free Fire',
+      'garena free fire': 'Free Fire',
+      
+      // Add other common games and their variations
+      'COD': 'Call of Duty',
+      'CALL OF DUTY': 'Call of Duty',
+      'call of duty': 'Call of Duty',
+      
+      'VALORANT': 'Valorant',
+      'valorant': 'Valorant',
+      
+      'PUBG': 'PUBG',
+      'pubg': 'PUBG',
+      'PUBG MOBILE': 'PUBG Mobile',
+      'pubg mobile': 'PUBG Mobile',
+      
+      'FORTNITE': 'Fortnite',
+      'fortnite': 'Fortnite',
+      
+      'CS2': 'Counter-Strike 2',
+      'CS:2': 'Counter-Strike 2',
+      'COUNTER STRIKE 2': 'Counter-Strike 2',
+      'counter-strike 2': 'Counter-Strike 2',
+      
+      'LOL': 'League of Legends',
+      'LEAGUE OF LEGENDS': 'League of Legends',
+      'league of legends': 'League of Legends',
+      
+      'DOTA2': 'Dota 2',
+      'DOTA 2': 'Dota 2',
+      'dota 2': 'Dota 2',
+      
+      'APEX': 'Apex Legends',
+      'APEX LEGENDS': 'Apex Legends',
+      'apex legends': 'Apex Legends',
+      
+      'FIFA': 'FIFA',
+      'fifa': 'FIFA',
+      'FIFA 24': 'FIFA 24',
+      'fifa 24': 'FIFA 24',
+      
+      'ROCKET LEAGUE': 'Rocket League',
+      'rocket league': 'Rocket League',
+      
+      'OVERWATCH': 'Overwatch',
+      'overwatch': 'Overwatch',
+      'OVERWATCH 2': 'Overwatch 2',
+      'overwatch 2': 'Overwatch 2'
+    };
+    
+    // Get the original game name and try to map it
+    const originalGame = latestFormData.game.trim();
+    const mappedGame = gameNameMapping[originalGame] || originalGame;
+    
+    console.log("Original game:", originalGame);
+    console.log("Mapped game:", mappedGame);
+    
+    // Date validation
     if (!latestFormData.start_date_and_time || !latestFormData.end_date_and_time) {
       alert('Please fill in both start and end dates');
-      setSelectedTab(1); // Go back to Basic Info tab
+      setSelectedTab(1);
       return;
     }
     
-    // Validate dates before sending
     const startDate = new Date(latestFormData.start_date_and_time);
     const endDate = new Date(latestFormData.end_date_and_time);
     
-    console.log("Parsed start date:", startDate);
-    console.log("Parsed end date:", endDate);
-    
     if (startDate >= endDate) {
       alert('Start date and time must be before end date and time. Please check your tournament schedule.');
-      setSelectedTab(1); // Go back to Basic Info tab
+      setSelectedTab(1);
       return;
     }
     
-    // Transform sponsors data if it exists in the new format
+    // Transform sponsors data
     let sponsor_names = [];
     let sponsor_types = [];
     let sponsor_usernames = [];
     
     if (Array.isArray(latestFormData.sponsors)) {
       sponsor_names = latestFormData.sponsors.map(sponsor => sponsor.name || '');
-      sponsor_types = latestFormData.sponsors.map(sponsor => sponsor.type || 'individual'); // default type
+      sponsor_types = latestFormData.sponsors.map(sponsor => sponsor.type || 'individual');
       sponsor_usernames = latestFormData.sponsors.map(sponsor => sponsor.username || '');
     } else if (Array.isArray(latestFormData.sponsor_names)) {
-      // Fallback to old format
       sponsor_names = latestFormData.sponsor_names;
       sponsor_types = latestFormData.sponsor_types || [];
       sponsor_usernames = latestFormData.sponsor_usernames || [];
     }
     
-    // Extract social links from nested structure or root level
     const socialLinks = latestFormData.webSocialLinks || latestFormData;
     
-    // Format the data according to the API requirements
+    // Format the data with the mapped game name
     const formattedData = {
       tournament_title: latestFormData.tournament_title || '',
-      game: latestFormData.game || '',
+      game: mappedGame, // Use the mapped game name
       game_mode: latestFormData.game_mode || '',
       tournament_description: latestFormData.tournament_description || '',
       tournament_type: latestFormData.tournament_type || '',
@@ -138,7 +251,7 @@ const handleSubmit = async () => {
       sponsor_usernames: sponsor_usernames
     };
     
-    // Add social links from either nested or root level
+    // Add social links
     if (socialLinks.facebook_link) formattedData.facebook_link = socialLinks.facebook_link;
     if (socialLinks.twitter_link) formattedData.twitter_link = socialLinks.twitter_link;
     if (socialLinks.instagram_link) formattedData.instagram_link = socialLinks.instagram_link;
@@ -148,44 +261,46 @@ const handleSubmit = async () => {
     if (socialLinks.tiktok_link) formattedData.tiktok_link = socialLinks.tiktok_link;
     if (socialLinks.bigolive_link) formattedData.bigolive_link = socialLinks.bigolive_link;
 
-    console.log("Formatted data for API:", formattedData); // Debug log
+    console.log("Final formatted data for API:", formattedData);
 
-    // Send data to API with proper authorization
     const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/create-tournament/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.user.sessionToken}`, // Use the session token
+        'Authorization': `Bearer ${session.user.sessionToken}`,
       },
       body: JSON.stringify(formattedData),
-      credentials: 'include', // Include cookies if using session auth
+      credentials: 'include',
     });
 
-    console.log("Response status:", response.status); // Debug log
+    console.log("Response status:", response.status);
     
-    // Try to get the response body as text first
     const responseText = await response.text();
-    console.log("Response body:", responseText); // Debug log
+    console.log("Response body:", responseText);
     
-    // Then try to parse it as JSON if possible
     let responseData;
     try {
       responseData = JSON.parse(responseText);
     } catch (e) {
-      // If it's not valid JSON, keep the text version
       responseData = responseText;
     }
 
     if (!response.ok) {
+      if (response.status === 500 && responseText.includes('Games matching query does not exist')) {
+        // Fetch available games to show user
+        const availableGames = await fetchAvailableGames();
+        const gamesList = availableGames ? availableGames.map(g => g.name || g.title || g).join(', ') : 'Unable to fetch available games';
+        throw new Error(`The game "${mappedGame}" is not available. Available games might include: ${gamesList}. Please contact support if your game should be available.`);
+      }
       throw new Error(`Server returned ${response.status}: ${typeof responseData === 'object' ? JSON.stringify(responseData) : responseData}`);
     }
 
     console.log('Tournament Created Successfully:', responseData);
     
-    // Clear localStorage after successful submission
+    // Clear localStorage and state after successful submission
     localStorage.removeItem('createTournamentData');
+    setFormData({});
     
-    // Alert success
     alert('Tournament created successfully!');
     
   } catch (error) {
@@ -199,17 +314,17 @@ const handleSubmit = async () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo setSelectedTab={setSelectedTab} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} updateLocalStorage={updateLocalStorage} />;
       case 2:
-        return <FormatParticipants setSelectedTab={setSelectedTab} />;
+        return <FormatParticipants setSelectedTab={setSelectedTab} updateLocalStorage={updateLocalStorage} />;
       case 3:
-        return <PrizeDistribution setSelectedTab={setSelectedTab} />;
+        return <PrizeDistribution setSelectedTab={setSelectedTab} updateLocalStorage={updateLocalStorage} />;
       case 4:
         return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:
         return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSubmitting={isSubmitting} />;
       default:
-        return <BasicInfo setSelectedTab={setSelectedTab} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} updateLocalStorage={updateLocalStorage} />;
     }
   };
 

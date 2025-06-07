@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react'; // Add this import
 import Image from 'next/image'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react' // Added this import
+import { signOut } from 'next-auth/react'
 import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers, FaTv } from 'react-icons/fa';
@@ -16,7 +17,11 @@ import styles from './bottom-menu.module.css'
 
 const BottomMenu = ({ customClass }) => {
   const pathname = usePathname()
+  const { data: session } = useSession(); // Add session hook
   const [menuOpen , setMenuOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [profilePic, setProfilePic] = useState(profileImageSmall);
+  const [isExternalImage, setIsExternalImage] = useState(false);
   const menuRef = useRef(null);
 
   // Function to Check if the Route is Active
@@ -30,6 +35,61 @@ const BottomMenu = ({ customClass }) => {
   const toggleMenu = () => {
     setMenuOpen(prev => !prev);
   }
+
+  // Get user information from localStorage and session
+  useEffect(() => {
+    const getUserInfo = () => {
+      try {
+        // First try to get from localStorage (same as UserProfile component)
+        const storedProfile = localStorage.getItem("userProfile");
+        if (storedProfile) {
+          const profileData = JSON.parse(storedProfile);
+          setUserInfo(profileData);
+          
+          // Set profile picture if available
+          if (profileData.profile_picture) {
+            setProfilePic(profileData.profile_picture);
+            setIsExternalImage(true);
+          }
+          return;
+        }
+
+        // Fallback to session data if localStorage is empty
+        if (session?.user) {
+          const sessionUserData = {
+            full_name: session.user.name,
+            username: session.user.username || session.user.email,
+            profile_picture: session.user.image
+          };
+          setUserInfo(sessionUserData);
+          
+          if (session.user.image) {
+            setProfilePic(session.user.image);
+            setIsExternalImage(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting user information:', error);
+      }
+    };
+
+    getUserInfo();
+
+    // Listen for localStorage changes (when profile is updated)
+    const handleStorageChange = () => {
+      getUserInfo();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for localStorage updates within the same tab
+    const interval = setInterval(getUserInfo, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [session]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,7 +131,7 @@ const BottomMenu = ({ customClass }) => {
         <nav className={styles.bottomNavContainer}>
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
-                    <Link href={'/'} className={styles.iconTextLink}>
+                    <Link href={'/user-profile'} className={styles.iconTextLink}>
                         <BiHomeCircle className={`${styles.sidebarIcon} `} /> Home
                     </Link>
                 </li>
@@ -141,13 +201,23 @@ const BottomMenu = ({ customClass }) => {
         <div className={styles.profileContainerOuter} ref={menuRef}>
             <div className={styles.profileContainer} onClick={toggleMenu}>
                 <div className={styles.profileImageContainer}>
-                    <Image
-                        src={profileImageSmall}
-                        alt="Profile"
-                        className={styles.profileImage}
-                        width={40}
-                        height={40}
-                    />
+                    {isExternalImage ? (
+                        <img
+                            src={profilePic}
+                            alt="Profile"
+                            className={styles.profileImage}
+                            width={40}
+                            height={40}
+                        />
+                    ) : (
+                        <Image
+                            src={profilePic}
+                            alt="Profile"
+                            className={styles.profileImage}
+                            width={40}
+                            height={40}
+                        />
+                    )}
                 </div>
                 <p className={styles.username}>My Profile</p>
             </div>
