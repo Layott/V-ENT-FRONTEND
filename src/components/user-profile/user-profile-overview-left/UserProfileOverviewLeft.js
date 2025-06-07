@@ -26,7 +26,12 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
     <div className={`${profileStyles.overviewLeft} ${profileStyles.middleLayerColor}`}>
       {/* Interests Section */}
       <div className={profileStyles.sectionContainer}>
-        <h4 className={profileStyles.profileH4Header}>Interests</h4>
+        <div className={profileStyles.sectionHeader}>
+          <h4 className={profileStyles.profileH4Header}>Interests</h4>
+          <button className={`${profileStyles.addGameAccountBTN}`}>
+            <HiPlus className={profileStyles.profileH4Icons} /> Add
+          </button>
+        </div>
 
         <div className={profileStyles.interestsListContainer}>
 
@@ -143,7 +148,12 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
 
       {/* Social Links Section */}
       <div className={profileStyles.sectionContainer}>
-        <h4 className={profileStyles.sectionHeader}>Social Links</h4>
+        <div className={profileStyles.sectionHeader}>
+          <h4 className={profileStyles.profileH4Header}>Social Links</h4>
+          <button className={`${profileStyles.addGameAccountBTN}`}>
+            <HiPlus className={profileStyles.profileH4Icons} /> Add
+          </button>
+        </div>
         <div className={profileStyles.socialLinksListContainer}>
             {socialLinks.length === 0 ? (
                 <div className={profileStyles.noInterestsContainer}>
