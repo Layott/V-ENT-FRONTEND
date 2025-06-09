@@ -6,7 +6,6 @@ import { MdDeleteForever } from "react-icons/md";
 
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from "./user-profile-gallery.module.css";
-import galleryStyles from "./user-profile-gallery.module.scss";
 
 const baseUrl = "https://vermillionent.pythonanywhere.com";
 
@@ -282,9 +281,22 @@ const UserProfileGallery = () => {
     setIsUploading(true);
     setUploadError(null);
 
+    // Set up 30-second timeout for upload
+    const uploadTimeout = setTimeout(() => {
+      if (isUploading) {
+        showSnackbarNotification(
+          "Upload is taking longer than expected. Please check your connection and try again.",
+          "warning"
+        );
+      }
+    }, 30000); // 30 seconds
+
     try {
       // Upload to backend
       const uploadResult = await uploadImageToBackend(file);
+
+      // Clear timeout on successful upload
+      clearTimeout(uploadTimeout);
 
       // Show success snackbar
       showSnackbarNotification("Image uploaded successfully!", "success");
@@ -308,6 +320,9 @@ const UserProfileGallery = () => {
         fetchGalleryImages();
       }, 1000);
     } catch (error) {
+      // Clear timeout on error
+      clearTimeout(uploadTimeout);
+      
       // ✅ ✅ ✅ FIXED HERE:
       if (
         !error.message.includes("Upload limit exceeded") &&
@@ -404,8 +419,8 @@ const UserProfileGallery = () => {
         prevData.filter((img) => img.id !== imageToDelete.id)
       );
 
-      // Show success snackbar
-      showSnackbarNotification("Image deleted successfully!", "success");
+      // Show red background success snackbar for deletion
+      showSnackbarNotification("Image deleted successfully!", "deleted");
     } catch (error) {
       // Show error snackbar
       showSnackbarNotification(`Delete failed: ${error.message}`, "error");
@@ -422,15 +437,34 @@ const UserProfileGallery = () => {
     setImageToDelete(null);
   };
 
+  // Get background color based on snackbar type
+  const getSnackbarBackgroundColor = (type) => {
+    switch (type) {
+      case 'success':
+        return '#4CAF50'; // Green
+      case 'error':
+        return '#f44336'; // Red
+      case 'warning':
+        return '#ff9800'; // Orange
+      case 'deleted':
+        return '#d32f2f'; // Dark Red for deletion
+      default:
+        return '#f44336'; // Default to red
+    }
+  };
+
   return (
     <div className={styles.galleryContainer}>
       {showSnackbar && (
-        <div className={`${styles.snackbar} ${snackbarType}`}>
+        <div 
+          className={`${styles.snackbar} ${snackbarType}`}
+          style={{ backgroundColor: getSnackbarBackgroundColor(snackbarType) }}
+        >
           <span>{snackbarMessage}</span>
           <button
             onClick={() => setShowSnackbar(false)}
             className={"${styles.snackbarClose}"}
-            style={{backgroundColor: 'red !important', color: 'white !important'}}
+            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', marginLeft: '10px'}}
           >
             ×
           </button>
@@ -439,25 +473,25 @@ const UserProfileGallery = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className={galleryStyles.overlay}>
-          <div className={galleryStyles.modalContent}>
-            <h3 className={galleryStyles.modalHeading}>Delete Image</h3>
-            <p className={galleryStyles.modalText}>
+        <div className={styles.overlay}>
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalHeading}>Delete Image</h3>
+            <p className={styles.modalText}>
               Are you sure you want to delete this image? This action cannot be
               undone.
             </p>
-            <div className={galleryStyles.modalButtons}>
+            <div className={styles.modalButtons}>
               <button
                 onClick={cancelDelete}
                 disabled={isDeleting}
-                className={galleryStyles.cancelButton}
+                className={styles.cancelButton}
               >
                 No, Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={isDeleting}
-                className={galleryStyles.deleteImageButton}
+                className={styles.deleteImageButton}
               >
                 {isDeleting ? "Deleting..." : "Yes, Delete"}
               </button>
@@ -526,10 +560,10 @@ const UserProfileGallery = () => {
             )} */}
 
       {isLoading ? (
-        <div className={galleryStyles.loadingMessage}>Loading gallery...</div>
+        <div className={styles.loadingMessage}>Loading gallery...</div>
       ) : galleryData.length === 0 && status === "authenticated" ? (
         <div
-          className={galleryStyles.emptyMessage}
+          className={styles.emptyMessage}
           
         >
           No images in your gallery yet. Upload your first image!
@@ -539,7 +573,7 @@ const UserProfileGallery = () => {
       {galleryData.map((gallery, index) => (
         <div
           key={gallery.id || index}
-          className={galleryStyles.imageContainer}
+          className={styles.imageContainer}
           style={{ position: "relative" }}
         >
           <Image
@@ -551,7 +585,7 @@ const UserProfileGallery = () => {
           {/* Delete Icon */}
           <button
             onClick={() => handleDeleteClick(gallery)}
-            className={galleryStyles.deleteButton}
+            className={styles.deleteButton}
           >
             <MdDeleteForever />
           </button>
