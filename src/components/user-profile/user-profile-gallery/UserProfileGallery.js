@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { FiPlus } from "react-icons/fi";
@@ -34,7 +34,7 @@ const UserProfileGallery = () => {
     }, 5000);
   };
 
-  const fetchGalleryImages = async () => {
+  const fetchGalleryImages = useCallback(async () => {
     if (status === "loading") return;
 
     if (status === "unauthenticated" || !session?.user?.sessionToken) {
@@ -107,12 +107,12 @@ const UserProfileGallery = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session, status]);
 
   // Fetch gallery images when component mounts or session changes
   useEffect(() => {
     fetchGalleryImages();
-  }, [session, status]);
+  }, [fetchGalleryImages]);
 
   // Function to Handle Upload Image
   const handleUploadClick = () => {

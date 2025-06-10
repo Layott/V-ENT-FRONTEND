@@ -202,7 +202,7 @@ const BottomMenu = ({ customClass }) => {
             <div className={styles.profileContainer} onClick={toggleMenu}>
                 <div className={styles.profileImageContainer}>
                     {isExternalImage ? (
-                        <img
+                        <Image
                             src={profilePic}
                             alt="Profile"
                             className={styles.profileImage}
