@@ -7,40 +7,74 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const BasicInfo = ({ setSelectedTab }) => {
+const BasicInfo = ({ setSelectedTab, updateFormData }) => {
   const [formData, setFormData] = useState({});
 
   // Load initial data from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(parsedData);
+        console.log('BasicInfo - Loaded data from localStorage:', parsedData);
+      } catch (error) {
+        console.error('BasicInfo - Error parsing localStorage data:', error);
+      }
     }
   }, []);
 
-  // Function to handle form data updates and localStorage sync
-  const updateFormData = (field, value) => {
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-    localStorage.setItem('createTournamentData', JSON.stringify(updatedData)); // Save to localStorage
+  // Function to handle form data updates
+  const handleFormDataUpdate = (field, value) => {
+    // Update local state for immediate UI updates
+    setFormData(prevData => ({
+      ...prevData,
+      [field]: value
+    }));
+    
+    // Update parent component and localStorage through centralized function
+    updateFormData(field, value);
   };
 
   const handleProceed = () => {
     setSelectedTab((prevTab) => prevTab + 1);
   };
 
+  const handleSaveDraft = () => {
+    // Data is already saved through updateFormData, just show confirmation
+    alert('Draft saved');
+  };
+
   return (
-    <div className={createTournamentStyles.generalTabContainer}>
-      <header>
-        <h1>Basic Info</h1>
-      </header>
+    <div>
+      {/* Basic Info Header */}
+      <div>
+        <h2>Basic Info</h2>
+      </div>
 
-      <CreateTournamentTitle updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentType updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentSchedule updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentVisibility updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentLogo updateFormData={updateFormData} formData={formData} />
+      {/* Form Components */}
+      <CreateTournamentTitle 
+        formData={formData} 
+        updateFormData={handleFormDataUpdate} 
+      />
+      <CreateTournamentType 
+        formData={formData} 
+        updateFormData={handleFormDataUpdate} 
+      />
+      <CreateTournamentSchedule 
+        formData={formData} 
+        updateFormData={handleFormDataUpdate} 
+      />
+      <CreateTournamentVisibility 
+        formData={formData} 
+        updateFormData={handleFormDataUpdate} 
+      />
+      <CreateTournamentLogo 
+        formData={formData} 
+        updateFormData={handleFormDataUpdate} 
+      />
 
+      {/* Action Buttons */}
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
