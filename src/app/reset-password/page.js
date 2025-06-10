@@ -83,15 +83,15 @@ const ResetPassword = () => {
     // setOpen(true);
     };
 
-    useEffect(() => {
-        if (open && snackbarType === 'success') {
-          const timer = setTimeout(() => {
-            router.push('/login');
-          }, 1500);
-      
-          return () => clearTimeout(timer);
-        }
-      }, [open, snackbarType]);
+   useEffect(() => {
+  if (open && snackbarType === 'success') {
+    const timer = setTimeout(() => {
+      router.push('/login');
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }
+}, [open, snackbarType, router]);
 
     const isPasswordValid = (password) => {
         return (

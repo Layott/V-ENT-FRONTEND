@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
@@ -33,14 +33,14 @@ const UserProfile = () => {
 
   const baseUrl = "https://vermillionent.pythonanywhere.com";
 
-  const getAbsoluteUrl = (url) => {
+  const getAbsoluteUrl = useCallback((url) => {
     if (!url) return null;
     return url.startsWith("http")
       ? url
       : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-  };
+  }, [baseUrl]);
 
-  const processUserData = (data) => {
+  const processUserData = useCallback((data) => {
     if (!data) return null;
     
     const processed = { ...data };
@@ -67,10 +67,10 @@ const UserProfile = () => {
 
     console.log('Processed user data:', processed);
     return processed;
-  };
+  }, [getAbsoluteUrl]);
 
   // Function to handle session expiration and logout
-  const handleSessionExpiration = async () => {
+  const handleSessionExpiration = useCallback(async () => {
     console.log("Session expired or invalid, logging out...");
     // Clear local storage data
     localStorage.removeItem("userProfile");
@@ -81,7 +81,7 @@ const UserProfile = () => {
     
     // Redirect to login page
     router.push("/login");
-  };
+  }, [router]);
 
   useEffect(() => {
     console.log("Current session status:", status);
@@ -290,7 +290,7 @@ const UserProfile = () => {
     if (status === "authenticated") {
       fetchUserProfile();
     }
-  }, [status, session, router]);
+  }, [status, session, router, handleSessionExpiration, processUserData]);
 
   useEffect(() => {
     // This effect runs when the component mounts and when userData changes
@@ -327,7 +327,7 @@ const UserProfile = () => {
         console.error("Error loading from localStorage:", error);
       }
     }
-  }, [userData, loading, status]);
+  }, [userData, loading, status, processUserData]);
 
   useEffect(() => {
     // Clean up localStorage to remove any problematic URLs
@@ -372,7 +372,7 @@ const UserProfile = () => {
     } catch (error) {
       console.error("Error cleaning up localStorage:", error);
     }
-  }, []);
+  }, [getAbsoluteUrl]);
 
   
   const refreshUserData = async () => {

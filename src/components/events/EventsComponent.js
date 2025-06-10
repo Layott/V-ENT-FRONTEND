@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
@@ -30,7 +30,8 @@ const EventsComponent = () => {
 
   const baseUrl = "https://vermillionent.pythonanywhere.com";
 
-  const getAbsoluteUrl = (url, type = "default") => {
+  // Memoize the helper functions with useCallback
+  const getAbsoluteUrl = useCallback((url, type = "default") => {
     if (!url) {
       if (type === "banner") {
         return "https://vermillionent.pythonanywhere.com/media/default-banner.jpg";
@@ -43,16 +44,17 @@ const EventsComponent = () => {
     }
     
     return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-  };
-  const processEventImages = (events) => {
+  }, [baseUrl]);
+
+  const processEventImages = useCallback((events) => {
     return events.map((event) => ({
       ...event,
       banner_image: getAbsoluteUrl(event.banner_image),
       organizer_logo: getAbsoluteUrl(event.organizer_logo),
     }));
-  };
+  }, [getAbsoluteUrl]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     if (!session || !session.user?.sessionToken) {
       console.error("No session token available.");
       return;
@@ -86,11 +88,11 @@ const EventsComponent = () => {
         console.log("Response data:", error.response.data);
       }
     }
-  };
+  }, [session, processEventImages]);
 
   useEffect(() => {
     fetchEvents();
-  }, [session]);
+  }, [fetchEvents]);
 
   const toggleSearchBar = () => {
     setIsSearchBarVisible((prev) => !prev);

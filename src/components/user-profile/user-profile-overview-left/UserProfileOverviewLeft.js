@@ -28,9 +28,9 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
       <div className={profileStyles.sectionContainer}>
         <div className={profileStyles.sectionHeader}>
           <h4 className={profileStyles.profileH4Header}>Interests</h4>
-          <button className={`${profileStyles.addGameAccountBTN}`}>
+          <Link href={'/edit-user-profile'} className={`${profileStyles.addGameAccountBTN}`}>
             <HiPlus className={profileStyles.profileH4Icons} /> Add
-          </button>
+          </Link>
         </div>
 
         <div className={profileStyles.interestsListContainer}>
@@ -81,9 +81,9 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
       <div className={profileStyles.sectionContainer}>
         <div className={profileStyles.sectionHeader}>
           <h4 className={profileStyles.profileH4Header}>Gaming Accounts</h4>
-          <button className={`${profileStyles.addGameAccountBTN}`}>
+          <Link href={'/edit-user-profile'} className={`${profileStyles.addGameAccountBTN}`}>
             <HiPlus className={profileStyles.profileH4Icons} /> Add
-          </button>
+          </Link>
         </div>
 
         <div className={profileStyles.gamingAccountsListContainer}>
@@ -150,9 +150,9 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
       <div className={profileStyles.sectionContainer}>
         <div className={profileStyles.sectionHeader}>
           <h4 className={profileStyles.profileH4Header}>Social Links</h4>
-          <button className={`${profileStyles.addGameAccountBTN}`}>
+          <Link href={'/edit-user-profile'} className={`${profileStyles.addGameAccountBTN}`}>
             <HiPlus className={profileStyles.profileH4Icons} /> Add
-          </button>
+          </Link>
         </div>
         <div className={profileStyles.socialLinksListContainer}>
             {socialLinks.length === 0 ? (
