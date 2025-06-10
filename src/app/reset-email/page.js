@@ -87,14 +87,14 @@ const ResetEmail = () => {
   };
 
   useEffect(() => {
-    if (open && snackbarType === 'success') {
-      const timer = setTimeout(() => {
-        router.push('/reset-password');
-      }, 1500);
-  
-      return () => clearTimeout(timer);
-    }
-  }, [open, snackbarType]);
+  if (open && snackbarType === 'success') {
+    const timer = setTimeout(() => {
+      router.push('/reset-password');
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }
+}, [open, snackbarType, router]);
 
   const handleCloseSnackbar = () => setOpen(false);
 

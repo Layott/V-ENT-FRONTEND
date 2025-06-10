@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
@@ -15,16 +15,23 @@ import TournamentDetailsPrize from '@/components/view-tournament/tournament-deta
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './view-tournament.module.css'
 
-const ViewTournament = () => {
+// Separate component for the main content to handle search params
+const ViewTournamentContent = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [mounted, setMounted] = useState(false);
   
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
+  // Handle client-side mounting
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fetchTournament = useCallback(async () => {
     if (!id) {
       setError('Tournament ID not found');
       setLoading(false);
@@ -33,58 +40,60 @@ const ViewTournament = () => {
 
     console.log('Tournament ID from URL:', id);
     
-    const fetchTournament = async () => {
-      try {
-        const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/');
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch tournaments: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Full API Response:', data);
-        
-        // Find the specific tournament by ID from the by_game data
-        let foundTournament = null;
-        
-        // Check if data has the expected structure
-        if (data.status === 'success' && data.data && data.data.by_game) {
-          console.log('Available tournament IDs:', 
-            Object.values(data.data.by_game)
-              .flat()
-              .map(t => ({ id: t.tournament_id, title: t.tournament_title }))
-          );
-          
-          // Search through all games
-          Object.values(data.data.by_game).forEach(gameArray => {
-            const tournament = gameArray.find(t => 
-              t.tournament_id === parseInt(id) || t.tournament_id === id
-            );
-            if (tournament) {
-              foundTournament = tournament;
-            }
-          });
-        } else {
-          console.error('Unexpected API response structure:', data);
-          throw new Error('Invalid API response structure');
-        }
-        
-        if (!foundTournament) {
-          throw new Error(`Tournament with ID ${id} not found`);
-        }
-        
-        console.log('Found tournament:', foundTournament);
-        setTournament(foundTournament);
-        setLoading(false);
-      } catch (err) {
-        console.error('Detailed error:', err);
-        setError(err.message);
-        setLoading(false);
+    try {
+      const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/');
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch tournaments: ${response.status} ${response.statusText}`);
       }
-    };
-
-    fetchTournament();
+      
+      const data = await response.json();
+      console.log('Full API Response:', data);
+      
+      // Find the specific tournament by ID from the by_game data
+      let foundTournament = null;
+      
+      // Check if data has the expected structure
+      if (data.status === 'success' && data.data && data.data.by_game) {
+        console.log('Available tournament IDs:', 
+          Object.values(data.data.by_game)
+            .flat()
+            .map(t => ({ id: t.tournament_id, title: t.tournament_title }))
+        );
+        
+        // Search through all games
+        Object.values(data.data.by_game).forEach(gameArray => {
+          const tournament = gameArray.find(t => 
+            t.tournament_id === parseInt(id) || t.tournament_id === id
+          );
+          if (tournament) {
+            foundTournament = tournament;
+          }
+        });
+      } else {
+        console.error('Unexpected API response structure:', data);
+        throw new Error('Invalid API response structure');
+      }
+      
+      if (!foundTournament) {
+        throw new Error(`Tournament with ID ${id} not found`);
+      }
+      
+      console.log('Found tournament:', foundTournament);
+      setTournament(foundTournament);
+      setLoading(false);
+    } catch (err) {
+      console.error('Detailed error:', err);
+      setError(err.message);
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (mounted && id) {
+      fetchTournament();
+    }
+  }, [mounted, id, fetchTournament]);
 
   // Render loading state
   const renderPageLayout = (content) => (
@@ -100,6 +109,15 @@ const ViewTournament = () => {
       <BottomMenu />
     </div>
   );
+
+  // Show loading until component is mounted on client
+  if (!mounted) {
+    return renderPageLayout(
+      <div className={styles.loadingContainer}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return renderPageLayout(
@@ -212,6 +230,29 @@ const ViewTournament = () => {
       <BottomMenu />
     </div>
   )
+}
+
+// Main component wrapped with Suspense
+const ViewTournament = () => {
+  return (
+    <Suspense fallback={
+      <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            <div className={styles.loadingContainer}>
+              <p>Loading...</p>
+            </div>
+          </div>
+        </main>
+        <BottomMenu />
+      </div>
+    }>
+      <ViewTournamentContent />
+    </Suspense>
+  );
 }
 
 export default ViewTournament;

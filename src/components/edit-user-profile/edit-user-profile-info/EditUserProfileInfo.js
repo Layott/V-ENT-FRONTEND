@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import EditProfileImageAvatar from './edit-profile-image-avatar/EditProfileImageAvatar';
@@ -33,14 +33,14 @@ const EditUserProfileInfo = () => {
 
   const baseUrl = "https://vermillionent.pythonanywhere.com";
 
-  const getAbsoluteUrl = (url) => {
+  const getAbsoluteUrl = useCallback((url) => {
     if (!url) return null;
     return url.startsWith("http")
       ? url
       : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-  };
+  }, [baseUrl]);
 
-  const processUserData = (data) => {
+  const processUserData = useCallback((data) => {
     if (!data) return null;
     
     const processed = { ...data };
@@ -67,10 +67,10 @@ const EditUserProfileInfo = () => {
 
     console.log('Processed user data for edit:', processed);
     return processed;
-  };
+  }, [getAbsoluteUrl]);
 
   // Function to handle session expiration and logout
-  const handleSessionExpiration = async () => {
+  const handleSessionExpiration = useCallback(async () => {
     console.log("Session expired or invalid, logging out...");
     // Clear local storage data
     localStorage.removeItem("userProfile");
@@ -81,7 +81,7 @@ const EditUserProfileInfo = () => {
     
     // Redirect to login page
     router.push("/login");
-  };
+  }, [router]);
 
   // Fetch current user profile data when component mounts or session changes
   useEffect(() => {
@@ -320,7 +320,7 @@ const EditUserProfileInfo = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [session, status, router]);
+  }, [session, status, router, handleSessionExpiration, processUserData]);
 
   // Also try to load from localStorage if available (similar to user profile)
   useEffect(() => {
