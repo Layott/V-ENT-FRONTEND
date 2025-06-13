@@ -1,10 +1,11 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar'
 import CircularProgress from '@mui/material/CircularProgress';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import generalStyles from "@/styles/auth/auth.module.css"
 
 const ForgotPassword = () => {
@@ -14,6 +15,25 @@ const ForgotPassword = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarType, setSnackbarType] = useState('success');
     const router = useRouter();
+    // const { data: session } = useSession();
+    // const searchParams = useSearchParams();
+    // const cameFromEditProfile = searchParams?.get('from') === 'edit-profile';
+
+    // useEffect(() => {
+    //     //if the user is authenticated and did'nt come from the edit profile page, redirect to the home pagge
+    //     if (session && ! cameFromEditProfile) {
+    //         router.push('/user-profile');
+    //     }
+    // }, [session, router, cameFromEditProfile])
+
+//     useEffect(() => {
+//   const isFromEditProfile = searchParams?.get("from") === "edit-profile";
+
+//   // If user is authenticated and came from edit profile, sign them out to avoid redirect loop
+//   if (session && isFromEditProfile) {
+//     // signOut({ redirect: false });
+//   }
+// }, [session, searchParams]);
 
     const handleInputChange = (e) => {
         setEmail(e.target.value);
@@ -41,6 +61,7 @@ const ForgotPassword = () => {
 
                 setSnackbarMessage(data.message);
                 setSnackbarType('success');
+                 await signOut({ redirect: false });
                 router.push('/reset-email');
             } else {
                 setSnackbarMessage(data.message);

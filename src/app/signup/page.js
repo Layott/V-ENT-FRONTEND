@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import googleLogo from "../../../public/images/google.svg";
 import facebookLogo from "../../../public/images/facebook.svg";
@@ -12,27 +13,26 @@ import PasswordStrength from "./passwordStrength";
 import { VENT } from "@/app/api/auth/[...nextauth]/route";
 import MessageSnackbar from "../../components/Snackbar/MessageSnackbar";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useRouter } from "next/navigation";
 import AuthHeader from "@/components/auth-header/AuthHeader";
 import generalStyles from "@/styles/auth/auth.module.css";
 import styles from "./signup.module.css";
 
 const Signup = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    full_name: "",
+    country: "",
+    state: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("success");
   const [showPassword, setShowPassword] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [password, setPassword] = useState("");
-  const [formData, setFormData] = useState({
-    username: "",
-    full_name: "",
-    email: "",
-    country: "",
-    state: "",
-    password: "",
-    confirmPassword: "",
-  });
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
@@ -46,6 +46,12 @@ const Signup = () => {
     setShowPassword((prevState) => !prevState);
   };
 
+  const clearError = (setErrorFunction) => {
+      setTimeout(() => {
+        setErrorFunction("");
+      }, 1500);
+    };
+
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
@@ -55,62 +61,17 @@ const Signup = () => {
     
     setFormData({ ...formData, [name]: value });
     
-    // Clear error after some time
-    const clearError = (setErrorFunction) => {
-      setTimeout(() => {
-        setErrorFunction("");
-      }, 1500);
-    };
-    
-    if (name === "username") {
-      if (!usernameEditable) return;
-      
-      if (value.length > 30) {
-        setUsernameError("Username cannot exceed 30 characters.");
-        clearError(setUsernameError);
-      } else {
-        setUsernameError("");
-        
-        // You might want to add username availability check here too
-        if (value.trim() !== "") {
-          try {
-            const response = await fetch(VENT.USER_VERIFICATION, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ username: value }),
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-              if (data.message === "The username does not exist") {
-                // Username is available
-                setUsernameError("");
-              } else {
-                // Username is already taken
-                setUsernameError("This username is already taken");
-                clearError(setUsernameError);
-              }
-            }
-          } catch (error) {
-            console.error("Error checking username:", error);
-          }
-        }
-      }
-    }
-    
+
     if (name === "email") {
       setEmailError("");
+      setIsEmailLoading(true);
       
       if (!emailRegex.test(value)) {
         setEmailError("Invalid email address");
         clearError(setEmailError);
+        setIsEmailLoading(false);
         return;
       }
-      
-      setIsEmailLoading(true);
       
       try {
         const response = await fetch(VENT.USER_VERIFICATION, {
@@ -124,35 +85,49 @@ const Signup = () => {
         const data = await response.json();
         console.log("Username verification response:", data);
         
-        if (response.ok) {
-          // If a username is suggested from the email
-          if (data.username) {
-            setFormData((prevFormData) => ({
-              ...prevFormData,
-              username: data.username || "",
-            }));
-          }
-          
-          // Check if username is available or not
-          if (data.message === "The username does not exist") {
-            setUsernameEditable(true);  // Allow editing if username doesn't exist
-            setUsernameError("");
+        if (data.status === 'success' && data.username) {
+          setFormData((prev) => ({...prev, username: data.username }));
+          setUsernameEditable(false);
+          setUsernameError("");
           } else {
-            setUsernameEditable(false); // Don't allow editing if username exists
-            setUsernameError("This username is already taken");
-            clearError(setUsernameError);
-          }
-        } else {
-          setUsernameError(data.message || "Failed to verify username");
-          clearError(setUsernameError);
-          setUsernameEditable(true); // Allow editing if verification fails
+          // No existing username for email, allow manual entry
+          setFormData((prev) => ({ ...prev, username: "" }));
+          setUsernameEditable(true);
+          setUsernameError("");
         }
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        setEmailError("Error occurred while verifying email");
+        } catch (err) {
+        console.error("Error verifying email:", err);
+        setEmailError("Verification failed. Try again.");
         clearError(setEmailError);
+        setUsernameEditable(true);
       } finally {
         setIsEmailLoading(false);
+      }
+    }
+
+    if (name === "username" && usernameEditable) {
+      if (value.trim().length > 30) {
+        setUsernameError("Username must not exceed 30 characters");
+        clearError(setUsernameError);
+        return;
+      }
+
+      try {
+        const res = await fetch(VENT.USER_VERIFICATION, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: value }),
+        });
+
+        const data = await res.json();
+        if (data.message === "The username does not exist") {
+          setUsernameError("");
+        } else {
+          setUsernameError("Username is already taken");
+          clearError(setUsernameError);
+        }
+      } catch (err) {
+        console.error("Username check failed:", err);
       }
     }
   };
@@ -369,11 +344,6 @@ return (
                                 value={formData.state}
                                 onChange={handleInputChange} 
                             />
-                                <span
-                                    onClick={togglePasswordVisibility}
-                                    className={generalStyles.togglePassword}>
-                                    {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
-                                </span>
                             </div>
                         </div>
 
@@ -476,3 +446,4 @@ return (
 };
 
 export default Signup;
+
