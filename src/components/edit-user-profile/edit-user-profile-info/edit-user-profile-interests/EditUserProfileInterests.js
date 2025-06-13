@@ -76,7 +76,7 @@ const EditUserProfileInterests = ({ selectedInterests = [], handleInterestsChang
 
     return (
         <div className={styles.editInterestsContainer}>
-            <h3>Profile Details</h3>
+            <h3>Profile Interests</h3>
             <div className={exStyles.profileDetailsContainer}>
                 <p className={profileStyles.instructionText}>You can choose up to 15 interests</p>
 
