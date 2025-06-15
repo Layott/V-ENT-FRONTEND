@@ -43,20 +43,24 @@ const Login = () => {
     const result = await signIn("credentials", {
       redirect: false,
       email: username_or_email,
-      password,
+      password, 
       callbackUrl: `${window.location.origin}/user-profile`, // Redirect to user profile after login,
     });
+    
+    console.log("SignIn result:", result);
+
 
     if (result?.error) {
       setSnackbarMessage("Login failed. Please check your credentials.");
       setSnackbarType("error");
       setOpen(true);
+      setLoading(false);
     } else {
       setSnackbarMessage("Login successful!");
       setSnackbarType("success");
       setOpen(true);
       window.location.href = "/user-profile";
-      // router.push('/user-profile');
+      
     }
 
     setLoading(false);
