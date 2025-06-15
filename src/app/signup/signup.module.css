@@ -19,6 +19,16 @@
   font-size: 0.9rem;
 }
 
+.countryDropdown {
+  font-size: 0.85rem;
+  padding: 0.75rem;
+  border-radius: 5px;
+  background-color: #303136;
+  border: 1px solid #303136;
+  outline: none;
+  color: var(--primary-bg);
+}
+
 .valid {
   color: var(--green);
   margin-right: 5px;

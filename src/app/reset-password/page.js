@@ -65,6 +65,7 @@ const ResetPassword = () => {
             if (response.ok) {
                 setSnackbarMessage(data.message || 'Done!');
                 setSnackbarType('success');
+                localStorage.removeItem('forgotPasswordEmail');
               } else {
                 setSnackbarMessage(data.error || 'Failed!');
                 setSnackbarType('error');

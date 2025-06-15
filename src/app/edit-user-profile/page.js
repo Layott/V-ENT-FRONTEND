@@ -86,6 +86,18 @@ const EditUserProfile = () => {
               >
                 Web and Social Links {activeTab === "web-social-links" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
               </button>
+
+              <button
+                className={`${editProfileStyles.tabBTN} ${activeTab === 'forgot-password' ? editProfileStyles.activeTab : ''}`}
+                onClick={() => {
+                  if(session) {
+                    setActiveTab('forgot-password');
+                    router.push('/forgot-password?from=edit-profile');
+                  }
+                  }}
+              >
+                Forgot Password {activeTab === 'forgot-password' && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
+              </button>
             </div>
           </div>
 
@@ -114,6 +126,12 @@ const EditUserProfile = () => {
                 <EditLinks />
               </div>
             )}
+
+            {/* {activeTab === 'forgot-password' && (
+              <div className={editProfileStyles.editLinksContainer}>
+                <EditLinks />
+              </div>
+            )} */}
           </div>
       
         </div>

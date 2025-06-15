@@ -32,6 +32,13 @@ export default async function middleware(req) {
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
+    const fromEditProfile = req.nextUrl.searchParams.get("from") === "edit-profile";
+
+  // Allow access to forgot-password if came from edit profile
+  if (path === "/forgot-password" && fromEditProfile) {
+    console.log("Allowed access to /forgot-password from edit-profile despite auth.");
+    return NextResponse.next();
+  }
     console.log("Redirecting to events (already authenticated)");
     return NextResponse.redirect(new URL("/user-profile", req.url));
   }
