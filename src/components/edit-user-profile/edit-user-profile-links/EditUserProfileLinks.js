@@ -43,59 +43,79 @@ const EditUserProfileLinks = () => {
     setOpen(false);
   };
 
+  // Add this right before the handleSubmit function
+console.log('Current state values:', {
+  facebook,
+  twitter, 
+  instagram,
+  youtube
+});
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (!sessionToken) {
-        setSnackbarMessage('Session token is missing. Please log in again.');
-        setSnackbarType('error');
-        setOpen(true);
-        return;
-      }
+  e.preventDefault();
+  setLoading(true);
 
-      const formattedLinks = {
-        facebook,
-        twitter,
-        instagram,
-        youtube,
-        ...links.reduce((acc, link) => {
-          if (link.title && link.link) {
-            acc[link.title] = link.link;
-          }
-          return acc;
-        }, {}),
-      };
-
-      const response = await fetch(VENT.EDIT_LINKS, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`,
-        },
-        body: JSON.stringify({ links: formattedLinks }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setLinks([{ title: '', link: '' }]);
-        router.push('/user-profile');
-        setSnackbarMessage(data.message || 'Links updated successfully!');
-        setSnackbarType('success');
-      } else {
-        setSnackbarMessage(data.message || 'Failed to update links.');
-        setSnackbarType('error');
-      }
-      setOpen(true);
-    } catch (error) {
-      console.error('Error updating links:', error);
-      setSnackbarMessage('An error occurred while updating your links.');
+  console.log('YouTube state value:', youtube);
+  console.log('YouTube length:', youtube.length);
+  console.log('Is youtube truthy?', !!youtube);
+  try {
+    if (!sessionToken) {
+      setSnackbarMessage('Session token is missing. Please log in again.');
       setSnackbarType('error');
       setOpen(true);
+      return;
     }
-    setLoading(false);
-  };
+
+    // Format links as dictionary/object as backend expects
+    const formattedLinks = {};
+    
+    // Add predefined social media links if they have values
+    if (facebook) formattedLinks.facebook = facebook;
+    if (twitter) formattedLinks.twitter = twitter;
+    if (instagram) formattedLinks.instagram = instagram;
+    if (youtube) formattedLinks.youtube = youtube;
+    
+    // Add dynamic links
+    links.forEach(link => {
+      if (link.title && link.link) {
+        formattedLinks[link.title] = link.link;
+      }
+    });
+
+    console.log('Formatted links being sent:', formattedLinks);
+    console.log('Full payload:', { social_links: formattedLinks });
+
+    const response = await fetch(VENT.EDIT_LINKS, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`,
+      },
+      body: JSON.stringify({ links: formattedLinks }),
+    });
+
+    const data = await response.json();
+    console.log('Response status:', response.status);
+    console.log('Response data:', data);
+
+    if (response.ok) {
+      setLinks([{ title: '', link: '' }]);
+      router.push('/user-profile');
+      setSnackbarMessage(data.message || 'Links updated successfully!');
+      setSnackbarType('success');
+    } else {
+      setSnackbarMessage(data.message || 'Failed to update links.');
+      setSnackbarType('error');
+    }
+    setOpen(true);
+  } catch (error) {
+    console.error('Error updating links:', error);
+    setSnackbarMessage('An error occurred while updating your links.');
+    setSnackbarType('error');
+    setOpen(true);
+  }
+  setLoading(false);
+};
 
   return (
     <div className={styles.editLinksContainer}>
@@ -134,6 +154,7 @@ const EditUserProfileLinks = () => {
                   value={link.title}
                   onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
                 />
+                
               </div>
 
               <div className={`${editUserProfileDetailsStyles.inputGroup} ${styles.addInputGroup}`}>

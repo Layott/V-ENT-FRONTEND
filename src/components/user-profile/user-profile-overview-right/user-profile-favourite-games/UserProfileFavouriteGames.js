@@ -48,6 +48,7 @@ const UserProfileFavouriteGames = () => {
           <button
             className={styles.seeMoreBTN}
             onClick={handleSeeMoreAndLess}
+            disabled
           >
             {showAll ? 'See less' : 'See more'}
             {showAll ? <FaArrowLeft className={styles.rightArrowIcon} /> : <FaArrowRight className={styles.rightArrowIcon} />}
@@ -61,6 +62,9 @@ const UserProfileFavouriteGames = () => {
                     <span className={styles.plusIcon}><FiPlus /></span>
                     <span className={styles.addGameText}>Add Game</span>
                 </div>
+          <div className={styles.notAvailableOverlay}>
+            <span>Coming soon</span>
+          </div>
             </div>
             {favouriteGameList.slice(0, visibleGames).map((favouriteGame, index) => (
               <div key={`game-${index}-${favouriteGame.name}`} className={`${profileStyles.gameOrAchievementCard}`}>
@@ -74,9 +78,6 @@ const UserProfileFavouriteGames = () => {
                   </div>     
               </div>
             ))}        
-          </div>
-          <div className={styles.notAvailableOverlay}>
-            <span>Coming soon</span>
           </div>
         </div>
 
