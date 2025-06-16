@@ -26,4 +26,4 @@ const Tournaments = () => {
   )
 }
 
-export default Tournaments
+export default Tournaments;
