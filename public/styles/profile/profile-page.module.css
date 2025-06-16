@@ -531,8 +531,8 @@
 
 .viewBTN,
 .manageBTN,
-.addGameAccountBTN,
-.seeMoreBTN {
+.addGameAccountBTN
+ {
   background-color: transparent;
   border: none;
   outline: none;
@@ -540,6 +540,16 @@
   align-items: center;
   cursor: pointer;
   gap: 0.4rem;
+}
+
+.seeMoreBTN{
+  background-color: transparent;
+  border: none;
+  outline: none;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  cursor: not-allowed;
 }
 
 .viewBTN,

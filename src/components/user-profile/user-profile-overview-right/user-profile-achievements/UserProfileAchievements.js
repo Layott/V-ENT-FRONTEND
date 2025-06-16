@@ -47,6 +47,7 @@ const UserProfileAchievements = () => {
           <button
             className={profileStyles.seeMoreBTN}
             onClick={handleSeeMoreAndLess}
+            disabled
           >
             {showAll ? 'See less' : 'See more'}
             {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} /> }
