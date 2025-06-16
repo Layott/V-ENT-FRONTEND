@@ -22,6 +22,15 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
     console.log(`Removing gaming account at index: ${index}`);
   };
 
+  // Helper function to ensure URL has proper protocol
+  const formatUrl = (url) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
   return (
     <div className={`${profileStyles.overviewLeft} ${profileStyles.middleLayerColor}`}>
       {/* Interests Section */}
@@ -168,7 +177,7 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
                 <>
                     {socialLinks.slice(0, showMoreSocials ? socialLinks.length : 4).map((socialLink, index) => (
                         <Link
-                            href={socialLink.url}
+                            href={formatUrl(socialLink.url)}
                             key={index}
                             target='_blank'
                             rel='noopener noreferrer'
