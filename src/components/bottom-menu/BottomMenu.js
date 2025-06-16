@@ -148,28 +148,62 @@ const BottomMenu = ({ customClass }) => {
                     </Link>
                 </li>
                 
-                <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
                         <FaTv className={`${styles.sidebarIcon} ${isActive('/anime') ? styles.activeSidebarIcon : ''}`} /> Anime
                     </Link>
+                </li> */}
+
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><FaTv className={styles.sidebarIcon} /> Anime</span>
+                        <span className={styles.comingSoon}>
+                            Coming<br />Soon
+                        </span>
+                    </span>
                 </li>
                 
-                <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
                         <PiRankingBold className={`${styles.sidebarIcon} ${isActive('/rankings') ? styles.activeSidebarIcon : ''}`} /> Rankings
                     </Link>
-                </li>
+                </li> */}
                 
-                <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
                         <FaUsers className={`${styles.sidebarIcon} ${isActive('/teams') ? styles.activeSidebarIcon : ''}`} /> Teams
                     </Link>
-                </li>
+                </li> */}
 
-                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
+                {/* <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         <IoWalletOutline className={`${styles.sidebarIcon} ${isActive('/wallets') ? styles.activeSidebarIcon : ''}`} /> Wallets
                     </Link>
+                </li> */}
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><PiRankingBold className={styles.sidebarIcon} /> Ranking</span>
+                        <span className={styles.comingSoon}>
+                            Coming<br />Soon
+                        </span>
+                    </span>
+                </li>
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><FaUsers className={styles.sidebarIcon} /> Teams</span>
+                        <span className={styles.comingSoon}>
+                            Coming<br />Soon
+                        </span>
+                    </span>
+                </li>
+
+                <li className={styles.sidebarItem}>
+                    <span className={styles.disabledLink}>
+                        <span className={styles.iconMarketplaceSpan}><IoWalletOutline className={styles.sidebarIcon} /> Wallets</span>
+                        <span className={styles.comingSoon}>
+                            Coming<br />Soon
+                        </span>
+                    </span>
                 </li>
                             
                 <li className={styles.sidebarItem}>
