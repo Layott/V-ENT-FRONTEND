@@ -240,7 +240,11 @@ const CreateTournamentComponent = () => {
         
         sponsor_names: sponsor_names,
         sponsor_types: sponsor_types,
-        sponsor_usernames: sponsor_usernames
+        sponsor_usernames: sponsor_usernames,
+        
+        // ADD LOGO AND BANNER DATA HERE
+        tournament_logo: latestFormData.tournament_logo || null,
+        tournament_banner: latestFormData.tournament_banner || null
       };
       
       // Add social links
