@@ -463,8 +463,8 @@ const UserProfileGallery = () => {
           <span>{snackbarMessage}</span>
           <button
             onClick={() => setShowSnackbar(false)}
-            className={"${styles.snackbarClose}"}
-            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', marginLeft: '10px'}}
+            className={`${styles.snackbarClose} ${styles.snackbarMessageBtn}`}
+            
           >
             ×
           </button>

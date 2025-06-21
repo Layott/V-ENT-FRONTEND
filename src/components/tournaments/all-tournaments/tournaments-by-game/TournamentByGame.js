@@ -13,13 +13,21 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css';
 import newTournamentsStyles from './../../new-tournaments/new-tournaments.module.css';
 import allTournamentsStyles from './../all-tournaments.module.css';
 
-const TournamentsByGame = () => {
+const TournamentsByGame = ({ data }) => {
   const [tournaments, setTournaments] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedGames, setExpandedGames] = useState({});
 
   useEffect(() => {
+    // If data is passed as props, use it
+    if (data && Object.keys(data).length > 0) {
+      setTournaments(data);
+      setLoading(false);
+      return;
+    }
+
+    // Otherwise, fetch data
     const fetchTournaments = async () => {
       try {
         const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/');
@@ -28,10 +36,10 @@ const TournamentsByGame = () => {
           throw new Error('Failed to fetch tournaments');
         }
         
-        const data = await response.json();
+        const responseData = await response.json();
         
-        if (data.status === 'success' && data.data && data.data.by_game) {
-          setTournaments(data.data.by_game);
+        if (responseData.status === 'success' && responseData.data && responseData.data.by_game) {
+          setTournaments(responseData.data.by_game);
         } else {
           throw new Error('Invalid data structure');
         }
@@ -43,13 +51,29 @@ const TournamentsByGame = () => {
     };
 
     fetchTournaments();
-  }, []);
+  }, [data]);
 
   const handleToggle = (game) => {
     setExpandedGames(prev => ({
       ...prev,
       [game]: !prev[game]
     }));
+  };
+
+  // Function to get the correct image URL (same as featured tournaments)
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666'%3ETournament%3C/text%3E%3C/svg%3E";
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // If it starts with /media, prepend your backend URL
+    if (imagePath.startsWith('/media')) {
+      return `https://vermillionent.pythonanywhere.com${imagePath}`;
+    }
+    
+    // If it's just a filename, construct the full path
+    return `https://vermillionent.pythonanywhere.com/media/tournament_banners/${imagePath}`;
   };
 
   // Helper function to format date
@@ -64,6 +88,9 @@ const TournamentsByGame = () => {
 
   if (loading) return <div className={allTournamentsStyles.loading}>Loading tournaments...</div>;
   if (error) return <div className={allTournamentsStyles.error}>Error: {error}</div>;
+  if (!tournaments || Object.keys(tournaments).length === 0) {
+    return <div className={allTournamentsStyles.noTournaments}>No tournaments available</div>;
+  }
 
   return (
     <div className={allTournamentsStyles.allTournamentsSlidersContainer}>
@@ -88,8 +115,8 @@ const TournamentsByGame = () => {
                 <div key={index} className={allTournamentsStyles.cardContainer}>
                   <div className={allTournamentsStyles.imageContainer}>
                     <Image
-                      src={tournament.tournament_banner || "/placeholder-tournament.jpg"}
-                      alt={` banner`}
+                      src={getImageUrl(tournament.tournament_banner)}
+                      alt={`${tournament.tournament_title} banner`}
                       width={400}
                       height={200}
                     />
@@ -147,7 +174,7 @@ const TournamentsByGame = () => {
                           <GrTrophy className={menuContentStyles.prizeIcon} />
                         </span>
                         <span className={menuContentStyles.prizeSpan}>
-                          Prize: {tournament.prize_distributions.length > 0 
+                          Prize: {tournament.prize_distributions && tournament.prize_distributions.length > 0 
                             ? `N ${tournament.prize_distributions[0].prize}` 
                             : 'N/A'}
                         </span>

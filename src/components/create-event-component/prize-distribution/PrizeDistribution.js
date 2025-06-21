@@ -1,22 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import PrizeDistributionInside from "./prize-distribution-inside/PrizeDistributionInside";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const PrizeDistribution = ({ setSelectedTab }) => {
-  const [formData, setFormData] = useState({});
-
+const PrizeDistribution = ({ formData, setFormData, setSelectedTab }) => {
+  // Load initial data from localStorage only if formData is empty
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
+    if (savedData && Object.keys(formData).length === 0) {
       setFormData(JSON.parse(savedData));
     }
-  }, []);
+  }, [formData, setFormData]);
 
   const updateFormData = (key, value) => {
-    const savedData = JSON.parse(localStorage.getItem('createTournamentData')) || {};
-    savedData[key] = value;
-    localStorage.setItem('createTournamentData', JSON.stringify(savedData));
+    // Update the centralized formData state
+    const updatedData = { ...formData, [key]: value };
+    setFormData(updatedData);
+    
+    // Also save to localStorage for persistence
+    localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
   };
 
   const handleProceed = () => {
@@ -33,7 +35,7 @@ const PrizeDistribution = ({ setSelectedTab }) => {
         <h1>Prize Distribution</h1>
       </header>
 
-      <PrizeDistributionInside updateFormData={updateFormData} />
+      <PrizeDistributionInside updateFormData={updateFormData} formData={formData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button

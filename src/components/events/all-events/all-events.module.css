@@ -27,6 +27,13 @@
   flex-direction: column;
 }
 
+.allEventContainerDisplay{
+  position: relative;
+  width: 100px;
+  height: 200px;
+
+}
+
 .header {
   display: flex;
   flex-direction: row;

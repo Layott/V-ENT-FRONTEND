@@ -1,32 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import TournamentFormat from "./tournament-format/TournamentFormat";
 import Participants from "./participants/Participants";
 import TournamentRules from "./tournament-rules/TournamentRules";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-
-const FormatParticipants = ({ setSelectedTab }) => {
-  // Function to handle form data updates and localStorage sync
-   const [formData, setFormData] = useState({});
+const FormatParticipants = ({ formData, setFormData, setSelectedTab }) => {
+  // Load initial data from localStorage only if formData is empty
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
+    if (savedData && Object.keys(formData).length === 0) {
       setFormData(JSON.parse(savedData));
     }
-  }, []);
+  }, [formData, setFormData]);
 
   const updateFormData = (key, value) => {
-    // Get the current data in localStorage, or initialize it if it doesn't exist
-    const savedData = JSON.parse(localStorage.getItem('createTournamentData')) || {};
-  
-    // Add/Update the specific key-value pair
-    savedData[key] = value;
-  
-    // Save the updated data back to localStorage
-    localStorage.setItem('createTournamentData', JSON.stringify(savedData));
+    // Update the centralized formData state
+    const updatedData = { ...formData, [key]: value };
+    setFormData(updatedData);
+    
+    // Also save to localStorage for persistence
+    localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
   };
-  
 
   const handleProceed = () => {
     setSelectedTab((prevTab) => prevTab + 1);
@@ -42,11 +37,11 @@ const FormatParticipants = ({ setSelectedTab }) => {
         <h1>Format & Participants</h1>
       </header>
 
-      <TournamentFormat updateFormData={updateFormData} />
+      <TournamentFormat updateFormData={updateFormData} formData={formData} />
 
-      <Participants updateFormData={updateFormData} />
+      <Participants updateFormData={updateFormData} formData={formData} />
 
-      <TournamentRules updateFormData={updateFormData} />
+      <TournamentRules updateFormData={updateFormData} formData={formData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button
