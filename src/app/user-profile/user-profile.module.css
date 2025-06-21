@@ -21,6 +21,14 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
+.loadingPageBtn{
+  background-color: red;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 15px;
+
+}
 
 .notAllowedBtn{
   color: gray !important;

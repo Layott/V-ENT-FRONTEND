@@ -290,4 +290,15 @@
   .tournamentsFeaturedContainer {
     margin-top: -3rem;
   }
+  
+}
+
+@media (max-width: 414px) {
+  .eventFeatureContainerDisplay{
+  position: relative;
+  width: 250px;
+  height: 200px;
+
+}
+
 }

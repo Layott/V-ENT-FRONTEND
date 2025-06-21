@@ -602,8 +602,8 @@ const UserProfile = () => {
         <h1>Please login again!</h1>
         
       </div>
-      <button >
-          <a className={`${styles.loadingPageBtn}`} href="/login">Login</a>
+      <button className={`${styles.loadingPageBtn}`}>
+          <a  href="/login">Login</a>
         </button>
       </div>
       </div>
