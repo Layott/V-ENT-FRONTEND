@@ -594,8 +594,18 @@ const UserProfile = () => {
   
   if (!userData)
     return (
-      <div className={profileStyles.errorContainer}>
-        Please login again!
+  <div className={profileStyles.profileError}>
+
+  
+      <div className={profileStyles.profileContent}>
+        <div>
+        <h1>Please login again!</h1>
+        
+      </div>
+      <button >
+          <a className={`${styles.loadingPageBtn}`} href="/login">Login</a>
+        </button>
+      </div>
       </div>
     );
 
@@ -737,11 +747,11 @@ const UserProfile = () => {
             </button>
 
             <button
-              className={`${styles.tabBTN} ${
+              className={`${styles.tabBTN} ${styles.notAllowedBtn} ${
                 activeTab === "activity" ? styles.activeTab : ""
               }`}
               // onClick={() => setActiveTab("activity")}
-              style={{color: "gray", cursor: "not-allowed"}}
+              
               
             >
               Activity

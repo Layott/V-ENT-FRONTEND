@@ -49,8 +49,9 @@ const EventsComponent = () => {
   const processEventImages = useCallback((events) => {
     return events.map((event) => ({
       ...event,
-      banner_image: getAbsoluteUrl(event.banner_image),
-      organizer_logo: getAbsoluteUrl(event.organizer_logo),
+      // Map the correct field names from API response
+      banner_image: getAbsoluteUrl(event.banner),
+      organizer_logo: getAbsoluteUrl(event.logo),
     }));
   }, [getAbsoluteUrl]);
 

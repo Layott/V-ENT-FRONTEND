@@ -22,6 +22,11 @@
   padding-right: 1.5rem;
 }
 
+.notAllowedBtn{
+  color: gray !important;
+  cursor: not-allowed !important;
+}
+
 .tabBTN {
   background-color: transparent;
   border: none;

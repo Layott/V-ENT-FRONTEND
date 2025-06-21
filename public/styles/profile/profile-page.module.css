@@ -650,6 +650,26 @@
   font-size: 0.85rem;
   padding: 1.25rem;
 }
+.profileError {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  width: 100%;
+  
+  background-color: #17181A;
+  color: #FFF;
+  font-size: 0.85rem;
+  padding: 1.25rem;
+}
+
+
+.profileContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
 
 .blinkingDots {
   display: inline-block;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import CreateTournamentTitle from './create-tournament-title/CreateTournamentTitle';
 import CreateTournamentType from './create-tournament-type/CreateTournamentType';
@@ -7,22 +7,20 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const BasicInfo = ({ setSelectedTab }) => {
-  const [formData, setFormData] = useState({});
-
-  // Load initial data from localStorage
+const BasicInfo = ({ formData, setFormData, setSelectedTab, updateFileData }) => {
+  // Load initial data from localStorage only once when component mounts
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
+    if (savedData && Object.keys(formData).length === 0) {
       setFormData(JSON.parse(savedData));
     }
-  }, []);
+  }, [formData, setFormData]);
 
   // Function to handle form data updates and localStorage sync
   const updateFormData = (field, value) => {
     const updatedData = { ...formData, [field]: value };
     setFormData(updatedData);
-    localStorage.setItem('createTournamentData', JSON.stringify(updatedData)); // Save to localStorage
+    localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
   };
 
   const handleProceed = () => {
@@ -39,7 +37,11 @@ const BasicInfo = ({ setSelectedTab }) => {
       <CreateTournamentType updateFormData={updateFormData} formData={formData} />
       <CreateTournamentSchedule updateFormData={updateFormData} formData={formData} />
       <CreateTournamentVisibility updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentLogo updateFormData={updateFormData} formData={formData} />
+      <CreateTournamentLogo 
+        updateFormData={updateFormData} 
+        formData={formData} 
+        updateFileData={updateFileData}
+      />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button

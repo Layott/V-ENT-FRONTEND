@@ -10,6 +10,13 @@
   font-size: 1rem;
 }
 
+.newTournamentsContainer-display{
+  position: relative;
+  width: 100px;
+  height: 200px;
+
+}
+
 .cardsContainer {
   width: 100%;
   display: flex;
