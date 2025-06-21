@@ -1,9 +1,18 @@
+import { useEffect } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import Sponsor from "./sponsors/Sponsors";
 import WebSocialLink from "./web-social-links/WebSocialLink";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
 const SponsorsLinks = ({ formData, setFormData, setSelectedTab }) => {
+  // Load initial data from localStorage only if formData is empty
+  useEffect(() => {
+    const savedData = localStorage.getItem('createTournamentData');
+    if (savedData && Object.keys(formData).length === 0) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, [formData, setFormData]);
+
   // Function to handle form data updates and localStorage sync
   const updateFormData = (field, value) => {
     const updatedData = { ...formData, [field]: value };

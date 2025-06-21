@@ -9,6 +9,24 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css'
 // Import your default event image - make sure this path is correct
 
 const UpcomingEvents = ({ upcomingEvents = [] }) => {
+  const baseUrl = "https://vermillionent.pythonanywhere.com";
+
+  // Function to get the correct image URL - same as tournament implementation
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666'%3EEvent%3C/text%3E%3C/svg%3E";
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // If it starts with /media, prepend your backend URL
+    if (imagePath.startsWith('/media')) {
+      return `${baseUrl}${imagePath}`;
+    }
+    
+    // If it's just a filename, construct the full path
+    return `${baseUrl}/media/event_banners/${imagePath}`;
+  };
+
   // Format date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -19,27 +37,10 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
     });
   };
 
-  // Get event image with proper error handling
+  // Get event image with proper error handling - using same pattern as tournament
   const getEventImage = (event) => {
-    // Define base URL for absolute path resolution
-    const baseUrl = "https://vermillionent.pythonanywhere.com";
-    
-    // Convert relative URLs to absolute URLs
-    const getAbsoluteUrl = (url) => {
-      if (!url) return null;
-      return url.startsWith("http")
-        ? url
-        : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-    };
-    
-    // Use absolute URL for banner if it exists and isn't "null"
-    if (event.banner && event.banner !== "null") {
-      return getAbsoluteUrl(event.banner);
-    }
-    
-    // For default image, use a statically imported image (best practice)
-    // or an absolute URL within your domain
-    return "https://via.placeholder.com/400x200?text=Event";
+    // Use the banner field from API response with proper fallback
+    return getImageUrl(event.banner);
   };
 
   return (
@@ -50,13 +51,13 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
         {upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
             <div key={event.event_id} className={newTournamentStyles.cardContainer}>
-              <div className={newTournamentStyles.imageContainer}>
+              <div className={`${newTournamentStyles.imageContainer} ${newTournamentStyles['newTournamentsContainer-display']}`}
+>
                 <Image
                   src={getEventImage(event)}
                   alt={event.name || "Event"}
-                  width={400}
-                  height={200}
-                  style={{ width: 'auto', height: 'auto' }}
+                  fill
+                  style={{ objectFit: 'cover' }}
                   // Add fallback image using onError
                   onError={(e) => {
                     // Use a placeholder service that is guaranteed to work

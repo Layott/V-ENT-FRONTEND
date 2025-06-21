@@ -8,6 +8,11 @@
   gap: 2rem;
   padding-bottom: 2rem;
 }
+.loading{
+  text-align: center;
+  padding: 20px;
+
+}
 
 @media only screen and (min-width: 768px) {
   .createTournamentContainer {

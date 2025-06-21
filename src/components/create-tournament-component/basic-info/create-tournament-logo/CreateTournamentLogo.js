@@ -4,7 +4,7 @@ import { FiCamera } from 'react-icons/fi'
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-logo.module.css'
 
-const CreateTournamentLogo = ({ updateFormData }) => {
+const CreateTournamentLogo = ({ updateFormData, updateFileData }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
 
@@ -15,8 +15,11 @@ const CreateTournamentLogo = ({ updateFormData }) => {
       reader.onload = () => {
         setLogoPreview(reader.result); // Preview the uploaded logo
         
-        // Save the data URL to localStorage (instead of the file object)
+        // Save the data URL to localStorage for preview purposes
         updateFormData('tournament_logo', reader.result);
+        
+        // Save the actual File object for FormData submission
+        updateFileData('tournament_logo', file);
       };
       reader.readAsDataURL(file);
     }
@@ -29,8 +32,11 @@ const CreateTournamentLogo = ({ updateFormData }) => {
       reader.onload = () => {
         setBannerPreview(reader.result); // Preview the uploaded banner
 
-        // Save the data URL to localStorage (instead of the file object)
+        // Save the data URL to localStorage for preview purposes
         updateFormData('tournament_banner', reader.result);
+        
+        // Save the actual File object for FormData submission
+        updateFileData('tournament_banner', file);
       };
       reader.readAsDataURL(file);
     }

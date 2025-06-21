@@ -8,6 +8,42 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   const [recurrenceFrequency, setRecurrenceFrequency] = useState(formData?.recurrenceFrequency || null);
   const [endCriteria, setEndCriteria] = useState(formData?.endCriteria || null);
   const [showMaxCyclesInput, setShowMaxCyclesInput] = useState(endCriteria === "after-cycles");
+  const [dateError, setDateError] = useState('');
+  const [regDateError, setRegDateError] = useState('');
+
+  const validateDates = (startDate, endDate) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      
+      if (start > end) {
+        setDateError('Tournament start date cannot be later than end date');
+        return false;
+      } else {
+        setDateError('');
+        return true;
+      }
+    }
+    setDateError('');
+    return true;
+  };
+
+  const validateRegDates = (regStartDate, regEndDate) => {
+    if (regStartDate && regEndDate) {
+      const regStart = new Date(regStartDate);
+      const regEnd = new Date(regEndDate);
+      
+      if (regStart > regEnd) {
+        setRegDateError('Registration start date cannot be later than end date');
+        return false;
+      } else {
+        setRegDateError('');
+        return true;
+      }
+    }
+    setRegDateError('');
+    return true;
+  };
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -29,6 +65,20 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   
   const handleInputChange = (key, value) => {
     updateFormData([key], value );
+    
+    // Validate dates when start or end date changes
+    if (key === 'start_date_and_time') {
+      validateDates(value, formData?.end_date_and_time);
+    } else if (key === 'end_date_and_time') {
+      validateDates(formData?.start_date_and_time, value);
+    }
+    
+    // Validate registration dates when reg start or reg end date changes
+    if (key === 'reg_start_date_and_time') {
+      validateRegDates(value, formData?.reg_end_date_and_time);
+    } else if (key === 'reg_end_date_and_time') {
+      validateRegDates(formData?.reg_start_date_and_time, value);
+    }
   }
 
   return (
@@ -73,7 +123,12 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
             </label>
 
             
-            <input id='start_date_and_time' type="datetime-local" className={styles.dateInput}  onChange={(e) => handleInputChange('start_date_and_time', e.target.value)} />
+            <input 
+              id='start_date_and_time' 
+              type="datetime-local" 
+              className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} 
+              onChange={(e) => handleInputChange('start_date_and_time', e.target.value)} 
+            />
             
           </div>
 
@@ -84,10 +139,21 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
                 </span>
             </label>
 
-            <input id='end_date_and_time' type="datetime-local" className={styles.dateInput} onChange={(e) => handleInputChange('end_date_and_time', e.target.value)}/>
+            <input 
+              id='end_date_and_time' 
+              type="datetime-local" 
+              className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} 
+              onChange={(e) => handleInputChange('end_date_and_time', e.target.value)}
+            />
           </div>
 
         </div>
+
+        {dateError && (
+          <div className={styles.errorMessage}>
+            {dateError}
+          </div>
+        )}
         
         <div className={styles.tournamentStartEndDateContainer}>
           <div className={createTournamentStyles.inputGroup}>
@@ -97,7 +163,13 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
                 </span>
             </label>
 
-            <input id='reg_start_date_and_time' type="datetime-local" className={styles.dateInput} style={{ color: selectedOption ? "white" : ""}} onChange={(e) => handleInputChange('reg_start_date_and_time', e.target.value)} />
+            <input 
+              id='reg_start_date_and_time' 
+              type="datetime-local" 
+              className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} 
+              style={{ color: selectedOption ? "white" : ""}} 
+              onChange={(e) => handleInputChange('reg_start_date_and_time', e.target.value)} 
+            />
             
           </div>
 
@@ -107,11 +179,22 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
             </label>
-            <input id='reg_end_date_and_time' type="datetime-local" className={styles.dateInput} onChange={(e) => handleInputChange('reg_end_date_and_time', e.target.value)} />
+            <input 
+              id='reg_end_date_and_time' 
+              type="datetime-local" 
+              className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} 
+              onChange={(e) => handleInputChange('reg_end_date_and_time', e.target.value)} 
+            />
             
           </div>
 
         </div>
+
+        {regDateError && (
+          <div className={styles.errorMessage}>
+            {regDateError}
+          </div>
+        )}
         
       </div>
 
@@ -227,4 +310,4 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   )
 }
 
-export default CreateTournamentSchedule
+export default CreateTournamentSchedule;

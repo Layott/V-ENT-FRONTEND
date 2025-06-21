@@ -15,6 +15,10 @@ const CreateTournamentComponent = () => {
 
   // Initialize formData - load from localStorage on mount
   const [formData, setFormData] = useState({});
+  
+  // Store actual File objects separately for logo and banner
+  const [logoFile, setLogoFile] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -80,6 +84,15 @@ const CreateTournamentComponent = () => {
       });
     } catch (error) {
       console.error('Error updating formData:', error);
+    }
+  };
+
+  // New function to handle file uploads for logo and banner
+  const updateFileData = (key, file) => {
+    if (key === 'tournament_logo') {
+      setLogoFile(file);
+    } else if (key === 'tournament_banner') {
+      setBannerFile(file);
     }
   };
     
@@ -208,60 +221,68 @@ const CreateTournamentComponent = () => {
       
       const socialLinks = latestFormData.webSocialLinks || latestFormData;
       
-      // Format the data with the mapped game name
-      const formattedData = {
-        tournament_title: latestFormData.tournament_title || '',
-        game: mappedGame, // Use the mapped game name
-        game_mode: latestFormData.game_mode || '',
-        tournament_description: latestFormData.tournament_description || '',
-        tournament_type: latestFormData.tournament_type || '',
-        start_date_and_time: latestFormData.start_date_and_time || '',
-        end_date_and_time: latestFormData.end_date_and_time || '',
-        tournament_location: latestFormData.tournament_location || '',
-        virtual_link: latestFormData.virtual_link || '',
-        hide_location: Boolean(latestFormData.hide_location),
-        
-        tournament_visibility: latestFormData.tournament_visibility || 'public',
-        entry_type: latestFormData.entry_type || '',
-        entry_fee: parseFloat(latestFormData.entry_fee) || 0,
-        
-        tournament_access: latestFormData.tournament_access || '',
-        team_size: parseInt(latestFormData.team_size) || 1,
-        min_number_of_participants: parseInt(latestFormData.min_number_of_participants) || 8,
-        max_number_of_participants: parseInt(latestFormData.max_number_of_participants) || 32,
-        bracket_type: latestFormData.bracket_type || '',
-        tournament_rules: latestFormData.tournament_rules || '',
-        
-        prize_distribution_type: latestFormData.prize_distribution_type || 'distributed',
-        prize_distribution: Array.isArray(latestFormData.prize_distribution) 
-          ? latestFormData.prize_distribution 
-          : [],
-        winner_prize: parseFloat(latestFormData.winner_prize) || 0,
-        
-        sponsor_names: sponsor_names,
-        sponsor_types: sponsor_types,
-        sponsor_usernames: sponsor_usernames
-      };
+      // Create FormData object for multipart/form-data submission
+      const formDataToSend = new FormData();
+      
+      // Add all text fields to FormData
+      formDataToSend.append('tournament_title', latestFormData.tournament_title || '');
+      formDataToSend.append('game', mappedGame);
+      formDataToSend.append('game_mode', latestFormData.game_mode || '');
+      formDataToSend.append('tournament_description', latestFormData.tournament_description || '');
+      formDataToSend.append('tournament_type', latestFormData.tournament_type || '');
+      formDataToSend.append('start_date_and_time', latestFormData.start_date_and_time || '');
+      formDataToSend.append('end_date_and_time', latestFormData.end_date_and_time || '');
+      formDataToSend.append('tournament_location', latestFormData.tournament_location || '');
+      formDataToSend.append('virtual_link', latestFormData.virtual_link || '');
+      formDataToSend.append('hide_location', Boolean(latestFormData.hide_location));
+      
+      formDataToSend.append('tournament_visibility', latestFormData.tournament_visibility || 'public');
+      formDataToSend.append('entry_type', latestFormData.entry_type || '');
+      formDataToSend.append('entry_fee', parseFloat(latestFormData.entry_fee) || 0);
+      
+      formDataToSend.append('tournament_access', latestFormData.tournament_access || '');
+      formDataToSend.append('team_size', parseInt(latestFormData.team_size) || 1);
+      formDataToSend.append('min_number_of_participants', parseInt(latestFormData.min_number_of_participants) || 8);
+      formDataToSend.append('max_number_of_participants', parseInt(latestFormData.max_number_of_participants) || 32);
+      formDataToSend.append('bracket_type', latestFormData.bracket_type || '');
+      formDataToSend.append('tournament_rules', latestFormData.tournament_rules || '');
+      
+      formDataToSend.append('prize_distribution_type', latestFormData.prize_distribution_type || 'distributed');
+      formDataToSend.append('prize_distribution', JSON.stringify(Array.isArray(latestFormData.prize_distribution) ? latestFormData.prize_distribution : []));
+      formDataToSend.append('winner_prize', parseFloat(latestFormData.winner_prize) || 0);
+      
+      // Add sponsor arrays
+      formDataToSend.append('sponsor_names', JSON.stringify(sponsor_names));
+      formDataToSend.append('sponsor_types', JSON.stringify(sponsor_types));
+      formDataToSend.append('sponsor_usernames', JSON.stringify(sponsor_usernames));
+      
+      // Add logo and banner files if they exist
+      if (logoFile) {
+        formDataToSend.append('tournament_logo', logoFile);
+      }
+      if (bannerFile) {
+        formDataToSend.append('tournament_banner', bannerFile);
+      }
       
       // Add social links
-      if (socialLinks.facebook_link) formattedData.facebook_link = socialLinks.facebook_link;
-      if (socialLinks.twitter_link) formattedData.twitter_link = socialLinks.twitter_link;
-      if (socialLinks.instagram_link) formattedData.instagram_link = socialLinks.instagram_link;
-      if (socialLinks.youtube_link) formattedData.youtube_link = socialLinks.youtube_link;
-      if (socialLinks.twitch_link) formattedData.twitch_link = socialLinks.twitch_link;
-      if (socialLinks.kick_link) formattedData.kick_link = socialLinks.kick_link;
-      if (socialLinks.tiktok_link) formattedData.tiktok_link = socialLinks.tiktok_link;
-      if (socialLinks.bigolive_link) formattedData.bigolive_link = socialLinks.bigolive_link;
+      if (socialLinks.facebook_link) formDataToSend.append('facebook_link', socialLinks.facebook_link);
+      if (socialLinks.twitter_link) formDataToSend.append('twitter_link', socialLinks.twitter_link);
+      if (socialLinks.instagram_link) formDataToSend.append('instagram_link', socialLinks.instagram_link);
+      if (socialLinks.youtube_link) formDataToSend.append('youtube_link', socialLinks.youtube_link);
+      if (socialLinks.twitch_link) formDataToSend.append('twitch_link', socialLinks.twitch_link);
+      if (socialLinks.kick_link) formDataToSend.append('kick_link', socialLinks.kick_link);
+      if (socialLinks.tiktok_link) formDataToSend.append('tiktok_link', socialLinks.tiktok_link);
+      if (socialLinks.bigolive_link) formDataToSend.append('bigolive_link', socialLinks.bigolive_link);
 
-      console.log("Final formatted data for API:", formattedData);
+      console.log("FormData prepared for API submission");
 
       const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/create-tournament/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.user.sessionToken}`,
+          // Don't set Content-Type header - let browser set it with boundary for FormData
         },
-        body: JSON.stringify(formattedData),
+        body: formDataToSend,
         credentials: 'include',
       });
 
@@ -291,6 +312,8 @@ const CreateTournamentComponent = () => {
       
       // Clear both state and localStorage after successful submission
       setFormData({});
+      setLogoFile(null);
+      setBannerFile(null);
       localStorage.removeItem('createTournamentData');
       
       alert('Tournament created successfully!');
@@ -306,7 +329,7 @@ const CreateTournamentComponent = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
       case 2:
         return <FormatParticipants setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
       case 3:
@@ -316,7 +339,7 @@ const CreateTournamentComponent = () => {
       case 5:
         return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSubmitting={isSubmitting} />;
       default:
-        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} />;
+        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
     }
   };
 
