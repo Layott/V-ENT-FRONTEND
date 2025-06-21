@@ -121,6 +121,17 @@
   line-height: 1.4;
 }
 
+.snackbarMessageBtn{
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white; 
+  border: none; 
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+
 .modalButtons {
   display: flex;
   gap: 12px;

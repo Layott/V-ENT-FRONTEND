@@ -7,6 +7,20 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [selectedOption, setSelectedOption] = useState(formData?.tournament_type || null);
   const [isLinkedToEvent, setIsLinkedToEvent] = useState(true);
   const [hideLocation, setHideLocation] = useState(false);
+  const [eventSearchTerm, setEventSearchTerm] = useState('');
+
+  // Mock data for events - replace with actual API call
+  const availableEvents = [
+    { id: 1, name: 'Summer Gaming Championship 2024', date: '2024-07-15' },
+    { id: 2, name: 'Winter Esports Tournament', date: '2024-12-10' },
+    { id: 3, name: 'Spring Mobile Gaming Event', date: '2024-04-20' },
+    { id: 4, name: 'Annual Gaming Fest', date: '2024-08-30' },
+    { id: 5, name: 'Regional Championship Series', date: '2024-06-05' }
+  ];
+
+  const filteredEvents = availableEvents.filter(event =>
+    event.name.toLowerCase().includes(eventSearchTerm.toLowerCase())
+  );
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -23,6 +37,15 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
 
   const handleEventLinkChange = (value) => {
     setIsLinkedToEvent(value === 'yes');
+  };
+
+  const handleEventSearchChange = (e) => {
+    setEventSearchTerm(e.target.value);
+  };
+
+  const handleEventSelect = (eventId) => {
+    updateFormData('event', eventId.toString());
+    setEventSearchTerm(availableEvents.find(event => event.id === eventId)?.name || '');
   };
 
   return (
@@ -128,17 +151,38 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                   </span>
                 </label>
-                <select
-                  id="selectEvent"
-                  className={createTournamentStyles.inputWithDropdown}
-                  onChange={(e) => updateFormData('event', e.target.value)}
-                >
-                  <option value="">Select Event</option>
-                  <option value="FREEFIRE">Free Fire</option>
-                  <option value="PUBGM">PUBG</option>
-                  <option value="CODM">CODM</option>
-                  <option value="EAFC">EAFC</option>
-                </select>
+                
+                <div className={styles.eventSearchContainer}>
+                  <input
+                    id="selectEvent"
+                    type="text"
+                    placeholder="Search for events..."
+                    className={createTournamentStyles.inputText}
+                    value={eventSearchTerm}
+                    onChange={handleEventSearchChange}
+                  />
+                  
+                  {eventSearchTerm && filteredEvents.length > 0 && (
+                    <div >
+                      {filteredEvents.map((event) => (
+                        <div
+                          key={event.id}
+                          className={styles.eventOption}
+                          onClick={() => handleEventSelect(event.id)}
+                        >
+                          <div className={styles.eventName}>{event.name}</div>
+                          <div className={styles.eventDate}>{event.date}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {eventSearchTerm && filteredEvents.length === 0 && (
+                    <div className={styles.noEventsFound}>
+                      No events found matching your search.
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

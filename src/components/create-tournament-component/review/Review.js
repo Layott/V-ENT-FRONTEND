@@ -16,9 +16,41 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
     // Load form data from localStorage
     const savedData = localStorage.getItem('createTournamentData');
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      const parsedData = JSON.parse(savedData);
+      setFormData(parsedData);
+      // Debug: Log the form data structure
+      console.log('Form data loaded:', parsedData);
     }
   }, []);
+
+  // Validation functions to check if each section is completed
+  const isBasicInfoCompleted = () => {
+    // Add your basic info validation logic here
+    // Check if formData has any properties (adjust field names as needed)
+    console.log('Basic Info check:', formData);
+    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+  };
+
+  const isFormatParticipantsCompleted = () => {
+    // Add your format & participants validation logic here
+    console.log('Format Participants check:', formData);
+    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+  };
+
+  const isPrizeDistributionCompleted = () => {
+    // Add your prize distribution validation logic here
+    console.log('Prize Distribution check:', formData);
+    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+  };
+
+  const isSponsorsLinksCompleted = () => {
+    // Check if sponsors and links are actually filled
+    const hasSponsors = formData.sponsors && formData.sponsors.length > 0;
+    const hasLinks = formData.links && formData.links.length > 0;
+    
+    // Return true only if at least one sponsor or link is added
+    return hasSponsors || hasLinks;
+  };
 
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
@@ -32,7 +64,7 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
 
       <ReviewHeaderComponent
         title="Basic Info"
-        isCompleted={true}
+        isCompleted={isBasicInfoCompleted()}
         editTabIndex={1}
         setSelectedTab={setSelectedTab}
       >
@@ -41,7 +73,7 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
 
       <ReviewHeaderComponent
         title="Format & Participants"
-        isCompleted={true}
+        isCompleted={isFormatParticipantsCompleted()}
         editTabIndex={2}
         setSelectedTab={setSelectedTab}
       >
@@ -50,7 +82,7 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
 
       <ReviewHeaderComponent
         title="Prize Distribution"
-        isCompleted={true}
+        isCompleted={isPrizeDistributionCompleted()}
         editTabIndex={3}
         setSelectedTab={setSelectedTab}
       >
@@ -59,7 +91,7 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
 
       <ReviewHeaderComponent
         title="Sponsors & Links"
-        isCompleted={true}
+        isCompleted={isSponsorsLinksCompleted()}
         editTabIndex={4}
         setSelectedTab={setSelectedTab}
       >

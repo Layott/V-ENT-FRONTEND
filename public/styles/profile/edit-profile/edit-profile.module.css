@@ -72,6 +72,21 @@
   align-items: center;
 }
 
+.notAllowed {
+  cursor: not-allowed;
+  color: gray;
+}
+
+.notAllowedSpan{
+  margin-left: auto;
+  font-size: 0.675rem;
+  opacity:  0.7;
+  background-color: rgba(251, 198, 75, 0.24);
+  padding: 3px;
+  border-radius: 2px;
+
+}
+
 .activeTab {
   background-color: #46484F;
   border-radius: 5px;

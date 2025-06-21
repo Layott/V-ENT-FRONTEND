@@ -7,7 +7,7 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const BasicInfo = ({ setSelectedTab, updateFormData }) => {
+const BasicInfo = ({ setSelectedTab, updateFormData, updateFileData }) => {
   const [formData, setFormData] = useState({});
 
   // Load initial data from localStorage
@@ -71,7 +71,8 @@ const BasicInfo = ({ setSelectedTab, updateFormData }) => {
       />
       <CreateTournamentLogo 
         formData={formData} 
-        updateFormData={handleFormDataUpdate} 
+        updateFormData={handleFormDataUpdate}
+        updateFileData={updateFileData}
       />
 
       {/* Action Buttons */}

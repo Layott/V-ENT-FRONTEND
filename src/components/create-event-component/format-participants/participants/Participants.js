@@ -191,7 +191,7 @@ const Participants = ({ formData = {}, updateFormData }) => {
                 </p>
               </div>
             </div>
-            <p className={styles.infoParagraph} style={{ marginTop: '0.5rem' }}>
+            <p className={styles.infoParagraph}>
               <span className={styles.infoSpan}>
                 <FiInfo className={styles.infoIcon} />
               </span>
