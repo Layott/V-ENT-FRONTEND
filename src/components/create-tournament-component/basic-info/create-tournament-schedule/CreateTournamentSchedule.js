@@ -11,39 +11,73 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   const [dateError, setDateError] = useState('');
   const [regDateError, setRegDateError] = useState('');
 
+  
+
   const validateDates = (startDate, endDate) => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      
-      if (start > end) {
-        setDateError('Tournament start date cannot be later than end date');
-        return false;
-      } else {
-        setDateError('');
-        return true;
-      }
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Check if start date is after end date
+    if (start > end) {
+      setDateError('Tournament start date cannot be later than end date');
+      return false;
     }
+    
+    // Check if dates are exactly the same (no duration)
+    if (start.getTime() === end.getTime()) {
+      setDateError('Tournament end date must be at least 10 minutes after start date');
+      return false;
+    }
+    
+    // Check if there's at least 10 minutes difference
+    const timeDifference = end.getTime() - start.getTime();
+    const tenMinutesInMs = 10 * 60 * 1000; // 10 minutes in milliseconds
+    
+    if (timeDifference < tenMinutesInMs) {
+      setDateError('Tournament end date must be at least 10 minutes after start date');
+      return false;
+    }
+    
     setDateError('');
     return true;
-  };
+  }
+  setDateError('');
+  return true;
+};
 
-  const validateRegDates = (regStartDate, regEndDate) => {
-    if (regStartDate && regEndDate) {
-      const regStart = new Date(regStartDate);
-      const regEnd = new Date(regEndDate);
-      
-      if (regStart > regEnd) {
-        setRegDateError('Registration start date cannot be later than end date');
-        return false;
-      } else {
-        setRegDateError('');
-        return true;
-      }
+const validateRegDates = (regStartDate, regEndDate) => {
+  if (regStartDate && regEndDate) {
+    const regStart = new Date(regStartDate);
+    const regEnd = new Date(regEndDate);
+    
+    // Check if start date is after end date
+    if (regStart > regEnd) {
+      setRegDateError('Registration start date cannot be later than end date');
+      return false;
     }
+    
+    // Check if dates are exactly the same (no duration)
+    if (regStart.getTime() === regEnd.getTime()) {
+      setRegDateError('Registration end date must be at least 10 minutes after start date');
+      return false;
+    }
+    
+    // Check if there's at least 10 minutes difference
+    const timeDifference = regEnd.getTime() - regStart.getTime();
+    const tenMinutesInMs = 10 * 60 * 1000; // 10 minutes in milliseconds
+    
+    if (timeDifference < tenMinutesInMs) {
+      setRegDateError('Registration end date must be at least 10 minutes after start date');
+      return false;
+    }
+    
     setRegDateError('');
     return true;
-  };
+  }
+  setRegDateError('');
+  return true;
+};
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -89,6 +123,7 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
         <div className={createTournamentStyles.twoBoxesInRowContainer}>
           <div
             className={`${createTournamentStyles.halfBoxContainer} ${selectedOption === 'one-time' ? createTournamentStyles.activeBox : ''}`}
+            onClick={() => handleOptionClick('one-time')}
           >
             <div
               className={`${createTournamentStyles.option} ${selectedOption === 'one-time' ? createTournamentStyles.selected : ''}`}
@@ -102,6 +137,7 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
           
           <div
             className={`${createTournamentStyles.halfBoxContainer} ${selectedOption === 'recurring' ? createTournamentStyles.activeBox : ''}`}
+            onClick={() => handleOptionClick('recurring')}
           >
             <div
               className={`${createTournamentStyles.option} ${selectedOption === 'recurring' ? createTournamentStyles.selected : ''}`}

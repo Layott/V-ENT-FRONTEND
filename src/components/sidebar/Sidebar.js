@@ -10,8 +10,10 @@ import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdOutlineSettings } from "react-icons/md";
+import { MdLogout } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
+import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 
 const Sidebar = ({ customClass }) => {
     const pathname = usePathname()      // Gets the current pathname
@@ -22,6 +24,30 @@ const Sidebar = ({ customClass }) => {
             return pathname === '/';
         }
         return pathname === href || pathname.startsWith(href);
+    }
+
+    const handleLogout = async () => {
+        try {
+            // First clear all local storage items
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('authToken');
+            sessionStorage.clear();
+            
+            // Set the logged out cookie
+            document.cookie = "isLoggedOut=true; path=/; max-age=60";
+            
+            // Use NextAuth signOut but handle it properly
+            await signOut({ 
+                redirect: false // Change this to false
+            }).then(() => {
+                // Manual redirect after successful signOut
+                window.location.href = '/login';
+            });
+        } catch (error) {
+            console.error("Error during logout:", error);
+            // Still redirect even if there was an error
+            window.location.href = '/login';
+        }
     }
 
   return (
@@ -127,6 +153,13 @@ const Sidebar = ({ customClass }) => {
                         <span className={styles.comingSoon}>Coming Soon</span>
                     </span>
                 </li>
+
+                
+                <li className={`${styles.sidebarItem} ? styles.activeLink : ''}`}>
+                    <button onClick={handleLogout} className={styles.logoutButtonLink}>
+                        <MdLogout className={styles.sidebarIcon} /> Logout
+                    </button>
+                </li>
             
                 {/* <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
@@ -139,4 +172,4 @@ const Sidebar = ({ customClass }) => {
   )
 }
 
-export default Sidebar
+export default Sidebar;
