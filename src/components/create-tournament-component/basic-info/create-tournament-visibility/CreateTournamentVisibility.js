@@ -38,6 +38,7 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
           
           <div
             className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'public' ? createTournamentStyles.activeBox : ''}`}
+            onClick={() => handleOptionClick('public')}
           >
             <div
               className={`${createTournamentStyles.option} ${selectedOption === 'public' ? createTournamentStyles.selected : ''}`}
@@ -51,6 +52,7 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
           
           <div
             className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'private' ? createTournamentStyles.activeBox : ''}`}
+            onClick={() => handleOptionClick('private')}
           >
             <div
               className={`${createTournamentStyles.option} ${selectedOption === 'private' ? createTournamentStyles.selected : ''}`}
@@ -64,6 +66,7 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
 
           <div
             className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === 'protected' ? createTournamentStyles.activeBox : ''}`}
+            onClick={() => handleOptionClick('protected')}
           >
             <div
               className={`${createTournamentStyles.option} ${selectedOption === 'protected' ? createTournamentStyles.selected : ''}`}
@@ -143,4 +146,4 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
   )
 }
 
-export default CreateTournamentVisibility
+export default CreateTournamentVisibility;

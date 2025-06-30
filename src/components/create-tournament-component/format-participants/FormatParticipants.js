@@ -7,13 +7,64 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 
 const FormatParticipants = ({ setSelectedTab, updateLocalStorage }) => {
   const [formData, setFormData] = useState({});
-  
+
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
   }, []);
+
+  // Function to validate if all required fields are filled
+  const isFormValid = () => {
+    console.log('Current formData for validation:', formData);
+    
+    // Check bracket type is selected
+    if (!formData.bracket_type) {
+      console.log('Missing bracket_type');
+      return false;
+    }
+
+    // Check tournament access is selected
+    if (!formData.tournament_access) {
+      console.log('Missing tournament_access');
+      return false;
+    }
+
+    // Check tournament rules
+    if (!formData.tournament_rules || formData.tournament_rules.trim() === '') {
+      console.log('Missing tournament_rules');
+      return false;
+    }
+
+    // Additional validation based on tournament access type
+    if (formData.tournament_access === 'teams' || formData.tournament_access === 'both') {
+      // Check team-specific fields
+      if (!formData.number_of_teams || formData.number_of_teams === '') {
+        console.log('Missing number_of_teams');
+        return false;
+      }
+      if (!formData.team_size || formData.team_size === '') {
+        console.log('Missing team_size');
+        return false;
+      }
+    }
+
+    if (formData.tournament_access === 'individuals' || formData.tournament_access === 'both') {
+      // Check individual-specific fields
+      if (!formData.min_number_of_participants || formData.min_number_of_participants === '') {
+        console.log('Missing min_number_of_participants');
+        return false;
+      }
+      if (!formData.max_number_of_participants || formData.max_number_of_participants === '') {
+        console.log('Missing max_number_of_participants');
+        return false;
+      }
+    }
+
+    console.log('Form validation passed');
+    return true;
+  };
 
   const updateFormData = (key, value) => {
     console.log(`FormatParticipants - Updating ${key}:`, value);
@@ -29,6 +80,10 @@ const FormatParticipants = ({ setSelectedTab, updateLocalStorage }) => {
   };
 
   const handleProceed = () => {
+    if (!isFormValid()) {
+      alert('Please fill in all required fields before proceeding.');
+      return;
+    }
     // Force save current state before proceeding
     localStorage.setItem('createTournamentData', JSON.stringify(formData));
     setSelectedTab((prevTab) => prevTab + 1);
@@ -39,15 +94,26 @@ const FormatParticipants = ({ setSelectedTab, updateLocalStorage }) => {
   };
 
   return (
-    <div className={createTournamentStyles.generalTabContainer}>
-      <header className={createTournamentStyles.createTournamentHeader}>
-        <h1>Format & Participants</h1>
-      </header>
-
-      <TournamentFormat updateFormData={updateFormData} />
-      <Participants updateFormData={updateFormData} />
-      <TournamentRules updateFormData={updateFormData} />
-
+    <div>
+      <div>
+        <h2>Format & Participants</h2>
+      </div>
+      
+      <TournamentFormat 
+        formData={formData} 
+        updateFormData={updateFormData} 
+      />
+      
+      <Participants 
+        formData={formData} 
+        updateFormData={updateFormData} 
+      />
+      
+      <TournamentRules 
+        formData={formData} 
+        updateFormData={updateFormData} 
+      />
+      
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}

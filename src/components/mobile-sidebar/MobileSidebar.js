@@ -9,6 +9,8 @@ import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { MdOutlineSettings } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
+import { MdLogout } from "react-icons/md";
+import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 import styles from './mobile-sidebar.module.css'
 
 const MobileSidebar = ({ isOpen }) => {
@@ -20,6 +22,30 @@ const MobileSidebar = ({ isOpen }) => {
             return pathname === '/';
         }
         return pathname === href || pathname.startsWith(href);
+    }
+
+    const handleLogout = async () => {
+        try {
+            // First clear all local storage items
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('authToken');
+            sessionStorage.clear();
+            
+            // Set the logged out cookie
+            document.cookie = "isLoggedOut=true; path=/; max-age=60";
+            
+            // Use NextAuth signOut but handle it properly
+            await signOut({ 
+                redirect: false // Change this to false
+            }).then(() => {
+                // Manual redirect after successful signOut
+                window.location.href = '/login';
+            });
+        } catch (error) {
+            console.error("Error during logout:", error);
+            // Still redirect even if there was an error
+            window.location.href = '/login';
+        }
     }
 
   return (
@@ -119,10 +145,16 @@ const MobileSidebar = ({ isOpen }) => {
                         Settings <MdOutlineSettings className={styles.sidebarIcon} />
                     </Link>
                 </li>
+
+                <li className={styles.sidebarItem}>
+                    <button onClick={handleLogout} className={styles.logoutButtonLink}>
+                        Logout <MdLogout className={styles.sidebarIcon} />
+                    </button>
+                </li>
             </ul>
         </nav>
     </div>
   )
 }
 
-export default MobileSidebar
+export default MobileSidebar;

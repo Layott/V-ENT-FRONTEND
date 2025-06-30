@@ -19,6 +19,7 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
                 className={`${createTournamentStyles.halfBoxContainer} ${
                     selectedOption === 'single-elimination' ? createTournamentStyles.activeBox : ''
                 }`}
+                onClick={() => handleOptionClick('single-elimination')}
             >
                 <div
                 className={`${createTournamentStyles.option} ${selectedOption === 'single-elimination' ? createTournamentStyles.selected : ''}`}
@@ -34,6 +35,7 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
                 className={`${createTournamentStyles.halfBoxContainer} ${
                     selectedOption === 'swiss-system' ? createTournamentStyles.activeBox : ''
                 }`}
+                onClick={() => handleOptionClick('swiss-system')}
             >
                 <div
                 className={`${createTournamentStyles.option} ${selectedOption === 'swiss-system' ? createTournamentStyles.selected : ''}`}
@@ -49,6 +51,7 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
                 className={`${createTournamentStyles.halfBoxContainer} ${
                     selectedOption === 'double-elimination' ? createTournamentStyles.activeBox : ''
             }`}
+                onClick={() => handleOptionClick('double-elimination')}
             >
                 <div
                     className={`${createTournamentStyles.option} ${selectedOption === 'double-elimination' ? createTournamentStyles.selected : ''}`}
@@ -64,6 +67,7 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
                 className={`${createTournamentStyles.halfBoxContainer} ${
                     selectedOption === 'round-robin' ? createTournamentStyles.activeBox : ''
             }`}
+                onClick={() => handleOptionClick('round-robin')}
             >
                 <div
                     className={`${createTournamentStyles.option} ${selectedOption === 'round-robin' ? createTournamentStyles.selected : ''}`}
@@ -79,6 +83,7 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
                 className={`${createTournamentStyles.halfBoxContainer} ${
                     selectedOption === 'battle-royale' ? createTournamentStyles.activeBox : ''
             }`}
+                onClick={() => handleOptionClick('battle-royale')}
             >
                 <div
                     className={`${createTournamentStyles.option} ${selectedOption === 'battle-royale' ? createTournamentStyles.selected : ''}`}
@@ -99,4 +104,4 @@ const TournamentFormat = ({formData={}, updateFormData}) => {
   )
 }
 
-export default TournamentFormat
+export default TournamentFormat;
