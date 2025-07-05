@@ -53,9 +53,9 @@ const MobileSidebar = ({ isOpen }) => {
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
-                <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
-                    <Link href={'/'} className={styles.iconTextLink}>
-                        Home <BiHomeCircle className={styles.sidebarIcon} />
+                <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
+                    <Link href={'/user-profile'} className={styles.iconTextLink}>
+                        Home <BiHomeCircle className={styles.sidebarIcon} />    
                     </Link>
                 </li>
 
