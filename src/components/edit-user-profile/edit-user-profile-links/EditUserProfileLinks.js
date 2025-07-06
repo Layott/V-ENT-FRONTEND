@@ -43,79 +43,130 @@ const EditUserProfileLinks = () => {
     setOpen(false);
   };
 
-  // Add this right before the handleSubmit function
-console.log('Current state values:', {
-  facebook,
-  twitter, 
-  instagram,
-  youtube
-});
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  console.log('YouTube state value:', youtube);
-  console.log('YouTube length:', youtube.length);
-  console.log('Is youtube truthy?', !!youtube);
-  try {
-    if (!sessionToken) {
-      setSnackbarMessage('Session token is missing. Please log in again.');
+    console.log('=== DEBUGGING START ===');
+    console.log('Current state values:', {
+      facebook,
+      twitter, 
+      instagram,
+      youtube
+    });
+    console.log('Dynamic links array:', links);
+    
+    try {
+      if (!sessionToken) {
+        setSnackbarMessage('Session token is missing. Please log in again.');
+        setSnackbarType('error');
+        setOpen(true);
+        setLoading(false);
+        return;
+      }
+
+      // Start with empty object
+      const formattedLinks = {};
+      const reservedTitles = ['facebook', 'twitter', 'instagram', 'youtube'];
+      
+      // Check for reserved titles in dynamic links and show error if found
+      const invalidLinks = links.filter(link => 
+        link.title && link.title.trim() && reservedTitles.includes(link.title.toLowerCase().trim())
+      );
+      
+      if (invalidLinks.length > 0) {
+        console.log('Found invalid links:', invalidLinks);
+        setSnackbarMessage('Please use the dedicated fields for Facebook, Twitter, Instagram, and YouTube instead of adding them as custom links.');
+        setSnackbarType('error');
+        setOpen(true);
+        setLoading(false);
+        return;
+      }
+      
+      // Add predefined social media links if they have values
+      if (facebook && facebook.trim()) {
+        formattedLinks.facebook = facebook.trim();
+        console.log('Added facebook:', facebook.trim());
+      }
+      if (twitter && twitter.trim()) {
+        formattedLinks.twitter = twitter.trim();
+        console.log('Added twitter:', twitter.trim());
+      }
+      if (instagram && instagram.trim()) {
+        formattedLinks.instagram = instagram.trim();
+        console.log('Added instagram:', instagram.trim());
+      }
+      if (youtube && youtube.trim()) {
+        formattedLinks.youtube = youtube.trim();
+        console.log('Added youtube:', youtube.trim());
+      }
+      
+      // Add dynamic links (filter out empty ones and reserved titles)
+      links.forEach((link, index) => {
+        if (link.title && link.title.trim() && link.link && link.link.trim()) {
+          const trimmedTitle = link.title.trim();
+          const trimmedLink = link.link.trim();
+          
+          // Double check it's not a reserved title
+          if (!reservedTitles.includes(trimmedTitle.toLowerCase())) {
+            formattedLinks[trimmedTitle] = trimmedLink;
+            console.log(`Added dynamic link ${index}:`, trimmedTitle, '=', trimmedLink);
+          } else {
+            console.log(`Skipped reserved title at index ${index}:`, trimmedTitle);
+          }
+        }
+      });
+
+      console.log('=== FINAL FORMATTED LINKS ===');
+      console.log('Keys in formattedLinks:', Object.keys(formattedLinks));
+      console.log('Full formattedLinks object:', formattedLinks);
+      
+      // Check for any duplicate keys (this shouldn't happen, but let's be sure)
+      const keys = Object.keys(formattedLinks);
+      const uniqueKeys = [...new Set(keys)];
+      if (keys.length !== uniqueKeys.length) {
+        console.error('DUPLICATE KEYS DETECTED IN FRONTEND!');
+        console.error('Keys:', keys);
+        console.error('Unique keys:', uniqueKeys);
+      }
+
+      const payload = { links: formattedLinks };
+      console.log('=== PAYLOAD BEING SENT ===');
+      console.log('Payload:', JSON.stringify(payload, null, 2));
+
+      const response = await fetch(VENT.EDIT_LINKS, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      console.log('=== RESPONSE ===');
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
+
+      if (response.ok) {
+        setLinks([{ title: '', link: '' }]);
+        router.push('/user-profile');
+        setSnackbarMessage(data.message || 'Links updated successfully!');
+        setSnackbarType('success');
+      } else {
+        setSnackbarMessage(data.message || 'Failed to update links.');
+        setSnackbarType('error');
+      }
+      setOpen(true);
+    } catch (error) {
+      console.error('Error updating links:', error);
+      setSnackbarMessage('An error occurred while updating your links.');
       setSnackbarType('error');
       setOpen(true);
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    // Format links as dictionary/object as backend expects
-    const formattedLinks = {};
-    
-    // Add predefined social media links if they have values
-    if (facebook) formattedLinks.facebook = facebook;
-    if (twitter) formattedLinks.twitter = twitter;
-    if (instagram) formattedLinks.instagram = instagram;
-    if (youtube) formattedLinks.youtube = youtube;
-    
-    // Add dynamic links
-    links.forEach(link => {
-      if (link.title && link.link) {
-        formattedLinks[link.title] = link.link;
-      }
-    });
-
-    console.log('Formatted links being sent:', formattedLinks);
-    console.log('Full payload:', { social_links: formattedLinks });
-
-    const response = await fetch(VENT.EDIT_LINKS, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`,
-      },
-      body: JSON.stringify({ links: formattedLinks }),
-    });
-
-    const data = await response.json();
-    console.log('Response status:', response.status);
-    console.log('Response data:', data);
-
-    if (response.ok) {
-      setLinks([{ title: '', link: '' }]);
-      router.push('/user-profile');
-      setSnackbarMessage(data.message || 'Links updated successfully!');
-      setSnackbarType('success');
-    } else {
-      setSnackbarMessage(data.message || 'Failed to update links.');
-      setSnackbarType('error');
-    }
-    setOpen(true);
-  } catch (error) {
-    console.error('Error updating links:', error);
-    setSnackbarMessage('An error occurred while updating your links.');
-    setSnackbarType('error');
-    setOpen(true);
-  }
-  setLoading(false);
-};
+  };
 
   return (
     <div className={styles.editLinksContainer}>
