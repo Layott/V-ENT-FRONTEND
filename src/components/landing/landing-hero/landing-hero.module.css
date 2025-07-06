@@ -72,15 +72,33 @@
   width: 120px;
 }
 
-.loginBTN {
+.signupBTN, .loginBTN {
   border-radius: 5px;
   width: 80px;
+  margin: 0;
   background-color: var(--v-ent-red);
 }
 
-.headerJoinTournamentsBTNContainer button:first-of-type {
-  border-radius: 50px;
+.signupBTN {
+  /* background-color: var(--overlay-gray); */
+  background-color: transparent;
+  border: 1px solid var(--v-ent-red);
 }
+
+.signupBTN:focus, .signupBTN:active, .signupBTN:hover {
+  background-color: var(--v-ent-red);
+}
+
+.authButtonsWrapper {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end; 
+  align-items: center;
+}
+
+/* .headerJoinTournamentsBTNContainer button:first-of-type {
+  border-radius: 50px;
+} */
 
 .heroContent {
   height: calc(100% - 100px);
