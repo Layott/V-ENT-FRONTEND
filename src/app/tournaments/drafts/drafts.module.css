@@ -1,0 +1,10 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #17181A;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  width: 100%;
+}
