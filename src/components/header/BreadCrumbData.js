@@ -6,6 +6,11 @@ const breadCrumbTitles = {
         fallbackURL: '/user-profile'
     },
     "/tournaments": { title: "Tournaments", showBackArrow: false },
+    "/tournaments/drafts": { 
+        title: "My Drafts", 
+        showBackArrow: true,
+        fallbackURL: '/tournaments'
+    },
     "/tournaments/create-tournament": { 
         title: "Create Tournament", 
         showBackArrow: true,

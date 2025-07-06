@@ -115,6 +115,11 @@ const TournamentsComponent = () => {
           )}
         </div>
 
+          {/* Create Tournament Button */}
+        {/* <Link href={'./tournaments/drafts'} className={`${styles.createTournamentBTN} redBTN`}>
+          <HiPlus className={styles.plusIcon} />
+          My Drafts
+        </Link> */}
         {/* Create Tournament Button */}
         <Link href={'./tournaments/create-tournament'} className={`${styles.createTournamentBTN} redBTN`}>
           <HiPlus className={styles.plusIcon} />
