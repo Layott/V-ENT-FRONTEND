@@ -80,10 +80,10 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
 
         </div>
 
-          <div className={styles.outerQuestionContainer}>
+          {/* <div className={styles.outerQuestionContainer}>
 
             <div className={styles.eventContainer}>
-                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>b
+                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>Mode
                     <span className={createTournamentStyles.asteriskSpan}>
                         <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                     </span>
@@ -102,7 +102,7 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
                 </select>
             </div>
 
-          </div>
+          </div> */}
 
 
           <div className={createTournamentStyles.twoInputContainer}>
