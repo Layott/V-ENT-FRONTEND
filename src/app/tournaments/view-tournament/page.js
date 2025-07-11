@@ -41,7 +41,7 @@ const ViewTournamentContent = () => {
     console.log('Tournament ID from URL:', id);
     
     try {
-      const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/get-all-tournaments/');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-all-tournaments/`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch tournaments: ${response.status} ${response.statusText}`);

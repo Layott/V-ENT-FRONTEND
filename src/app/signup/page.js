@@ -394,7 +394,14 @@ return (
                         <p className={styles.termsAndPrivacy}>By creating an account, you agree to our&nbsp;
                             <Link href={'/term-of-use'}>Terms of Use</Link>
                             &nbsp;&amp;&nbsp;
-                            <Link href={'/privacy-policy'}>Privacy Policy</Link>
+                            {/* <Link href={'/privacy-policy'}>Privacy Policy</Link> */}
+                            <a
+                              href="/privacy-policy.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Privacy Policy
+                            </a>
                         </p>
                     </form>
 

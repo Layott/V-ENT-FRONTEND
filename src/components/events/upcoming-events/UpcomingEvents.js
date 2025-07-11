@@ -9,7 +9,7 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css'
 // Import your default event image - make sure this path is correct
 
 const UpcomingEvents = ({ upcomingEvents = [] }) => {
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Function to get the correct image URL - same as tournament implementation
   const getImageUrl = (imagePath) => {

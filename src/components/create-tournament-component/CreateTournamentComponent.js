@@ -37,7 +37,7 @@ const CreateTournamentComponent = () => {
   // Wrap fetchAvailableGames with useCallback to memoize it
   const fetchAvailableGames = useCallback(async () => {
     try {
-      const response = await fetch('https://vermillionent.pythonanywhere.com/get-all-tournaments/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-all-tournaments/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session?.user?.sessionToken}`,
@@ -96,7 +96,7 @@ const CreateTournamentComponent = () => {
     }
   };
     
-  const handleSubmit = async () => {
+  const handleSubmit = async (isDraft = false) => {
     try {
       setIsSubmitting(true);
       
@@ -234,7 +234,13 @@ const CreateTournamentComponent = () => {
       formDataToSend.append('end_date_and_time', latestFormData.end_date_and_time || '');
       formDataToSend.append('tournament_location', latestFormData.tournament_location || '');
       formDataToSend.append('virtual_link', latestFormData.virtual_link || '');
-      formDataToSend.append('hide_location', Boolean(latestFormData.hide_location));
+      // formDataToSend.append('hide_location', Boolean(latestFormData.hide_location));
+      // const hideLocation =
+      //   latestFormData.hide_location === true ||
+      //   latestFormData.hide_location === 'true';
+      // formDataToSend.append('hide_location', hideLocation ? 'True' : 'False');
+      formDataToSend.append('hide_location', latestFormData.hide_location ? 'True' : 'False');
+      // formDataToSend.append('hide_location', latestFormData.hide_location ? 'true' : 'false');
       
       formDataToSend.append('tournament_visibility', latestFormData.tournament_visibility || 'public');
       formDataToSend.append('entry_type', latestFormData.entry_type || '');
@@ -249,6 +255,9 @@ const CreateTournamentComponent = () => {
       
       formDataToSend.append('prize_distribution_type', latestFormData.prize_distribution_type || 'distributed');
       formDataToSend.append('prize_distribution', JSON.stringify(Array.isArray(latestFormData.prize_distribution) ? latestFormData.prize_distribution : []));
+      // formDataToSend.append('is_draft', isDraft); // true if saving a draft
+      // formDataToSend.append('is_draft', isDraft ? 'true' : 'false');
+      formDataToSend.append('is_draft', isDraft ? 'True' : 'False'); // capitalize
       formDataToSend.append('winner_prize', parseFloat(latestFormData.winner_prize) || 0);
       
       // Add sponsor arrays
@@ -276,7 +285,7 @@ const CreateTournamentComponent = () => {
 
       console.log("FormData prepared for API submission");
 
-      const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/create-tournament/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/create-tournament/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.user.sessionToken}`,
@@ -329,11 +338,11 @@ const CreateTournamentComponent = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
+        return <BasicInfo formData={formData} setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
       case 2:
-        return <FormatParticipants setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return <FormatParticipants formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
       case 3:
-        return <PrizeDistribution setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return <PrizeDistribution formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
       case 4:
         return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:

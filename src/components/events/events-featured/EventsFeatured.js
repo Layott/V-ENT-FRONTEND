@@ -6,7 +6,7 @@ import { FaArrowRight } from "react-icons/fa";
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
 
 const EventsFeatured = ({ featuredEvents = [] }) => {
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Function to get the correct image URL - same as tournament implementation
   const getImageUrl = (imagePath) => {

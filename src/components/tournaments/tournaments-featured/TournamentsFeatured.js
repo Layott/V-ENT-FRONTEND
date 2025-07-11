@@ -18,11 +18,11 @@ const TournamentsFeatured = ({ data }) => {
     
     // If it starts with /media, prepend your backend URL
     if (imagePath.startsWith('/media')) {
-      return `https://vermillionent.pythonanywhere.com${imagePath}`;
+      return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
     }
     
     // If it's just a filename, construct the full path
-    return `https://vermillionent.pythonanywhere.com/media/tournament_banners/${imagePath}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}/media/tournament_banners/${imagePath}`;
   };
 
   // Function to format date from API format to your display format
