@@ -28,15 +28,15 @@ const EventsComponent = () => {
 
   console.log("Session:", session); // Debugging log
 
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Memoize the helper functions with useCallback
   const getAbsoluteUrl = useCallback((url, type = "default") => {
     if (!url) {
       if (type === "banner") {
-        return "https://vermillionent.pythonanywhere.com/media/default-banner.jpg";
+        return `${process.env.NEXT_PUBLIC_API_URL}/media/default-banner.jpg`;
       }
-      return "https://vermillionent.pythonanywhere.com/media/default-profile.jpg";
+      return `${process.env.NEXT_PUBLIC_API_URL}/media/default-profile.jpg`;
     }
     
     if (url.startsWith("http")) {
@@ -66,7 +66,7 @@ const EventsComponent = () => {
 
     try {
       const response = await axios.get(
-        "https://vermillionent.pythonanywhere.com/event/get-all-events/",
+        `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,

@@ -24,7 +24,7 @@ const UserProfileBio = ({
   const [imageError, setImageError] = useState(false);
 
   
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   
   const getAbsoluteUrl = (url) => {

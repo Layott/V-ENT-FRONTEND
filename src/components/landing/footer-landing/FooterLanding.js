@@ -38,7 +38,7 @@ const FooterLanding = () => {
                     <div className={styles.innerContactContainer}>
                         <p className={styles.emailParagraph}>
                             <span className={styles.envelopeSpan}><BsEnvelope /></span>
-                            <span>info@vermillionent.com</span>
+                            <span>support@v-ent.co</span>
                         </p>
                         <p className={styles.emailParagraph}>
                             <span className={styles.envelopeSpan}><IoCallOutline /></span>
@@ -63,7 +63,7 @@ const FooterLanding = () => {
 
         <div className={styles.footerBottom}>
             <p>
-                &copy; 2024 Vermillion Enterprise (V-ENT)
+                &copy; 2025 Vermillion Enterprise (V-ENT)
             </p>
             <p>
                 All rights reserved

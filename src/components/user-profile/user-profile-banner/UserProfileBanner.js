@@ -48,7 +48,7 @@ const UserProfileBanner = ({ banner, onBannerUpdate }) => {
 
       // Upload banner to server
       const response = await fetch(
-        `https://vermillionent.pythonanywhere.com/auth/edit-profile-info/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/edit-profile-info/`,
         {
           method: "POST",
           headers: {

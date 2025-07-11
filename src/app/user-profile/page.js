@@ -31,7 +31,7 @@ const UserProfile = () => {
     setInterests(newInterests);
   };
 
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   const getAbsoluteUrl = useCallback((url) => {
     if (!url) return null;

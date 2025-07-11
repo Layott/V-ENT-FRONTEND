@@ -6,7 +6,7 @@ const handler = NextAuth(authOptions)
 export {handler as GET, handler as POST}
 
 
-const BASE_URL = 'https://vermillionent.pythonanywhere.com';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const VENT = {
   WAITLIST: `${BASE_URL}/auth/add-email-to-waitlist/`,

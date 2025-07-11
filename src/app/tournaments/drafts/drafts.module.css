@@ -8,3 +8,20 @@
 .mainContainer {
   width: 100%;
 }
+
+.draftsContainer {
+  padding: 2rem;
+}
+
+.draftsList {
+  list-style: none;
+  padding: 0;
+}
+
+.draftsCard {
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f9f9f9;
+}

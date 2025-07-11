@@ -15,6 +15,7 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
   useEffect(() => {
     // Load form data from localStorage
     const savedData = localStorage.getItem('createTournamentData');
+    console.log("Saved data in Review:", savedData);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData(parsedData);
@@ -107,9 +108,12 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
+          onClick={() => handleSubmit(true)}
+          disabled={isSubmitting}
         >
-          Save Draft
+          {isSubmitting ? 'Saving...' : 'Save Draft'}
         </button>
+
 
         <div className={createTournamentStyles.backAndProceedContainer}>
           <button
@@ -123,7 +127,8 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
 
           <button
             className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
-            onClick={handleSubmit}
+            onClick={() => handleSubmit(false)}
+
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Publishing...' : 'Publish'}
