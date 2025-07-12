@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'; // Add this import
 import Image from 'next/image'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
-import { BiHomeCircle } from "react-icons/bi";
+// import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
@@ -14,6 +14,7 @@ import { RiShoppingCart2Line } from "react-icons/ri";
 import { MdOutlineSettings } from "react-icons/md";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './bottom-menu.module.css'
+import { PiUserCircle } from "react-icons/pi";
 
 const BottomMenu = ({ customClass }) => {
   const pathname = usePathname()
@@ -132,7 +133,7 @@ const BottomMenu = ({ customClass }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        <BiHomeCircle className={`${styles.sidebarIcon} `} /> Home
+                        <PiUserCircle className={`${styles.sidebarIcon} `} /> Profile
                     </Link>
                 </li>
 
