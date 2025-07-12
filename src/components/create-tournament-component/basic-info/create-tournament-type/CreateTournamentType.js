@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from "next-auth/react";
+import axios from "axios";
 import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './create-tournament-type.module.css';
@@ -8,19 +10,116 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [isLinkedToEvent, setIsLinkedToEvent] = useState(true);
   const [hideLocation, setHideLocation] = useState(false);
   const [eventSearchTerm, setEventSearchTerm] = useState('');
+  const [availableEvents, setAvailableEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [filteredEvents, setFilteredEvents] = useState([]);
 
-  // Mock data for events - replace with actual API call
-  const availableEvents = [
-    { id: 1, name: 'Summer Gaming Championship 2024', date: '2024-07-15' },
-    { id: 2, name: 'Winter Esports Tournament', date: '2024-12-10' },
-    { id: 3, name: 'Spring Mobile Gaming Event', date: '2024-04-20' },
-    { id: 4, name: 'Annual Gaming Fest', date: '2024-08-30' },
-    { id: 5, name: 'Regional Championship Series', date: '2024-06-05' }
-  ];
+  const { data: session } = useSession();
+  const baseUrl = "https://vermillionent.pythonanywhere.com";
 
-  const filteredEvents = availableEvents.filter(event =>
-    event.name.toLowerCase().includes(eventSearchTerm.toLowerCase())
-  );
+  // Helper function to get absolute URLs
+  const getAbsoluteUrl = useCallback((url, type = "default") => {
+    if (!url) {
+      if (type === "banner") {
+        return "https://vermillionent.pythonanywhere.com/media/default-banner.jpg";
+      }
+      return "https://vermillionent.pythonanywhere.com/media/default-profile.jpg";
+    }
+    
+    if (url.startsWith("http")) {
+      return url;
+    }
+    
+    return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+  }, [baseUrl]);
+
+  // Process event images to use absolute URLs
+  const processEventImages = useCallback((events) => {
+    return events.map((event) => ({
+      ...event,
+      banner_image: getAbsoluteUrl(event.banner),
+      organizer_logo: getAbsoluteUrl(event.logo),
+    }));
+  }, [getAbsoluteUrl]);
+
+  // Fetch events from backend
+  const fetchEvents = useCallback(async () => {
+    if (!session || !session.user?.sessionToken) {
+      console.error("No session token available for fetching events.");
+      return;
+    }
+
+    setIsLoadingEvents(true);
+    const sessionToken = session.user.sessionToken;
+
+    try {
+      const response = await axios.get(
+        "https://vermillionent.pythonanywhere.com/event/get-all-events/",
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Raw API response:", response.data);
+      
+      // Combine featured and upcoming events
+      const featured = response.data.data.featured || [];
+      const upcoming = response.data.data.upcoming || [];
+      const allEvents = [...featured, ...upcoming];
+      
+      console.log("Combined events before processing:", allEvents);
+
+      // Process the events to include absolute URLs
+      const processedEvents = processEventImages(allEvents);
+      
+      // Map to the format expected by the component
+      const formattedEvents = processedEvents.map(event => ({
+        id: event.id || event.event_id, // Try both possible ID fields
+        name: event.name || event.title || event.event_name,
+        date: event.start_date || event.date || event.event_date,
+        banner_image: event.banner_image,
+        organizer_logo: event.organizer_logo,
+        description: event.description,
+        location: event.location
+      })).filter(event => event.id && event.name); // Filter out events without ID or name
+
+      setAvailableEvents(formattedEvents);
+      console.log("Fetched events for tournament creation:", formattedEvents);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+      if (error.response) {
+        console.log("Response status:", error.response.status);
+        console.log("Response data:", error.response.data);
+      }
+      // Fallback to empty array if fetch fails
+      setAvailableEvents([]);
+    } finally {
+      setIsLoadingEvents(false);
+    }
+  }, [session, processEventImages]);
+
+  // Fetch events when component mounts and session is available
+  useEffect(() => {
+    if (session && session.user?.sessionToken) {
+      fetchEvents();
+    }
+  }, [session, fetchEvents]);
+
+  // Filter events based on search term
+  useEffect(() => {
+    if (!eventSearchTerm.trim()) {
+      setFilteredEvents([]);
+      return;
+    }
+
+    const filtered = availableEvents.filter(event =>
+      event.name.toLowerCase().includes(eventSearchTerm.toLowerCase())
+    );
+    setFilteredEvents(filtered);
+  }, [eventSearchTerm, availableEvents]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -31,8 +130,9 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
     setHideLocation(event.target.checked);
     if (event.target.checked) {
       updateFormData('hide_location', 'true');
-    }else {
-      updateFormData('hide_location', 'false');}
+    } else {
+      updateFormData('hide_location', 'false');
+    }
   };
 
   const handleEventLinkChange = (value) => {
@@ -44,8 +144,15 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   };
 
   const handleEventSelect = (eventId) => {
+    // Add safety check for eventId
+    if (!eventId) {
+      console.error('Event ID is undefined');
+      return;
+    }
+    
     updateFormData('event', eventId.toString());
-    setEventSearchTerm(availableEvents.find(event => event.id === eventId)?.name || '');
+    const selectedEvent = availableEvents.find(event => event.id === eventId);
+    setEventSearchTerm(selectedEvent?.name || '');
   };
 
   return (
@@ -162,7 +269,13 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
                     onChange={handleEventSearchChange}
                   />
                   
-                  {eventSearchTerm && filteredEvents.length > 0 && (
+                  {isLoadingEvents && (
+                    <div className={styles.loadingMessage}>
+                      Loading events...
+                    </div>
+                  )}
+                  
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length > 0 && (
                     <div >
                       {filteredEvents.map((event) => (
                         <div
@@ -172,14 +285,22 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
                         >
                           <div className={styles.eventName}>{event.name}</div>
                           <div className={styles.eventDate}>{event.date}</div>
+                          {/* Debug info - remove after fixing */}
+                          <div style={{fontSize: '10px', color: 'gray'}}>ID: {event.id}</div>
                         </div>
                       ))}
                     </div>
                   )}
                   
-                  {eventSearchTerm && filteredEvents.length === 0 && (
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && (
                     <div className={styles.noEventsFound}>
                       No events found matching your search.
+                    </div>
+                  )}
+
+                  {!isLoadingEvents && availableEvents.length === 0 && eventSearchTerm && (
+                    <div className={styles.noEventsFound}>
+                      No events available. Please try again later.
                     </div>
                   )}
                 </div>
