@@ -20,13 +20,13 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
     
     // Check if start date is after end date
     if (start > end) {
-      setDateError('Tournament start date cannot be later than end date');
+      setDateError('Tournament start date cannot be later than end date and time');
       return false;
     }
     
     // Check if dates are exactly the same (no duration)
     if (start.getTime() === end.getTime()) {
-      setDateError('Tournament end date must be at least 10 minutes after start date');
+      setDateError('Tournament end date must be at least 10 minutes after start date and time');
       return false;
     }
     
@@ -35,7 +35,7 @@ const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
     const tenMinutesInMs = 10 * 60 * 1000; // 10 minutes in milliseconds
     
     if (timeDifference < tenMinutesInMs) {
-      setDateError('Tournament end date must be at least 10 minutes after start date');
+      setDateError('Tournament end date must be at least 10 minutes after start date and time');
       return false;
     }
     
@@ -53,13 +53,13 @@ const validateRegDates = (regStartDate, regEndDate) => {
     
     // Check if start date is after end date
     if (regStart > regEnd) {
-      setRegDateError('Registration start date cannot be later than end date');
+      setRegDateError('Registration start date cannot be later than end date and time');
       return false;
     }
     
     // Check if dates are exactly the same (no duration)
     if (regStart.getTime() === regEnd.getTime()) {
-      setRegDateError('Registration end date must be at least 10 minutes after start date');
+      setRegDateError('Registration end date must be at least 10 minutes after start date and time');
       return false;
     }
     

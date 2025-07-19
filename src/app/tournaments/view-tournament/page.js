@@ -44,43 +44,23 @@ const ViewTournamentContent = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-all-tournaments/`);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch tournaments: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch tournament: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
-      console.log('Full API Response:', data);
+      console.log('Tournament API Response:', data);
       
-      // Find the specific tournament by ID from the by_game data
-      let foundTournament = null;
-      
-      // Check if data has the expected structure
-      if (data.status === 'success' && data.data && data.data.by_game) {
-        console.log('Available tournament IDs:', 
-          Object.values(data.data.by_game)
-            .flat()
-            .map(t => ({ id: t.tournament_id, title: t.tournament_title }))
-        );
+      // Check if the API response has the expected structure
+      if (data.status === 'success' && data.data) {
+        console.log('Found tournament:', data.data);
         
-        // Search through all games
-        Object.values(data.data.by_game).forEach(gameArray => {
-          const tournament = gameArray.find(t => 
-            t.tournament_id === parseInt(id) || t.tournament_id === id
-          );
-          if (tournament) {
-            foundTournament = tournament;
-          }
-        });
+        // Set the tournament data directly - no need for extra processing
+        setTournament(data.data);
+        console.log('Tournament data set:', data.data);
       } else {
-        console.error('Unexpected API response structure:', data);
         throw new Error('Invalid API response structure');
       }
       
-      if (!foundTournament) {
-        throw new Error(`Tournament with ID ${id} not found`);
-      }
-      
-      console.log('Found tournament:', foundTournament);
-      setTournament(foundTournament);
       setLoading(false);
     } catch (err) {
       console.error('Detailed error:', err);
@@ -144,6 +124,9 @@ const ViewTournamentContent = () => {
       </div>
     );
   }
+
+  // Debug: Log tournament data before rendering
+  console.log('Rendering tournament:', tournament);
 
   return (
     <div className={styles.pageContainer}>

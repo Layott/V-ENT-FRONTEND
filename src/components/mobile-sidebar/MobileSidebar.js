@@ -1,6 +1,6 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BiHomeCircle } from "react-icons/bi";
+// import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
@@ -12,6 +12,8 @@ import { LuGamepad2 } from "react-icons/lu";
 import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 import styles from './mobile-sidebar.module.css'
+import { PiUserCircle } from "react-icons/pi";
+
 
 const MobileSidebar = ({ isOpen }) => {
     const pathname = usePathname()      // Gets the current pathname
@@ -55,7 +57,7 @@ const MobileSidebar = ({ isOpen }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        Home <BiHomeCircle className={styles.sidebarIcon} />    
+                        Profile <PiUserCircle className={styles.sidebarIcon} />    
                     </Link>
                 </li>
 
