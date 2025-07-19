@@ -42,7 +42,7 @@ const ViewTournamentContent = () => {
     
     try {
       // Use the specific tournament endpoint instead of get-all-tournaments
-      const response = await fetch(`https://vermillionent.pythonanywhere.com/tournament/view-tournament/${id}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch tournament: ${response.status} ${response.statusText}`);

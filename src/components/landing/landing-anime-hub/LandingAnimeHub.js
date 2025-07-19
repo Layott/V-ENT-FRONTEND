@@ -71,10 +71,10 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                     </p>
 
                     <Link
-                        href={'/login'}
+                        href={'/Signup'}
                         className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                         >
-                        Login
+                        Signup
                     </Link>
                 </div>
 

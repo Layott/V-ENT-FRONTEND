@@ -9,9 +9,15 @@
   width: 100%;
 }
 
-.draftsContainer {
+.rightPaneContainer {
   width: 100%;
-  margin-top: 30px;
+  margin-top: 60px;
+}
+
+.draftsContainer {
+  /* padding: 2rem; */
+  width: 100%;
+  margin-top: 60px;
 }
 
 .draftList {
@@ -19,8 +25,12 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  margin-top: 60px;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding-left: 5rem;
+  margin-right: 10rem;
 }
+
 
 .draftsCard {
   border: 1px solid #ccc;
@@ -28,4 +38,10 @@
   padding: 1rem;
   border-radius: 8px;
   background: #f9f9f9;
+}
+
+@media (max-width: 768px) {
+  .draftList{
+    margin-right: 3rem;
+  }
 }

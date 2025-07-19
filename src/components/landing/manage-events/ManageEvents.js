@@ -47,10 +47,10 @@ const ManageEvents = ({ scrollToForm }) => {
               </p>
 
               <Link
-                  href={'/login'}
+                  href={'/signup'}
                   className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                 >
-                  Login
+                  Signup
               </Link>
             </div>
 

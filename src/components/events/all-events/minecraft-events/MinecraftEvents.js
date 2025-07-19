@@ -17,7 +17,7 @@ const MinecraftEvents = () => {
     const [showAll, setShowAll] = useState(false);
     const [minecraftEvents, setMinecraftEvents] = useState([]);
     const { data: session } = useSession();
-    const baseUrl = "https://vermillionent.pythonanywhere.com";
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
     const handleToggle = () => {
         setShowAll(!showAll);
@@ -34,7 +34,7 @@ const MinecraftEvents = () => {
 
             try {
                 const response = await axios.get(
-                    "https://vermillionent.pythonanywhere.com/event/get-all-events/",
+                    `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
                     {
                         headers: {
                             Authorization: `Bearer ${sessionToken}`,

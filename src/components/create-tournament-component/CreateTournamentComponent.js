@@ -10,7 +10,8 @@ import styles from './create-tournament-component.module.css';
 
 const CreateTournamentComponent = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const { data: session } = useSession();
 
   // Initialize formData - load from localStorage on mount
@@ -37,7 +38,7 @@ const CreateTournamentComponent = () => {
   // Wrap fetchAvailableGames with useCallback to memoize it
   const fetchAvailableGames = useCallback(async () => {
     try {
-      const response = await fetch('https://vermillionent.pythonanywhere.com/get-all-tournaments/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-all-tournaments/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session?.user?.sessionToken}`,
@@ -98,7 +99,11 @@ const CreateTournamentComponent = () => {
     
   const handleSubmit = async (isDraft = false) => {
   try {
-    setIsSubmitting(true);
+    if (isDraft) {
+      setIsSavingDraft(true);
+    } else {
+      setIsPublishing(true);
+    }
     
     if (!session?.user?.sessionToken) {
       alert('You must be logged in to create a tournament');
@@ -335,22 +340,26 @@ const CreateTournamentComponent = () => {
     console.error('Error creating tournament:', error);
     alert(`Failed to ${isDraft ? 'save draft' : 'publish tournament'}: ${error.message || 'Unknown error'}`);
   } finally {
-    setIsSubmitting(false);
+    if (isDraft) {
+      setIsSavingDraft(false);
+    } else {
+      setIsPublishing(false);
+    }
   }
 };
 
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
+        return <BasicInfo formData={formData} setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
       case 2:
-        return <FormatParticipants setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return <FormatParticipants formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
       case 3:
-        return <PrizeDistribution setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return <PrizeDistribution formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
       case 4:
         return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:
-        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSubmitting={isSubmitting} />;
+        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSavingDraft={isSavingDraft} isPublishing={isPublishing} />;
       default:
         return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
     }

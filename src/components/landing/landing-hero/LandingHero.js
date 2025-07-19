@@ -39,7 +39,7 @@ const LandingHero = ({ formRef }) => {
         }
 
     try {
-      const response = await axios.post('https://vermillionent.pythonanywhere.com/auth/add-email-to-waitlist/', { email });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/add-email-to-waitlist/`, { email });
       setSnackbarMessage(response.data.message || 'Successfully joined the waitlist!');
       setSnackbarType('success');
       setEmail('');
@@ -98,7 +98,7 @@ const LandingHero = ({ formRef }) => {
             </div>
             <div className={styles.heroWelcomeTextContainer}>
               <p>Welcome to V-ENT, the ultimate platform where gaming, anime, and community converge. Whether you&apos;re a competitive esports player, a casual gamer, or an anime enthusiast, V-ENT offers tournaments, a vibrant marketplace, and unique features to help you immerse yourself in what you love most. Connect, compete, and engage in a community built for fans by fans.</p>
-              <div className={styles.formContainer} ref={formRef} >
+              {/* <div className={styles.formContainer} ref={formRef} >
                 <form onSubmit={handleSubmit} className={styles.form}>
                   <input
                     type="text"
@@ -108,13 +108,13 @@ const LandingHero = ({ formRef }) => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Link
-                    href={'/login'}
+                    href={'/signup'}
                       className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                     >
-                    Login
+                    Signup
                   </Link>
                 </form>
-              </div>
+              </div> */}
             </div>
           </div>
 
