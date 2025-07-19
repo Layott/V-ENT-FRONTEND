@@ -115,6 +115,51 @@ const validateRegDates = (regStartDate, regEndDate) => {
     }
   }
 
+  const formatDate = (dateObj) => {
+  if (!dateObj) return "--";
+
+  const options = { day: 'numeric', month: 'long', year: 'numeric' };
+  return new Date(dateObj).toLocaleDateString('en-GB', options);
+};
+
+const getNextCycleStartDate = () => {
+  if (!formData?.start_date_and_time || !recurrenceFrequency) return null;
+  const baseDate = new Date(formData.start_date_and_time);
+  const next = new Date(baseDate);
+
+  if (recurrenceFrequency === "monthly") {
+    next.setMonth(next.getMonth() + 1);
+  } else if (recurrenceFrequency === "yearly") {
+    next.setFullYear(next.getFullYear() + 1);
+  }
+
+  return next;
+};
+
+const getLastCycleEndDate = () => {
+  if (
+    !formData?.start_date_and_time ||
+    !recurrenceFrequency ||
+    !formData?.number_cycle
+  ) return null;
+
+  const baseDate = new Date(formData.start_date_and_time);
+  const last = new Date(baseDate);
+  const cycles = parseInt(formData.number_cycle, 10) - 1;
+
+  if (recurrenceFrequency === "monthly") {
+    last.setMonth(last.getMonth() + cycles);
+  } else if (recurrenceFrequency === "yearly") {
+    last.setFullYear(last.getFullYear() + cycles);
+  }
+
+  return last;
+};
+
+const nextCycleStart = getNextCycleStartDate();
+const lastCycleEnd = getLastCycleEndDate();
+
+
   return (
     <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
@@ -273,9 +318,10 @@ const validateRegDates = (regStartDate, regEndDate) => {
 
             <div className={styles.nextCycleContainer}>
               <p className={styles.nextCycleParagraph}>
-                <span>Next Cycle Start Date:</span>
-                <span>21st November 2024</span>
+              <span>Next Cycle Start Date:</span>
+              <span>{formatDate(nextCycleStart)}</span>
               </p>
+
 
               <div className={styles.recurringTournamentMoreDetails}>
                 <p>Recurring tournaments will inherit start dates (including registration dates) and duration from the first cycle.</p>
@@ -335,7 +381,7 @@ const validateRegDates = (regStartDate, regEndDate) => {
             {endCriteria === "after-cycles" && (
               <p className={styles.nextCycleParagraph}>
                 <span>Last Cycle End Date:</span>
-                <span>21st November 2026</span>
+                <span>{formatDate(lastCycleEnd)}</span>
               </p>
             )}
 

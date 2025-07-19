@@ -10,7 +10,8 @@ import styles from './create-tournament-component.module.css';
 
 const CreateTournamentComponent = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const { data: session } = useSession();
 
   // Initialize formData - load from localStorage on mount
@@ -98,7 +99,11 @@ const CreateTournamentComponent = () => {
     
   const handleSubmit = async (isDraft = false) => {
   try {
-    setIsSubmitting(true);
+    if (isDraft) {
+      setIsSavingDraft(true);
+    } else {
+      setIsPublishing(true);
+    }
     
     if (!session?.user?.sessionToken) {
       alert('You must be logged in to create a tournament');
@@ -335,7 +340,11 @@ const CreateTournamentComponent = () => {
     console.error('Error creating tournament:', error);
     alert(`Failed to ${isDraft ? 'save draft' : 'publish tournament'}: ${error.message || 'Unknown error'}`);
   } finally {
-    setIsSubmitting(false);
+    if (isDraft) {
+      setIsSavingDraft(false);
+    } else {
+      setIsPublishing(false);
+    }
   }
 };
 
@@ -350,7 +359,7 @@ const CreateTournamentComponent = () => {
       case 4:
         return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:
-        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSubmitting={isSubmitting} />;
+        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSavingDraft={isSavingDraft} isPublishing={isPublishing} />;
       default:
         return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
     }
