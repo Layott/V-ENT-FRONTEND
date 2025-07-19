@@ -1,3 +1,4 @@
+// Fixed FreeFireEvents.js
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -77,7 +78,7 @@ const FreeFireEvents = () => {
         return `${baseUrl}/media/event_banners/${imagePath}`;
     };
 
-    // Format date to display in a readable format
+    // Format date to display in a readable format (same as tournament)
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { 
@@ -102,55 +103,71 @@ const FreeFireEvents = () => {
             </div>
 
             <div className={allEventsStyles.cardsContainer}>
-                {freeFireEvents.slice(0, showAll ? freeFireEvents.length : 3).map((event, index) => (
-                    <div key={index} className={allEventsStyles.cardContainer}>
-                        <div className={allEventsStyles.imageContainer}>
-                            <Image
-                                src={getImageUrl(event.banner)}
-                                alt={event.name || "Event"}
-                                width={400}
-                                height={200}
-                            />
-                        </div>
-                                    
-                        <div className={menuContentStyles.descriptionContainer}>
-                            <div className={menuContentStyles.descriptionNameLocationContainer}>
-                                <p><span className={menuContentStyles.descriptionNameSpan}>{event.name}</span></p>
-                            </div>
-
-                            <div className={menuContentStyles.detailsContainer}>
-                                <div className={newTournamentStyles.eventTypeAndLocationContainer}>
-                                    <p className={newTournamentStyles.eventTypeParagraph}>
-                                        <span className={menuContentStyles.eventTypeSpan}>{event.event_type}</span>
-                                    </p>
-                                    {event.location && (
-                                        <>
-                                            <span className={menuContentStyles.dotSpan}>
-                                                <GoDotFill className={menuContentStyles.dotIcon} />
-                                            </span>
-                                            <span className={menuContentStyles.locationSpan}>{event.location}</span>
-                                        </>
-                                    )}
-                                </div>
+                {freeFireEvents.slice(0, showAll ? freeFireEvents.length : 3).map((event, index) => {
+                    // Normalize the event ID - same as tournament approach
+                    const eventId = event.event_id || event.id;
                     
-                                <p className={menuContentStyles.dateParagraph}>
-                                    <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
-                                    <span className={menuContentStyles.dateSpan}>{formatDate(event.event_date)}</span>
-                                </p>
-                                    
-                                <p className={menuContentStyles.feeParagraph}>
-                                    <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
-                                    <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {event.entry_fee}</span>
-                                </p>
+                    return (
+                        <div key={eventId} className={allEventsStyles.cardContainer}>
+                            <div className={allEventsStyles.imageContainer}>
+                                <Image
+                                    src={getImageUrl(event.banner)}
+                                    alt={event.name || "Event"}
+                                    width={400}
+                                    height={200}
+                                />
                             </div>
+                                        
+                            <div className={menuContentStyles.descriptionContainer}>
+                                <div className={menuContentStyles.descriptionNameLocationContainer}>
+                                    <p><span className={menuContentStyles.descriptionNameSpan}>{event.name}</span></p>
+                                </div>
+
+                                <div className={menuContentStyles.detailsContainer}>
+                                    <div className={newTournamentStyles.eventTypeAndLocationContainer}>
+                                        <p className={newTournamentStyles.eventTypeParagraph}>
+                                            <span className={menuContentStyles.eventTypeSpan}>{event.event_type}</span>
+                                        </p>
+                                        {event.location && (
+                                            <>
+                                                <span className={menuContentStyles.dotSpan}>
+                                                    <GoDotFill className={menuContentStyles.dotIcon} />
+                                                </span>
+                                                <span className={menuContentStyles.locationSpan}>{event.location}</span>
+                                            </>
+                                        )}
+                                    </div>
                         
-                            <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
-                                <Link href={`/events/view-event/${event.event_id}`} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
-                                <Link href={`/events/register-event/${event.event_id}`} className={newTournamentStyles.registerBTN}>Register</Link>
+                                    <p className={menuContentStyles.dateParagraph}>
+                                        <span className={menuContentStyles.calendarIconSpan}><FiCalendar className={menuContentStyles.calendarIcon} /></span>
+                                        <span className={menuContentStyles.dateSpan}>{formatDate(event.event_date)}</span>
+                                    </p>
+                                        
+                                    <p className={menuContentStyles.feeParagraph}>
+                                        <span className={newTournamentStyles.feeIconSpan}><PiMoneyWavy className={menuContentStyles.feeIcon} /></span>
+                                        <span className={menuContentStyles.feeSpan}>Fee: <span><RiCopperCoinFill className={menuContentStyles.coinIcon} /></span> {event.entry_fee}</span>
+                                    </p>
+                                </div>
+                            
+                                <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
+                                    {/* Fixed: Using query parameter approach like tournaments */}
+                                    <Link 
+                                        href={`/events/view-event?id=${eventId}`} 
+                                        className={newTournamentStyles.viewDetailsBTN}
+                                    >
+                                        View Details
+                                    </Link>
+                                    <Link 
+                                        href={`/events/register-event?id=${eventId}`} 
+                                        className={newTournamentStyles.registerBTN}
+                                    >
+                                        Register
+                                    </Link>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
                 
                 {showAll && freeFireEvents.length > 3 && (
                     <button
