@@ -247,16 +247,6 @@ const ViewEventContent = () => {
         <h3>Error Loading Event</h3>
         <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
         
-        <div style={{ marginBottom: '1rem' }}>
-          <h4>Debugging Steps:</h4>
-          <ol style={{ textAlign: 'left', fontSize: '0.9rem' }}>
-            <li>Check if event ID "{id}" exists in your database</li>
-            <li>Verify your API is running at: https://vermillionent.pythonanywhere.com</li>
-            <li>Make sure the event has a proper view-event endpoint</li>
-            <li>Check if you're logged in with a valid session</li>
-            <li>Review the console logs for more details</li>
-          </ol>
-        </div>
 
         <div style={{ marginTop: '1rem' }}>
           <button 
