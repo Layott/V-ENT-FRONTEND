@@ -46,64 +46,89 @@ const EventsFeatured = ({ featuredEvents = [] }) => {
 
       <div className={menuContentStyles.slidersContainer}>
         {featuredEvents.length > 0 ? (
-          featuredEvents.map((event, index) => (
-            <div key={event.event_id} className={menuContentStyles.sliderContainer}>
-              <div className={`${menuContentStyles.imageContainer} ${menuContentStyles['eventFeatureContainerDisplay']}`}
->
-                <Image
-                  src={getEventImage(event)}
-                  alt={event.name || "Featured Event"}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  priority={index === 0} // Add priority to the first image (potential LCP)
-                  // Add fallback image using onError
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/400x200?text=Featured+Event";
-                  }}
-                  unoptimized={true} // Add this for external images
-                />
-              </div>
-              
-              <div className={menuContentStyles.sliderDescriptionContainer}>
-                <div className={menuContentStyles.left}>
-                  <p>
-                    <span className={menuContentStyles.featuredName}>{event.name}</span> 
-                    {event.location && (
-                      <>
-                        - <span className={menuContentStyles.featuredLocation}>{event.location}</span>
-                      </>
-                    )}
-                  </p>
-                  <div className={menuContentStyles.dateEventTypeContainer}>
-                    <div className={menuContentStyles.dateContainer}>
-                      <p className={menuContentStyles.dateParagraph}>
-                        <span className={menuContentStyles.dateIconSpan}>
-                          <FiCalendar className={menuContentStyles.calendarIcon} />
-                        </span>
-                        <span className={menuContentStyles.dateSpan}>{formatDate(event.event_date)}</span>
-                      </p>
-                    </div>
+          featuredEvents.map((event, index) => {
+            // Normalize the event ID - this is crucial for consistency!
+            const eventId = event.event_id || event.id;
+            
+            // Debug logging to track the event data being rendered
+            console.log('EventsFeatured - Rendering event:', {
+              id: eventId,
+              name: event.name,
+              type: typeof eventId,
+              fullEvent: event
+            });
+
+            return (
+              <div key={eventId} className={menuContentStyles.sliderContainer}>
+                <div className={`${menuContentStyles.imageContainer} ${menuContentStyles['eventFeatureContainerDisplay']}`}>
+                  <Image
+                    src={getEventImage(event)}
+                    alt={event.name || "Featured Event"}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    priority={index === 0} // Add priority to the first image (potential LCP)
+                    // Add fallback image using onError
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400x200?text=Featured+Event";
+                    }}
+                    unoptimized={true} // Add this for external images
+                  />
+                </div>
                 
-                    <div className={menuContentStyles.eventTypeContainer}>
-                      <p className={menuContentStyles.eventTypeParagraph}>
-                        <span className={menuContentStyles.eventTypeIconSpan}>
-                          <LuBuilding2 className={menuContentStyles.buildingIcon} /> Event Type: 
-                        </span>
-                        <span className={menuContentStyles.eventType}>{event.event_type}</span>
-                      </p>
+                <div className={menuContentStyles.sliderDescriptionContainer}>
+                  <div className={menuContentStyles.left}>
+                    <p>
+                      <span className={menuContentStyles.featuredName}>{event.name}</span> 
+                      {event.location && (
+                        <>
+                          - <span className={menuContentStyles.featuredLocation}>{event.location}</span>
+                        </>
+                      )}
+                    </p>
+                    <div className={menuContentStyles.dateEventTypeContainer}>
+                      <div className={menuContentStyles.dateContainer}>
+                        <p className={menuContentStyles.dateParagraph}>
+                          <span className={menuContentStyles.dateIconSpan}>
+                            <FiCalendar className={menuContentStyles.calendarIcon} />
+                          </span>
+                          <span className={menuContentStyles.dateSpan}>{formatDate(event.event_date)}</span>
+                        </p>
+                      </div>
+                  
+                      <div className={menuContentStyles.eventTypeContainer}>
+                        <p className={menuContentStyles.eventTypeParagraph}>
+                          <span className={menuContentStyles.eventTypeIconSpan}>
+                            <LuBuilding2 className={menuContentStyles.buildingIcon} /> Event Type: 
+                          </span>
+                          <span className={menuContentStyles.eventType}>{event.event_type}</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                    
-                <div>
-                  <Link href={`/events/view-event/${event.event_id}`} className={menuContentStyles.viewDetailsLink}>
-                    <span className={menuContentStyles.viewDetails}>View Details</span>
-                    <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
-                  </Link>
+                      
+                  <div>
+                    <Link 
+                      href={`/events/view-event?id=${encodeURIComponent(eventId)}`} 
+                      className={menuContentStyles.viewDetailsLink}
+                      onClick={() => {
+                        console.log('🔗 Navigating to event with ID:', eventId);
+                        console.log('🔗 Full event data being passed:', event);
+                        
+                        // Store event data for debugging and consistency
+                        if (typeof window !== 'undefined') {
+                          sessionStorage.setItem('lastClickedEvent', JSON.stringify(event));
+                          sessionStorage.setItem('lastClickedEventId', String(eventId));
+                        }
+                      }}
+                    >
+                      <span className={menuContentStyles.viewDetails}>View Details</span>
+                      <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className={menuContentStyles.noEventsMessage}>No featured events available at the moment.</div>
         )}

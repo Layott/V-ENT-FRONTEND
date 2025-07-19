@@ -15,16 +15,71 @@ import tournamentStyles from '@/styles/tournament/tournament.module.css'
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 import overviewRtStyles from '@/view-/overview-right/overview-rt.module.css'
 
-const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
-
-    const address = "Landmark Beach, Water Corporation Drive, Lagos, Nigeria."
-    const formattedAddress = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.479607015029!2d3.402021615261661!3d6.42100899534757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf573739d5e67%3A0x4b0e643d8da168c!2sLandmark%20Beach!5e0!3m2!1sen!2sng!4v1690023945342!5m2!1sen!2sng";
-
+const EventDetailsOverviewRight = ({ event, socialLinks = [] }) => {
     const [showMoreSocials, setShowMoreSocials] = useState(false);
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [severity, setSeverity] = useState("success");
     const [isMapVisible, setIsMapVisible] = useState(false);
+
+    // Format date range
+    const formatDateRange = (startDate, endDate) => {
+      if (!startDate) return 'Date not set';
+      
+      const start = new Date(startDate);
+      const end = endDate ? new Date(endDate) : start;
+      
+      const startFormatted = start.toLocaleDateString('en-US', { 
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+      
+      if (startDate === endDate || !endDate) {
+        return startFormatted;
+      }
+      
+      const endFormatted = end.toLocaleDateString('en-US', { 
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+      
+      return `${startFormatted} - ${endFormatted}`;
+    };
+
+    // Format time range
+    const formatTimeRange = (startTime, endTime) => {
+      if (!startTime && !endTime) return 'Time not set';
+      
+      const formatTime = (time) => {
+        if (!time) return '';
+        // Assuming time is in 24h format like "07:00" or "23:00"
+        const [hours, minutes] = time.split(':');
+        const hour12 = ((parseInt(hours) + 11) % 12 + 1);
+        const ampm = parseInt(hours) >= 12 ? 'PM' : 'AM';
+        return `${hour12}:${minutes}${ampm}`;
+      };
+
+      if (startTime && endTime) {
+        return `${formatTime(startTime)} - ${formatTime(endTime)} (WAT)`;
+      }
+      
+      return `${formatTime(startTime || endTime)} (WAT)`;
+    };
+
+    // Format entry fee
+    const formatEntryFee = (fee) => {
+      if (!fee || fee === '0' || fee === 0) return 'FREE';
+      return `₦${fee.toLocaleString()}`;
+    };
+
+    // Generate Google Maps embed URL
+    const getMapEmbedUrl = (address) => {
+      if (!address) return '';
+      const encodedAddress = encodeURIComponent(address);
+      return `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodedAddress}`;
+    };
 
     const toggleMapVisibility = () => {
       setIsMapVisible((prev) => !prev);
@@ -62,38 +117,83 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
       return socialIcons[title.toLowerCase()] || socialIcons.default;
     };
     
-    const linkText = "https://chat.whatsapp.com/BX6jTRvEvrBGNHgNwqWJsbbdjndndkjdnjdFW";
-  
+    // Use event link or default WhatsApp link
+    const linkText = event?.event_link || event?.whatsapp_link || "https://chat.whatsapp.com/BX6jTRvEvrBGNHgNwqWJsbbdjndndkjdnjdFW";
+    const address = event?.location || event?.address || "Event location not specified";
+    
+    // Determine platform from link
+    const getPlatform = (link) => {
+      if (link.includes('whatsapp')) return 'WhatsApp';
+      if (link.includes('discord')) return 'Discord';
+      if (link.includes('telegram')) return 'Telegram';
+      if (link.includes('zoom')) return 'Zoom';
+      return 'Custom Platform';
+    };
+
   return (
     <div className={overviewLtStyles.overviewRight}>
       <div className={overviewRtStyles.rightBox}>
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><PiBuildingApartmentBold className={`${overviewRtStyles.icons} ${overviewRtStyles.fillIcons}`} /> Event Type</p>
-          <p className={overviewRtStyles.paragraphValue}>Physical</p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <PiBuildingApartmentBold className={`${overviewRtStyles.icons} ${overviewRtStyles.fillIcons}`} /> 
+            Event Type
+          </p>
+          <p className={overviewRtStyles.paragraphValue}>
+            {event?.event_type || 'Not specified'}
+          </p>
         </div>
+        
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><PiMoneyWavy className={`${overviewRtStyles.icons} ${overviewRtStyles.fillIcons}`} /> Entry Fee</p>
-          <p className={overviewRtStyles.paragraphValue}>N5,000</p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <PiMoneyWavy className={`${overviewRtStyles.icons} ${overviewRtStyles.fillIcons}`} /> 
+            Entry Fee
+          </p>
+          <p className={overviewRtStyles.paragraphValue}>
+            {formatEntryFee(event?.entry_fee)}
+          </p>
         </div>
+        
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><GrGamepad className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> Game</p>
-          <p className={overviewRtStyles.paragraphValue}>Counter Strike</p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <GrGamepad className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> 
+            Game
+          </p>
+          <p className={overviewRtStyles.paragraphValue}>
+            {event?.game || 'Game not specified'}
+          </p>
         </div>
+        
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><FiCalendar className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> Date</p>
-          <p className={overviewRtStyles.paragraphValue}>1st Oct - 21st Oct 2024</p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <FiCalendar className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> 
+            Date
+          </p>
+          <p className={overviewRtStyles.paragraphValue}>
+            {formatDateRange(event?.event_date, event?.end_date)}
+          </p>
         </div>
+        
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><FiClock className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> Time </p>
-          <p className={overviewRtStyles.paragraphValue}>7AM - 11PM  (WAT)</p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <FiClock className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} /> 
+            Time 
+          </p>
+          <p className={overviewRtStyles.paragraphValue}>
+            {formatTimeRange(event?.start_time, event?.end_time)}
+          </p>
         </div>
       </div>
 
       <div className={overviewRtStyles.rightBox}>
-        <h3 className={`${overviewRtStyles.headerH3} ${tournamentStyles.headerH3}`}><FaLink className={overviewRtStyles.priceIcon} /> Event Link</h3>
+        <h3 className={`${overviewRtStyles.headerH3} ${tournamentStyles.headerH3}`}>
+          <FaLink className={overviewRtStyles.priceIcon} /> Event Link
+        </h3>
+        
         <div className={overviewRtStyles.paragraphDiv}>
           <p className={overviewRtStyles.paragraphTitle}>Platform </p>
-          <p className={`${overviewRtStyles.paragraphValue} ${overviewRtStyles.paragraphValueFloatRight}`}>WhatsApp</p>
+          <p className={`${overviewRtStyles.paragraphValue} ${overviewRtStyles.paragraphValueFloatRight}`}>
+            {getPlatform(linkText)}
+          </p>
         </div>
 
         <div className={overviewRtStyles.linkDiv}>
@@ -107,26 +207,29 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
             <FiCopy className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} />
             <span className={overviewRtStyles.copySpan}>Copy</span>
           </button>
-          <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }} >
-            <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }} 
-              className={severity === "success" ? overviewRtStyles.snackbarSuccess : overviewRtStyles.snackbarError}
-            >
-              {message}
-            </Alert>
-          </Snackbar>
         </div>
       </div>
 
       <div className={`${overviewRtStyles.rightBox} ${overviewRtStyles.removeBorderBottom}`}>
-        <h3 className={`${overviewRtStyles.headerH3} ${tournamentStyles.headerH3}`}><BiMapPin className={overviewRtStyles.priceIcon} /> Direction</h3>
+        <h3 className={`${overviewRtStyles.headerH3} ${tournamentStyles.headerH3}`}>
+          <BiMapPin className={overviewRtStyles.priceIcon} /> Direction
+        </h3>
 
         <div className={overviewRtStyles.paragraphDiv}>
-          <p className={overviewRtStyles.paragraphTitle}><IoLocationOutline className={overviewRtStyles.icons} /> Address </p>
+          <p className={overviewRtStyles.paragraphTitle}>
+            <IoLocationOutline className={overviewRtStyles.icons} /> Address 
+          </p>
           <p className={overviewRtStyles.paragraphValue}>{address}</p>
         </div>
 
         <div className={overviewRtStyles.linkDiv}>
-          <button className={overviewRtStyles.getDirectionBTN}>
+          <button 
+            className={overviewRtStyles.getDirectionBTN}
+            onClick={() => {
+              const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+              window.open(googleMapsUrl, '_blank');
+            }}
+          >
             Get Directions
           </button>
           <button 
@@ -136,26 +239,22 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
             <FiCopy className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} />
             <span className={overviewRtStyles.copySpan}>Copy</span>
           </button>
-          <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }} >
-            <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }} 
-              className={severity === "success" ? overviewRtStyles.snackbarSuccess : overviewRtStyles.snackbarError}
-            >
-              {message}
-            </Alert>
-          </Snackbar>
         </div>
 
         <button onClick={toggleMapVisibility} className={overviewRtStyles.hideMapBTN}>
           {isMapVisible ? "Hide Map" : "Show Map"}{" "}
-          {isMapVisible ? <PiCaretUpBold className={overviewRtStyles.caretIcons} /> : <PiCaretDownBold className={overviewRtStyles.caretIcons} />}
+          {isMapVisible ? 
+            <PiCaretUpBold className={overviewRtStyles.caretIcons} /> : 
+            <PiCaretDownBold className={overviewRtStyles.caretIcons} />
+          }
         </button>
       </div>
 
-      {isMapVisible && 
+      {isMapVisible && address && address !== "Event location not specified" && (
         <div className={overviewRtStyles.mapContainer}>
           <iframe
-            src={formattedAddress}
-            frameborder="0"
+            src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodeURIComponent(address)}`}
+            frameBorder="0"
             allowFullScreen=""
             className={overviewRtStyles.mapIframe}
             loading="lazy"
@@ -163,7 +262,7 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
             title="Google Map"
           />
         </div>
-      }
+      )}
 
       <div className={overviewRtStyles.rightBox}>
         <h3 className={`${overviewRtStyles.headerH3} ${tournamentStyles.headerH3}`}>Social Links</h3>
@@ -172,7 +271,7 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
           {Array.isArray(socialLinks) && socialLinks.length === 0 ? (
             <div className={profileStyles.noInterestsContainer}>
               <h4 className={profileStyles.profileH4HeaderEmptyContent}>No social links yet</h4>
-              <p className={profileStyles.emptyParagraphContent}>You haven&#39;t added any social media links yet</p>
+              <p className={profileStyles.emptyParagraphContent}>No social media links have been added for this event</p>
             </div>
           ) : (
             <>
@@ -203,11 +302,27 @@ const EventDetailsOverviewRight = ({ socialLinks = [] }) => {
                 </button>
               )}
             </>
-            )}
+          )}
         </div>
       </div>
+
+      <Snackbar 
+        open={open} 
+        autoHideDuration={3000} 
+        onClose={handleClose} 
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert 
+          onClose={handleClose} 
+          severity={severity} 
+          sx={{ width: "100%" }} 
+          className={severity === "success" ? overviewRtStyles.snackbarSuccess : overviewRtStyles.snackbarError}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }
 
-export default EventDetailsOverviewRight
+export default EventDetailsOverviewRight;
