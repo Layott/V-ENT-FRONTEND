@@ -2,8 +2,9 @@ import EventDetailsOverviewLeft from './event-details-overview-left/EventDetails
 import EventDetailsOverviewRight from './event-details-overview-right/EventDetailsOverviewRight'
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 
-const EventDetailsOverview = () => {
-  const socialLinks = [
+const EventDetailsOverview = ({ event }) => {
+  // Extract social links from event data or use defaults
+  const socialLinks = event?.social_links || [
     { title: "Facebook", url: "https://facebook.com/username" },
     { title: "X", url: "https://x.com/username" },
     { title: "Instagram", url: "https://instagram.com/username" },
@@ -15,8 +16,8 @@ const EventDetailsOverview = () => {
 
   return (
     <div className={overviewLtStyles.tournamentDetailsOverviewContainer}>
-      <EventDetailsOverviewLeft />
-      <EventDetailsOverviewRight socialLinks={socialLinks} />
+      <EventDetailsOverviewLeft event={event} />
+      <EventDetailsOverviewRight event={event} socialLinks={socialLinks} />
     </div>
   )
 }
