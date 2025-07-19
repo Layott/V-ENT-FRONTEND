@@ -105,36 +105,38 @@ const Review = ({ setSelectedTab, handleSubmit, isSavingDraft, isPublishing, }) 
         </div>
       )}
 
-      <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => handleSubmit(true)}
-          disabled={isSavingDraft || isPublishing}
-        >
-          {isSavingDraft ? 'Saving...' : 'Save Draft'}
-        </button>
+      
 
-
-        <div div className={createTournamentStyles.backAndProceedContainer}>
+        <div className={createTournamentStyles.buttonContainer}>
           <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-            onClick={handleBack}
+            className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
+            onClick={() => handleSubmit(true)} // Pass true for draft
             disabled={isSavingDraft || isPublishing}
           >
-            <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
+            {isSavingDraft ? 'Saving...' : 'Save Draft'}
           </button>
 
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
-            onClick={() => handleSubmit(false)} // Pass false for publish
-            disabled={isSavingDraft || isPublishing}
-          >
-            {isPublishing  ? 'Publishing...' : 'Publish'}
-          </button>
+
+          <div className={createTournamentStyles.backAndProceedContainer}>
+            <button
+              className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
+              onClick={handleBack}
+              disabled={isSavingDraft || isPublishing}
+            >
+              <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
+              Back
+            </button>
+
+            <button
+              className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
+              onClick={() => handleSubmit(false)} // Pass false for publish
+              disabled={isSavingDraft || isPublishing}
+            >
+              {isPublishing  ? 'Publishing...' : 'Publish'}
+            </button>
+          </div>
         </div>
-        </div>
-      </div>
+    </div>
   );
 }
 
