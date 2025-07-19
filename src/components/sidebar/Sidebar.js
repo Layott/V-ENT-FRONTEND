@@ -1,7 +1,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BiHomeCircle } from "react-icons/bi";
+// import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers, FaTv } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
@@ -14,6 +14,8 @@ import { MdLogout } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
+import { PiUserCircle } from "react-icons/pi";
+
 
 const Sidebar = ({ customClass }) => {
     const pathname = usePathname()      // Gets the current pathname
@@ -69,7 +71,7 @@ const Sidebar = ({ customClass }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        <BiHomeCircle className={styles.sidebarIcon} /> Home
+                        <PiUserCircle className={styles.sidebarIcon} /> Profile
                     </Link>
                 </li>
 

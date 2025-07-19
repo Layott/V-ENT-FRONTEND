@@ -108,22 +108,28 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => handleSubmit(true)}
-          disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Draft'}
+          Save Draft
         </button>
 
+        <div className={createTournamentStyles.buttonContainer}>
+  <button
+    className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
+    onClick={() => handleSubmit(true)} // Pass true for draft
+    disabled={isSubmitting}
+  >
+    {isSubmitting ? 'Saving...' : 'Save Draft'}
+  </button>
 
-        <div className={createTournamentStyles.backAndProceedContainer}>
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-            onClick={handleBack}
-            disabled={isSubmitting}
-          >
-            <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
-          </button>
+  <div className={createTournamentStyles.backAndProceedContainer}>
+    <button
+      className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
+      onClick={handleBack}
+      disabled={isSubmitting}
+    >
+      <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
+      Back
+    </button>
 
           <button
             className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
@@ -136,7 +142,8 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
         </div>
       </div>
     </div>
+  </div>
   );
-};
+}
 
 export default Review;

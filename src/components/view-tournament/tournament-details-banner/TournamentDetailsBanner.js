@@ -9,6 +9,32 @@ import bannerDetailsStyles from '@/view-/details-banner/tournament-details-banne
 
 const TournamentDetailsBanner = ({ tournament }) => {
   
+  // Function to get the correct image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      console.log('No image path provided, using default banner');
+      return tournamentDetailsBanner;
+    }
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) {
+      console.log('Using full URL:', imagePath);
+      return imagePath;
+    }
+    
+    // If it starts with /media, prepend your backend URL
+    if (imagePath.startsWith('/media')) {
+      const fullUrl = `https://vermillionent.pythonanywhere.com${imagePath}`;
+      console.log('Constructed URL from /media path:', fullUrl);
+      return fullUrl;
+    }
+    
+    // If it's just a filename, construct the full path
+    const fullUrl = `https://vermillionent.pythonanywhere.com/media/tournament_banners/${imagePath}`;
+    console.log('Constructed URL from filename:', fullUrl);
+    return fullUrl;
+  };
+
   // Helper function to calculate time remaining
   const calculateTimeRemaining = (startDate) => {
     if (!tournament || !startDate) return "15 days 13 hours 12 mins";
@@ -67,15 +93,28 @@ const TournamentDetailsBanner = ({ tournament }) => {
       </div>
     );
   }
-      
+
+  // Debug logging
+  console.log('Tournament data:', tournament);
+  console.log('Tournament banner field:', tournament?.tournament_banner);
+  
   return (
     <div className={bannerDetailsStyles.tournamentDetailsBannerContainer}>
         <div className={bannerDetailsStyles.tournamentDetailsBanner}>
             <Image
-                src={tournament?.tournament_banner || tournamentDetailsBanner}
+                src={getImageUrl(tournament?.tournament_banner)}
                 alt={tournament ? `${tournament.tournament_title} Banner` : 'Tournament Details Banner'}
                 width={800}
                 height={400}
+                onError={(e) => {
+                  console.error('Image failed to load:', e.target.src);
+                  console.log('Falling back to default banner');
+                  // Fallback to default banner on error
+                  e.target.src = tournamentDetailsBanner;
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully');
+                }}
             />
         </div>
 
@@ -94,11 +133,11 @@ const TournamentDetailsBanner = ({ tournament }) => {
                         <PiMoneyWavy className={bannerDetailsStyles.moneyIcon} /> 
                         Entry Fee: 
                         {tournament ? (
-                            tournament.entry_fee_price === 0 ? (
+                            tournament.entry_fee_price === 0 || tournament.entry_fee_price === "0.00" ? (
                                 <span className={bannerDetailsStyles.feeSpan}>FREE</span>
                             ) : (
                                 <span className={bannerDetailsStyles.feeSpan}>
-                                    <RiCopperCoinFill /> {tournament.entry_fee_price}
+                                    <RiCopperCoinFill /> ${tournament.entry_fee_price}
                                 </span>
                             )
                         ) : (
@@ -123,4 +162,4 @@ const TournamentDetailsBanner = ({ tournament }) => {
   )
 }
 
-export default TournamentDetailsBanner
+export default TournamentDetailsBanner;

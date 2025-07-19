@@ -11,7 +11,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 const EditUserProfileLinks = () => {
   const { data: session, status } = useSession();
   const [links, setLinks] = useState([{ title: '', link: '' }]);
-  const [sessionToken, setSessionToken] = useState('');
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
@@ -22,12 +21,87 @@ const EditUserProfileLinks = () => {
   const [youtube, setYoutube] = useState('');
   const router = useRouter();
 
-  // Fetch sessionToken and set it when authenticated
+  // Get base URL - adjust this to match your actual base URL
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vermillionent.pythonanywhere.com';
+
+  // Fetch user information and populate form
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.sessionToken) {
-      setSessionToken(session.user.sessionToken);
-    }
-  }, [session, status]);
+    const fetchUserInfo = async () => {
+      if (status !== "authenticated" || !session?.user?.sessionToken) {
+        console.log('Not authenticated or no session token');
+        return;
+      }
+
+      console.log('Fetching user info with token:', session.user.sessionToken);
+      console.log('Base URL:', baseUrl);
+
+      try {
+        const response = await fetch(`${baseUrl}/auth/get-user-informations/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.user.sessionToken}`,
+          },
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Full API response:', result);
+          
+          const userData = result.data;
+          console.log('User data:', userData);
+          console.log('Social links:', userData.social_links);
+          
+          // Populate social media fields
+          if (userData.social_links && Array.isArray(userData.social_links)) {
+            const reservedTitles = ['facebook', 'twitter', 'instagram', 'youtube'];
+            const dynamicLinks = [];
+
+            userData.social_links.forEach((linkObj) => {
+              const title = linkObj.title.toLowerCase();
+              const url = linkObj.url;
+
+              console.log(`Processing link: ${title} = ${url}`);
+
+              if (title === 'facebook') {
+                console.log('Setting facebook:', url);
+                setFacebook(url);
+              } else if (title === 'twitter') {
+                console.log('Setting twitter:', url);
+                setTwitter(url);
+              } else if (title === 'instagram') {
+                console.log('Setting instagram:', url);
+                setInstagram(url);
+              } else if (title === 'youtube') {
+                console.log('Setting youtube:', url);
+                setYoutube(url);
+              } else {
+                // Add to dynamic links if it's not a reserved title
+                console.log('Adding to dynamic links:', linkObj.title, url);
+                dynamicLinks.push({ title: linkObj.title, link: url });
+              }
+            });
+
+            // Set dynamic links if there are any, otherwise keep default empty link
+            if (dynamicLinks.length > 0) {
+              console.log('Setting dynamic links:', dynamicLinks);
+              setLinks(dynamicLinks);
+            }
+          } else {
+            console.log('No social_links found or not an array');
+          }
+        } else {
+          console.log('Response not ok:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error fetching user information:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [session, status, baseUrl]);
 
   const handleAddLink = () => {
     setLinks([...links, { title: '', link: '' }]);
@@ -57,7 +131,7 @@ const EditUserProfileLinks = () => {
     console.log('Dynamic links array:', links);
     
     try {
-      if (!sessionToken) {
+      if (!session?.user?.sessionToken) {
         setSnackbarMessage('Session token is missing. Please log in again.');
         setSnackbarType('error');
         setOpen(true);
@@ -138,7 +212,7 @@ const EditUserProfileLinks = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`,
+          'Authorization': `Bearer ${session.user.sessionToken}`,
         },
         body: JSON.stringify(payload),
       });
