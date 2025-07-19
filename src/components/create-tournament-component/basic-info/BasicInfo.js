@@ -7,22 +7,22 @@ import CreateTournamentVisibility from './create-tournament-visibility/CreateTou
 import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const BasicInfo = ({ setSelectedTab, updateFormData, updateFileData }) => {
-  const [formData, setFormData] = useState({});
+const BasicInfo = ({ setSelectedTab, formData, updateFormData, updateFileData }) => {
+  // const [formData, setFormData] = useState({});
 
-  // Load initial data from localStorage
-  useEffect(() => {
-    const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(parsedData);
-        console.log('BasicInfo - Loaded data from localStorage:', parsedData);
-      } catch (error) {
-        console.error('BasicInfo - Error parsing localStorage data:', error);
-      }
-    }
-  }, []);
+  // // Load initial data from localStorage
+  // useEffect(() => {
+  //   const savedData = localStorage.getItem('createTournamentData');
+  //   if (savedData) {
+  //     try {
+  //       const parsedData = JSON.parse(savedData);
+  //       setFormData(parsedData);
+  //       console.log('BasicInfo - Loaded data from localStorage:', parsedData);
+  //     } catch (error) {
+  //       console.error('BasicInfo - Error parsing localStorage data:', error);
+  //     }
+  //   }
+  // }, []);
 
   // Function to validate if all required fields are filled
   const isFormValid = () => {
@@ -71,14 +71,14 @@ const BasicInfo = ({ setSelectedTab, updateFormData, updateFileData }) => {
     console.log(`Updating field "${field}" with value:`, value);
     
     // Update local state for immediate UI updates
-    setFormData(prevData => {
-      const newData = {
-        ...prevData,
-        [field]: value
-      };
-      console.log('New formData after update:', newData);
-      return newData;
-    });
+    // setFormData(prevData => {
+    //   const newData = {
+    //     ...prevData,
+    //     [field]: value
+    //   };
+    //   console.log('New formData after update:', newData);
+    //   return newData;
+    // });
     
     // Update parent component and localStorage through centralized function
     updateFormData(field, value);
@@ -147,7 +147,7 @@ const BasicInfo = ({ setSelectedTab, updateFormData, updateFileData }) => {
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => alert('Draft saved')}
+          onClick={handleSaveDraft}
         >
           Save Draft
         </button>

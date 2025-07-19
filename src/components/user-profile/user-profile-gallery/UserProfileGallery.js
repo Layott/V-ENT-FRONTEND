@@ -7,7 +7,7 @@ import { MdDeleteForever } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from "./user-profile-gallery.module.css";
 
-const baseUrl = "https://vermillionent.pythonanywhere.com";
+const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 const UserProfileGallery = () => {
   const { data: session, status } = useSession();

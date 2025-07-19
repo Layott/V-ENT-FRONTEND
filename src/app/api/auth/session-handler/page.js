@@ -37,7 +37,7 @@ export default function SessionHandler() {
         setStatus('Verifying token with backend...');
         
         // Verify the token with your backend
-        const verifyResponse = await fetch('https://vermillionent.pythonanywhere.com/auth/verify-oauth-token/', {
+        const verifyResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-oauth-token/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 

@@ -231,7 +231,7 @@ const handleSubmit = async () => {
 
     // OPTION 1: Try the original request first
     console.log('Attempting API call with current field mapping...');
-    const response = await fetch('https://vermillionent.pythonanywhere.com/event/create-event/', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/create-event/`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${sessionToken}`,
@@ -301,7 +301,7 @@ const handleSubmit = async () => {
         }
         
         // Try the alternative request
-        const altResponse = await fetch('https://vermillionent.pythonanywhere.com/event/create-event/', {
+        const altResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/create-event/`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${sessionToken}`,

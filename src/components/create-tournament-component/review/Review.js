@@ -8,13 +8,14 @@ import ReviewSponsorLinks from "./review-sponsor-links/ReviewSponsorLinks";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './review.module.css'
 
-const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
+const Review = ({ setSelectedTab, handleSubmit, isSavingDraft, isPublishing, }) => {
   const [formData, setFormData] = useState({});
   const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
     // Load form data from localStorage
     const savedData = localStorage.getItem('createTournamentData');
+    console.log("Saved data in Review:", savedData);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData(parsedData);
@@ -104,44 +105,39 @@ const Review = ({ setSelectedTab, handleSubmit, isSubmitting }) => {
         </div>
       )}
 
-      <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-        >
-          Save Draft
-        </button>
+      
 
         <div className={createTournamentStyles.buttonContainer}>
-  <button
-    className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-    onClick={() => handleSubmit(true)} // Pass true for draft
-    disabled={isSubmitting}
-  >
-    {isSubmitting ? 'Saving...' : 'Save Draft'}
-  </button>
+          <button
+            className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
+            onClick={() => handleSubmit(true)} // Pass true for draft
+            disabled={isSavingDraft || isPublishing}
+          >
+            {isSavingDraft ? 'Saving...' : 'Save Draft'}
+          </button>
 
-  <div className={createTournamentStyles.backAndProceedContainer}>
-    <button
-      className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-      onClick={handleBack}
-      disabled={isSubmitting}
-    >
-      <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-      Back
-    </button>
 
-    <button
-      className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
-      onClick={() => handleSubmit(false)} // Pass false for publish
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? 'Publishing...' : 'Publish'}
-    </button>
-  </div>
-</div>
-      </div>
+          <div className={createTournamentStyles.backAndProceedContainer}>
+            <button
+              className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
+              onClick={handleBack}
+              disabled={isSavingDraft || isPublishing}
+            >
+              <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
+              Back
+            </button>
+
+            <button
+              className={`${createTournamentStyles.btn} ${createTournamentStyles.publishBTN}`}
+              onClick={() => handleSubmit(false)} // Pass false for publish
+              disabled={isSavingDraft || isPublishing}
+            >
+              {isPublishing  ? 'Publishing...' : 'Publish'}
+            </button>
+          </div>
+        </div>
     </div>
   );
-};
+}
 
 export default Review;

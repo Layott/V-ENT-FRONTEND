@@ -18,17 +18,17 @@ export const socialLinks = [
       name: "Facebook",
     },
     {
-      href: "https://www.instagram.com/v_ent.co/profilecard/",
+      href: "https://www.instagram.com/myventhq",
       icon: <FaInstagram />,
       name: "Instagram",
     },
     {
-      href: "https://x.com/v_ent_co",
+      href: "https://www.x.com/myventhq",
       icon: <FaTwitter />,
       name: "Twitter",
     },
     {
-      href: "https://www.tiktok.com/@v_ent.co",
+      href: "https://www.tiktok.com/@myventhq",
       icon: <FaTiktok />,
       name: "TikTok",
     },

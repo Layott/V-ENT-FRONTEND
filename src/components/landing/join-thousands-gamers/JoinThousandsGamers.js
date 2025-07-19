@@ -34,7 +34,7 @@ const JoinThousandsGamers = () => {
         
 
       try {
-        const response = await axios.post('https://vermillionent.pythonanywhere.com/auth/add-email-to-waitlist/', { email });
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/add-email-to-waitlist/`, { email });
         setSnackbarMessage(response.data.message || 'Successfully joined the waitlist!');
         setSnackbarType('success');
         setEmail('');
@@ -84,10 +84,10 @@ const JoinThousandsGamers = () => {
                     />
                   </div>
                   <Link
-                      href={'/login'}
+                      href={'/signup'}
                       className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                     >
-                    Login
+                    Signup
                   </Link>
                 </form>
               </div>

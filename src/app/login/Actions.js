@@ -25,7 +25,7 @@ export async function login(prevState, formData) {
   const { email, password } = result.data;
 
   try {
-    const res = await fetch("https://vermillionent.pythonanywhere.com/auth/login/", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

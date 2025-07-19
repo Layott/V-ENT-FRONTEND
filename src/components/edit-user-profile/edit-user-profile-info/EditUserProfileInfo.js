@@ -31,7 +31,7 @@ const EditUserProfileInfo = () => {
   const [loading, setLoading] = useState(false);
   const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   const getAbsoluteUrl = useCallback((url) => {
     if (!url) return null;
