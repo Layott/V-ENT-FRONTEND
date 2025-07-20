@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { FiCamera, FiEdit3 } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
@@ -27,24 +27,24 @@ const UserProfileBio = ({
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   
-  const getAbsoluteUrl = (url) => {
-    if (!url) return null;
-    return url.startsWith("http")
-      ? url
-      : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-  };
-
-  
-  const addCacheBusting = (url) => {
+  const addCacheBusting = useCallback((url) => {
     if (!url) return null;
     const cacheBuster = `t=${new Date().getTime()}`;
     return url.includes("?")
       ? `${url}&${cacheBuster}`
       : `${url}?${cacheBuster}`;
-  };
+  }, []);
 
   
   useEffect(() => {
+    
+    const getAbsoluteUrl = (url) => {
+      if (!url) return null;
+      return url.startsWith("http")
+        ? url
+        : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+    };
+
     
     const loadProfileImage = () => {
       
@@ -81,7 +81,7 @@ const UserProfileBio = ({
     };
 
     loadProfileImage();
-  }, [profilePicture]);
+  }, [profilePicture, baseUrl, addCacheBusting]);
 
   const handleProfileImageUploader = async (event) => {
     const file = event.target.files[0];
@@ -89,6 +89,14 @@ const UserProfileBio = ({
   
     
     let localPreviewUrl = null;
+
+    
+    const getAbsoluteUrl = (url) => {
+      if (!url) return null;
+      return url.startsWith("http")
+        ? url
+        : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+    };
   
     try {
       
@@ -226,5 +234,3 @@ const UserProfileBio = ({
 };
 
 export default UserProfileBio;
-
-
