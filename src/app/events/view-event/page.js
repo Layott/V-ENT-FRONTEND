@@ -33,93 +33,6 @@ const ViewEventContent = () => {
     setMounted(true);
   }, []);
 
-  const fetchEvent = useCallback(async () => {
-    if (!id) {
-      setError('Event ID not found');
-      setLoading(false);
-      return;
-    }
-
-    console.log('Event ID from URL:', id);
-    
-    try {
-      // First, try the direct event endpoint (following tournament pattern)
-      const directEndpoint = `https://vermillionent.pythonanywhere.com/event/view-event/${id}`;
-      console.log('Trying direct endpoint:', directEndpoint);
-      
-      const response = await fetch(directEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && {
-            'Authorization': `Bearer ${session.user.sessionToken}`
-          })
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Direct endpoint response:', data);
-        
-        // Check if the API response has the expected structure (similar to tournament)
-        if (data.status === 'success' && data.data) {
-          console.log('Found event via direct endpoint:', data.data);
-          setEvent(data.data);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(data.data));
-          setLoading(false);
-          return;
-        } else if (data.event_id || data.id) {
-          // Handle case where event data is directly in response
-          console.log('Found event data directly in response:', data);
-          setEvent(data);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(data));
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Fallback: Try the get-all-events endpoint (your original working approach)
-      console.log('Direct endpoint failed, trying get-all-events endpoint...');
-      
-      const allEventsEndpoint = `https://vermillionent.pythonanywhere.com/event/get-all-events/`;
-      const allEventsResponse = await fetch(allEventsEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && {
-            'Authorization': `Bearer ${session.user.sessionToken}`
-          })
-        }
-      });
-
-      if (allEventsResponse.ok) {
-        const allEventsData = await allEventsResponse.json();
-        console.log('Get-all-events response:', allEventsData);
-        
-        // Find the specific event in the response
-        const eventData = findEventInResponse(allEventsData, id);
-        
-        if (eventData) {
-          console.log('Found event in get-all-events:', eventData);
-          setEvent(eventData);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(eventData));
-          setLoading(false);
-          return;
-        }
-      }
-
-      throw new Error(`Event with ID "${id}" not found. Please check if the event exists.`);
-      
-    } catch (err) {
-      console.error('Error fetching event:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-  }, [id, session]);
-
   // FIXED: Helper function to find event in get-all-events response
   const findEventInResponse = useCallback((data, eventId) => {
     console.log('Looking for event ID:', eventId);
@@ -208,6 +121,93 @@ const ViewEventContent = () => {
     
     return null;
   }, []);
+
+  const fetchEvent = useCallback(async () => {
+    if (!id) {
+      setError('Event ID not found');
+      setLoading(false);
+      return;
+    }
+
+    console.log('Event ID from URL:', id);
+    
+    try {
+      // First, try the direct event endpoint (following tournament pattern)
+      const directEndpoint = `https://vermillionent.pythonanywhere.com/event/view-event/${id}`;
+      console.log('Trying direct endpoint:', directEndpoint);
+      
+      const response = await fetch(directEndpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.user?.sessionToken && {
+            'Authorization': `Bearer ${session.user.sessionToken}`
+          })
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Direct endpoint response:', data);
+        
+        // Check if the API response has the expected structure (similar to tournament)
+        if (data.status === 'success' && data.data) {
+          console.log('Found event via direct endpoint:', data.data);
+          setEvent(data.data);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(data.data));
+          setLoading(false);
+          return;
+        } else if (data.event_id || data.id) {
+          // Handle case where event data is directly in response
+          console.log('Found event data directly in response:', data);
+          setEvent(data);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(data));
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Fallback: Try the get-all-events endpoint (your original working approach)
+      console.log('Direct endpoint failed, trying get-all-events endpoint...');
+      
+      const allEventsEndpoint = `https://vermillionent.pythonanywhere.com/event/get-all-events/`;
+      const allEventsResponse = await fetch(allEventsEndpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.user?.sessionToken && {
+            'Authorization': `Bearer ${session.user.sessionToken}`
+          })
+        }
+      });
+
+      if (allEventsResponse.ok) {
+        const allEventsData = await allEventsResponse.json();
+        console.log('Get-all-events response:', allEventsData);
+        
+        // Find the specific event in the response
+        const eventData = findEventInResponse(allEventsData, id);
+        
+        if (eventData) {
+          console.log('Found event in get-all-events:', eventData);
+          setEvent(eventData);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(eventData));
+          setLoading(false);
+          return;
+        }
+      }
+
+      throw new Error(`Event with ID "${id}" not found. Please check if the event exists.`);
+      
+    } catch (err) {
+      console.error('Error fetching event:', err);
+      setError(err.message);
+      setLoading(false);
+    }
+  }, [id, session, findEventInResponse]);
 
   useEffect(() => {
     if (mounted && id) {

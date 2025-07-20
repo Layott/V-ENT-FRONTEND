@@ -7,7 +7,7 @@ import carryFirstLogo from '@/images/carry_first_logo.svg';
 import cadeEsportsLogo from '@/images/cade_esports.png';
 import { GoDotFill } from "react-icons/go";
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
-import styles from './event-details-overview-left.module.css'
+import styles from '../event-details-overview-left/event-details-overview-left.module.css';
 
 const sponsors = [
   {
@@ -85,7 +85,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
             </p>
             <h4 className={overviewLtStyles.descriptionSubHeading}>What to Expect:</h4>
             <p className={overviewLtStyles.descriptionParagraph}>
-              Casual and Competitive Play: Whether you're in it for fun or to prove your skills, there's something for everyone. Jump into friendly matches or take part in high-stakes challenges.
+              Casual and Competitive Play: Whether you&apos;re in it for fun or to prove your skills, there&apos;s something for everyone. Jump into friendly matches or take part in high-stakes challenges.
             </p>
             <p className={overviewLtStyles.descriptionParagraph}>
               Skill Showcases: Watch and learn from experienced players as they demonstrate advanced strategies, tactics, and game mechanics.
@@ -152,4 +152,4 @@ const EventDetailsOverviewLeft = ({ event }) => {
   )
 }
 
-export default EventDetailsOverviewLeft;
+export default EventDetailsOverviewLeft; 
