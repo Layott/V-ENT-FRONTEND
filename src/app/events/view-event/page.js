@@ -65,12 +65,16 @@ const ViewEventContent = () => {
         if (data.status === 'success' && data.data) {
           console.log('Found event via direct endpoint:', data.data);
           setEvent(data.data);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(data.data));
           setLoading(false);
           return;
         } else if (data.event_id || data.id) {
           // Handle case where event data is directly in response
           console.log('Found event data directly in response:', data);
           setEvent(data);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(data));
           setLoading(false);
           return;
         }
@@ -100,6 +104,8 @@ const ViewEventContent = () => {
         if (eventData) {
           console.log('Found event in get-all-events:', eventData);
           setEvent(eventData);
+          // Cache the event data
+          localStorage.setItem(`event_${id}`, JSON.stringify(eventData));
           setLoading(false);
           return;
         }
@@ -205,9 +211,45 @@ const ViewEventContent = () => {
 
   useEffect(() => {
     if (mounted && id) {
+      // First, try to load from localStorage
+      try {
+        const cachedEvent = localStorage.getItem(`event_${id}`);
+        if (cachedEvent) {
+          const parsedEvent = JSON.parse(cachedEvent);
+          console.log('Loaded event from cache:', parsedEvent);
+          setEvent(parsedEvent);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading cached event:', error);
+      }
+      
+      // If no cached data, fetch from API
       fetchEvent();
     }
   }, [mounted, id, fetchEvent]);
+
+  // Save activeTab to localStorage
+  useEffect(() => {
+    if (mounted && id) {
+      localStorage.setItem(`event_${id}_activeTab`, activeTab);
+    }
+  }, [activeTab, id, mounted]);
+
+  // Restore activeTab from localStorage
+  useEffect(() => {
+    if (mounted && id) {
+      try {
+        const savedTab = localStorage.getItem(`event_${id}_activeTab`);
+        if (savedTab) {
+          setActiveTab(savedTab);
+        }
+      } catch (error) {
+        console.error('Error loading saved tab:', error);
+      }
+    }
+  }, [mounted, id]);
 
   // Render loading state
   const renderPageLayout = (content) => (
