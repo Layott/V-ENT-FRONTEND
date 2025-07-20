@@ -7,7 +7,7 @@ import carryFirstLogo from '@/images/carry_first_logo.svg';
 import cadeEsportsLogo from '@/images/cade_esports.png';
 import { GoDotFill } from "react-icons/go";
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
-import styles from './event-details-overview-left.module.css'
+import styles from '../event-details-overview-left/event-details-overview-left.module.css';
 
 const sponsors = [
   {
@@ -57,15 +57,21 @@ const EventDetailsOverviewLeft = ({ event }) => {
   // Get event sponsors or use defaults
   const eventSponsors = event?.sponsors || sponsors;
 
+  // Map the event properties to match the actual data structure
+  const eventDescription = event?.desc || event?.description;
+  const organizerName = event?.creator || event?.organizer?.name || event?.organizer_name;
+  const createdDate = event?.reg_start_date || event?.created_at;
+  const updatedDate = event?.reg_end_date || event?.updated_at;
+
   return (
     <div className={overviewLtStyles.overviewLeft}>
       <div className={overviewLtStyles.descriptionContainer}>
         <h3 className={overviewLtStyles.headerH3}>Description</h3>
         
-        {event?.description ? (
+        {eventDescription ? (
           <div 
             dangerouslySetInnerHTML={{ 
-              __html: event.description.replace(/\n/g, '<br/>') 
+              __html: eventDescription.replace(/\n/g, '<br/>') 
             }} 
             className={overviewLtStyles.descriptionParagraph}
           />
@@ -79,7 +85,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
             </p>
             <h4 className={overviewLtStyles.descriptionSubHeading}>What to Expect:</h4>
             <p className={overviewLtStyles.descriptionParagraph}>
-              Casual and Competitive Play: Whether you're in it for fun or to prove your skills, there's something for everyone. Jump into friendly matches or take part in high-stakes challenges.
+              Casual and Competitive Play: Whether you&apos;re in it for fun or to prove your skills, there&apos;s something for everyone. Jump into friendly matches or take part in high-stakes challenges.
             </p>
             <p className={overviewLtStyles.descriptionParagraph}>
               Skill Showcases: Watch and learn from experienced players as they demonstrate advanced strategies, tactics, and game mechanics.
@@ -119,25 +125,25 @@ const EventDetailsOverviewLeft = ({ event }) => {
           </div>
 
           <div className={overviewLtStyles.organizerNameTag}>
-            <p>{event?.organizer?.name || event?.organizer_name || 'Event Organizer'}</p>
-            <p>@{event?.organizer?.username || event?.organizer_username || 'organizer'}</p>
+            <p>{organizerName || 'Event Organizer'}</p>
+            <p>@{organizerName || 'organizer'}</p>
           </div>
         </div>
 
         <div className={overviewLtStyles.dateContainer}>
           <p className={overviewLtStyles.createdDateParagraph}>
-            Created:&nbsp;
+            Registration Start:&nbsp;
             <span className={overviewLtStyles.createdDateSpan}>
-              {formatDate(event?.created_at)}
+              {formatDate(createdDate)}
             </span>
           </p>
 
           <GoDotFill className={overviewLtStyles.dotIcon} />
       
           <p className={overviewLtStyles.updatedDateParagraph}>
-            Last Updated:&nbsp;
+            Registration End:&nbsp;
             <span className={overviewLtStyles.updatedDateSpan}>
-              {formatDate(event?.updated_at)}
+              {formatDate(updatedDate)}
             </span>
           </p>
         </div>
@@ -146,4 +152,4 @@ const EventDetailsOverviewLeft = ({ event }) => {
   )
 }
 
-export default EventDetailsOverviewLeft
+export default EventDetailsOverviewLeft; 
