@@ -3,6 +3,79 @@ import { useSession } from 'next-auth/react';
 import { GoDotFill } from "react-icons/go";
 import styles from './event-details-prize.module.css'
 
+// Helper function for ordinal suffixes
+const getOrdinalSuffix = (num) => {
+  const j = num % 10,
+        k = num % 100;
+  if (j == 1 && k != 11) {
+    return num + "st";
+  }
+  if (j == 2 && k != 12) {
+    return num + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return num + "rd";
+  }
+  return num + "th";
+};
+
+// Helper function to extract prize information from event object
+const extractPrizeFromEvent = (eventData) => {
+  const prizes = [];
+  
+  // Check various possible prize fields in event data
+  if (eventData.prize_pool || eventData.prizePool) {
+    const totalPrize = eventData.prize_pool || eventData.prizePool;
+    
+    // If there's prize distribution data
+    if (eventData.prize_distribution || eventData.prizeDistribution) {
+      const distribution = eventData.prize_distribution || eventData.prizeDistribution;
+      
+      if (Array.isArray(distribution)) {
+        return distribution.map((prize, index) => ({
+          position: prize.position || `${index + 1}${getOrdinalSuffix(index + 1)}`,
+          prize: prize.amount || prize.prize || '',
+          bonus: prize.bonus || prize.bonuses || 'None'
+        }));
+      }
+    }
+    
+    // Default prize structure if no specific distribution
+    prizes.push({
+      position: '1st',
+      prize: totalPrize,
+      bonus: eventData.bonus || 'None'
+    });
+  }
+  
+  // Check if event has individual prize fields
+  if (eventData.first_prize || eventData.second_prize || eventData.third_prize) {
+    if (eventData.first_prize) {
+      prizes.push({
+        position: '1st',
+        prize: eventData.first_prize,
+        bonus: eventData.first_bonus || 'None'
+      });
+    }
+    if (eventData.second_prize) {
+      prizes.push({
+        position: '2nd',
+        prize: eventData.second_prize,
+        bonus: eventData.second_bonus || 'None'
+      });
+    }
+    if (eventData.third_prize) {
+      prizes.push({
+        position: '3rd',
+        prize: eventData.third_prize,
+        bonus: eventData.third_bonus || 'None'
+      });
+    }
+  }
+  
+  return prizes;
+};
+
 const EventDetailsPrize = ({ event }) => {
   const [prizeData, setPrizeData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,79 +136,6 @@ const EventDetailsPrize = ({ event }) => {
 
     fetchPrizeData();
   }, [event, session]);
-
-  // Helper function to extract prize information from event object
-  const extractPrizeFromEvent = (eventData) => {
-    const prizes = [];
-    
-    // Check various possible prize fields in event data
-    if (eventData.prize_pool || eventData.prizePool) {
-      const totalPrize = eventData.prize_pool || eventData.prizePool;
-      
-      // If there's prize distribution data
-      if (eventData.prize_distribution || eventData.prizeDistribution) {
-        const distribution = eventData.prize_distribution || eventData.prizeDistribution;
-        
-        if (Array.isArray(distribution)) {
-          return distribution.map((prize, index) => ({
-            position: prize.position || `${index + 1}${getOrdinalSuffix(index + 1)}`,
-            prize: prize.amount || prize.prize || '',
-            bonus: prize.bonus || prize.bonuses || 'None'
-          }));
-        }
-      }
-      
-      // Default prize structure if no specific distribution
-      prizes.push({
-        position: '1st',
-        prize: totalPrize,
-        bonus: eventData.bonus || 'None'
-      });
-    }
-    
-    // Check if event has individual prize fields
-    if (eventData.first_prize || eventData.second_prize || eventData.third_prize) {
-      if (eventData.first_prize) {
-        prizes.push({
-          position: '1st',
-          prize: eventData.first_prize,
-          bonus: eventData.first_bonus || 'None'
-        });
-      }
-      if (eventData.second_prize) {
-        prizes.push({
-          position: '2nd',
-          prize: eventData.second_prize,
-          bonus: eventData.second_bonus || 'None'
-        });
-      }
-      if (eventData.third_prize) {
-        prizes.push({
-          position: '3rd',
-          prize: eventData.third_prize,
-          bonus: eventData.third_bonus || 'None'
-        });
-      }
-    }
-    
-    return prizes;
-  };
-
-  // Helper function for ordinal suffixes
-  const getOrdinalSuffix = (num) => {
-    const j = num % 10,
-          k = num % 100;
-    if (j == 1 && k != 11) {
-      return num + "st";
-    }
-    if (j == 2 && k != 12) {
-      return num + "nd";
-    }
-    if (j == 3 && k != 13) {
-      return num + "rd";
-    }
-    return num + "th";
-  };
 
   // Format date helper
   const formatDate = (dateString) => {
