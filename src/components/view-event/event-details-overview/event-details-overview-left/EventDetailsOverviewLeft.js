@@ -57,15 +57,21 @@ const EventDetailsOverviewLeft = ({ event }) => {
   // Get event sponsors or use defaults
   const eventSponsors = event?.sponsors || sponsors;
 
+  // Map the event properties to match the actual data structure
+  const eventDescription = event?.desc || event?.description;
+  const organizerName = event?.creator || event?.organizer?.name || event?.organizer_name;
+  const createdDate = event?.reg_start_date || event?.created_at;
+  const updatedDate = event?.reg_end_date || event?.updated_at;
+
   return (
     <div className={overviewLtStyles.overviewLeft}>
       <div className={overviewLtStyles.descriptionContainer}>
         <h3 className={overviewLtStyles.headerH3}>Description</h3>
         
-        {event?.description ? (
+        {eventDescription ? (
           <div 
             dangerouslySetInnerHTML={{ 
-              __html: event.description.replace(/\n/g, '<br/>') 
+              __html: eventDescription.replace(/\n/g, '<br/>') 
             }} 
             className={overviewLtStyles.descriptionParagraph}
           />
@@ -119,25 +125,25 @@ const EventDetailsOverviewLeft = ({ event }) => {
           </div>
 
           <div className={overviewLtStyles.organizerNameTag}>
-            <p>{event?.organizer?.name || event?.organizer_name || 'Event Organizer'}</p>
-            <p>@{event?.organizer?.username || event?.organizer_username || 'organizer'}</p>
+            <p>{organizerName || 'Event Organizer'}</p>
+            <p>@{organizerName || 'organizer'}</p>
           </div>
         </div>
 
         <div className={overviewLtStyles.dateContainer}>
           <p className={overviewLtStyles.createdDateParagraph}>
-            Created:&nbsp;
+            Registration Start:&nbsp;
             <span className={overviewLtStyles.createdDateSpan}>
-              {formatDate(event?.created_at)}
+              {formatDate(createdDate)}
             </span>
           </p>
 
           <GoDotFill className={overviewLtStyles.dotIcon} />
       
           <p className={overviewLtStyles.updatedDateParagraph}>
-            Last Updated:&nbsp;
+            Registration End:&nbsp;
             <span className={overviewLtStyles.updatedDateSpan}>
-              {formatDate(event?.updated_at)}
+              {formatDate(updatedDate)}
             </span>
           </p>
         </div>
@@ -146,4 +152,4 @@ const EventDetailsOverviewLeft = ({ event }) => {
   )
 }
 
-export default EventDetailsOverviewLeft
+export default EventDetailsOverviewLeft;
