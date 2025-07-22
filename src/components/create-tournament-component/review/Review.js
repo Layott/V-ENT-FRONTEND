@@ -26,22 +26,76 @@ const Review = ({ setSelectedTab, handleSubmit, isSavingDraft, isPublishing, }) 
 
   // Validation functions to check if each section is completed
   const isBasicInfoCompleted = () => {
-    // Add your basic info validation logic here
-    // Check if formData has any properties (adjust field names as needed)
+    // Check for required Basic Info fields (matching the validation in BasicInfo component)
+    const requiredFields = [
+      'tournament_title',
+      'game',
+      'game_mode',
+      'tournament_description',
+      'tournament_type',
+      'start_date_and_time',
+      'end_date_and_time',
+      'reg_start_date_and_time',
+      'reg_end_date_and_time',
+      'scheduleType',
+      'tournament_visibility',
+      'entry_type'
+    ];
+    
     console.log('Basic Info check:', formData);
-    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+    return requiredFields.every(field => 
+      formData[field] && formData[field].toString().trim() !== ''
+    );
   };
 
   const isFormatParticipantsCompleted = () => {
-    // Add your format & participants validation logic here
+    // Check for required Format & Participants fields (matching the validation in FormatParticipants component)
     console.log('Format Participants check:', formData);
-    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+    
+    // Check basic required fields
+    if (!formData.bracket_type) return false;
+    if (!formData.tournament_access) return false;
+    if (!formData.tournament_rules || formData.tournament_rules.trim() === '') return false;
+
+    // Additional validation based on tournament access type
+    if (formData.tournament_access === 'teams' || formData.tournament_access === 'both') {
+      if (!formData.team_size || formData.team_size === '') return false;
+    }
+
+    if (formData.tournament_access === 'individuals' || formData.tournament_access === 'both') {
+      if (!formData.min_number_of_participants || formData.min_number_of_participants === '') return false;
+      if (!formData.max_number_of_participants || formData.max_number_of_participants === '') return false;
+    }
+
+    return true;
   };
 
   const isPrizeDistributionCompleted = () => {
-    // Add your prize distribution validation logic here
-    console.log('Prize Distribution check:', formData);
-    return Object.keys(formData).length > 0; // Temporary - returns true if ANY data exists
+    // Check if prize distribution has been configured
+    console.log('Prize Distribution check - Full formData:', formData);
+    console.log('Prize Distribution check - All keys:', Object.keys(formData));
+    
+    // Log all fields that might be prize-related
+    const prizeFields = Object.keys(formData).filter(key => 
+      key.toLowerCase().includes('prize') || 
+      key.toLowerCase().includes('reward') ||
+      key.toLowerCase().includes('distribution') ||
+      key.toLowerCase().includes('pool')
+    );
+    console.log('Prize-related fields found:', prizeFields);
+    prizeFields.forEach(field => {
+      console.log(`${field}:`, formData[field]);
+    });
+    
+    // For now, return true if ANY prize-related field exists and has content
+    // This is a temporary fix - replace with actual field names once identified
+    return prizeFields.some(field => {
+      const value = formData[field];
+      if (Array.isArray(value)) return value.length > 0;
+      if (typeof value === 'object' && value !== null) return Object.keys(value).length > 0;
+      if (typeof value === 'string') return value.trim() !== '';
+      return value !== null && value !== undefined && value !== '';
+    });
   };
 
   const isSponsorsLinksCompleted = () => {

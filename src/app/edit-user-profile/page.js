@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
@@ -18,7 +18,16 @@ const EditUserProfile = () => {
   const [activeTab, setActiveTab] = useState('edit-profile-details');
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
+  // Check URL parameters and set active tab
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['edit-profile-details', 'favourite-games', 'gaming-accounts', 'web-social-links', 'forgot-password'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   // Check if user is authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -100,7 +109,6 @@ const EditUserProfile = () => {
               </button>
             </div>
           </div>
-
 
           <div className={editProfileStyles.profileEditDashboard}>
             {activeTab === 'edit-profile-details' && (
