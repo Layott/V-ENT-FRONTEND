@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SlArrowRight } from "react-icons/sl";
@@ -14,7 +14,8 @@ import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-u
 import EditLinks from '@/components/edit-user-profile/edit-user-profile-links/EditUserProfileLinks';
 import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css';
 
-const EditUserProfile = () => {
+// Create a separate component for the search params logic
+const EditUserProfileContent = () => {
   const [activeTab, setActiveTab] = useState('edit-profile-details');
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -149,6 +150,18 @@ const EditUserProfile = () => {
       <BottomMenu />
 
     </div>
+  );
+};
+
+const EditUserProfile = () => {
+  return (
+    <Suspense fallback={
+      <div className={editProfileStyles.loadingContainer}>
+        <p>Loading profile editor...</p>
+      </div>
+    }>
+      <EditUserProfileContent />
+    </Suspense>
   );
 };
 
