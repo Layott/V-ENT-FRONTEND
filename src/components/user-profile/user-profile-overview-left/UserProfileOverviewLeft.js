@@ -156,55 +156,55 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
       <hr className={profileStyles.sectionHr} />
 
       {/* Social Links Section */}
-      <div className={profileStyles.sectionContainer}>
-        <div className={profileStyles.sectionHeader}>
-          <h4 className={profileStyles.profileH4Header}>Social Links</h4>
-          <Link href={'/edit-user-profile'} className={`${profileStyles.addGameAccountBTN}`}>
-            <HiPlus className={profileStyles.profileH4Icons} /> Add
-          </Link>
-        </div>
-        <div className={profileStyles.socialLinksListContainer}>
-            {socialLinks.length === 0 ? (
-                <div className={profileStyles.noInterestsContainer}>
-                    <h4 className={profileStyles.profileH4HeaderEmptyContent}>No social links yet</h4>
-                    <p className={profileStyles.emptyParagraphContent}>You haven&#39;t connected any social media links yet</p>
+     <div className={profileStyles.sectionContainer}>
+  <div className={profileStyles.sectionHeader}>
+    <h4 className={profileStyles.profileH4Header}>Social Links</h4>
+    <Link href={'/edit-user-profile?tab=web-social-links'} className={`${profileStyles.addGameAccountBTN}`}>
+      <HiPlus className={profileStyles.profileH4Icons} /> Add
+    </Link>
+  </div>
+  <div className={profileStyles.socialLinksListContainer}>
+      {socialLinks.length === 0 ? (
+          <div className={profileStyles.noInterestsContainer}>
+              <h4 className={profileStyles.profileH4HeaderEmptyContent}>No social links yet</h4>
+              <p className={profileStyles.emptyParagraphContent}>You haven&#39;t connected any social media links yet</p>
 
-                    <Link href={'/edit-user-profile'} className={`${profileStyles.addInterestsBTN} ${profileStyles.topMostLayerColor}`}>
-                        <HiPlus className={profileStyles.profileH4IconsEmptyContent} /> Add Social Links
-                    </Link>
-                </div>
-            ) : (
-                <>
-                    {socialLinks.slice(0, showMoreSocials ? socialLinks.length : 4).map((socialLink, index) => (
-                        <Link
-                            href={formatUrl(socialLink.url)}
-                            key={index}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}
-                        >
-                            {getSocialIcon(socialLink.title)} {socialLink.title}
-                        </Link>
-                    ))}
+              <Link href={'/edit-user-profile?tab=web-social-links'} className={`${profileStyles.addInterestsBTN} ${profileStyles.topMostLayerColor}`}>
+                  <HiPlus className={profileStyles.profileH4IconsEmptyContent} /> Add Social Links
+              </Link>
+          </div>
+      ) : (
+          <>
+              {socialLinks.slice(0, showMoreSocials ? socialLinks.length : 4).map((socialLink, index) => (
+                  <Link
+                      href={formatUrl(socialLink.url)}
+                      key={index}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}
+                  >
+                      {getSocialIcon(socialLink.title)} {socialLink.title}
+                  </Link>
+              ))}
 
-                    {socialLinks.length > 4 && (
-                        <button
-                            onClick={() => setShowMoreSocials((prev) => !prev)}
-                            className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
-                        >
-                            {showMoreSocials ? (
-                                <>
-                                    <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
-                                </>
-                            ) : (
-                                `See more +${socialLinks.length - 4}`
-                            )}
-                        </button>
-                    )}
-                </>
-            )}
-        </div>
-      </div>
+              {socialLinks.length > 4 && (
+                  <button
+                      onClick={() => setShowMoreSocials((prev) => !prev)}
+                      className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
+                  >
+                      {showMoreSocials ? (
+                          <>
+                              <FaArrowLeft className={profileStyles.rightOrLeftArrowIcon} /> See less
+                          </>
+                      ) : (
+                          `See more +${socialLinks.length - 4}`
+                      )}
+                  </button>
+              )}
+          </>
+      )}
+  </div>
+</div>
     </div>
   );
 };
