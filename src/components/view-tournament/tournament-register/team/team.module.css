@@ -1,0 +1,391 @@
+/* ./src/components/view-tournament/tournament-details-banner/ChooseTeamModal.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid #404040;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton:hover {
+  color: white;
+  background-color: #3a3a3a;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #ef4444;
+}
+
+.modalBody {
+  padding: 24px 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #9ca3af;
+  margin: 0 0 24px 0;
+}
+
+.teamsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.teamsCount {
+  font-size: 16px;
+  color: white;
+  font-weight: 500;
+}
+
+.newTeamButton {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.newTeamButton:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.plusIcon {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.searchContainer {
+  margin-bottom: 24px;
+}
+
+.searchInputWrapper {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: #3a3a3a;
+  border: 2px solid #4a4a4a;
+  border-radius: 8px;
+  padding: 14px 16px 14px 48px;
+  font-size: 16px;
+  color: white;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+.searchInput::placeholder {
+  color: #6b7280;
+}
+
+.teamsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.teamCard {
+  background-color: #3a3a3a;
+  border: 2px solid #4a4a4a;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+}
+
+.teamCard:hover {
+  border-color: #ef4444;
+  background-color: #4a3a3a;
+  transform: translateY(-1px);
+}
+
+.teamCard.selected {
+  border-color: #ef4444;
+  background-color: #4a3a3a;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3);
+}
+
+.teamInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.teamImage {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #5a5a5a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teamImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teamDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teamName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.teamMeta {
+  display: flex;
+  gap: 20px;
+}
+
+.gameInfo,
+.membersInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.checkmark {
+  width: 32px;
+  height: 32px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px 32px;
+  border-top: 1px solid #404040;
+  margin-top: auto;
+}
+
+.cancelButton {
+  background: none;
+  border: 2px solid #6b7280;
+  color: #9ca3af;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  border-color: #9ca3af;
+  color: white;
+}
+
+.proceedButton {
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proceedButton:hover:not(.disabled) {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.proceedButton.disabled {
+  background-color: #4a4a4a;
+  border-color: #4a4a4a;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Scrollbar styling for teams container */
+.teamsContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.teamsContainer::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+.teamsContainer::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 3px;
+}
+
+.teamsContainer::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modalContent {
+    margin: 20px;
+    max-width: none;
+    max-height: 95vh;
+  }
+  
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .modalTitle {
+    font-size: 20px;
+  }
+  
+  .teamsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .teamInfo {
+    gap: 12px;
+  }
+  
+  .teamImage {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .teamName {
+    font-size: 16px;
+  }
+  
+  .teamMeta {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .modalFooter {
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .proceedButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
