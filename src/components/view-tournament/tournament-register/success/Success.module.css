@@ -1,0 +1,285 @@
+/* success.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: white;
+  position: relative;
+}
+
+.confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.confettiPiece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.modalBody {
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.successIcon {
+  margin: 0 auto 24px auto;
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.successTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #10b981;
+  margin: 0 0 16px 0;
+  animation: slideInUp 0.6s ease-out 0.2s both;
+}
+
+.successMessage {
+  font-size: 18px;
+  color: #d1d5db;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+  animation: slideInUp 0.6s ease-out 0.4s both;
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.detailsCard {
+  background-color: #1f1f1f;
+  border: 1px solid #404040;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  text-align: left;
+  animation: slideInUp 0.6s ease-out 0.6s both;
+}
+
+.detailsTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #333;
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+}
+
+.nextSteps {
+  background-color: #1e3a8a;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  animation: slideInUp 0.6s ease-out 0.8s both;
+}
+
+.nextStepsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.nextStepsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.nextStepsList li {
+  font-size: 14px;
+  color: #e0e7ff;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.nextStepsList li:before {
+  content: "•";
+  color: #60a5fa;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.nextStepsList li:last-child {
+  margin-bottom: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 32px 32px 32px;
+  animation: slideInUp 0.6s ease-out 1s both;
+}
+
+.closeButton {
+  background: none;
+  border: 2px solid #6b7280;
+  color: #9ca3af;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  border-color: #9ca3af;
+  color: white;
+  background-color: #374151;
+}
+
+.viewTournamentButton {
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewTournamentButton:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modalContent {
+    margin: 20px;
+    max-width: none;
+  }
+  
+  .modalBody {
+    padding: 32px 20px;
+  }
+  
+  .modalFooter {
+    padding: 0 20px 24px 20px;
+    flex-direction: column;
+  }
+  
+  .closeButton,
+  .viewTournamentButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .successTitle {
+    font-size: 28px;
+  }
+  
+  .successMessage {
+    font-size: 16px;
+  }
+  
+  .detailsCard {
+    padding: 20px;
+  }
+  
+  .nextSteps {
+    padding: 20px;
+  }
+  
+  .detailValue {
+    max-width: 50%;
+    font-size: 13px;
+  }
+}

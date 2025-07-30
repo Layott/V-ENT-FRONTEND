@@ -1,0 +1,383 @@
+/* payment.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px 0 32px;
+  border-bottom: 1px solid #404040;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton:hover {
+  background-color: #404040;
+  color: white;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #ef4444;
+}
+
+.modalBody {
+  padding: 0 32px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #9ca3af;
+  margin: 0 0 32px 0;
+}
+
+.entryFeeSection {
+  background-color: #1f1f1f;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 32px;
+}
+
+.entryFeeHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.entryFeeIcon {
+  color: #9ca3af;
+}
+
+.entryFeeLabel {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+}
+
+.entryFeeDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.entryFeeAmount {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coinIcon {
+  flex-shrink: 0;
+}
+
+.entryFeeConversion {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.paymentMethodsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.paymentMethod {
+  background-color: #3a3a3a;
+  border: 2px solid #4a4a4a;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.paymentMethod:hover {
+  border-color: #6b7280;
+  background-color: #404040;
+}
+
+.paymentMethod.insufficient {
+  border-color: #ef4444;
+  background-color: #4a2a2a;
+}
+
+.paymentMethod.insufficient .paymentMethodTitle {
+  color: #fca5a5;
+}
+
+.insufficientFunds {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.paymentMethod.selected {
+  border-color: #ef4444;
+  background-color: #4a3a3a;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3);
+}
+
+.paymentMethodContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paymentMethodLeft {
+  flex: 1;
+}
+
+.paymentMethodTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.walletBalance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.paystackHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.paystackIcon {
+  width: 40px;
+  height: 40px;
+  background-color: #5a5a5a;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d1d5db;
+}
+
+.paystackDescription {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.cardLogos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mastercardLogo {
+  display: flex;
+  align-items: center;
+}
+
+.mastercardCircle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.visaLogo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a73e8;
+  letter-spacing: 2px;
+}
+
+.radioButton {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #6b7280;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.paymentMethod.selected .radioButton {
+  border-color: #ef4444;
+}
+
+.radioInner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.radioInner.radioSelected {
+  background-color: #ef4444;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px 32px 32px 32px;
+  border-top: 1px solid #404040;
+  margin-top: 24px;
+}
+
+.cancelButton {
+  background: none;
+  border: 2px solid #6b7280;
+  color: #9ca3af;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  border-color: #9ca3af;
+  color: white;
+}
+
+.payButton {
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payButton:hover:not(.disabled) {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.payButton.disabled {
+  background-color: #4a4a4a;
+  border-color: #4a4a4a;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modalContent {
+    margin: 20px;
+    max-width: none;
+  }
+  
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .modalTitle {
+    font-size: 20px;
+  }
+  
+  .paymentMethod {
+    padding: 20px;
+  }
+  
+  .entryFeeAmount {
+    font-size: 20px;
+  }
+  
+  .walletBalance {
+    font-size: 20px;
+  }
+  
+  .modalFooter {
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .payButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
