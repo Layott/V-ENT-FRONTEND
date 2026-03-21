@@ -15,11 +15,6 @@ export default async function middleware(req) {
   
   const isLoggedOutCookie = cookies().get("isLoggedOut")?.value === "true";
   
-  console.log("Path:", path);
-  console.log("NextAuth Token:", nextAuthToken ? "exists" : "none");
-  console.log("Session Cookie:", sessionCookie ? "exists" : "none");
-  console.log("isLoggedOut Cookie:", isLoggedOutCookie ? "true" : "false");
-
   if (isLoggedOutCookie) {
     const response = NextResponse.redirect(new URL("/login", req.url));
     response.cookies.delete("isLoggedOut");
@@ -27,19 +22,16 @@ export default async function middleware(req) {
   }
 
   if (isProtectedRoute && !nextAuthToken && !sessionCookie) {
-    console.log("Redirecting to login (no authentication)");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
     const fromEditProfile = req.nextUrl.searchParams.get("from") === "edit-profile";
 
-  // Allow access to forgot-password if came from edit profile
-  if (path === "/forgot-password" && fromEditProfile) {
-    console.log("Allowed access to /forgot-password from edit-profile despite auth.");
-    return NextResponse.next();
-  }
-    console.log("Redirecting to events (already authenticated)");
+    // Allow access to forgot-password if came from edit profile
+    if (path === "/forgot-password" && fromEditProfile) {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL("/user-profile", req.url));
   }
 
