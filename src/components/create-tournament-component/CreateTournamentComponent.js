@@ -38,17 +38,16 @@ const CreateTournamentComponent = () => {
   // Wrap fetchAvailableGames with useCallback to memoize it
   const fetchAvailableGames = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-all-tournaments/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-all-tournaments/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session?.user?.sessionToken}`,
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (response.ok) {
         const games = await response.json();
-        console.log("Available games from API:", games);
         return games;
       } else {
         console.error("Failed to fetch games:", response.status);
