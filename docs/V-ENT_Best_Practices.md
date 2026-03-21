@@ -1,6 +1,6 @@
 # V-ENT Development Best Practices
-**Last Updated:** March 2026  
-**Stack:** Next.js (Frontend) + Django (Backend) + MySQL  
+**Last Updated:** March 2026 (revised after codebase audit)
+**Stack:** Next.js 14 / JavaScript (Frontend) + Django (Backend) + MySQL
 **Team:** 2-3 developers
 
 ---
@@ -80,7 +80,7 @@ The `/init` command generates a `CLAUDE.md` file in your project root — this g
 ## 2. UI/UX Design Best Practices
 
 ### Design System Fundamentals
-- **Maintain a single source of truth:** All colors, typography, spacing, and components should be defined in Figma and mirrored in code (CSS variables or Tailwind config)
+- **Maintain a single source of truth:** All colors, typography, spacing, and components should be defined in Figma and mirrored in code via CSS custom properties in `globals.css`. **This project uses CSS Modules + CSS variables — not Tailwind.**
 - **Use an 8px grid system:** All spacing, padding, and sizing should be multiples of 8px (8, 16, 24, 32, 40, 48, etc.)
 - **Limit your color palette:** Primary, secondary, accent, background, surface, and semantic colors (success, warning, error, info). No one-off hex values
 - **Typography scale:** Define a type scale (e.g., 12, 14, 16, 18, 20, 24, 28, 32, 40, 48px) and stick to it. No custom font sizes outside the scale
@@ -113,68 +113,126 @@ The `/init` command generates a `CLAUDE.md` file in your project root — this g
 
 ## 3. Next.js Frontend Best Practices
 
-### Project Structure (App Router)
+### Actual Project Structure (App Router)
+
+This is the real structure of the V-ENT-FRONTEND repo:
+
 ```
 src/
-├── app/                    # App Router pages and layouts
-│   ├── (auth)/            # Route group for auth pages (login, signup)
-│   │   ├── login/
-│   │   └── register/
-│   ├── (dashboard)/       # Route group for authenticated pages
-│   │   ├── tournaments/
-│   │   ├── events/
-│   │   ├── teams/
-│   │   ├── profile/
-│   │   └── wallet/
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Landing page
-│   └── not-found.tsx      # 404 page
-├── components/
-│   ├── ui/                # Atomic UI components (Button, Input, Card, etc.)
-│   ├── forms/             # Form components (LoginForm, RegisterForm, etc.)
-│   ├── layouts/           # Layout components (Sidebar, TopNav, Footer)
-│   └── features/          # Feature-specific components (TournamentCard, TeamCard)
-├── lib/
-│   ├── api/               # API client functions (fetch wrappers)
-│   ├── hooks/             # Custom React hooks
-│   ├── utils/             # Utility functions
-│   ├── constants/         # Constants and config
-│   └── types/             # TypeScript type definitions
-├── styles/                # Global styles, CSS variables
-└── middleware.ts          # Auth middleware, rate limiting, redirects
+├── app/                        # App Router pages (flat, no route groups yet)
+│   ├── api/auth/               # NextAuth route handlers + backend-callback
+│   ├── tournaments/            # Tournament list, view, create, drafts, register
+│   ├── events/                 # Event list, view, create
+│   ├── teams/                  # Teams list + team-profile
+│   ├── user-profile/           # View user profile
+│   ├── edit-user-profile/      # Edit user profile
+│   ├── edit-team-profile/      # Edit team profile
+│   ├── wallets/                # Wallet (stub)
+│   ├── rankings/ settings/ anime/ privacy-policy/ reset-email/
+│   ├── login/ signup/ forgot-password/ reset-password/ verify-email/ email-verified/
+│   ├── layout.js               # Root layout (SessionWrapper + Inter font)
+│   └── globals.css             # CSS variables + global styles (Clash Grotesk)
+├── components/                 # Feature components, each with co-located .module.css
+│   ├── SessionWrapper.js       # next-auth SessionProvider wrapper
+│   ├── header/ mobile-header/ sidebar/ bottom-menu/ footer/ auth-header/
+│   ├── landing/                # Landing page section components
+│   ├── tournaments/            # Tournament listing components
+│   ├── view-tournament/        # Tournament detail tabs + registration modal
+│   ├── create-tournament-component/   # 5-step tournament creation wizard
+│   ├── create-event-component/        # 5-step event creation wizard
+│   ├── events/                 # Event listing components
+│   ├── edit-user-profile/      # Edit profile sub-components
+│   ├── edit-team-profile/      # Edit team sub-components
+│   └── drafts/
+├── constants/vent.js           # API endpoint constants (VENTT object)
+├── hooks/useIntersectionObserver.js
+└── middleware.js               # Auth route protection (protects /events, /teams, /user-profile, etc.)
+lib/
+└── authOptions.js              # NextAuth config (Credentials + Google + Facebook)
+public/
+├── fonts/clash_grotesk/        # Self-hosted font files
+├── styles/                     # Additional page-level CSS Modules
+└── images/
 ```
 
-### Server vs. Client Components
-- **Default to Server Components.** They run on the server, reduce bundle size, and can fetch data directly
-- **Use Client Components only when you need:** useState, useEffect, event handlers (onClick, onChange), browser APIs, or third-party libraries that require the browser
-- **Add `'use client'` at the top of client component files** — be intentional about it
-- **Never pass sensitive data from Server Components to Client Components.** Anything passed as props gets serialized into the HTML
+### Styling: CSS Modules + CSS Variables
 
-### Data Fetching
-- **Use Server Components for data fetching** whenever possible — no need for useEffect + useState patterns
-- **Create a centralized API client** in `lib/api/` that handles authentication tokens, base URLs, and error handling
-- **Implement proper error boundaries** with `error.tsx` files in each route segment
-- **Use loading.tsx for route-level loading states** — Next.js will automatically show these during navigation
+**This project does NOT use Tailwind.** All styling is done with:
+1. **CSS custom properties** defined in `src/app/globals.css` (colors, font sizes, font weights)
+2. **CSS Modules** (`.module.css` files co-located with each component or page)
+3. **Global utility classes** in `globals.css`: `.btn`, `.grnBTN`, `.redBTN`
 
-### TypeScript
-- **Use TypeScript strictly.** Enable `strict: true` in tsconfig.json
-- **Define types for all API responses** in `lib/types/`
-- **Never use `any`.** If you're unsure of a type, use `unknown` and narrow it
-- **Use Zod for runtime validation** of API responses and form data
+Rules:
+- Never use one-off hex values — use the CSS variables from `globals.css`
+- Never recreate button styles — use `.btn`, `.grnBTN`, `.redBTN`
+- Every new component gets its own `.module.css` in the same folder
+- Page-level CSS Modules live either next to the page or in `public/styles/` (imported via `@/styles/*`)
+
+### Language: JavaScript (not TypeScript)
+
+**This project uses plain JavaScript.** There is no `tsconfig.json`, no type annotations, and no TypeScript anywhere. All files are `.js`. Do not introduce TypeScript without a team decision to migrate.
+
+Zod is installed and should be used for runtime validation of API responses and form data where schemas are needed.
+
+### Client Components and Data Fetching
+
+Currently, **every page in the codebase uses `'use client'`** with `useEffect` + `useState` + `fetch` for data fetching. This is the established pattern:
+
+```js
+'use client'
+import { useState, useEffect } from 'react';
+
+const MyPage = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/endpoint/`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.status === 'success') setData(json.data);
+      });
+  }, []);
+};
+```
+
+For authenticated requests, include: `Authorization: Bearer ${session.user.sessionToken}`
+
+All API responses follow: `{ status: "success" | "error", data: {...}, message: "..." }`
 
 ### Performance
-- **Use `next/image` for all images** — it handles lazy loading, responsive sizing, and format optimization
-- **Use `next/font` for font loading** — it eliminates layout shift from font loading
-- **Lazy load heavy components** with `dynamic()` imports (e.g., rich text editors, chart libraries)
-- **Minimize client-side JavaScript** — if a component doesn't need interactivity, keep it as a Server Component
-- **Use React.memo() sparingly** — only for components that re-render frequently with the same props
+- **Lazy load heavy browser-only libraries** with `dynamic()` — this is critical for `react-quill` which requires the browser and will hydration-error if imported directly:
+  ```js
+  const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+  ```
+- Use `next/image` for images where possible
+- Use `React.memo()` sparingly — only for components that re-render frequently with the same props
 
 ### Forms
-- **Use React Hook Form** for complex forms (tournament creation, event creation, profile editing)
-- **Validate client-side with Zod** schemas that match your backend validation
-- **Show inline validation errors** — don't wait for form submission
-- **Disable submit buttons during submission** and show loading indicators
-- **Handle optimistic updates** for better UX on simple actions (likes, follows, joins)
+
+Forms are currently built with manual `useState` per field. Zod is available for validation schemas. When building new complex forms, prefer consistent patterns with:
+- Controlled inputs using `useState`
+- Inline error messages (don't wait for submit)
+- Disabled submit button during submission with a loading indicator
+
+### Page Layout Pattern
+
+Every authenticated page follows this structure:
+```jsx
+'use client'
+return (
+  <div className={styles.pageContainer}>
+    <Header />
+    <MobileHeader />
+    <main className={styles.mainContainer}>
+      <Sidebar />
+      {/* page content */}
+    </main>
+    <BottomMenu />
+  </div>
+);
+```
+
+Auth pages use `<AuthHeader />` instead.
 
 ---
 
@@ -198,8 +256,8 @@ src/
 - **API keys, database credentials, and secrets must never be prefixed with `NEXT_PUBLIC_`**
 
 ### Content Security Policy (CSP)
-```typescript
-// middleware.ts
+```js
+// middleware.js
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -227,7 +285,7 @@ const cspHeader = `
 - **Never expose internal error details** in production responses
 
 ### Headers
-```typescript
+```js
 // next.config.js
 const securityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
@@ -470,10 +528,10 @@ security: patch CVE-2025-29927
 - [ ] Does it work? (Test locally before approving)
 - [ ] Is the code readable and well-named?
 - [ ] Are there any security issues? (SQL injection, XSS, auth bypass)
-- [ ] Are API responses properly typed?
-- [ ] Are error states handled?
+- [ ] Are error states handled? (empty state, failed fetch, no data)
 - [ ] Is there unnecessary complexity that could be simplified?
-- [ ] Does it follow the patterns established in the codebase?
+- [ ] Does it follow the patterns established in the codebase? (CSS Modules, JavaScript, `'use client'`, standard page layout)
+- [ ] Has `console.log` of sensitive data been removed?
 
 ---
 
@@ -491,4 +549,10 @@ security: patch CVE-2025-29927
 
 6. **Streaming integration (OBS/VMIX/Streamlabs)** will require WebSocket connections. Plan your Django Channels setup early.
 
-7. **Admin dashboard should be in MVP.** Build a lightweight admin panel for user management, tournament oversight, and payout approval from Phase 1.
+7. **Admin dashboard must be in Phase 1 MVP.** Build a lightweight admin panel for user management, tournament oversight, and payout approval before moving to Phase 2.
+
+8. **`react-quill` must be dynamically imported.** It requires the browser and will cause hydration errors if imported normally. Always use `dynamic(() => import('react-quill'), { ssr: false })`.
+
+9. **`src/constants/vent.js` has dead NextAuth exports.** The `GET`/`POST` handler exports in that file do nothing — the file is not under `src/app/api/`. Only the `VENTT` constants object is used. Clean this up before it causes confusion.
+
+10. **Tournament listing components use hardcoded mock data.** `fifaTournamentsList.js`, `pubgTournamentsList.js`, etc. are static arrays — not API calls. Real data integration is required before launch.

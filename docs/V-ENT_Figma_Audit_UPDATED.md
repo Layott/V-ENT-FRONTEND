@@ -1,7 +1,7 @@
 # V-ENT Figma Design Audit Report (UPDATED)
-**Date:** March 2026 (Revised)  
-**Figma File:** [VENT-Main](https://www.figma.com/design/Ne1xquUxx1yZc0NhkN8kUE/VENT-Main)  
-**Corrections:** Landing page exists (node 3171:21723), Admin dashboard added to MVP scope
+**Date:** March 2026 (Revised — further corrected after full codebase audit)
+**Figma File:** [VENT-Main](https://www.figma.com/design/Ne1xquUxx1yZc0NhkN8kUE/VENT-Main)
+**Corrections:** Landing page exists (node 3171:21723), Admin dashboard added to MVP scope, tournament creation built, event creation built, tournament registration modal built, landing page built
 
 ---
 
@@ -88,10 +88,10 @@ No design exists for the authenticated home/dashboard page. This is where users 
 |--------|------------|---------------|-------|
 | Tournament Homepage | ✅ | ✅ | Designed and built |
 | Tournament Details (Overview/Rules/Participants/Prize) | ✅ | ✅ | Designed and built |
-| Tournament Details (Brackets) | ✅ | ❌ | Designed, not built |
-| Join/Leave Tournaments | ✅ | ❌ | Designed, not built |
-| Registration (Team/Individual) | ✅ | ❌ | Designed, not built |
-| Payment Methods | ✅ | ❌ | Designed, not built |
+| Tournament Details (Brackets) | ✅ | 🟡 | Component file exists (`TournamentDetailsBracket.js`) but is a placeholder stub — no real bracket visualization |
+| Join/Leave Tournaments | ✅ | ✅ | Built as multi-step modal in `view-tournament/tournament-register/` (added in recent commit) |
+| Registration (Team/Individual) | ✅ | ✅ | Full modal flow: team/individual select → choose team → edit roster → review → payment → success. Route `/tournaments/register-tournament` is a stub; actual flow is modal-based |
+| Payment Methods | ✅ | 🟡 | Payment step exists in registration modal (UI shell), not wired to real payment provider |
 | Search Tournaments | ✅ | ❌ | Designed, not built |
 | Tournament Management (Players) | ❌ | ❌ | Not designed |
 
@@ -102,11 +102,13 @@ No design exists for the authenticated home/dashboard page. This is where users 
 ### Tournament Creation
 | Screen | UI Designed | Built | Notes |
 |--------|------------|-------|-------|
-| Basic Info form | ✅ | ❌ | Multi-step wizard |
-| Format & Participants | ✅ | ❌ | |
-| Prize Distribution | ✅ | ❌ | |
-| Sponsors & Links | ✅ | ❌ | |
-| Review | ✅ | ❌ | |
+| Basic Info form | ✅ | ✅ | 5-step wizard built in `src/components/create-tournament-component/` |
+| Format & Participants | ✅ | ✅ | Built |
+| Prize Distribution | ✅ | ✅ | Built |
+| Sponsors & Links | ✅ | ✅ | Built |
+| Review | ✅ | ✅ | Built — full review step with all sections |
+
+**Note:** Tournament creation wizard UI is complete. Backend API integration status is separate — the UI submits but backend wiring should be verified.
 
 ### Tournament Management
 | Screen | UI Designed | Built | Notes |
@@ -118,35 +120,35 @@ No design exists for the authenticated home/dashboard page. This is where users 
 | Update Scores | ✅ | ❌ | |
 | Tournament Production | ✅ | ❌ | Basic version — needs OBS/VMIX/Streamlabs integration design |
 
-**Gaps:** No mobile designs. Production screen needs redesign for streaming software integration (OBS/VMIX/Streamlabs). Screen scanning feature needs original design.
+**Gaps:** Tournament management (post-creation) not built. No mobile designs for creation wizard. Production screen needs redesign for streaming software integration (OBS/VMIX/Streamlabs). Screen scanning feature needs original design.
 
 ---
 
-## 7. EVENTS (Players & Organizers) — 🟡 PARTIAL (Players) / ❌ MISSING (Organizer Tools)
+## 7. EVENTS (Players & Organizers) — 🟡 PARTIAL (Players) / 🟡 PARTIAL (Organizer Tools)
 
 ### Explore Events (Players)
-| Screen | UI Designed | Notes |
-|--------|------------|-------|
-| Event Homepage | ✅ | Designed |
-| Event Overview (Physical/Virtual/Hybrid) | ✅ | Designed |
-| Tournaments under Events | ❌ | **NOT designed** |
-| Attendees | ✅ | Designed |
-| Gallery | ✅ | Designed |
-| Registration | ✅ | Designed |
-| Payment Methods | ✅ | Designed |
-| Search Events | ✅ | Designed |
+| Screen | UI Designed | Built | Notes |
+|--------|------------|-------|-------|
+| Event Homepage | ✅ | ✅ | Built at `src/app/events/page.js` |
+| Event Overview (Physical/Virtual/Hybrid) | ✅ | ✅ | Built at `src/app/events/view-event/page.js` |
+| Tournaments under Events | ❌ | ❌ | Not designed, not built |
+| Attendees | ✅ | ❌ | Designed, not built |
+| Gallery | ✅ | ❌ | Designed, not built |
+| Registration | ✅ | ❌ | Designed, not built |
+| Payment Methods | ✅ | ❌ | Designed, not built |
+| Search Events | ✅ | ❌ | Designed, not built |
 
-### Event Organizer Tools — ❌ ALL MISSING
-| Screen | Status | Notes |
-|--------|--------|-------|
-| Event Creation | ❌ | Needs complete design |
-| Event Management Dashboard | ❌ | Needs complete design |
-| Ticketing System | ❌ | Needs complete design |
-| Tournament-Event Linking | ❌ | NEW feature, needs design |
-| Vendor Shop System | ❌ | NEW feature, needs complete design |
-| Registration & Attendance | ❌ | Needs design |
+### Event Organizer Tools — 🟡 CREATION BUILT, REST MISSING
+| Screen | Design | Built | Notes |
+|--------|--------|-------|-------|
+| Event Creation | ❌ | ✅ | **Built despite no Figma design.** Full 5-step wizard at `src/app/events/create-event/` using `CreateEventComponent` — mirrors tournament creation wizard exactly |
+| Event Management Dashboard | ❌ | ❌ | Needs design and build |
+| Ticketing System | ❌ | ❌ | Needs design and build |
+| Tournament-Event Linking | ❌ | ❌ | NEW feature, needs design |
+| Vendor Shop System | ❌ | ❌ | NEW feature, needs complete design |
+| Registration & Attendance | ❌ | ❌ | Needs design |
 
-**This is the biggest design gap for MVP Phase 2.**
+**Note:** Event creation was built without a Figma design. It should be audited against a design before launch. The event creation wizard is structurally identical to the tournament creation wizard — verify the flows are actually different enough to justify separate components or consolidate.
 
 ---
 
@@ -221,21 +223,26 @@ No design exists for the authenticated home/dashboard page. This is where users 
 
 ## 12. SECTIONS WITH NO FIGMA DESIGNS
 
-| Section | MVP Priority | Notes |
-|---------|-------------|-------|
-| ~~Landing Page~~ | ~~P0~~ | **CORRECTED: Exists at node 3171:21723** ✅ |
-| Home Page (logged in) | P0 | Needs design |
-| Account Settings | P1 | Partially designed |
-| Community Pages | P2 | Not designed |
-| Anime Features | P2 | Not designed |
-| Marketplace | P2 | Not designed |
-| Wager System | P3 | Not designed |
-| E-Commerce Shop | P2 | Not designed |
-| AI Features | P2 | Not designed |
-| Admin Dashboard | P0-P1 | Not designed — should be in MVP |
-| Production/Streaming Integration | P0 | NEW feature, needs original design |
-| Vendor Shop System | P1 | NEW feature, needs original design |
-| Ticketing System | P1 | Not designed |
+| Section | MVP Priority | Built Without Design | Notes |
+|---------|-------------|---------------------|-------|
+| ~~Landing Page~~ | ~~P0~~ | No | **CORRECTED: Exists at node 3171:21723** ✅ |
+| Home Page (logged in) | P0 | No | Needs design |
+| Account Settings | P1 | No | Partially designed |
+| **Tournament Creation** | P0 | **Yes** ✅ | **CORRECTED: Built as 5-step wizard — needs design verification** |
+| **Event Creation (Organizer)** | P1 | **Yes** ✅ | **CORRECTED: Built as 5-step wizard — needs design and CEO approval** |
+| **Draft Tournaments** | P1 | **Yes** ✅ | **CORRECTED: `DraftCard.js` and `/tournaments/drafts` page built — no design exists** |
+| **Rankings** | P2 | **Yes** ✅ | **CORRECTED: `/rankings` page built — no design exists** |
+| Wallet System | P0 | No | BIN version exists but is outdated. Required for tournament fees |
+| Admin Dashboard | P0-P1 | No | Not designed — required for MVP |
+| Production/Streaming Integration | P0 | No | NEW feature, needs original design |
+| Vendor Shop System | P1 | No | NEW feature, needs original design |
+| Ticketing System | P1 | No | Not designed |
+| Community Pages | P2 | No | Not designed |
+| Anime Features | P2 | No | Not designed |
+| Marketplace | P2 | No | Not designed |
+| Wager System | P3 | No | Not designed |
+| E-Commerce Shop | P2 | No | Not designed |
+| AI Features | P2 | No | Not designed |
 
 ---
 
@@ -246,23 +253,29 @@ No design exists for the authenticated home/dashboard page. This is where users 
 2. **Wallet System** — Fresh designs needed (BIN versions outdated). Required for tournament fees
 3. **Production/Streaming Integration** — OBS/VMIX/Streamlabs overlay config, data pipeline UI, spectator screen scanning
 4. **Admin Dashboard (Lightweight)** — User management, tournament oversight, payout approval
+5. **Bracket Visualization** — `TournamentDetailsBracket.js` is currently a stub
+
+### 🟡 Design Verification Needed (Pages Built Without Figma)
+6. **Tournament Creation wizard** — built but no design confirmation; verify against Figma or create reference
+7. **Event Creation wizard** — built without any design; CEO approval required before launch
+8. **Draft Tournaments page** — built without design
+9. **Rankings page** — built without design
 
 ### 🟡 Design Needed for MVP Phase 2
-5. Event Creation (Organizer)
-6. Event Management Dashboard
-7. Ticketing System
-8. Tournament-Event Linking UI
-9. Vendor Shop System
-10. Account Settings (completion)
+10. Event Management Dashboard
+11. Ticketing System
+12. Tournament-Event Linking UI
+13. Vendor Shop System
+14. Account Settings (completion)
 
 ### 🟢 Design Can Wait (Phase 3+)
-11. Organization System
-12. Community Pages
-13. Anime Features
-14. Marketplace
-15. E-Commerce Shop
-16. Wager System
-17. AI Features
+15. Organization System
+16. Community Pages
+17. Anime Features
+18. Marketplace
+19. E-Commerce Shop
+20. Wager System
+21. AI Features
 
 ---
 
@@ -285,4 +298,4 @@ No design exists for the authenticated home/dashboard page. This is where users 
 
 ---
 
-*This audit was generated by analyzing Figma metadata and cross-referencing with the V-ENT MVP tracker and feature specifications. Visual pixel-level review requires human verification.*
+*This audit was generated by analyzing Figma metadata and cross-referencing with the V-ENT MVP tracker and feature specifications. Revised March 2026 after full codebase audit — statuses now reflect actual code in the V-ENT-FRONTEND repo. Visual pixel-level design comparison (Figma vs. built output) still requires human verification.*

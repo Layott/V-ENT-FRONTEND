@@ -37,7 +37,7 @@ V-ENT addresses this gap with a unified platform that combines an open-ended bra
 
 The company is seeking $250,000 in funding to fully build and launch the platform, starting with the Nigerian market before expanding across Africa and globally.
 
-**Current Status:** Pre-launch. 100 waitlist signups during initial registration period. Core authentication, user profiles, and tournament homepage are built. Figma designs cover 60%+ of MVP screens.
+**Current Status:** Pre-launch. 100 waitlist signups during initial registration period. Built: full auth flow, landing page, user profiles (view/edit), team profiles (view/edit), tournament homepage + detail view, tournament creation wizard (5-step), tournament registration modal (multi-step), event creation wizard (5-step), events page + view event, rankings page, tournament drafts, and wallet stub. Figma designs cover 60%+ of MVP screens — several pages were built without Figma designs and require design review.
 
 ---
 
@@ -72,9 +72,11 @@ The company is seeking $250,000 in funding to fully build and launch the platfor
 | **Total** | **6** | |
 
 ### Technology Stack
-- **Frontend:** Next.js (React), TypeScript
+- **Frontend:** Next.js 14 (React), JavaScript (not TypeScript — codebase uses plain JS)
 - **Backend:** Django (Python), Django REST Framework
 - **Database:** MySQL
+- **Styling:** CSS Modules + CSS custom properties (not Tailwind)
+- **Auth:** NextAuth v4 (Credentials + Google + Facebook OAuth)
 - **Design:** Figma
 - **Repositories:** GitHub (separate frontend and backend repos)
 
@@ -281,9 +283,10 @@ V-ENT employs a diversified revenue model with seven distinct streams:
 | **Phase 6: Wagering** | Wager system — all bet types, management, security | Q3-Q4 2027 | High-engagement feature. Additional transaction volume through VENT COINS. |
 
 ### 9.2 Current Development Status
-- **Built:** User registration (login, signup, email verification, password reset), user profiles (view, edit, gallery), tournament homepage, tournament details
-- **Designed (not built):** Tournament creation wizard, tournament management, explore events, teams (overview, members, edit, activity), landing page
-- **Not designed:** Home page (logged in), wallet system, event creation/management, ticketing, vendor shops, admin dashboard, production/streaming integration, organizations, community, anime, marketplace, wager, shop
+- **Built:** User registration (login, signup, email verification, password reset), user profiles (view, edit, gallery), tournament homepage, tournament details (overview, rules, participants, prize tabs), tournament creation wizard (5-step), tournament registration modal (team/individual → payment → success), tournament drafts, teams (overview, members, edit), team profile (view, edit), landing page, events homepage, view event, event creation wizard (5-step), rankings page, wallet stub
+- **Partially built:** Tournament brackets (component file is a placeholder stub — no real visualization), account settings (incomplete), wallet page (UI stub only, no transactions)
+- **Designed (not built):** Tournament management (post-creation: leaderboard, scores, invites, matches), event details sub-pages (attendees, gallery, registration), search for tournaments/events
+- **Not designed:** Home page (logged in), wallet system (transactions, buy/send VENT COINS, payouts), event creation organizer tools (management dashboard, ticketing, tournament-event linking, vendor shops), admin dashboard, production/streaming integration (OBS/VMIX/Streamlabs), organizations, community, anime, marketplace, wager, e-commerce shop
 
 ---
 
