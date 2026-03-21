@@ -12,7 +12,7 @@ const EventDetailsBanner = ({ event }) => {
   const [bannerUrl, setBannerUrl] = useState(tournamentDetailsBanner);
   const { data: session } = useSession();
   
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Function to get the correct image URL - same pattern as tournament
   const getImageUrl = (imagePath) => {

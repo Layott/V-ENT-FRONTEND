@@ -15,28 +15,10 @@ const TournamentDetailsBanner = ({ tournament }) => {
   
   // Function to get the correct image URL
   const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      console.log('No image path provided, using default banner');
-      return tournamentDetailsBanner;
-    }
-    
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) {
-      console.log('Using full URL:', imagePath);
-      return imagePath;
-    }
-    
-    // If it starts with /media, prepend your backend URL
-    if (imagePath.startsWith('/media')) {
-      const fullUrl = `https://vermillionent.pythonanywhere.com${imagePath}`;
-      console.log('Constructed URL from /media path:', fullUrl);
-      return fullUrl;
-    }
-    
-    // If it's just a filename, construct the full path
-    const fullUrl = `https://vermillionent.pythonanywhere.com/media/tournament_banners/${imagePath}`;
-    console.log('Constructed URL from filename:', fullUrl);
-    return fullUrl;
+    if (!imagePath) return tournamentDetailsBanner;
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/media')) return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}/media/tournament_banners/${imagePath}`;
   };
 
   // Helper function to calculate time remaining
