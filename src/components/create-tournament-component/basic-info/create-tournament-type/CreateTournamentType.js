@@ -15,15 +15,15 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   const { data: session } = useSession();
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Helper function to get absolute URLs
   const getAbsoluteUrl = useCallback((url, type = "default") => {
     if (!url) {
       if (type === "banner") {
-        return "https://vermillionent.pythonanywhere.com/media/default-banner.jpg";
+        return `${process.env.NEXT_PUBLIC_API_URL}/media/default-banner.jpg`;
       }
-      return "https://vermillionent.pythonanywhere.com/media/default-profile.jpg";
+      return `${process.env.NEXT_PUBLIC_API_URL}/media/default-profile.jpg`;
     }
     
     if (url.startsWith("http")) {
@@ -54,7 +54,7 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
 
     try {
       const response = await axios.get(
-        "https://vermillionent.pythonanywhere.com/event/get-all-events/",
+        `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -63,7 +63,6 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
         }
       );
 
-      console.log("Raw API response:", response.data);
       
       // Combine featured and upcoming events
       const featured = response.data.data.featured || [];

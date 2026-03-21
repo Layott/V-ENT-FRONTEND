@@ -285,16 +285,7 @@ const CreateTournamentComponent = () => {
     if (socialLinks.tiktok_link) formDataToSend.append('tiktok_link', socialLinks.tiktok_link);
     if (socialLinks.bigolive_link) formDataToSend.append('bigolive_link', socialLinks.bigolive_link);
 
-    console.log("FormData prepared for API submission");
-    console.log("Is Draft:", isDraft);
-    
-    // Debug: Log all FormData entries
-    console.log("FormData entries:");
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
-    const response = await fetch('https://vermillionent.pythonanywhere.com/tournament/create-tournament/', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/create-tournament/`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.user.sessionToken}`,
@@ -304,10 +295,7 @@ const CreateTournamentComponent = () => {
       credentials: 'include',
     });
 
-    console.log("Response status:", response.status);
-    
     const responseText = await response.text();
-    console.log("Response body:", responseText);
     
     let responseData;
     try {
