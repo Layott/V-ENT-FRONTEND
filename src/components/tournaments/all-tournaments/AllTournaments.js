@@ -1,10 +1,10 @@
 import TournamentsByGame from './tournaments-by-game/TournamentByGame';
 import styles from './all-tournaments.module.css';
 
-const AllTournaments = () => {
+const AllTournaments = ({ data }) => {
   return (
     <div className={styles.allTournamentsSlidersContainer}>
-      <TournamentsByGame />
+      <TournamentsByGame data={data} />
     </div>
   );
 };
