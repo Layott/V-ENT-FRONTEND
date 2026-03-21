@@ -232,6 +232,47 @@ For pages with no Figma design (wallet, admin, event management, ticketing, vend
 - **No reusable UI component library** — buttons, inputs, and form elements are recreated per page; should be extracted into shared components
 - **`/tournaments` routes not in `protectedRoutes`** in middleware — tournament browsing, creation, and registration are publicly accessible without login; confirm if intentional
 - **Dead NextAuth exports in `src/constants/vent.js`** — this file exports `GET`/`POST` handler from a non-route location; these exports do nothing since the file isn't under `src/app/api/`. Clean up: keep only the `VENTT` constants object
+- **Teams module: 5 hardcoded data files** — `cardDataList.js`, `membersList.js`, `requestList.js`, `teamProfileTournamentsList.js`, `teamEventsList.js` — all need real API integration; team profile links go to `/teams/team-profile` with no `?id=` param
+- **Dual auth prefix bug** — some components use `Authorization: Bearer`, others fall back to `Authorization: Token`; standardize on `Bearer` across all components
+- **`Payment.js` hardcoded balance** — `src/components/view-tournament/tournament-register/payment/Payment.js` uses hardcoded wallet balance of `526` and simulates Paystack with `setTimeout`; must be replaced with real wallet API
+- **Hardcoded backend URL in `CreateTournamentComponent.js:297`** — uses literal `https://vermillionent.pythonanywhere.com` instead of `process.env.NEXT_PUBLIC_API_URL`; same issue in `events/view-event/page.js`
+- **Duplicate/inconsistent API URL paths** — some endpoints called as `/get-all-tournaments/`, others as `/tournament/get-all-tournaments/`; confirm correct prefix with backend team
+- **`/anime/page.js` status unknown** — file exists (it's in middleware's protectedRoutes) but content may be a stub; verify before building anime module
+- **10 security issues identified** — see `docs/modules/15-SECURITY.md` for full list including token logging, hardcoded URLs, missing DOMPurify, and simulated payments
+
+---
+
+## Infrastructure
+
+| Service | Provider | Details |
+|---------|----------|---------|
+| Backend hosting | AWS EC2 | t3.small — Django + Celery + Daphne |
+| Database | AWS RDS | MySQL db.t3.micro |
+| File storage (public) | AWS S3 | Bucket: `v-ent-media` |
+| File storage (private) | AWS S3 | Bucket: `v-ent-private` |
+| CDN | AWS CloudFront | In front of S3 |
+| Email | AWS SES | Transactional email |
+| Cache / WebSockets | AWS ElastiCache | Redis t3.micro |
+| Frontend hosting | Vercel | Free tier |
+| DNS / Security | Cloudflare | Free tier — in front of AWS |
+| Payments | Paystack | Nigerian gateway — all payment flows |
+| Push notifications | Firebase Cloud Messaging | Free tier |
+| IP geolocation | ipinfo.io | Free tier |
+| Error tracking | Sentry | Free tier |
+| Analytics | PostHog | Free tier |
+
+**Budget:** $1,000 AWS credits — approximately $61–66/month, lasting ~15 months.
+
+---
+
+## External Services Rule
+
+Before suggesting or integrating any third-party service, check `docs/V-ENT_External_Tools_and_Services.md` to see if an equivalent already exists in the stack.
+
+- **AWS-first:** use AWS services where possible — they are covered by credits (S3, SES, ElastiCache, CloudFront before any paid alternatives)
+- **Payments:** all payment flows go through Paystack — never simulate payments, never introduce a second payment provider without explicit approval
+- **Never use Tailwind, TypeScript, or Server Components** — this project uses CSS Modules, JavaScript, and `'use client'` pattern throughout
+- **Never hardcode API keys or secrets** — use environment variables; never commit `.env.local`
 
 ---
 
@@ -240,3 +281,5 @@ For pages with no Figma design (wallet, admin, event management, ticketing, vend
 - `docs/V-ENT_BRD.md` — Business requirements, product phases, revenue model
 - `docs/V-ENT_Best_Practices.md` — Development standards for Next.js (JavaScript), Django, and security
 - `docs/V-ENT_Figma_Audit_UPDATED.md` — Design status for every screen (what's designed vs. missing vs. built)
+- `docs/V-ENT_External_Tools_and_Services.md` — All external services, APIs, and AWS infrastructure decisions
+- `docs/modules/01-TOURNAMENTS.md` through `docs/modules/15-SECURITY.md` — Per-module specs with Figma node IDs, component trees, API endpoints, Django models, acceptance criteria, and task checklists
