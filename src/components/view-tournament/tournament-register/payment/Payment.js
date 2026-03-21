@@ -2,9 +2,13 @@
 import { useState } from 'react';
 import styles from './payment.module.css';
 
-const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selectedTeam, teamMembers, registrationData }) => {
+// TODO (06-WALLET.md): Pass real walletBalance from GET /wallet/balance/ via parent TournamentRegister.js
+// TODO (06-WALLET.md): Wire handlePayNow wallet path to POST /wallet/deduct/ with PIN confirmation
+// TODO (06-WALLET.md): Wire handlePayNow paystack path to POST /wallet/topup/initiate/ → Paystack SDK → POST /wallet/topup/verify/
+const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selectedTeam, teamMembers, registrationData, walletBalance = null }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
 
   const handleBack = () => {
     if (onBack) {
@@ -20,59 +24,56 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
 
   const handlePaymentMethodSelect = (method) => {
     setSelectedPaymentMethod(method);
+    setPaymentError(null);
   };
 
   const handlePayNow = async () => {
     if (!selectedPaymentMethod) return;
-    
+
     setIsProcessing(true);
-    
+    setPaymentError(null);
+
     try {
       if (selectedPaymentMethod === 'wallet') {
-        // Check if wallet has enough funds
-        const requiredAmount = tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? 40 : tournament?.entry_fee_price;
-        const walletBalance = 526; // This should come from your app state/props
-        
-        if (walletBalance >= requiredAmount) {
-          // Sufficient funds - simulate payment processing
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // Call the completion handler
-          if (onComplete) {
-            onComplete({
-              paymentMethod: selectedPaymentMethod,
-              amount: requiredAmount,
-              currency: tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? 'vent_coins' : 'USD',
-              registrationData: registrationData,
-              success: true
-            });
-          }
-        } else {
-          // Insufficient funds - show error or redirect to paystack
+        const requiredAmount = getRequiredAmount();
+
+        if (walletBalance === null) {
+          setPaymentError('Wallet not connected. Please set up your wallet before paying.');
           setIsProcessing(false);
-          alert('Insufficient wallet balance. Please select Paystack to add funds or pay directly.');
-          setSelectedPaymentMethod('paystack');
+          return;
         }
+
+        if (walletBalance < requiredAmount) {
+          setPaymentError(`Insufficient balance. You have ${walletBalance} vent coins but need ${requiredAmount}.`);
+          setIsProcessing(false);
+          return;
+        }
+
+        // TODO (06-WALLET.md): Call POST /wallet/deduct/ with { tournament_id, amount, pin }
+        // TODO (06-WALLET.md): Show PIN input modal before this step
+        // TODO (06-WALLET.md): On success from API, then call onComplete below
+        setPaymentError('Wallet payments are not yet available. Please check back soon.');
+        setIsProcessing(false);
+
       } else if (selectedPaymentMethod === 'paystack') {
-        // Simulate Paystack payment processing
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
-        // Call the completion handler
-        if (onComplete) {
-          onComplete({
-            paymentMethod: selectedPaymentMethod,
-            amount: tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? 40 : tournament?.entry_fee_price,
-            currency: tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? 'vent_coins' : 'USD',
-            registrationData: registrationData,
-            success: true
-          });
-        }
+        // TODO (06-WALLET.md): Call POST /wallet/topup/initiate/ to get Paystack authorization_url
+        // TODO (06-WALLET.md): Open Paystack inline popup or redirect to authorization_url
+        // TODO (06-WALLET.md): On Paystack callback, call POST /wallet/topup/verify/?reference=
+        // TODO (06-WALLET.md): On verified, call POST /wallet/deduct/ for tournament fee, then onComplete
+        setPaymentError('Paystack integration is not yet available. Please check back soon.');
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error('Payment failed:', error);
+      setPaymentError('An unexpected error occurred. Please try again.');
       setIsProcessing(false);
-      alert('Payment failed. Please try again.');
     }
+  };
+
+  const getRequiredAmount = () => {
+    return tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00"
+      ? 40
+      : tournament?.entry_fee_price;
   };
 
   const getEntryFeeDisplay = () => {
@@ -89,13 +90,12 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
   };
 
   const getWalletStatus = () => {
-    const requiredAmount = tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? 40 : tournament?.entry_fee_price;
-    const walletBalance = 526; // This should come from your app state/props
-    
+    const requiredAmount = getRequiredAmount();
     return {
       balance: walletBalance,
-      hasSufficientFunds: walletBalance >= requiredAmount,
-      required: requiredAmount
+      hasSufficientFunds: walletBalance !== null && walletBalance >= requiredAmount,
+      required: requiredAmount,
+      isConnected: walletBalance !== null,
     };
   };
 
@@ -120,7 +120,7 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
             ×
           </button>
         </div>
-        
+
         <div className={styles.modalBody}>
           <p className={styles.subtitle}>Choose your preferred payment method</p>
 
@@ -157,7 +157,7 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
           {/* Payment Methods */}
           <div className={styles.paymentMethodsSection}>
             {/* Wallet Payment */}
-            <div 
+            <div
               className={`${styles.paymentMethod} ${selectedPaymentMethod === 'wallet' ? styles.selected : ''} ${!walletStatus.hasSufficientFunds ? styles.insufficient : ''}`}
               onClick={() => handlePaymentMethodSelect('wallet')}
             >
@@ -170,9 +170,14 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
                       <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2"/>
                       <point cx="12" cy="17" stroke="white" strokeWidth="2"/>
                     </svg>
-                    {walletStatus.balance}
+                    {walletStatus.isConnected ? walletStatus.balance : 'Connect wallet'}
                   </div>
-                  {!walletStatus.hasSufficientFunds && (
+                  {!walletStatus.isConnected && (
+                    <div className={styles.insufficientFunds}>
+                      Wallet not set up yet — coming soon
+                    </div>
+                  )}
+                  {walletStatus.isConnected && !walletStatus.hasSufficientFunds && (
                     <div className={styles.insufficientFunds}>
                       Insufficient funds (need {walletStatus.required})
                     </div>
@@ -185,7 +190,7 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
             </div>
 
             {/* Paystack Payment */}
-            <div 
+            <div
               className={`${styles.paymentMethod} ${selectedPaymentMethod === 'paystack' ? styles.selected : ''}`}
               onClick={() => handlePaymentMethodSelect('paystack')}
             >
@@ -216,13 +221,20 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
               </div>
             </div>
           </div>
+
+          {/* Inline error — replaces alert() */}
+          {paymentError && (
+            <div className={styles.paymentError}>
+              {paymentError}
+            </div>
+          )}
         </div>
 
         <div className={styles.modalFooter}>
           <button className={styles.cancelButton} onClick={handleClose}>
             Cancel
           </button>
-          <button 
+          <button
             className={`${styles.payButton} ${!selectedPaymentMethod || isProcessing ? styles.disabled : ''}`}
             onClick={handlePayNow}
             disabled={!selectedPaymentMethod || isProcessing}
