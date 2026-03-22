@@ -1,14 +1,38 @@
 // ./src/components/view-tournament/tournament-details-banner/payment/Payment.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import styles from './payment.module.css';
 
-// TODO (06-WALLET.md): Pass real walletBalance from GET /wallet/balance/ via parent TournamentRegister.js
-// TODO (06-WALLET.md): Wire handlePayNow wallet path to POST /wallet/deduct/ with PIN confirmation
-// TODO (06-WALLET.md): Wire handlePayNow paystack path to POST /wallet/topup/initiate/ → Paystack SDK → POST /wallet/topup/verify/
-const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selectedTeam, teamMembers, registrationData, walletBalance = null }) => {
+const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selectedTeam, teamMembers, registrationData }) => {
+  const { data: session } = useSession();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
+  const [walletBalance, setWalletBalance] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && session?.user?.sessionToken) {
+      fetchWalletBalance();
+    }
+  }, [isOpen, session?.user?.sessionToken]);
+
+  const fetchWalletBalance = async () => {
+    setBalanceLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
+        headers: { Authorization: `Bearer ${session.user.sessionToken}` },
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setWalletBalance(data.data.balance);
+      }
+    } catch (err) {
+      console.error('Failed to fetch wallet balance:', err);
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
 
   const handleBack = () => {
     if (onBack) {
@@ -38,7 +62,7 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
         const requiredAmount = getRequiredAmount();
 
         if (walletBalance === null) {
-          setPaymentError('Wallet not connected. Please set up your wallet before paying.');
+          setPaymentError('Could not load wallet balance. Please refresh and try again.');
           setIsProcessing(false);
           return;
         }
@@ -49,19 +73,31 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
           return;
         }
 
-        // TODO (06-WALLET.md): Call POST /wallet/deduct/ with { tournament_id, amount, pin }
-        // TODO (06-WALLET.md): Show PIN input modal before this step
-        // TODO (06-WALLET.md): On success from API, then call onComplete below
-        setPaymentError('Wallet payments are not yet available. Please check back soon.');
-        setIsProcessing(false);
+        // Balance is sufficient — pass payment intent to parent; deduction handled in tournament registration
+        onComplete({ paymentMethod: 'wallet', amount: requiredAmount });
 
       } else if (selectedPaymentMethod === 'paystack') {
-        // TODO (06-WALLET.md): Call POST /wallet/topup/initiate/ to get Paystack authorization_url
-        // TODO (06-WALLET.md): Open Paystack inline popup or redirect to authorization_url
-        // TODO (06-WALLET.md): On Paystack callback, call POST /wallet/topup/verify/?reference=
-        // TODO (06-WALLET.md): On verified, call POST /wallet/deduct/ for tournament fee, then onComplete
-        setPaymentError('Paystack integration is not yet available. Please check back soon.');
-        setIsProcessing(false);
+        const requiredAmount = getRequiredAmount();
+        // 1 vent coin = N1,000; send amount in kobo (Paystack standard)
+        const amountInKobo = requiredAmount * 1000 * 100;
+        const callbackUrl = `${window.location.origin}/wallet-topup-callback?redirect_to=${encodeURIComponent(window.location.href)}`;
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/topup/initiate/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.sessionToken}`,
+          },
+          body: JSON.stringify({ amount: amountInKobo, callback_url: callbackUrl }),
+        });
+        const data = await res.json();
+
+        if (data.status === 'success' && data.data?.authorization_url) {
+          window.location.href = data.data.authorization_url;
+        } else {
+          setPaymentError(data.message || 'Failed to initiate payment. Please try again.');
+          setIsProcessing(false);
+        }
       }
     } catch (error) {
       console.error('Payment failed:', error);
@@ -170,11 +206,11 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
                       <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2"/>
                       <point cx="12" cy="17" stroke="white" strokeWidth="2"/>
                     </svg>
-                    {walletStatus.isConnected ? walletStatus.balance : 'Connect wallet'}
+                    {balanceLoading ? 'Loading...' : walletStatus.isConnected ? `${walletStatus.balance} vent coins` : 'Balance unavailable'}
                   </div>
-                  {!walletStatus.isConnected && (
+                  {!balanceLoading && !walletStatus.isConnected && (
                     <div className={styles.insufficientFunds}>
-                      Wallet not set up yet — coming soon
+                      Could not load balance — please try again
                     </div>
                   )}
                   {walletStatus.isConnected && !walletStatus.hasSufficientFunds && (
