@@ -1,0 +1,73 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--v-ent-grn);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.iconSuccess {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--v-ent-grn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: #fff;
+  font-weight: var(--fw-bold);
+}
+
+.iconError {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--v-ent-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: #fff;
+  font-weight: var(--fw-bold);
+}
+
+.text {
+  font-size: var(--fs-p-size-desktop);
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.subtext {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}

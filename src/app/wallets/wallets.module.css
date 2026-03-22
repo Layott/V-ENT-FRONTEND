@@ -9,41 +9,135 @@
 }
 
 .rightPaneContainer {
-  border: 1px solid red;
   width: 100%;
   margin-top: 60px;
   min-height: calc(100vh - 60px);
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 }
 
-.header {
-  width: 100%;
-  min-height: 50px;
-  border: 1px solid white;
+.pageHeader {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-bold);
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.errorText {
+  color: var(--v-ent-red);
+  font-size: var(--fs-p-size-desktop);
+  margin-bottom: 1rem;
+}
+
+/* Balance card */
+.balanceCard {
+  background-color: var(--overlay-gray);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 340px;
+}
+
+.balanceLabel {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--fw-medium);
+}
+
+.balanceAmount {
+  font-size: var(--desktop-h3-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--v-ent-grn);
+  margin: 0 0 0.35rem;
+}
+
+.balanceRate {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+/* Transactions */
+.transactionsSection {
+  max-width: 600px;
+}
+
+.sectionTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-text);
+  margin: 0 0 1rem;
+}
+
+.loadingText,
+.emptyText {
+  font-size: var(--fs-p-size-desktop);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.transactionList {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transactionRow {
+  display: flex;
   justify-content: space-between;
+  align-items: center;
+  background-color: var(--overlay-gray);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
 }
 
-.header h3 {
-  font-size: 1.125rem;
+.txLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
-.searchFilterContainer {
-  border: 1px solid green;
-  height: 100%;
-  width: 200px;
+.txType {
+  font-size: var(--fs-p-size-desktop);
+  font-weight: var(--fw-medium);
+  color: var(--primary-text);
+}
+
+.txDate {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.txAmount {
+  font-size: var(--fs-p-size-desktop);
+  font-weight: var(--fw-bold);
+}
+
+.txCredit {
+  color: var(--v-ent-grn);
+}
+
+.txDebit {
+  color: var(--v-ent-red);
 }
 
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
     width: calc(100% - 180px);
     margin-left: 180px;
+    padding: 2rem 1.5rem;
   }
 }
+
 @media only screen and (min-width: 1024px) {
   .rightPaneContainer {
     width: calc(100% - 250px);
     margin-left: 250px;
+    padding: 2rem;
   }
 }
