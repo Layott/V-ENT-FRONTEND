@@ -73,8 +73,33 @@ const PaymentModal = ({ isOpen, onClose, onBack, onComplete, tournament, selecte
           return;
         }
 
-        // Balance is sufficient — pass payment intent to parent; deduction handled in tournament registration
-        onComplete({ paymentMethod: 'wallet', amount: requiredAmount });
+        // Balance sufficient — call registration API (handles wallet deduction server-side)
+        const body = {
+          tournament_id: tournament?.id,
+          payment_method: 'wallet',
+          registration_type: registrationData?.type || 'individual',
+        };
+        if (registrationData?.type === 'team' && selectedTeam?.id) {
+          body.team_id = selectedTeam.id;
+          body.member_ids = (teamMembers || []).map(m => m.id);
+        }
+
+        const regRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/register-tournament/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.sessionToken}`,
+          },
+          body: JSON.stringify(body),
+        });
+        const regData = await regRes.json();
+
+        if (regData.status === 'success') {
+          onComplete({ paymentMethod: 'wallet', amount: requiredAmount, registrationId: regData.data?.id });
+        } else {
+          setPaymentError(regData.message || 'Registration failed. Please try again.');
+          setIsProcessing(false);
+        }
 
       } else if (selectedPaymentMethod === 'paystack') {
         const requiredAmount = getRequiredAmount();
