@@ -283,6 +283,72 @@ This protocol applies to ALL Track B pages: admin dashboard, wallet UI, organize
 
 ---
 
+## Mockup Quality Standard — MANDATORY
+
+### Gold Standard Reference
+The wallet mockup at docs/mockups/wallet.html is the quality benchmark. Every new mockup and page MUST match this level of:
+- Design consistency with existing V-ENT pages
+- Responsive behavior across all screen sizes
+- Polish and attention to detail
+
+### Responsive Requirements — ALL Pages and Mockups
+Every page and HTML mockup MUST be fully responsive. Not just two breakpoints — fluid across ALL screen sizes:
+
+**Breakpoints to support:**
+- Mobile: 375px (primary mobile target)
+- Small tablet: 768px
+- Tablet/small laptop: 1024px
+- Desktop: 1440px (primary desktop target)
+- Large desktop: 1920px+
+
+**Responsive rules:**
+- Sidebar collapses to bottom navigation on mobile (match existing pattern from Sidebar.js + BottomMenu.js)
+- Cards stack vertically on mobile, grid on desktop
+- Tables become expandable card lists on mobile (match tournament participants pattern)
+- Font sizes switch between desktop and mobile CSS variables (--desktop-h1-size vs --mobile-h1-size)
+- Touch targets minimum 44px on mobile
+- No horizontal scrolling at any breakpoint
+- Images and media scale proportionally
+- Modals become full-screen on mobile
+- Form inputs are full-width on mobile
+
+**Testing responsive:**
+Before presenting any mockup or page, mentally verify it works at 375px, 768px, 1024px, and 1440px. If any breakpoint looks broken, fix it first.
+
+### Mockup File Standards
+All HTML mockups saved to docs/mockups/ must:
+- Be fully self-contained single HTML files (inline CSS, no external dependencies except Google Fonts as fallback)
+- Include the Clash Grotesk font (load from public/fonts/ or use Google Fonts fallback)
+- Use the EXACT CSS variables from globals.css (copy them into the mockup's style block)
+- Include the V-ENT logo from public/images/
+- Include the favicon
+- Be interactive where relevant (tabs should switch, dropdowns should open, sidebar should collapse on mobile)
+- Include smooth transitions and hover states matching existing pages
+- Work when opened directly in a browser (file:///path/to/mockup.html)
+
+### What to Reference for Each Page Type
+
+| Building This | Reference These Existing Pages |
+|--------------|-------------------------------|
+| Dashboard/overview | user-profile (stats cards, layout), tournaments page (card grid) |
+| Data table page | view-tournament participants tab (table style, search, pagination) |
+| Form/wizard page | create-tournament-component (multi-step wizard, form inputs, validation) |
+| Detail/view page | view-tournament overview tab (hero banner, info sections, tabs) |
+| Listing page | tournaments page (card grid, filters, search bar) |
+| Settings page | settings page (sidebar nav + content panels) |
+| Modal/dialog | tournament registration modal (overlay, steps, confirmation) |
+| Wallet/financial | docs/mockups/wallet.html (THE gold standard for financial UI) |
+
+### For EVERY New Page — Read These Files First
+This is not optional. Read ALL of these before writing a single line of CSS:
+1. src/app/globals.css — every CSS variable
+2. The module CSS of the reference page closest to what you're building
+3. src/components/sidebar/Sidebar.module.css — sidebar dimensions and style
+4. src/components/header/Header.module.css — header dimensions and style
+5. src/components/bottom-menu/BottomMenu.module.css — mobile nav style
+
+---
+
 ## Known Technical Debt
 
 - **Hardcoded mock data** in tournament/event listing components (`fifaTournamentsList.js`, `pubgTournamentsList.js`, `fifaEventsList.js`, etc.) — needs real API integration
