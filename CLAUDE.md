@@ -223,6 +223,66 @@ For pages with no Figma design (wallet, admin, event management, ticketing, vend
 
 ---
 
+## Design Reference Protocol — MANDATORY
+
+Every new page or component MUST follow this process. No exceptions.
+
+### STEP 1: Read the Existing Design System
+Before writing ANY new CSS or layout code, read these files completely:
+- `src/app/globals.css` — ALL CSS variables (colors, fonts, sizes, weights)
+- `src/app/clash-grotesk.css` — font face definitions
+- `src/components/sidebar/Sidebar.js` + `Sidebar.module.css`
+- `src/components/header/Header.js` + `Header.module.css`
+- `src/components/mobile-header/MobileHeader.js` + `MobileHeader.module.css`
+- `src/components/bottom-menu/BottomMenu.js` + `BottomMenu.module.css`
+- `public/images/` — all available logos, favicons, icons
+
+### STEP 2: Study 3 Reference Pages
+Read the FULL code + CSS for these built pages:
+- `src/app/user-profile/page.js` + its module CSS — profile layout, stats cards, avatar
+- `src/app/tournaments/page.js` + its module CSS — listing page, cards, filters, search
+- `src/components/view-tournament/` — all tabs + their CSS
+
+Extract and note these patterns from the reference pages:
+- Exact padding and margin values
+- Border radius values
+- Card structure (background, border, shadow, spacing)
+- Table style (header, row height, alternating colors)
+- Button classes used (`.btn`, `.grnBTN`, `.redBTN`)
+- Tab/navigation patterns
+- Empty states and loading states
+- Desktop (1440px) to mobile (375px) responsive patterns
+
+### STEP 3: Build Using ONLY Existing Patterns
+- ONLY use CSS variables from `globals.css` — NEVER raw hex values
+- ONLY use existing component structure (Sidebar + Header + content area)
+- ONLY use existing card, table, button, tab patterns from reference pages
+- ONLY use font sizes from CSS variables (`--desktop-h1-size` through `h6`, `--fs-p-size-desktop`)
+- ONLY use the same spacing, border-radius, and hover effects observed in Step 2
+- Use V-ENT logo and favicon from `public/images/`
+
+### STEP 4: Self-Check Before Showing
+Compare your new page against the reference pages:
+- Does the sidebar look identical to the existing sidebar?
+- Does the header look identical to the existing header?
+- Are cards the same style (background, border, padding, border-radius)?
+- Are fonts the same size and weight?
+- Are ALL colors from CSS variables?
+- Does mobile view use the same bottom-nav pattern?
+- Would a user think this was designed by the same person who built the existing pages?
+
+If ANY answer is no — fix it before presenting.
+
+### STEP 5: Present With References
+When showing the result, state which existing page was referenced for each pattern:
+- "Card style: referenced user-profile stats cards"
+- "Table style: referenced tournament participants tab"
+- "Layout: referenced tournaments listing page"
+
+This protocol applies to ALL Track B pages: admin dashboard, wallet UI, organizer management, production overlays, home page, organizations, community, and any future pages without Figma designs.
+
+---
+
 ## Known Technical Debt
 
 - **Hardcoded mock data** in tournament/event listing components (`fifaTournamentsList.js`, `pubgTournamentsList.js`, `fifaEventsList.js`, etc.) — needs real API integration
