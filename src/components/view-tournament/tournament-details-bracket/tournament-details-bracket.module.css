@@ -1,143 +1,137 @@
+/* ============================================================
+   BRACKET WRAPPER
+   ============================================================ */
 .bracketWrapper {
   width: 100%;
-  padding: 1.5rem 0;
+  padding: 0.5rem 0 1.5rem;
 }
 
 .bracketType {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   font-weight: var(--fw-medium);
   margin: 0 0 1.25rem;
 }
 
-/* Horizontally scrollable bracket */
+/* ============================================================
+   HORIZONTAL SCROLL CONTAINER
+   ============================================================ */
 .bracketScroll {
   overflow-x: auto;
   overflow-y: visible;
   padding-bottom: 1rem;
-  /* Hide scrollbar on webkit but keep scrollability */
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
-.bracketScroll::-webkit-scrollbar {
-  height: 4px;
-}
-.bracketScroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.bracketScroll::-webkit-scrollbar-thumb {
-  background-color: rgba(255,255,255,0.15);
-  border-radius: 2px;
-}
+.bracketScroll::-webkit-scrollbar        { height: 4px; }
+.bracketScroll::-webkit-scrollbar-track  { background: transparent; }
+.bracketScroll::-webkit-scrollbar-thumb  { background-color: rgba(255, 255, 255, 0.15); border-radius: 2px; }
 
-.bracketRounds {
+.bracketInner {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  gap: 0;
   min-width: max-content;
 }
 
-/* === Round column === */
-.round {
+/* ============================================================
+   ROUND GROUP (column + connector pair)
+   ============================================================ */
+.roundGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+/* ============================================================
+   ROUND COLUMN
+   ============================================================ */
+.roundCol {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-width: 200px;
+  flex-shrink: 0;
   width: 200px;
 }
 
+/* Round header: name + optional badge */
+.roundHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  margin-bottom: 16px;
+}
+
 .roundLabel {
-  font-size: var(--fs-p-size-mobile);
+  font-size: var(--fs-p-size-desktop);
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-  margin: 0 0 0.75rem;
-  padding: 0 8px;
+  color: var(--primary-text);
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.roundBadge {
+  padding: 2px 8px;
+  background: rgba(23, 140, 78, 0.2);
+  color: #34d399;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: var(--fw-semi-bold);
   white-space: nowrap;
 }
 
-/* === Match list — evenly spaces matches to align with next round === */
-.matchList {
+/* Cards area: relative container for absolutely positioned cards */
+.cardsArea {
+  position: relative;
+  width: 100%;
+}
+
+/* ============================================================
+   CONNECTOR COLUMN
+   ============================================================ */
+.connectorCol {
+  flex-shrink: 0;
+  width: 60px;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-/* === Match wrapper with connector lines === */
-.matchWrapper {
-  position: relative;
-  padding: 10px 0;
+/* Spacer that matches the round header height (28 + 16 = 44px) */
+.connectorSpacer {
+  height: 44px;
+  flex-shrink: 0;
 }
 
-/* Right horizontal line from this match to the connector */
-.hasConnector::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  width: 16px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-50%);
+.connectorSvg {
+  display: block;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1;
+  fill: none;
+  overflow: visible;
 }
 
-/* Vertical connector between pairs (every even+odd match pair) */
-.hasConnector:nth-child(odd)::before {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  width: 2px;
-  /* height spans from top of this match to bottom of the next, via JS-free approximation */
-  height: calc(100% + 20px);
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(0);
-}
-
-/* Left horizontal line coming in from connector */
-.matchWrapper {
-  padding-left: 16px;
-}
-
-/* Except first round */
-.round:first-child .matchWrapper {
-  padding-left: 0;
-}
-.round:first-child .matchWrapper::before,
-.round:first-child .matchWrapper::after {
-  content: none;
-}
-
-/* Incoming connector line on non-first rounds */
-.round:not(:first-child) .matchWrapper::before {
-  content: '';
+/* ============================================================
+   MATCH CARD
+   ============================================================ */
+.matchCard {
   position: absolute;
   left: 0;
-  top: 50%;
-  width: 16px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-50%);
-}
-.round:not(:first-child) .hasConnector::after {
-  right: 0;
-}
-
-/* === Gap between rounds acts as connector zone === */
-.round + .round {
-  margin-left: 16px;
-}
-
-/* === Match card === */
-.matchCard {
-  background-color: var(--overlay-gray);
+  width: 100%;
+  background: var(--overlay-gray);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: border-color 0.2s;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.matchDone {
+  background: var(--overlay-gray);
 }
 
 .matchLive {
@@ -145,86 +139,126 @@
   box-shadow: 0 0 0 1px var(--v-ent-grn);
 }
 
-/* Status badge */
-.statusBadge {
-  font-size: 0.65rem;
-  font-weight: var(--fw-semi-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 3px 8px;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.status_upcoming {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.status_in_progress {
-  background-color: rgba(76, 175, 80, 0.15);
-  color: var(--v-ent-light-grn);
-}
-
-.status_completed {
-  background-color: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.35);
-}
-
-/* Participant row */
-.participant {
+/* ── Card top row ── */
+.cardTop {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  gap: 0.5rem;
+  gap: 5px;
 }
 
-.winner {
-  background-color: rgba(76, 175, 80, 0.12);
-}
-
-.loser .participantName {
-  color: rgba(255, 255, 255, 0.35);
-  text-decoration: line-through;
-  text-decoration-color: rgba(255, 255, 255, 0.2);
-}
-
-.participantName {
-  font-size: 0.8rem;
+.matchLabel {
+  font-size: 10px;
   font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+}
+
+.statusBadge {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.statusDone     { background: rgba(23, 140, 78, 0.2);   color: #34d399; }
+.statusLive     { background: rgba(76, 175, 80, 0.15);  color: var(--v-ent-light-grn); }
+.statusUpcoming { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.35); }
+
+.cardDate {
+  margin-left: auto;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+/* ── Divider between top row and teams ── */
+.cardDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 -10px;
+}
+
+/* ── Teams ── */
+.cardTeams {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.teamWinner .teamName {
+  color: var(--v-ent-light-grn);
+  font-weight: var(--fw-semi-bold);
+}
+
+.teamAvatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: var(--fw-bold);
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.teamName {
+  font-size: 11px;
+  font-weight: var(--fw-regular);
   color: var(--primary-text);
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 100px;
 }
 
-.winner .participantName {
-  color: var(--v-ent-light-grn);
-  font-weight: var(--fw-bold);
+.winnerBadge {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--v-ent-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .score {
-  font-size: 0.8rem;
-  font-weight: var(--fw-bold);
+  font-size: 12px;
+  font-weight: var(--fw-semi-bold);
   color: rgba(255, 255, 255, 0.7);
-  min-width: 20px;
+  min-width: 18px;
   text-align: right;
   flex-shrink: 0;
 }
 
-.winner .score {
-  color: var(--v-ent-light-grn);
-}
+.scoreWinner { color: var(--v-ent-light-grn); }
+.scoreLoser  { color: rgba(255, 255, 255, 0.25); }
+.scoreNA     { color: rgba(255, 255, 255, 0.2); font-size: 10px; }
 
-.matchDivider {
+/* Thin divider between the two team rows */
+.teamDivider {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.06);
   margin: 0;
 }
 
-/* === Empty / loading states === */
+/* ============================================================
+   EMPTY / LOADING STATES
+   ============================================================ */
 .stateContainer {
   display: flex;
   flex-direction: column;
@@ -249,14 +283,19 @@
   text-align: center;
 }
 
-/* Mobile: allow card to be narrower */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media only screen and (max-width: 480px) {
-  .round {
-    min-width: 160px;
+  .roundCol {
     width: 160px;
   }
 
-  .participantName {
-    max-width: 88px;
+  .teamName {
+    max-width: 72px;
+  }
+
+  .connectorCol {
+    width: 40px;
   }
 }

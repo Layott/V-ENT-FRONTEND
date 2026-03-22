@@ -1,0 +1,201 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+}
+
+.pageHeader {
+  margin-bottom: 1.75rem;
+}
+
+.backLink {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  transition: color 0.15s;
+}
+.backLink:hover { color: rgba(255,255,255,0.8); }
+
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-bold);
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.stateText {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: var(--fs-p-size-desktop);
+  margin: 0;
+}
+
+.errorText {
+  color: var(--v-ent-red);
+  font-size: var(--fs-p-size-desktop);
+  margin: 0;
+}
+
+/* Section */
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-text);
+  margin: 0 0 1.25rem;
+}
+
+/* Round */
+.roundBlock {
+  margin-bottom: 1.75rem;
+}
+
+.roundLabel {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem;
+}
+
+/* Match grid */
+.matchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.matchBlock {
+  background-color: var(--overlay-gray);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.matchHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.matchNumber {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  color: rgba(255,255,255,0.55);
+}
+
+.statusBadge {
+  font-size: 0.65rem;
+  font-weight: var(--fw-semi-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status_upcoming   { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); }
+.status_in_progress { background: rgba(76,175,80,0.15);  color: var(--v-ent-light-grn); }
+.status_completed  { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
+
+/* Score form */
+.tbdNote {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+.scoreForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.participantLabel {
+  font-size: 0.85rem;
+  color: var(--primary-text);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scoreInput {
+  width: 56px;
+  background-color: #1a1c1f;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: var(--fw-semi-bold);
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+.scoreInput:focus { border-color: var(--v-ent-grn); }
+.scoreInput:disabled { opacity: 0.5; }
+
+/* Remove number input arrows */
+.scoreInput::-webkit-outer-spin-button,
+.scoreInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.scoreInput[type=number] { -moz-appearance: textfield; }
+
+.formError   { color: var(--v-ent-red);   font-size: 0.75rem; margin: 0; }
+.formSuccess { color: var(--v-ent-grn);   font-size: 0.75rem; margin: 0; }
+
+.saveBtn {
+  margin-top: 0.25rem;
+  background-color: var(--v-ent-grn);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  transition: background-color 0.15s;
+  align-self: flex-start;
+}
+.saveBtn:hover:not(:disabled) { background-color: var(--v-ent-light-grn); }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 2rem 1.5rem;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem;
+  }
+}

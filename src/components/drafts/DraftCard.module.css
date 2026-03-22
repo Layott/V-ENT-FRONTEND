@@ -20,6 +20,14 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .cardTitleSection {
@@ -71,6 +79,32 @@
 
 .detailsSection p {
   margin: 0.3rem 0;
+}
+
+.deleteButton {
+  background-color: transparent;
+  border: 1px solid var(--v-ent-red, #ED1C24);
+  color: var(--v-ent-red, #ED1C24);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: rgba(237, 28, 36, 0.1);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteError {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .resumeButton {
