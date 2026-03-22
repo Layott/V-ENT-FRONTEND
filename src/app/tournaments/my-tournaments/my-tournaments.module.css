@@ -1,0 +1,161 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-bold);
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.errorText {
+  color: var(--v-ent-red);
+  font-size: var(--fs-p-size-desktop);
+  margin-bottom: 1rem;
+}
+
+.stateText {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: var(--fs-p-size-desktop);
+}
+
+/* Tournament list */
+.tournamentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.tournamentRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--overlay-gray);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tournamentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.tournamentName {
+  font-size: var(--fs-p-size-desktop);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tournamentMeta {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tournamentRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* Status badges */
+.statusBadge {
+  font-size: 0.7rem;
+  font-weight: var(--fw-semi-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.status_draft       { background-color: rgba(245,158,11,0.15); color: #f59e0b; }
+.status_published   { background-color: rgba(76,175,80,0.15);  color: var(--v-ent-grn); }
+.status_ongoing     { background-color: rgba(0,255,8,0.12);    color: var(--v-ent-light-grn); }
+.status_completed   { background-color: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45); }
+.status_cancelled   { background-color: rgba(237,28,36,0.12);  color: var(--v-ent-red); }
+
+/* Row action buttons */
+.rowActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.actionBtn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.manageBtn {
+  border-color: var(--v-ent-grn);
+  color: var(--v-ent-grn);
+}
+
+.manageBtn:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: var(--v-ent-light-grn);
+  color: var(--v-ent-light-grn);
+}
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem;
+  }
+}

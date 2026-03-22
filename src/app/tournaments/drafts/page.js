@@ -60,7 +60,11 @@ const Drafts = () => {
           ) : (
             <div className={styles.draftList}>
               {drafts.map((draft) => (
-                <DraftCard key={draft.id} draft={draft} />
+                <DraftCard
+                  key={draft.id}
+                  draft={draft}
+                  onDelete={(id) => setDrafts(prev => prev.filter(d => d.id !== id))}
+                />
               ))}
             </div>
           )}
