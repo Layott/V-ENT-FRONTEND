@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -15,20 +16,22 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './team-profile.module.css'
 
-const TeamProfile = () => {
+const TeamProfileContent = () => {
   const [activeTab, setActiveTab] = useState('members')
+  const searchParams = useSearchParams();
+  const teamId = searchParams.get('id');
 
   return (
     <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
-      
+
       <main className={styles.mainContainer}>
         <Sidebar />
-      
+
         <div className={styles.rightPaneContainer}>
-          <TeamProfileBanner />
-          <TeamProfileBio />
+          <TeamProfileBanner teamId={teamId} />
+          <TeamProfileBio teamId={teamId} />
 
           <div className={tabStyles.buttonContainer}>
             <button
@@ -63,38 +66,46 @@ const TeamProfile = () => {
           <div className={tabStyles.detailsDashboard}>
             {activeTab === 'overview' && (
               <div className={styles.overviewContainer}>
-                <TeamProfileOverviewLeft />
-                <TeamProfileOverviewRight />
-              </div>            
+                <TeamProfileOverviewLeft teamId={teamId} />
+                <TeamProfileOverviewRight teamId={teamId} />
+              </div>
             )}
 
             {activeTab === 'members' && (
               <div className={styles.membersContainer}>
-                <TeamProfileMembers />
+                <TeamProfileMembers teamId={teamId} />
               </div>
             )}
 
             {activeTab === 'activity' && (
               <div className={styles.activityContainer}>
-                <TeamProfileActivity />
+                <TeamProfileActivity teamId={teamId} />
               </div>
             )}
 
             {activeTab === 'stats' && (
               <div className={styles.statsContainer}>
-                <TeamProfileGallery />
+                <TeamProfileGallery teamId={teamId} />
               </div>
-            )}       
+            )}
           </div>
-      
+
         </div>
 
       </main>
 
       <BottomMenu />
-      
+
     </div>
   )
+}
+
+const TeamProfile = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <TeamProfileContent />
+    </Suspense>
+  );
 }
 
 export default TeamProfile

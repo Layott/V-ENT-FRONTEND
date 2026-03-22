@@ -1,87 +1,95 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import { CiSearch } from 'react-icons/ci'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import TeamEventsDetails from './TeamEventsDetails'
-import { teamEventsList } from './teamEventsList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './team-events-history.module.css'
 
-const TeamEventsHistory = () => {
-    const [selectedTournament, setSelectedTournament] = useState(null)
+const TeamEventsHistory = ({ teamId }) => {
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [searchQuery, setSearchQuery] = useState('')
+    const { data: session } = useSession();
 
-    const indexOfLastTournament = currentPage * rowsPerPage
-    const indexOfFirstTournament = indexOfLastTournament - rowsPerPage
-    const currentTournaments = teamEventsList.slice(indexOfFirstTournament, indexOfLastTournament)
-
-    // Pagination Handler
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber)
-    }
-
-    const handlePrevClick = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1)
+    useEffect(() => {
+        if (!teamId) {
+            setLoading(false);
+            return;
         }
-    }
+        const fetchEvents = async () => {
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (session?.user?.sessionToken) {
+                    headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
+                }
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/team/events/${teamId}/`,
+                    { method: 'GET', headers }
+                );
+                if (!response.ok) throw new Error(`Failed to load events (${response.status})`);
+                const data = await response.json();
+                const list = data?.data?.events ?? data?.data ?? data ?? [];
+                setEvents(Array.isArray(list) ? list : []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchEvents();
+    }, [teamId, session]);
 
-    const handleNextClick = () => {
-        if (currentPage < Math.ceil(teamEventsList.length / rowsPerPage)) {
-            setCurrentPage(currentPage + 1)
-        }
-    }
+    const indexOfLastEvent = currentPage * rowsPerPage
+    const indexOfFirstEvent = indexOfLastEvent - rowsPerPage
+    const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent)
 
-    // Row Count Handler
-    const handleRowsPerPageChange = (event) => {
-        setRowsPerPage(Number(event.target.value))
-        setCurrentPage(1)     // Reset to first page when changing row count
-    }  
+    const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+    const handlePrevClick = () => { if (currentPage > 1) setCurrentPage(currentPage - 1) }
+    const handleNextClick = () => { if (currentPage < Math.ceil(events.length / rowsPerPage)) setCurrentPage(currentPage + 1) }
+    const handleRowsPerPageChange = (event) => { setRowsPerPage(Number(event.target.value)); setCurrentPage(1) }
+    const handleViewClick = (event) => setSelectedEvent(event)
+    const handleSearch = () => {}
+    const handleKeyDown = (event) => { if (event.key === 'Enter') handleSearch() }
 
-    const handleViewClick = (tournament) => {
-        setSelectedTournament(tournament)
-    }
-
-    // Pagination Controls
     const pageNumbers = []
-        for (let i = 1; i <= Math.ceil(teamEventsList.length / rowsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(events.length / rowsPerPage); i++) {
         pageNumbers.push(i)
     }
 
-    const handleSearch = () => {
-        if (searchQuery.trim() != '') {
-            console.log(`Searching for: ${searchQuery}`)
-        }
-    }
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+    };
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
-            handleSearch()
-        }
-    }
+    if (loading) return <p>Loading event history...</p>;
+    if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div className={profileStyles.tournamentEventsContainer}>
         <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
             <div className={profileStyles.tournamentsEventsFilterContainer}>
-                <p className={styles.tournamentNumber}>{teamEventsList.length} events</p>
-                
+                <p className={styles.tournamentNumber}>{events.length} events</p>
+
                 <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>
                     Filter
                 </div>
-
             </div>
-          
+
             <div className={profileStyles.searchContainer}>
                 <div className={profileStyles.searchBar}>
-                    <CiSearch 
+                    <CiSearch
                         className={profileStyles.searchIcon}
                         onClick={handleSearch}
                     />
-                        <input
+                    <input
                         type='text'
                         placeholder='Search events'
                         className={profileStyles.searchInput}
@@ -104,41 +112,44 @@ const TeamEventsHistory = () => {
           <div className={`${styles.gridItem} ${styles.gridItemHeader}`}>Actions</div>
         </div>
 
-        {currentTournaments.map((tournament, index) => (
-          <div key={index} className={`${styles.gridRow} ${profileStyles.middleLayerColor}`}>
-            <div className={`${styles.gridItem} ${styles.nameColumn}`}>
-              <div className={styles.gameImageContainer}>
-                <Image
-                  src={tournament.src}
-                  alt={tournament.name}
-                  className={styles.gameImage}
-                />
+        {events.length === 0 && <p>No event history.</p>}
+
+        {currentEvents.map((event, index) => {
+          const logoUrl = getImageUrl(event.event_logo || event.logo || event.src);
+          return (
+            <div key={event.event_id || event.id || index} className={`${styles.gridRow} ${profileStyles.middleLayerColor}`}>
+              <div className={`${styles.gridItem} ${styles.nameColumn}`}>
+                <div className={styles.gameImageContainer}>
+                  {logoUrl ? (
+                    <Image src={logoUrl} alt={event.event_title || event.name || ''} className={styles.gameImage} width={36} height={36} />
+                  ) : (
+                    <div className={styles.gameImage} style={{ background: 'var(--overlay-gray)' }} />
+                  )}
+                </div>
+                <p className={styles.gameName}>{event.event_title || event.name}</p>
               </div>
-              <p className={styles.gameName}>{tournament.name}</p>
-            </div>
-            <div className={styles.gridItem}>{tournament.type}</div>
-            <div className={styles.gridItem}>{tournament.game}</div>
-            <div className={styles.gridItem}>{tournament.location}</div>
-            <div className={styles.gridItem}>{tournament.date}</div>
+              <div className={styles.gridItem}>{event.event_type || event.type || 'N/A'}</div>
+              <div className={styles.gridItem}>{event.game || 'N/A'}</div>
+              <div className={styles.gridItem}>{event.event_location || event.location || 'N/A'}</div>
+              <div className={styles.gridItem}>{event.start_date_and_time || event.date || 'N/A'}</div>
 
-            <div
-              className={`${styles.gridItem}`}
-            >
-              <span className={`${tournament.status === 'Completed' ? styles.completedStatus : styles.inProgress}`}>
-                {tournament.status}
-              </span>
-            </div>
+              <div className={`${styles.gridItem}`}>
+                <span className={`${event.status === 'Completed' ? styles.completedStatus : styles.inProgress}`}>
+                  {event.status || 'N/A'}
+                </span>
+              </div>
 
-            <div className={styles.gridItem}>
-              <button
-                className={`${styles.exploreBTN} ${profileStyles.topMostLayerColor}`}
-                onClick={() => handleViewClick(tournament)}
-              >
-                Explore
-              </button>
+              <div className={styles.gridItem}>
+                <button
+                  className={`${styles.exploreBTN} ${profileStyles.topMostLayerColor}`}
+                  onClick={() => handleViewClick(event)}
+                >
+                  Explore
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
       </div>
 
@@ -157,15 +168,14 @@ const TeamEventsHistory = () => {
               <option value={20}>20</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
-              <option value={200}>100</option>
             </select>
             <TiArrowSortedDown className={styles.dropDownIcon} />
           </div>
         </div>
 
         <p className={profileStyles.showingNumber}>
-          Showing {indexOfFirstTournament + 1} -{" "}
-          {indexOfLastTournament > teamEventsList.length ? teamEventsList.length : indexOfLastTournament}{" "} of {teamEventsList.length}
+          Showing {indexOfFirstEvent + 1} -{" "}
+          {indexOfLastEvent > events.length ? events.length : indexOfLastEvent}{" "} of {events.length}
         </p>
 
         <div className={styles.pagination}>
@@ -186,18 +196,16 @@ const TeamEventsHistory = () => {
             </button>
           ))}
           <button
-            className={`${styles.navIconBTN} ${currentPage === Math.ceil(teamEventsList.length / rowsPerPage) ? styles.hidden : ''}`}
+            className={`${styles.navIconBTN} ${currentPage === Math.ceil(events.length / rowsPerPage) ? styles.hidden : ''}`}
             onClick={handleNextClick}
-            disabled={currentPage === Math.ceil(teamEventsList.length / rowsPerPage)}
+            disabled={currentPage === Math.ceil(events.length / rowsPerPage)}
           >
-            <BsChevronRight
-              className={styles.navIcon}
-            />
+            <BsChevronRight className={styles.navIcon} />
           </button>
         </div>
       </div>
-      
-      <TeamEventsDetails selectedTournament={selectedTournament} setSelectedTournament={setSelectedTournament} />
+
+      <TeamEventsDetails selectedTournament={selectedEvent} setSelectedTournament={setSelectedEvent} />
     </div>
   )
 }
