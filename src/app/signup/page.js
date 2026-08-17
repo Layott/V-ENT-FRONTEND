@@ -413,22 +413,28 @@ return (
                         </p>
                     </form>
 
-                    {/* <div className={generalStyles.alternativeAuthContainer}>
+                    <div className={generalStyles.alternativeAuthContainer}>
                         <p>Or sign up with</p>
                         <div className={generalStyles.logoContainer}>
-                            <Image
-                                src={googleLogo}
-                                alt="Google Logo"
-                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                                // onClick={() => handleOAuthSignUp('google')}
+                            <button
+                                type="button"
+                                className={generalStyles.oauthButton}
+                                aria-label="Sign up with Google"
                                 onClick={() =>
-                                handleOAuthSignUp("google", {
-                                    callbackUrl: `${window.location.origin}/user-profile`,
+                                    handleOAuthSignUp("google", {
+                                        callbackUrl: `${window.location.origin}/onboarding`,
                                     })
                                 }
-                            />
+                            >
+                                <Image
+                                    src={googleLogo}
+                                    alt=""
+                                    className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+                                />
+                                <span>Google</span>
+                            </button>
                         </div>
-                    </div> */}
+                    </div>
 
                     <div className={generalStyles.formHelperContainer}>
                         <p>Already have an account?&nbsp;</p>

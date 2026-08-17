@@ -228,3 +228,27 @@
     padding: 3rem 3.5rem;
   }
 }
+
+/* Google sign-in. A filled surface rather than a bare icon, so the tap target
+   clears 44px on a phone and the control reads as a button. */
+.oauthButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #303136;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.oauthButton:hover { background-color: #3a3b41; }
+
+.oauthButton:disabled { opacity: 0.55; cursor: not-allowed; }
