@@ -32,7 +32,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px 24px 0 24px;
-  border-bottom: 1px solid #404040;
+
   padding-bottom: 16px;
 }
 
@@ -101,7 +101,7 @@
   gap: 16px;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #404040;
+
 }
 
 .tournamentImage {
@@ -216,7 +216,7 @@
 .teamCard {
   background: #353535;
   border-radius: 12px;
-  border: 1px solid #404040;
+
   overflow: hidden;
 }
 
@@ -297,7 +297,7 @@
 
 /* Team Members List */
 .teamMembersList {
-  border-top: 1px solid #404040;
+
   padding: 16px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -369,7 +369,7 @@
 .checkmark {
   width: 20px;
   height: 20px;
-  border: 2px solid #606060;
+
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -381,7 +381,7 @@
 
 .termsCheckbox input[type="checkbox"]:checked + .checkmark {
   background: #ef4444;
-  border-color: #ef4444;
+
 }
 
 .termsCheckbox input[type="checkbox"]:checked + .checkmark::after {
@@ -411,13 +411,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 24px;
-  border-top: 1px solid #404040;
+
   gap: 12px;
 }
 
 .cancelButton {
   background: transparent;
-  border: 1px solid #606060;
+
   color: #ffffff;
   padding: 12px 20px;
   border-radius: 8px;
@@ -429,7 +429,7 @@
 
 .cancelButton:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: #808080;
+
 }
 
 .proceedButton {

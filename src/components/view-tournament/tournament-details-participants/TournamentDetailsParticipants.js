@@ -18,11 +18,11 @@ const normalize = (p) => ({
   id: p.id,
   name: p.name || p.username || p.team_name || 'Unknown',
   type: p.registration_type || p.type || 'individual',
-  ranking: p.ranking ? `#${p.ranking}` : '—',
-  location: p.location || '—',
-  tournaments: p.tournaments_played ?? p.tournaments ?? '—',
-  wins: p.wins ?? '—',
-  losses: p.losses ?? '—',
+  ranking: p.ranking ? `#${p.ranking}` : '-',
+  location: p.location || '-',
+  tournaments: p.tournaments_played ?? p.tournaments ?? '-',
+  wins: p.wins ?? '-',
+  losses: p.losses ?? '-',
   avatar: p.profile_picture || p.avatar || p.team_logo || null,
   profileId: p.user_id || p.id || null,
 })
@@ -247,7 +247,7 @@ const TournamentDetailsParticipants = ({ tournament }) => {
             </div>
 
             <p className={profileStyles.showingNumber}>
-              Showing {indexOfFirst + 1}–{Math.min(indexOfLast, filtered.length)} of {filtered.length}
+              Showing {indexOfFirst + 1}-{Math.min(indexOfLast, filtered.length)} of {filtered.length}
             </p>
 
             <div className={tableStyles.pagination}>

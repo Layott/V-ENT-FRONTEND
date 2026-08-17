@@ -1,5 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
+import { validateAll } from './tournamentWizardValidation';
 import ProgressMenu from './progress-menu/ProgressMenu';
 import BasicInfo from './basic-info/BasicInfo';
 import FormatParticipants from './format-participants/FormatParticipants';
@@ -8,86 +11,49 @@ import SponsorsLinks from './sponsors-links/SponsorsLinks';
 import Review from './review/Review';
 import styles from './create-tournament-component.module.css';
 
+// Reads the persisted wizard draft synchronously. Used both as the lazy
+// initializer for formData (so the very first render - and therefore every
+// child's own useState-from-props seed - already has any draft data the
+// page shell hydrated before mounting this component) and as a safe helper
+// anywhere else we need the latest snapshot.
+const readSavedFormData = () => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const saved = localStorage.getItem('createTournamentData');
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+};
+
 const CreateTournamentComponent = () => {
+  const router = useRouter();
+  const { data: session } = useSession();
+
   const [selectedTab, setSelectedTab] = useState(1);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const { data: session } = useSession();
+  const [statusMessage, setStatusMessage] = useState(null); // { type: 'error' | 'success', text }
 
-  // Initialize formData - load from localStorage on mount
-  const [formData, setFormData] = useState({});
-  
-  // Store actual File objects separately for logo and banner
+  const [formData, setFormData] = useState(readSavedFormData);
   const [logoFile, setLogoFile] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
+  // Centralized function to update both state and localStorage. This is the
+  // single source of truth every step writes through, so formData is always
+  // current for whichever step is mounted (no per-step drift/races).
+  const updateFormData = useCallback((key, value) => {
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, [key]: value };
       try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(parsedData);
-        console.log('Loaded data from localStorage:', parsedData);
-      } catch (error) {
-        console.error('Error parsing localStorage data:', error);
+        localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
+      } catch {
+        // Storage can fail (private mode, quota) - keep going in-memory.
       }
-    }
+      return updatedData;
+    });
   }, []);
 
-  // Wrap fetchAvailableGames with useCallback to memoize it
-  const fetchAvailableGames = useCallback(async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-all-tournaments/`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session?.user?.sessionToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const games = await response.json();
-        return games;
-      } else {
-        console.error("Failed to fetch games:", response.status);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching available games:", error);
-      return null;
-    }
-  }, [session?.user?.sessionToken]);
-
-  useEffect(() => {
-    if (session?.user?.sessionToken) {
-      fetchAvailableGames();
-    }
-  }, [session?.user?.sessionToken, fetchAvailableGames]);
-
-  // Centralized function to update both state and localStorage
-  const updateFormData = (key, value) => {
-    try {
-      setFormData(prevData => {
-        const updatedData = {
-          ...prevData,
-          [key]: value
-        };
-        
-        // Update localStorage
-        localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
-        
-        console.log(`Updated formData - ${key}:`, value);
-        console.log('New formData:', updatedData);
-        
-        return updatedData;
-      });
-    } catch (error) {
-      console.error('Error updating formData:', error);
-    }
-  };
-
-  // New function to handle file uploads for logo and banner
   const updateFileData = (key, file) => {
     if (key === 'tournament_logo') {
       setLogoFile(file);
@@ -95,265 +61,241 @@ const CreateTournamentComponent = () => {
       setBannerFile(file);
     }
   };
-    
+
   const handleSubmit = async (isDraft = false) => {
-  try {
-    if (isDraft) {
-      setIsSavingDraft(true);
-    } else {
-      setIsPublishing(true);
-    }
-    
-    if (!session?.user?.sessionToken) {
-      alert('You must be logged in to create a tournament');
-      return;
-    }
-    
-    // Get the most recent data from localStorage as a backup
-    const savedData = localStorage.getItem('createTournamentData');
-    const latestFormData = savedData ? JSON.parse(savedData) : formData;
-    
-    console.log('Form data for validation:', latestFormData);
-    
-    // Validate required fields
-    if (!latestFormData.tournament_title || latestFormData.tournament_title.trim() === '') {
-      alert('Please fill in the tournament title');
-      setSelectedTab(1);
-      return;
-    }
-    
-    if (!latestFormData.game || latestFormData.game.trim() === '') {
-      alert('Please select a game for your tournament');
-      setSelectedTab(1);
-      return;
-    }
-    
-    // Game name mapping
-    const gameNameMapping = {
-      'FREEFIRE': 'Free Fire',
-      'FREE FIRE': 'Free Fire',
-      'free fire': 'Free Fire',
-      'FreeFire': 'Free Fire',
-      'Freefire': 'Free Fire',
-      'GARENA FREE FIRE': 'Free Fire',
-      'garena free fire': 'Free Fire',
-      'COD': 'Call of Duty',
-      'CALL OF DUTY': 'Call of Duty',
-      'call of duty': 'Call of Duty',
-      'VALORANT': 'Valorant',
-      'valorant': 'Valorant',
-      'PUBG': 'PUBG',
-      'pubg': 'PUBG',
-      'PUBG MOBILE': 'PUBG Mobile',
-      'pubg mobile': 'PUBG Mobile',
-      'FORTNITE': 'Fortnite',
-      'fortnite': 'Fortnite',
-      'CS2': 'Counter-Strike 2',
-      'CS:2': 'Counter-Strike 2',
-      'COUNTER STRIKE 2': 'Counter-Strike 2',
-      'counter-strike 2': 'Counter-Strike 2',
-      'LOL': 'League of Legends',
-      'LEAGUE OF LEGENDS': 'League of Legends',
-      'league of legends': 'League of Legends',
-      'DOTA2': 'Dota 2',
-      'DOTA 2': 'Dota 2',
-      'dota 2': 'Dota 2',
-      'APEX': 'Apex Legends',
-      'APEX LEGENDS': 'Apex Legends',
-      'apex legends': 'Apex Legends',
-      'FIFA': 'FIFA',
-      'fifa': 'FIFA',
-      'FIFA 24': 'FIFA 24',
-      'fifa 24': 'FIFA 24',
-      'ROCKET LEAGUE': 'Rocket League',
-      'rocket league': 'Rocket League',
-      'OVERWATCH': 'Overwatch',
-      'overwatch': 'Overwatch',
-      'OVERWATCH 2': 'Overwatch 2',
-      'overwatch 2': 'Overwatch 2'
-    };
-    
-    const originalGame = latestFormData.game.trim();
-    const mappedGame = gameNameMapping[originalGame] || originalGame;
-    
-    console.log("Original game:", originalGame);
-    console.log("Mapped game:", mappedGame);
-    
-    // Date validation
-    if (!latestFormData.start_date_and_time || !latestFormData.end_date_and_time) {
-      alert('Please fill in both start and end dates');
-      setSelectedTab(1);
-      return;
-    }
-    
-    const startDate = new Date(latestFormData.start_date_and_time);
-    const endDate = new Date(latestFormData.end_date_and_time);
-    
-    if (startDate >= endDate) {
-      alert('Start date and time must be before end date and time. Please check your tournament schedule.');
-      setSelectedTab(1);
-      return;
-    }
-    
-    // Transform sponsors data
-    let sponsor_names = [];
-    let sponsor_types = [];
-    let sponsor_usernames = [];
-    
-    if (Array.isArray(latestFormData.sponsors)) {
-      sponsor_names = latestFormData.sponsors.map(sponsor => sponsor.name || '');
-      sponsor_types = latestFormData.sponsors.map(sponsor => sponsor.type || 'individual');
-      sponsor_usernames = latestFormData.sponsors.map(sponsor => sponsor.username || '');
-    } else if (Array.isArray(latestFormData.sponsor_names)) {
-      sponsor_names = latestFormData.sponsor_names;
-      sponsor_types = latestFormData.sponsor_types || [];
-      sponsor_usernames = latestFormData.sponsor_usernames || [];
-    }
-    
-    const socialLinks = latestFormData.webSocialLinks || latestFormData;
-    
-    // Create FormData object for multipart/form-data submission
-    const formDataToSend = new FormData();
-    
-    // Add all text fields to FormData
-    formDataToSend.append('tournament_title', latestFormData.tournament_title || '');
-    formDataToSend.append('game', mappedGame);
-    formDataToSend.append('game_mode', latestFormData.game_mode || '');
-    formDataToSend.append('tournament_description', latestFormData.tournament_description || '');
-    formDataToSend.append('tournament_type', latestFormData.tournament_type || '');
-    formDataToSend.append('start_date_and_time', latestFormData.start_date_and_time || '');
-    formDataToSend.append('end_date_and_time', latestFormData.end_date_and_time || '');
-    formDataToSend.append('tournament_location', latestFormData.tournament_location || '');
-    formDataToSend.append('virtual_link', latestFormData.virtual_link || '');
-    
-    // Handle boolean fields properly - convert to string values the backend expects
-    formDataToSend.append('hide_location', latestFormData.hide_location ? 'true' : 'false');
-    
-    formDataToSend.append('tournament_visibility', latestFormData.tournament_visibility || 'public');
-    formDataToSend.append('entry_type', latestFormData.entry_type || '');
-    formDataToSend.append('entry_fee', parseFloat(latestFormData.entry_fee) || 0);
-    
-    formDataToSend.append('tournament_access', latestFormData.tournament_access || '');
-    formDataToSend.append('team_size', parseInt(latestFormData.team_size) || 1);
-    formDataToSend.append('min_number_of_participants', parseInt(latestFormData.min_number_of_participants) || 8);
-    formDataToSend.append('max_number_of_participants', parseInt(latestFormData.max_number_of_participants) || 32);
-    formDataToSend.append('bracket_type', latestFormData.bracket_type || '');
-    formDataToSend.append('tournament_rules', latestFormData.tournament_rules || '');
-    
-    // Fix prize distribution mapping to match backend expectations
-    formDataToSend.append('prize_type', latestFormData.prize_distribution_type || 'distributed');
-    
-    // Transform prize_distribution to prize_data format expected by backend
-    let prizeData = [];
-    if (Array.isArray(latestFormData.prize_distribution)) {
-      prizeData = latestFormData.prize_distribution.map((prize, index) => ({
-        position: index + 1,
-        prize: parseFloat(prize.amount || prize.prize || 0)
-      }));
-    }
-    formDataToSend.append('prize_data', JSON.stringify(prizeData));
-    
-    // Add winner_prize if using "winner takes all" format
-    if (latestFormData.prize_distribution_type === 'winner_takes_all') {
-      formDataToSend.append('winner_prize', parseFloat(latestFormData.winner_prize) || 0);
-    }
-    
-    // Add sponsor arrays
-    formDataToSend.append('sponsor_names', JSON.stringify(sponsor_names));
-    formDataToSend.append('sponsor_types', JSON.stringify(sponsor_types));
-    formDataToSend.append('sponsor_usernames', JSON.stringify(sponsor_usernames));
-    
-    // CRITICAL: Add the is_draft field - try as 1/0 instead of true/false
-    formDataToSend.append('is_draft', isDraft ? '1' : '0');
-    
-    // Add logo and banner files if they exist
-    if (logoFile) {
-      formDataToSend.append('tournament_logo', logoFile);
-    }
-    if (bannerFile) {
-      formDataToSend.append('tournament_banner', bannerFile);
-    }
-    
-    // Add social links
-    if (socialLinks.facebook_link) formDataToSend.append('facebook_link', socialLinks.facebook_link);
-    if (socialLinks.twitter_link) formDataToSend.append('twitter_link', socialLinks.twitter_link);
-    if (socialLinks.instagram_link) formDataToSend.append('instagram_link', socialLinks.instagram_link);
-    if (socialLinks.youtube_link) formDataToSend.append('youtube_link', socialLinks.youtube_link);
-    if (socialLinks.twitch_link) formDataToSend.append('twitch_link', socialLinks.twitch_link);
-    if (socialLinks.kick_link) formDataToSend.append('kick_link', socialLinks.kick_link);
-    if (socialLinks.tiktok_link) formDataToSend.append('tiktok_link', socialLinks.tiktok_link);
-    if (socialLinks.bigolive_link) formDataToSend.append('bigolive_link', socialLinks.bigolive_link);
+    setStatusMessage(null);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/create-tournament/`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.user.sessionToken}`,
-        // Don't set Content-Type header - let browser set it with boundary for FormData
-      },
-      body: formDataToSend,
-      credentials: 'include',
-    });
-
-    const responseText = await response.text();
-    
-    let responseData;
-    try {
-      responseData = JSON.parse(responseText);
-    } catch (e) {
-      responseData = responseText;
-    }
-
-    if (!response.ok) {
-      if (response.status === 500 && responseText.includes('Games matching query does not exist')) {
-        const availableGames = await fetchAvailableGames();
-        const gamesList = availableGames ? availableGames.map(g => g.name || g.title || g).join(', ') : 'Unable to fetch available games';
-        throw new Error(`The game "${mappedGame}" is not available. Available games might include: ${gamesList}. Please contact support if your game should be available.`);
+    // Drafts can always be saved partially. Publishing must pass every step.
+    if (!isDraft) {
+      const { isValid, firstInvalidStep, stepErrors } = validateAll(formData);
+      if (!isValid) {
+        setSelectedTab(firstInvalidStep);
+        const stepLabel = stepErrors[firstInvalidStep]?.label || `Step ${firstInvalidStep}`;
+        setStatusMessage({ type: 'error', text: `Please fix "${stepLabel}" before publishing.` });
+        return;
       }
-      throw new Error(`Server returned ${response.status}: ${typeof responseData === 'object' ? JSON.stringify(responseData) : responseData}`);
     }
 
-    console.log('Tournament Created Successfully:', responseData);
-    
-    // Clear both state and localStorage after successful submission
-    setFormData({});
-    setLogoFile(null);
-    setBannerFile(null);
-    localStorage.removeItem('createTournamentData');
-    
-    const successMessage = isDraft ? 'Tournament saved as draft successfully!' : 'Tournament published successfully!';
-    alert(successMessage);
-    
-  } catch (error) {
-    console.error('Error creating tournament:', error);
-    alert(`Failed to ${isDraft ? 'save draft' : 'publish tournament'}: ${error.message || 'Unknown error'}`);
-  } finally {
-    if (isDraft) {
-      setIsSavingDraft(false);
-    } else {
-      setIsPublishing(false);
+    const token = tokenFrom(session);
+    if (!token) {
+      setStatusMessage({ type: 'error', text: 'You must be logged in to create a tournament.' });
+      return;
     }
-  }
-};
+
+    if (isDraft) setIsSavingDraft(true);
+    else setIsPublishing(true);
+
+    try {
+      if (!isDraft) {
+        if (!formData.tournament_title || !formData.tournament_title.trim()) {
+          setStatusMessage({ type: 'error', text: 'Please fill in the tournament title.' });
+          setSelectedTab(1);
+          return;
+        }
+        if (!formData.game || !formData.game.trim()) {
+          setStatusMessage({ type: 'error', text: 'Please select a game for your tournament.' });
+          setSelectedTab(1);
+          return;
+        }
+      }
+
+      let sponsor_names = [];
+      let sponsor_types = [];
+      let sponsor_usernames = [];
+
+      if (Array.isArray(formData.sponsors)) {
+        sponsor_names = formData.sponsors.map((sponsor) => sponsor.name || '');
+        sponsor_types = formData.sponsors.map((sponsor) => sponsor.type || 'individual');
+        sponsor_usernames = formData.sponsors.map((sponsor) => sponsor.username || '');
+      } else if (Array.isArray(formData.sponsor_names)) {
+        sponsor_names = formData.sponsor_names;
+        sponsor_types = formData.sponsor_types || [];
+        sponsor_usernames = formData.sponsor_usernames || [];
+      }
+
+      const socialLinks = formData.webSocialLinks || formData;
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('tournament_title', formData.tournament_title || '');
+      formDataToSend.append('game', formData.game || '');
+      if (formData.game_id !== undefined && formData.game_id !== null && formData.game_id !== '') {
+        formDataToSend.append('game_id', formData.game_id);
+      }
+      formDataToSend.append('game_mode', formData.game_mode || '');
+      formDataToSend.append('tournament_description', formData.tournament_description || '');
+      formDataToSend.append('tournament_type', formData.tournament_type || '');
+      formDataToSend.append('start_date_and_time', formData.start_date_and_time || '');
+      formDataToSend.append('end_date_and_time', formData.end_date_and_time || '');
+      formDataToSend.append('reg_start_date_and_time', formData.reg_start_date_and_time || '');
+      formDataToSend.append('reg_end_date_and_time', formData.reg_end_date_and_time || '');
+      formDataToSend.append('tournament_location', formData.tournament_location || '');
+      formDataToSend.append('virtual_link', formData.virtual_link || '');
+
+      formDataToSend.append('hide_location', formData.hide_location ? 'true' : 'false');
+
+      formDataToSend.append('tournament_visibility', formData.tournament_visibility || 'public');
+      formDataToSend.append('entry_type', formData.entry_type || '');
+      formDataToSend.append('entry_fee_price', parseFloat(formData.entry_fee) || 0);
+
+      formDataToSend.append('tournament_access', formData.tournament_access || '');
+      formDataToSend.append('team_size', parseInt(formData.team_size, 10) || 1);
+      formDataToSend.append('min_number_of_participants', parseInt(formData.min_number_of_participants, 10) || 8);
+      formDataToSend.append('max_number_of_participants', parseInt(formData.max_number_of_participants, 10) || 32);
+      formDataToSend.append('bracket_type', formData.bracket_type || '');
+      formDataToSend.append('tournament_rules', formData.tournament_rules || '');
+
+      formDataToSend.append('prize_type', formData.prize_distribution_type || 'distributed');
+
+      let prizeData = [];
+      if (Array.isArray(formData.prize_distribution)) {
+        prizeData = formData.prize_distribution.map((prize, index) => ({
+          position: prize.position || index + 1,
+          prize: parseFloat(prize.amount ?? prize.prize ?? 0) || 0,
+          extras: prize.extras ?? prize.extra ?? '',
+        }));
+      }
+      formDataToSend.append('prize_data', JSON.stringify(prizeData));
+
+      // 'winner-takes-all' is what this wizard actually sets; 'winner_takes_all'
+      // kept for tolerance in case a draft was saved under an older spelling.
+      if (formData.prize_distribution_type === 'winner-takes-all' || formData.prize_distribution_type === 'winner_takes_all') {
+        formDataToSend.append('winner_prize', parseFloat(formData.winner_prize) || 0);
+      }
+
+      formDataToSend.append('sponsor_names', JSON.stringify(sponsor_names));
+      formDataToSend.append('sponsor_types', JSON.stringify(sponsor_types));
+      formDataToSend.append('sponsor_usernames', JSON.stringify(sponsor_usernames));
+
+      formDataToSend.append('is_draft', isDraft ? '1' : '0');
+
+      if (logoFile) formDataToSend.append('tournament_logo', logoFile);
+      if (bannerFile) formDataToSend.append('tournament_banner', bannerFile);
+
+      if (socialLinks.facebook_link) formDataToSend.append('facebook_link', socialLinks.facebook_link);
+      if (socialLinks.twitter_link) formDataToSend.append('twitter_link', socialLinks.twitter_link);
+      if (socialLinks.instagram_link) formDataToSend.append('instagram_link', socialLinks.instagram_link);
+      if (socialLinks.youtube_link) formDataToSend.append('youtube_link', socialLinks.youtube_link);
+      if (socialLinks.twitch_link) formDataToSend.append('twitch_link', socialLinks.twitch_link);
+      if (socialLinks.kick_link) formDataToSend.append('kick_link', socialLinks.kick_link);
+      if (socialLinks.tiktok_link) formDataToSend.append('tiktok_link', socialLinks.tiktok_link);
+      if (socialLinks.bigolive_link) formDataToSend.append('bigolive_link', socialLinks.bigolive_link);
+
+      const data = await ventFetch(API.TOURNAMENT.CREATE, {
+        method: 'POST',
+        token,
+        isFormData: true,
+        body: formDataToSend,
+      });
+
+      const tournamentId = data?.tournament_id || data?.tournament?.id || data?.id || null;
+
+      setFormData({});
+      setLogoFile(null);
+      setBannerFile(null);
+      try { localStorage.removeItem('createTournamentData'); } catch {
+        // Nothing to clean up if storage isn't available.
+      }
+
+      setStatusMessage({
+        type: 'success',
+        text: isDraft ? 'Tournament saved as draft.' : 'Tournament published successfully.',
+      });
+
+      if (isDraft) {
+        router.push('/tournaments/drafts');
+      } else if (tournamentId) {
+        router.push(`/tournaments/view-tournament?id=${tournamentId}`);
+      } else {
+        router.push('/tournaments/drafts');
+      }
+    } catch (error) {
+      setStatusMessage({
+        type: 'error',
+        text: error?.message || `Failed to ${isDraft ? 'save draft' : 'publish tournament'}.`,
+      });
+    } finally {
+      if (isDraft) setIsSavingDraft(false);
+      else setIsPublishing(false);
+    }
+  };
 
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo formData={formData} setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
+        return (
+          <BasicInfo
+            formData={formData}
+            setSelectedTab={setSelectedTab}
+            updateFormData={updateFormData}
+            updateFileData={updateFileData}
+            handleSubmit={handleSubmit}
+            isSavingDraft={isSavingDraft}
+          />
+        );
       case 2:
-        return <FormatParticipants formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return (
+          <FormatParticipants
+            formData={formData}
+            setSelectedTab={setSelectedTab}
+            updateLocalStorage={updateFormData}
+            handleSubmit={handleSubmit}
+            isSavingDraft={isSavingDraft}
+          />
+        );
       case 3:
-        return <PrizeDistribution formData={formData} setSelectedTab={setSelectedTab} updateLocalStorage={updateFormData} />;
+        return (
+          <PrizeDistribution
+            formData={formData}
+            setSelectedTab={setSelectedTab}
+            updateLocalStorage={updateFormData}
+            handleSubmit={handleSubmit}
+            isSavingDraft={isSavingDraft}
+          />
+        );
       case 4:
-        return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return (
+          <SponsorsLinks
+            formData={formData}
+            setFormData={setFormData}
+            setSelectedTab={setSelectedTab}
+            handleSubmit={handleSubmit}
+            isSavingDraft={isSavingDraft}
+          />
+        );
       case 5:
-        return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} isSavingDraft={isSavingDraft} isPublishing={isPublishing} />;
+        return (
+          <Review
+            formData={formData}
+            handleSubmit={handleSubmit}
+            setSelectedTab={setSelectedTab}
+            isSavingDraft={isSavingDraft}
+            isPublishing={isPublishing}
+          />
+        );
       default:
-        return <BasicInfo setSelectedTab={setSelectedTab} updateFormData={updateFormData} updateFileData={updateFileData} />;
+        return (
+          <BasicInfo
+            formData={formData}
+            setSelectedTab={setSelectedTab}
+            updateFormData={updateFormData}
+            updateFileData={updateFileData}
+            handleSubmit={handleSubmit}
+            isSavingDraft={isSavingDraft}
+          />
+        );
     }
   };
 
   return (
     <div className={styles.createTournamentContainer}>
+      {statusMessage && (
+        <div
+          className={`${styles.statusBanner} ${statusMessage.type === 'success' ? styles.statusSuccess : styles.statusError}`}
+          role="status"
+        >
+          {statusMessage.text}
+        </div>
+      )}
       <ProgressMenu selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <div className={styles.renderTabContent}>{renderTabContent()}</div>
     </div>

@@ -1,440 +1,1292 @@
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  IoCalendarOutline,
+  IoLocationOutline,
+  IoTimeOutline,
+  IoTicketOutline,
+} from 'react-icons/io5';
+import {
+  FaUsers,
+  FaCheckCircle,
+  FaCrown,
+  FaStar,
+  FaStore,
+  FaTrophy,
+} from 'react-icons/fa';
+import { MdOutlineClose } from 'react-icons/md';
+import { FiExternalLink } from 'react-icons/fi';
+import { BsTwitter, BsInstagram, BsYoutube, BsFacebook, BsTwitch } from 'react-icons/bs';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
-import EventDetailsBanner from '@/components/view-event/event-details-banner/EventDetailsBanner';
-import EventDetailsOverview from '@/components/view-event/event-details-overview/EventDetailsOverview';
-import EventDetailsTournaments from '@/components/view-event/event-details-tournament/EventDetailsTournaments';
-import EventDetailsBracket from '@/components/view-event/event-details-bracket/EventDetailsBracket';
-import EventDetailsParticipants from '@/components/view-event/event-details-participants/EventDetailsParticipants';
-import EventDetailsPrize from '@/components/view-event/event-details-prize/EventDetailsPrize';
-import tabStyles from '@/styles/modules/tabs/tabs.module.css';
-import styles from './view-event.module.css'
+import { normalizeEvent, findEventInList } from '@/components/events/normalizeEvents';
+import styles from './view-event.module.css';
 
-// Separate component for the main content to handle search params
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'tickets', label: 'Tickets' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'vendors', label: 'Vendors' },
+  { id: 'tournaments', label: 'Tournaments' },
+  { id: 'map', label: 'Map' },
+];
+
+const formatDateTime = (iso) => {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const formatDate = (iso) => {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
+// Ticket tiers come from GET /event/<id>/ticket-types/. This used to fall back
+// to three invented tiers (GA 2,500 / VIP 10,000 / Backstage 25,000) whenever
+// the event had none, so every event appeared to sell tickets it did not have.
+const normaliseTier = (t) => {
+  const name = t.name || 'General';
+  const tier = /vip/i.test(name) ? 'vip' : /backstage/i.test(name) ? 'backstage' : 'general';
+  return {
+    id: t.id,
+    name,
+    tier,
+    price: Number(t.price_vc ?? t.price ?? 0),   // VENT COINS
+    price_ngn: Number(t.price_ngn ?? 0),
+    available: Number(t.remaining ?? 0),
+    sold_out: !!t.sold_out,
+    perks: Array.isArray(t.perks) ? t.perks : [],
+  };
+};
+
+const SCHEDULE_BLUEPRINT = (event) => {
+  // Build a schedule based on event start time. Anchored to Day 1 + Day 2.
+  if (!event?.start_date) return [];
+  const start = new Date(event.start_date);
+  const day1 = new Date(start);
+  const day2 = new Date(start);
+  day2.setDate(day1.getDate() + 1);
+
+  const at = (d, h, m = 0) => {
+    const o = new Date(d);
+    o.setHours(h, m, 0, 0);
+    return o.toISOString();
+  };
+
+  return [
+    {
+      day: 'Day 1',
+      date: day1.toISOString(),
+      sessions: [
+        { id: 's1', time: at(day1, 10), title: 'Doors open + Vendor zone activation', stage: 'Main Hall' },
+        { id: 's2', time: at(day1, 12), title: 'Cosplay parade', stage: 'Centre Stage' },
+        { id: 's3', time: at(day1, 14), title: 'Group stage - FIFA Pro Cup', stage: 'Esports Arena' },
+        { id: 's4', time: at(day1, 17), title: 'Live AMV showcase', stage: 'Centre Stage' },
+        { id: 's5', time: at(day1, 20), title: 'After-party + DJ set', stage: 'Outdoor Yard' },
+      ],
+    },
+    {
+      day: 'Day 2',
+      date: day2.toISOString(),
+      sessions: [
+        { id: 's6', time: at(day2, 11), title: 'Anime industry panel', stage: 'Panel Room A' },
+        { id: 's7', time: at(day2, 13), title: 'Quarter & Semi finals - PUBG', stage: 'Esports Arena' },
+        { id: 's8', time: at(day2, 16), title: 'VIP meet & greet', stage: 'VIP Lounge' },
+        { id: 's9', time: at(day2, 18), title: 'Grand Finals + Awards', stage: 'Main Hall' },
+      ],
+    },
+  ];
+};
+
+const VENUE_BOOTHS = [
+  { id: 'b1', name: 'Main Stage', x: 50, y: 18, w: 40, h: 12, type: 'stage' },
+  { id: 'b2', name: 'Esports Arena', x: 8, y: 38, w: 30, h: 18, type: 'esports' },
+  { id: 'b3', name: 'Vendor Row A', x: 45, y: 38, w: 22, h: 8, type: 'vendor' },
+  { id: 'b4', name: 'Vendor Row B', x: 70, y: 38, w: 22, h: 8, type: 'vendor' },
+  { id: 'b5', name: 'Food Court', x: 8, y: 62, w: 26, h: 12, type: 'food' },
+  { id: 'b6', name: 'Cosplay Studio', x: 40, y: 62, w: 20, h: 12, type: 'studio' },
+  { id: 'b7', name: 'VIP Lounge', x: 65, y: 62, w: 27, h: 12, type: 'vip' },
+  { id: 'b8', name: 'Entry / Check-in', x: 38, y: 82, w: 24, h: 8, type: 'entry' },
+];
+
+// Live means "started and not finished". Without the end date every past event
+// claimed to be live forever.
+const useCountdown = (target, endTarget) => {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  if (!target) return null;
+  const diff = new Date(target).getTime() - now;
+  const endMs = endTarget ? new Date(endTarget).getTime() : null;
+  if (diff <= 0) {
+    const ended = endMs != null && now > endMs;
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, live: !ended, ended };
+  }
+  return {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    seconds: Math.floor((diff / 1000) % 60),
+    live: false,
+  };
+};
+
 const ViewEventContent = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [mounted, setMounted] = useState(false);
-  
+  const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const { data: session } = useSession();
+  const tabParam = searchParams.get('tab');
+  const { data: session, status: sessionStatus } = useSession();
 
-  // Handle client-side mounting
+  const [event, setEvent] = useState(null);
+  const [linkedTournaments, setLinkedTournaments] = useState([]);
+  const [tournamentsLoading, setTournamentsLoading] = useState(true);
+  const [linkable, setLinkable] = useState([]);
+  const [linkableLoading, setLinkableLoading] = useState(false);
+  const [linkPanelOpen, setLinkPanelOpen] = useState(false);
+  const [linkBusyId, setLinkBusyId] = useState(null);
+  const [linkError, setLinkError] = useState('');
+  const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState(tabParam || 'overview');
+  const [walletBalance, setWalletBalance] = useState(null);
+
+  // Ticket tiers (real, from the ticketing endpoint)
+  const [tiers, setTiers] = useState([]);
+  const [tiersLoading, setTiersLoading] = useState(true);
+  const [buyPin, setBuyPin] = useState('');
+
+  // Buy flow modal state
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [buyStep, setBuyStep] = useState(1);
+  const [buyTier, setBuyTier] = useState(null);
+  const [buyQty, setBuyQty] = useState(1);
+  const [buyError, setBuyError] = useState('');
+  const [buyLoading, setBuyLoading] = useState(false);
+  const [buyResult, setBuyResult] = useState(null);
+
+  const authHeaders = useCallback(() => ({
+    Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
+    'Content-Type': 'application/json',
+  }), [session?.user?.sessionToken]);
+
+  // Fetch event. Gated on the session having settled: without this the effect
+  // runs once tokenless on mount and again when NextAuth resolves, doubling every
+  // request on the page (measured: view-event, vendors and the events list were
+  // each fetched four times per load).
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // FIXED: Helper function to find event in get-all-events response
-  const findEventInResponse = useCallback((data, eventId) => {
-    console.log('Looking for event ID:', eventId);
-    console.log('Response structure:', data);
-    
-    // Handle the structure from your working EventsComponent
-    if (data.data) {
-      // Check featured events
-      if (data.data.featured && Array.isArray(data.data.featured)) {
-        const found = data.data.featured.find(event => 
-          String(event.event_id) === String(eventId) || 
-          String(event.id) === String(eventId)
-        );
-        if (found) {
-          console.log('Found in featured events:', found);
-          return found;
-        }
-      }
-      
-      // Check upcoming events
-      if (data.data.upcoming && Array.isArray(data.data.upcoming)) {
-        const found = data.data.upcoming.find(event => 
-          String(event.event_id) === String(eventId) || 
-          String(event.id) === String(eventId)
-        );
-        if (found) {
-          console.log('Found in upcoming events:', found);
-          return found;
-        }
-      }
-      
-      // FIXED: Check by_game events (this was missing)
-      if (data.data.by_game && typeof data.data.by_game === 'object') {
-        // Loop through all game categories (Free Fire, FIFA, PUBG, etc.)
-        for (const gameName in data.data.by_game) {
-          const gameEvents = data.data.by_game[gameName];
-          if (Array.isArray(gameEvents)) {
-            const found = gameEvents.find(event => 
-              String(event.event_id) === String(eventId) || 
-              String(event.id) === String(eventId)
-            );
-            if (found) {
-              console.log(`Found in ${gameName} events:`, found);
-              return found;
-            }
-          }
-        }
-      }
-      
-      // Check if there's an 'all' events array
-      if (data.data.all && Array.isArray(data.data.all)) {
-        const found = data.data.all.find(event => 
-          String(event.event_id) === String(eventId) || 
-          String(event.id) === String(eventId)
-        );
-        if (found) {
-          console.log('Found in all events:', found);
-          return found;
-        }
-      }
-      
-      // If data.data is directly an array
-      if (Array.isArray(data.data)) {
-        const found = data.data.find(event => 
-          String(event.event_id) === String(eventId) || 
-          String(event.id) === String(eventId)
-        );
-        if (found) {
-          console.log('Found in data array:', found);
-          return found;
-        }
-      }
-    }
-    
-    // If the response is directly an array
-    if (Array.isArray(data)) {
-      const found = data.find(event => 
-        String(event.event_id) === String(eventId) || 
-        String(event.id) === String(eventId)
-      );
-      if (found) {
-        console.log('Found in root array:', found);
-        return found;
-      }
-    }
-    
-    return null;
-  }, []);
-
-  const fetchEvent = useCallback(async () => {
     if (!id) {
-      setError('Event ID not found');
+      setError('Event ID missing');
       setLoading(false);
       return;
     }
+    if (sessionStatus === 'loading') return;
+    const fetchEvent = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Primary: dedicated single-event endpoint. The mock layer serves this;
+        // the real backend does not have it yet (Phase 2), so this may 404.
+        let found = null;
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`,
+            { headers: authHeaders() }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === 'success') {
+              found = normalizeEvent(data.data.event || data.data);
+            }
+          }
+        } catch {
+          /* fall through to the list-based lookup below */
+        }
 
+        // Fallback: locate the event inside `get-all-events` (real backend has
+        // no single-event route). Also covers the thin real field shape.
+        if (!found) {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
+            { headers: authHeaders() }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === 'success') {
+              found = findEventInList(data.data, id);
+            }
+          }
+        }
+
+        if (found) setEvent(found);
+        else setError('This event doesn’t exist or is no longer available.');
+      } catch (err) {
+        setError('Network error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvent();
+  }, [id, authHeaders]);
+
+  // Fetch wallet balance for ticket flow
+  useEffect(() => {
+    if (!session?.user?.sessionToken) return;
+    const fetchBalance = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`,
+          { headers: authHeaders() }
+        );
+        const data = await res.json();
+        if (data.status === 'success') {
+          setWalletBalance(Number(data.data.balance || 0));
+        }
+      } catch (err) {
+        console.error('Balance fetch error:', err);
+      }
+    };
+    fetchBalance();
+  }, [session?.user?.sessionToken, authHeaders]);
+
+  // Fetch vendors (same session gate as above)
+  useEffect(() => {
+    if (!id || sessionStatus === 'loading') return;
+    const fetchVendors = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/vendors/`,
+          { headers: authHeaders() }
+        );
+        const data = await res.json();
+        if (data.status === 'success') {
+          setVendors(data.data.vendors || []);
+        }
+      } catch (err) {
+        console.error('Vendors fetch error:', err);
+      }
+    };
+    fetchVendors();
+  }, [id, authHeaders]);
+
+  // Linked tournaments. The list carries per-viewer flags (does your ticket cover
+  // entry, are you the organizer), so it has to wait for the session to resolve
+  // or every flag comes back false.
+  const loadTournaments = useCallback(async () => {
+    if (!id) return;
+    setTournamentsLoading(true);
     try {
-      // First, try the direct event endpoint (following tournament pattern)
-      const directEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}`;
-      
-      const response = await fetch(directEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && {
-            'Authorization': `Bearer ${session.user.sessionToken}`
-          })
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-
-        // Check if the API response has the expected structure (similar to tournament)
-        if (data.status === 'success' && data.data) {
-          setEvent(data.data);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(data.data));
-          setLoading(false);
-          return;
-        } else if (data.event_id || data.id) {
-          setEvent(data);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(data));
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Fallback: Try the get-all-events endpoint
-      const allEventsEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`;
-      const allEventsResponse = await fetch(allEventsEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && {
-            'Authorization': `Bearer ${session.user.sessionToken}`
-          })
-        }
-      });
-
-      if (allEventsResponse.ok) {
-        const allEventsData = await allEventsResponse.json();
-        console.log('Get-all-events response:', allEventsData);
-        
-        // Find the specific event in the response
-        const eventData = findEventInResponse(allEventsData, id);
-        
-        if (eventData) {
-          console.log('Found event in get-all-events:', eventData);
-          setEvent(eventData);
-          // Cache the event data
-          localStorage.setItem(`event_${id}`, JSON.stringify(eventData));
-          setLoading(false);
-          return;
-        }
-      }
-
-      throw new Error(`Event with ID "${id}" not found. Please check if the event exists.`);
-      
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/tournaments/`,
+        { headers: authHeaders() }
+      );
+      const data = await res.json();
+      setLinkedTournaments(data.status === 'success' ? data.data.tournaments || [] : []);
     } catch (err) {
-      console.error('Error fetching event:', err);
-      setError(err.message);
-      setLoading(false);
+      console.error('Linked tournaments fetch error:', err);
+      setLinkedTournaments([]);
+    } finally {
+      setTournamentsLoading(false);
     }
-  }, [id, session, findEventInResponse]);
+  }, [id, authHeaders]);
 
   useEffect(() => {
-    if (mounted && id) {
-      // First, try to load from localStorage
-      try {
-        const cachedEvent = localStorage.getItem(`event_${id}`);
-        if (cachedEvent) {
-          const parsedEvent = JSON.parse(cachedEvent);
-          console.log('Loaded event from cache:', parsedEvent);
-          setEvent(parsedEvent);
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.error('Error loading cached event:', error);
+    if (sessionStatus === 'loading') return;
+    loadTournaments();
+  }, [sessionStatus, loadTournaments]);
+
+  // Organizer only: the tournaments this organizer can still attach.
+  const loadLinkable = useCallback(async () => {
+    if (!id) return;
+    setLinkableLoading(true);
+    setLinkError('');
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/linkable-tournaments/`,
+        { headers: authHeaders() }
+      );
+      const data = await res.json();
+      if (data.status === 'success') setLinkable(data.data.tournaments || []);
+      else {
+        setLinkable([]);
+        setLinkError(data.message || 'Could not load your tournaments.');
       }
-      
-      // If no cached data, fetch from API
-      fetchEvent();
+    } catch (err) {
+      setLinkable([]);
+      setLinkError('Network error while loading your tournaments.');
+    } finally {
+      setLinkableLoading(false);
     }
-  }, [mounted, id, fetchEvent]);
+  }, [id, authHeaders]);
 
-  // Save activeTab to localStorage
-  useEffect(() => {
-    if (mounted && id) {
-      localStorage.setItem(`event_${id}_activeTab`, activeTab);
-    }
-  }, [activeTab, id, mounted]);
+  const openLinkPanel = () => {
+    setLinkPanelOpen(true);
+    loadLinkable();
+  };
 
-  // Restore activeTab from localStorage
-  useEffect(() => {
-    if (mounted && id) {
-      try {
-        const savedTab = localStorage.getItem(`event_${id}_activeTab`);
-        if (savedTab) {
-          setActiveTab(savedTab);
+  const linkTournament = async (tournamentId) => {
+    setLinkBusyId(tournamentId);
+    setLinkError('');
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/link-tournament/`,
+        {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ tournament_id: tournamentId, shared_ticketing: false }),
         }
-      } catch (error) {
-        console.error('Error loading saved tab:', error);
+      );
+      const data = await res.json();
+      if (data.status === 'success') {
+        await loadTournaments();
+        await loadLinkable();
+      } else {
+        setLinkError(data.message || 'Could not link that tournament.');
       }
+    } catch (err) {
+      setLinkError('Network error while linking.');
+    } finally {
+      setLinkBusyId(null);
     }
-  }, [mounted, id]);
+  };
 
-  // Render loading state
-  const renderPageLayout = (content) => (
+  const unlinkTournament = async (tournamentId) => {
+    setLinkBusyId(tournamentId);
+    setLinkError('');
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/unlink-tournament/`,
+        {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ tournament_id: tournamentId }),
+        }
+      );
+      const data = await res.json();
+      if (data.status === 'success') {
+        await loadTournaments();
+        if (linkPanelOpen) await loadLinkable();
+      } else {
+        setLinkError(data.message || 'Could not unlink that tournament.');
+      }
+    } catch (err) {
+      setLinkError('Network error while unlinking.');
+    } finally {
+      setLinkBusyId(null);
+    }
+  };
+
+  const setSharedTicketing = async (tournamentId, next) => {
+    setLinkBusyId(tournamentId);
+    setLinkError('');
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/tournament/${tournamentId}/ticketing/`,
+        {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ shared_ticketing: next }),
+        }
+      );
+      const data = await res.json();
+      if (data.status === 'success') await loadTournaments();
+      else setLinkError(data.message || 'Could not change shared ticketing.');
+    } catch (err) {
+      setLinkError('Network error while changing shared ticketing.');
+    } finally {
+      setLinkBusyId(null);
+    }
+  };
+
+  // Sync tab to URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (activeTab && activeTab !== 'overview') params.set('tab', activeTab);
+    else params.delete('tab');
+    const qs = params.toString();
+    router.replace(qs ? `/events/view-event?${qs}` : `/events/view-event?id=${id}`, { scroll: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  const countdown = useCountdown(event?.start_date, event?.end_date);
+  const tickets = useMemo(() => tiers.map(normaliseTier), [tiers]);
+
+  // Only the organizer gets the door list (the endpoint enforces it too).
+  const isOrganizer = useMemo(() => {
+    const me = session?.user;
+    if (!me || !event?.organizer) return false;
+    return (
+      String(event.organizer.user_id ?? event.organizer.id ?? '') === String(me.id ?? '') ||
+      (event.organizer.username && event.organizer.username === me.username)
+    );
+  }, [session?.user, event?.organizer]);
+
+  // Load the real tiers for this event.
+  useEffect(() => {
+    if (!id) return;
+    const controller = new AbortController();
+    (async () => {
+      setTiersLoading(true);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${id}/ticket-types/`, {
+          signal: controller.signal,
+        });
+        const body = await res.json();
+        setTiers(body?.data?.tiers || []);
+      } catch {
+        setTiers([]);
+      } finally {
+        setTiersLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [id]);
+  const schedule = useMemo(() => (event ? SCHEDULE_BLUEPRINT(event) : []), [event]);
+
+  const openBuy = (tier) => {
+    setBuyTier(tier);
+    setBuyPin('');
+    setBuyQty(1);
+    setBuyStep(1);
+    setBuyError('');
+    setBuyResult(null);
+    setBuyOpen(true);
+  };
+  const closeBuy = () => {
+    setBuyOpen(false);
+    setBuyResult(null);
+  };
+
+  const totalCost = buyTier ? buyTier.price * buyQty : 0;
+
+  const handleBuy = async () => {
+    if (!buyTier) return;
+    setBuyError('');
+    if (totalCost > 0 && buyPin.length < 4) {
+      setBuyError('Enter your 4-digit wallet PIN to authorise this payment.');
+      return;
+    }
+    if (walletBalance !== null && totalCost > walletBalance) {
+      setBuyError(
+        `Insufficient wallet balance. Need ${totalCost.toLocaleString()} VC, have ${walletBalance.toLocaleString()} VC.`
+      );
+      return;
+    }
+    setBuyLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/buy-ticket/`,
+        {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            tier_id: buyTier.id,
+            quantity: buyQty,
+            pin: buyPin,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.status === 'success') {
+        setBuyResult(data.data);
+        if (typeof data.data.new_balance === 'number') {
+          setWalletBalance(data.data.new_balance);
+        }
+        setBuyStep(3);
+      } else {
+        setBuyError(data.message || 'Failed to purchase ticket.');
+      }
+    } catch (err) {
+      setBuyError('Network error. Please try again.');
+    } finally {
+      setBuyLoading(false);
+    }
+  };
+
+  const renderPage = (content) => (
     <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
       <main className={styles.mainContainer}>
         <Sidebar />
-        <div className={styles.rightPaneContainer}>
-          {content}
-        </div>
+        <div className={styles.rightPaneContainer}>{content}</div>
       </main>
       <BottomMenu />
     </div>
   );
 
-  // Show loading until component is mounted on client
-  if (!mounted) {
-    return renderPageLayout(
-      <div className={styles.loadingContainer}>
-        <p>Loading...</p>
+  if (loading) return renderPage(<p className={styles.stateText}>Loading event…</p>);
+  if (error || !event)
+    return renderPage(
+      <div className={styles.errorState}>
+        <h3 className={styles.errorTitle}>Couldn&apos;t load event</h3>
+        <p className={styles.errorSub}>{error || 'Event not found.'}</p>
+        <Link href="/events" className={`${styles.errorBtn} goldBTN`}>
+          Back to events
+        </Link>
       </div>
     );
-  }
-
-  if (loading) {
-    return renderPageLayout(
-      <div className={styles.loadingContainer}>
-        <p>Loading event details...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return renderPageLayout(
-      <div className={styles.errorContainer}>
-        <h3>Error Loading Event</h3>
-        <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
-        
-
-        <div style={{ marginTop: '1rem' }}>
-          <button 
-            onClick={fetchEvent} 
-            style={{ 
-              marginRight: '1rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Retry
-          </button>
-          <button 
-            onClick={() => window.history.back()}
-            style={{ 
-              padding: '0.5rem 1rem',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!event) {
-    return renderPageLayout(
-      <div className={styles.errorContainer}>
-        <h3>Event Not Found</h3>
-        <p>The requested event could not be found.</p>
-        <button onClick={() => window.history.back()}>Go Back</button>
-      </div>
-    );
-  }
-
-  // Debug: Log event data before rendering
-  console.log('Rendering event:', event);
 
   return (
     <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
-      
+
       <main className={styles.mainContainer}>
         <Sidebar />
-      
+
         <div className={styles.rightPaneContainer}>
-          <EventDetailsBanner event={event} />
+          {/* Hero banner - only render the image when a real banner exists.
+              An empty src makes next/image emit a preload warning and bleed the
+              alt text over the card; the hero's own dark background fills in. */}
+          <div className={styles.hero}>
+            {(event.banner_image || event.banner) ? (
+              <Image
+                src={event.banner_image || event.banner}
+                alt={event.name}
+                fill
+                sizes="(min-width: 1024px) 70vw, 100vw"
+                style={{ objectFit: 'cover' }}
+                priority
+                unoptimized
+              />
+            ) : null}
+            <div className={styles.heroOverlay} />
+            <div className={styles.heroContent}>
+              <span className={`${styles.heroType} ${styles['type_' + event.event_type]}`}>
+                {event.event_type}
+              </span>
+              <h1 className={styles.heroTitle}>{event.name}</h1>
+              <div className={styles.heroMeta}>
+                <span className={styles.metaItem}>
+                  <IoCalendarOutline /> {formatDateTime(event.start_date)}
+                </span>
+                <span className={styles.metaItem}>
+                  <IoLocationOutline /> {event.location}
+                </span>
+                <span className={styles.metaItem}>
+                  <FaUsers /> {event.attendees_count?.toLocaleString() || 0} attending
+                </span>
+              </div>
 
-          <div className={tabStyles.buttonContainer}>
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'overview' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
+              {countdown && !countdown.live && !countdown.ended && (
+                <div className={styles.countdown}>
+                  <span className={styles.countdownLabel}>Starts in</span>
+                  <div className={styles.countdownValues}>
+                    <div className={styles.countdownCell}>
+                      <span className={styles.countdownNum}>{countdown.days}</span>
+                      <span className={styles.countdownUnit}>days</span>
+                    </div>
+                    <div className={styles.countdownCell}>
+                      <span className={styles.countdownNum}>{String(countdown.hours).padStart(2, '0')}</span>
+                      <span className={styles.countdownUnit}>hrs</span>
+                    </div>
+                    <div className={styles.countdownCell}>
+                      <span className={styles.countdownNum}>{String(countdown.minutes).padStart(2, '0')}</span>
+                      <span className={styles.countdownUnit}>min</span>
+                    </div>
+                    <div className={styles.countdownCell}>
+                      <span className={styles.countdownNum}>{String(countdown.seconds).padStart(2, '0')}</span>
+                      <span className={styles.countdownUnit}>sec</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {countdown?.live && (
+                <div className={styles.liveBadge}>
+                  <span className={styles.liveDot} /> Event is live now
+                </div>
+              )}
+              {countdown?.ended && (
+                <div className={styles.endedBadge}>This event has ended</div>
+              )}
 
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'tournaments' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('tournaments')}
-            >
-              Tournaments
-            </button>
-
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'bracket' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('bracket')}
-            >
-              Bracket
-            </button>
-
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'participants' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('participants')}
-            >
-              Participants
-            </button>
-
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'prize' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('prize')}
-            >
-              Prize
-            </button>
+              <div className={styles.heroActions}>
+                <button
+                  className={`${styles.heroPrimaryBtn} redBTN`}
+                  onClick={() => setActiveTab('tickets')}
+                  type="button"
+                >
+                  <IoTicketOutline /> Get tickets
+                </button>
+                <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
+                  My tickets
+                </Link>
+              </div>
+            </div>
           </div>
 
-          <div className={tabStyles.detailsDashboard}>
+          {/* Tabs */}
+          <div className={styles.tabRow}>
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`}
+                onClick={() => setActiveTab(t.id)}
+                type="button"
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.tabContent}>
+            {/* OVERVIEW */}
             {activeTab === 'overview' && (
-              <div className={styles.overviewContainer}>
-                <EventDetailsOverview event={event} />
-              </div>            
+              <div className={styles.overviewGrid}>
+                <div>
+                  <h3 className={styles.sectionTitle}>About this event</h3>
+                  <p className={styles.body}>
+                    {event.description || 'Come play, meet streamers, and win prizes at the biggest gaming event in Lagos.'}
+                  </p>
+
+                  <h3 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                    What to expect
+                  </h3>
+                  <ul className={styles.expectList}>
+                    <li><FaCheckCircle /> Live tournaments with prize pools</li>
+                    <li><FaCheckCircle /> Vendor zone with exclusive merch drops</li>
+                    <li><FaCheckCircle /> Cosplay competitions and meet & greets</li>
+                    <li><FaCheckCircle /> AMV showcase + after-party</li>
+                  </ul>
+
+                  <h3 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                    Connect
+                  </h3>
+                  <div className={styles.socialRow}>
+                    <a href="#" className={styles.socialBtn} aria-label="Twitter"><BsTwitter /></a>
+                    <a href="#" className={styles.socialBtn} aria-label="Instagram"><BsInstagram /></a>
+                    <a href="#" className={styles.socialBtn} aria-label="YouTube"><BsYoutube /></a>
+                    <a href="#" className={styles.socialBtn} aria-label="Facebook"><BsFacebook /></a>
+                    <a href="#" className={styles.socialBtn} aria-label="Twitch"><BsTwitch /></a>
+                  </div>
+                </div>
+
+                <aside className={styles.sideCard}>
+                  <p className={styles.sideLabel}>Organizer</p>
+                  {isOrganizer && (
+                    <Link href={`/events/attendees?id=${id}`} className={styles.doorListLink}>
+                      Door list &amp; check-in →
+                    </Link>
+                  )}
+                  <div className={styles.organizerRow}>
+                    <div className={styles.organizerAvatar}>
+                      <FaCrown />
+                    </div>
+                    <div>
+                      <p className={styles.organizerName}>
+                        {event.organizer?.full_name || event.organizer?.username || 'V-ENT Live'}
+                      </p>
+                      <p className={styles.organizerSub}>
+                        @{event.organizer?.username || 'v-ent'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className={styles.sideLabel} style={{ marginTop: '1.25rem' }}>
+                    Sponsors
+                  </p>
+                  <div className={styles.sponsorRow}>
+                    {['NetEase', 'Pulse', 'Konga', 'Paystack'].map((s) => (
+                      <span key={s} className={styles.sponsorChip}>
+                        <FaStar className={styles.sponsorStar} /> {s}
+                      </span>
+                    ))}
+                  </div>
+
+                  <p className={styles.sideLabel} style={{ marginTop: '1.25rem' }}>
+                    Quick stats
+                  </p>
+                  <div className={styles.miniStats}>
+                    <div className={styles.miniStatRow}>
+                      <span>Capacity</span>
+                      <strong>{event.attendees_count?.toLocaleString() || '-'}</strong>
+                    </div>
+                    <div className={styles.miniStatRow}>
+                      <span>Type</span>
+                      <strong style={{ textTransform: 'capitalize' }}>{event.event_type}</strong>
+                    </div>
+                    <div className={styles.miniStatRow}>
+                      <span>Status</span>
+                      <strong style={{ textTransform: 'capitalize' }}>{event.status}</strong>
+                    </div>
+                  </div>
+                </aside>
+              </div>
             )}
 
+            {/* TICKETS */}
+            {activeTab === 'tickets' && (
+              <div className={styles.ticketTab}>
+                <div className={styles.ticketHeaderRow}>
+                  <div>
+                    <h3 className={styles.sectionTitle}>Buy tickets</h3>
+                    <p className={styles.body}>
+                      {countdown?.ended
+                        ? 'This event has ended, so tickets are no longer on sale.'
+                        : 'Pick your tier. Payment is deducted from your V-ENT wallet.'}
+                    </p>
+                  </div>
+                  {walletBalance !== null && (
+                    <div className={styles.walletPill}>
+                      Wallet: <strong>{walletBalance.toLocaleString()} VC</strong>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.tierGrid}>
+                  {tickets.map((t) => (
+                    <div
+                      key={t.id}
+                      className={`${styles.tierCard} ${styles['tierCard_' + t.tier]}`}
+                    >
+                      <div className={styles.tierHeader}>
+                        <span className={`${styles.tierBadge} ${styles['badge_' + t.tier]}`}>
+                          {t.tier === 'vip' ? 'VIP' : t.tier === 'backstage' ? 'BACKSTAGE' : 'GA'}
+                        </span>
+                        <p className={styles.tierName}>{t.name}</p>
+                      </div>
+                      <p className={styles.tierPrice}>
+                        {t.price.toLocaleString()} VC
+                        <span className={styles.tierUnit}>/ ticket</span>
+                      </p>
+                      <ul className={styles.perkList}>
+                        {t.perks.map((p) => (
+                          <li key={p}>
+                            <FaCheckCircle className={styles.perkIcon} /> {p}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className={styles.tierStock}>
+                        {t.available > 0 ? `${t.available} remaining` : 'Sold out'}
+                      </p>
+                      <button
+                        className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`}
+                        disabled={t.available === 0 || countdown?.ended}
+                        onClick={() => openBuy(t)}
+                        type="button"
+                      >
+                        {countdown?.ended ? 'Event over' : t.available === 0 ? 'Sold out' : 'Buy ticket'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* SCHEDULE */}
+            {activeTab === 'schedule' && (
+              <div className={styles.scheduleTab}>
+                <h3 className={styles.sectionTitle}>Event schedule</h3>
+                {schedule.length === 0 ? (
+                  <p className={styles.body}>Schedule will be published soon.</p>
+                ) : (
+                  schedule.map((day) => (
+                    <div key={day.day} className={styles.dayBlock}>
+                      <div className={styles.dayHeader}>
+                        <h4 className={styles.dayTitle}>{day.day}</h4>
+                        <span className={styles.daySub}>{formatDate(day.date)}</span>
+                      </div>
+                      <div className={styles.timeline}>
+                        {day.sessions.map((s) => (
+                          <div key={s.id} className={styles.timelineRow}>
+                            <div className={styles.timelineTime}>
+                              <IoTimeOutline />
+                              {new Date(s.time).toLocaleTimeString('en-GB', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </div>
+                            <div className={styles.timelineDot} />
+                            <div className={styles.timelineBody}>
+                              <p className={styles.timelineTitle}>{s.title}</p>
+                              <p className={styles.timelineStage}>
+                                <IoLocationOutline /> {s.stage}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* VENDORS */}
+            {activeTab === 'vendors' && (
+              <div className={styles.vendorTab}>
+                <div className={styles.ticketHeaderRow}>
+                  <div>
+                    <h3 className={styles.sectionTitle}>Vendor zone</h3>
+                    <p className={styles.body}>
+                      Browse on-site vendors. Click any vendor to view products and add to cart.
+                    </p>
+                  </div>
+                  <Link
+                    href={`/events/vendor-shop?id=${event.id}`}
+                    className={styles.viewAllLink}
+                  >
+                    View vendor shop <FiExternalLink />
+                  </Link>
+                </div>
+
+                {vendors.length === 0 ? (
+                  <p className={styles.body}>No vendors confirmed yet.</p>
+                ) : (
+                  <div className={styles.vendorGrid}>
+                    {vendors.map((v) => (
+                      <Link
+                        key={v.id}
+                        href={`/events/vendor-shop/vendor?event=${event.id}&vendor=${v.id}`}
+                        className={styles.vendorCard}
+                      >
+                        <div className={styles.vendorLogoWrap}>
+                          {v.logo ? (
+                            <Image
+                              src={v.logo}
+                              alt={v.name}
+                              width={56}
+                              height={56}
+                              className={styles.vendorLogo}
+                              unoptimized
+                            />
+                          ) : (
+                            <div className={styles.vendorLogoFallback}><FaStore /></div>
+                          )}
+                        </div>
+                        <div>
+                          <p className={styles.vendorName}>{v.name}</p>
+                          <p className={styles.vendorSub}>
+                            {v.category} • Booth {v.booth}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TOURNAMENTS */}
             {activeTab === 'tournaments' && (
-              <div className={styles.tournamentsContainer}>
-                <EventDetailsTournaments event={event} />
+              <div className={styles.tournamentsTab}>
+                <div className={styles.ticketHeaderRow}>
+                  <div>
+                    <h3 className={styles.sectionTitle}>Tournaments at this event</h3>
+                    <p className={styles.body}>
+                      {isOrganizer
+                        ? 'Attach tournaments you run. Turn on shared ticketing and a ticket to this event pays the entry fee.'
+                        : 'Brackets running inside the event. Entry is separate unless the organizer covers it with your ticket.'}
+                    </p>
+                  </div>
+                  {isOrganizer && !linkPanelOpen && (
+                    <button
+                      type="button"
+                      className={styles.linkOpenBtn}
+                      onClick={openLinkPanel}
+                    >
+                      Link a tournament
+                    </button>
+                  )}
+                </div>
+
+                {isOrganizer && linkPanelOpen && (
+                  <div className={styles.linkPanel}>
+                    <div className={styles.linkPanelHead}>
+                      <p className={styles.linkPanelTitle}>Your tournaments</p>
+                      <button
+                        type="button"
+                        className={styles.linkPanelClose}
+                        onClick={() => setLinkPanelOpen(false)}
+                        aria-label="Close the tournament picker"
+                      >
+                        <MdOutlineClose />
+                      </button>
+                    </div>
+                    {linkableLoading ? (
+                      <p className={styles.linkPanelNote}>Loading your tournaments...</p>
+                    ) : linkable.length === 0 ? (
+                      <p className={styles.linkPanelNote}>
+                        Nothing available. Published tournaments you created that are not
+                        already part of an event show up here.
+                      </p>
+                    ) : (
+                      <ul className={styles.linkList}>
+                        {linkable.map((t) => (
+                          <li key={t.id} className={styles.linkRow}>
+                            <div>
+                              <p className={styles.linkRowName}>{t.name}</p>
+                              <p className={styles.linkRowMeta}>
+                                {t.game} · {formatDate(t.start_date)} ·{' '}
+                                {Number(t.entry_fee_vc || 0) > 0
+                                  ? `${Number(t.entry_fee_vc).toLocaleString()} VC entry`
+                                  : 'Free entry'}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              className={styles.linkRowBtn}
+                              disabled={linkBusyId === t.id}
+                              onClick={() => linkTournament(t.id)}
+                            >
+                              {linkBusyId === t.id ? 'Linking...' : 'Link'}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {linkError && <p className={styles.linkError}>{linkError}</p>}
+
+                {tournamentsLoading ? (
+                  <p className={styles.body}>Loading tournaments...</p>
+                ) : linkedTournaments.length === 0 ? (
+                  <div className={styles.emptyInner}>
+                    <FaTrophy className={styles.emptyInnerIcon} />
+                    <p className={styles.emptyInnerTitle}>No tournaments linked.</p>
+                    <p className={styles.emptyInnerSub}>
+                      {isOrganizer
+                        ? 'Link one above and it shows up here for attendees.'
+                        : 'This event is a showcase, panel or concert.'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className={styles.tournamentGrid}>
+                    {linkedTournaments.map((t) => (
+                      <div key={t.id} className={styles.tournamentCard}>
+                        <Link
+                          href={`/tournaments/view-tournament?id=${t.id}`}
+                          className={styles.tournamentCardLink}
+                        >
+                          <div className={styles.tournamentImgWrap}>
+                            {(t.banner_image || t.banner) && (
+                              <Image
+                                src={t.banner_image || t.banner}
+                                alt={t.name}
+                                fill
+                                sizes="(min-width: 1024px) 30vw, 100vw"
+                                style={{ objectFit: 'cover' }}
+                                unoptimized
+                              />
+                            )}
+                          </div>
+                          <div className={styles.tournamentBody}>
+                            <p className={styles.tournamentGame}>{t.game}</p>
+                            <p className={styles.tournamentName}>{t.name}</p>
+                            <div className={styles.tournamentStats}>
+                              <span>
+                                <FaTrophy /> {Number(t.prize_pool || 0).toLocaleString()} VC
+                              </span>
+                              <span>
+                                <FaUsers /> {t.current_participants}/{t.max_participants}
+                              </span>
+                            </div>
+                            {t.entry_covered_by_ticket ? (
+                              <p className={styles.coveredNote}>
+                                <IoTicketOutline /> Your event ticket covers entry
+                              </p>
+                            ) : t.shared_ticketing ? (
+                              <p className={styles.sharedNote}>
+                                <IoTicketOutline /> Entry is free with an event ticket
+                              </p>
+                            ) : null}
+                          </div>
+                        </Link>
+                        {isOrganizer && (
+                          <div className={styles.tournamentAdminRow}>
+                            <button
+                              type="button"
+                              className={
+                                t.shared_ticketing
+                                  ? styles.sharedToggleOn
+                                  : styles.sharedToggleOff
+                              }
+                              disabled={linkBusyId === t.id}
+                              onClick={() => setSharedTicketing(t.id, !t.shared_ticketing)}
+                            >
+                              {t.shared_ticketing
+                                ? 'Shared ticketing on'
+                                : 'Shared ticketing off'}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.unlinkBtn}
+                              disabled={linkBusyId === t.id}
+                              onClick={() => unlinkTournament(t.id)}
+                            >
+                              {linkBusyId === t.id ? 'Working...' : 'Unlink'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
-            {activeTab === 'bracket' && (
-              <div className={styles.bracketContainer}>
-                <EventDetailsBracket event={event} />
+            {/* MAP */}
+            {activeTab === 'map' && (
+              <div className={styles.mapTab}>
+                <div className={styles.ticketHeaderRow}>
+                  <div>
+                    <h3 className={styles.sectionTitle}>Venue map</h3>
+                    <p className={styles.body}>
+                      Floor plan of the venue. Booths are colour-coded by zone.
+                    </p>
+                  </div>
+                </div>
+                <div className={styles.mapWrap}>
+                  <svg className={styles.mapSvg} viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <rect x="0" y="0" width="100" height="100" className={styles.mapBg} />
+                    {VENUE_BOOTHS.map((b) => (
+                      <g key={b.id}>
+                        <rect
+                          x={b.x}
+                          y={b.y}
+                          width={b.w}
+                          height={b.h}
+                          className={`${styles.booth} ${styles['booth_' + b.type]}`}
+                          rx="0.6"
+                        />
+                        <text
+                          x={b.x + b.w / 2}
+                          y={b.y + b.h / 2 + 1}
+                          className={styles.boothLabel}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          {b.name}
+                        </text>
+                      </g>
+                    ))}
+                  </svg>
+                  <div className={styles.mapLegend}>
+                    {[
+                      { type: 'stage', label: 'Stage' },
+                      { type: 'esports', label: 'Esports' },
+                      { type: 'vendor', label: 'Vendor' },
+                      { type: 'food', label: 'Food' },
+                      { type: 'studio', label: 'Studio' },
+                      { type: 'vip', label: 'VIP' },
+                      { type: 'entry', label: 'Entry' },
+                    ].map((l) => (
+                      <span key={l.type} className={styles.legendItem}>
+                        <span className={`${styles.legendSwatch} ${styles['booth_' + l.type]}`} />
+                        {l.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
-
-            {activeTab === 'participants' && (
-              <div className={styles.participantsContainer}>
-                <EventDetailsParticipants event={event} />
-              </div>
-            )}
-
-            {activeTab === 'prize' && (
-              <div className={styles.prizeContainer}>
-                <EventDetailsPrize event={event} />
-              </div>
-            )}       
           </div>
         </div>
       </main>
 
       <BottomMenu />
-    </div>
-  )
-}
 
-// Main component wrapped with Suspense
-const ViewEvent = () => {
-  return (
-    <Suspense fallback={
+      {/* Buy ticket modal */}
+      {buyOpen && buyTier && (
+        <div
+          className={styles.modalOverlay}
+          onClick={(e) => { if (e.target === e.currentTarget) closeBuy(); }}
+        >
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>
+                {buyStep === 3 ? 'Ticket secured' : `Buy ${buyTier.name}`}
+              </h3>
+              <button className={styles.modalClose} onClick={closeBuy} type="button">
+                <MdOutlineClose />
+              </button>
+            </div>
+
+            {buyStep === 1 && (
+              <div className={styles.modalBody}>
+                <p className={styles.modalLabel}>Quantity</p>
+                <div className={styles.qtyRow}>
+                  <button
+                    className={styles.qtyBtn}
+                    onClick={() => setBuyQty((q) => Math.max(1, q - 1))}
+                    type="button"
+                  >−</button>
+                  <span className={styles.qtyValue}>{buyQty}</span>
+                  <button
+                    className={styles.qtyBtn}
+                    onClick={() => setBuyQty((q) => Math.min(10, q + 1))}
+                    type="button"
+                  >+</button>
+                </div>
+
+                <div className={styles.confirmRow}>
+                  <span className={styles.confirmLabel}>Tier</span>
+                  <span className={styles.confirmValue}>{buyTier.name}</span>
+                </div>
+                <div className={styles.confirmRow}>
+                  <span className={styles.confirmLabel}>Price</span>
+                  <span className={styles.confirmValue}>
+                    {buyTier.price.toLocaleString()} VC × {buyQty}
+                  </span>
+                </div>
+                <div className={styles.confirmRow}>
+                  <span className={styles.confirmLabel}>Total</span>
+                  <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
+                    {totalCost.toLocaleString()} VC
+                  </span>
+                </div>
+                {walletBalance !== null && (
+                  <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>Wallet balance</span>
+                    <span className={styles.confirmValue}>
+                      {walletBalance.toLocaleString()} VC
+                    </span>
+                  </div>
+                )}
+
+                {buyError && <p className={styles.modalError}>{buyError}</p>}
+
+                <button
+                  className={`${styles.modalPrimaryBtn} redBTN`}
+                  onClick={() => setBuyStep(2)}
+                  type="button"
+                >
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {buyStep === 2 && (
+              <div className={styles.modalBody}>
+                <p className={styles.body} style={{ marginBottom: '0.5rem' }}>
+                  Confirm payment for <strong>{event.name}</strong> - {buyTier.name} × {buyQty}.
+                </p>
+                <div className={styles.confirmRow}>
+                  <span className={styles.confirmLabel}>You pay</span>
+                  <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
+                    {totalCost.toLocaleString()} VC
+                  </span>
+                </div>
+                <div className={styles.confirmRow}>
+                  <span className={styles.confirmLabel}>Method</span>
+                  <span className={styles.confirmValue}>V-ENT Wallet</span>
+                </div>
+                {totalCost > 0 && (
+                  <div className={styles.confirmRow} style={{ display: 'block' }}>
+                    <label className={styles.confirmLabel} htmlFor="event-buy-pin">Wallet PIN</label>
+                    <input
+                      id="event-buy-pin"
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={6}
+                      className={styles.pinInput}
+                      placeholder="••••"
+                      value={buyPin}
+                      onChange={(e) => setBuyPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      autoComplete="off"
+                    />
+                  </div>
+                )}
+                {buyError && <p className={styles.modalError}>{buyError}</p>}
+                <button
+                  className={`${styles.modalPrimaryBtn} redBTN`}
+                  onClick={handleBuy}
+                  disabled={buyLoading}
+                  type="button"
+                >
+                  {buyLoading ? 'Processing…' : 'Pay with wallet'}
+                </button>
+                <button
+                  className={styles.modalSecondaryBtn}
+                  onClick={() => setBuyStep(1)}
+                  type="button"
+                >
+                  Back
+                </button>
+              </div>
+            )}
+
+            {buyStep === 3 && (
+              <div className={styles.modalBody}>
+                <div className={styles.successIcon}>
+                  <FaCheckCircle />
+                </div>
+                <p className={styles.successTitle}>Payment successful</p>
+                <p className={styles.successSub}>
+                  {buyQty} × {buyTier.name} for {event.name}
+                </p>
+                {buyResult?.qr_code && (
+                  <p className={styles.qrCode}>QR: {buyResult.qr_code}</p>
+                )}
+                {typeof buyResult?.new_balance === 'number' && (
+                  <p className={styles.successSub}>
+                    New balance: {Number(buyResult.new_balance).toLocaleString()} VC
+                  </p>
+                )}
+                <Link
+                  href="/events/my-tickets"
+                  className={`${styles.modalPrimaryBtn} goldBTN`}
+                  style={{ display: 'inline-flex', justifyContent: 'center', textDecoration: 'none' }}
+                >
+                  View my tickets
+                </Link>
+                <button
+                  className={styles.modalSecondaryBtn}
+                  onClick={closeBuy}
+                  type="button"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ViewEvent = () => (
+  <Suspense
+    fallback={
       <div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <div className={styles.loadingContainer}>
-              <p>Loading...</p>
-            </div>
+            <p className={styles.stateText}>Loading event…</p>
           </div>
         </main>
         <BottomMenu />
       </div>
-    }>
-      <ViewEventContent />
-    </Suspense>
-  );
-}
+    }
+  >
+    <ViewEventContent />
+  </Suspense>
+);
 
 export default ViewEvent;

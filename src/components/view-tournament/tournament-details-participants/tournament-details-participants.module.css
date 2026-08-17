@@ -44,7 +44,7 @@
 .gridRowExpanded {
   display: grid;
   grid-template-columns: minmax(200px, 200px) minmax(110px, 110px) minmax(100px, 100px) minmax(150px, 150px) minmax(110px, 110px) minmax(110px, 110px) minmax(110px, 110px) minmax(160px, 160px);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+
   width: 100%;
   width: max-content;
 }

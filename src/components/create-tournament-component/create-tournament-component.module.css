@@ -21,3 +21,22 @@
     width: calc(100% - 250px);
   }
 }
+
+.statusBanner {
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.statusSuccess {
+  background-color: rgba(76, 175, 80, 0.12);
+
+  color: var(--v-ent-success);
+}
+
+.statusError {
+  background-color: rgba(237, 28, 36, 0.1);
+
+  color: var(--v-ent-red);
+}
