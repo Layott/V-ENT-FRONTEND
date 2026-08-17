@@ -2,7 +2,24 @@
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "mcp__claude_ai_Figma__get_design_context",
+      "Bash(start:*)",
+      "mcp__claude_ai_Figma__get_screenshot",
+      "Bash(npm run:*)",
+      "Bash(npx next:*)",
+      "Bash(grep -r \"user.tournament\\\\|user.event\\\\|user-tournament\\\\|user-event\\\\|my-tournament\\\\|my-event\" C:UsersSweezDesktopLAYOCLAUDEV-ENTV-ENT-FRONTENDdocs --include=*.md -i -l)",
+      "Bash(node --input-type=module --eval \"import ''''./src/app/wallets/page.js''''\")",
+      "Bash(curl:*)",
+      "Bash(mkdir -p \"C:/Users/Sweez/Desktop/LAYO/CLAUDE/V-ENT/V-ENT-FRONTEND/src/app/\\(admin\\)/admin/users/[id]\")",
+      "Bash(mkdir -p \"C:/Users/Sweez/Desktop/LAYO/CLAUDE/V-ENT/V-ENT-FRONTEND/src/app/\\(admin\\)/admin/tournaments/[id]\")",
+      "Bash(ls \"C:\\\\Users\\\\Sweez\\\\Desktop\\\\LAYO\\\\CLAUDE\\\\V-ENT\\\\V-ENT-FRONTEND\\\\.next\\\\server\\\\app\\\\\\(admin\\)\\\\admin\")",
+      "Bash(npm install:*)",
+      "Bash(npm list:*)",
+      "Bash(dir \"C:\\\\Users\\\\Sweez\\\\Desktop\\\\LAYO\\\\CLAUDE\\\\V-ENT\\\\V-ENT-BACKEND\\\\vent_auth\\\\migrations\")",
+      "Bash(venvScriptsactivate)",
+      "Bash(python manage.py makemigrations --no-input)",
+      "Bash(dir:*)"
     ]
   }
 }

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT — Edit Profile · Personal Info (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    :root {
+      --v-ent-red:       #ED1C24;
+      --v-ent-light-red: #FF3B45;
+      --v-ent-grn:       #2E8B3E;
+      --v-ent-light-grn: #3FB554;
+      --overlay-gray:    #212225;
+      --surface-2:       #303136;
+      --page-bg:         #131316;
+      --header-bg:       #17181A;
+      --border-subtle:   rgba(255,255,255,0.25);
+      --border-faint:    rgba(255,255,255,0.08);
+      --text-white:      #ffffff;
+      --text-muted:      #A7A6A6;
+      --text-dim:        rgba(255,255,255,0.45);
+      --active-nav-bg:   rgba(237,28,36,0.24);
+      --coming-soon-bg:  rgba(251,198,75,0.24);
+      --coming-soon-col: rgba(251,198,75,0.9);
+      --sidebar-w:       250px;
+      --header-h:        60px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top:0; left:0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .logo-container { width:100%; height:var(--header-h); display:flex; align-items:center; }
+    .logo-link { display:flex; align-items:center; gap:0.25rem; padding-left:1rem; text-decoration:none; width:100%; }
+    .logo-img  { height:25px; width:auto; }
+    .logo-text { font-family:"ClashGrotesk-Medium",sans-serif; font-weight:700; font-size:1.75rem; color:var(--v-ent-red); }
+    .sidebar-nav { margin-top:0.25rem; padding-bottom:1rem; }
+    .sidebar-list { display:flex; flex-direction:column; align-items:center; gap:0.6rem; list-style:none; padding:0; }
+    .sidebar-item { display:flex; min-height:20px; align-items:center; gap:0.5rem; width:calc(100% - 1.5rem); border-radius:5px; transition:all 0.3s; border:1px solid transparent; }
+    .sidebar-item:hover { border-color:#6e6e6e; }
+    .sidebar-item.active-item { background-color:var(--active-nav-bg); }
+    .nav-link { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; border-radius:5px; text-decoration:none; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-white); }
+    .nav-icon { width:0.9rem; height:0.9rem; flex-shrink:0; }
+    .disabled-item { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; cursor:not-allowed; }
+    .disabled-label { display:flex; align-items:center; gap:0.5rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-muted); }
+    .coming-soon { font-size:0.6rem; background-color:var(--coming-soon-bg); color:var(--coming-soon-col); padding:3px 5px; border-radius:3px; }
+
+    /* ── HEADER ── */
+    .header {
+      position:fixed; top:0; left:var(--sidebar-w); right:0;
+      height:var(--header-h); background-color:var(--header-bg);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 1.5rem 0 2rem; z-index:100;
+      gap:1rem;
+    }
+    .header-title-wrap { display:flex; align-items:center; gap:0.6rem; min-width:0; }
+    .back-btn {
+      width:32px; height:32px; border-radius:6px; background:var(--surface-2);
+      border:1px solid var(--border-faint); color:var(--text-white); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; transition:border-color 0.2s;
+      flex-shrink:0;
+    }
+    .back-btn:hover { border-color:#6e6e6e; }
+    .header-title-block { display:flex; flex-direction:column; min-width:0; }
+    .header-title { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:1.1rem; font-weight:600; line-height:1.1; }
+    .breadcrumb { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-top:0.15rem; }
+    .breadcrumb a { color:var(--text-dim); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--text-white); }
+    .breadcrumb .crumb-active { color:var(--v-ent-red); }
+    .breadcrumb .sep { margin:0 0.35rem; opacity:0.6; }
+
+    .header-right { display:flex; align-items:center; gap:0.75rem; }
+    .header-search { display:flex; align-items:center; background-color:var(--surface-2); border-radius:5px; padding:5px 12px; gap:0.4rem; border:1px solid var(--surface-2); }
+    .header-search input { background:transparent; border:none; outline:none; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; width:200px; }
+    .header-search input::placeholder { color:var(--text-dim); }
+    .vc-pill { display:flex; align-items:center; gap:0.4rem; background-color:var(--surface-2); border-radius:5px; padding:6px 10px; border:1px solid var(--border-faint); }
+    .vc-dot { width:14px; height:14px; border-radius:50%; background:rgba(251,198,75,0.95); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#000; font-weight:700; }
+    .vc-amount { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:0.85rem; }
+    .vc-label { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.6rem; color:var(--text-dim); }
+    .user-info { display:flex; flex-direction:column; align-items:flex-end; }
+    .user-name   { font-size:0.85rem; font-weight:700; }
+    .user-handle { font-size:0.65rem; color:var(--text-dim); }
+    .user-avatar { width:35px; height:35px; border-radius:50%; background-color:var(--overlay-gray); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.75rem; cursor:pointer; }
+    .user-avatar img { width:35px; height:35px; object-fit:cover; border-radius:50%; pointer-events:none; }
+    .user-details { position:relative; display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
+    .caret-icon { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid rgba(255,255,255,0.6); flex-shrink:0; }
+
+    /* ── CONTENT ── */
+    .content {
+      margin-left:var(--sidebar-w);
+      margin-top:var(--header-h);
+      padding:2rem;
+      min-height:calc(100vh - var(--header-h));
+    }
+    .page-grid {
+      display:grid;
+      grid-template-columns: 270px 1fr;
+      gap: 1.5rem;
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    /* ── EDIT-PROFILE SUBMENU ── */
+    .submenu-card {
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:10px;
+      padding:1rem;
+      align-self:flex-start;
+      position:sticky;
+      top:calc(var(--header-h) + 1rem);
+    }
+    .submenu-label {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.72rem;
+      text-transform:uppercase;
+      letter-spacing:0.1em;
+      color:var(--text-dim);
+      padding:0.5rem 0.75rem 0.75rem;
+    }
+    .submenu-list { list-style:none; display:flex; flex-direction:column; gap:0.25rem; }
+    .submenu-item a {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0.7rem 0.85rem;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--text-muted);
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.88rem;
+      transition:background 0.2s, color 0.2s;
+    }
+    .submenu-item a:hover { background:rgba(255,255,255,0.04); color:var(--text-white); }
+    .submenu-item.on a {
+      background-color:var(--surface-2);
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Medium",sans-serif;
+    }
+    .submenu-item.on a .chev { color:var(--v-ent-red); }
+    .chev { color:var(--text-dim); font-size:0.85rem; }
+
+    /* ── FORM CARD ── */
+    .form-stack { display:flex; flex-direction:column; gap:1.25rem; }
+    .card {
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:10px;
+      padding:1.5rem;
+    }
+    .card-title {
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+      font-size:1rem;
+      font-weight:600;
+      margin-bottom:1.1rem;
+    }
+
+    /* ── PROFILE PICTURE & BANNER ── */
+    .pic-row {
+      display:flex; align-items:flex-start; gap:1rem;
+      flex-wrap:wrap;
+      margin-bottom:1.25rem;
+    }
+    .avatar-current {
+      width:72px; height:72px; border-radius:50%;
+      background:var(--surface-2);
+      overflow:hidden;
+      flex-shrink:0;
+      border:1px solid var(--border-faint);
+    }
+    .avatar-current img { width:100%; height:100%; object-fit:cover; }
+    .avatar-actions { display:flex; flex-direction:column; gap:0.5rem; flex:1; min-width:200px; }
+    .avatar-btn-row { display:flex; gap:0.4rem; align-items:center; }
+    .icon-btn {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:6px;
+      color:var(--text-white);
+      padding:0.5rem 0.8rem;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.82rem;
+      cursor:pointer;
+      transition:border-color 0.2s, background 0.2s;
+    }
+    .icon-btn:hover { border-color:#6e6e6e; }
+    .icon-btn.danger { padding:0.5rem; color:var(--v-ent-red); }
+    .icon-btn.danger:hover { background:rgba(237,28,36,0.08); border-color:rgba(237,28,36,0.4); }
+    .helper-text {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.72rem;
+      color:var(--text-dim);
+    }
+
+    .avatar-gallery-wrap {
+      margin-left:auto;
+      display:flex; flex-direction:column; align-items:flex-end;
+      gap:0.5rem; min-width:240px;
+    }
+    .gallery-head {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:1rem; width:100%;
+    }
+    .gallery-label { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem; color:var(--text-dim); }
+    .gallery-more {
+      background:none; border:none; color:var(--v-ent-red);
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.72rem;
+      cursor:pointer; text-decoration:underline; padding:0;
+    }
+    .avatar-gallery {
+      display:flex; gap:0.5rem;
+    }
+    .avatar-thumb {
+      width:42px; height:42px; border-radius:50%;
+      background:var(--surface-2);
+      border:1px solid var(--border-faint);
+      overflow:hidden; cursor:pointer;
+      transition:transform 0.15s, border-color 0.15s;
+    }
+    .avatar-thumb:hover { transform:scale(1.05); border-color:var(--v-ent-grn); }
+    .avatar-thumb img { width:100%; height:100%; object-fit:cover; }
+
+    /* Banner */
+    .banner-zone {
+      position:relative;
+      width:100%; aspect-ratio: 1258 / 256;
+      border-radius:8px;
+      border:1px dashed var(--border-subtle);
+      background:var(--surface-2);
+      overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      transition:border-color 0.2s;
+    }
+    .banner-zone:hover { border-color:var(--v-ent-grn); }
+    .banner-zone img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .banner-overlay {
+      position:relative; z-index:1;
+      background:rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      border-radius:6px;
+      padding:0.55rem 0.85rem;
+      display:inline-flex; align-items:center; gap:0.4rem;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.82rem;
+      color:var(--text-white);
+      border:1px solid rgba(255,255,255,0.2);
+    }
+    .banner-helper { margin-top:0.5rem; }
+
+    /* ── FORM FIELDS ── */
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.1rem; }
+    .form-group:last-child { margin-bottom:0; }
+    .form-label {
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.85rem;
+      color:var(--text-white);
+    }
+    .form-input, .form-select, .form-textarea {
+      width:100%;
+      background:var(--surface-2);
+      border:1px solid var(--border-faint);
+      color:var(--text-white);
+      padding:12px 14px;
+      border-radius:6px;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.9rem;
+      outline:none;
+      transition:border-color 0.2s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:var(--text-dim); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color:var(--v-ent-grn);
+    }
+    .form-textarea { resize:vertical; min-height:96px; line-height:1.5; }
+    .form-select {
+      cursor:pointer;
+      appearance:none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A7A6A6' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat:no-repeat;
+      background-position: right 14px center;
+      padding-right:36px;
+    }
+    .field-helper {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.72rem;
+      color:var(--text-dim);
+    }
+
+    /* Search field with icon */
+    .search-input-wrap {
+      position:relative;
+    }
+    .search-input-wrap .search-ico {
+      position:absolute; top:50%; left:14px; transform:translateY(-50%);
+      color:var(--text-dim); pointer-events:none;
+    }
+    .search-input-wrap .form-input { padding-left:40px; }
+
+    /* ── INTERESTS ── */
+    .interest-sub {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.78rem;
+      color:var(--text-dim);
+      margin-top:-0.7rem;
+      margin-bottom:1rem;
+    }
+    .chip-row {
+      display:flex; flex-wrap:wrap; gap:0.5rem;
+      margin-top:1rem;
+    }
+    .chip {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      background:var(--surface-2);
+      border:1px solid var(--border-faint);
+      color:var(--text-white);
+      border-radius:99px;
+      padding:0.4rem 0.85rem;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.82rem;
+    }
+    .chip-x {
+      width:16px; height:16px; border-radius:50%;
+      background:rgba(255,255,255,0.08);
+      border:none;
+      color:var(--text-dim);
+      font-size:0.7rem;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.15s, color 0.15s;
+    }
+    .chip-x:hover { background:rgba(237,28,36,0.2); color:var(--v-ent-red); }
+
+    /* ── FOOTER ACTIONS ── */
+    .form-footer {
+      display:flex; justify-content:flex-end; gap:0.65rem;
+      padding-top:0.5rem;
+    }
+    .btn {
+      padding:0.7rem 1.4rem;
+      border-radius:6px;
+      border:none;
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+      font-size:0.88rem;
+      font-weight:600;
+      cursor:pointer;
+      height:42px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition:background-color 0.3s, border-color 0.3s;
+    }
+    .grnBTN { background-color:var(--v-ent-grn); border:1px solid var(--v-ent-grn); color:#fff; }
+    .grnBTN:hover { background-color:var(--v-ent-light-grn); }
+    .redBTN { background-color:var(--v-ent-red); border:1px solid var(--v-ent-red); color:#fff; }
+    .redBTN:hover { background-color:var(--v-ent-light-red); }
+    .ghostBTN { background:transparent; border:1px solid var(--border-faint); color:var(--text-muted); }
+    .ghostBTN:hover { border-color:#6e6e6e; color:var(--text-white); }
+
+    /* ── BOTTOM MENU (mobile) ── */
+    .bottom-menu {
+      display:none;
+      position:fixed; bottom:0; left:0; right:0;
+      background-color:var(--page-bg);
+      border-top:1px solid var(--border-subtle);
+      height:60px;
+      align-items:center; justify-content:space-around;
+      z-index:200;
+      padding:0 0.5rem;
+    }
+    .bm-item {
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+      color:var(--text-muted);
+      text-decoration:none;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.62rem;
+      padding:0.4rem 0.5rem;
+      border-radius:6px;
+      min-width:56px;
+    }
+    .bm-item.on { color:var(--v-ent-red); }
+    .bm-item svg { width:18px; height:18px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .page-grid { grid-template-columns: 230px 1fr; gap:1.25rem; }
+      .submenu-card { padding:0.85rem; }
+      .header-search input { width:140px; }
+    }
+
+    @media (max-width: 900px) {
+      .avatar-gallery-wrap { margin-left:0; align-items:flex-start; width:100%; }
+      .gallery-head { width:auto; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display:none; }
+      .header { left:0; padding:0 1rem; }
+      .header-search { display:none; }
+      .vc-pill { display:none; }
+      .user-info { display:none; }
+      .content { margin-left:0; padding:1.25rem 1rem 5.5rem; }
+      .page-grid { grid-template-columns: 1fr; gap:1rem; max-width:100%; }
+      .submenu-card { position:static; padding:0.75rem; }
+      .submenu-list { flex-direction:row; overflow-x:auto; gap:0.5rem; padding-bottom:0.25rem; }
+      .submenu-list::-webkit-scrollbar { display:none; }
+      .submenu-item a { white-space:nowrap; padding:0.6rem 0.9rem; font-size:0.82rem; }
+      .submenu-item a .chev { display:none; }
+      .submenu-label { display:none; }
+      .card { padding:1.1rem; }
+      .pic-row { gap:0.75rem; }
+      .avatar-gallery-wrap { min-width:0; }
+      .form-footer { flex-direction:column-reverse; }
+      .form-footer .btn { width:100%; }
+      .bottom-menu { display:flex; }
+    }
+
+    @media (max-width: 420px) {
+      .content { padding:1rem 0.75rem 5.5rem; }
+      .card { padding:1rem; }
+      .header-title { font-size:1rem; }
+      .breadcrumb { font-size:0.65rem; }
+      .avatar-current { width:60px; height:60px; }
+      .avatar-thumb { width:36px; height:36px; }
+      .banner-overlay { font-size:0.75rem; padding:0.45rem 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+      </li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Profile
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Events
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Teams
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Rankings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+          Wallets
+        </a>
+      </li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>Anime</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Community</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01"/></svg>Organizations</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Marketplace</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Shop</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="header">
+  <div class="header-title-wrap">
+    <button class="back-btn" title="Back to profile" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title-block">
+      <span class="header-title">Edit Profile</span>
+      <div class="breadcrumb">
+        <a href="#">Profile</a>
+        <span class="sep">/</span>
+        <a href="#">Edit</a>
+        <span class="sep">/</span>
+        <span class="crumb-active">Profile Info</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search tournaments, events, users..." />
+    </div>
+    <div class="vc-pill" title="VENT COINS balance">
+      <div class="vc-dot">V</div>
+      <div style="display:flex; flex-direction:column; line-height:1;">
+        <span class="vc-amount">526</span>
+        <span class="vc-label">v-ent coins</span>
+      </div>
+    </div>
+    <div class="user-details" id="profile-trigger">
+      <div class="user-info">
+        <span class="user-name">Nathan Drake</span>
+        <span class="user-handle">@frostbite</span>
+      </div>
+      <div class="user-avatar">
+        <img src="https://i.pravatar.cc/80?img=12" alt="ND" onerror="this.style.display='none';this.parentElement.textContent='ND'" />
+      </div>
+      <div class="caret-icon"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<main class="content">
+  <div class="page-grid">
+
+    <!-- ─── LEFT: edit-profile submenu ─── -->
+    <aside class="submenu-card">
+      <div class="submenu-label">Menu</div>
+      <ul class="submenu-list">
+        <li class="submenu-item on">
+          <a href="#">Profile Info <span class="chev">›</span></a>
+        </li>
+        <li class="submenu-item">
+          <a href="#">Favorite Games <span class="chev">›</span></a>
+        </li>
+        <li class="submenu-item">
+          <a href="#">Gaming Accounts <span class="chev">›</span></a>
+        </li>
+        <li class="submenu-item">
+          <a href="#">Web and Social Links <span class="chev">›</span></a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- ─── RIGHT: form stack ─── -->
+    <section class="form-stack">
+
+      <!-- Profile Picture & Banner -->
+      <div class="card">
+        <h3 class="card-title">Profile Picture &amp; Banner</h3>
+
+        <div class="pic-row">
+          <div class="avatar-current">
+            <img src="https://i.pravatar.cc/200?img=12" alt="Current avatar" onerror="this.src='https://picsum.photos/seed/nathan/200'" />
+          </div>
+          <div class="avatar-actions">
+            <div class="avatar-btn-row">
+              <button class="icon-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                Change
+              </button>
+              <button class="icon-btn danger" type="button" title="Remove avatar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button>
+            </div>
+            <span class="helper-text">We recommend an image that is 256 x 256 px</span>
+          </div>
+
+          <div class="avatar-gallery-wrap">
+            <div class="gallery-head">
+              <span class="gallery-label">or use an avatar</span>
+              <button class="gallery-more" type="button">show more</button>
+            </div>
+            <div class="avatar-gallery">
+              <div class="avatar-thumb"><img src="https://i.pravatar.cc/80?img=15" alt="" onerror="this.src='https://picsum.photos/seed/a1/80'" /></div>
+              <div class="avatar-thumb"><img src="https://i.pravatar.cc/80?img=33" alt="" onerror="this.src='https://picsum.photos/seed/a2/80'" /></div>
+              <div class="avatar-thumb"><img src="https://i.pravatar.cc/80?img=52" alt="" onerror="this.src='https://picsum.photos/seed/a3/80'" /></div>
+              <div class="avatar-thumb"><img src="https://i.pravatar.cc/80?img=47" alt="" onerror="this.src='https://picsum.photos/seed/a4/80'" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="banner-zone">
+          <img src="https://picsum.photos/seed/ventbanner/1258/256" alt="Cover banner" onerror="this.style.display='none'" />
+          <div class="banner-overlay">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Change banner
+          </div>
+        </div>
+        <div class="helper-text banner-helper">We recommend an image that is 1258 x 256 px</div>
+      </div>
+
+      <!-- Profile Details -->
+      <div class="card">
+        <h3 class="card-title">Profile Details</h3>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-input" id="username" type="text" value="@frostbite" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="profile-name">Profile Name</label>
+          <input class="form-input" id="profile-name" type="text" value="Nathan Drake" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bio">Bio</label>
+          <textarea class="form-textarea" id="bio" maxlength="140" oninput="updateBioCounter(this)">Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it's dominating in-game or leveling up your project with killer design, I'm here to make it happen. Let's team up and create something epic!</textarea>
+          <span class="field-helper" id="bio-helper">Maximum of 140 characters</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="location">Location</label>
+          <select class="form-select" id="location">
+            <option>Lagos, Nigeria</option>
+            <option>Abuja, Nigeria</option>
+            <option>Port Harcourt, Nigeria</option>
+            <option>Ibadan, Nigeria</option>
+            <option>Kano, Nigeria</option>
+            <option>Accra, Ghana</option>
+            <option>Nairobi, Kenya</option>
+            <option>Johannesburg, South Africa</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="card">
+        <h3 class="card-title">Interests</h3>
+        <p class="interest-sub">You can choose up to 15 interests</p>
+
+        <div class="form-group">
+          <div class="search-input-wrap">
+            <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input class="form-input" type="text" placeholder="Search interests" />
+          </div>
+        </div>
+
+        <div class="chip-row" id="chip-row">
+          <span class="chip">Battle Royale <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">God of War <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Uncharted <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Sonic <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Tekken <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Manga <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Anime <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">PUBG <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Sniper <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+          <span class="chip">Casula <button class="chip-x" onclick="removeChip(this)">✕</button></span>
+        </div>
+      </div>
+
+      <!-- Footer actions -->
+      <div class="form-footer">
+        <button class="btn ghostBTN" type="button" onclick="history.back()">Cancel</button>
+        <button class="btn redBTN" type="button" onclick="alert('Save changes — would PATCH /api/users/me/ in the real app.')">Save changes</button>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- ═══════ BOTTOM MENU (mobile) ═══════ -->
+<nav class="bottom-menu">
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
+  <a class="bm-item on" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Profile
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/></svg>
+    Tournaments
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Events
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+    Wallet
+  </a>
+</nav>
+
+<script>
+  function removeChip(btn) {
+    const chip = btn.parentElement;
+    chip.style.transition = 'opacity 0.15s, transform 0.15s';
+    chip.style.opacity = '0';
+    chip.style.transform = 'scale(0.9)';
+    setTimeout(() => chip.remove(), 150);
+  }
+  function updateBioCounter(el) {
+    const max = el.getAttribute('maxlength') || 140;
+    const remaining = max - el.value.length;
+    document.getElementById('bio-helper').textContent =
+      remaining === parseInt(max) ? `Maximum of ${max} characters` : `${remaining} characters remaining`;
+  }
+</script>
+
+</body>
+</html>

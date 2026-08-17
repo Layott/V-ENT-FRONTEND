@@ -67,11 +67,11 @@ const LandingAnimeHub = ({ scrollToForm }) => {
 
                 <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
                     <p className={`${landingStyles.descriptionParagraph} ${styles.descriptionParagraph}`}>
-                    V-ENT isn&#39;t just about gaming. Explore anime features like manga uploads, collaborative viewing, and even official anime character battles. Engage with other fans, upload your own work, or vote on fan-favorite AMVs—there&#39;s something for every anime lover.
+                    V-ENT isn&#39;t just about gaming. Explore anime features like manga uploads, collaborative viewing, and even official anime character battles. Engage with other fans, upload your own work, or vote on fan-favorite AMVs-there&#39;s something for every anime lover.
                     </p>
 
                     <Link
-                        href={'/Signup'}
+                        href={'/signup'}
                         className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                         >
                         Signup

@@ -43,7 +43,7 @@
   height: 30px !important;
   cursor: pointer;
   outline: none !important;
-  border: 1px solid #303136 !important;
+
   transition: all 0.5s ease-in-out;
 }
 
@@ -52,7 +52,7 @@
 .inputWithDropdown:focus-within,
 .inputWithDropdown:active {
   outline: none !important;
-  border-bottom: 1px solid #FFF !important;
+
 }
 
 .filterIcon {
@@ -87,7 +87,7 @@
   border-radius: 5px;
   position: relative;
   transition: all 0.5s ease-in-out;
-  border: 0.5px solid #303136;
+
   gap: 0;
   width: 100%;
   flex-grow: 1;
@@ -105,7 +105,7 @@
 }
 
 .searchBar:focus-within {
-  border: 0.5px solid #FFF;
+  outline: none;
 }
 
 .closeIcon {

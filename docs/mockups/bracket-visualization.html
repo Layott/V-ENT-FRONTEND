@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT — Tournament Bracket Chart Mockup (v4)</title>
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ============================================================
+       DESIGN TOKENS
+       ============================================================ */
+    :root {
+      --page-bg:       #17181A;
+      --surface:       #28292D;
+      --surface-2:     #303136;
+      --border:        #28292D;
+      --border-muted:  #5E606A;
+      --red:           #ED1C24;
+      --red-tint:      rgba(106,16,16,0.24);
+      --grn:           #2E8B3E;
+      --v-ent-red:     #ED1C24;
+      --v-ent-light-red: #FF3B45;
+      --v-ent-grn:     #2E8B3E;
+      --v-ent-light-grn: #3FB554;
+      --text-primary:  #EEEEF0;
+      --text-muted:    #B2B3BD;
+      --text-dim:      #797B86;
+      --badge-done:    #2E8B3E;
+      --connector:     #5E606A;
+      --sidebar-w:     248px;
+      --topnav-h:      60px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--page-bg);
+      color: var(--text-primary);
+      font-family: "Cabinet Grotesk", 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================ MOCKUP BANNER */
+    .mockup-banner {
+      background: #0d0d0d;
+      border-bottom: 2px solid var(--red);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #aaa;
+      flex-shrink: 0;
+      z-index: 999;
+    }
+    .mockup-banner strong { color: var(--red); }
+
+    /* ============================================================ LAYOUT */
+    .shell { display: flex; flex: 1; min-height: 0; }
+
+    /* ============================================================ SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--page-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: var(--topnav-h);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--red);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; color: #fff; flex-shrink: 0;
+    }
+    .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
+    .logo-text span { color: var(--red); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+      font-size: 14px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; text-decoration: none; position: relative;
+    }
+    .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+    .nav-item.active { color: var(--text-primary); background: var(--red-tint); }
+    .nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0.7; }
+    .nav-item.active .nav-icon { opacity: 1; }
+    .nav-badge { margin-left: auto; font-size: 9px; font-weight: 600; padding: 2px 5px; border-radius: 4px; letter-spacing: 0.3px; }
+    .nav-badge.beta { background: rgba(13,116,206,0.25); color: #4da6ff; }
+    .nav-badge.soon { background: rgba(255,255,255,0.08); color: var(--text-dim); }
+
+    /* ============================================================ MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+
+    /* ============================================================ TOPNAV */
+    .topnav {
+      height: var(--topnav-h); background: var(--page-bg); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+    .breadcrumb:hover { color: var(--text-primary); }
+    .topnav-search { flex: 1; max-width: 380px; margin: 0 auto; position: relative; }
+    .topnav-search input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border-muted); border-radius: 8px;
+      padding: 7px 12px 7px 32px; font-size: 12px; color: var(--text-primary); outline: none;
+    }
+    .topnav-search input::placeholder { color: var(--text-dim); }
+    .topnav-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+    .topnav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+    .wallet-chip {
+      display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border-muted);
+      border-radius: 20px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--text-primary);
+    }
+    .wallet-chip .coin { color: var(--grn); font-size: 13px; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--red);
+      display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-primary);
+    }
+
+    /* ============================================================ PAGE CONTENT */
+    .page-content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    /* ============================================================ TOURNAMENT HEADER */
+    .tournament-header { margin-bottom: 24px; }
+    .tournament-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    .tournament-title { font-size: 24px; font-weight: 500; color: var(--text-primary); line-height: 1.2; }
+    .tournament-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .btn-share {
+      display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border-muted);
+      border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 500; color: var(--text-primary); cursor: pointer;
+    }
+    .btn-edit {
+      display: flex; align-items: center; gap: 6px; background: var(--red); border: none;
+      border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 500; color: #fff; cursor: pointer;
+    }
+    .tournament-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tag { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.2px; }
+    .tag-reg  { background: rgba(124,58,237,0.2); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+    .tag-live { background: rgba(13,116,206,0.2);  color: #60a5fa; border: 1px solid rgba(13,116,206,0.3); }
+    .tournament-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--text-muted); flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 5px; }
+    .meta-item svg { opacity: 0.6; }
+
+    /* ============================================================ TAB BAR */
+    .tab-bar { display: flex; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+    .tab:hover { color: var(--text-muted); }
+    .tab.active { color: var(--text-primary); border-bottom: 2px solid var(--red); }
+
+    /* ============================================================ CONTROLS ROW */
+    .controls-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 12px; }
+    .match-count { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+    .match-count strong { color: var(--text-primary); font-weight: 600; }
+    .controls-right { display: flex; align-items: center; gap: 10px; }
+    .view-toggle {
+      display: flex; align-items: center; gap: 4px; background: var(--surface);
+      border: 1px solid var(--border-muted); border-radius: 6px; padding: 4px;
+    }
+    .view-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; color: var(--text-dim); }
+    .view-btn.active { background: var(--red); color: #fff; }
+    .search-input-wrap { position: relative; }
+    .search-input-wrap input {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 10px 6px 28px; font-size: 12px; color: var(--text-primary); width: 256px; outline: none;
+    }
+    .search-input-wrap input::placeholder { color: var(--text-dim); }
+    .search-icon-inner { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+
+    /* ============================================================ BRACKET CHART */
+    .bracket-area {
+      overflow-x: auto;
+      overflow-y: visible;
+      padding-bottom: 32px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+    .bracket-area::-webkit-scrollbar { height: 4px; }
+    .bracket-area::-webkit-scrollbar-track { background: transparent; }
+    .bracket-area::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.15); border-radius: 2px; }
+
+    .bracket-chart {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      min-width: max-content;
+    }
+
+    .round-col {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+
+    .round-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      height: 28px;
+    }
+
+    .round-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .round-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .round-badge.done { background: rgba(23,140,78,0.2); color: #34d399; }
+    .round-badge.live { background: rgba(13,116,206,0.2); color: #60a5fa; }
+
+    .cards-area {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .connector-col {
+      flex-shrink: 0;
+      width: 80px;
+    }
+    .connector-col svg { display: block; }
+
+    /* ============================================================ MATCH CARD */
+    .match-card {
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: absolute;
+      left: 0;
+    }
+    .match-card.completed  { background: var(--surface); }
+    .match-card.in-progress { background: var(--surface); border: 1px solid rgba(13,116,206,0.35); }
+    .match-card.scheduled  { background: transparent; border: 1px dashed var(--border-muted); }
+
+    .card-top { display: flex; align-items: center; gap: 6px; }
+    .match-label { font-size: 11px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+    .status-dot { padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; }
+    .status-dot.done  { background: rgba(23,140,78,0.2);  color: #34d399; }
+    .status-dot.live  { background: rgba(13,116,206,0.2); color: #60a5fa; }
+    .status-dot.sched { background: rgba(171,100,0,0.2);  color: #f59e0b; }
+    .card-date { margin-left: auto; font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+
+    .card-teams { display: flex; flex-direction: column; gap: 6px; }
+    .team-row { display: flex; align-items: center; gap: 8px; }
+    .team-avatar {
+      width: 22px; height: 22px; border-radius: 4px; background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 7px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; overflow: hidden;
+    }
+    .team-name { font-size: 11px; font-weight: 400; color: var(--text-primary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .winner-badge {
+      width: 16px; height: 16px; border-radius: 100px; background: var(--v-ent-gold);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(232,191,61,0.4), 0 0 8px rgba(201,162,39,0.35);
+    }
+    .team-score { font-size: 13px; font-weight: 600; color: var(--text-primary); min-width: 20px; text-align: right; }
+    .team-score.na { color: var(--text-dim); font-weight: 500; font-size: 11px; }
+    .divider-line { height: 1px; background: rgba(255,255,255,0.06); margin: 0 -12px; }
+
+    svg { display: inline-block; vertical-align: middle; fill: currentColor; }
+  </style>
+</head>
+<body>
+
+<!-- Mockup Banner -->
+<div class="mockup-banner">
+  <div>
+    <strong>MOCKUP v4</strong> &nbsp;—&nbsp; Tournament Matches — Chart/Bracket View &nbsp;|&nbsp;
+    Figma: "My Tournaments - Matches - Chart View" &nbsp;|&nbsp;
+    Status: <strong>PENDING CEO APPROVAL</strong>
+  </div>
+  <div>Track B — Self-designed mockup → requires approval before Next.js build</div>
+</div>
+
+<div class="shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">V</div>
+      <span class="logo-text">v<span>•</span>ent</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>
+        Home
+      </a>
+      <a class="nav-item active" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg></span>
+        Tournaments
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>
+        Events
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></span>
+        Anime
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg></span>
+        Rankings
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></span>
+        Teams
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M21 18v1a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v1h-9a2 2 0 00-2 2v8a2 2 0 002 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg></span>
+        Wallets
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span>
+        Marketplace
+        <span class="nav-badge beta">BETA</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 4H4v2l8 5 8-5V4zM4 20h16V8l-8 5-8-5v12z"/></svg></span>
+        Shop
+        <span class="nav-badge soon">SOON</span>
+      </a>
+      <a class="nav-item" style="margin-top:8px" href="#">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6a3.6 3.6 0 110-7.2 3.6 3.6 0 010 7.2z"/></svg></span>
+        Settings
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <!-- TOP NAV -->
+    <nav class="topnav">
+      <div class="breadcrumb">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        My Tournaments
+      </div>
+      <div class="topnav-search">
+        <span class="topnav-search-icon"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+        <input type="text" placeholder="Search tournaments, events, users..." />
+      </div>
+      <div class="topnav-right">
+        <div class="wallet-chip"><span class="coin">◈</span>526</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);">
+          <div class="avatar">NO</div>
+          Nathan Okafor
+        </div>
+      </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- TOURNAMENT HEADER -->
+      <div class="tournament-header">
+        <div class="tournament-header-top">
+          <div class="tournament-title">FC24 — Unilag Showdown 2024</div>
+          <div class="tournament-actions">
+            <button class="btn-share">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+              Share
+            </button>
+            <button class="btn-edit">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              Edit Details
+            </button>
+          </div>
+        </div>
+        <div class="tournament-tags">
+          <span class="tag tag-reg">Registration</span>
+          <span class="tag tag-live">In Progress</span>
+        </div>
+        <div class="tournament-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            32/32 Teams
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 3c-1.38 0-2.5-1.12-2.5-2.5S14.12 12 15.5 12s2.5 1.12 2.5 2.5S16.88 16 15.5 16zm4-5c-1.38 0-2.5-1.12-2.5-2.5S18.12 8 19.5 8 22 9.12 22 10.5 20.88 11 19.5 11z"/></svg>
+            FC24
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            1 Nov – 28 Dec 2024
+          </span>
+        </div>
+      </div>
+
+      <!-- TAB BAR -->
+      <div class="tab-bar">
+        <div class="tab">Details</div>
+        <div class="tab">Participants</div>
+        <div class="tab active">Matches</div>
+        <div class="tab">Leaderboard</div>
+        <div class="tab">Settings</div>
+      </div>
+
+      <!-- CONTROLS ROW -->
+      <div class="controls-row">
+        <div class="match-count"><strong>31</strong> Matches</div>
+        <div class="controls-right">
+          <div class="view-toggle">
+            <!-- Grid view (inactive) -->
+            <div class="view-btn" title="Grid view">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+            </div>
+            <!-- Bracket/chart view (active) -->
+            <div class="view-btn active" title="Chart view">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path d="M9.5 4C9.5 2.9 10.4 2 11.5 2h1C13.6 2 14.5 2.9 14.5 4v2h2V4c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2v3a2 2 0 01-2 2h-1v3h1a2 2 0 012 2v3c0 1.1-.9 2-2 2h-1c-1.1 0-2-.9-2-2v-2h-5v2c0 1.1-.9 2-2 2h-1c-1.1 0-2-.9-2-2v-3a2 2 0 012-2h1V9H7.5a2 2 0 01-2-2V4c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2v2h-1V4z"/></svg>
+            </div>
+          </div>
+          <div class="search-input-wrap">
+            <span class="search-icon-inner"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+            <input type="text" placeholder="Search matches..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- BRACKET CHART -->
+      <div class="bracket-area">
+        <div class="bracket-chart" id="bracket-chart"></div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /shell -->
+
+<script>
+(function () {
+  const CARD_H = 102;
+  const TOTAL_H = 2280;
+
+  // ── Precompute card top positions for all 5 rounds ──────────────
+  function buildR32Positions() {
+    // 8 pairs; within pair gap = 32px; between pairs gap = 56px
+    // pair_height = 102 + 32 + 102 = 236; unit = 236 + 56 = 292
+    const pos = [];
+    for (let i = 0; i < 8; i++) {
+      pos.push(i * 292);          // card 1
+      pos.push(i * 292 + 134);    // card 2  (134 = 102 + 32)
+    }
+    return pos;
+  }
+
+  function deriveNext(prev) {
+    const pos = [];
+    for (let i = 0; i < prev.length; i += 2) {
+      const mid = (prev[i] + CARD_H / 2 + prev[i + 1] + CARD_H / 2) / 2;
+      pos.push(Math.round(mid - CARD_H / 2));
+    }
+    return pos;
+  }
+
+  const r32p = buildR32Positions();
+  const r16p = deriveNext(r32p);
+  const qfp  = deriveNext(r16p);
+  const sfp  = deriveNext(qfp);
+  const finp = deriveNext(sfp);
+  const allPos = [r32p, r16p, qfp, sfp, finp];
+
+  // ── Match data ───────────────────────────────────────────────────
+  const W = true;
+  const rounds = [
+    {
+      name: 'Round of 32', badge: null, w: 268,
+      m: [
+        {n:'Match 1',  s:'done', d:'1 Nov · 10:00', t1:{a:'FCL',n:'FC Lagos',      sc:3,w:W}, t2:{a:'KA', n:'Kano Arrows',      sc:1}   },
+        {n:'Match 2',  s:'done', d:'1 Nov · 12:00', t1:{a:'ABW',n:'Abuja Warriors', sc:2,w:W}, t2:{a:'PP', n:'Port Pirates',      sc:0}   },
+        {n:'Match 3',  s:'done', d:'1 Nov · 14:00', t1:{a:'BG', n:'Benin Giants',   sc:1},     t2:{a:'OE', n:'Ondo Eagles',       sc:4,w:W}},
+        {n:'Match 4',  s:'done', d:'1 Nov · 16:00', t1:{a:'IK', n:'Ibadan Kings',   sc:3,w:W}, t2:{a:'CR', n:'Calabar Riders',    sc:1}   },
+        {n:'Match 5',  s:'done', d:'2 Nov · 10:00', t1:{a:'LU', n:'Lagos United',   sc:5,w:W}, t2:{a:'KW', n:'Kogi Warriors',     sc:2}   },
+        {n:'Match 6',  s:'done', d:'2 Nov · 12:00', t1:{a:'ES', n:'Enugu Stars',    sc:0},     t2:{a:'DA', n:'Delta Aces',        sc:3,w:W}},
+        {n:'Match 7',  s:'done', d:'2 Nov · 14:00', t1:{a:'RB', n:'Rivers Bulls',   sc:2,w:W}, t2:{a:'ON', n:'Ogun Ninjas',       sc:1}   },
+        {n:'Match 8',  s:'done', d:'2 Nov · 16:00', t1:{a:'SO', n:'Sokoto Outlaws', sc:1},     t2:{a:'ZK', n:'Zamfara Kings',     sc:4,w:W}},
+        {n:'Match 9',  s:'done', d:'3 Nov · 10:00', t1:{a:'BN', n:'Bauchi Nomads',  sc:3,w:W}, t2:{a:'GO', n:'Gombe Outlaws',     sc:2}   },
+        {n:'Match 10', s:'done', d:'3 Nov · 12:00', t1:{a:'CE', n:'Cross Eagles',   sc:2,w:W}, t2:{a:'TU', n:'Taraba United',     sc:0}   },
+        {n:'Match 11', s:'done', d:'3 Nov · 14:00', t1:{a:'NS', n:'Nasarawa Stars', sc:1},     t2:{a:'PL', n:'Plateau Lions',     sc:3,w:W}},
+        {n:'Match 12', s:'done', d:'3 Nov · 16:00', t1:{a:'YB', n:'Yobe Bulls',     sc:4,w:W}, t2:{a:'AB', n:'Adamawa Blaze',    sc:1}   },
+        {n:'Match 13', s:'done', d:'4 Nov · 10:00', t1:{a:'EB', n:'Ebonyi Beasts',  sc:2,w:W}, t2:{a:'IM', n:'Imo Makers',       sc:1}   },
+        {n:'Match 14', s:'done', d:'4 Nov · 12:00', t1:{a:'AF', n:'Anambra FC',     sc:3,w:W}, t2:{a:'AK', n:'Akwa Irons',       sc:1}   },
+        {n:'Match 15', s:'done', d:'4 Nov · 14:00', t1:{a:'ED', n:'Edo Destroyers', sc:5,w:W}, t2:{a:'OK', n:'Oke United',       sc:2}   },
+        {n:'Match 16', s:'done', d:'4 Nov · 16:00', t1:{a:'OS', n:'Osun Strikers',  sc:1},     t2:{a:'OY', n:'Oyo Young',        sc:3,w:W}},
+      ]
+    },
+    {
+      name: 'Round of 16', badge: 'Completed', w: 264,
+      m: [
+        {n:'Match 17', s:'done', d:'8 Nov · 10:00', t1:{a:'FCL',n:'FC Lagos',       sc:2,w:W}, t2:{a:'ABW',n:'Abuja Warriors',   sc:1}   },
+        {n:'Match 18', s:'done', d:'8 Nov · 12:00', t1:{a:'OE', n:'Ondo Eagles',    sc:3,w:W}, t2:{a:'IK', n:'Ibadan Kings',     sc:2}   },
+        {n:'Match 19', s:'done', d:'8 Nov · 14:00', t1:{a:'LU', n:'Lagos United',   sc:4,w:W}, t2:{a:'DA', n:'Delta Aces',       sc:1}   },
+        {n:'Match 20', s:'done', d:'8 Nov · 16:00', t1:{a:'RB', n:'Rivers Bulls',   sc:1},     t2:{a:'ZK', n:'Zamfara Kings',    sc:3,w:W}},
+        {n:'Match 21', s:'done', d:'9 Nov · 10:00', t1:{a:'BN', n:'Bauchi Nomads',  sc:2,w:W}, t2:{a:'CE', n:'Cross Eagles',     sc:1}   },
+        {n:'Match 22', s:'done', d:'9 Nov · 12:00', t1:{a:'PL', n:'Plateau Lions',  sc:0},     t2:{a:'YB', n:'Yobe Bulls',       sc:2,w:W}},
+        {n:'Match 23', s:'done', d:'9 Nov · 14:00', t1:{a:'EB', n:'Ebonyi Beasts',  sc:3,w:W}, t2:{a:'AF', n:'Anambra FC',      sc:2}   },
+        {n:'Match 24', s:'done', d:'9 Nov · 16:00', t1:{a:'ED', n:'Edo Destroyers', sc:4,w:W}, t2:{a:'OY', n:'Oyo Young',       sc:1}   },
+      ]
+    },
+    {
+      name: 'Quarter-Finals', badge: null, w: 264,
+      m: [
+        {n:'Match 25', s:'done', d:'15 Nov · 10:00', t1:{a:'FCL',n:'FC Lagos',      sc:3,w:W}, t2:{a:'OE', n:'Ondo Eagles',     sc:1}   },
+        {n:'Match 26', s:'done', d:'15 Nov · 14:00', t1:{a:'LU', n:'Lagos United',  sc:2,w:W}, t2:{a:'ZK', n:'Zamfara Kings',   sc:1}   },
+        {n:'Match 27', s:'live', d:'18 Nov · 12:00', t1:{a:'BN', n:'Bauchi Nomads', sc:1},     t2:{a:'YB', n:'Yobe Bulls',      sc:1}   },
+        {n:'Match 28', s:'sched',d:'18 Nov · 16:00', t1:{a:'EB', n:'Ebonyi Beasts', sc:null},  t2:{a:'ED', n:'Edo Destroyers',  sc:null}},
+      ]
+    },
+    {
+      name: 'Semi-Finals', badge: null, w: 264,
+      m: [
+        {n:'Match 29', s:'sched',d:'21 Dec · 14:00', t1:{a:'FCL',n:'FC Lagos',      sc:null},  t2:{a:'LU', n:'Lagos United',    sc:null}},
+        {n:'Match 30', s:'sched',d:'21 Dec · 17:00', t1:{a:'?',  n:'Unknown',        sc:null},  t2:{a:'?',  n:'Unknown',         sc:null}},
+      ]
+    },
+    {
+      name: 'Final', badge: null, w: 264,
+      m: [
+        {n:'Match 31', s:'sched',d:'28 Dec · 18:00', t1:{a:'?',  n:'Unknown',        sc:null},  t2:{a:'?',  n:'Unknown',         sc:null}},
+      ]
+    }
+  ];
+
+  // ── Helpers ──────────────────────────────────────────────────────
+  function trophy() {
+    return `<div class="winner-badge"><svg viewBox="0 0 24 24" width="8" height="8" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`;
+  }
+
+  function makeCard(match, topY, width) {
+    const statusClass = {done:'completed', live:'in-progress', sched:'scheduled'}[match.s];
+    const dotClass    = {done:'done', live:'live', sched:'sched'}[match.s];
+    const dotLabel    = {done:'Completed', live:'Live', sched:'Scheduled'}[match.s];
+
+    function teamRow(t) {
+      const score = t.sc !== null && t.sc !== undefined
+        ? `<span class="team-score">${t.sc}</span>`
+        : `<span class="team-score na">N/A</span>`;
+      return `<div class="team-row">
+        <div class="team-avatar">${t.a}</div>
+        <span class="team-name">${t.n}</span>
+        ${t.w ? trophy() : ''}
+        ${score}
+      </div>`;
+    }
+
+    return `<div class="match-card ${statusClass}" style="top:${topY}px;width:${width}px;">
+      <div class="card-top">
+        <span class="match-label">${match.n}</span>
+        <span class="status-dot ${dotClass}">${dotLabel}</span>
+        <span class="card-date">${match.d}</span>
+      </div>
+      <div class="divider-line"></div>
+      <div class="card-teams">
+        ${teamRow(match.t1)}
+        ${teamRow(match.t2)}
+      </div>
+    </div>`;
+  }
+
+  function makeSVG(prevPos, nextPos) {
+    const HALF_H = 51; // CARD_H / 2
+    let lines = '';
+    const stroke = 'stroke="#5E606A" stroke-width="1"';
+    for (let i = 0; i < nextPos.length; i++) {
+      const top = prevPos[2 * i]     + HALF_H;
+      const bot = prevPos[2 * i + 1] + HALF_H;
+      const mid = nextPos[i]         + HALF_H;
+      const mx = 40; // midpoint x in the 80px connector column
+      // Horizontal stubs from source cards inward
+      lines += `<line x1="0" y1="${top}" x2="${mx}" y2="${top}" ${stroke}/>`;
+      lines += `<line x1="0" y1="${bot}" x2="${mx}" y2="${bot}" ${stroke}/>`;
+      // Vertical bridge between the two source card stubs
+      lines += `<line x1="${mx}" y1="${top}" x2="${mx}" y2="${bot}" ${stroke}/>`;
+      // Horizontal line from midpoint to target card
+      lines += `<line x1="${mx}" y1="${mid}" x2="80" y2="${mid}" ${stroke}/>`;
+    }
+    return `<svg width="80" height="${TOTAL_H}" style="display:block;" xmlns="http://www.w3.org/2000/svg">${lines}</svg>`;
+  }
+
+  // ── Build HTML ───────────────────────────────────────────────────
+  let html = '';
+  const HEADER_H = 44; // round-header (28px) + margin-bottom (16px)
+
+  for (let r = 0; r < rounds.length; r++) {
+    const rd = rounds[r];
+    const positions = allPos[r];
+
+    // Round column
+    html += `<div class="round-col" style="width:${rd.w}px;">`;
+    html += `<div class="round-header">
+      <span class="round-name">${rd.name}</span>
+      ${rd.badge ? `<span class="round-badge done">${rd.badge}</span>` : ''}
+    </div>`;
+    html += `<div class="cards-area" style="width:${rd.w}px;height:${TOTAL_H}px;">`;
+    rd.m.forEach((match, idx) => {
+      html += makeCard(match, positions[idx], rd.w);
+    });
+    html += `</div></div>`; // close cards-area + round-col
+
+    // Connector column (not after the last round)
+    if (r < rounds.length - 1) {
+      html += `<div class="connector-col">`;
+      html += `<div style="height:${HEADER_H}px;"></div>`;
+      html += makeSVG(allPos[r], allPos[r + 1]);
+      html += `</div>`;
+    }
+  }
+
+  document.getElementById('bracket-chart').innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

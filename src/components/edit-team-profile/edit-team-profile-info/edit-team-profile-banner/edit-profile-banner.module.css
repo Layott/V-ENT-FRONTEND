@@ -33,7 +33,7 @@
 .bannerUploadLabel {
   display: flex;
   flex-direction: row;
-  border: 1px solid #28292D;
+
   padding: 0.5rem;
   border-radius: 10px;
   font-size: 0.85rem;

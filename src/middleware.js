@@ -3,22 +3,39 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const protectedRoutes = [
+  "/home",
   "/events",
   "/anime",
   "/user-profile",
   "/edit-user-profile",
+  "/onboarding",
   "/teams",
   "/edit-team-profile",
   "/tournaments/create-tournament",
   "/tournaments/drafts",
   "/tournaments/register-tournament",
+  "/tournaments/my-tournaments",
   "/wallets",
+  "/production",
   "/settings",
+  "/notifications",
+  "/disputes",
 ];
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
+
+  // ── Admin route protection ──────────────────────────────────────
+  const isAdminRoute = path.startsWith('/admin');
+  const isAdminLoginRoute = path === '/admin/login';
+  if (isAdminRoute && !isAdminLoginRoute) {
+    const adminToken = cookies().get('adminToken')?.value;
+    if (!adminToken) {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
+    }
+  }
+
   const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
   const isPublicRoute = publicRoutes.some(route => path === route);
 
@@ -44,7 +61,7 @@ export default async function middleware(req) {
     if (path === "/forgot-password" && fromEditProfile) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/user-profile", req.url));
+    return NextResponse.redirect(new URL("/home", req.url));
   }
 
   return NextResponse.next();

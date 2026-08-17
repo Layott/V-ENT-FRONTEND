@@ -1,0 +1,113 @@
+/* Mirrors the wallet / disputes page shell: fixed 250px sidebar offset at
+   desktop, 60px header offset, dark surfaces from globals.css. */
+
+/* #131316 is the app-wide page ground used by /wallets, /disputes and the rest
+   - NOT var(--primary-bg), which is white. */
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  display: flex;
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 620px;
+  margin-top: 4rem;
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 2rem 1.75rem;
+  text-align: center;
+}
+
+.phase {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--v-ent-red);
+  font-weight: var(--fw-semi-bold);
+  margin: 0 0 0.75rem;
+}
+
+.title {
+  font-size: var(--desktop-h4-size);
+  font-weight: var(--fw-bold);
+  margin: 0 0 0.75rem;
+}
+
+.blurb {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: var(--fs-p-size-desktop);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 46ch;
+}
+
+.links {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+
+}
+
+.linksLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 0.85rem;
+}
+
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.linkPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+
+  background-color: #303136;
+  color: #fff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.linkPill:hover { background-color: #3f4046; }
+
+.linkPill:focus-visible { outline: 2px solid var(--v-ent-red); outline-offset: 2px; }
+
+@media only screen and (max-width: 767px) {
+  .title { font-size: var(--mobile-h3-size); }
+  .blurb { font-size: var(--fs-p-size-mobile); }
+  .card { margin-top: 1.5rem; padding: 1.5rem 1.15rem; }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 2rem;
+  }
+}

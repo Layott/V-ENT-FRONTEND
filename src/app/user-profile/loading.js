@@ -12,7 +12,7 @@ const LoadingStyles = {
     width: '40px',
     height: '40px',
     border: '3px solid #212225',
-    borderTop: '3px solid #4caf50',
+    borderTop: '3px solid #D4AF37',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   },

@@ -441,7 +441,7 @@ const UserProfileGallery = () => {
   const getSnackbarBackgroundColor = (type) => {
     switch (type) {
       case 'success':
-        return '#4CAF50'; // Green
+        return '#D4AF37'; // Green
       case 'error':
         return '#f44336'; // Red
       case 'warning':
@@ -536,7 +536,6 @@ const UserProfileGallery = () => {
                     marginBottom: '10px',
                     backgroundColor: '#fee',
                     borderRadius: '4px',
-                    border: '1px solid #fcc'
                 }}>
                     {fetchError}
                     <button 

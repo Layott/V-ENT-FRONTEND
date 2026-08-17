@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT Admin — Payouts (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ── Clash Grotesk (mirroring clash-grotesk.css) ────────────────── */
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    :root {
+      --v-ent-red:        #ED1C24;
+      --v-ent-light-red:  #FF3B45;
+      --v-ent-grn:        #2E8B3E;
+      --v-ent-light-grn:  #3FB554;
+      --overlay-gray:     #212225;
+      --surface-2:        #303136;
+      --page-bg:          #131316;
+      --header-bg:        #17181A;
+      --border-subtle:    rgba(255,255,255,0.25);
+      --border-faint:     rgba(255,255,255,0.08);
+      --border-divider:   rgba(204,204,204,0.3);
+      --text-white:       #ffffff;
+      --text-muted:       #A7A6A6;
+      --text-dim:         rgba(255,255,255,0.45);
+      --active-nav-bg:    rgba(237,28,36,0.2392);
+      --sidebar-w:        250px;
+      --sidebar-w-md:     180px;
+      --header-h:         60px;
+      --bottom-nav-h:     70px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    .logo-container {
+      width: 100%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-left: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .logo-img  { height: 25px; width: auto; }
+    .logo-text {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--v-ent-red);
+    }
+    .admin-role-row {
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 0.5px solid var(--border-faint);
+    }
+    .role-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .role-super   { background: rgba(237,28,36,0.15); color: var(--v-ent-red); border: 1px solid rgba(237,28,36,0.3); }
+    .role-finance { background: rgba(76,175,80,0.12); color: var(--v-ent-grn); border: 1px solid rgba(76,175,80,0.25); }
+    .role-mod     { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.15); }
+    .sidebar-nav { margin-top: 0.25rem; flex: 1; }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0 0 1rem;
+    }
+    .nav-section-label {
+      width: calc(100% - 1.5rem);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0.75rem 0.75rem 0.2rem;
+    }
+    .sidebar-item {
+      display: flex;
+      min-height: 20px;
+      align-items: center;
+      gap: 0.5rem;
+      width: calc(100% - 1.5rem);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { border-color: #6e6e6e; }
+    .sidebar-item.active-item { background-color: var(--active-nav-bg); border-color: transparent; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      border-radius: 5px;
+      text-decoration: none;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+    .nav-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background-color: var(--v-ent-red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+    }
+    .nav-divider {
+      width: calc(100% - 1.5rem);
+      height: 1px;
+      background: var(--border-divider);
+      margin: 0.35rem 0;
+    }
+    .sidebar-footer {
+      padding: 0.75rem 0.75rem 1rem;
+      border-top: 0.5px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      border: 1px solid transparent;
+    }
+    .sidebar-user:hover { border-color: #6e6e6e; }
+    .s-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .s-user-info { flex: 1; overflow: hidden; }
+    .s-username {
+      font-size: 0.8rem; font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
+
+    /* ════════════════════════════════════════════════════════════════
+       HEADER
+    ════════════════════════════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--header-h);
+      background-color: var(--header-bg);
+      border-bottom: 0.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem 0 2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .header-breadcrumb {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .header-breadcrumb span { color: rgba(255,255,255,0.75); }
+    .hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: var(--text-white);
+    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .notif-btn {
+      width: 32px; height: 32px;
+      border-radius: 5px;
+      background: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .notif-btn:hover { border-color: #6e6e6e; }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+    }
+    .header-search {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px;
+      padding: 5px 12px;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      transition: border-color 0.2s;
+    }
+    .header-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .header-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+    .header-search input::placeholder { color: var(--text-dim); }
+    .header-admin {
+      position: relative;
+      display: flex; align-items: center; gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .header-admin:hover { border-color: #6e6e6e; }
+    .h-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700;
+      color: #fff;
+    }
+    .h-admin-info { display: flex; flex-direction: column; align-items: flex-end; }
+    .h-name  { font-size: 0.8rem; font-weight: 600; }
+    .h-role  { font-size: 0.65rem; color: var(--text-dim); }
+    .caret {
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.5);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .header-admin.open .caret { transform: rotate(180deg); }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px); right: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .profile-dropdown.open { display: block; }
+    .pd-user { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-faint); }
+    .pd-name  { font-size: 0.85rem; font-weight: 600; color: var(--text-white); }
+    .pd-role  { font-size: 0.7rem; color: var(--text-dim); font-family: "ClashGrotesk-Light", sans-serif; margin-top: 0.1rem; }
+    .pd-item {
+      display: block; width: 100%; text-align: left;
+      padding: 0.6rem 1rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      text-decoration: none; background: transparent; border: none;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .pd-item:hover { background-color: rgba(255,255,255,0.06); }
+    .pd-item.danger { color: var(--v-ent-red); border-top: 1px solid var(--border-faint); }
+
+    /* ════════════════════════════════════════════════════════════════
+       NOTIFICATION PANEL
+    ════════════════════════════════════════════════════════════════ */
+    .notif-panel {
+      display: none;
+      position: absolute;
+      top: calc(var(--header-h) + 4px); right: 1.5rem;
+      width: 320px;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .notif-panel-title { font-size: 0.9rem; font-weight: 600; }
+    .notif-mark-read {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem; color: var(--v-ent-gold);
+      cursor: pointer; background: none; border: none;
+    }
+    .notif-mark-read:hover { color: var(--v-ent-gold-bright); }
+    .notif-item {
+      display: flex; gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .notif-item:hover { background: rgba(255,255,255,0.04); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item.unread { background: rgba(237,28,36,0.04); }
+    .notif-icon-wrap {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.8rem;
+    }
+    .notif-body { flex: 1; }
+    .notif-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.4; font-family: "ClashGrotesk-Light", sans-serif; }
+    .notif-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: "ClashGrotesk-Light", sans-serif; }
+    .unread-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ent-red); flex-shrink: 0; margin-top: 6px; }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOBILE BOTTOM NAV
+    ════════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background-color: var(--page-bg);
+      border-top: 0.5px solid var(--border-subtle);
+      z-index: 300;
+      flex-direction: row; align-items: center; justify-content: space-around;
+      padding: 0 0.5rem;
+    }
+    .bottom-nav-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.2rem; padding: 0.25rem 0.5rem;
+      border-radius: 5px; border: 1px solid transparent;
+      min-width: 44px; min-height: 44px;
+      cursor: pointer; text-decoration: none;
+    }
+    .bottom-nav-item:hover { border-color: #6e6e6e; }
+    .bottom-nav-item.active-bn .bn-icon { color: var(--v-ent-red); stroke: var(--v-ent-red); }
+    .bottom-nav-item.active-bn .bn-label { color: var(--v-ent-red); }
+    .bn-icon { width: 1.35rem; height: 1.35rem; color: #797B86; }
+    .bn-label { font-family: "ClashGrotesk-Medium", sans-serif; font-size: 0.7rem; color: #797B86; }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 190;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ════════════════════════════════════════════════════════════════
+       CONTENT AREA
+    ════════════════════════════════════════════════════════════════ */
+    .content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 2rem;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 1.75rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.75rem; font-weight: 700; color: #fff;
+      margin-bottom: 0.2rem;
+    }
+    .page-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-dim);
+    }
+    .page-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+    .btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      padding: 0.45rem 1rem; border-radius: 5px;
+      cursor: pointer; height: 37px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, border-color 0.3s;
+      white-space: nowrap;
+    }
+    .ghostBTN { background: transparent; border: 1px solid var(--border-faint); color: var(--text-muted); }
+    .ghostBTN:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
+    .redBTN:hover   { background-color: var(--v-ent-light-red); }
+    .grnBTN   { background-color: var(--v-ent-grn); border: 1px solid var(--v-ent-grn); color: #fff; }
+    .grnBTN:hover   { background-color: var(--v-ent-light-grn); color: #000; }
+
+    /* ── Stats cards — 4-col ─────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+    }
+    .metric-card { position: relative; }
+    .metric-icon-wrap {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .ic-yellow { background: rgba(255,193,7,0.15); }
+    .ic-grn    { background: rgba(76,175,80,0.15); }
+    .ic-red    { background: rgba(237,28,36,0.15); }
+    .ic-teal   { background: rgba(0,188,212,0.15); }
+    .metric-label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-dim); margin-bottom: 0.5rem;
+    }
+    .metric-value {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.6rem; font-weight: 700; color: #fff;
+      line-height: 1; margin-bottom: 0.4rem;
+    }
+    .metric-delta { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.72rem; }
+    .delta-up   { color: var(--v-ent-gold-bright); font-weight: 600; }
+    .delta-down { color: var(--v-ent-red); }
+    .delta-neu  { color: var(--text-dim); }
+
+    /* ── Filters row ─────────────────────────────────────────────── */
+    .filters-row {
+      display: flex;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-search {
+      display: flex; align-items: center;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0 0.9rem;
+      gap: 0.45rem;
+      height: 37px;
+      flex: 1;
+      min-width: 200px;
+      transition: border-color 0.2s;
+    }
+    .filter-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .filter-search input {
+      background: transparent; border: none; outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .filter-search input::placeholder { color: var(--text-dim); }
+    .filter-select {
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0 0.9rem;
+      height: 37px;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.7rem center;
+      padding-right: 2rem;
+      transition: border-color 0.2s;
+    }
+    .filter-select:hover,
+    .filter-select:focus { border-color: rgba(255,255,255,0.3); }
+    .filter-select option { background-color: var(--surface-2); }
+
+    /* ── Full-page table card ─────────────────────────────────────── */
+    .table-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      border: 1px solid var(--border-faint);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .table-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-faint);
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+    .section-title {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 1rem; font-weight: 600;
+    }
+    .section-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem; color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.85rem;
+    }
+    thead th {
+      text-align: left;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--text-dim);
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-divider);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid rgba(204,204,204,0.07);
+      color: rgba(255,255,255,0.75);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background-color: rgba(255,255,255,0.02); }
+
+    /* User cell */
+    .user-cell { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700;
+      color: rgba(255,255,255,0.6); flex-shrink: 0;
+    }
+    .user-name {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; color: rgba(255,255,255,0.88);
+      white-space: nowrap;
+    }
+
+    /* Amount cell */
+    .amount-primary {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.88rem; color: #fff;
+      white-space: nowrap;
+    }
+    .amount-secondary {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem; color: var(--text-dim);
+      margin-top: 0.1rem;
+      white-space: nowrap;
+    }
+
+    /* Bank cell */
+    .bank-info {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.82rem; color: rgba(255,255,255,0.65);
+      white-space: nowrap;
+    }
+    .bank-acct {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem; color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 2px 8px; border-radius: 20px;
+      white-space: nowrap;
+    }
+    .s-pending  { background: rgba(255,193,7,0.12);  color: #FFC107; }
+    .s-approved { background: rgba(76,175,80,0.12);  color: var(--v-ent-grn); }
+    .s-rejected { background: rgba(237,28,36,0.12);  color: var(--v-ent-red); }
+
+    /* Action buttons */
+    .act-group { display: flex; gap: 0.35rem; align-items: center; }
+    .act-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer; border: none;
+      min-height: 24px; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .act-approve { background: rgba(76,175,80,0.15);  color: var(--v-ent-grn); }
+    .act-approve:hover { background: rgba(76,175,80,0.28); }
+    .act-reject  { background: rgba(237,28,36,0.12);  color: var(--v-ent-red); }
+    .act-reject:hover  { background: rgba(237,28,36,0.25); }
+    .act-view    { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .act-view:hover    { background: rgba(255,255,255,0.12); }
+
+    /* Row dim states */
+    tr.row-approved td { opacity: 0.45; transition: opacity 0.3s; }
+    tr.row-rejected td { opacity: 0.45; transition: opacity 0.3s; }
+
+    /* ── Reject reason inline popover ─────────────────────────────── */
+    .reject-popover {
+      display: none;
+      position: absolute;
+      z-index: 300;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.85rem;
+      min-width: 220px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .reject-popover.open { display: block; }
+    .reject-popover-title {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem; color: var(--text-white);
+      margin-bottom: 0.6rem;
+    }
+    .reject-reason-list {
+      list-style: none;
+      margin-bottom: 0.75rem;
+    }
+    .reject-reason-list li {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.35rem 0;
+      cursor: pointer;
+      border-radius: 4px;
+      padding-left: 0.25rem;
+    }
+    .reject-reason-list li:hover { background: rgba(255,255,255,0.04); }
+    .reject-reason-list input[type="radio"] {
+      accent-color: var(--v-ent-red);
+      cursor: pointer;
+    }
+    .reject-reason-list label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.8rem; color: rgba(255,255,255,0.75);
+      cursor: pointer;
+    }
+    .reject-popover-actions { display: flex; gap: 0.4rem; }
+    .reject-popover-actions .btn {
+      flex: 1; font-size: 0.75rem; height: 30px; padding: 0 0.75rem;
+    }
+
+    /* ── Pagination ────────────────────────────────────────────────── */
+    .pagination-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--border-faint);
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+    .pagination-info {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.8rem; color: var(--text-dim);
+    }
+    .pagination-btns { display: flex; gap: 0.4rem; }
+    .pg-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.78rem;
+      padding: 4px 12px; height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border-faint);
+      background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pg-btn:hover { background: rgba(255,255,255,0.06); border-color: #6e6e6e; color: var(--text-white); }
+    .pg-btn.active { background: rgba(237,28,36,0.15); border-color: rgba(237,28,36,0.3); color: var(--v-ent-red); }
+    .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ════════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ════════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.6rem;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 0.65rem;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 0.75rem 1rem;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: slideUp 0.25s ease forwards;
+      max-width: 340px;
+    }
+    .toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast-msg { flex: 1; }
+    .toast-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem; line-height: 1; padding: 0 0.1rem; }
+    .toast-close:hover { color: var(--text-white); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
+
+    /* ── Mockup notes banner ─────────────────────────────────────── */
+    .mockup-notes {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem; color: rgba(255,255,255,0.32);
+      line-height: 1.9; margin-top: 1.75rem;
+    }
+    .mockup-notes strong { color: rgba(255,255,255,0.48); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ════════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ════════════════════════════════════════════════════════════════ */
+
+    /* Mobile — max 767px */
+    @media (max-width: 767px) {
+      :root { --sidebar-w: 250px; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .header { left: 0; padding: 0 1rem; }
+      .hamburger { display: flex; }
+      .h-admin-info { display: none; }
+      .header-search { display: none; }
+      .content {
+        margin-left: 0; padding: 1.25rem 1rem;
+        padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+      }
+      .bottom-nav { display: flex; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-title { font-size: 1.25rem; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+      .metric-value { font-size: 1.3rem; }
+      .hide-mobile { display: none; }
+      #toast-container { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; }
+      .filters-row { flex-direction: column; align-items: stretch; }
+      .filter-search { min-width: unset; }
+      .reject-popover { position: fixed; left: 1rem; right: 1rem; bottom: calc(var(--bottom-nav-h) + 1rem); top: auto; min-width: unset; }
+    }
+
+    /* Small tablet 768px–1023px */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --sidebar-w: var(--sidebar-w-md); }
+      .header { left: var(--sidebar-w-md); }
+      .sidebar { width: var(--sidebar-w-md); }
+      .logo-text { font-size: 1.5rem; }
+      .content { margin-left: var(--sidebar-w-md); padding: 1.5rem; }
+      .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+      .header-search input { width: 120px; }
+    }
+
+    /* Tablet/laptop 1024px–1439px */
+    @media (min-width: 1024px) and (max-width: 1439px) {
+      .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* Desktop 1440px+ */
+    @media (min-width: 1440px) {
+      .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* Large desktop 1920px+ */
+    @media (min-width: 1920px) {
+      .content { padding: 2.5rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+  <div class="admin-role-row">
+    <span class="role-badge role-super">Super Admin</span>
+    <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.72rem;color:var(--text-dim);">superadmin</span>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+
+      <li class="nav-section-label">Overview</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Management</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+          <span class="nav-badge">3</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          KYC Review
+          <span class="nav-badge">7</span>
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Finance</li>
+      <!-- Payouts — ACTIVE -->
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Payouts
+          <span class="nav-badge">12</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">System</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted);">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="s-avatar">SA</div>
+      <div class="s-user-info">
+        <div class="s-username">superadmin</div>
+        <div class="s-user-role">Super Admin</div>
+      </div>
+      <svg style="width:13px;height:13px;color:rgba(255,255,255,0.28);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="header-breadcrumb">
+      Admin&nbsp;/&nbsp;<span>Payouts</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search users, tournaments..." />
+    </div>
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+    <div class="header-admin" id="profile-trigger" onclick="toggleProfileDropdown(event)">
+      <div class="h-admin-info">
+        <span class="h-name">superadmin</span>
+        <span class="h-role">Super Admin</span>
+      </div>
+      <div class="h-avatar">SA</div>
+      <div class="caret"></div>
+      <div class="profile-dropdown" id="profile-dropdown" onclick="event.stopPropagation()">
+        <div class="pd-user">
+          <div class="pd-name">superadmin</div>
+          <div class="pd-role">Super Admin · admin@v-ent.gg</div>
+        </div>
+        <button class="pd-item" onclick="showToast('Settings page coming soon.', 'info')">Settings</button>
+        <button class="pd-item" onclick="showToast('Switched to Finance role view.', 'info')">Switch Role View</button>
+        <button class="pd-item danger" onclick="showToast('Logged out. Redirecting to /admin/login…', 'error')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notification panel -->
+<div class="notif-panel" id="notif-panel" onclick="event.stopPropagation()">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.12);">⏳</div>
+    <div class="notif-body">
+      <p class="notif-text">12 payout requests are pending review</p>
+      <p class="notif-time">5 min ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(237,28,36,0.12);">⚡</div>
+    <div class="notif-body">
+      <p class="notif-text">Dispute on PUBG Masters Match 7 unresolved for 48h</p>
+      <p class="notif-time">2h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.1);">📄</div>
+    <div class="notif-body">
+      <p class="notif-text">7 KYC documents awaiting review</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(76,175,80,0.1);">✓</div>
+    <div class="notif-body">
+      <p class="notif-text">Tournament "Tekken 8 Open" was published</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🏆</div>
+    <div class="notif-body">
+      <p class="notif-text">COD Warzone Cup registration opened — 0 participants so far</p>
+      <p class="notif-time">5h ago</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<main class="content">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Payouts</h1>
+      <p class="page-subtitle">Review and process winner withdrawal requests</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn ghostBTN" onclick="showToast('Payouts report exported as CSV. Check your downloads.', 'success')">Export CSV</button>
+      <button class="btn ghostBTN" onclick="showToast('Bulk approve is available when rows are selected (Phase 2).', 'info')">Bulk Approve</button>
+    </div>
+  </div>
+
+  <!-- ── 4 Stat cards ─────────────────────────────────────────────── -->
+  <div class="metrics-grid">
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-yellow">⏳</div>
+      <p class="metric-label">Pending Payouts</p>
+      <p class="metric-value" id="stat-pending">8</p>
+      <p class="metric-delta delta-down">↑ 5 new today</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-grn">💸</div>
+      <p class="metric-label">Total Paid (30d)</p>
+      <p class="metric-value">₦1.2M</p>
+      <p class="metric-delta delta-up">↑ 18.4% vs prior month</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-red">✕</div>
+      <p class="metric-label">Rejected (30d)</p>
+      <p class="metric-value">3</p>
+      <p class="metric-delta delta-neu">No change today</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-teal">⏱</div>
+      <p class="metric-label">Avg Processing Time</p>
+      <p class="metric-value">4.2h</p>
+      <p class="metric-delta delta-up">↓ 0.8h faster than last week</p>
+    </div>
+
+  </div>
+
+  <!-- ── Filters row ──────────────────────────────────────────────── -->
+  <div class="filters-row">
+    <div class="filter-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="table-search" placeholder="Search by user or tournament…" oninput="filterTable()" />
+    </div>
+    <select class="filter-select" id="status-filter" onchange="filterTable()">
+      <option value="">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+    </select>
+    <select class="filter-select" id="date-filter" onchange="filterTable()">
+      <option value="7">Last 7 days</option>
+      <option value="30" selected>Last 30 days</option>
+      <option value="all">All time</option>
+    </select>
+  </div>
+
+  <!-- ── Payouts table ────────────────────────────────────────────── -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <div>
+        <p class="section-title">All Payouts</p>
+        <p class="section-subtitle" id="visible-count">Showing 16 entries</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="position:relative;">
+
+      <!-- Reject reason popover (hidden, moved by JS) -->
+      <div class="reject-popover" id="reject-popover" onclick="event.stopPropagation()">
+        <p class="reject-popover-title">Select rejection reason</p>
+        <ul class="reject-reason-list" id="reject-reason-list">
+          <li onclick="selectReason('suspicious')">
+            <input type="radio" name="reject-reason" id="r1" value="suspicious" />
+            <label for="r1">Suspicious activity</label>
+          </li>
+          <li onclick="selectReason('kyc')">
+            <input type="radio" name="reject-reason" id="r2" value="kyc" />
+            <label for="r2">Unverified KYC</label>
+          </li>
+          <li onclick="selectReason('duplicate')">
+            <input type="radio" name="reject-reason" id="r3" value="duplicate" />
+            <label for="r3">Duplicate request</label>
+          </li>
+          <li onclick="selectReason('new-account')">
+            <input type="radio" name="reject-reason" id="r4" value="new-account" />
+            <label for="r4">Account too new</label>
+          </li>
+          <li onclick="selectReason('other')">
+            <input type="radio" name="reject-reason" id="r5" value="other" />
+            <label for="r5">Other</label>
+          </li>
+        </ul>
+        <div class="reject-popover-actions">
+          <button class="btn ghostBTN" onclick="cancelReject()">Cancel</button>
+          <button class="btn redBTN" onclick="confirmReject()">Reject</button>
+        </div>
+      </div>
+
+      <table id="payouts-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Amount</th>
+            <th class="hide-mobile">Tournament</th>
+            <th class="hide-mobile">Requested</th>
+            <th class="hide-mobile">Bank Account</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="payouts-tbody">
+
+          <!-- PENDING ROWS ─────────────────────────────────────────── -->
+          <tr data-id="1" data-status="pending" data-days="0">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">JD</div><span class="user-name">johndoe_ng</span></div></td>
+            <td><div class="amount-primary">₦25,000</div><div class="amount-secondary">25 VENT Coins</div></td>
+            <td class="hide-mobile">PUBG Masters</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2h ago</td>
+            <td class="hide-mobile"><div class="bank-info">GTBank</div><div class="bank-acct">****4521</div></td>
+            <td><span class="badge s-pending" id="badge-1">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-1">
+                <button class="act-btn act-approve" onclick="approveRow(1,'johndoe_ng','₦25,000')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(1,'johndoe_ng','₦25,000',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="2" data-status="pending" data-days="0">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(33,150,243,0.2);color:#64B5F6;">AK</div><span class="user-name">akintunde_k</span></div></td>
+            <td><div class="amount-primary">₦15,500</div><div class="amount-secondary">15.5 VENT Coins</div></td>
+            <td class="hide-mobile">FIFA Weekend</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">5h ago</td>
+            <td class="hide-mobile"><div class="bank-info">Access Bank</div><div class="bank-acct">****7832</div></td>
+            <td><span class="badge s-pending" id="badge-2">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-2">
+                <button class="act-btn act-approve" onclick="approveRow(2,'akintunde_k','₦15,500')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(2,'akintunde_k','₦15,500',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="3" data-status="pending" data-days="1">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(156,39,176,0.2);color:#CE93D8;">FP</div><span class="user-name">femtech_pro</span></div></td>
+            <td><div class="amount-primary">₦8,200</div><div class="amount-secondary">8.2 VENT Coins</div></td>
+            <td class="hide-mobile">Tekken 8</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">1d ago</td>
+            <td class="hide-mobile"><div class="bank-info">Zenith Bank</div><div class="bank-acct">****2201</div></td>
+            <td><span class="badge s-pending" id="badge-3">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-3">
+                <button class="act-btn act-approve" onclick="approveRow(3,'femtech_pro','₦8,200')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(3,'femtech_pro','₦8,200',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="4" data-status="pending" data-days="2">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(255,193,7,0.2);color:#FFC107;">OA</div><span class="user-name">oluwaseun_a</span></div></td>
+            <td><div class="amount-primary">₦42,000</div><div class="amount-secondary">42 VENT Coins</div></td>
+            <td class="hide-mobile">COD Cup</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2d ago</td>
+            <td class="hide-mobile"><div class="bank-info">GTBank</div><div class="bank-acct">****9910</div></td>
+            <td><span class="badge s-pending" id="badge-4">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-4">
+                <button class="act-btn act-approve" onclick="approveRow(4,'oluwaseun_a','₦42,000')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(4,'oluwaseun_a','₦42,000',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="5" data-status="pending" data-days="2">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(0,188,212,0.2);color:#4DD0E1;">TP</div><span class="user-name">tolu_plays</span></div></td>
+            <td><div class="amount-primary">₦6,000</div><div class="amount-secondary">6 VENT Coins</div></td>
+            <td class="hide-mobile">eFootball</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2d ago</td>
+            <td class="hide-mobile"><div class="bank-info">UBA</div><div class="bank-acct">****3341</div></td>
+            <td><span class="badge s-pending" id="badge-5">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-5">
+                <button class="act-btn act-approve" onclick="approveRow(5,'tolu_plays','₦6,000')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(5,'tolu_plays','₦6,000',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="6" data-status="pending" data-days="3">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(237,28,36,0.2);color:var(--v-ent-red);">NG</div><span class="user-name">ngozi_gamer</span></div></td>
+            <td><div class="amount-primary">₦18,000</div><div class="amount-secondary">18 VENT Coins</div></td>
+            <td class="hide-mobile">PUBG Mobile</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">3d ago</td>
+            <td class="hide-mobile"><div class="bank-info">First Bank</div><div class="bank-acct">****8821</div></td>
+            <td><span class="badge s-pending" id="badge-6">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-6">
+                <button class="act-btn act-approve" onclick="approveRow(6,'ngozi_gamer','₦18,000')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(6,'ngozi_gamer','₦18,000',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="7" data-status="pending" data-days="3">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(76,175,80,0.15);color:var(--v-ent-grn);">BK</div><span class="user-name">bk_esports</span></div></td>
+            <td><div class="amount-primary">₦11,000</div><div class="amount-secondary">11 VENT Coins</div></td>
+            <td class="hide-mobile">Valorant</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">3d ago</td>
+            <td class="hide-mobile"><div class="bank-info">Access Bank</div><div class="bank-acct">****5512</div></td>
+            <td><span class="badge s-pending" id="badge-7">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-7">
+                <button class="act-btn act-approve" onclick="approveRow(7,'bk_esports','₦11,000')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(7,'bk_esports','₦11,000',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr data-id="8" data-status="pending" data-days="4">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(255,193,7,0.15);color:#FFD54F;">KG</div><span class="user-name">ktech_gamer</span></div></td>
+            <td><div class="amount-primary">₦4,500</div><div class="amount-secondary">4.5 VENT Coins</div></td>
+            <td class="hide-mobile">Street Fighter</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">4d ago</td>
+            <td class="hide-mobile"><div class="bank-info">GTBank</div><div class="bank-acct">****0023</div></td>
+            <td><span class="badge s-pending" id="badge-8">Pending</span></td>
+            <td>
+              <div class="act-group" id="actions-8">
+                <button class="act-btn act-approve" onclick="approveRow(8,'ktech_gamer','₦4,500')">Approve</button>
+                <button class="act-btn act-reject"  onclick="openReject(8,'ktech_gamer','₦4,500',event)">Reject</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- APPROVED ROWS ────────────────────────────────────────── -->
+          <tr data-id="9" data-status="approved" data-days="1" class="row-approved">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">AW</div><span class="user-name">adaeze_wins</span></div></td>
+            <td><div class="amount-primary">₦9,000</div><div class="amount-secondary">9 VENT Coins</div></td>
+            <td class="hide-mobile">FIFA Cup</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">1d ago</td>
+            <td class="hide-mobile"><div class="bank-info">GTBank</div><div class="bank-acct">****1102</div></td>
+            <td><span class="badge s-approved" id="badge-9">Approved</span></td>
+            <td><div class="act-group" id="actions-9"><button class="act-btn act-view" onclick="showToast('Viewing payout receipt for adaeze_wins.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="10" data-status="approved" data-days="2" class="row-approved">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(33,150,243,0.2);color:#64B5F6;">EC</div><span class="user-name">emeka_ctrl</span></div></td>
+            <td><div class="amount-primary">₦33,000</div><div class="amount-secondary">33 VENT Coins</div></td>
+            <td class="hide-mobile">COD Masters</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2d ago</td>
+            <td class="hide-mobile"><div class="bank-info">Zenith Bank</div><div class="bank-acct">****6670</div></td>
+            <td><span class="badge s-approved" id="badge-10">Approved</span></td>
+            <td><div class="act-group" id="actions-10"><button class="act-btn act-view" onclick="showToast('Viewing payout receipt for emeka_ctrl.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="11" data-status="approved" data-days="3" class="row-approved">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(156,39,176,0.2);color:#CE93D8;">SP</div><span class="user-name">sola_prg</span></div></td>
+            <td><div class="amount-primary">₦7,500</div><div class="amount-secondary">7.5 VENT Coins</div></td>
+            <td class="hide-mobile">Tekken 8</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">3d ago</td>
+            <td class="hide-mobile"><div class="bank-info">Access Bank</div><div class="bank-acct">****3390</div></td>
+            <td><span class="badge s-approved" id="badge-11">Approved</span></td>
+            <td><div class="act-group" id="actions-11"><button class="act-btn act-view" onclick="showToast('Viewing payout receipt for sola_prg.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="12" data-status="approved" data-days="5" class="row-approved">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(0,188,212,0.2);color:#4DD0E1;">WG</div><span class="user-name">wale_gg</span></div></td>
+            <td><div class="amount-primary">₦21,000</div><div class="amount-secondary">21 VENT Coins</div></td>
+            <td class="hide-mobile">PUBG Masters</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">5d ago</td>
+            <td class="hide-mobile"><div class="bank-info">UBA</div><div class="bank-acct">****8840</div></td>
+            <td><span class="badge s-approved" id="badge-12">Approved</span></td>
+            <td><div class="act-group" id="actions-12"><button class="act-btn act-view" onclick="showToast('Viewing payout receipt for wale_gg.', 'info')">View</button></div></td>
+          </tr>
+
+          <!-- REJECTED ROWS ────────────────────────────────────────── -->
+          <tr data-id="13" data-status="rejected" data-days="1" class="row-rejected">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(237,28,36,0.2);color:var(--v-ent-red);">S1</div><span class="user-name">spammer_01</span></div></td>
+            <td><div class="amount-primary">₦50,000</div><div class="amount-secondary">50 VENT Coins</div></td>
+            <td class="hide-mobile">Unknown</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">1d ago</td>
+            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Suspicious activity</div></td>
+            <td><span class="badge s-rejected" id="badge-13">Rejected</span></td>
+            <td><div class="act-group" id="actions-13"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for spammer_01.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="14" data-status="rejected" data-days="2" class="row-rejected">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(237,28,36,0.2);color:var(--v-ent-red);">FA</div><span class="user-name">fraud_acc</span></div></td>
+            <td><div class="amount-primary">₦100,000</div><div class="amount-secondary">100 VENT Coins</div></td>
+            <td class="hide-mobile">Unknown</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2d ago</td>
+            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Unverified KYC</div></td>
+            <td><span class="badge s-rejected" id="badge-14">Rejected</span></td>
+            <td><div class="act-group" id="actions-14"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for fraud_acc.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="15" data-status="rejected" data-days="3" class="row-rejected">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(255,193,7,0.2);color:#FFC107;">TU</div><span class="user-name">temp_user</span></div></td>
+            <td><div class="amount-primary">₦15,000</div><div class="amount-secondary">15 VENT Coins</div></td>
+            <td class="hide-mobile">eFootball</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">3d ago</td>
+            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Account too new</div></td>
+            <td><span class="badge s-rejected" id="badge-15">Rejected</span></td>
+            <td><div class="act-group" id="actions-15"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for temp_user.', 'info')">View</button></div></td>
+          </tr>
+
+          <tr data-id="16" data-status="rejected" data-days="4" class="row-rejected">
+            <td><div class="user-cell"><div class="user-avatar" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);">ZP</div><span class="user-name">zeek_plays</span></div></td>
+            <td><div class="amount-primary">₦8,800</div><div class="amount-secondary">8.8 VENT Coins</div></td>
+            <td class="hide-mobile">Valorant</td>
+            <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">4d ago</td>
+            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Duplicate request</div></td>
+            <td><span class="badge s-rejected" id="badge-16">Rejected</span></td>
+            <td><div class="act-group" id="actions-16"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for zeek_plays.', 'info')">View</button></div></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row">
+      <p class="pagination-info" id="pagination-info">Showing 1–16 of 284 total payouts processed</p>
+      <div class="pagination-btns">
+        <button class="pg-btn" disabled>&lsaquo; Prev</button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn" onclick="showToast('Navigating to page 2 (not implemented in mockup).', 'info')">2</button>
+        <button class="pg-btn" onclick="showToast('Navigating to page 3.', 'info')">3</button>
+        <span style="font-size:0.8rem;color:var(--text-dim);padding:0 0.25rem;display:flex;align-items:center;">…</span>
+        <button class="pg-btn" onclick="showToast('Navigating to page 18.', 'info')">18</button>
+        <button class="pg-btn" onclick="showToast('Navigating to page 2.', 'info')">Next &rsaquo;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mockup notes -->
+  <div class="mockup-notes">
+    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    · <strong>Approve flow:</strong> Confirm dialog → badge changes to Approved → buttons disabled → toast "Payout approved. Bank transfer initiated." → real build triggers Paystack disbursement API<br>
+    · <strong>Reject flow:</strong> Inline reason selector (Suspicious activity / Unverified KYC / Duplicate request / Account too new / Other) → confirm → badge Rejected → toast with reason<br>
+    · <strong>Bank transfer:</strong> Real build calls Paystack Transfer API after admin approval. Never simulated — Paystack only (per External Services Rule)<br>
+    · <strong>VENT Coins:</strong> 1 VENT Coin = ₦1,000 equivalence shown here; confirm exchange rate with backend team before building<br>
+    · <strong>Filters:</strong> Search filters by username + tournament name in real time. Status + date filters combine. All filter client-side in this mockup; real build = server-side with query params<br>
+    · <strong>Pagination:</strong> Showing 1–16 of 284 total. Real build = server-paginated, 20 per page<br>
+    · <strong>Mobile:</strong> Bank Account + Requested columns hidden. User, Amount, Status, Actions remain<br>
+    · <strong>References used:</strong> sidebar → admin-overview.html · stats cards → admin-overview.html metric cards · table → tournament participants tab + admin-overview payouts table · filters → self-designed to match existing input patterns
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="bn-label">Dashboard</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <span class="bn-label">Users</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="bn-label">Tourns</span>
+  </a>
+  <a class="bottom-nav-item active-bn" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span class="bn-label">Payouts</span>
+  </a>
+  <a class="bottom-nav-item" href="#" onclick="openSidebar(); return false;">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    <span class="bn-label">More</span>
+  </a>
+</nav>
+
+<script>
+  /* ── Sidebar ──────────────────────────────────────────────────── */
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Profile dropdown ─────────────────────────────────────────── */
+  function toggleProfileDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.getElementById('profile-trigger');
+    const dd = document.getElementById('profile-dropdown');
+    const isOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  /* ── Notification panel ───────────────────────────────────────── */
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-panel');
+    const isOpen = panel.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      panel.classList.add('open');
+    }
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-pip').forEach(el => el.style.display = 'none');
+    document.getElementById('notif-dot').style.display = 'none';
+    showToast('All notifications marked as read.', 'success');
+  }
+
+  /* ── Close all dropdowns/panels ──────────────────────────────── */
+  function closeAllDropdowns() {
+    document.getElementById('profile-dropdown').classList.remove('open');
+    document.getElementById('profile-trigger').classList.remove('open');
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  document.addEventListener('click', function() {
+    closeAllDropdowns();
+    cancelReject();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeAllDropdowns(); cancelReject(); }
+  });
+
+  /* ── Toast ────────────────────────────────────────────────────── */
+  const COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(255,255,255,0.35)' };
+  function showToast(msg, type) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-dot" style="background:${COLORS[type] || COLORS.info};"></div>
+      <span class="toast-msg">${msg}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 320);
+    }, 4000);
+  }
+
+  /* ── Approve flow ─────────────────────────────────────────────── */
+  function approveRow(id, user, amount) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const badge = document.getElementById('badge-' + id);
+    const actionsDiv = document.getElementById('actions-' + id);
+    if (!row || row.dataset.resolved) return;
+
+    // Confirm
+    if (!confirm(`Approve this payout?\n\n${user} · ${amount}\n\nA bank transfer will be initiated upon confirmation.`)) return;
+
+    row.dataset.resolved = '1';
+    row.dataset.status = 'approved';
+
+    badge.className = 'badge s-approved';
+    badge.textContent = 'Approved';
+
+    row.classList.remove('row-rejected');
+    row.classList.add('row-approved');
+
+    // Replace buttons with View
+    actionsDiv.innerHTML = `<button class="act-btn act-view" onclick="showToast('Viewing payout receipt for ${user}.', 'info')">View</button>`;
+
+    showToast(`Payout approved. Bank transfer initiated for ${user} (${amount}).`, 'success');
+    updatePendingCount(-1);
+  }
+
+  /* ── Reject flow ──────────────────────────────────────────────── */
+  let _rejectTarget = null;
+
+  function openReject(id, user, amount, e) {
+    e.stopPropagation();
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    if (!row || row.dataset.resolved) return;
+
+    _rejectTarget = { id, user, amount };
+
+    // Clear previous selection
+    document.querySelectorAll('input[name="reject-reason"]').forEach(r => r.checked = false);
+
+    // Position popover near the button
+    const popover = document.getElementById('reject-popover');
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const tableWrap = btn.closest('.table-wrap');
+    const wrapRect = tableWrap.getBoundingClientRect();
+
+    // On mobile the popover is fixed via CSS; on desktop position it
+    if (window.innerWidth > 767) {
+      popover.style.position = 'absolute';
+      popover.style.top = (rect.bottom - wrapRect.top + 6) + 'px';
+      // align right if near right edge
+      const rightSpace = window.innerWidth - rect.right;
+      if (rightSpace < 240) {
+        popover.style.right = (wrapRect.right - rect.right) + 'px';
+        popover.style.left = 'auto';
+      } else {
+        popover.style.left = (rect.left - wrapRect.left) + 'px';
+        popover.style.right = 'auto';
+      }
+    } else {
+      popover.style.position = '';
+      popover.style.top = '';
+      popover.style.left = '';
+      popover.style.right = '';
+    }
+
+    popover.classList.add('open');
+  }
+
+  function selectReason(val) {
+    const radio = document.querySelector(`input[value="${val}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  function cancelReject() {
+    document.getElementById('reject-popover').classList.remove('open');
+    _rejectTarget = null;
+  }
+
+  const REASON_LABELS = {
+    'suspicious':  'Suspicious activity',
+    'kyc':         'Unverified KYC',
+    'duplicate':   'Duplicate request',
+    'new-account': 'Account too new',
+    'other':       'Other'
+  };
+
+  function confirmReject() {
+    if (!_rejectTarget) return;
+    const selected = document.querySelector('input[name="reject-reason"]:checked');
+    if (!selected) {
+      showToast('Please select a rejection reason first.', 'error');
+      return;
+    }
+
+    const { id, user, amount } = _rejectTarget;
+    const reasonLabel = REASON_LABELS[selected.value] || 'Other';
+
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const badge = document.getElementById('badge-' + id);
+    const actionsDiv = document.getElementById('actions-' + id);
+
+    row.dataset.resolved = '1';
+    row.dataset.status = 'rejected';
+
+    badge.className = 'badge s-rejected';
+    badge.textContent = 'Rejected';
+
+    row.classList.remove('row-approved');
+    row.classList.add('row-rejected');
+
+    // Replace buttons with View
+    actionsDiv.innerHTML = `<button class="act-btn act-view" onclick="showToast('Viewing rejection log for ${user}.', 'info')">View</button>`;
+
+    cancelReject();
+    showToast(`Payout rejected — ${reasonLabel}.`, 'error');
+    updatePendingCount(-1);
+  }
+
+  /* ── Update pending stat card ─────────────────────────────────── */
+  function updatePendingCount(delta) {
+    const el = document.getElementById('stat-pending');
+    const current = parseInt(el.textContent, 10);
+    const next = Math.max(0, current + delta);
+    el.textContent = next;
+  }
+
+  /* ── Table filter ─────────────────────────────────────────────── */
+  function filterTable() {
+    const query   = document.getElementById('table-search').value.trim().toLowerCase();
+    const status  = document.getElementById('status-filter').value.toLowerCase();
+    const dateVal = document.getElementById('date-filter').value;
+
+    const rows = document.querySelectorAll('#payouts-tbody tr');
+    let visible = 0;
+
+    rows.forEach(row => {
+      const text       = row.textContent.toLowerCase();
+      const rowStatus  = row.dataset.status || '';
+      const rowDays    = parseInt(row.dataset.days || '0', 10);
+
+      const matchSearch = !query || text.includes(query);
+      const matchStatus = !status || rowStatus === status;
+      let matchDate = true;
+      if (dateVal === '7')  matchDate = rowDays <= 7;
+      if (dateVal === '30') matchDate = rowDays <= 30;
+
+      const show = matchSearch && matchStatus && matchDate;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    document.getElementById('visible-count').textContent = `Showing ${visible} ${visible === 1 ? 'entry' : 'entries'}`;
+  }
+</script>
+
+</body>
+</html>

@@ -75,7 +75,6 @@ const ResetEmail = () => {
         setOpen(true);
       }
     } catch (error) {
-      console.error('Error verifying token:', error);
       setSnackbarMessage('Something went wrong. Please try again.');
       setSnackbarType('error');
       setOpen(true);

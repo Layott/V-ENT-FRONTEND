@@ -19,7 +19,7 @@
 }
 
 .addImage {
-  border: 1px dashed var(--primary-bg);
+
   min-height: 140px;
   border-radius: 7.5px;
   display: flex;
@@ -131,7 +131,6 @@
   margin-left: 10px;
 }
 
-
 .modalButtons {
   display: flex;
   gap: 12px;
@@ -140,7 +139,7 @@
 
 .cancelButton {
   padding: 10px 20px;
-  border: 1px solid #ddd;
+
   border-radius: 6px;
   background-color: white;
   color: #333;
@@ -194,9 +193,6 @@
 .deleteButton:hover {
   background: rgba(239, 68, 68, 1);
 }
-
-
-
 
 @media only screen and (min-width: 768px) {
   .galleryContainer {

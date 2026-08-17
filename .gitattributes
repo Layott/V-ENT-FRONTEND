@@ -1,0 +1,2 @@
+# Anything executed on the Linux box keeps LF endings.
+*.sh    text eol=lf

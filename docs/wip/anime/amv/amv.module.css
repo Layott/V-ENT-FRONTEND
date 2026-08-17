@@ -1,0 +1,214 @@
+/* ── V-ENT Anime · AMV Gallery ── */
+
+.pageContainer { width: 100%; min-height: 100vh; background-color: #131316; overflow-x: hidden; }
+.mainContainer { width: 100%; }
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+@media (min-width: 768px) { .rightPaneContainer { width: calc(100% - 180px); margin-left: 180px; padding: 2rem 1.5rem 3rem; } }
+@media (min-width: 1024px) { .rightPaneContainer { width: calc(100% - 250px); margin-left: 250px; padding: 2rem; } }
+@media (min-width: 1440px) { .rightPaneContainer { padding: 2.25rem 2rem 3rem; } }
+@media (min-width: 1920px) { .rightPaneContainer { padding: 2.5rem 3rem 4rem; } }
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--primary-bg);
+  margin: 0 0 0.35rem;
+  line-height: 1.1;
+}
+.pageSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  max-width: 540px;
+  line-height: 1.5;
+}
+.uploadBtn {
+  height: 40px;
+  padding: 0 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.filtersBar {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--overlay-gray);
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 1;
+  min-width: 240px;
+  max-width: 460px;
+}
+.searchIcon { color: rgba(255, 255, 255, 0.45); font-size: 1.1rem; }
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  width: 100%;
+}
+.searchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.dropdown {
+  height: 40px;
+  padding: 0 2rem 0 0.85rem;
+  background-color: var(--overlay-gray) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+}
+
+.tagChips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1.25rem; }
+.tagChip {
+  padding: 0.4rem 0.9rem;
+  background-color: var(--overlay-gray);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.tagChip:hover { background-color: #303136; color: var(--primary-bg); }
+.tagChipActive { background-color: var(--v-ent-red); border-color: var(--v-ent-red); color: #fff; }
+
+.resultsCount {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 1rem;
+}
+.emptyState {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  background-color: var(--overlay-gray);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  font-size: var(--fs-p-size-mobile);
+}
+
+.cardGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 480px) { .cardGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .cardGrid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+@media (min-width: 1280px) { .cardGrid { grid-template-columns: repeat(4, 1fr); } }
+
+.amvCard {
+  background-color: var(--overlay-gray);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.amvCard:hover { transform: translateY(-2px); border-color: rgba(237, 28, 36, 0.35); }
+.amvThumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  background-color: #303136;
+}
+.amvPlayIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(237, 28, 36, 0.92);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding-left: 4px;
+  transition: transform 0.2s;
+}
+.amvCard:hover .amvPlayIcon { transform: translate(-50%, -50%) scale(1.08); }
+.amvDuration {
+  position: absolute;
+  bottom: 0.55rem;
+  right: 0.55rem;
+  padding: 0.15rem 0.45rem;
+  background-color: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: var(--fw-medium);
+  border-radius: 3px;
+}
+.amvBody { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.amvTitle {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.amvUploader {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+.amvStats {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.15rem;
+}
+.likeStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba(237, 28, 36, 0.85);
+}
+.dot { color: rgba(255, 255, 255, 0.3); }

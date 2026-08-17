@@ -1,11 +1,12 @@
 'use client'
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './wallet-topup-callback.module.css';
 
-export default function WalletTopupCallback() {
+function WalletTopupCallbackInner() {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -81,12 +82,24 @@ export default function WalletTopupCallback() {
           <>
             <div className={styles.iconError}>✕</div>
             <p className={styles.text}>{message}</p>
-            <button className="btn grnBTN" onClick={() => router.replace('/wallets')}>
+            <button className="btn goldBTN" onClick={() => router.replace('/wallets')}>
               Go to Wallet
             </button>
           </>
         )}
       </div>
     </div>
+  );
+}
+
+export default function WalletTopupCallback() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'sans-serif' }}>Loading…</p>
+      </div>
+    }>
+      <WalletTopupCallbackInner />
+    </Suspense>
   );
 }

@@ -85,7 +85,7 @@
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
-  border: 1px solid #303136;
+
   right: 1rem;
   display: none;
   z-index: 10;
@@ -122,7 +122,7 @@
 }
 
 .searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
+  outline: none;
 }
 
 .searchBar:hover {
@@ -152,7 +152,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #B2B3BD;
   font-size: 0.9rem;
 }
@@ -233,13 +233,13 @@
 }
 
 .viewProfile {
-  border: 1px solid var(--v-ent-red);
+
   margin-top: 0.5rem;
 }
 
 .logoutBTN {
   outline: none;
-  border: 1px solid var(--v-ent-red);
+
   width: 80px;
   margin-bottom: 0.6rem;
   background-color: var(--v-ent-red);
@@ -247,11 +247,11 @@
 }
 
 .viewProfile:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .logoutBTN:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .logoContainer {
@@ -263,7 +263,7 @@
 }
 
 .logoContainer h1 {
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
   color: var(--v-ent-red);
@@ -289,6 +289,43 @@
 
 .vEntH1 {
   display: none;
+}
+
+.bellContainer {
+  position: absolute;
+  top: 50%;
+  right: 5.25rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  cursor: pointer;
+  color: var(--primary-bg);
+}
+
+.bellIconMobile {
+  font-size: 1.25rem;
+}
+
+.bellBadgeMobile {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background-color: var(--v-ent-red);
+  color: #FFF;
+  font-family: "Inter", sans-serif;
+  font-size: 0.55rem;
+  font-weight: var(--fw-bold);
+  line-height: 15px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hamburgerContainer {

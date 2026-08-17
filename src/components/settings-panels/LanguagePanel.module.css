@@ -1,0 +1,52 @@
+/* LanguagePanel currently composes its UI from shared classes in
+   settingsShared.module.css (formStack, card, formGroup, formSelect, etc.).
+   This file is reserved for any panel-specific overrides - it parallels
+   AccountPanel.module.css so every settings panel has a matching module file.
+   Add classes here only when a Language-specific style is genuinely needed. */
+
+.regionPreviewGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 540px) {
+  .regionPreviewGrid { grid-template-columns: 1fr; }
+}
+
+.regionPreviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.85rem 1rem;
+  background: #303136;
+
+  border-radius: 8px;
+}
+
+.regionPreviewLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.regionPreviewValue {
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.langChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.7rem;
+  background-color: rgba(212, 175, 55, 0.14);
+  color: var(--v-ent-gold);
+
+}

@@ -45,7 +45,6 @@ const VerifyEmail = () => {
         setSnackbarType('error');
       }
     } catch (error) {
-      console.error('Error resending verification email:', error);
       setSnackbarMessage('An error occurred. Please try again.');
       setSnackbarType('error');
     } finally {

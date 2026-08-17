@@ -32,7 +32,7 @@
   text-align: center;
   font-size: 2rem;
   line-height: 1.125;
-  font-family: "ClashGrotesk-Regular", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .joinThousandsGamersBottom {
@@ -57,7 +57,7 @@
   display: flex;
   width: 320px;
   font-size: 1.45rem;
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   text-align: center;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .inputGroup input {
-  border: 1px solid #303136;
+
   outline: none;
   padding: calc(0.55rem - 1px) 1rem;
   padding-left: 0.8rem;
@@ -95,14 +95,14 @@
 }
 
 .inputGroup input::placeholder {
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #CCC;
   font-size: 0.8rem;
 }
 
 .inputGroup input:focus,
 .inputGroup input:active {
-  border: 1px solid #FFF;
+  outline: none;
 }
 
 .joinThousandsGamersInputContainer button {
