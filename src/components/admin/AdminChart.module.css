@@ -1,0 +1,43 @@
+.card {
+  background-color: #212225;
+
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.title {
+  font-family: 'Fraunces', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.38);
+  margin-top: 0.15rem;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.empty {
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+  padding: 2rem 0;
+  text-align: center;
+}

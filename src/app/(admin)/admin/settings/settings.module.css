@@ -1,0 +1,115 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+
+.sectionTitle {
+  font-family: 'Fraunces', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+.sectionSub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 1.25rem;
+}
+
+.formGroup { margin-bottom: 0.85rem; }
+.label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.35rem;
+}
+.input {
+  width: 100%;
+  background: #303136;
+
+  border-radius: 5px;
+  padding: 0.55rem 0.8rem;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  resize: vertical;
+}
+.input:focus { background-color: rgba(255, 255, 255, 0.05); }
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+
+  gap: 0.75rem;
+}
+.toggleRow:last-child { border-bottom: none; }
+.toggleLabel {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+.toggleHint {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 0.1rem;
+}
+
+.dangerRow {
+  background: rgba(237, 28, 36, 0.06);
+
+  border-radius: 5px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.12);
+  transition: 0.25s;
+  border-radius: 22px;
+}
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: 0.25s;
+  border-radius: 50%;
+}
+.switch input:checked + .slider {
+  background-color: var(--v-ent-gold);
+}
+.switch input:checked + .slider:before {
+  transform: translateX(16px);
+  background-color: #fff;
+}

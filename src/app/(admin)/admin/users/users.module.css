@@ -1,0 +1,67 @@
+.checkbox {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+
+  border-radius: 3px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  transition: background-color 0.15s;
+}
+.checkbox:checked {
+  background-color: var(--v-ent-red);
+
+}
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  background-color: rgba(237, 28, 36, 0.14);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.checkbox:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(237, 28, 36, 0.06);
+
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  margin-bottom: 1rem;
+}
+.bulkCount {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: auto;
+}
+
+.userLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.userLink:hover .userName {
+  color: #fff;
+}
+.userName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  transition: color 0.15s;
+}
+.userId {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.32);
+  margin-top: 0.05rem;
+}
