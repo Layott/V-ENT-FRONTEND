@@ -1,0 +1,18 @@
+/* Avatar: filled surfaces only - no strokes, no glow. */
+
+.img {
+  object-fit: cover;
+  display: block;
+}
+
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #a3141a;
+  color: #fff;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  line-height: 1;
+}
