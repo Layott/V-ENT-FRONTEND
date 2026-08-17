@@ -209,17 +209,25 @@ const Login = () => {
             </button>
           </form>
 
-          {/* <div className={generalStyles.alternativeAuthContainer}>
+          <div className={generalStyles.alternativeAuthContainer}>
             <p>Or sign in with</p>
             <div className={generalStyles.logoContainer}>
-              <Image
-                src={googleLogo}
-                alt="Google Logo"
-                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+              <button
+                type="button"
+                className={generalStyles.oauthButton}
                 onClick={() => handleOAuthSignIn("google")}
-              />
+                aria-label="Sign in with Google"
+                disabled={loading}
+              >
+                <Image
+                  src={googleLogo}
+                  alt=""
+                  className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+                />
+                <span>Google</span>
+              </button>
             </div>
-          </div> */}
+          </div>
 
           <div className={generalStyles.formHelperContainer}>
             <p>Don&#39;t have an account?&nbsp;</p>
