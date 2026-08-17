@@ -1,0 +1,64 @@
+/* Admin Disputes - local styles. Mirrors payouts.module.css (rejectPop) so
+   the resolve/dismiss popover matches the payouts reject popover exactly.
+   Shared table/badge/action styling comes from admin.module.css. */
+
+.descCell {
+  display: inline-block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.resolvePop {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #303136;
+
+  border-radius: 6px;
+  padding: 0.75rem;
+  z-index: 300;
+  min-width: 240px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.resolveLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resolveTextarea {
+  width: 100%;
+  background: #212225;
+
+  border-radius: 4px;
+  color: #fff;
+  padding: 0.45rem 0.55rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  outline: none;
+  resize: vertical;
+  min-height: 62px;
+}
+
+.resolveTextarea:focus {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.resolveTextarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.resolveBtns {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}

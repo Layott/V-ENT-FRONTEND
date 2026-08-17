@@ -1,0 +1,32 @@
+.actionBadge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.actionApprove { background: rgba(212, 175, 55,0.12);  color: var(--v-ent-gold); }
+.actionReject  { background: rgba(237,28,36,0.12);  color: var(--v-ent-red); }
+.actionBan     { background: rgba(237,28,36,0.15);  color: var(--v-ent-red); }
+.actionInfo    { background: rgba(100,181,246,0.12); color: #64B5F6; }
+.actionWarn    { background: rgba(255,193,7,0.12);  color: #FFC107; }
+
+.timeCell { white-space: nowrap; }
+.descCell {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.code {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1px 5px;
+  border-radius: 3px;
+}

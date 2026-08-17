@@ -1,0 +1,78 @@
+.tName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+.tGame {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.1rem;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal {
+  background-color: #212225;
+
+  border-radius: 10px;
+  padding: 1.75rem;
+  max-width: 460px;
+  width: 100%;
+}
+.modalTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+.modalSub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1.25rem;
+}
+
+.formRow { margin-bottom: 1rem; }
+.formRow2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.formLabel {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.35rem;
+}
+.formInput {
+  width: 100%;
+  background: #303136;
+
+  border-radius: 5px;
+  padding: 0.6rem 0.8rem;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  resize: vertical;
+}
+.formInput:focus { background-color: rgba(255, 255, 255, 0.05); }
+
+.modalBtns {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}

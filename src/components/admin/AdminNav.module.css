@@ -1,0 +1,182 @@
+/* Sidebar - exact values from Sidebar.module.css */
+.sidebar {
+  background-color: #131316;
+
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+/* Logo */
+.logoContainer {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.logoLink {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-left: 1rem;
+  text-decoration: none;
+  width: 100%;
+}
+.innerLogo { height: 25px; }
+.logoText {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--v-ent-red);
+}
+
+/* Role badge row */
+.roleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem;
+
+  flex-shrink: 0;
+}
+.roleBadge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.role_super    { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
+.role_finance  { background: rgba(212, 175, 55,0.12); color: var(--v-ent-gold); }
+.role_moderator { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+.roleUsername {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* Nav */
+.nav { flex: 1; margin-top: 0.25rem; overflow-y: auto; }
+.navList { list-style: none; padding: 0 0 1rem; display: flex; flex-direction: column; }
+.sectionLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  padding: 0.75rem 1.5rem 0.2rem;
+}
+.sectionList { list-style: none; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+.navItem {
+  width: calc(100% - 1.5rem);
+  border-radius: 5px;
+
+  transition: all 0.3s ease;
+}
+.navItem:hover { border-color: #6e6e6e; }
+.activeItem { background-color: rgba(237, 28, 36, 0.2392); border-color: transparent !important; }
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  border-radius: 5px;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+}
+.navIcon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+.navBadge {
+  margin-left: auto;
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+.divider {
+  /* Separation by space, not a rule. */
+  height: 0;
+  margin: 0.35rem 1.5rem;
+}
+
+/* Footer */
+.footer {
+  padding: 0.75rem 0.75rem 1rem;
+
+  flex-shrink: 0;
+}
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+
+  transition: background-color 0.2s;
+}
+.userRow:hover { border-color: #6e6e6e; }
+.userAvatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background-color: var(--v-ent-red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.userInfo { flex: 1; overflow: hidden; }
+.username {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.userRole { font-size: 0.65rem; color: rgba(255, 255, 255, 0.38); }
+.logoutBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+.logoutBtn:hover { color: var(--v-ent-red); }
+
+/* Responsive */
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .sidebar { width: 180px; }
+  .logoText { font-size: 1.5rem; }
+}
+@media only screen and (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 250px;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}

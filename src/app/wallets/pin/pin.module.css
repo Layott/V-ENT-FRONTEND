@@ -1,0 +1,36 @@
+/* ─────────────────────────────────────────────────────────────────
+   V-ENT Wallet - PIN page. Only NEW styles live here.
+   Shared shell/form/button classes come from ../wallets.module.css.
+   ───────────────────────────────────────────────────────────────── */
+
+/* Masked 4-digit PIN input - composed on top of shared .formInput */
+.pinField {
+  text-align: center;
+  letter-spacing: 0.55em;
+  text-indent: 0.55em;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold);
+  font-family: "Inter", sans-serif;
+}
+
+.pinField::placeholder {
+  letter-spacing: normal;
+  text-indent: 0;
+  font-size: 0.9rem;
+  font-weight: var(--fw-regular);
+}
+
+/* Small helper line under a PIN field */
+.helperText {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0.4rem 0 0;
+}
+
+/* Inline success notice - matches the shared .notice sizing, green tint */
+.noticeSuccess {
+  background: rgba(76, 175, 80, 0.1);
+
+  color: var(--v-ent-success-light);
+}

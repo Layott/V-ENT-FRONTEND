@@ -1,0 +1,174 @@
+/* Header - 60px, #17181A, matching header.module.css */
+.header {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  height: 60px;
+  background-color: #17181A;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem 0 2rem;
+  z-index: 100;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+}
+.breadcrumb {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.breadcrumb span { color: rgba(255, 255, 255, 0.75); }
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Search */
+.search {
+  display: flex;
+  align-items: center;
+  background-color: #303136;
+
+  border-radius: 5px;
+  padding: 5px 12px;
+  gap: 0.4rem;
+  transition: background-color 0.2s;
+}
+.search:focus-within { background-color: rgba(255, 255, 255, 0.05); }
+.searchIcon { color: rgba(255, 255, 255, 0.4); font-size: 0.9rem; flex-shrink: 0; }
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  width: 180px;
+}
+.searchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+
+/* Notification bell */
+.iconBtn {
+  width: 32px; height: 32px;
+  border-radius: 5px;
+  background: #212225;
+
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+.iconBtn:hover { border-color: #6e6e6e; }
+.bellIcon { color: rgba(255, 255, 255, 0.55); font-size: 0.95rem; }
+.notifDot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background-color: var(--v-ent-red);
+}
+
+/* Profile */
+.profileWrap { position: relative; }
+.profileTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+
+  border-radius: 5px;
+  padding: 0.25rem 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.profileTrigger:hover,
+.profileOpen { border-color: #6e6e6e; }
+.adminInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.adminName { font-size: 0.8rem; font-weight: 600; color: #fff; }
+.adminRole { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4); }
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background-color: var(--v-ent-red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.caret {
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+.profileOpen .caret { transform: rotate(180deg); }
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: #303136;
+
+  border-radius: 6px;
+  min-width: 160px;
+  z-index: 400;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+.dropdownUser {
+  padding: 0.75rem 1rem;
+
+}
+.dropdownName { font-size: 0.85rem; font-weight: 600; color: #fff; }
+.dropdownRole { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); margin-top: 0.1rem; }
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dropdownItem:hover { background-color: rgba(255, 255, 255, 0.06); }
+.dropdownDanger { color: var(--v-ent-red);  background-color: rgba(255, 255, 255, 0.14); }
+
+/* Responsive */
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .header { left: 180px; }
+  .searchInput { width: 130px; }
+}
+@media only screen and (max-width: 767px) {
+  .header { left: 0; padding: 0 1rem; }
+  .hamburger { display: flex; }
+  .search { display: none; }
+  .adminInfo { display: none; }
+}
