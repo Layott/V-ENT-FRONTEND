@@ -14,7 +14,9 @@ const ForgotPassword = () => {
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarType, setSnackbarType] = useState('success');
+    const [emailError, setEmailError] = useState('');
     const router = useRouter();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     // const { data: session } = useSession();
     // const searchParams = useSearchParams();
     // const cameFromEditProfile = searchParams?.get('from') === 'edit-profile';
@@ -37,12 +39,19 @@ const ForgotPassword = () => {
 
     const handleInputChange = (e) => {
         setEmail(e.target.value);
+        if (emailError) setEmailError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!emailRegex.test(email.trim())) {
+            setEmailError('Enter a valid email address');
+            return;
+        }
+        setEmailError('');
         setLoading(true);
- 
+
         try {
             const response = await fetch(VENT.FORGOT_PASSWORD, {
                 method: 'POST',
@@ -69,7 +78,6 @@ const ForgotPassword = () => {
             }
             setOpen(true);
         } catch (error) {
-            console.error('Error during forgot password request:', error);
             setSnackbarMessage('An error occurred. Please try again.');
             setSnackbarType('error');
             setOpen(true);
@@ -106,6 +114,9 @@ const ForgotPassword = () => {
                                 onChange={handleInputChange}
                                 required
                             />
+                            {emailError && (
+                                <p className={generalStyles.errorMessage}>{emailError}</p>
+                            )}
                         </div>
     
                         <button 

@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>V-ENT — Join the Waitlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary-bg:#000;
+  --primary-text:#FFF;
+  --white:#FFF;
+  --black:#000;
+  --v-ent-red:#ED1C24;
+  --v-ent-light-red:#FF0008;
+  --v-ent-deep-red:#7a0e12;
+  --v-ent-success:#4caf50;
+  --v-ent-success-light:#66bb6a;
+  --overlay-gray:#212225;
+  --surface-1:#18191c;
+  --surface-2:#212225;
+  --surface-3:#303136;
+  --surface-4:#393A40;
+  --border-1:#2a2b2f;
+  --border-2:#3a3b40;
+  --muted:#8a8d94;
+  --muted-2:#b8bbc2;
+  --fw-bold:700;
+  --fw-semi-bold:600;
+  --fw-medium:500;
+  --fw-regular:400;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",sans-serif;color:var(--primary-text);}
+body{background:#000;min-height:100vh;overflow-x:hidden;}
+h1,h2,h3,h4,h5{font-family:"Fraunces","Inter",serif;font-weight:700;letter-spacing:-0.01em;line-height:1.05;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;}
+input,select{font-family:inherit;}
+
+/* ============ HERO — matches original landing-hero ============ */
+.landing-hero{
+  width:100%;
+  background-image:radial-gradient(circle, rgba(255,0,0,0.5) 0%, #000 50%, #000 75%, #000 100%);
+  background-position:left center;
+  background-size:130%;
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+}
+.tunnel-bg{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+  opacity:0.55;
+  pointer-events:none;
+  z-index:0;
+}
+.landing-hero-inner{position:relative;width:100%;z-index:1;}
+
+/* header */
+.landing-header{
+  height:70px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem;
+}
+@media(min-width:550px){.landing-header{padding:1rem 1.5rem;}}
+@media(min-width:1150px){.landing-header{height:100px;padding:1rem 2rem;}}
+.lh-logo{display:flex;align-items:center;gap:0.25rem;}
+.lh-logo-mark{
+  width:24px;height:25px;display:flex;align-items:center;justify-content:center;
+}
+.lh-logo-mark img{width:24px;height:25px;object-fit:contain;display:block;}
+.lh-logo h1{font-family:"Inter",sans-serif;font-weight:var(--fw-bold);font-size:1.5rem;color:var(--v-ent-red);letter-spacing:0;}
+@media(min-width:768px){.lh-logo-mark,.lh-logo-mark img{width:34px;height:35px;}.lh-logo h1{font-size:2.5rem;}}
+@media(min-width:1150px){.lh-logo-mark,.lh-logo-mark img{width:43px;height:45px;}}
+.lh-buttons{display:flex;gap:10px;align-items:center;}
+.waitlistBTN{
+  display:flex;align-items:center;justify-content:center;
+  height:37px;
+  border-radius:5px;font-weight:600;font-size:0.85rem;
+  cursor:pointer;
+  transition:background-color .5s,color .5s,border .5s,transform 0s;
+  background-color:var(--v-ent-red);border:1px solid var(--v-ent-red);
+  color:#fff;
+  width:80px;
+}
+.waitlistBTN.ghost{background:transparent;border:1px solid var(--v-ent-red);}
+.waitlistBTN.ghost:hover{background-color:var(--v-ent-red);}
+.waitlistBTN:hover{background-color:var(--v-ent-light-red);border:1px solid #fff;}
+@media(min-width:768px){.waitlistBTN{font-size:1rem;width:90px;}}
+.edit-tag{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:"Inter",sans-serif;
+  color:var(--v-ent-red);
+  font-size:0.7rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;
+  position:relative;
+}
+.edit-tag::before{
+  content:"";display:inline-block;
+  width:2px;height:14px;background:var(--v-ent-red);
+  box-shadow:0 0 8px rgba(237,28,36,0.55);
+}
+.edit-tag .sep{
+  display:inline-block;width:18px;height:1px;background:rgba(237,28,36,0.55);
+  vertical-align:middle;
+}
+
+/* hero content */
+.hero-content{
+  display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding-bottom:64px;
+}
+@media(min-width:1150px){
+  .hero-content{flex-direction:row;width:95%;margin:0 auto;height:calc(100vh - 100px);align-items:center;gap:32px;}
+}
+.hero-left{width:90%;display:flex;flex-direction:column;gap:1.25rem;}
+@media(min-width:1150px){.hero-left{width:45%;}}
+.gaming-anime-tribe{line-height:1.25;}
+.gaming-anime-tribe h1{font-size:3rem;font-family:"Fraunces",serif;font-weight:700;letter-spacing:-0.02em;}
+.gat-anime{margin-left:2.5rem;color:#fff;}
+.gat-tribe{margin-left:5.5rem;color:var(--v-ent-red);}
+@media(min-width:650px){.gaming-anime-tribe h1{font-size:4rem;}.gat-anime{margin-left:3rem;}.gat-tribe{margin-left:6.5rem;}}
+@media(min-width:768px){.gaming-anime-tribe h1{font-size:4.5rem;}.gat-anime{margin-left:4.5rem;}.gat-tribe{margin-left:9rem;}}
+@media(min-width:850px){.gaming-anime-tribe h1{font-size:4rem;}}
+@media(min-width:1150px){.gaming-anime-tribe h1{font-size:5rem;line-height:1.125;}}
+@media(min-width:1400px){.gaming-anime-tribe h1{font-size:6.5rem;line-height:1;}}
+
+.hero-welcome p{font-size:0.9rem;text-align:center;line-height:1.55;color:#e6e6e6;}
+@media(min-width:768px){.hero-welcome p{text-align:left;font-size:1rem;}}
+@media(min-width:1400px){.hero-welcome p{font-size:1.125rem;}}
+
+.hero-cta-row{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+@media(min-width:560px){.hero-cta-row{flex-direction:row;align-items:center;}}
+.hero-cta-row a.waitlistBTN{width:auto;padding:0 20px;height:42px;}
+.hero-cta-row .meta{font-size:0.8rem;color:#cfcfcf;display:flex;align-items:center;gap:8px;}
+.hero-cta-row .dot{width:8px;height:8px;border-radius:50%;background:var(--v-ent-success);box-shadow:0 0 10px var(--v-ent-success);}
+
+/* right collage 2x2 */
+.hero-right{width:100%;display:flex;justify-content:flex-end;}
+@media(min-width:1150px){.hero-right{width:55%;}}
+.collage{display:flex;flex-direction:column;gap:1.25rem;width:90%;}
+@media(min-width:1150px){.collage{width:100%;}}
+.collage-row{display:flex;gap:1.25rem;width:100%;}
+.collage-tile{
+  border-radius:20px;overflow:hidden;position:relative;
+  height:120px;
+  border:1px solid rgba(255,255,255,0.04);
+}
+@media(min-width:450px){.collage-tile{height:160px;}}
+@media(min-width:650px){.collage-tile{height:190px;}}
+@media(min-width:768px){.collage-tile{height:240px;}}
+@media(min-width:1150px){.collage-tile{height:210px;}}
+@media(min-width:1220px){.collage-tile{height:230px;}}
+@media(min-width:1400px){.collage-tile{height:250px;}}
+.collage-tile.lg{flex:0 0 60%;}
+.collage-tile.sm{flex:0 0 calc(40% - 1.25rem);}
+.collage-tile.lg-r{flex:0 0 60%;}
+.collage-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.collage-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.55));}
+.tile-tag{position:absolute;left:14px;bottom:14px;z-index:2;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+
+/* ============ BELOW HERO — curve text ============ */
+.below-hero{padding:48px 16px 32px;text-align:center;}
+.below-hero .curve-text{font-size:0.92rem;color:#cfcfcf;max-width:760px;margin:0 auto;line-height:1.65;font-family:"Fraunces",serif;font-style:italic;font-weight:500;font-size:1.1rem;letter-spacing:-0.01em;}
+@media(min-width:768px){.below-hero .curve-text{font-size:1.35rem;}}
+.below-hero-bar{display:block;margin:24px auto 0;height:1px;width:120px;background:linear-gradient(90deg,transparent,var(--v-ent-red),transparent);}
+
+/* ============ WAITLIST SECTION — the new big band ============ */
+.waitlist-section{
+  position:relative;
+  padding:64px 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(237,28,36,0.18), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(237,28,36,0.10), transparent 70%),
+  #000;
+  border-top:1px solid var(--border-1);
+  border-bottom:1px solid var(--border-1);
+  overflow:hidden;
+}
+.waitlist-section::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size:32px 32px,32px 32px;
+  background-position:0 0,16px 16px;
+  pointer-events:none;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, #000 30%, transparent 80%);
+}
+.shell{width:90%;max-width:1280px;margin:0 auto;position:relative;}
+
+.ws-head{
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;margin-bottom:36px;
+}
+.ws-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:"Inter",sans-serif;
+  color:var(--v-ent-red);
+  font-size:0.72rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;
+}
+.ws-eyebrow::before{
+  content:"";display:inline-block;
+  width:2px;height:14px;background:var(--v-ent-red);
+  box-shadow:0 0 8px rgba(237,28,36,0.55);
+}
+.ws-eyebrow .sep{display:inline-block;width:24px;height:1px;background:rgba(237,28,36,0.6);vertical-align:middle;}
+.ws-head h2{
+  font-size:2rem;font-family:"Fraunces",serif;line-height:1.05;
+}
+@media(min-width:768px){.ws-head h2{font-size:3rem;}}
+@media(min-width:1150px){.ws-head h2{font-size:3.75rem;}}
+.ws-head h2 .red{color:var(--v-ent-red);}
+.ws-head h2 .it{font-style:italic;font-weight:600;}
+.ws-head p{font-size:1rem;color:#cfcfcf;max-width:620px;line-height:1.6;}
+
+/* grid: left form, right counter+claim */
+.ws-grid{display:grid;gap:24px;grid-template-columns:1fr;align-items:start;}
+@media(min-width:1024px){.ws-grid{grid-template-columns:1.1fr 0.9fr;gap:32px;}}
+
+/* form card */
+.ws-card{
+  background:linear-gradient(180deg, rgba(33,34,37,0.85), rgba(15,15,17,0.85));
+  border:1px solid var(--border-2);
+  border-radius:20px;
+  padding:24px;
+  position:relative;
+}
+@media(min-width:768px){.ws-card{padding:32px;}}
+.ws-card::before{
+  content:"";position:absolute;inset:0;border-radius:20px;
+  padding:1px;background:linear-gradient(135deg,rgba(237,28,36,0.3),transparent 50%,rgba(237,28,36,0.1));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+
+.tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--surface-2);
+  border:1px solid var(--border-1);
+  border-radius:10px;
+  padding:4px;margin-bottom:22px;
+}
+.tab{
+  padding:10px 12px;text-align:center;background:transparent;border-radius:8px;
+  font-size:0.85rem;font-weight:600;color:var(--muted);transition:all .25s;
+  display:flex;flex-direction:column;gap:2px;
+}
+.tab.active{background:var(--surface-4);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,0.04);}
+.tab .meta{font-size:0.68rem;font-weight:500;color:var(--muted);}
+.tab.active .meta{color:#cfcfcf;}
+
+.field{display:block;margin-bottom:14px;}
+.field-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:0.76rem;color:#cfcfcf;margin-bottom:8px;
+  letter-spacing:0.04em;text-transform:uppercase;font-weight:600;
+}
+.field-label .opt{color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500;}
+.field input,.field select{
+  width:100%;height:46px;
+  background:var(--surface-3);
+  border:1px solid var(--surface-3);
+  color:#fff;font-size:0.95rem;outline:none;padding:0 14px;
+  transition:border .5s;
+}
+.field input:focus,.field select:focus{border:1px solid #fff;}
+.field input::placeholder{color:#999;}
+.row-2{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:560px){.row-2{grid-template-columns:1fr 1fr;}}
+.username-input{position:relative;}
+.username-input .prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.username-input input{padding-left:32px;}
+.username-input .status{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.72rem;color:var(--v-ent-success-light);font-weight:600;}
+
+.consent{display:flex;gap:10px;align-items:flex-start;margin:6px 0 18px;}
+.consent input{margin-top:3px;width:16px;height:16px;accent-color:var(--v-ent-red);}
+.consent label{font-size:0.78rem;color:#b8bbc2;line-height:1.5;}
+.consent a{color:var(--v-ent-light-red);text-decoration:underline;text-underline-offset:2px;}
+
+.submit-wide{
+  width:100%;height:52px;border-radius:6px;
+  background-color:var(--v-ent-red);border:1px solid var(--v-ent-red);
+  color:#fff;font-size:0.95rem;font-weight:700;letter-spacing:0.01em;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:background-color .5s, border .5s, transform .12s;
+}
+.submit-wide:hover{background-color:var(--v-ent-light-red);border:1px solid #fff;}
+.submit-wide:active{transform:scale(1.005);}
+.submit-wide svg{width:18px;height:18px;}
+
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border-2);}
+.divider span{font-size:0.72rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
+
+.social-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.soc-btn{
+  height:44px;background:var(--surface-3);border:1px solid var(--border-2);border-radius:6px;
+  color:#fff;font-size:0.85rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .25s, border-color .25s;
+}
+.soc-btn:hover{background:var(--surface-4);border-color:var(--v-ent-red);}
+.soc-btn svg{width:18px;height:18px;}
+
+/* right column: position + claim flow + referral */
+.ws-right{display:flex;flex-direction:column;gap:16px;}
+.position-card{
+  background:linear-gradient(180deg,rgba(237,28,36,0.12),rgba(0,0,0,0.4));
+  border:1px solid rgba(237,28,36,0.3);
+  border-radius:20px;padding:24px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.position-card::after{
+  content:"";position:absolute;inset:auto -60px -60px auto;width:180px;height:180px;
+  background:radial-gradient(closest-side,rgba(237,28,36,0.5),transparent 70%);pointer-events:none;
+}
+.position-card .label{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#ffb3b6;font-weight:700;}
+.position-card .num{
+  font-family:"Fraunces",serif;font-size:4rem;font-weight:700;line-height:1;margin-top:8px;color:#fff;
+  text-shadow:0 0 30px rgba(237,28,36,0.4);
+}
+.position-card .num small{font-size:1.4rem;color:#ffb3b6;vertical-align:super;margin-right:4px;}
+.position-card .sub{font-size:0.85rem;color:#cfcfcf;margin-top:8px;}
+.position-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;position:relative;z-index:1;}
+.position-stats .stat{padding:12px;background:rgba(0,0,0,0.4);border:1px solid var(--border-2);border-radius:10px;}
+.position-stats .stat .n{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:700;color:#fff;}
+.position-stats .stat .l{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+/* claim 3-step */
+.claim-card{
+  background:linear-gradient(180deg,rgba(33,34,37,0.7),rgba(15,15,17,0.7));
+  border:1px solid var(--border-1);border-radius:20px;padding:24px;
+}
+.claim-card h4{font-size:1.05rem;color:#fff;}
+.claim-card .sub{font-size:0.82rem;color:#cfcfcf;margin-top:8px;line-height:1.55;}
+.claim-steps{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+.claim-step{display:flex;align-items:flex-start;gap:14px;padding:12px;background:rgba(0,0,0,0.4);border:1px solid var(--border-1);border-radius:12px;}
+.claim-step .n{
+  flex:0 0 36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--v-ent-red),var(--v-ent-deep-red));
+  font-family:"Fraunces",serif;font-weight:700;font-size:0.95rem;
+  display:grid;place-items:center;color:#fff;
+}
+.claim-step h5{font-size:0.92rem;color:#fff;}
+.claim-step p{font-size:0.78rem;color:#b8bbc2;margin-top:4px;line-height:1.45;}
+
+/* referral box */
+.ref-box{
+  background:rgba(237,28,36,0.06);
+  border:1px dashed rgba(237,28,36,0.45);
+  border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;
+}
+@media(min-width:560px){.ref-box{flex-direction:row;align-items:center;justify-content:space-between;}}
+.ref-box .text{font-size:0.82rem;color:#cfcfcf;line-height:1.5;}
+.ref-box .text strong{color:var(--v-ent-light-red);font-weight:700;}
+.ref-box .link-row{display:flex;gap:8px;flex:1;max-width:340px;}
+.ref-box .link{
+  flex:1;padding:10px 12px;background:var(--surface-3);
+  border:1px solid var(--border-2);border-radius:6px;
+  font-size:0.8rem;color:#cfcfcf;
+  font-family:"JetBrains Mono","Inter",monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ref-box .copy{
+  padding:10px 16px;background:var(--v-ent-red);border:1px solid var(--v-ent-red);color:#fff;
+  border-radius:6px;font-size:0.78rem;font-weight:700;
+  transition:background .5s;
+}
+.ref-box .copy:hover{background:var(--v-ent-light-red);}
+
+/* ============ SPLIT-CARD SECTION (matches automated-tournaments pattern) ============ */
+.split-section{padding:64px 0;border-top:1px solid var(--border-1);}
+.split{display:grid;gap:32px;grid-template-columns:1fr;align-items:center;}
+@media(min-width:850px){.split{grid-template-columns:1fr 1fr;gap:48px;}}
+.split-left .sub-h{
+  font-size:0.85rem;color:var(--v-ent-red);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;
+}
+.split-left h3{
+  font-size:1.8rem;font-family:"Fraunces",serif;margin-top:14px;line-height:1.1;
+}
+@media(min-width:768px){.split-left h3{font-size:2.5rem;}}
+.split-left p{margin-top:18px;color:#cfcfcf;font-size:0.95rem;line-height:1.6;max-width:520px;}
+.split-left a.waitlistBTN{margin-top:24px;height:42px;padding:0 22px;width:auto;}
+.split-right{display:flex;flex-direction:column;gap:16px;}
+.split-card{
+  border-radius:18px;height:200px;
+  border:1px solid rgba(237,28,36,0.15);
+  position:relative;overflow:hidden;
+}
+@media(min-width:768px){.split-card{height:240px;}}
+.split-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.split-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.7));}
+.split-card .tag{position:absolute;left:18px;bottom:16px;z-index:1;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+
+/* ============ PHASES MINI GRID ============ */
+.phases-section{padding:64px 0;border-top:1px solid var(--border-1);}
+.phases-head{margin-bottom:32px;}
+.phases-head .sub-h{font-size:0.85rem;color:var(--v-ent-red);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+.phases-head h3{font-size:1.8rem;font-family:"Fraunces",serif;margin-top:12px;line-height:1.1;}
+@media(min-width:768px){.phases-head h3{font-size:2.5rem;}}
+.phases-head p{margin-top:14px;color:#cfcfcf;font-size:0.95rem;line-height:1.6;max-width:620px;}
+.phases-grid{display:grid;gap:14px;grid-template-columns:1fr;}
+@media(min-width:560px){.phases-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.phases-grid{grid-template-columns:repeat(3,1fr);}}
+.phase-card{
+  padding:20px;border:1px solid var(--border-1);border-radius:16px;
+  background:linear-gradient(180deg,rgba(33,34,37,0.5),rgba(15,15,17,0.5));
+  transition:border-color .25s,transform .25s;
+}
+.phase-card:hover{border-color:var(--v-ent-red);transform:translateY(-4px);}
+.phase-card .pn{font-family:"Fraunces",serif;font-weight:700;color:var(--v-ent-red);font-size:0.9rem;letter-spacing:0.05em;}
+.phase-card h5{margin-top:8px;font-size:1.1rem;}
+.phase-card p{margin-top:10px;color:#b8bbc2;font-size:0.85rem;line-height:1.55;}
+.phase-card .bar{margin-top:14px;height:4px;border-radius:999px;background:var(--surface-3);overflow:hidden;}
+.phase-card .bar .fill{height:100%;background:linear-gradient(90deg,var(--v-ent-deep-red),var(--v-ent-red));}
+
+/* ============ FOUNDERS PERKS ============ */
+.perks-section{padding:64px 0;border-top:1px solid var(--border-1);background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(237,28,36,0.08),transparent 70%);}
+.perks-head{text-align:center;margin-bottom:36px;}
+.perks-head h3{font-size:2rem;font-family:"Fraunces",serif;line-height:1.05;}
+@media(min-width:768px){.perks-head h3{font-size:2.8rem;}}
+.perks-head h3 .red{color:var(--v-ent-red);}
+.perks-head p{margin-top:14px;color:#cfcfcf;font-size:0.95rem;line-height:1.6;max-width:600px;margin-left:auto;margin-right:auto;}
+.perks-grid{display:grid;gap:16px;grid-template-columns:1fr;}
+@media(min-width:560px){.perks-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.perks-grid{grid-template-columns:repeat(4,1fr);}}
+.perk{padding:20px;border:1px solid var(--border-1);border-radius:14px;background:rgba(15,15,17,0.6);text-align:center;}
+.perk .ico{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,var(--v-ent-red),var(--v-ent-deep-red));
+  display:grid;place-items:center;margin:0 auto 14px;
+  font-family:"Fraunces",serif;font-weight:700;color:#fff;font-size:1.2rem;
+}
+.perk h5{font-size:0.98rem;}
+.perk p{margin-top:8px;font-size:0.8rem;color:#b8bbc2;line-height:1.5;}
+
+/* ============ ESPORTS SECTION ============ */
+.esports-section{
+  position:relative;
+  padding:64px 0;
+  border-top:1px solid var(--border-1);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(237,28,36,0.14), transparent 70%),
+    #000;
+  overflow:hidden;
+}
+.esports-grid{display:grid;gap:32px;grid-template-columns:1fr;align-items:center;}
+@media(min-width:1024px){.esports-grid{grid-template-columns:1fr 1fr;gap:48px;}}
+.esports-copy .kicker{
+  display:inline-flex;align-items:center;gap:14px;
+  font-family:"Inter",sans-serif;
+  font-size:0.72rem;color:var(--v-ent-red);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;
+}
+.esports-copy .kicker img{width:22px;height:22px;object-fit:contain;}
+.esports-copy .kicker .sep{display:inline-block;width:24px;height:1px;background:rgba(237,28,36,0.6);}
+.esports-stack{margin-top:22px;font-family:"Fraunces",serif;font-weight:800;line-height:1;letter-spacing:-0.02em;}
+.esports-stack .word{display:block;font-size:2.4rem;}
+@media(min-width:560px){.esports-stack .word{font-size:3.4rem;}}
+@media(min-width:1024px){.esports-stack .word{font-size:4.2rem;}}
+.esports-stack .red{color:var(--v-ent-red);}
+.esports-tag{margin-top:18px;font-family:"Fraunces",serif;font-style:italic;font-size:1.1rem;color:#cfcfcf;line-height:1.4;max-width:520px;}
+.esports-blurb{margin-top:18px;font-size:0.92rem;color:#b8bbc2;line-height:1.6;max-width:520px;}
+.esports-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px;max-width:480px;}
+@media(min-width:768px){.esports-stats{grid-template-columns:repeat(4,1fr);}}
+.esports-stats .stat{padding:14px 12px;background:rgba(15,15,17,0.6);border:1px solid var(--border-1);border-radius:10px;}
+.esports-stats .stat .n{font-family:"Fraunces",serif;font-weight:700;color:#fff;font-size:0.95rem;line-height:1.1;}
+.esports-stats .stat .l{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;}
+.esports-cta{margin-top:28px;display:inline-flex;align-items:center;gap:10px;padding:0 22px;height:46px;background:var(--v-ent-red);border:1px solid var(--v-ent-red);color:#fff;font-weight:700;font-size:0.95rem;border-radius:6px;transition:background .5s,border .5s;}
+.esports-cta:hover{background:var(--v-ent-light-red);border:1px solid #fff;}
+.esports-cta svg{width:16px;height:16px;}
+
+.esports-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:14px;}
+.esports-tile{border-radius:18px;overflow:hidden;border:1px solid var(--border-1);position:relative;}
+.esports-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.esports-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.55));}
+.esports-tile .tile-label{position:absolute;left:14px;bottom:12px;z-index:2;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
+.esports-tile.featured{grid-column:1/3;height:240px;}
+.esports-tile.half{height:180px;}
+@media(min-width:560px){.esports-tile.featured{height:300px;}.esports-tile.half{height:220px;}}
+
+/* ============ FAQ ============ */
+.faq-section{padding:64px 0;border-top:1px solid var(--border-1);}
+.faq-head{margin-bottom:32px;text-align:center;}
+.faq-head h3{font-size:2rem;font-family:"Fraunces",serif;}
+@media(min-width:768px){.faq-head h3{font-size:2.5rem;}}
+.faq-head p{margin-top:10px;color:#cfcfcf;font-size:0.95rem;}
+.faq-list{display:grid;gap:10px;max-width:780px;margin:0 auto;}
+.faq-item{
+  border:1px solid var(--border-1);border-radius:12px;
+  background:linear-gradient(180deg,rgba(33,34,37,0.4),rgba(15,15,17,0.4));
+  padding:18px 22px;
+}
+.faq-item summary{
+  cursor:pointer;font-weight:600;font-size:0.95rem;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:"+";font-size:1.6rem;color:var(--v-ent-red);transition:transform .25s;line-height:1;}
+.faq-item[open] summary::after{transform:rotate(45deg);}
+.faq-item p{margin-top:12px;color:#b8bbc2;font-size:0.88rem;line-height:1.6;}
+
+/* ============ FOOTER (matches original) ============ */
+.foot{padding:48px 0 24px;border-top:1px solid var(--border-1);background:#000;}
+.foot-top{
+  display:flex;flex-direction:column;gap:32px;
+  padding-bottom:32px;border-bottom:1px solid var(--border-1);
+}
+@media(min-width:768px){.foot-top{flex-direction:row;justify-content:space-between;}}
+.foot-about{max-width:420px;}
+.foot-logo{display:flex;align-items:center;gap:0.25rem;margin-bottom:14px;}
+.foot-logo h1{font-family:"Inter",sans-serif;font-weight:700;font-size:1.5rem;color:var(--v-ent-red);}
+.foot-about p{color:#cfcfcf;font-size:0.88rem;line-height:1.65;}
+.foot-cols{display:flex;gap:36px;flex-wrap:wrap;}
+.foot-col h3{font-family:"Inter",sans-serif;font-size:1rem;font-weight:700;margin-bottom:12px;}
+.foot-col .item{display:flex;align-items:center;gap:10px;color:#cfcfcf;font-size:0.86rem;margin-bottom:8px;}
+.foot-col .item .ico{display:grid;place-items:center;width:18px;height:18px;color:var(--v-ent-red);}
+.foot-bottom{padding-top:18px;display:flex;justify-content:space-between;color:#888;font-size:0.78rem;flex-wrap:wrap;gap:8px;}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="landing-hero">
+  <img class="tunnel-bg" src="./assets/waitlist/tunnel_pattern.svg" alt="" aria-hidden="true" />
+  <div class="landing-hero-inner">
+
+    <header class="landing-header">
+      <a class="lh-logo" href="#">
+        <span class="lh-logo-mark"><img src="./assets/waitlist/logo_mark_red.svg" alt="V-ENT logo mark" /></span>
+        <h1>v-ent</h1>
+      </a>
+      <div class="lh-buttons">
+        <span class="edit-tag">Pre-launch <span class="sep"></span> v1</span>
+      </div>
+    </header>
+
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="gaming-anime-tribe">
+          <h1>Gaming</h1>
+          <h1 class="gat-anime">Anime</h1>
+          <h1 class="gat-tribe">Tribe</h1>
+        </div>
+        <div class="hero-welcome">
+          <p>Welcome to V-ENT. The ultimate platform where gaming, anime, and community converge. Tournaments, marketplace, events, anime hub. Built for fans, by fans. Africa first.</p>
+        </div>
+        <div class="hero-cta-row">
+          <a href="#waitlist" class="waitlistBTN">Join the waitlist</a>
+          <div class="meta"><span class="dot"></span> Founding cohort open · Q4 '26 launch</div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="collage">
+          <div class="collage-row">
+            <div class="collage-tile sm"><img src="./assets/waitlist/top_left.jpeg" alt="" /><span class="tile-tag">Tournaments</span></div>
+            <div class="collage-tile lg-r"><img src="./assets/waitlist/top_right.jpg" alt="" /><span class="tile-tag">Anime Hub</span></div>
+          </div>
+          <div class="collage-row">
+            <div class="collage-tile lg"><img src="./assets/waitlist/bottom_left.jpg" alt="" /><span class="tile-tag">Marketplace</span></div>
+            <div class="collage-tile sm"><img src="./assets/waitlist/bottom_right.jpg" alt="" /><span class="tile-tag">Events</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BELOW HERO ===== -->
+<section class="below-hero">
+  <p class="curve-text">Level up your gaming and anime experience with tournaments, exclusive merchandise, and much more. Join V-ENT and unlock a world where fans rule.</p>
+  <span class="below-hero-bar"></span>
+</section>
+
+<!-- ===== WAITLIST SECTION (the new big band) ===== -->
+<section class="waitlist-section" id="waitlist">
+  <div class="shell">
+
+    <div class="ws-head">
+      <span class="ws-eyebrow">Pre-launch <span class="sep"></span> Founding 1,000</span>
+      <h2>Lock <span class="it red">your spot</span>.<br>Claim at launch with one click.</h2>
+      <p>Drop your email and we save it. Optionally reserve your username and identity now. When V-ENT goes live, the same email signs you straight in. No re-signup.</p>
+    </div>
+
+    <div class="ws-grid">
+
+      <!-- left form -->
+      <div class="ws-card">
+
+        <div class="tabs">
+          <button class="tab" data-tab="quick">
+            <span>Quick join</span>
+            <span class="meta">Email only · 5 sec</span>
+          </button>
+          <button class="tab active" data-tab="full">
+            <span>Reserve identity</span>
+            <span class="meta">Lock username + name</span>
+          </button>
+        </div>
+
+        <!-- QUICK PANEL -->
+        <div class="panel" data-panel="quick" style="display:none;">
+          <form onsubmit="event.preventDefault();">
+            <label class="field">
+              <span class="field-label">Email <span class="opt">required</span></span>
+              <input type="email" placeholder="you@vermillion.gg" required />
+            </label>
+            <div class="consent">
+              <input type="checkbox" id="cq" checked />
+              <label for="cq">I want launch updates. Same email = same account at launch. <a href="#">Privacy</a> · <a href="#">Terms</a></label>
+            </div>
+            <button class="submit-wide" type="submit">
+              Join the waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>
+            </button>
+          </form>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <button class="soc-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 4.5c1.95 0 3.62.67 4.96 1.78l-2.01 1.93C14.13 7.58 13.16 7.2 12.04 7.2c-2.69 0-4.88 1.85-4.88 4.8s2.19 4.8 4.88 4.8c2.96 0 4.36-1.85 4.6-3.36h-4.6V11.2h7.62c.1.5.16 1 .16 1.62 0 4-2.7 7.18-7.78 7.18-4.5 0-8.04-3.43-8.04-7.99 0-4.57 3.54-8 8.04-8z"/></svg> Google</button>
+            <button class="soc-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.45 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/></svg> Facebook</button>
+          </div>
+        </div>
+
+        <!-- FULL RESERVE PANEL -->
+        <div class="panel" data-panel="full">
+          <form onsubmit="event.preventDefault();">
+            <label class="field">
+              <span class="field-label">Email <span class="opt">required · the key to your account</span></span>
+              <input type="email" placeholder="you@vermillion.gg" required />
+            </label>
+
+            <div class="row-2">
+              <label class="field">
+                <span class="field-label">Display name <span class="opt">how we'll greet you</span></span>
+                <input type="text" placeholder="Ladi Lawal" />
+              </label>
+              <label class="field">
+                <span class="field-label">Username <span class="opt">held for you</span></span>
+                <div class="username-input">
+                  <span class="prefix">@</span>
+                  <input type="text" placeholder="vermillion_ace" />
+                  <span class="status">Available</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="row-2">
+              <label class="field">
+                <span class="field-label">Favorite game <span class="opt">optional</span></span>
+                <select>
+                  <option>Select a game</option>
+                  <option>FIFA / EA FC</option>
+                  <option>PUBG Mobile</option>
+                  <option>Call of Duty: Mobile</option>
+                  <option>Tekken 8</option>
+                  <option>Mortal Kombat</option>
+                  <option>Apex Legends</option>
+                  <option>Valorant</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Country <span class="opt">optional</span></span>
+                <select>
+                  <option>Select country</option>
+                  <option>Nigeria</option><option>Ghana</option><option>Kenya</option>
+                  <option>South Africa</option><option>Egypt</option><option>Other</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field-label">Set password <span class="opt">optional · speeds up claim</span></span>
+              <input type="password" placeholder="Min 8 characters" />
+            </label>
+
+            <div class="consent">
+              <input type="checkbox" id="cf" checked />
+              <label for="cf">I want launch updates. Data held privately per <a href="#">Privacy Policy</a> · <a href="#">Terms</a>.</label>
+            </div>
+
+            <button class="submit-wide" type="submit">
+              Reserve my spot
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>
+            </button>
+          </form>
+
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <button class="soc-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 4.5c1.95 0 3.62.67 4.96 1.78l-2.01 1.93C14.13 7.58 13.16 7.2 12.04 7.2c-2.69 0-4.88 1.85-4.88 4.8s2.19 4.8 4.88 4.8c2.96 0 4.36-1.85 4.6-3.36h-4.6V11.2h7.62c.1.5.16 1 .16 1.62 0 4-2.7 7.18-7.78 7.18-4.5 0-8.04-3.43-8.04-7.99 0-4.57 3.54-8 8.04-8z"/></svg> Google</button>
+            <button class="soc-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.45 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/></svg> Facebook</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- right column -->
+      <div class="ws-right">
+
+        <div class="position-card">
+          <div class="label">Founding cohort</div>
+          <div class="num"><small>#</small>TBD</div>
+          <div class="sub">Live count drops at launch · Founding 1,000 = badge + VC bonus</div>
+          <div class="position-stats">
+            <div class="stat"><div class="n">Q4 '26</div><div class="l">Launch window</div></div>
+            <div class="stat"><div class="n">+5</div><div class="l">Per referral</div></div>
+          </div>
+        </div>
+
+        <div class="claim-card">
+          <h4>How the claim works</h4>
+          <p class="sub">Your email is the key. Whatever you reserve here is bound to it.</p>
+          <div class="claim-steps">
+            <div class="claim-step">
+              <div class="n">1</div>
+              <div>
+                <h5>Drop email today</h5>
+                <p>5-second join. Optional: lock username + identity.</p>
+              </div>
+            </div>
+            <div class="claim-step">
+              <div class="n">2</div>
+              <div>
+                <h5>We hold it</h5>
+                <p>Username reserved, position locked, data encrypted.</p>
+              </div>
+            </div>
+            <div class="claim-step">
+              <div class="n">3</div>
+              <div>
+                <h5>Claim at launch</h5>
+                <p>One email, one click. Account ready. Same email signs you in.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ref-box">
+          <div class="text"><strong>Skip the line.</strong> Each referral bumps you +5. Top 1,000 = founder badge + VC bonus.</div>
+          <div class="link-row">
+            <div class="link">v-ent.co/r/4F2N9X</div>
+            <button class="copy">Copy</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SPLIT-CARD SECTION (matches original automated-tournaments rhythm) ===== -->
+<section class="split-section">
+  <div class="shell split">
+    <div class="split-left">
+      <div class="sub-h">Automated Tournaments</div>
+      <h3>AI-powered tournaments for gamers.</h3>
+      <p>Compete in automated tournaments for your favorite games. From registration to scoring, our AI-driven system ensures smooth management and real-time updates so you can focus on winning.</p>
+      <a href="#waitlist" class="waitlistBTN">Join the waitlist</a>
+    </div>
+    <div class="split-right">
+      <div class="split-card"><img src="./assets/waitlist/counter_strike_card.webp" alt="" /><span class="tag">Counter Strike · Season 1</span></div>
+      <div class="split-card"><img src="./assets/waitlist/fifa_card.webp" alt="" /><span class="tag">FIFA Pro Cup · Lagos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PHASES ===== -->
+<section class="phases-section">
+  <div class="shell">
+    <div class="phases-head">
+      <div class="sub-h">Roadmap</div>
+      <h3>What ships first.</h3>
+      <p>Each phase only starts when the previous one is stable. Phase 1 lights up the platform; everything stacks on it. Waitlist gets access first.</p>
+    </div>
+    <div class="phases-grid">
+      <div class="phase-card">
+        <div class="pn">PHASE 1 · MVP</div>
+        <h5>Tournaments + Wallet + Admin</h5>
+        <p>Brackets, registration, streaming integration, wallet flows, lightweight admin console.</p>
+        <div class="bar"><div class="fill" style="width:72%"></div></div>
+      </div>
+      <div class="phase-card">
+        <div class="pn">PHASE 2</div>
+        <h5>Events + Vendor Shops</h5>
+        <p>Ticketing, tournament-event linking, vendor onboarding.</p>
+        <div class="bar"><div class="fill" style="width:18%"></div></div>
+      </div>
+      <div class="phase-card">
+        <div class="pn">PHASE 3 · 4 · 5</div>
+        <h5>Shop · Marketplace · Anime</h5>
+        <p>Commerce, peer-to-peer marketplace, anime hub. Staged through 2026 and beyond.</p>
+        <div class="bar"><div class="fill" style="width:6%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOUNDER PERKS ===== -->
+<section class="perks-section">
+  <div class="shell">
+    <div class="perks-head">
+      <h3>What you get for joining <span class="red">early</span>.</h3>
+      <p>The first 1,000 to claim at launch get founder treatment: badge, bonus, and priority access to every feature we ship.</p>
+    </div>
+    <div class="perks-grid">
+      <div class="perk">
+        <div class="ico">★</div>
+        <h5>Founder badge</h5>
+        <p>Permanent profile mark. Visible in every tournament, every chat, every event.</p>
+      </div>
+      <div class="perk">
+        <div class="ico">VC</div>
+        <h5>100 VENT COINS</h5>
+        <p>Welcome bonus credited at launch. Use on entries, tickets, shop.</p>
+      </div>
+      <div class="perk">
+        <div class="ico">↑</div>
+        <h5>Priority access</h5>
+        <p>First wave gets in before public. Lock your username before someone else does.</p>
+      </div>
+      <div class="perk">
+        <div class="ico">∞</div>
+        <h5>Lifetime discount</h5>
+        <p>Founders get 20% off all premium tier upgrades. For life.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ESPORTS (v-entesport.com) ===== -->
+<section class="esports-section">
+  <div class="shell">
+    <div class="esports-grid">
+
+      <div class="esports-copy">
+        <div class="kicker">
+          <img src="./assets/waitlist/esports/logo-red.png" alt="V-ENT Esports mark" />
+          V-ENT Esports <span class="sep"></span> Free Fire Vanguard
+        </div>
+        <div class="esports-stack">
+          <span class="word">FIRST.</span>
+          <span class="word red">TWICE.</span>
+          <span class="word">VANGUARD.</span>
+        </div>
+        <p class="esports-tag">Nigeria's first FFWS + EWC 2025 qualifiers. The only roster to push past Arena mode. The only one to do it twice in a single year.</p>
+        <p class="esports-blurb">V-ENT Esports is our competitive arm. Founded 2023 in Lagos. AFCA Best Esports Team. Roster, schedule, news, gallery, history, jerseys + partner deck live on the team site.</p>
+        <div class="esports-stats">
+          <div class="stat"><div class="n">2023</div><div class="l">Founded</div></div>
+          <div class="stat"><div class="n">Lagos · NG</div><div class="l">HQ</div></div>
+          <div class="stat"><div class="n">FFWS</div><div class="l">Qualifier 2025</div></div>
+          <div class="stat"><div class="n">AFCA</div><div class="l">Best Team</div></div>
+        </div>
+        <a class="esports-cta" href="https://v-entesport.com" target="_blank" rel="noopener noreferrer">
+          Visit v-entesport.com
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </a>
+      </div>
+
+      <div class="esports-collage">
+        <div class="esports-tile featured"><img src="./assets/waitlist/esports/ffws-grand-finals.png" alt="FFWS Grand Finals" /><span class="tile-label">FFWS · Grand Finals</span></div>
+        <div class="esports-tile half"><img src="./assets/waitlist/esports/team-1.jpg" alt="V-ENT Esports team" /><span class="tile-label">The Roster</span></div>
+        <div class="esports-tile half"><img src="./assets/waitlist/esports/team-2.jpg" alt="V-ENT Esports squad" /><span class="tile-label">On Stage</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq-section">
+  <div class="shell">
+    <div class="faq-head">
+      <h3>Honest answers.</h3>
+      <p>Quick read.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>What am I joining?</summary>
+        <p>The V-ENT pre-launch list. We save your email plus any optional details you give us (display name, username, country, favorite game, password). On launch we send a one-click claim link to that email. Clicking it activates a full account with everything you reserved already populated.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do I need to set a password now?</summary>
+        <p>No. Email-only works fine. If you set a password now, claim is one click; if you don't, the launch email contains a magic link. Either way works.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is my username actually reserved?</summary>
+        <p>Yes. Locked against your email. Nobody else can take it. If you don't claim within 30 days of launch, the username releases back to the pool.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How does "skip the line" work?</summary>
+        <p>Each person who joins via your referral link bumps your position +5. Top 1,000 positions at launch get the founder badge + VC bonus.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How do you handle my data?</summary>
+        <p>We only collect what you give us. Stored encrypted. Used only for launch updates and to provision your account. Email <a href="mailto:info@v-ent.co">info@v-ent.co</a> any time to delete your record.</p>
+      </details>
+      <details class="faq-item">
+        <summary>When is launch?</summary>
+        <p>Phase 1 (Tournaments + Wallet + Admin) targets Q4 2026. Waitlist members get access first. Later joiners on a rolling weekly basis.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER (matches original) ===== -->
+<footer class="foot">
+  <div class="shell">
+    <div class="foot-top">
+      <div class="foot-about">
+        <a class="foot-logo" href="#">
+          <span class="lh-logo-mark"><img src="./assets/waitlist/logo_mark_red.svg" alt="V-ENT logo mark" /></span>
+          <h1>v-ent</h1>
+        </a>
+        <p>V-ent is the ultimate esports hub, designed for gamers and enthusiasts alike. It's a place where competitive energy meets community vibes, offering top-tier gaming experiences, tournaments and events.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h3>Contact</h3>
+          <a class="item" href="mailto:info@v-ent.co"><span class="ico">✉</span> info@v-ent.co</a>
+          <div class="item"><span class="ico">☎</span> +234 913 601 7004</div>
+        </div>
+        <div class="foot-col">
+          <h3>Follow Us</h3>
+          <a class="item" href="https://x.com/myventhq" target="_blank" rel="noopener noreferrer"><span class="ico">𝕏</span> @myventhq</a>
+          <a class="item" href="https://instagram.com/myventhq" target="_blank" rel="noopener noreferrer"><span class="ico">◎</span> @myventhq</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© 2026 Vermillion Enterprise (V-ENT)</p>
+      <p>All rights reserved</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const key=t.dataset.tab;
+      document.querySelectorAll('.panel').forEach(p=>{
+        p.style.display=(p.dataset.panel===key)?'block':'none';
+      });
+    });
+  });
+  document.querySelector('.ref-box .copy')?.addEventListener('click',e=>{
+    const link=document.querySelector('.ref-box .link').textContent;
+    navigator.clipboard?.writeText(link);
+    e.target.textContent='Copied';
+    setTimeout(()=>e.target.textContent='Copy',1400);
+  });
+</script>
+
+</body>
+</html>

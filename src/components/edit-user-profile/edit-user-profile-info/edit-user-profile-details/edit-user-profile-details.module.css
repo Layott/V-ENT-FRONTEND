@@ -31,7 +31,7 @@
 .inputGroup textarea,
 .inputGroup input {
   background-color: #46484F;
-  border: 1px solid #95959A;
+
   outline: none;
   font-size: 0.9rem;
   padding: 0.5rem 0.75rem;
@@ -51,7 +51,7 @@
 }
 
 .inputGroup label {
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -59,7 +59,7 @@
 .inputGroup textarea:active,
 .inputGroup input:focus,
 .inputGroup input:active {
-  border: 1px solid white;
+  outline: none;
 }
 
 .inputGroup input::placeholder {

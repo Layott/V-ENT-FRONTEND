@@ -50,7 +50,7 @@
 
 .tournamentFilterContainer p {
   font-size: 1rem;
-  font-family: "ClashGrotesk-ExtraLight", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .filterContainer {
@@ -76,7 +76,7 @@
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
-  border: 1px solid #303136;
+
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -84,7 +84,7 @@
 }
 
 .searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
+  outline: none;
   width: 95%;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: "ClashGrotesk-Extralight", sans-serif;
+  font-family: "Inter", sans-serif;
   color: white;
   font-size: 0.85rem;
 }
@@ -126,7 +126,7 @@
 .gridRow {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) minmax(70px, 90px);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+
 }
 
 .gridRow:last-child {
@@ -151,7 +151,7 @@
 }
 
 .gridItem {
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.8rem;
 }
 
@@ -162,7 +162,7 @@
 }
 
 .gridItemHeader {
-  font-family: "ClashGrotesk-Regular", sans-serif;
+  font-family: "Inter", sans-serif;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -217,12 +217,12 @@
   border-radius: 5px;
   cursor: pointer;
   transition: all ease-in-out 0.5s;
-  border: 1px solid #303136;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .exploreBTN:hover {
   background-color: #212225;
-  border: 1px solid #FFFFFF;
+
 }
 
 .tournamentDetailsContainer {
@@ -243,14 +243,14 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   gap: 1rem;
-  border: 1px solid #5C5C5f;
+
 }
 
 .tournamentDetailsH3 {
   margin-top: 0.5rem;
   font-size: 1rem;
   text-align: center;
-  font-family: "ClashGrotesk-Regular", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .tournamentDetails {
@@ -283,7 +283,7 @@
 .tournamentRecord label {
   display: flex;
   min-width: 120px;
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.8rem;
   justify-content: flex-start;
 }
@@ -347,7 +347,7 @@
 .pageBTN {
   background-color: #131316;
   outline: none;
-  border: 1px solid #131316;
+
   width: 28px;
   height: 30px;
   padding: 5px 9px;
@@ -355,7 +355,7 @@
   cursor: pointer;
   border-radius: 6px;
   transition: all ease-in-out 0.5s;
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -363,25 +363,25 @@
 
 .navIconBTN {
   background-color: #303136;
-  border: 1px solid #303136;
+
   width: 30px;
   padding: 0;
   font-size: 1rem;
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .navIconBTN:hover {
-  border: 1px solid var(--v-ent-red);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .activePage:hover,
 .pageBTN:hover {
-  border: 1px solid #FFFFFF;
+  background-color: rgba(237, 28, 36, 0.14);
 }
 
 .activePage {
   background-color: var(--v-ent-red);
-  border: 1px solid var(--v-ent-red);
+
 }
 
 .navIcon {
@@ -408,7 +408,7 @@
 }
 
 .customSelect {
-  border: 1px solid #303136;
+  background-color: #1a1b1f;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   appearance: none;
@@ -422,7 +422,7 @@
 .customSelect:focus-within,
 .customSelect:focus,
 .customSelect:active {
-  border: 1px solid #303136;
+  background-color: #1a1b1f;
   outline: none;
 }
 

@@ -29,7 +29,7 @@
 }
 
 .header h4 {
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 1rem;
   font-weight: 100;
 }
@@ -59,7 +59,7 @@
 }
 
 .sliderSwitch:focus {
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .sliderSwitch.on {

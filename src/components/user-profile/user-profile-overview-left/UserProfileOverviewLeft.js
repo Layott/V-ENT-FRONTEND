@@ -84,9 +84,7 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
 
       </div>
 
-      <hr className={profileStyles.sectionHr} />
-
-      {/* Gaming Accounts Section */}
+{/* Gaming Accounts Section */}
       <div className={profileStyles.sectionContainer}>
         <div className={profileStyles.sectionHeader}>
           <h4 className={profileStyles.profileH4Header}>Gaming Accounts</h4>
@@ -153,9 +151,7 @@ const UserProfileOverviewLeft = ({ interests = [], gamingAccounts = [], socialLi
 
       </div>
 
-      <hr className={profileStyles.sectionHr} />
-
-      {/* Social Links Section */}
+{/* Social Links Section */}
      <div className={profileStyles.sectionContainer}>
   <div className={profileStyles.sectionHeader}>
     <h4 className={profileStyles.profileH4Header}>Social Links</h4>

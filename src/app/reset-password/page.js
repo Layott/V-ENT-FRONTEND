@@ -71,7 +71,6 @@ const ResetPassword = () => {
                 setSnackbarType('error');
               }
             } catch (error) {
-              console.error('Error reseting password:', error);
               setSnackbarMessage('An error occurred. Please try again.');
               setSnackbarType('error');
             } finally {

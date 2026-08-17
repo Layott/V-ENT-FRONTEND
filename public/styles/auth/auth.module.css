@@ -84,7 +84,7 @@
   height: 3rem;
   font-size: 2rem;
   text-align: center;
-  border: 2px solid #ccc;
+  background-color: #1a1b1f;
   border-radius: 5px;
   color: black;
 }
@@ -138,7 +138,7 @@
   padding: 0.75rem;
   border-radius: 5px;
   background-color: #303136;
-  border: 1px solid #303136;
+
   outline: none;
   color: var(--primary-bg);
   transition: ease-in-out 0.5s all;
@@ -146,7 +146,7 @@
 
 .inputGroup input:focus,
 .inputGroup input:active {
-  border: 1px solid var(--primary-bg);
+  outline: none;
 }
 
 .inputGroup input::placeholder {

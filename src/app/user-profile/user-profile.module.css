@@ -1,91 +1,477 @@
+/* ───────── Profile suite - all V-ENT pages share these tokens ─────────
+   Tokens mirror docs/mockups/profile-*.html. Sidebar/Header/BottomMenu
+   come from the shared layout components.
+*/
+
 .pageContainer {
   width: 100%;
   min-height: 100vh;
-  background-color: #17181A;
+  background-color: #131316;
+  color: #fff;
   overflow-x: hidden;
-  padding-bottom: 3rem;
 }
 
 .mainContainer {
   width: 100%;
+  display: block;
 }
 
 .rightPaneContainer {
   width: 100%;
   margin-top: 60px;
+  padding: 1.5rem 1rem 6rem;
 }
 
-.buttonContainer {
-  display: flex;
-  margin-top: 1rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-.loadingPageBtn{
-  background-color: red;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 15px;
-
-}
-
-.notAllowedBtn{
-  color: gray !important;
-  cursor: not-allowed !important;
-}
-
-.tabBTN {
-  background-color: transparent;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: var(--fw-bold);
-  position: relative;
-  outline: none;
-  width: 33.333%;
-}
-
-.activeTab {
-  border-bottom: 2px solid var(--v-ent-red);
-}
-
-.profileDashboard {
-  min-height: 200px;
-  width: 100%;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.overviewContainer {
-  display: flex;
-  flex-direction: row;
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-@media only screen and (min-width: 768px) {
-  .tabBTN {
-    width: 100px;
-  }
-  .rightPaneContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
-  }
-  .overviewContainer {
-    flex-direction: row;
-  }
-}
-@media only screen and (min-width: 1024px) {
+@media (min-width: 768px) {
   .rightPaneContainer {
     width: calc(100% - 250px);
     margin-left: 250px;
+    padding: 1.5rem 2rem 3rem;
   }
-  .profileDashboard {
-    padding: 1.5rem;
+}
+
+@media (min-width: 1920px) {
+  .rightPaneContainer {
+    max-width: 1640px;
   }
+}
+
+/* ── HERO CARD ── */
+.heroCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.heroBanner {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background-color: #303136;
+  background-size: cover;
+  background-position: center;
+}
+
+.heroBanner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
+}
+
+.heroBannerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.changeBannerBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  background-color: rgba(23, 24, 26, 0.7);
+  backdrop-filter: blur(6px);
+
+  border-radius: 6px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.changeBannerBtn:hover {
+  background-color: rgba(23, 24, 26, 0.9);
+
+}
+
+.heroMeta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.25rem;
+  padding: 0 1.75rem 1.5rem;
+  align-items: flex-start;
+}
+
+.heroIdentity {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-top: -70px;
+  min-width: 0;
+}
+
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background-color: var(--overlay-gray);
+  border: 4px solid var(--overlay-gray);
+  overflow: hidden;
+}
+
+.avatarWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #303136;
+  font-family: "Fraunces", sans-serif;
+  font-size: 2.4rem;
+  color: var(--v-ent-red);
+}
+
+.identityInfo {
+  padding-top: 80px;
+  min-width: 0;
+}
+
+.identityNameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--v-ent-success);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.newBadge {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(212, 175, 55, 0.16);
+  color: #a5d6a7;
+  font-family: "Inter", sans-serif;
+  font-size: 0.65rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.identityHandle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2px;
+}
+
+.identityLoc {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  color: #A7A6A6;
+  margin-top: 0.4rem;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.heroBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  background-color: #303136;
+
+  border-radius: 6px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+
+.heroBtn:hover {
+
+  background-color: #3a3b40;
+}
+
+.heroBtnPrimary {
+  background-color: var(--v-ent-gold);
+
+}
+
+.heroBtnPrimary:hover {
+  background-color: var(--v-ent-light-gold);
+
+}
+
+.heroBtnFollowing {
+  background-color: transparent;
+  color: var(--v-ent-gold);
+
+}
+
+.heroBtnFollowing:hover {
+  background-color: rgba(237, 28, 36, 0.12);
+
+  color: var(--v-ent-red);
+}
+
+.heroIconBtn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background-color: #303136;
+
+  border-radius: 6px;
+  color: #A7A6A6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.heroIconBtn:hover {
+
+  color: #fff;
+}
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background-color: #303136;
+
+  border-radius: 6px;
+  min-width: 180px;
+  z-index: 300;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.moreMenu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.moreMenu button:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.moreMenu .danger {
+  color: var(--v-ent-red);
+
+}
+
+.heroBio {
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #A7A6A6;
+  padding: 0 1.75rem 1.25rem;
+  max-width: 780px;
+}
+
+/* ── PROFILE TABS ── */
+.profileTabs {
+  display: flex;
+  gap: 0.25rem;
+
+  padding: 0 1.75rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.profileTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.profileTab {
+  position: relative;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: none;
+  color: #A7A6A6;
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.profileTab:hover {
+  color: #fff;
+}
+
+.profileTabActive {
+  color: #fff;
+  font-family: "Fraunces", sans-serif;
+  font-weight: 600;
+}
+
+.profileTabActive::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--v-ent-red);
+  border-radius: 2px;
+}
+
+.tabCount {
+  margin-left: 0.4rem;
+  font-size: 0.68rem;
+  background-color: #303136;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0.12rem 0.5rem;
+  border-radius: 20px;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── SUB TABS (Activity) ── */
+.subTabs {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  background-color: var(--overlay-gray);
+
+  border-radius: 8px;
+  margin: 1.25rem 0;
+}
+
+.subTab {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #A7A6A6;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.subTab:hover {
+  color: #fff;
+}
+
+.subTabActive {
+  background-color: #303136;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── PANEL CONTENT ── */
+.panelArea {
+  margin-top: 1.25rem;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #303136;
+
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: toastIn 0.2s ease;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ── LOADING / ERROR ── */
+.loadingState,
+.errorState {
+  margin-top: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 60px);
+  color: #A7A6A6;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .heroBanner { height: 200px; }
+  .heroMeta { grid-template-columns: 1fr; padding: 0 1.25rem 1.25rem; }
+  .heroBio { padding: 0 1.25rem 1.25rem; }
+  .profileTabs { padding: 0 1.25rem; }
+  .heroIdentity { gap: 1rem; margin-top: -55px; }
+  .avatarWrap { width: 110px; height: 110px; }
+  .identityInfo { padding-top: 60px; }
+  .identityNameRow { font-size: 1.2rem; }
+  .heroActions { width: 100%; }
+  .heroBtn { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .rightPaneContainer { padding: 1rem 0.75rem 6rem; }
+  .heroBanner { height: 160px; }
+  .heroMeta, .heroBio { padding-left: 1rem; padding-right: 1rem; }
+  .profileTabs { padding: 0 1rem; }
+  .avatarWrap { width: 96px; height: 96px; border-width: 3px; }
+  .identityInfo { padding-top: 52px; }
+  .heroIdentity { margin-top: -48px; }
+  .identityNameRow { font-size: 1.1rem; }
+  .changeBannerBtn { padding: 0.4rem 0.65rem; font-size: 0.7rem; }
+  .changeBannerBtn span { display: none; }
 }

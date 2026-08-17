@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT — Profile · Image Gallery (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    :root {
+      --v-ent-red:       #ED1C24;
+      --v-ent-light-red: #FF3B45;
+      --v-ent-grn:       #2E8B3E;
+      --v-ent-light-grn: #3FB554;
+      --overlay-gray:    #212225;
+      --surface-2:       #303136;
+      --page-bg:         #131316;
+      --header-bg:       #17181A;
+      --border-subtle:   rgba(255,255,255,0.25);
+      --border-faint:    rgba(255,255,255,0.08);
+      --text-white:      #ffffff;
+      --text-muted:      #A7A6A6;
+      --text-dim:        rgba(255,255,255,0.45);
+      --active-nav-bg:   rgba(237,28,36,0.24);
+      --coming-soon-bg:  rgba(251,198,75,0.24);
+      --coming-soon-col: rgba(251,198,75,0.9);
+      --sidebar-w:       250px;
+      --header-h:        60px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top:0; left:0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .logo-container { width:100%; height:var(--header-h); display:flex; align-items:center; }
+    .logo-link { display:flex; align-items:center; gap:0.25rem; padding-left:1rem; text-decoration:none; width:100%; }
+    .logo-img  { height:25px; width:auto; }
+    .logo-text { font-family:"ClashGrotesk-Medium",sans-serif; font-weight:700; font-size:1.75rem; color:var(--v-ent-red); }
+    .sidebar-nav { margin-top:0.25rem; padding-bottom:1rem; }
+    .sidebar-list { display:flex; flex-direction:column; align-items:center; gap:0.6rem; list-style:none; padding:0; }
+    .sidebar-item { display:flex; min-height:20px; align-items:center; gap:0.5rem; width:calc(100% - 1.5rem); border-radius:5px; transition:all 0.3s; border:1px solid transparent; }
+    .sidebar-item:hover { border-color:#6e6e6e; }
+    .sidebar-item.active-item { background-color:var(--active-nav-bg); }
+    .nav-link { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; border-radius:5px; text-decoration:none; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-white); }
+    .nav-icon { width:0.9rem; height:0.9rem; flex-shrink:0; }
+    .disabled-item { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; cursor:not-allowed; }
+    .disabled-label { display:flex; align-items:center; gap:0.5rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-muted); }
+    .coming-soon { font-size:0.6rem; background-color:var(--coming-soon-bg); color:var(--coming-soon-col); padding:3px 5px; border-radius:3px; }
+
+    /* ── HEADER ── */
+    .header {
+      position:fixed; top:0; left:var(--sidebar-w); right:0;
+      height:var(--header-h); background-color:var(--header-bg);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 1.5rem 0 2rem; z-index:100;
+      gap:1rem;
+    }
+    .header-title-wrap { display:flex; align-items:center; gap:0.6rem; min-width:0; }
+    .back-btn {
+      width:32px; height:32px; border-radius:6px; background:var(--surface-2);
+      border:1px solid var(--border-faint); color:var(--text-white); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; transition:border-color 0.2s;
+      flex-shrink:0;
+    }
+    .back-btn:hover { border-color:#6e6e6e; }
+    .header-title-block { display:flex; flex-direction:column; min-width:0; }
+    .header-title { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:1.1rem; font-weight:600; line-height:1.1; }
+    .breadcrumb { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-top:0.15rem; }
+    .breadcrumb a { color:var(--text-dim); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--text-white); }
+    .breadcrumb .crumb-active { color:var(--v-ent-red); }
+    .breadcrumb .sep { margin:0 0.35rem; opacity:0.6; }
+
+    .header-right { display:flex; align-items:center; gap:0.75rem; }
+    .header-search { display:flex; align-items:center; background-color:var(--surface-2); border-radius:5px; padding:5px 12px; gap:0.4rem; border:1px solid var(--surface-2); }
+    .header-search input { background:transparent; border:none; outline:none; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; width:200px; }
+    .header-search input::placeholder { color:var(--text-dim); }
+    .vc-pill { display:flex; align-items:center; gap:0.4rem; background-color:var(--surface-2); border-radius:5px; padding:6px 10px; border:1px solid var(--border-faint); }
+    .vc-dot { width:14px; height:14px; border-radius:50%; background:rgba(251,198,75,0.95); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#000; font-weight:700; }
+    .vc-amount { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:0.85rem; }
+    .vc-label { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.6rem; color:var(--text-dim); }
+    .user-info { display:flex; flex-direction:column; align-items:flex-end; }
+    .user-name   { font-size:0.85rem; font-weight:700; }
+    .user-handle { font-size:0.65rem; color:var(--text-dim); }
+    .user-avatar { width:35px; height:35px; border-radius:50%; background-color:var(--overlay-gray); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.75rem; cursor:pointer; }
+    .user-avatar img { width:35px; height:35px; object-fit:cover; border-radius:50%; pointer-events:none; }
+    .user-details { position:relative; display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
+    .caret-icon { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid rgba(255,255,255,0.6); flex-shrink:0; }
+
+    /* ── CONTENT ── */
+    .content {
+      margin-left:var(--sidebar-w);
+      margin-top:var(--header-h);
+      padding:2rem;
+      min-height:calc(100vh - var(--header-h));
+    }
+    .page-wrap {
+      max-width:1280px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:1.5rem;
+    }
+
+    /* ── PROFILE HEADER STRIP ── */
+    .profile-banner-card {
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:12px;
+      overflow:hidden;
+      position:relative;
+    }
+    .banner-img-wrap {
+      width:100%; height:240px;
+      position:relative;
+      background-color:var(--surface-2);
+      overflow:hidden;
+    }
+    .banner-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+    .banner-upload-btn {
+      position:absolute; top:1rem; right:1rem;
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.5rem 0.85rem;
+      background-color:rgba(0,0,0,0.55);
+      border:1px solid rgba(255,255,255,0.18);
+      backdrop-filter:blur(8px);
+      border-radius:6px;
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.78rem;
+      cursor:pointer; transition:background 0.2s, border-color 0.2s;
+    }
+    .banner-upload-btn:hover { background-color:rgba(0,0,0,0.75); border-color:rgba(255,255,255,0.3); }
+
+    .profile-row {
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:1.25rem; padding:0 1.75rem 1.5rem; flex-wrap:wrap;
+      margin-top:-46px; position:relative; z-index:2;
+    }
+    .profile-id-block {
+      display:flex; align-items:flex-end; gap:1.25rem;
+      flex:1; min-width:0;
+    }
+    .profile-avatar-wrap {
+      position:relative;
+      width:120px; height:120px;
+      border-radius:50%;
+      border:4px solid var(--page-bg);
+      background-color:var(--surface-2);
+      overflow:hidden;
+      flex-shrink:0;
+    }
+    .profile-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
+    .avatar-cam-btn {
+      position:absolute; bottom:6px; right:6px;
+      width:28px; height:28px; border-radius:50%;
+      background-color:var(--surface-2);
+      border:1.5px solid var(--page-bg);
+      color:var(--text-white);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+    }
+    .profile-id-text { padding-bottom:0.5rem; min-width:0; }
+    .profile-name {
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+      font-size:1.4rem; font-weight:600; line-height:1.1;
+    }
+    .profile-handle {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.88rem; color:var(--text-muted);
+      margin-top:0.2rem;
+    }
+    .profile-loc {
+      display:flex; align-items:center; gap:0.3rem;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.78rem; color:var(--v-ent-red);
+      margin-top:0.4rem;
+    }
+    .profile-actions {
+      display:flex; gap:0.5rem; padding-bottom:0.5rem; flex-wrap:wrap;
+    }
+    .pa-btn {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.55rem 1rem;
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:6px;
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.82rem;
+      cursor:pointer; transition:border-color 0.2s, background 0.2s;
+    }
+    .pa-btn:hover { border-color:#6e6e6e; }
+
+    .profile-bio {
+      padding:0 1.75rem 1.5rem;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.9rem; line-height:1.55;
+      color:var(--text-muted);
+      max-width:780px;
+    }
+
+    /* ── TABS ROW ── */
+    .tabs-row {
+      display:flex; gap:0.25rem;
+      border-bottom:1px solid var(--border-faint);
+      overflow-x:auto;
+    }
+    .tabs-row::-webkit-scrollbar { display:none; }
+    .tab-btn {
+      position:relative;
+      padding:0.85rem 1.1rem;
+      background:transparent; border:none;
+      color:var(--text-muted);
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.92rem;
+      cursor:pointer; white-space:nowrap;
+      transition:color 0.2s;
+    }
+    .tab-btn:hover { color:var(--text-white); }
+    .tab-btn.on {
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+    }
+    .tab-btn.on::after {
+      content:""; position:absolute; left:1.1rem; right:1.1rem; bottom:-1px;
+      height:2px; background-color:var(--v-ent-red); border-radius:2px;
+    }
+
+    /* ── GALLERY HEAD (filter chips + count) ── */
+    .gallery-head {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:1rem; flex-wrap:wrap;
+    }
+    .filter-chips { display:flex; gap:0.4rem; flex-wrap:wrap; }
+    .chip {
+      padding:0.45rem 0.9rem;
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:999px;
+      color:var(--text-muted);
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.78rem;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .chip:hover { border-color:#6e6e6e; color:var(--text-white); }
+    .chip.on {
+      background-color:var(--active-nav-bg);
+      border-color:rgba(237,28,36,0.5);
+      color:var(--text-white);
+    }
+    .gallery-count {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.78rem; color:var(--text-dim);
+    }
+    .gallery-count strong { color:var(--text-white); font-family:"ClashGrotesk-Semibold",sans-serif; }
+
+    /* ── GALLERY GRID ── */
+    .gallery-grid {
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:1rem;
+    }
+    .gallery-tile {
+      position:relative;
+      border-radius:10px;
+      overflow:hidden;
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      cursor:pointer;
+    }
+    .gallery-tile.ratio-square  { aspect-ratio:1 / 1; }
+    .gallery-tile.ratio-land    { aspect-ratio:4 / 3; }
+    .gallery-tile.ratio-portrait { aspect-ratio:3 / 4; }
+    .gallery-tile img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      transition:transform 0.4s ease;
+    }
+    .gallery-tile:hover img { transform:scale(1.04); }
+    .tile-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.75) 100%);
+      opacity:0; transition:opacity 0.25s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .gallery-tile:hover .tile-overlay { opacity:1; }
+    .tile-view-icon {
+      width:44px; height:44px; border-radius:50%;
+      background-color:rgba(0,0,0,0.6);
+      border:1px solid rgba(255,255,255,0.3);
+      backdrop-filter:blur(6px);
+      display:flex; align-items:center; justify-content:center;
+      transform:scale(0.85);
+      transition:transform 0.25s;
+    }
+    .gallery-tile:hover .tile-view-icon { transform:scale(1); }
+    .tile-meta {
+      position:absolute; left:0.85rem; right:0.85rem; bottom:0.7rem;
+      opacity:0; transform:translateY(6px);
+      transition:opacity 0.25s, transform 0.25s;
+    }
+    .gallery-tile:hover .tile-meta { opacity:1; transform:translateY(0); }
+    .tile-tag {
+      display:inline-block;
+      padding:0.18rem 0.55rem;
+      background-color:rgba(237,28,36,0.85);
+      color:#fff; font-size:0.66rem;
+      border-radius:3px;
+      font-family:"ClashGrotesk-Medium",sans-serif;
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+    .tile-tag.ev { background-color:rgba(76,175,80,0.85); }
+    .tile-tag.hl { background-color:rgba(251,198,75,0.85); color:#1a1a1a; }
+    .tile-caption {
+      margin-top:0.3rem;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.78rem; color:#fff;
+      line-height:1.25;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    /* Upload tile (first) */
+    .upload-tile {
+      aspect-ratio:1 / 1;
+      border:1.5px dashed var(--border-subtle);
+      background-color:var(--overlay-gray);
+      border-radius:10px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:0.6rem;
+      color:var(--text-muted);
+      cursor:pointer;
+      transition:border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .upload-tile:hover {
+      border-color:var(--v-ent-red);
+      background-color:rgba(237,28,36,0.04);
+      color:var(--text-white);
+    }
+    .upload-plus {
+      width:42px; height:42px; border-radius:50%;
+      background-color:var(--surface-2);
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.2s;
+    }
+    .upload-tile:hover .upload-plus { background-color:rgba(237,28,36,0.15); }
+    .upload-label {
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.85rem;
+    }
+    .upload-hint {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.7rem; color:var(--text-dim);
+    }
+
+    /* ── BOTTOM MENU (mobile) ── */
+    .bottom-menu {
+      display:none;
+      position:fixed; bottom:0; left:0; right:0;
+      background-color:var(--page-bg);
+      border-top:1px solid var(--border-subtle);
+      height:60px;
+      align-items:center; justify-content:space-around;
+      z-index:200;
+      padding:0 0.5rem;
+    }
+    .bm-item {
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+      color:var(--text-muted);
+      text-decoration:none;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.62rem;
+      padding:0.4rem 0.5rem;
+      border-radius:6px;
+      min-width:56px;
+    }
+    .bm-item.on { color:var(--v-ent-red); }
+    .bm-item svg { width:18px; height:18px; }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 1920px) {
+      .page-wrap { max-width:1480px; }
+      .gallery-grid { gap:1.25rem; }
+      .banner-img-wrap { height:280px; }
+    }
+
+    @media (max-width: 1280px) {
+      .page-wrap { max-width:100%; }
+    }
+
+    @media (max-width: 1024px) {
+      .gallery-grid { grid-template-columns:repeat(3, 1fr); }
+      .header-search input { width:140px; }
+      .banner-img-wrap { height:200px; }
+      .profile-row { margin-top:-40px; }
+      .profile-avatar-wrap { width:100px; height:100px; }
+    }
+
+    @media (max-width: 900px) {
+      .profile-actions { width:100%; padding-bottom:0; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display:none; }
+      .header { left:0; padding:0 1rem; }
+      .header-search { display:none; }
+      .vc-pill { display:none; }
+      .user-info { display:none; }
+      .content { margin-left:0; padding:1.25rem 1rem 5.5rem; }
+      .page-wrap { gap:1.1rem; }
+      .gallery-grid { grid-template-columns:repeat(2, 1fr); gap:0.75rem; }
+      .banner-img-wrap { height:160px; }
+      .banner-upload-btn { padding:0.4rem 0.7rem; font-size:0.7rem; top:0.75rem; right:0.75rem; }
+      .profile-row { padding:0 1rem 1.1rem; margin-top:-34px; gap:0.8rem; }
+      .profile-bio { padding:0 1rem 1.1rem; font-size:0.85rem; }
+      .profile-id-block { gap:0.85rem; }
+      .profile-avatar-wrap { width:84px; height:84px; border-width:3px; }
+      .profile-name { font-size:1.15rem; }
+      .pa-btn { padding:0.5rem 0.85rem; font-size:0.78rem; }
+      .tab-btn { padding:0.7rem 0.8rem; font-size:0.85rem; }
+      .gallery-head { gap:0.6rem; }
+      .chip { padding:0.4rem 0.75rem; font-size:0.72rem; }
+      .bottom-menu { display:flex; }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns:1fr; gap:0.85rem; }
+      .gallery-tile.ratio-portrait { aspect-ratio:4 / 3; }
+      .upload-tile { aspect-ratio:4 / 3; }
+      .profile-row { flex-direction:column; align-items:stretch; }
+      .profile-actions { justify-content:stretch; }
+      .pa-btn { flex:1; justify-content:center; }
+      .header-title { font-size:0.95rem; }
+      .breadcrumb { font-size:0.62rem; }
+      .content { padding:1rem 0.75rem 5.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+      </li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Profile
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Events
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Teams
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Rankings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+          Wallets
+        </a>
+      </li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>Anime</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Community</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01"/></svg>Organizations</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Marketplace</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Shop</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="header">
+  <div class="header-title-wrap">
+    <button class="back-btn" title="Back" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title-block">
+      <span class="header-title">My Profile</span>
+      <div class="breadcrumb">
+        <a href="#">Home</a>
+        <span class="sep">/</span>
+        <a href="#">Profile</a>
+        <span class="sep">/</span>
+        <span class="crumb-active">Image Gallery</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search tournaments, events, users..." />
+    </div>
+    <div class="vc-pill" title="VENT COINS balance">
+      <div class="vc-dot">V</div>
+      <div style="display:flex; flex-direction:column; line-height:1;">
+        <span class="vc-amount">526</span>
+        <span class="vc-label">v-ent coins</span>
+      </div>
+    </div>
+    <div class="user-details" id="profile-trigger">
+      <div class="user-info">
+        <span class="user-name">Nathan Drake</span>
+        <span class="user-handle">@frostbite</span>
+      </div>
+      <div class="user-avatar">
+        <img src="https://i.pravatar.cc/80?img=12" alt="ND" onerror="this.style.display='none';this.parentElement.textContent='ND'" />
+      </div>
+      <div class="caret-icon"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<main class="content">
+  <div class="page-wrap">
+
+    <!-- ─── Profile header strip ─── -->
+    <section class="profile-banner-card">
+      <div class="banner-img-wrap">
+        <img src="https://picsum.photos/seed/vent-gal-banner/1600/400" alt="Profile banner" />
+        <button class="banner-upload-btn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Upload banner
+        </button>
+      </div>
+
+      <div class="profile-row">
+        <div class="profile-id-block">
+          <div class="profile-avatar-wrap">
+            <img src="https://i.pravatar.cc/240?img=12" alt="Nathan Drake" />
+            <button class="avatar-cam-btn" type="button" title="Change avatar">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+          </div>
+          <div class="profile-id-text">
+            <div class="profile-name">Nathan Drake</div>
+            <div class="profile-handle">@frostbite</div>
+            <div class="profile-loc">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Lagos, Nigeria
+            </div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="pa-btn" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+          <button class="pa-btn" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <p class="profile-bio">
+        Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether
+        it's dominating in-game or leveling up your project with killer design, I'm here to make it happen.
+        Let's team up and create something epic!
+      </p>
+    </section>
+
+    <!-- ─── Tabs row ─── -->
+    <nav class="tabs-row" role="tablist">
+      <button class="tab-btn" type="button" role="tab">Overview</button>
+      <button class="tab-btn" type="button" role="tab">Activity</button>
+      <button class="tab-btn on" type="button" role="tab" aria-selected="true">Image Gallery</button>
+      <button class="tab-btn" type="button" role="tab">Social Links</button>
+      <button class="tab-btn" type="button" role="tab">Favorite Games</button>
+    </nav>
+
+    <!-- ─── Filter chips + count ─── -->
+    <div class="gallery-head">
+      <div class="filter-chips" id="filter-chips">
+        <button class="chip on"  data-filter="all"         type="button">All</button>
+        <button class="chip"     data-filter="tournaments" type="button">Tournaments</button>
+        <button class="chip"     data-filter="events"      type="button">Events</button>
+        <button class="chip"     data-filter="highlights"  type="button">Highlights</button>
+      </div>
+      <div class="gallery-count">
+        <strong id="img-count">12</strong> photos
+      </div>
+    </div>
+
+    <!-- ─── Gallery grid ─── -->
+    <div class="gallery-grid" id="gallery-grid">
+
+      <!-- Upload CTA tile -->
+      <div class="upload-tile" role="button" tabindex="0" onclick="alert('Upload flow goes here')">
+        <div class="upload-plus">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="upload-label">Upload Image</div>
+        <div class="upload-hint">JPG, PNG · max 5MB</div>
+      </div>
+
+      <!-- 12 photo tiles. Mixed aspect: square / land / portrait -->
+      <figure class="gallery-tile ratio-land" data-cat="tournaments">
+        <img src="https://picsum.photos/seed/vent-gal-01/800/600" alt="Tournament moment" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag">Tournament</span>
+            <div class="tile-caption">Lagos Open · grand finals stage</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-square" data-cat="events">
+        <img src="https://picsum.photos/seed/vent-gal-02/600/600" alt="Event crowd" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag ev">Event</span>
+            <div class="tile-caption">VENT Anime Con · cosplay floor</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-portrait" data-cat="highlights">
+        <img src="https://picsum.photos/seed/vent-gal-03/600/800" alt="Highlight clip" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag hl">Highlight</span>
+            <div class="tile-caption">Clutch 1v3 · Valorant ranked</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-land" data-cat="tournaments">
+        <img src="https://picsum.photos/seed/vent-gal-04/800/600" alt="Tournament moment" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag">Tournament</span>
+            <div class="tile-caption">FIFA Champions League · semi</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-square" data-cat="highlights">
+        <img src="https://picsum.photos/seed/vent-gal-05/600/600" alt="Highlight" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag hl">Highlight</span>
+            <div class="tile-caption">Setup reveal · ultra-wide rig</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-land" data-cat="events">
+        <img src="https://picsum.photos/seed/vent-gal-06/800/600" alt="Event panel" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag ev">Event</span>
+            <div class="tile-caption">VENT Devs panel · Q&amp;A session</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-portrait" data-cat="tournaments">
+        <img src="https://picsum.photos/seed/vent-gal-07/600/800" alt="Trophy lift" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag">Tournament</span>
+            <div class="tile-caption">Trophy lift · regional champion</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-square" data-cat="highlights">
+        <img src="https://picsum.photos/seed/vent-gal-08/600/600" alt="Squad shot" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag hl">Highlight</span>
+            <div class="tile-caption">Squad photo · post-match smiles</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-land" data-cat="events">
+        <img src="https://picsum.photos/seed/vent-gal-09/800/600" alt="Event stage" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag ev">Event</span>
+            <div class="tile-caption">Main stage lights · keynote</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-portrait" data-cat="highlights">
+        <img src="https://picsum.photos/seed/vent-gal-10/600/800" alt="Solo portrait" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag hl">Highlight</span>
+            <div class="tile-caption">Headset on · ranked grind</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-square" data-cat="tournaments">
+        <img src="https://picsum.photos/seed/vent-gal-11/600/600" alt="Match concentration" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag">Tournament</span>
+            <div class="tile-caption">Focus mode · final round</div>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="gallery-tile ratio-land" data-cat="highlights">
+        <img src="https://picsum.photos/seed/vent-gal-12/800/600" alt="Behind the scenes" loading="lazy" />
+        <div class="tile-overlay">
+          <div class="tile-view-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="tile-meta">
+            <span class="tile-tag hl">Highlight</span>
+            <div class="tile-caption">Behind the scenes · stream night</div>
+          </div>
+        </div>
+      </figure>
+
+    </div>
+  </div>
+</main>
+
+<!-- ═══════ BOTTOM MENU (mobile) ═══════ -->
+<nav class="bottom-menu">
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
+  <a class="bm-item on" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Profile
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/></svg>
+    Tournaments
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Events
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+    Wallet
+  </a>
+</nav>
+
+<script>
+  // Filter-chip behavior (visual only)
+  const chips = document.querySelectorAll('#filter-chips .chip');
+  const tiles = document.querySelectorAll('#gallery-grid .gallery-tile');
+  const counter = document.getElementById('img-count');
+  chips.forEach(c => c.addEventListener('click', () => {
+    chips.forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    const f = c.dataset.filter;
+    let shown = 0;
+    tiles.forEach(t => {
+      const match = (f === 'all') || (t.dataset.cat === f);
+      t.style.display = match ? '' : 'none';
+      if (match) shown++;
+    });
+    counter.textContent = shown;
+  }));
+
+  // Tabs (visual only)
+  document.querySelectorAll('.tab-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    })
+  );
+</script>
+
+</body>
+</html>

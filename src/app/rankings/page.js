@@ -1,9 +1,11 @@
 'use client'
 
+import { Suspense } from 'react'
 import Header from '@/components/header/Header'
-import MobileHeader from '@/components/mobile-header/MobileHeader';
+import MobileHeader from '@/components/mobile-header/MobileHeader'
 import Sidebar from '@/components/sidebar/Sidebar'
 import BottomMenu from '@/components/bottom-menu/BottomMenu'
+import RankingsView from './RankingsView'
 import styles from './ranking.module.css'
 
 const Rankings = () => {
@@ -16,20 +18,13 @@ const Rankings = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <div className={styles.header}>
-            <h3>Rankings Page</h3>
-
-            <div className={styles.searchFilterContainer}>
-                Filter and Search
-            </div>
-          </div>
-
+          <Suspense fallback={<p className={styles.loadingText}>Loading rankings…</p>}>
+            <RankingsView />
+          </Suspense>
         </div>
-
       </main>
 
       <BottomMenu />
-      
     </div>
   )
 }

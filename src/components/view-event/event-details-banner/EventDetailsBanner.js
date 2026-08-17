@@ -8,7 +8,7 @@ import { PiMoneyWavy } from "react-icons/pi";
 import { RiShare2Fill } from "react-icons/ri";
 import bannerDetailsStyles from '@/view-/details-banner/tournament-details-banner.module.css'
 
-const EventDetailsBanner = ({ event }) => {
+const EventDetailsBanner = ({ event, onBookNow }) => {
   const [bannerUrl, setBannerUrl] = useState(tournamentDetailsBanner);
   const { data: session } = useSession();
   
@@ -174,8 +174,18 @@ const EventDetailsBanner = ({ event }) => {
           <button className={bannerDetailsStyles.shareBTN}>
             <RiShare2Fill className={bannerDetailsStyles.shareIcon} /> Share
           </button>
-          <Link 
-            href={`/events/register-event?id=${event.event_id || event.id}`} 
+          {onBookNow && (
+            <button
+              onClick={onBookNow}
+              className={`${bannerDetailsStyles.joinTournamentBTN} goldBTN`}
+              style={{ border: 'none', cursor: 'pointer' }}
+              type="button"
+            >
+              Book now
+            </button>
+          )}
+          <Link
+            href={`/events/register-event?id=${event.event_id || event.id}`}
             className={bannerDetailsStyles.joinTournamentBTN}
           >
             Register for Event

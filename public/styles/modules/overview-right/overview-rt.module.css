@@ -191,7 +191,7 @@
 }
 
 .socialLinks {
-  border: 1px solid #303136;
+
   padding: 7.5px 16px;
   display: flex;
   flex-direction: row;
@@ -202,7 +202,7 @@
 }
 
 .socialLinks:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .socialLinksListContainer {
@@ -224,7 +224,7 @@
 .linkToBeCopied {
   font-size: 0.8rem;
   background-color: #303136;
-  border: 1px solid #303136;
+
   padding: 10px 13px;
   border-radius: 5px;
   width: calc(100% - 87px);
@@ -250,11 +250,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: border 0.5s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  border: 1px solid #B2B3BD;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .getDirectionBTN:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .getDirectionBTN:active {
@@ -275,7 +275,7 @@
 .copyBTN {
   outline: none;
   background-color: #212225;
-  border: 1px solid #B2B3BD;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -294,7 +294,7 @@
 }
 
 .copyBTN:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .copySpan {

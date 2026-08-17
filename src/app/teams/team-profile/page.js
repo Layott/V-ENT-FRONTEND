@@ -1,25 +1,132 @@
 'use client'
 
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Sidebar from '@/components/sidebar/Sidebar';
-import Header from '@/components/header/Header';
-import MobileHeader from '@/components/mobile-header/MobileHeader';
-import TeamProfileBanner from '@/components/team-profile/team-profile-banner/TeamProfileBanner';
-import TeamProfileBio from '@/components/team-profile/team-profile-bio/TeamProfileBio';
-import TeamProfileOverviewLeft from '@/components/team-profile/team-profile-overview-left/TeamProfileOverviewLeft';
-import TeamProfileOverviewRight from '@/components/team-profile/team-profile-overview-right/TeamProfileOverviewRight';
-import TeamProfileGallery from '@/components/team-profile/team-profile-gallery/TeamProfileGallery';
-import TeamProfileActivity from '@/components/team-profile/team-profile-activity/TeamProfileActivity';
-import TeamProfileMembers from '@/components/team-profile/team-profile-members/TeamProfileMembers';
-import BottomMenu from '@/components/bottom-menu/BottomMenu';
-import tabStyles from '@/styles/modules/tabs/tabs.module.css';
+import { useState, useEffect, Suspense, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import Sidebar from '@/components/sidebar/Sidebar'
+import Header from '@/components/header/Header'
+import MobileHeader from '@/components/mobile-header/MobileHeader'
+import BottomMenu from '@/components/bottom-menu/BottomMenu'
+import TeamProfileHero from '@/components/team-profile/TeamProfileHero'
+import TeamProfileOverview from '@/components/team-profile/TeamProfileOverview'
+import TeamProfileMembersTable from '@/components/team-profile/TeamProfileMembersTable'
+import TeamProfileTournaments from '@/components/team-profile/TeamProfileTournaments'
+import TeamProfileEvents from '@/components/team-profile/TeamProfileEvents'
+import TeamProfileStats from '@/components/team-profile/TeamProfileStats'
+import TeamProfileRequests from '@/components/team-profile/TeamProfileRequests'
 import styles from './team-profile.module.css'
 
+const ALL_TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'members', label: 'Members' },
+  { id: 'tournaments', label: 'Activity Tournaments' },
+  { id: 'events', label: 'Activity Events' },
+  { id: 'stats', label: 'Stats' },
+  { id: 'requests', label: 'Requests', ownerOnly: true },
+]
+
 const TeamProfileContent = () => {
-  const [activeTab, setActiveTab] = useState('members')
-  const searchParams = useSearchParams();
-  const teamId = searchParams.get('id');
+  const searchParams = useSearchParams()
+  const teamId = searchParams.get('id') || ''
+  const { data: session } = useSession()
+
+  const [team, setTeam] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [requestState, setRequestState] = useState(null) // 'pending' | 'success' | null
+  const [toast, setToast] = useState('')
+
+  const fetchTeam = useCallback(async () => {
+    if (!session?.user?.sessionToken) return
+    if (!teamId) {
+      setLoading(false)
+      setError('Missing team id')
+      return
+    }
+    try {
+      setLoading(true)
+      const headers = { 'Content-Type': 'application/json' }
+      if (session?.user?.sessionToken) headers['Authorization'] = `Bearer ${session.user.sessionToken}`
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/team/view-team/${teamId}/`,
+        { headers }
+      )
+      if (!res.ok) throw new Error(`Failed to load team (${res.status})`)
+      const data = await res.json()
+      const t = data?.data?.team ?? data?.data ?? null
+      if (!t) throw new Error('Team not found')
+      setTeam(t)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [teamId, session])
+
+  useEffect(() => { fetchTeam() }, [fetchTeam])
+
+  const showToast = (msg) => {
+    setToast(msg)
+    window.setTimeout(() => setToast(''), 2200)
+  }
+
+  const isOwner =
+    !!team && (
+      team?.owner?.id === session?.user?.id ||
+      team?.owner?.username === session?.user?.username ||
+      team?.owner?.user_id === session?.user?.id
+    )
+
+  const handleRequestJoin = async () => {
+    setRequestState('loading')
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/team/request-join/${teamId}/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          },
+          body: JSON.stringify({}),
+        }
+      )
+      const data = await res.json()
+      if (data?.status === 'success') {
+        setRequestState('pending')
+        showToast('Request sent')
+      } else {
+        setRequestState(null)
+        showToast(data?.message || 'Request failed')
+      }
+    } catch {
+      setRequestState(null)
+      showToast('Network error')
+    }
+  }
+
+  const handleLeaveTeam = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/team/leave/${teamId}/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          },
+        }
+      )
+      const data = await res.json()
+      if (data?.status === 'success') showToast('Left team')
+      else showToast(data?.message || 'Could not leave')
+    } catch {
+      showToast('Network error')
+    }
+  }
+
+  const visibleTabs = ALL_TABS.filter((t) => !t.ownerOnly || isOwner)
 
   return (
     <div className={styles.pageContainer}>
@@ -30,82 +137,63 @@ const TeamProfileContent = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <TeamProfileBanner teamId={teamId} />
-          <TeamProfileBio teamId={teamId} />
+          {loading && <p className={styles.stateText}>Loading team…</p>}
+          {!loading && error && <p className={styles.errorText}>{error}</p>}
 
-          <div className={tabStyles.buttonContainer}>
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'overview' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
+          {!loading && !error && team && (
+            <>
+              <TeamProfileHero
+                team={team}
+                isOwner={isOwner}
+                requestState={requestState}
+                onRequestJoin={handleRequestJoin}
+                onLeave={handleLeaveTeam}
+              />
 
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'members' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('members')}
-            >
-              Members
-            </button>
-
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'activity' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('activity')}
-            >
-              Activity
-            </button>
-
-            <button
-              className={`${tabStyles.tabBTN} ${activeTab === 'stats' ? tabStyles.activeTab : ''}`}
-              onClick={() => setActiveTab('stats')}
-            >
-              Stats
-            </button>
-          </div>
-
-          <div className={tabStyles.detailsDashboard}>
-            {activeTab === 'overview' && (
-              <div className={styles.overviewContainer}>
-                <TeamProfileOverviewLeft teamId={teamId} />
-                <TeamProfileOverviewRight teamId={teamId} />
+              <div className={styles.tabsRow}>
+                {visibleTabs.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab(t.id)}
+                  >
+                    {t.label}
+                    {t.id === 'requests' && team?._pendingRequestCount ? (
+                      <span className={styles.tabBadge}>{team._pendingRequestCount}</span>
+                    ) : null}
+                  </button>
+                ))}
               </div>
-            )}
 
-            {activeTab === 'members' && (
-              <div className={styles.membersContainer}>
-                <TeamProfileMembers teamId={teamId} />
+              <div className={styles.tabPanel}>
+                {activeTab === 'overview' && <TeamProfileOverview team={team} isOwner={isOwner} />}
+                {activeTab === 'members' && (
+                  <TeamProfileMembersTable team={team} isOwner={isOwner} onToast={showToast} />
+                )}
+                {activeTab === 'tournaments' && <TeamProfileTournaments team={team} />}
+                {activeTab === 'events' && <TeamProfileEvents team={team} />}
+                {activeTab === 'stats' && <TeamProfileStats team={team} />}
+                {activeTab === 'requests' && isOwner && (
+                  <TeamProfileRequests team={team} onToast={showToast} />
+                )}
               </div>
-            )}
-
-            {activeTab === 'activity' && (
-              <div className={styles.activityContainer}>
-                <TeamProfileActivity teamId={teamId} />
-              </div>
-            )}
-
-            {activeTab === 'stats' && (
-              <div className={styles.statsContainer}>
-                <TeamProfileGallery teamId={teamId} />
-              </div>
-            )}
-          </div>
-
+            </>
+          )}
         </div>
-
       </main>
 
       <BottomMenu />
 
+      {toast && <div className={styles.toast}>{toast}</div>}
     </div>
   )
 }
 
-const TeamProfile = () => {
-  return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <TeamProfileContent />
-    </Suspense>
-  );
-}
+const TeamProfile = () => (
+  <Suspense fallback={<p style={{ padding: '2rem' }}>Loading…</p>}>
+    <TeamProfileContent />
+  </Suspense>
+)
 
 export default TeamProfile

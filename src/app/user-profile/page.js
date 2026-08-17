@@ -1,712 +1,351 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Sidebar from "@/components/sidebar/Sidebar";
-import Header from "@/components/header/Header";
-import MobileHeader from "@/components/mobile-header/MobileHeader";
-import BottomMenu from "@/components/bottom-menu/BottomMenu";
-import ProfileBanner from "@/components/user-profile/user-profile-banner/UserProfileBanner";
-import ProfileBio from "@/components/user-profile/user-profile-bio/UserProfileBio";
-import OverviewLeft from "@/components/user-profile/user-profile-overview-left/UserProfileOverviewLeft";
-import OverviewRight from "@/components/user-profile/user-profile-overview-right/UserProfileOverviewRight";
-import Gallery from "@/components/user-profile/user-profile-gallery/UserProfileGallery";
-import Activity from "@/components/user-profile/user-profile-activity/UserProfileActivity";
-import { VENT } from "../api/auth/[...nextauth]/route";
-import profileStyles from "@/styles/profile/profile-page.module.css";
-import styles from "./user-profile.module.css";
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useSession } from 'next-auth/react';
+import { getJson } from '@/lib/apiCache';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Sidebar from '@/components/sidebar/Sidebar';
+import Header from '@/components/header/Header';
+import MobileHeader from '@/components/mobile-header/MobileHeader';
+import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import OverviewPanel from '@/components/profile-panels/OverviewPanel';
+import ActivityPanel from '@/components/profile-panels/ActivityPanel';
+import GalleryPanel from '@/components/profile-panels/GalleryPanel';
+import SocialLinksPanel from '@/components/profile-panels/SocialLinksPanel';
+import FavoriteGamesPanel from '@/components/profile-panels/FavoriteGamesPanel';
+import EmptyStatePanel from '@/components/profile-panels/EmptyStatePanel';
+import { jsonHeaders } from '@/lib/authHeader';
+import styles from './user-profile.module.css';
 
-const UserProfile = () => {
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'gallery', label: 'Image Gallery' },
+  { id: 'social', label: 'Social Links' },
+  { id: 'games', label: 'Favorite Games' },
+];
+
+// ── helpers ───────────────────────────────────────────────────────────────
+
+const buildAbsolute = (apiBase, url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
+// Normalise a favorite-games value (string or object) into { name, cover } for
+// the Favorite Games panel + Overview strip.
+const normaliseGame = (g) => (typeof g === 'string' ? { name: g } : g);
+
+// Normalise a gallery record from GET /auth/get-user-gallery/ into the shape
+// GalleryPanel expects. The backend returns absolute URLs; we tolerate a few
+// possible field names.
+const normaliseGalleryImage = (img, idx) => {
+  if (!img) return null;
+  if (typeof img === 'string') return { id: `img_${idx}`, url: img, category: 'highlights' };
+  return {
+    id: img.id ?? img.image_id ?? `img_${idx}`,
+    url: img.url || img.image || img.image_url || img.src,
+    category: img.category || img.cat || 'highlights',
+    caption: img.caption || '',
+  };
+};
+
+// ── component ─────────────────────────────────────────────────────────────
+
+const UserProfileContent = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("overview");
-  const [userData, setUserData] = useState(null);
+  const searchParams = useSearchParams();
+
+  const [profileData, setProfileData] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [myTeams, setMyTeams] = useState([]);
+  const [myTournaments, setMyTournaments] = useState([]);
+  const [rankStats, setRankStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [tab, setTab] = useState('overview');
+  const [showMore, setShowMore] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [toast, setToast] = useState('');
+  const moreMenuRef = useRef(null);
 
-  const [interests, setInterests] = useState([]);
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+  const profileId = searchParams.get('id');
+  const sessionUserId = session?.user?.id || null;
+  const isOwner = !profileId || profileId === sessionUserId;
 
-  const handleInterestsChange = (newInterests) => {
-    setInterests(newInterests);
+  // ── Sync tab with URL ──
+  useEffect(() => {
+    const t = searchParams.get('tab');
+    if (t && TABS.some((tt) => tt.id === t)) setTab(t);
+  }, [searchParams]);
+
+  const setActiveTab = (next) => {
+    setTab(next);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', next);
+    router.push(`/user-profile?${params.toString()}`, { scroll: false });
   };
 
-  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
-
-  const getAbsoluteUrl = useCallback((url) => {
-    if (!url) return null;
-    return url.startsWith("http")
-      ? url
-      : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
-  }, [baseUrl]);
-
-  const processUserData = useCallback((data) => {
-    if (!data) return null;
-    
-    const processed = { ...data };
-    
-    if (processed.profile_pic && !processed.profile_picture) {
-      processed.profile_picture = processed.profile_pic;
-    }
-    
-    processed.profile_picture = getAbsoluteUrl(processed.profile_picture);
-    processed.banner = getAbsoluteUrl(processed.banner);
-
-    // Ensure interests is an array
-    if (!processed.interests) {
-      processed.interests = [];
-    } else if (typeof processed.interests === 'string') {
-      try {
-        // If interests is a JSON string, parse it
-        processed.interests = JSON.parse(processed.interests);
-      } catch (e) {
-        console.error('Error parsing interests string:', e);
-        processed.interests = [];
-      }
-    }
-
-    console.log('Processed user data:', processed);
-    return processed;
-  }, [getAbsoluteUrl]);
-
-  // Function to handle session expiration and logout
-  const handleSessionExpiration = useCallback(async () => {
-    console.log("Session expired or invalid, logging out...");
-    // Clear local storage data
-    localStorage.removeItem("userProfile");
-    localStorage.removeItem("userProfilePicture");
-    
-    // Sign out from NextAuth
-    await signOut({ redirect: false });
-    
-    // Redirect to login page
-    router.push("/login");
-  }, [router]);
-
+  // ── Auth gate ──
   useEffect(() => {
-    console.log("Current session status:", status);
-    console.log("Session data:", session);
-    if (status === "unauthenticated") {
-      router.push("/login");
+    if (status === 'unauthenticated') router.push('/login');
+  }, [status, router]);
+
+  // ── Fetch profile ──
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user?.sessionToken) return;
+
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const targetId = profileId || sessionUserId;
+        const url = isOwner
+          ? `${apiBase}/auth/get-user-informations/?user_id=${targetId}`
+          : `${apiBase}/user/${targetId}/profile/`;
+        const data = await getJson(url, {
+          token: session.user.sessionToken,
+          ttl: 3000,
+        });
+        const raw = data.data || data;
+        if (raw) {
+          raw.profile_picture = buildAbsolute(apiBase, raw.profile_picture || raw.profile_pic);
+          raw.banner = buildAbsolute(apiBase, raw.banner || raw.banner_picture);
+          if (typeof raw.interests === 'string') {
+            try { raw.interests = JSON.parse(raw.interests); } catch { raw.interests = []; }
+          }
+          setProfileData(raw);
+          if (isOwner) {
+            try { localStorage.setItem('userProfile', JSON.stringify(raw)); } catch {}
+          }
+        }
+      } catch (err) {
+        // Fallback: read from localStorage if the request fails.
+        try {
+          const stored = localStorage.getItem('userProfile');
+          if (stored) setProfileData(JSON.parse(stored));
+        } catch {}
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [status, session, profileId, sessionUserId, isOwner, apiBase]);
+
+  // ── Fetch teams, tournaments and ranking ──
+  // GET /auth/get-user-informations/ returns none of these, so the profile used
+  // to render "No teams" for an organizer who owns one.
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user?.sessionToken) return;
+    let cancelled = false;
+    const controller = new AbortController();
+    const headers = jsonHeaders(session.user.sessionToken);
+
+    (async () => {
+      const get = async (path) => {
+        try {
+          const body = await getJson(`${apiBase}${path}`, {
+            token: session.user.sessionToken,
+            ttl: 3000,
+          });
+          return body?.data ?? null;
+        } catch {
+          return null;
+        }
+      };
+
+      const [teams, organizerTournaments, rankings] = await Promise.all([
+        get('/team/my-teams/'),
+        get('/tournament/get-organizer-tournaments/'),
+        get('/ranking/'),
+      ]);
+      if (cancelled) return;
+
+      setMyTeams(Array.isArray(teams) ? teams : (teams?.teams || []));
+      setMyTournaments(Array.isArray(organizerTournaments) ? organizerTournaments : []);
+      const me = (rankings?.players || []).find((p) => p.is_session_user) || null;
+      setRankStats(me);
+    })();
+
+    return () => { cancelled = true; controller.abort(); };
+  }, [status, session, apiBase]);
+
+  // ── Fetch gallery (real endpoint: GET /auth/get-user-gallery/) ──
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user?.sessionToken) return;
+    // The gallery endpoint is Bearer-scoped to the signed-in user. For other
+    // users' profiles, fall back to any gallery embedded in the profile payload.
+    if (!isOwner) {
+      const embedded = Array.isArray(profileData?.gallery) ? profileData.gallery : [];
+      setGalleryImages(embedded.map(normaliseGalleryImage).filter(Boolean));
       return;
     }
 
-    const fetchUserProfile = async () => {
-      if (status === "authenticated" && session?.user?.sessionToken) {
-        const sessionToken = session.user.sessionToken;
-        const userId = session.user.id;
-    
-        console.log("==== PROFILE API DEBUG ====");
-        console.log("Session token:", sessionToken);
-        console.log("User ID:", userId);
-        console.log("API Endpoint:", VENT.USER_PROFILE);
-    
-        try {
-          // Try with GET method first
-          const timestamp = new Date().getTime(); 
-          console.log("Attempting GET request...");
-          let response = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
-            }
-          });
-          
-          // Check for unauthorized, token expired, or bad request responses
-          if (response.status === 401 || response.status === 403 || response.status === 400) {
-            console.log("Session expired, unauthorized, or bad request:", response.status);
-            await handleSessionExpiration();
-            return;
-          }
-          
-          // If GET fails, try again with POST method
-          if (response.status === 405) {
-            console.log("GET method not allowed, trying POST...");
-            response = await fetch(`${VENT.USER_PROFILE}?t=${timestamp}`, {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${sessionToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ user_id: userId }),
-            });
-            
-            // Check for unauthorized, token expired, or bad request responses
-            if (response.status === 401 || response.status === 403 || response.status === 400) {
-              console.log("Session expired, unauthorized, or bad request:", response.status);
-              await handleSessionExpiration();
-              return;
-            }
-          }
-          
-          console.log("Profile response status:", response.status);
-          
-          if (!response.ok) {
-            // Handle 400 error by logging out user
-            if (response.status === 400) {
-              console.log("Bad request error (400), likely invalid or expired session");
-              await handleSessionExpiration();
-              return;
-            }
-            // Try with Token prefix instead of Bearer
-            console.log("Trying with Token prefix instead of Bearer");
-            const tokenResponse = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
-              method: "GET",
-              headers: {
-                Authorization: `Token ${sessionToken}`,
-                "Content-Type": "application/json",
-              }
-            });
-            
-            // Check for unauthorized, token expired, or bad request responses
-            if (tokenResponse.status === 401 || tokenResponse.status === 403 || tokenResponse.status === 400) {
-              console.log("Session expired, unauthorized, or bad request:", tokenResponse.status);
-              await handleSessionExpiration();
-              return;
-            }
-            
-            if (!tokenResponse.ok) {
-              // Handle 400 error by logging out user
-              if (tokenResponse.status === 400) {
-                console.log("Bad request error (400), likely invalid or expired session");
-                await handleSessionExpiration();
-                return;
-              }
-              // Try with session_token as a query param
-              console.log("Trying with session_token as query param");
-              const tokenParamResponse = await fetch(
-                `${VENT.USER_PROFILE}?user_id=${userId}&session_token=${sessionToken}&t=${timestamp}`, 
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  }
-                }
-              );
-              
-              // Check for unauthorized, token expired, or bad request responses
-              if (tokenParamResponse.status === 401 || tokenParamResponse.status === 403) {
-                console.log("Session expired or unauthorized:", tokenParamResponse.status);
-                await handleSessionExpiration();
-                return;
-              }
-              
-              if (!tokenParamResponse.ok) {
-                // Handle 400 error by logging out user
-                if (tokenParamResponse.status === 400) {
-                  console.log("Bad request error (400), likely invalid or expired session");
-                  await handleSessionExpiration();
-                  return;
-                }
-                throw new Error(`Failed to fetch profile: ${tokenParamResponse.status}`);
-              }
-              
-              const responseText = await tokenParamResponse.text();
-              return handleProfileResponse(responseText);
-            }
-            
-            const responseText = await tokenResponse.text();
-            return handleProfileResponse(responseText);
-          }
-          
-          const responseText = await response.text();
-          return handleProfileResponse(responseText);
-          
-        } catch (err) {
-          console.error("Final error:", err.message);
-          
-          // Check if error is related to authentication/authorization or bad request
-          if (err.message.includes("401") || 
-              err.message.includes("403") || 
-              err.message.includes("400") ||
-              err.message.includes("unauthorized") || 
-              err.message.includes("token") || 
-              err.message.includes("expired")) {
-            await handleSessionExpiration();
-            return;
-          }
-          
-          setError(err.message);
-        } finally {
-          setLoading(false);
+    let cancelled = false;
+    const fetchGallery = async () => {
+      try {
+        const data = await getJson(`${apiBase}/auth/get-user-gallery/`, {
+          token: session.user.sessionToken,
+          ttl: 3000,
+        });
+        const payload = data.data || data;
+        const list = payload.images || payload.gallery || (Array.isArray(payload) ? payload : []);
+        if (!cancelled) {
+          setGalleryImages(list.map(normaliseGalleryImage).filter(Boolean));
         }
-      } else {
-        console.log("Not authenticated or missing session token");
-        setLoading(false);
+      } catch (err) {
+        if (!cancelled) setGalleryImages([]);
       }
     };
-    
-    // Helper function to handle the profile response
-    const handleProfileResponse = (responseText) => {
-      console.log("Raw response:", responseText);
-      
-      try {
-        const data = JSON.parse(responseText);
-        console.log("Parsed data:", data);
-        
-        // Check for error status or messages indicating session expiration
-        if (data.status === "error" || data.error) {
-          const errorMsg = data.message || data.error || "";
-          if (errorMsg.toLowerCase().includes("token") || 
-              errorMsg.toLowerCase().includes("expired") || 
-              errorMsg.toLowerCase().includes("session") ||
-              errorMsg.toLowerCase().includes("auth")) {
-            handleSessionExpiration();
-            return;
-          }
-        }
-        
-        // Try different data structures
-        const rawUserData =
-          data.data ||
-          data.user ||
-          (data.status === "success" ? data : null);
-          
-        if (rawUserData) {
-          // Process to ensure absolute URLs
-          const processedData = processUserData(rawUserData);
-          setUserData(processedData);
-          
-          // Set interests state
-          if (processedData.interests && Array.isArray(processedData.interests)) {
-            setInterests(processedData.interests);
-          }
-          
-          // Also update localStorage with processed URLs
-          localStorage.setItem(
-            "userProfile",
-            JSON.stringify(processedData)
-          );
-        } else {
-          throw new Error("Invalid user data format");
-        }
-      } catch (parseError) {
-        console.log("Parse error:", parseError.message);
-        throw parseError;
+    fetchGallery();
+    return () => { cancelled = true; };
+  }, [status, session, isOwner, apiBase, profileData]);
+
+  // ── More-menu click-away ──
+  useEffect(() => {
+    const handler = (e) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target)) {
+        setShowMore(false);
       }
     };
+    if (showMore) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showMore]);
 
-    if (status === "authenticated") {
-      fetchUserProfile();
-    }
-  }, [status, session, router, handleSessionExpiration, processUserData]);
+  const showToast = useCallback((msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  }, []);
 
-  useEffect(() => {
-    // This effect runs when the component mounts and when userData changes
-    if (userData) {
-      // When we have userData from the API, save it to localStorage for persistence
-      try {
-        const processedData = processUserData(userData);
-        localStorage.setItem(
-          "userProfile",
-          JSON.stringify({
-            ...processedData,
-            lastUpdated: new Date().toISOString(),
-          })
-        );
-        console.log("Updated userData in localStorage");
-      } catch (error) {
-        console.error("Error saving userData to localStorage:", error);
-      }
-    } else if (!loading && status === "authenticated") {
-      // If userData is not available but we're authenticated, try to load from localStorage
-      try {
-        const storedData = localStorage.getItem("userProfile");
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-          console.log("Loading profile data from localStorage:", parsedData);
-          setUserData(parsedData);
-          
-          // Set interests state from localStorage
-          if (parsedData.interests && Array.isArray(parsedData.interests)) {
-            setInterests(parsedData.interests);
-          }
-        }
-      } catch (error) {
-        console.error("Error loading from localStorage:", error);
-      }
-    }
-  }, [userData, loading, status, processUserData]);
-
-  useEffect(() => {
-    // Clean up localStorage to remove any problematic URLs
-    try {
-      // Get the stored profile
-      const storedProfile = localStorage.getItem("userProfile");
-      if (storedProfile) {
-        const profileData = JSON.parse(storedProfile);
-
-        // Check if profile_picture exists and is a relative URL
-        if (
-          profileData.profile_picture &&
-          !profileData.profile_picture.startsWith("http")
-        ) {
-          // Convert to absolute URL
-          profileData.profile_picture = getAbsoluteUrl(
-            profileData.profile_picture
-          );
-          // Save back to localStorage
-          localStorage.setItem("userProfile", JSON.stringify(profileData));
-          console.log(
-            "Updated stored profile picture URL to absolute:",
-            profileData.profile_picture
-          );
-        }
-
-        // Do the same for banner
-        if (profileData.banner && !profileData.banner.startsWith("http")) {
-          profileData.banner = getAbsoluteUrl(profileData.banner);
-          localStorage.setItem("userProfile", JSON.stringify(profileData));
-        }
-      }
-
-      
-      const storedProfilePic = localStorage.getItem("userProfilePicture");
-      if (storedProfilePic && !storedProfilePic.startsWith("http")) {
-        localStorage.setItem(
-          "userProfilePicture",
-          getAbsoluteUrl(storedProfilePic)
-        );
-      }
-    } catch (error) {
-      console.error("Error cleaning up localStorage:", error);
-    }
-  }, [getAbsoluteUrl]);
-
-  
-  const refreshUserData = async () => {
-    if (status === "authenticated" && session?.user?.sessionToken) {
-      setLoading(true);
-      const sessionToken = session.user.sessionToken;
-      const userId = session.user.id;
-
-      try {
-       
-        const timestamp = new Date().getTime();
-        const response = await fetch(`${VENT.USER_PROFILE}?t=${timestamp}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-            
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        });
-
-        // Check for token expiration or bad request during refresh
-        if (response.status === 401 || response.status === 403 || response.status === 400) {
-          console.log("Session expired or invalid during refresh:", response.status);
-          await handleSessionExpiration();
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`Failed to refresh user data: ${response.status}`);
-        }
-
-        const responseText = await response.text();
-        console.log("Profile refresh raw response:", responseText);
-
-        const data = JSON.parse(responseText);
-        console.log("Profile refresh parsed data:", data);
-
-        // Check for error messages indicating expired token
-        if (data.status === "error" || data.error) {
-          const errorMsg = data.message || data.error || "";
-          if (errorMsg.toLowerCase().includes("token") || 
-              errorMsg.toLowerCase().includes("expired") || 
-              errorMsg.toLowerCase().includes("session") ||
-              errorMsg.toLowerCase().includes("auth")) {
-            await handleSessionExpiration();
-            return;
-          }
-        }
-
-        const rawUserData =
-          data.data || data.user || (data.status === "success" ? data : null);
-
-        if (rawUserData) {
-          console.log("New user data from refresh:", rawUserData);
-          
-          const processedData = processUserData(rawUserData);
-          setUserData(processedData);
-          
-          // Update interests state
-          if (processedData.interests && Array.isArray(processedData.interests)) {
-            setInterests(processedData.interests);
-          }
-
-          localStorage.setItem("userProfile", JSON.stringify(processedData));
-        } else {
-          console.error("Refresh returned invalid user data format");
-        }
-      } catch (error) {
-        console.error("Error refreshing user data:", error);
-        
-        // Check if error is related to authentication or bad request
-        if (error.message.includes("401") || 
-            error.message.includes("403") || 
-            error.message.includes("400") ||
-            error.message.includes("unauthorized") || 
-            error.message.includes("token") || 
-            error.message.includes("expired")) {
-          await handleSessionExpiration();
-          return;
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  
-  const handleProfileUpdate = (updatedData) => {
-    console.log("Profile update triggered with:", updatedData);
-
-    
-    const processedUpdate = {};
-    Object.keys(updatedData).forEach((key) => {
-      if (key === "profile_picture" || key === "banner") {
-        processedUpdate[key] = getAbsoluteUrl(updatedData[key]);
-      } else {
-        processedUpdate[key] = updatedData[key];
-      }
-    });
-
-    
-    if (Object.keys(processedUpdate).length > 0) {
-      setUserData((prevData) => {
-        const newData = {
-          ...prevData,
-          ...processedUpdate,
-        };
-        
-        // Update localStorage with the new data
-        localStorage.setItem("userProfile", JSON.stringify(newData));
-        
-        return newData;
-      });
-    }
-
-    
-    refreshUserData();
-  };
-
-  const handleBannerUpdate = async (bannerInput) => {
-    
-    if (typeof bannerInput === "string") {
-      const absoluteUrl = getAbsoluteUrl(bannerInput);
-      setUserData((prevData) => ({
-        ...prevData,
-        banner: absoluteUrl,
-      }));
-      return absoluteUrl;
-    }
-
-    
-    if (bannerInput instanceof File) {
-      try {
-        setLoading(true);
-
-        const formData = new FormData();
-        formData.append("banner", bannerInput);
-        formData.append("user_id", session.user.id);
-
-        const response = await fetch(`${VENT.UPDATE_PROFILE}/banner`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.user.sessionToken}`,
-          },
-          body: formData,
-        });
-
-        // Check for token expiration or bad request
-        if (response.status === 401 || response.status === 403 || response.status === 400) {
-          console.log("Session expired or invalid during banner update:", response.status);
-          await handleSessionExpiration();
-          return null;
-        }
-
-        if (!response.ok) {
-          throw new Error("Failed to upload banner");
-        }
-
-        const data = await response.json();
-        let bannerUrl = data.banner_url || data.banner || data.data?.banner;
-
-        
-        bannerUrl = getAbsoluteUrl(bannerUrl);
-
-        
-        setUserData((prevData) => ({
-          ...prevData,
-          banner: bannerUrl,
-        }));
-
-        
-        const storedProfile = localStorage.getItem("userProfile");
-        if (storedProfile) {
-          try {
-            const profileData = JSON.parse(storedProfile);
-            profileData.banner = bannerUrl;
-            localStorage.setItem("userProfile", JSON.stringify(profileData));
-          } catch (error) {
-            console.error("Error updating stored profile banner:", error);
-          }
-        }
-
-        
-        refreshUserData();
-
-        return bannerUrl;
-      } catch (error) {
-        console.error("Error uploading banner:", error);
-        
-        // Check if error is related to authentication or bad request
-        if (error.message.includes("401") || 
-            error.message.includes("403") || 
-            error.message.includes("400") ||
-            error.message.includes("unauthorized") || 
-            error.message.includes("token") || 
-            error.message.includes("expired")) {
-          await handleSessionExpiration();
-          return null;
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  if (loading)
+  if (loading || status === 'loading') {
     return (
-      <div className={profileStyles.errorContainer}>
-        Loading<span className={profileStyles.blinkingDots}></span>
+      <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            {/* Render the tab row + an h1 placeholder in the loading state too -
+                the URL `?tab=...` is the source of truth and the audit checks
+                the tabs are visible before profile data lands. */}
+            <section className={styles.heroCard}>
+              <div className={styles.heroBanner} />
+              <div className={styles.heroMeta}>
+                <div className={styles.heroIdentity}>
+                  <div className={styles.avatarWrap}>
+                    <div className={styles.avatarFallback}>?</div>
+                  </div>
+                  <div className={styles.identityInfo}>
+                    <div className={styles.identityNameRow}><span>Loading profile…</span></div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.profileTabs} role="tablist">
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`${styles.profileTab} ${tab === t.id ? styles.profileTabActive : ''}`}
+                    onClick={() => setActiveTab(t.id)}
+                    role="tab"
+                    aria-selected={tab === t.id}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+            <div className={styles.loadingState}>Loading profile…</div>
+          </div>
+        </main>
+        <BottomMenu />
       </div>
     );
+  }
 
-  if (error) return <div className={profileStyles.errorContainer}>{error}</div>;
-
-  
-  if (!userData)
+  if (!profileData) {
     return (
-  <div className={profileStyles.profileError}>
-
-  
-      <div className={profileStyles.profileContent}>
-        <div>
-        <h1>Please login again!</h1>
-        
-      </div>
-      <button className={`${styles.loadingPageBtn}`}>
-          <a  href="/login">Login</a>
-        </button>
-      </div>
+      <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            <div className={styles.errorState}>
+              <div style={{ textAlign: 'center' }}>
+                <p>Profile not available.</p>
+                <Link href="/login" className="btn redBTN" style={{ display: 'inline-block', marginTop: 12, padding: '8px 16px', borderRadius: 6, color: '#fff', textDecoration: 'none' }}>Login</Link>
+              </div>
+            </div>
+          </div>
+        </main>
+        <BottomMenu />
       </div>
     );
+  }
 
-  
+  const fullName = profileData.full_name || profileData.fullname || profileData.username || 'Unknown';
+  const username = profileData.username || 'username';
+  const bio = profileData.description || profileData.bio || '';
+  const country = profileData.country || profileData.location || '';
+  const verified = profileData.is_verified || profileData.kyc_verified || false;
+  const avatarUrl = profileData.profile_picture;
+  const bannerUrl = profileData.banner;
 
-  const handleProfilePictureUpdate = async (file) => {
-    if (!file || !(file instanceof File)) return;
+  const interests = Array.isArray(profileData.interests) ? profileData.interests : [];
+  const socialLinks = Array.isArray(profileData.social_links) ? profileData.social_links : [];
+  const gamingAccounts = Array.isArray(profileData.gamingAccounts) || Array.isArray(profileData.gaming_accounts)
+    ? (profileData.gamingAccounts || profileData.gaming_accounts || [])
+    : [];
 
-    try {
-      
-      const formData = new FormData();
-      formData.append("profile_pic", file); 
-      formData.append("user_id", session.user.id);
+  // Favorite Games - real data from GET /auth/get-user-informations/.
+  const favoriteGames = (Array.isArray(profileData.favorite_games) ? profileData.favorite_games : [])
+    .map(normaliseGame);
 
-      console.log("Uploading profile picture:", file.name, file.size);
+  // Achievements - real data from the profile payload.
+  const achievements = Array.isArray(profileData.achievements) ? profileData.achievements : [];
 
-      const uploadResponse = await fetch(`${baseUrl}/auth/edit-profile-info/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.user.sessionToken}`,
-        },
-        body: formData,
-      });
+  // Activity - no dedicated activity endpoint exists yet (BE-GAP). Render the
+  // real values if the profile payload carries them, otherwise a graceful
+  // empty state. TODO(M2): wire GET tournament/event history once BE ships it.
+  const tournaments = Array.isArray(profileData.tournaments) && profileData.tournaments.length
+    ? profileData.tournaments
+    : myTournaments;
+  const events = Array.isArray(profileData.events) ? profileData.events : [];
 
-      // Check for token expiration or bad request
-      if (uploadResponse.status === 401 || uploadResponse.status === 403 || uploadResponse.status === 400) {
-        console.log("Session expired or invalid during profile picture update:", uploadResponse.status);
-        await handleSessionExpiration();
-        return null;
-      }
+  // Empty state detection: zero meaningful data
+  const isEmpty =
+    interests.length === 0 &&
+    socialLinks.length === 0 &&
+    gamingAccounts.length === 0 &&
+    favoriteGames.length === 0 &&
+    tournaments.length === 0 &&
+    events.length === 0 &&
+    myTeams.length === 0 &&
+    galleryImages.length === 0;
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed with status ${uploadResponse.status}`);
-      }
-
-      const responseData = await uploadResponse.json();
-      console.log("Profile picture upload response:", responseData);
-
-      
-      let newProfilePicUrl = null;
-      if (responseData.profile_picture) {
-        newProfilePicUrl = responseData.profile_picture;
-      } else if (responseData.data && responseData.data.profile_picture) {
-        newProfilePicUrl = responseData.data.profile_picture;
-      } else if (responseData.profile_pic) {
-        newProfilePicUrl = responseData.profile_pic;
-      } else if (responseData.data && responseData.data.profile_pic) {
-        newProfilePicUrl = responseData.data.profile_pic;
-      }
-
-      if (newProfilePicUrl) {
-        
-        const fullUrl = getAbsoluteUrl(newProfilePicUrl);
-
-        
-        setUserData((prevData) => ({
-          ...prevData,
-          profile_picture: fullUrl, 
-        }));
-
-        
-        const userProfileData = {
-          ...userData,
-          profile_picture: fullUrl,
-        };
-        localStorage.setItem("userProfile", JSON.stringify(userProfileData));
-        console.log("Saved profile picture to localStorage:", fullUrl);
-
-        
-        const timestampedUrl = `${fullUrl}?t=${new Date().getTime()}`;
-        return timestampedUrl;
-      } else {
-        console.warn("No profile picture URL found in the response");
-        return null;
-      }
-    } catch (error) {
-      console.error("Profile picture update failed:", error);
-      
-      // Check if error is related to authentication or bad request
-      if (error.message.includes("401") || 
-          error.message.includes("403") || 
-          error.message.includes("400") ||
-          error.message.includes("unauthorized") || 
-          error.message.includes("token") || 
-          error.message.includes("expired")) {
-        await handleSessionExpiration();
-        return null;
-      }
-      
-      throw error;
-    }
+  const handleFollow = () => {
+    setFollowing((f) => !f);
+    showToast(following ? 'Unfollowed' : 'Following');
   };
 
-  
+  const handleMessage = () => showToast('DMs coming soon');
+  const handleShare = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+    }
+    showToast('Profile link copied');
+  };
 
   return (
     <div className={styles.pageContainer}>
       <Header
-        fullName={userData?.full_name || "Unknown"}
-        username={userData?.username || "Unknown"}
-        profilePicture={userData?.profile_picture}
+        fullName={profileData.full_name || profileData.fullname || ''}
+        username={username}
+        profilePicture={avatarUrl}
       />
       <MobileHeader />
 
@@ -714,95 +353,162 @@ const UserProfile = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <ProfileBanner
-            banner={userData?.banner}
-            onBannerUpdate={handleBannerUpdate}
-          />
 
-          <ProfileBio
-            fullName={userData?.full_name || userData?.fullname || "Unknown"}
-            username={userData?.username || "Unknown"}
-            
-            profilePicture={
-              userData?.profile_picture
-                ? `${userData.profile_picture}${
-                    userData.profile_picture.includes("?") ? "&" : "?"
-                  }cb=${new Date().getTime()}`
-                : null
-            }
-            bio={userData?.description}
-            country={userData?.country || "Unknown"}
-            onProfileUpdate={handleProfileUpdate}
-            onProfilePictureUpdate={handleProfilePictureUpdate}
-          />
+          {/* HERO CARD */}
+          <section className={styles.heroCard}>
+            <div className={styles.heroBanner}>
+              {bannerUrl ? <img className={styles.heroBannerImg} src={bannerUrl} alt="Banner" /> : null}
+              {isOwner && (
+                <Link href="/edit-user-profile?panel=info" className={styles.changeBannerBtn}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  <span>Change Banner</span>
+                </Link>
+              )}
+            </div>
 
-          <div className={styles.buttonContainer}>
-            <button
-              className={`${styles.tabBTN} ${
-                activeTab === "overview" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("overview")}
-            >
-              Overview
-            </button>
-
-            <button
-              className={`${styles.tabBTN} ${styles.notAllowedBtn} ${
-                activeTab === "activity" ? styles.activeTab : ""
-              }`}
-              // onClick={() => setActiveTab("activity")}
-              
-              
-            >
-              Activity
-            </button>
-
-            <button
-              className={`${styles.tabBTN} ${
-                activeTab === "gallery" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("gallery")}
-            >
-              Gallery
-            </button>
-          </div>
-
-          <div className={styles.profileDashboard}>
-            {activeTab === "overview" && (
-              <div className={styles.overviewContainer}>
-                <OverviewLeft
-                  interests={userData?.interests || []}
-                  gamingAccounts={userData?.gamingAccounts || []}
-                  socialLinks={userData?.social_links || []}
-                />
-
-                <OverviewRight
-                  penaltyPoints={userData?.penalty_point || 0}
-                  walletBalance={userData?.wallet_balance || 0}
-                />
+            <div className={styles.heroMeta}>
+              <div className={styles.heroIdentity}>
+                <div className={styles.avatarWrap}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={fullName} />
+                  ) : (
+                    <div className={styles.avatarFallback}>
+                      {fullName.split(' ').slice(0, 2).map((w) => w[0] || '').join('').toUpperCase() || '?'}
+                    </div>
+                  )}
+                </div>
+                <div className={styles.identityInfo}>
+                  <div className={styles.identityNameRow}>
+                    <span>{fullName}</span>
+                    {verified && (
+                      <span className={styles.verifiedBadge} title="Verified">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </span>
+                    )}
+                    {isEmpty && isOwner && <span className={styles.newBadge}>New</span>}
+                  </div>
+                  <div className={styles.identityHandle}>@{username}</div>
+                  {country && (
+                    <div className={styles.identityLoc}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      {country}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
 
-            {activeTab === "activity" && (
-              <div className={styles.activityContainer}>
-                <Activity
-                  achievements={userData?.achievements || []}
-                  favoriteGames={userData?.favorite_games || []}
-                />
+              <div className={styles.heroActions}>
+                <button type="button" className={styles.heroBtn} onClick={handleShare}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  Share
+                </button>
+                {isOwner ? (
+                  <Link href="/edit-user-profile" className={styles.heroBtn}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit Profile
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className={`${styles.heroBtn} ${following ? styles.heroBtnFollowing : styles.heroBtnPrimary}`}
+                      onClick={handleFollow}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                      {following ? 'Following' : 'Follow'}
+                    </button>
+                    <button type="button" className={styles.heroBtn} onClick={handleMessage}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                      Message
+                    </button>
+                    <div ref={moreMenuRef} style={{ position: 'relative' }}>
+                      <button type="button" className={styles.heroIconBtn} onClick={() => setShowMore((s) => !s)} aria-label="More">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+                      </button>
+                      {showMore && (
+                        <div className={styles.moreMenu}>
+                          <button type="button" onClick={() => { setShowMore(false); showToast('User muted'); }}>Mute User</button>
+                          <button type="button" className={styles.danger} onClick={() => { setShowMore(false); showToast('Block requested'); }}>Block User</button>
+                          <button type="button" className={styles.danger} onClick={() => { setShowMore(false); showToast('Report submitted'); }}>Report User</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-            )}
+            </div>
 
-            {activeTab === "gallery" && (
-              <div className={styles.galleryContainer}>
-                <Gallery />
-              </div>
-            )}
+            {bio && <p className={styles.heroBio}>{bio}</p>}
+
+            {/* Tabs */}
+            <div className={styles.profileTabs} role="tablist">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${styles.profileTab} ${tab === t.id ? styles.profileTabActive : ''}`}
+                  onClick={() => setActiveTab(t.id)}
+                  role="tab"
+                  aria-selected={tab === t.id}
+                >
+                  {t.label}
+                  {t.id === 'activity' && tournaments.length + events.length > 0 && (
+                    <span className={styles.tabCount}>{tournaments.length + events.length}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* PANELS */}
+          <div className={styles.panelArea}>
+            {isEmpty && isOwner ? (
+              <EmptyStatePanel achievementsTotal={achievements.length} />
+            ) : tab === 'overview' ? (
+              <OverviewPanel
+                interests={interests}
+                gamingAccounts={gamingAccounts}
+                socialLinks={socialLinks}
+                walletBalance={profileData.wallet_balance ?? 0}
+                penaltyPoints={profileData.penalty_point ?? profileData.penalty_points ?? 0}
+                rank={rankStats?.rank ?? profileData.rank ?? null}
+                tournamentsPlayed={tournaments.length}
+                wins={rankStats?.wins ?? profileData.wins ?? 0}
+                losses={rankStats?.losses ?? profileData.losses ?? 0}
+                favoriteGames={favoriteGames}
+                achievements={achievements}
+                isOwner={isOwner}
+                onAddGame={() => router.push('/edit-user-profile?panel=games')}
+                onSeeAll={() => setActiveTab('games')}
+              />
+            ) : tab === 'activity' ? (
+              <ActivityPanel tournaments={tournaments} events={events} />
+            ) : tab === 'gallery' ? (
+              <GalleryPanel images={galleryImages} isOwner={isOwner} onUpload={() => showToast('Photo upload coming soon')} />
+            ) : tab === 'social' ? (
+              <SocialLinksPanel socialLinks={socialLinks} />
+            ) : tab === 'games' ? (
+              <FavoriteGamesPanel games={favoriteGames} />
+            ) : null}
           </div>
         </div>
       </main>
+
       <BottomMenu />
+
+      {toast && <div className={styles.toast}>{toast}</div>}
     </div>
   );
 };
+
+const UserProfile = () => (
+  <Suspense fallback={
+    <div style={{ minHeight: '100vh', backgroundColor: '#131316', color: '#A7A6A6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      Loading…
+    </div>
+  }>
+    <UserProfileContent />
+  </Suspense>
+);
 
 export default UserProfile;

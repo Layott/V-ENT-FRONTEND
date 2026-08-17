@@ -29,7 +29,7 @@
 }
 
 .activeTab {
-  border-bottom: 2px solid var(--v-ent-red);
+  background-color: rgba(237, 28, 36, 0.16);
 }
 
 .borderTabBTNContainer {
@@ -49,7 +49,7 @@
 .borderTabBTN {
   cursor: pointer;
   transition: all ease-in-out 0.5s;
-  border: 1px solid transparent;
+
   background-color: #303136;
   outline: none;
   padding: 0.35rem 0.5rem;
@@ -62,7 +62,7 @@
 }
 
 .borderTabBTN:hover {
-  border: 1px solid #CCC;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .detailsDashboard {
@@ -70,7 +70,7 @@
   width: calc(100% - 3rem);
   display: flex;
   flex-direction: column;
-  border-top: 1px solid rgba(119, 119, 119, 0.5);
+
   margin: 0 auto;
   padding: 1.5rem 0;
 }

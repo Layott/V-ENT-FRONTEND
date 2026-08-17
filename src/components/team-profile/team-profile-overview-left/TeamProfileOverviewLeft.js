@@ -133,9 +133,7 @@ const TeamProfileOverviewLeft = () => {
                 </div>
             </div>
 
-            <hr className={profileStyles.sectionHr} />
-
-            <div className={profileStyles.sectionContainer}>
+<div className={profileStyles.sectionContainer}>
                 <h4 className={profileStyles.sectionHeader}>Social Links</h4>
                 <div className={profileStyles.socialLinksListContainer}>
                     <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>

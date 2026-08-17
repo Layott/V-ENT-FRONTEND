@@ -31,7 +31,6 @@ const EditUserProfileLinks = () => {
         return;
       }
 
-      console.log('Fetching user info with token:', session.user.sessionToken);
       console.log('Base URL:', baseUrl);
 
       try {

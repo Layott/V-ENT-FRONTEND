@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT — Profile / Activity / Tournaments (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    :root {
+      --v-ent-red:       #ED1C24;
+      --v-ent-light-red: #FF3B45;
+      --v-ent-grn:       #2E8B3E;
+      --v-ent-light-grn: #3FB554;
+      --overlay-gray:    #212225;
+      --surface-2:       #303136;
+      --page-bg:         #131316;
+      --header-bg:       #17181A;
+      --border-subtle:   rgba(255,255,255,0.25);
+      --border-faint:    rgba(255,255,255,0.08);
+      --text-white:      #ffffff;
+      --text-muted:      #A7A6A6;
+      --text-dim:        rgba(255,255,255,0.45);
+      --active-nav-bg:   rgba(237,28,36,0.24);
+      --coming-soon-bg:  rgba(251,198,75,0.24);
+      --coming-soon-col: rgba(251,198,75,0.9);
+      --sidebar-w:       250px;
+      --header-h:        60px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top:0; left:0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .logo-container { width:100%; height:var(--header-h); display:flex; align-items:center; }
+    .logo-link { display:flex; align-items:center; gap:0.25rem; padding-left:1rem; text-decoration:none; width:100%; }
+    .logo-img  { height:25px; width:auto; }
+    .logo-text { font-family:"ClashGrotesk-Medium",sans-serif; font-weight:700; font-size:1.75rem; color:var(--v-ent-red); }
+    .sidebar-nav { margin-top:0.25rem; }
+    .sidebar-list { display:flex; flex-direction:column; align-items:center; gap:0.75rem; list-style:none; padding:0; }
+    .sidebar-item { display:flex; min-height:20px; align-items:center; gap:0.5rem; width:calc(100% - 1.5rem); border-radius:5px; transition:all 0.3s; border:1px solid transparent; }
+    .sidebar-item:hover { border-color:#6e6e6e; }
+    .sidebar-item.active-item { background-color:var(--active-nav-bg); }
+    .nav-link { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; border-radius:5px; text-decoration:none; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-white); }
+    .nav-icon { width:0.9rem; height:0.9rem; flex-shrink:0; }
+    .disabled-item { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; cursor:not-allowed; }
+    .disabled-label { display:flex; align-items:center; gap:0.5rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-muted); }
+    .coming-soon { font-size:0.6rem; background-color:var(--coming-soon-bg); color:var(--coming-soon-col); padding:3px 5px; border-radius:3px; }
+
+    /* ── HEADER ── */
+    .header {
+      position:fixed; top:0; left:var(--sidebar-w); right:0;
+      height:var(--header-h); background-color:var(--header-bg);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 1.5rem 0 2rem; z-index:100;
+    }
+    .header-title-wrap { display:flex; align-items:center; gap:0.65rem; }
+    .back-btn { width:28px; height:28px; border-radius:50%; background-color:var(--surface-2); border:none; color:var(--text-white); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .back-btn:hover { background-color:#3a3b40; }
+    .header-title-block { display:flex; flex-direction:column; line-height:1; }
+    .header-title { font-family:"ClashGrotesk-Regular",sans-serif; font-size:1.05rem; font-weight:600; }
+    .breadcrumb { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-top:0.18rem; }
+    .breadcrumb a { color:var(--text-dim); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--text-white); }
+    .breadcrumb .crumb-sep { margin:0 0.35rem; color:rgba(255,255,255,0.25); }
+    .header-right { display:flex; align-items:center; gap:0.75rem; }
+    .header-search { display:flex; align-items:center; background-color:var(--surface-2); border-radius:5px; padding:5px 12px; gap:0.4rem; border:1px solid var(--surface-2); }
+    .header-search input { background:transparent; border:none; outline:none; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; width:180px; }
+    .header-search input::placeholder { color:var(--text-dim); }
+    .vc-pill { display:flex; align-items:center; gap:0.4rem; padding:0.35rem 0.65rem; background-color:rgba(251,198,75,0.12); border:1px solid rgba(251,198,75,0.25); border-radius:6px; }
+    .vc-pill-num { font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.85rem; color:var(--text-white); line-height:1; }
+    .vc-pill-lbl { display:flex; align-items:center; gap:0.25rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.6rem; color:rgba(251,198,75,0.95); line-height:1; margin-top:0.1rem; }
+    .vc-pill-dot { width:5px; height:5px; border-radius:50%; background-color:rgba(251,198,75,0.95); }
+    .vc-pill-stack { display:flex; flex-direction:column; align-items:flex-start; }
+    .user-info { display:flex; flex-direction:column; align-items:flex-end; }
+    .user-name   { font-size:0.85rem; font-weight:700; }
+    .user-handle { font-size:0.65rem; color:var(--text-dim); }
+    .user-avatar { width:35px; height:35px; border-radius:50%; background-color:var(--overlay-gray); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.75rem; cursor:pointer; }
+    .user-avatar img { width:35px; height:35px; object-fit:cover; border-radius:50%; pointer-events:none; }
+    .user-details { position:relative; display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
+
+    /* ── CONTENT ── */
+    .content { margin-left:var(--sidebar-w); margin-top:var(--header-h); padding:1.5rem 2rem 3rem; min-height:calc(100vh - var(--header-h)); }
+
+    /* ── PROFILE HERO ── */
+    .profile-hero { position:relative; margin-bottom:1.25rem; }
+    .banner {
+      position:relative;
+      width:100%; height:280px;
+      border-radius:12px; overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(33,34,37,0.5) 0%, rgba(48,49,54,0.4) 100%),
+        radial-gradient(circle at 30% 30%, rgba(237,28,36,0.18), transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(76,175,80,0.12), transparent 65%),
+        var(--overlay-gray);
+      border:1px solid var(--border-faint);
+    }
+    .banner::after {
+      content:""; position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 12px, transparent 12px 24px);
+      pointer-events:none;
+    }
+    .banner-upload {
+      position:absolute; top:1rem; right:1rem;
+      display:flex; align-items:center; gap:0.4rem;
+      padding:0.5rem 0.85rem;
+      background-color:rgba(0,0,0,0.55);
+      border:1px solid var(--border-subtle);
+      border-radius:6px;
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem;
+      cursor:pointer; backdrop-filter:blur(4px);
+    }
+    .banner-upload:hover { background-color:rgba(0,0,0,0.75); }
+
+    .profile-info {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:1.5rem; padding:0 1rem; margin-top:-50px; position:relative; z-index:2;
+      flex-wrap:wrap;
+    }
+    .profile-id { display:flex; align-items:flex-end; gap:1rem; }
+    .profile-avatar {
+      width:120px; height:120px; border-radius:50%;
+      background:linear-gradient(135deg,#5a4030,#3a2820);
+      border:4px solid var(--page-bg);
+      display:flex; align-items:center; justify-content:center;
+      font-family:"ClashGrotesk-Bold",sans-serif; font-size:2.2rem; color:var(--text-white);
+      flex-shrink:0; overflow:hidden;
+    }
+    .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-meta { padding-bottom:0.5rem; }
+    .profile-name { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:1.4rem; font-weight:600; line-height:1.1; }
+    .profile-handle { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; color:var(--text-dim); margin-top:0.25rem; }
+    .profile-location { display:flex; align-items:center; gap:0.35rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem; color:var(--text-muted); margin-top:0.4rem; }
+    .profile-actions { display:flex; gap:0.5rem; padding-top:60px; }
+    .profile-btn {
+      display:flex; align-items:center; gap:0.4rem;
+      padding:0.55rem 1rem; background-color:var(--overlay-gray);
+      border:1px solid var(--border-subtle); border-radius:6px;
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Regular",sans-serif; font-size:0.82rem;
+      cursor:pointer; text-decoration:none;
+    }
+    .profile-btn:hover { border-color:#6e6e6e; }
+    .profile-bio {
+      margin-top:1rem; padding:0 1rem;
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.88rem;
+      color:var(--text-muted); line-height:1.55; max-width:760px;
+    }
+
+    /* ── MAIN TABS ── */
+    .main-tabs {
+      display:flex; gap:0.25rem; padding:0 1rem;
+      border-bottom:1px solid var(--border-faint);
+      margin-top:1.25rem; margin-bottom:1.5rem;
+      overflow-x:auto;
+    }
+    .main-tabs::-webkit-scrollbar { display:none; }
+    .main-tab {
+      padding:0.7rem 1rem; background:transparent; border:none;
+      color:var(--text-muted);
+      font-family:"ClashGrotesk-Regular",sans-serif; font-size:0.92rem;
+      cursor:pointer; position:relative; white-space:nowrap;
+      border-bottom:2px solid transparent; margin-bottom:-1px;
+    }
+    .main-tab:hover { color:var(--text-white); }
+    .main-tab.on { color:var(--text-white); border-bottom-color:var(--v-ent-red); font-family:"ClashGrotesk-Semibold",sans-serif; }
+
+    /* ── SUB TABS (pills) ── */
+    .sub-tabs {
+      display:inline-flex; gap:0.2rem; padding:0.25rem;
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:8px; margin-bottom:1.25rem;
+    }
+    .sub-tab {
+      padding:0.5rem 1rem; background:transparent; border:none;
+      border-radius:6px; color:var(--text-muted);
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.82rem;
+      cursor:pointer; white-space:nowrap;
+    }
+    .sub-tab:hover { color:var(--text-white); }
+    .sub-tab.on { background-color:var(--surface-2); color:var(--text-white); font-family:"ClashGrotesk-Regular",sans-serif; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:1rem; margin-bottom:1rem; flex-wrap:wrap;
+    }
+    .filter-count { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-muted); }
+    .filter-controls { display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; }
+
+    .ctrl-search { display:flex; align-items:center; gap:0.4rem; background-color:var(--overlay-gray); border:1px solid var(--border-faint); border-radius:6px; padding:0.45rem 0.75rem; }
+    .ctrl-search input { background:transparent; border:none; outline:none; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.82rem; width:180px; }
+    .ctrl-search input::placeholder { color:var(--text-dim); }
+    .ctrl-select { background-color:var(--overlay-gray); border:1px solid var(--border-faint); border-radius:6px; padding:0.45rem 0.75rem; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.82rem; outline:none; cursor:pointer; }
+    .ctrl-select option { background-color:var(--surface-2); }
+    .ctrl-btn { display:flex; align-items:center; gap:0.45rem; background-color:var(--overlay-gray); border:1px solid var(--border-faint); border-radius:6px; padding:0.45rem 0.85rem; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.82rem; cursor:pointer; }
+    .ctrl-btn:hover { border-color:#6e6e6e; }
+    .ctrl-btn .caret { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text-dim); margin-left:0.2rem; }
+
+    /* ── TABLE (desktop) ── */
+    .tx-table-wrap { background-color:var(--overlay-gray); border-radius:10px; border:1px solid var(--border-faint); overflow:hidden; }
+    .tx-table { width:100%; border-collapse:collapse; }
+    .tx-table thead tr { background-color:var(--surface-2); }
+    .tx-table th { padding:0.75rem 1.1rem; text-align:left; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-dim); white-space:nowrap; }
+    .tx-table th:last-child { text-align:right; }
+    .tx-table td { padding:0.85rem 1.1rem; font-size:0.85rem; border-bottom:1px solid var(--border-faint); vertical-align:middle; }
+    .tx-table td:last-child { text-align:right; }
+    .tx-table tbody tr:last-child td { border-bottom:none; }
+    .tx-table tbody tr:nth-child(even) td { background-color:rgba(255,255,255,0.015); }
+    .tx-table tbody tr:hover td { background-color:rgba(255,255,255,0.04); }
+    .tx-empty { padding:2.5rem 1.25rem; text-align:center; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-dim); }
+
+    .t-name { display:flex; align-items:center; gap:0.7rem; }
+    .t-thumb {
+      width:42px; height:32px; border-radius:5px; flex-shrink:0;
+      background:linear-gradient(135deg, var(--surface-2), #1a1b1e);
+      display:flex; align-items:center; justify-content:center;
+      font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.6rem; color:rgba(255,255,255,0.6);
+      letter-spacing:0.05em; overflow:hidden;
+    }
+    .t-thumb.fifa { background:linear-gradient(135deg,#1a4d2e,#0a2818); color:#7fc89a; }
+    .t-thumb.pubg { background:linear-gradient(135deg,#5a3a0d,#2c1c05); color:#f0b56a; }
+    .t-thumb.val  { background:linear-gradient(135deg,#5a1320,#28080d); color:#ff7a85; }
+    .t-thumb.cod  { background:linear-gradient(135deg,#2a3a1a,#101808); color:#b0c878; }
+    .t-thumb.mk   { background:linear-gradient(135deg,#3a1010,#180404); color:#ff5a3a; }
+    .t-thumb.tek  { background:linear-gradient(135deg,#1e2a5a,#0a1228); color:#7a9aff; }
+    .t-thumb.sf6  { background:linear-gradient(135deg,#5a2a0a,#281204); color:#ffaa50; }
+    .t-thumb.eafc { background:linear-gradient(135deg,#0d4a3a,#04201a); color:#5ad6b0; }
+    .t-name-block { display:flex; flex-direction:column; min-width:0; }
+    .t-name-text { font-family:"ClashGrotesk-Medium",sans-serif; font-size:0.88rem; font-weight:500; color:var(--text-white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; }
+    .t-name-sub  { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-top:0.15rem; }
+
+    .t-prize { font-family:"ClashGrotesk-Medium",sans-serif; font-weight:600; color:var(--text-white); }
+    .t-prize.muted { color:var(--text-muted); font-weight:400; }
+    .t-prize sub { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-left:0.3rem; }
+    .t-place { font-family:"ClashGrotesk-Semibold",sans-serif; font-weight:600; }
+    .t-place.gold   { color:#ffd76a; }
+    .t-place.silver { color:#cfd3d8; }
+    .t-place.bronze { color:#d8a368; }
+    .t-place.dnp    { color:var(--text-dim); font-family:"ClashGrotesk-Light",sans-serif; font-weight:400; }
+
+    .t-status {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      padding:0.22rem 0.6rem; border-radius:20px;
+      font-size:0.72rem; font-family:"ClashGrotesk-Regular",sans-serif;
+      white-space:nowrap;
+    }
+    .s-upcoming   { background:rgba(255,255,255,0.06);  color:var(--text-muted); }
+    .s-live       { background:rgba(76,175,80,0.15);    color:#81c784; }
+    .s-progress   { background:rgba(251,198,75,0.12);   color:rgba(251,198,75,0.95); }
+    .s-completed  { background:rgba(76,175,80,0.12);    color:#81c784; }
+    .s-disq       { background:rgba(237,28,36,0.12);    color:#ef9a9a; }
+    .s-live .live-dot { width:6px; height:6px; border-radius:50%; background-color:#81c784; box-shadow:0 0 6px #81c784; }
+
+    .t-action {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      padding:0.4rem 0.85rem;
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint); border-radius:6px;
+      color:var(--text-white);
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem;
+      cursor:pointer; white-space:nowrap; text-decoration:none;
+    }
+    .t-action:hover { border-color:#6e6e6e; }
+
+    /* ── MOBILE CARDS ── */
+    .tx-cards { display:none; flex-direction:column; gap:0.6rem; }
+    .tx-card {
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:10px;
+      overflow:hidden;
+    }
+    .tx-card-head {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:0.75rem; padding:0.85rem 1rem;
+      cursor:pointer;
+    }
+    .tx-card-head .t-name { flex:1; min-width:0; }
+    .tx-card-right { display:flex; align-items:center; gap:0.6rem; flex-shrink:0; }
+    .tx-card .chev { transition:transform 0.25s; color:var(--text-dim); }
+    .tx-card.open .chev { transform:rotate(180deg); }
+    .tx-card-body {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.3s ease;
+      border-top:1px solid var(--border-faint);
+      background-color:rgba(0,0,0,0.18);
+    }
+    .tx-card.open .tx-card-body { max-height:520px; }
+    .tx-card-body-inner { padding:0.85rem 1rem 1rem; display:flex; flex-direction:column; gap:0.55rem; }
+    .tx-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+    .tx-row-key { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem; color:var(--text-dim); }
+    .tx-row-val { font-family:"ClashGrotesk-Regular",sans-serif; font-size:0.85rem; color:var(--text-white); text-align:right; }
+    .tx-card-cta { margin-top:0.4rem; width:100%; padding:0.6rem; background-color:var(--surface-2); border:1px solid var(--border-faint); border-radius:6px; color:var(--text-white); font-family:"ClashGrotesk-Regular",sans-serif; font-size:0.85rem; cursor:pointer; text-align:center; text-decoration:none; }
+    .tx-card-cta:hover { border-color:#6e6e6e; }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 0.25rem 0; flex-wrap:wrap; gap:0.75rem;
+    }
+    .pag-left { display:flex; align-items:center; gap:0.85rem; flex-wrap:wrap; }
+    .rows-per { display:flex; align-items:center; gap:0.45rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.8rem; color:var(--text-dim); }
+    .rows-per select { background-color:var(--overlay-gray); border:1px solid var(--border-faint); border-radius:5px; padding:0.3rem 0.55rem; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem; outline:none; cursor:pointer; }
+    .pag-info { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.8rem; color:var(--text-dim); }
+    .pag-btns { display:flex; gap:0.3rem; }
+    .pag-btn { width:30px; height:30px; border-radius:5px; border:1px solid var(--border-faint); background:transparent; color:var(--text-white); font-size:0.82rem; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:"ClashGrotesk-Regular",sans-serif; }
+    .pag-btn:hover:not(:disabled) { border-color:#6e6e6e; }
+    .pag-btn.on { background-color:var(--v-ent-red); border-color:var(--v-ent-red); }
+    .pag-btn:disabled { opacity:0.3; cursor:not-allowed; }
+
+    /* ── BOTTOM MENU (mobile) ── */
+    .bottom-menu {
+      display:none;
+      position:fixed; bottom:0; left:0; right:0;
+      background-color:var(--page-bg);
+      border-top:1px solid var(--border-subtle);
+      height:60px;
+      align-items:center; justify-content:space-around;
+      z-index:200;
+      padding:0 0.5rem;
+    }
+    .bm-item {
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+      color:var(--text-muted);
+      text-decoration:none;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.62rem;
+      padding:0.4rem 0.5rem;
+      border-radius:6px;
+      min-width:56px;
+    }
+    .bm-item.on { color:var(--v-ent-red); }
+    .bm-item svg { width:18px; height:18px; }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 1920px) {
+      .content { max-width:1640px; margin-left:auto; margin-right:auto; padding-left:calc(var(--sidebar-w) + 2rem); padding-right:2rem; }
+      .header { padding-left:calc(var(--sidebar-w) + 1rem); }
+    }
+
+    @media (max-width: 1024px) {
+      :root { --sidebar-w:230px; }
+      .header-search input { width:140px; }
+      .banner { height:230px; }
+      .profile-avatar { width:100px; height:100px; }
+      .t-name-text { max-width:160px; }
+      .ctrl-search input { width:140px; }
+    }
+
+    @media (max-width: 900px) {
+      .profile-actions { padding-top:0; margin-top:1rem; }
+      .profile-info { flex-direction:column; align-items:flex-start; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display:none; }
+      .header { left:0; padding:0 1rem; }
+      .header-search { display:none; }
+      .vc-pill { padding:0.3rem 0.5rem; }
+      .vc-pill-num { font-size:0.78rem; }
+      .vc-pill-lbl { font-size:0.55rem; }
+      .user-info { display:none; }
+      .content { margin-left:0; padding:1rem 1rem 5.5rem; }
+      .banner { height:170px; }
+      .banner-upload { font-size:0.7rem; padding:0.4rem 0.65rem; }
+      .profile-info { padding:0; gap:1rem; margin-top:-40px; }
+      .profile-avatar { width:80px; height:80px; font-size:1.6rem; border-width:3px; }
+      .profile-name { font-size:1.15rem; }
+      .profile-bio { padding:0; font-size:0.82rem; }
+      .main-tabs { padding:0; gap:0; margin-bottom:1rem; }
+      .main-tab { padding:0.6rem 0.75rem; font-size:0.85rem; }
+      .sub-tabs { width:100%; }
+      .sub-tab { flex:1; }
+      .filter-bar { gap:0.5rem; }
+      .filter-controls { width:100%; gap:0.45rem; }
+      .ctrl-search { flex:1; }
+      .ctrl-search input { width:100%; }
+
+      /* table → cards swap */
+      .tx-table-wrap { background:transparent; border:none; overflow:visible; }
+      .tx-table { display:none; }
+      .tx-cards { display:flex; }
+
+      .pagination { justify-content:center; gap:0.5rem; }
+      .pag-info { width:100%; text-align:center; }
+      .bottom-menu { display:flex; }
+    }
+
+    @media (max-width: 420px) {
+      .content { padding:1rem 0.85rem 5.5rem; }
+      .banner { height:140px; border-radius:10px; }
+      .banner-upload { top:0.65rem; right:0.65rem; }
+      .profile-name { font-size:1.05rem; }
+      .profile-handle { font-size:0.78rem; }
+      .header-title { font-size:0.95rem; }
+      .breadcrumb { font-size:0.65rem; }
+      .profile-btn { padding:0.5rem 0.8rem; font-size:0.78rem; }
+      .pag-btn { width:28px; height:28px; font-size:0.78rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+      </li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Profile
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Events
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Teams
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Rankings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+          Wallets
+        </a>
+      </li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>Anime</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Community</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01"/></svg>Organizations</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Marketplace</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Shop</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="header">
+  <div class="header-title-wrap">
+    <button class="back-btn" title="Back" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title-block">
+      <span class="header-title">My Profile</span>
+      <div class="breadcrumb">
+        <a href="#">Home</a>
+        <span class="crumb-sep">/</span>
+        <a href="#">My Profile</a>
+        <span class="crumb-sep">/</span>
+        <span>Activity</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search tournaments, events, users..." />
+    </div>
+    <div class="vc-pill">
+      <div class="vc-pill-stack">
+        <span class="vc-pill-num">526</span>
+        <span class="vc-pill-lbl"><span class="vc-pill-dot"></span>v-ent coins</span>
+      </div>
+    </div>
+    <div class="user-details">
+      <div class="user-info">
+        <span class="user-name">Nathan Drake</span>
+        <span class="user-handle">@frostbite</span>
+      </div>
+      <div class="user-avatar">ND</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<main class="content">
+
+  <!-- Profile hero -->
+  <section class="profile-hero">
+    <div class="banner">
+      <button class="banner-upload">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload banner
+      </button>
+    </div>
+
+    <div class="profile-info">
+      <div class="profile-id">
+        <div class="profile-avatar">ND</div>
+        <div class="profile-meta">
+          <h2 class="profile-name">Nathan Drake</h2>
+          <div class="profile-handle">@frostbite</div>
+          <div class="profile-location">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Lagos, Nigeria
+          </div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="profile-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Share
+        </button>
+        <button class="profile-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Profile
+        </button>
+      </div>
+    </div>
+
+    <p class="profile-bio">
+      Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it's dominating in-game or leveling up your project with killer design, I'm here to make it happen. Let's team up and create something epic!
+    </p>
+  </section>
+
+  <!-- Main tabs -->
+  <div class="main-tabs" role="tablist">
+    <button class="main-tab" role="tab">Overview</button>
+    <button class="main-tab on" role="tab" aria-selected="true">Activity</button>
+    <button class="main-tab" role="tab">Image Gallery</button>
+    <button class="main-tab" role="tab">Social Links</button>
+    <button class="main-tab" role="tab">Favorite Games</button>
+  </div>
+
+  <!-- Sub tabs -->
+  <div class="sub-tabs" role="tablist">
+    <button class="sub-tab on" role="tab" aria-selected="true">Tournaments</button>
+    <button class="sub-tab" role="tab">Events</button>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-count" id="t-count">12 tournaments</div>
+    <div class="filter-controls">
+      <div class="ctrl-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="t-search" placeholder="Search tournaments…" oninput="renderTable()" />
+      </div>
+      <select class="ctrl-select" id="t-status" onchange="renderTable()" aria-label="Filter status">
+        <option value="">All Status</option>
+        <option value="upcoming">Upcoming</option>
+        <option value="live">Live</option>
+        <option value="progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="disq">Disqualified</option>
+      </select>
+      <select class="ctrl-select" id="t-range" onchange="renderTable()" aria-label="Filter date range">
+        <option value="">All Time</option>
+        <option value="30">Last 30 days</option>
+        <option value="90">Last 3 months</option>
+        <option value="180">Last 6 months</option>
+        <option value="365">Last 12 months</option>
+      </select>
+      <select class="ctrl-select" id="t-sort" onchange="renderTable()" aria-label="Sort by">
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="prize-desc">Highest Prize</option>
+        <option value="placement">Best Placement</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table (desktop) -->
+  <div class="tx-table-wrap">
+    <table class="tx-table">
+      <thead>
+        <tr>
+          <th>Tournament</th>
+          <th>Game</th>
+          <th>Date</th>
+          <th>Format</th>
+          <th>Type</th>
+          <th>Placement</th>
+          <th>Prize</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="t-tbody"></tbody>
+    </table>
+    <div id="t-empty" class="tx-empty" style="display:none;">No tournaments match your filters.</div>
+
+    <!-- Mobile cards (swap container at ≤768) -->
+    <div class="tx-cards" id="t-cards"></div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <div class="pag-left">
+      <div class="rows-per">
+        <span>Rows</span>
+        <select id="t-rows" onchange="changeRows(this.value)">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+        </select>
+      </div>
+      <span class="pag-info" id="pag-info"></span>
+    </div>
+    <div class="pag-btns" id="pag-btns"></div>
+  </div>
+
+</main>
+
+<!-- ═══════ BOTTOM MENU (mobile) ═══════ -->
+<nav class="bottom-menu">
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
+  <a class="bm-item on" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Profile
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/></svg>
+    Tournaments
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Events
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+    Wallet
+  </a>
+</nav>
+
+<script>
+  /* ── MOCK DATA ── */
+  const TOURNAMENTS = [
+    { id:1,  name:"Lagos Pro Series — FIFA Cup",         game:"FIFA",              gkey:"fifa", date:"04 Apr '26",        dateRaw:"2026-04-04", format:"Single Elim",  type:"Solo", placement:null,   place:"—",   prize:"₦500,000",   prizeRaw:500000,   status:"upcoming",  org:"Lagos Pro Series" },
+    { id:2,  name:"VENT Open — PUBG Mobile",              game:"PUBG Mobile",       gkey:"pubg", date:"01–21 Apr '26",     dateRaw:"2026-04-21", format:"Battle Royale",type:"Squad", placement:null,  place:"—",   prize:"₦1,200,000", prizeRaw:1200000,  status:"live",      org:"VENT Open" },
+    { id:3,  name:"VCT Africa Qualifiers",                game:"Valorant",          gkey:"val",  date:"28 Mar – 14 Apr '26",dateRaw:"2026-04-14", format:"Double Elim",  type:"Team", placement:null,   place:"—",   prize:"₦2,500,000", prizeRaw:2500000,  status:"progress",  org:"Riot Africa" },
+    { id:4,  name:"COD Mobile Naija Showdown",            game:"Call of Duty",      gkey:"cod",  date:"22 Mar '26",        dateRaw:"2026-03-22", format:"Group Stage",  type:"Squad", placement:1,     place:"1st",  prize:"₦1,500,000", prizeRaw:1500000,  status:"completed", org:"Naija Esports" },
+    { id:5,  name:"Mortal Kombat 1 — Throne War",         game:"Mortal Kombat 1",   gkey:"mk",   date:"15 Mar '26",        dateRaw:"2026-03-15", format:"Single Elim",  type:"Solo", placement:2,     place:"2nd",  prize:"₦450,000",   prizeRaw:450000,   status:"completed", org:"Throne Fighters" },
+    { id:6,  name:"Tekken 8 — Lagos Locals #07",          game:"Tekken 8",          gkey:"tek",  date:"08 Mar '26",        dateRaw:"2026-03-08", format:"Round Robin",  type:"Solo", placement:3,     place:"3rd",  prize:"₦150,000",   prizeRaw:150000,   status:"completed", org:"Lagos FGC" },
+    { id:7,  name:"Street Fighter 6 — Capcom Cup Q2",     game:"Street Fighter 6",  gkey:"sf6",  date:"24 Feb '26",        dateRaw:"2026-02-24", format:"Single Elim",  type:"Solo", placement:5,     place:"5th",  prize:"—",          prizeRaw:0,        status:"completed", org:"Capcom Africa" },
+    { id:8,  name:"EA FC 25 — Naija Champions League",    game:"EA FC 25",          gkey:"eafc", date:"10 Feb '26",        dateRaw:"2026-02-10", format:"League",       type:"Team", placement:4,     place:"4th",  prize:"₦300,000",   prizeRaw:300000,   status:"completed", org:"Naija FC" },
+    { id:9,  name:"Valorant Lagos Invitational",          game:"Valorant",          gkey:"val",  date:"20 Jan '26",        dateRaw:"2026-01-20", format:"Double Elim",  type:"Team", placement:null,   place:"DQ",  prize:"—",          prizeRaw:0,        status:"disq",      org:"VENT Cup" },
+    { id:10, name:"PUBG Mobile — Vermillion Showdown",    game:"PUBG Mobile",       gkey:"pubg", date:"05 Jan '26",        dateRaw:"2026-01-05", format:"Battle Royale",type:"Squad", placement:7,     place:"7th",  prize:"—",          prizeRaw:0,        status:"completed", org:"Vermillion" },
+    { id:11, name:"FIFA Lagos City Cup",                  game:"FIFA",              gkey:"fifa", date:"18 Dec '25",        dateRaw:"2025-12-18", format:"Group Stage",  type:"Solo", placement:1,     place:"1st",  prize:"₦750,000",   prizeRaw:750000,   status:"completed", org:"Lagos City" },
+    { id:12, name:"Tekken 8 — December Brawl",            game:"Tekken 8",          gkey:"tek",  date:"02 Dec '25",        dateRaw:"2025-12-02", format:"Round Robin",  type:"Solo", placement:6,     place:"6th",  prize:"—",          prizeRaw:0,        status:"completed", org:"Throne Fighters" }
+  ];
+
+  const STATUS = {
+    upcoming:  { cls:"s-upcoming",  text:"Upcoming",     html:"Upcoming" },
+    live:      { cls:"s-live",      text:"Live",         html:'<span class="live-dot"></span>Live' },
+    progress:  { cls:"s-progress",  text:"In Progress",  html:"In Progress" },
+    completed: { cls:"s-completed", text:"Completed",    html:"Completed" },
+    disq:      { cls:"s-disq",      text:"Disqualified", html:"Disqualified" }
+  };
+
+  function placeClass(p) {
+    if (p === 1) return "gold";
+    if (p === 2) return "silver";
+    if (p === 3) return "bronze";
+    if (!p)      return "dnp";
+    return "";
+  }
+
+  let currentPage = 1;
+  let ROWS = 10;
+
+  function getFiltered() {
+    const q     = document.getElementById('t-search').value.toLowerCase().trim();
+    const stat  = document.getElementById('t-status').value;
+    const range = document.getElementById('t-range').value;
+    const sort  = document.getElementById('t-sort').value;
+
+    let rows = TOURNAMENTS.filter(t => {
+      if (stat && t.status !== stat) return false;
+      if (q && !(t.name.toLowerCase().includes(q) || t.game.toLowerCase().includes(q))) return false;
+      if (range) {
+        const cutoff = Date.now() - parseInt(range) * 86400000;
+        if (new Date(t.dateRaw).getTime() < cutoff) return false;
+      }
+      return true;
+    });
+
+    if      (sort === 'date-desc')  rows.sort((a,b) => new Date(b.dateRaw) - new Date(a.dateRaw));
+    else if (sort === 'date-asc')   rows.sort((a,b) => new Date(a.dateRaw) - new Date(b.dateRaw));
+    else if (sort === 'prize-desc') rows.sort((a,b) => b.prizeRaw - a.prizeRaw);
+    else if (sort === 'placement')  rows.sort((a,b) => (a.placement || 99) - (b.placement || 99));
+
+    return rows;
+  }
+
+  function renderTable() {
+    currentPage = 1;
+    renderPage();
+  }
+
+  function changeRows(v) {
+    ROWS = parseInt(v) || 10;
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const filtered = getFiltered();
+    const total    = filtered.length;
+    const start    = (currentPage - 1) * ROWS;
+    const end      = Math.min(start + ROWS, total);
+    const slice    = filtered.slice(start, end);
+
+    document.getElementById('t-count').textContent = `${total} tournament${total === 1 ? '' : 's'}`;
+
+    const tbody = document.getElementById('t-tbody');
+    const cards = document.getElementById('t-cards');
+    const empty = document.getElementById('t-empty');
+
+    if (total === 0) {
+      tbody.innerHTML = '';
+      cards.innerHTML = '';
+      empty.style.display = '';
+    } else {
+      empty.style.display = 'none';
+
+      // Desktop table rows
+      tbody.innerHTML = slice.map(t => {
+        const stat = STATUS[t.status];
+        const pCls = placeClass(t.placement);
+        return `<tr>
+          <td>
+            <div class="t-name">
+              <div class="t-thumb ${t.gkey}">${t.gkey.toUpperCase()}</div>
+              <div class="t-name-block">
+                <span class="t-name-text">${t.name}</span>
+                <span class="t-name-sub">${t.org}</span>
+              </div>
+            </div>
+          </td>
+          <td>${t.game}</td>
+          <td>${t.date}</td>
+          <td>${t.format}</td>
+          <td>${t.type}</td>
+          <td><span class="t-place ${pCls}">${t.place}</span></td>
+          <td><span class="t-prize ${t.prizeRaw === 0 ? 'muted' : ''}">${t.prize}</span></td>
+          <td><span class="t-status ${stat.cls}">${stat.html}</span></td>
+          <td><a class="t-action" href="#">View Details</a></td>
+        </tr>`;
+      }).join('');
+
+      // Mobile cards
+      cards.innerHTML = slice.map(t => {
+        const stat = STATUS[t.status];
+        const pCls = placeClass(t.placement);
+        return `<div class="tx-card" onclick="this.classList.toggle('open')">
+          <div class="tx-card-head">
+            <div class="t-name">
+              <div class="t-thumb ${t.gkey}">${t.gkey.toUpperCase()}</div>
+              <div class="t-name-block">
+                <span class="t-name-text">${t.name}</span>
+                <span class="t-name-sub">${t.game} • ${t.date}</span>
+              </div>
+            </div>
+            <div class="tx-card-right">
+              <span class="t-status ${stat.cls}">${stat.html}</span>
+              <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="tx-card-body">
+            <div class="tx-card-body-inner">
+              <div class="tx-row"><span class="tx-row-key">Format</span><span class="tx-row-val">${t.format}</span></div>
+              <div class="tx-row"><span class="tx-row-key">Type</span><span class="tx-row-val">${t.type}</span></div>
+              <div class="tx-row"><span class="tx-row-key">Placement</span><span class="tx-row-val"><span class="t-place ${pCls}">${t.place}</span></span></div>
+              <div class="tx-row"><span class="tx-row-key">Prize</span><span class="tx-row-val"><span class="t-prize ${t.prizeRaw === 0 ? 'muted' : ''}">${t.prize}</span></span></div>
+              <div class="tx-row"><span class="tx-row-key">Organizer</span><span class="tx-row-val">${t.org}</span></div>
+              <a class="tx-card-cta" href="#" onclick="event.stopPropagation()">View Details</a>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Pagination info
+    document.getElementById('pag-info').textContent =
+      total === 0 ? 'No results' : `Showing ${start + 1}–${end} of ${total}`;
+
+    // Pagination buttons
+    const totalPages = Math.ceil(total / ROWS);
+    let btns = `<button class="pag-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous">‹</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      btns += `<button class="pag-btn ${i === currentPage ? 'on' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    btns += `<button class="pag-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''} aria-label="Next">›</button>`;
+    document.getElementById('pag-btns').innerHTML = btns;
+  }
+
+  function changePage(n) {
+    const total = getFiltered().length;
+    const totalPages = Math.ceil(total / ROWS);
+    if (n < 1 || n > totalPages) return;
+    currentPage = n;
+    renderPage();
+  }
+
+  // Tab switching (visual-only)
+  document.querySelectorAll('.main-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+  document.querySelectorAll('.sub-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+
+  // Init
+  renderPage();
+</script>
+
+</body>
+</html>

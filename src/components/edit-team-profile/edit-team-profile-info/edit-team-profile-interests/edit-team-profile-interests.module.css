@@ -25,12 +25,12 @@
   border-radius: 7.5px;
   transition: all ease-in-out 0.5s;
   background-color: #46484F;
-  border: 1px solid #95959A;
+
   outline: none;
 }
 
 .searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
+  outline: none;
 }
 
 .searchIcon {
@@ -52,7 +52,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: "ClashGrotesk-Extralight", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #EEEEF0;
 }
 
@@ -66,7 +66,7 @@
 
 .selectedInterestsContainer span {
   background-color: #46484F;
-  border: 1px solid #46484F;
+
   padding: 7.5px 12.5px;
   border-radius: 30px;
   font-size: 0.9rem;
@@ -94,7 +94,7 @@
   display: inline-flex;
   cursor: pointer;
   background-color: #46484F;
-  border: 1px solid #46484F;
+
   padding: 7.5px 12.5px;
   border-radius: 30px;
   font-size: 0.9rem;

@@ -1,9 +1,9 @@
 .pageContainer {
   width: 100%;
   min-height: 100vh;
-  background-color: #17181A;
+  background-color: #131316;
   overflow-x: hidden;
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
 }
 
 .mainContainer {
@@ -13,30 +13,106 @@
 .rightPaneContainer {
   width: 100%;
   margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.overviewContainer {
+.tabsRow {
   display: flex;
-  align-items: flex-start;
+  gap: 0.4rem;
+  background-color: var(--overlay-gray);
+  padding: 0.35rem;
+  border-radius: 8px;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabsRow::-webkit-scrollbar { display: none; }
+
+.tabBTN {
+  position: relative;
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  padding: 0.5rem 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tabBTN:hover {
+  color: var(--primary-bg);
+}
+
+.activeTab {
+  background-color: #46484F;
+  color: var(--primary-bg);
+}
+
+.tabBadge {
+  background-color: var(--v-ent-red);
+  color: var(--primary-bg);
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.tabPanel {
+  display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  width: 100%;
+}
+
+.stateText,
+.errorText {
+  padding: 2rem 0;
+  font-size: var(--fs-p-size-desktop);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.errorText { color: var(--v-ent-red); }
+
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e1f23;
+
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-size: var(--fs-p-size-mobile);
+  color: var(--primary-bg);
+  z-index: 1100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
     width: calc(100% - 180px);
     margin-left: 180px;
-  }
-  .overviewContainer {
-    flex-direction: row;
+    padding: 2rem 1.5rem;
   }
 }
+
 @media only screen and (min-width: 1024px) {
   .rightPaneContainer {
     width: calc(100% - 250px);
     margin-left: 250px;
-  }
-  .profileDashboard {
-    padding: 1.5rem;
+    padding: 2rem;
   }
 }

@@ -1,0 +1,210 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+  padding-bottom: 4rem;
+}
+
+.mainContainer { width: 100%; }
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.headerRow { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.pageTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-bold);
+  margin: 0;
+}
+
+.pageSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.sideMenu {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 0.65rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sideMenu::-webkit-scrollbar { display: none; }
+
+.sideMenuLabel {
+  display: none;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 0.5rem;
+  padding: 0 0.4rem;
+}
+
+.tabBTN {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  padding: 0.55rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+  text-align: left;
+}
+
+.tabBTN:hover { color: var(--primary-bg); }
+
+.activeTab {
+  background-color: #46484F;
+  color: var(--primary-bg);
+}
+
+.tabArrow {
+  display: none;
+  font-size: 0.7rem;
+}
+
+.content {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 1.25rem;
+  min-height: 300px;
+}
+
+/* Gates */
+.gateCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gateIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(237, 28, 36, 0.12);
+  color: var(--v-ent-red);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.gateTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-bold);
+  margin: 0;
+}
+
+.gateSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1rem;
+}
+
+.gateBtn {
+  background-color: var(--v-ent-red);
+
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.gateBtn:hover { background-color: var(--v-ent-light-red); }
+
+.stateText {
+  padding: 2rem 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e1f23;
+
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-size: var(--fs-p-size-mobile);
+  color: var(--primary-bg);
+  z-index: 1100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive */
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 2rem 1.5rem;
+  }
+
+  .layout {
+    grid-template-columns: 240px 1fr;
+    align-items: flex-start;
+  }
+
+  .sideMenu {
+    flex-direction: column;
+    padding: 0.85rem;
+    overflow: visible;
+    position: sticky;
+    top: 80px;
+  }
+
+  .sideMenuLabel { display: block; }
+  .tabArrow { display: inline-block; }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem;
+  }
+  .layout { grid-template-columns: 260px 1fr; }
+}
