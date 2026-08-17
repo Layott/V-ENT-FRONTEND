@@ -1,39 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import PrizeDistributionInside from "./prize-distribution-inside/PrizeDistributionInside";
+import { validatePrizeDistribution } from "../tournamentWizardValidation";
+import ValidationSummary from "../validation-summary/ValidationSummary";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 
-const PrizeDistribution = ({ setSelectedTab, updateLocalStorage }) => {
-  const [formData, setFormData] = useState({});
-
-  useEffect(() => {
-    const savedData = localStorage.getItem('createTournamentData');
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
-  }, []);
-
-  const updateFormData = (key, value) => {
-    console.log(`PrizeDistribution - Updating ${key}:`, value);
-    
-    // Update local state
-    const updatedData = { ...formData, [key]: value };
-    setFormData(updatedData);
-    
-    // Update localStorage using centralized function
-    if (updateLocalStorage) {
-      updateLocalStorage(key, value);
-    }
-  };
+// Uses the parent's live formData/updateLocalStorage directly (see the note
+// in FormatParticipants.js for why this step no longer keeps its own
+// localStorage-loaded copy).
+const PrizeDistribution = ({ setSelectedTab, formData = {}, updateLocalStorage, handleSubmit, isSavingDraft }) => {
+  const [errors, setErrors] = useState({});
 
   const handleProceed = () => {
-    // Force save current state before proceeding
-    localStorage.setItem('createTournamentData', JSON.stringify(formData));
+    const { isValid, errors: fieldErrors } = validatePrizeDistribution(formData);
+    setErrors(fieldErrors);
+    if (!isValid) return;
     setSelectedTab((prevTab) => prevTab + 1);
   };
 
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
+  };
+
+  const handleSaveDraft = () => {
+    if (handleSubmit) handleSubmit(true);
   };
 
   return (
@@ -42,17 +32,17 @@ const PrizeDistribution = ({ setSelectedTab, updateLocalStorage }) => {
         <h1>Prize Distribution</h1>
       </header>
 
-      <PrizeDistributionInside updateFormData={updateFormData} />
+      <ValidationSummary errors={errors} />
+
+      <PrizeDistributionInside formData={formData} updateFormData={updateLocalStorage} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button
           className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => {
-            localStorage.setItem('createTournamentData', JSON.stringify(formData));
-            alert('Draft saved');
-          }}
+          onClick={handleSaveDraft}
+          disabled={isSavingDraft}
         >
-          Save Draft
+          {isSavingDraft ? 'Saving...' : 'Save Draft'}
         </button>
 
         <div className={createTournamentStyles.backAndProceedContainer}>

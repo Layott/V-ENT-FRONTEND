@@ -5,11 +5,41 @@ import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './prize-distribution-inside.module.css';
 
+// Reconstructs the position/prize/extras working state from the persisted
+// formData.prize_distribution array so re-visiting this step (or opening a
+// draft) doesn't wipe out prior entries.
+const buildInitialPrizeState = (formData) => {
+  const saved = Array.isArray(formData?.prize_distribution) ? formData.prize_distribution : [];
+  const prizes = {};
+  const extraBonuses = {};
+  const savedPositions = [];
+
+  saved.forEach((entry) => {
+    const position = Number(entry?.position);
+    if (!position) return;
+    savedPositions.push(position);
+    if (entry.prize !== null && entry.prize !== undefined && entry.prize !== '') {
+      prizes[`prizePosition${position}`] = entry.prize;
+    }
+    if (entry.extras !== null && entry.extras !== undefined && entry.extras !== '') {
+      extraBonuses[`extraBonus${position}`] = entry.extras;
+    }
+  });
+
+  const positions = savedPositions.length > 0
+    ? Array.from(new Set([1, 2, 3, ...savedPositions])).sort((a, b) => a - b)
+    : [1, 2, 3];
+
+  return { positions, prizes, extraBonuses };
+};
+
 const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
-  const [selectedOption, setSelectedOption] = useState(formData?.prizeOption || "");
-  const [positions, setPositions] = useState([1, 2, 3]);
-  const [prizes, setPrizes] = useState(formData?.prizes || {});
-  const [extraBonuses, setExtraBonuses] = useState({});
+  const initial = buildInitialPrizeState(formData);
+  const [selectedOption, setSelectedOption] = useState(formData?.prize_distribution_type || "");
+  const [positions, setPositions] = useState(initial.positions);
+  const [prizes, setPrizes] = useState(initial.prizes);
+  const [extraBonuses, setExtraBonuses] = useState(initial.extraBonuses);
+  const [winnerPrize, setWinnerPrize] = useState(formData?.winner_prize ?? '');
 
   useEffect(() => {
     const formattedPrizeDistribution = positions.map((position) => ({
@@ -20,7 +50,10 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
 
     updateFormData('prize_distribution_type', selectedOption);
     updateFormData('prize_distribution', formattedPrizeDistribution);
-  }, [selectedOption, prizes, extraBonuses, positions, updateFormData]);
+    if (selectedOption === 'winner-takes-all') {
+      updateFormData('winner_prize', winnerPrize);
+    }
+  }, [selectedOption, prizes, extraBonuses, positions, winnerPrize, updateFormData]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -28,10 +61,13 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
       setPrizes({});
       setExtraBonuses({});
     }
+    if (option !== 'winner-takes-all') {
+      setWinnerPrize('');
+    }
   };
 
   const addAnotherPosition = () => {
-    setPositions((prevPositions) => [...prevPositions, positions.length + 1]);
+    setPositions((prevPositions) => [...prevPositions, prevPositions.length > 0 ? Math.max(...prevPositions) + 1 : 1]);
   };
 
   const deletePosition = (position) => {
@@ -170,6 +206,8 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
                 type="number"
                 placeholder="Enter Amount for Prize"
                 className={createTournamentStyles.inputNumber}
+                value={winnerPrize}
+                onChange={(e) => setWinnerPrize(e.target.value)}
               />
             </div>
             <p className={createTournamentStyles.infoParagraph}>
@@ -201,10 +239,10 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
 
 PrizeDistributionInside.propTypes = {
   formData: PropTypes.shape({
-    prizeOption: PropTypes.string,
-    prizes: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
-    extraBonuses: PropTypes.objectOf(PropTypes.string),
-  }).isRequired,
+    prize_distribution_type: PropTypes.string,
+    prize_distribution: PropTypes.array,
+    winner_prize: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }),
   updateFormData: PropTypes.func.isRequired,
 };
 

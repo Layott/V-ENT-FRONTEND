@@ -32,7 +32,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  border-bottom: 1px solid #404040;
+
 }
 
 .headerLeft {
@@ -150,17 +150,17 @@
 .searchInput {
   width: 100%;
   background-color: #3a3a3a;
-  border: 2px solid #4a4a4a;
+
   border-radius: 8px;
   padding: 14px 16px 14px 48px;
   font-size: 16px;
   color: white;
-  transition: border-color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: #ef4444;
+
 }
 
 .searchInput::placeholder {
@@ -177,7 +177,7 @@
 
 .teamCard {
   background-color: #3a3a3a;
-  border: 2px solid #4a4a4a;
+
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
@@ -190,15 +190,15 @@
 }
 
 .teamCard:hover {
-  border-color: #ef4444;
+
   background-color: #4a3a3a;
   transform: translateY(-1px);
 }
 
 .teamCard.selected {
-  border-color: #ef4444;
+
   background-color: #4a3a3a;
-  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3);
+
 }
 
 .teamInfo {
@@ -268,13 +268,13 @@
   justify-content: flex-end;
   gap: 16px;
   padding: 24px 32px;
-  border-top: 1px solid #404040;
+
   margin-top: auto;
 }
 
 .cancelButton {
   background: none;
-  border: 2px solid #6b7280;
+
   color: #9ca3af;
   padding: 12px 24px;
   border-radius: 8px;
@@ -285,13 +285,13 @@
 }
 
 .cancelButton:hover {
-  border-color: #9ca3af;
+
   color: white;
 }
 
 .proceedButton {
   background-color: #ef4444;
-  border: 2px solid #ef4444;
+
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -306,14 +306,14 @@
 
 .proceedButton:hover:not(.disabled) {
   background-color: #dc2626;
-  border-color: #dc2626;
+
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .proceedButton.disabled {
   background-color: #4a4a4a;
-  border-color: #4a4a4a;
+
   color: #6b7280;
   cursor: not-allowed;
 }

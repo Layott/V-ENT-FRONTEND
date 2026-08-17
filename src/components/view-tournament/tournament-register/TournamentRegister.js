@@ -1,21 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../tournament-register/tournament-register.module.css';
 import ChooseTeamModal from '../tournament-register/team/Team';
 import EditTeamRosterModal from './edit-team/EditTeam';
 import ReviewModal from './review-team/Review';
 import PaymentModal from './payment/Payment';
-import SuccessModal from './success/Success'; 
+import SuccessModal from './success/Success';
 
-const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) => {
+const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament, resumeReference = null }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showEditRosterModal, setShowEditRosterModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false); 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [registrationData, setRegistrationData] = useState(null);
+
+  // Returning from a Paystack wallet top-up mid-registration (see
+  // payment/Payment.js `handleTopUp`) lands back on this same page with a
+  // `?reference=` query param. Resume straight at the Payment step instead of
+  // making the user pick Mode → Team → Roster → Review again. The in-flight
+  // selection was stashed in sessionStorage by Payment.js right before the
+  // redirect to Paystack.
+  useEffect(() => {
+    if (!isOpen || !resumeReference || !tournament?.id) return;
+
+    let draft = null;
+    try {
+      const raw = window.sessionStorage.getItem(`ventRegDraft:${tournament.id}`);
+      if (raw) draft = JSON.parse(raw);
+    } catch {
+      draft = null;
+    }
+
+    const type = draft?.type === 'team' ? 'team' : 'individual';
+    setSelectedOption(type);
+    setSelectedTeam(draft?.team || null);
+    setTeamMembers(draft?.members || []);
+    setRegistrationData({ type, team: draft?.team || null, members: draft?.members || [] });
+
+    setShowTeamModal(false);
+    setShowEditRosterModal(false);
+    setShowReviewModal(false);
+    setShowSuccessModal(false);
+    setShowPaymentModal(true);
+    // Only re-run this when the modal (re)opens with a resume reference -
+    // not on every keystroke of unrelated state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, resumeReference, tournament?.id]);
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -23,11 +56,9 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
 
   const handleNext = () => {
     if (selectedOption === 'individual') {
-      console.log('Individual selected, opening payment modal');
       setRegistrationData({ type: 'individual' });
       setShowPaymentModal(true);
     } else if (selectedOption === 'team') {
-      console.log('Team selected, opening team modal');
       setShowTeamModal(true);
     }
   };
@@ -65,7 +96,6 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
   };
 
   const handleTeamProceed = (team) => {
-    console.log('Selected team:', team);
     setSelectedTeam(team);
     setShowTeamModal(false);
     setShowEditRosterModal(true);
@@ -85,7 +115,6 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
   };
 
   const handleEditRosterProceed = (team, members, action) => {
-    console.log('Team roster completed:', { team, members, action });
     setSelectedTeam(team);
     setTeamMembers(members);
     setShowEditRosterModal(false);
@@ -106,8 +135,6 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
   };
 
   const handleReviewProceed = (reviewData) => {
-    console.log('Review completed, proceeding to payment:', reviewData);
-    console.log('Tournament data:', tournament);
     setRegistrationData({
       type: 'team',
       team: selectedTeam,
@@ -115,9 +142,6 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
       ...reviewData
     });
     setShowReviewModal(false);
-    
-    
-    console.log('Opening payment modal');
     setShowPaymentModal(true);
   };
 
@@ -140,7 +164,6 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
   };
 
   const handlePaymentComplete = (paymentData) => {
-    console.log('Payment completed:', paymentData);
     setShowPaymentModal(false);
     
     setRegistrationData(prev => ({
@@ -274,6 +297,7 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament }) =>
         selectedTeam={selectedTeam}
         teamMembers={teamMembers}
         registrationData={registrationData}
+        resumeReference={resumeReference}
       />
 
       {/* Success Modal */}

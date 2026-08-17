@@ -11,7 +11,7 @@
 .progressMenuContainer {
   height: 30px;
   width: fit-content;
-  border: 1px solid #393A40;
+
   background-color: #393A40;
   display: inline-flex;
   flex-direction: row;
@@ -21,8 +21,7 @@
 .progressBTN {
   cursor: pointer;
   outline: none;
-  border: 1px solid #393A40;
-  border-right: 1px solid #797B86;
+
   background-color: #393A40;
   color: #797B86;
   display: flex;
@@ -34,7 +33,7 @@
   height: 100%;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   white-space: nowrap;
 }
 
@@ -46,11 +45,11 @@
 .progressBTN:last-child {
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
-  border-right: 1px solid #393A40;
+
 }
 
 .progressNumber {
-  border: 1.5px solid #797B86;
+
   height: 16px;
   width: 16px;
   display: flex;
@@ -58,7 +57,7 @@
   align-items: center;
   border-radius: 50%;
   font-size: 0.7rem;
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #797B86;
 }
 
@@ -69,7 +68,7 @@
 .progressBTN.activeTab .progressNumber {
   background-color: var(--v-ent-light-red);
   color: #FFF;
-  border: 1.5px solid var(--v-ent-light-red);
+
 }
 
 @media only screen and (min-width: 768px) {
@@ -83,7 +82,7 @@
   .progressBTN {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
-    font-family: "ClashGrotesk-Medium", sans-serif;
+    font-family: "Inter", sans-serif;
     white-space: nowrap;
   }
   .progressBTN:first-child {

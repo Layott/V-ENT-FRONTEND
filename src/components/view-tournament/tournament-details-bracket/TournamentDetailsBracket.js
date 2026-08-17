@@ -85,12 +85,12 @@ function MatchCard({ match, topY }) {
   }
 
   function scoreEl(participant, opponent) {
-    if (!isDone && !isLive) return <span className={`${styles.score} ${styles.scoreNA}`}>—</span>;
+    if (!isDone && !isLive) return <span className={`${styles.score} ${styles.scoreNA}`}>-</span>;
     const isWinner = isDone && participant?.is_winner;
     const isLoser  = isDone && opponent?.is_winner;
     return (
       <span className={`${styles.score} ${isWinner ? styles.scoreWinner : ''} ${isLoser ? styles.scoreLoser : ''}`}>
-        {participant?.score ?? '—'}
+        {participant?.score ?? '-'}
       </span>
     );
   }
@@ -148,7 +148,7 @@ function BracketConnector({ prevPositions, nextPositions, totalHeight }) {
   for (let i = 0; i < nextPositions.length; i++) {
     const topIdx = 2 * i;
     const botIdx = 2 * i + 1;
-    if (botIdx >= prevPositions.length) continue; // bye — no connector needed
+    if (botIdx >= prevPositions.length) continue; // bye - no connector needed
 
     const top = prevPositions[topIdx] + half;
     const bot = prevPositions[botIdx] + half;
@@ -232,7 +232,7 @@ const TournamentDetailsBracket = ({ tournament }) => {
     return (
       <div className={styles.stateContainer}>
         <span className={styles.errorText}>{error}</span>
-        <button className="btn grnBTN" onClick={fetchBracket}>Retry</button>
+        <button className="btn goldBTN" onClick={fetchBracket}>Retry</button>
       </div>
     );
   }
