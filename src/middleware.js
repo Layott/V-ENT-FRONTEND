@@ -23,6 +23,20 @@ const protectedRoutes = [
 ];
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
+// Redirect to a path on whatever host the visitor is actually using.
+//
+// `new URL(path, req.url)` produces an ABSOLUTE Location, and behind nginx
+// req.url carries the internal listen address, so production was answering
+// protected routes with `Location: https://localhost:3000/login`. Any browser
+// following that - including Next's own prefetch of a protected link - tried to
+// reach the user's own machine.
+//
+// A relative Location is valid per RFC 7231 and the browser resolves it against
+// the current origin, so this cannot drift from the public hostname.
+function redirectTo(path) {
+  return new NextResponse(null, { status: 307, headers: { Location: path } });
+}
+
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
 
@@ -32,7 +46,7 @@ export default async function middleware(req) {
   if (isAdminRoute && !isAdminLoginRoute) {
     const adminToken = cookies().get('adminToken')?.value;
     if (!adminToken) {
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      return redirectTo('/admin/login');
     }
   }
 
@@ -45,13 +59,13 @@ export default async function middleware(req) {
   const isLoggedOutCookie = cookies().get("isLoggedOut")?.value === "true";
   
   if (isLoggedOutCookie) {
-    const response = NextResponse.redirect(new URL("/login", req.url));
+    const response = redirectTo('/login');
     response.cookies.delete("isLoggedOut");
     return response;
   }
 
   if (isProtectedRoute && !nextAuthToken && !sessionCookie) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectTo('/login');
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
@@ -61,7 +75,7 @@ export default async function middleware(req) {
     if (path === "/forgot-password" && fromEditProfile) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/home", req.url));
+    return redirectTo('/home');
   }
 
   return NextResponse.next();
