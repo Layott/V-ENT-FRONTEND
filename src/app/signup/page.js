@@ -339,7 +339,7 @@ return (
                         <p className={styles.termsAndPrivacy}>By creating an account, you agree to our&nbsp;
                             {/* /term-of-use is not a route - the terms live as a PDF in /public. */}
                             <a
-                              href="/V-ENT%20TERMS%20OF%20USE.pdf"
+                              href="/terms-of-use.pdf"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
