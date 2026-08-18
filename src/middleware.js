@@ -23,6 +23,21 @@ const protectedRoutes = [
 ];
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
+// Redirect to a path on the host the visitor is actually using.
+//
+// `new URL(path, req.url)` uses Next's internal listen address behind a proxy,
+// so production answered protected routes with
+// `Location: https://localhost:3000/login`. A relative Location is not an
+// option either - Next validates the header with `new URL()` and throws
+// "Invalid URL" - so the absolute URL is rebuilt from the forwarding headers
+// nginx sets, falling back to the request's own origin when there is no proxy.
+function redirectTo(path, req) {
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+  const proto = req.headers.get('x-forwarded-proto') || req.nextUrl.protocol.replace(':', '');
+  const base = host ? `${proto}://${host}` : req.nextUrl.origin;
+  return NextResponse.redirect(new URL(path, base));
+}
+
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
 
@@ -32,7 +47,7 @@ export default async function middleware(req) {
   if (isAdminRoute && !isAdminLoginRoute) {
     const adminToken = cookies().get('adminToken')?.value;
     if (!adminToken) {
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      return redirectTo('/admin/login', req);
     }
   }
 
@@ -45,13 +60,13 @@ export default async function middleware(req) {
   const isLoggedOutCookie = cookies().get("isLoggedOut")?.value === "true";
   
   if (isLoggedOutCookie) {
-    const response = NextResponse.redirect(new URL("/login", req.url));
+    const response = redirectTo('/login', req);
     response.cookies.delete("isLoggedOut");
     return response;
   }
 
   if (isProtectedRoute && !nextAuthToken && !sessionCookie) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectTo('/login', req);
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
@@ -61,7 +76,7 @@ export default async function middleware(req) {
     if (path === "/forgot-password" && fromEditProfile) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/home", req.url));
+    return redirectTo('/home', req);
   }
 
   return NextResponse.next();
