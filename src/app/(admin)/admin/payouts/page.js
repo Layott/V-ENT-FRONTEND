@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import AdminNav from '@/components/admin/AdminNav'
 import AdminHeader from '@/components/admin/AdminHeader'
 import { useAdminAuth } from '@/components/admin/useAdminAuth'
@@ -42,7 +42,16 @@ function PayoutsInner() {
   const [selected, setSelected] = useState(new Set())
   const [bulkLoading, setBulkLoading] = useState(false)
 
+  // Filter and page changes fire a new request while the previous one is still
+  // in flight. Without a guard the slower response wins the race, so a request
+  // that failed before the admin token was in localStorage could paint
+  // "Connection error." over a table that had already loaded correctly. Each
+  // run takes a ticket; only the newest one is allowed to touch state.
+  const requestRef = useRef(0)
+
   const fetchPayouts = useCallback(async () => {
+    const ticket = requestRef.current + 1
+    requestRef.current = ticket
     const token = localStorage.getItem('adminToken')
     setDataLoading(true)
     setError('')
@@ -56,6 +65,7 @@ function PayoutsInner() {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       const data = await res.json()
+      if (requestRef.current !== ticket) return
       if (data.status === 'success') {
         setPayouts(data.data?.results || [])
         setTotal(data.data?.count ?? (data.data?.results || []).length)
@@ -63,8 +73,9 @@ function PayoutsInner() {
         setError(data.message || 'Failed to load payouts.')
       }
     } catch {
-      setError('Connection error.')
+      if (requestRef.current === ticket) setError('Connection error.')
     } finally {
+      if (requestRef.current !== ticket) return
       setDataLoading(false)
     }
   }, [page, search, statusFilter, sortBy])

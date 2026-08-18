@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import AdminNav from '@/components/admin/AdminNav'
 import AdminHeader from '@/components/admin/AdminHeader'
 import { useAdminAuth } from '@/components/admin/useAdminAuth'
@@ -47,7 +47,16 @@ function DisputesInner() {
   const [actionLoading, setActionLoading] = useState({})
   const [resolvePopover, setResolvePopover] = useState(null)
 
+  // Filter and page changes fire a new request while the previous one is still
+  // in flight. Without a guard the slower response wins the race, so a request
+  // that failed before the admin token was in localStorage could paint
+  // "Connection error." over a table that had already loaded correctly. Each
+  // run takes a ticket; only the newest one is allowed to touch state.
+  const requestRef = useRef(0)
+
   const fetchDisputes = useCallback(async () => {
+    const ticket = requestRef.current + 1
+    requestRef.current = ticket
     const token = localStorage.getItem('adminToken')
     setDataLoading(true)
     setError('')
@@ -60,6 +69,7 @@ function DisputesInner() {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       const data = await res.json()
+      if (requestRef.current !== ticket) return
       if (data.status === 'success') {
         const rows = data.data?.results || []
         setDisputes(rows)
@@ -71,8 +81,9 @@ function DisputesInner() {
         setError(data.message || 'Failed to load disputes.')
       }
     } catch {
-      setError('Connection error.')
+      if (requestRef.current === ticket) setError('Connection error.')
     } finally {
+      if (requestRef.current !== ticket) return
       setDataLoading(false)
     }
   }, [page, statusFilter])
