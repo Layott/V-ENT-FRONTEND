@@ -42,8 +42,7 @@ const ReviewHeaderComponent = ({ title, children, isCompleted, editTabIndex, set
 
         {isOpen && (
             <div className={createTournamentStyles.reviewContentOuterContainer}>
-                <hr className={createTournamentStyles.reviewHR} />
-                <div className={createTournamentStyles.reviewContentContainer}>
+<div className={createTournamentStyles.reviewContentContainer}>
                     {children}
                 </div>
             </div>

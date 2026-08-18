@@ -58,9 +58,9 @@
 }
 
 .sectionHr {
-  height: 1px;
+  /* Separation by space, not a rule. */
+  height: 0;
   border: none;
-  background-color: rgba(204, 204, 204, 0.3);
 }
 
 .sectionHeader {
@@ -176,7 +176,7 @@
   gap: 0.25rem;
   font-weight: 500;
   transition: all ease-in-out 0.5s;
-  border: 1px solid #28292D;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .waitlistBTN,
@@ -202,7 +202,7 @@
 .waitlistBTN:hover,
 .seeMoreAccountsBTN:hover,
 .showMoreBTN:hover {
-  border: 1px solid var(--primary-bg);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .gamingAccount {
@@ -257,14 +257,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  border: 1px solid #28292D;
+
   transition: all ease-in-out 0.6s;
   width: 135px;
   flex-grow: 1;
 }
 
 .socialLink:hover {
-  border: 1px solid var(--primary-bg);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .socialIcon {
@@ -375,7 +375,7 @@
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
-  border: 1px solid #303136;
+
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -383,7 +383,7 @@
 }
 
 .searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
+  outline: none;
   width: 95%;
 }
 
@@ -662,14 +662,12 @@
   padding: 1.25rem;
 }
 
-
 .profileContent {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
-
 
 .blinkingDots {
   display: inline-block;

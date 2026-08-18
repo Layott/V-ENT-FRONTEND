@@ -51,7 +51,6 @@ export async function login(prevState, formData) {
     redirect("/events");
 
   } catch (error) {
-    console.error("Login error:", error);
     return {
       errors: {
         email: ["Something went wrong. Please try again."],

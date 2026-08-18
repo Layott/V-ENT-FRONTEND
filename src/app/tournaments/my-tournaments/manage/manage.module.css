@@ -1,0 +1,500 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+}
+
+.pageHeader {
+  margin-bottom: 1.75rem;
+}
+
+.backLink {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  transition: color 0.15s;
+}
+.backLink:hover { color: rgba(255,255,255,0.8); }
+
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+  margin: 0;
+}
+
+.stateText {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: var(--fs-p-size-desktop);
+  margin: 0;
+}
+
+.errorText {
+  color: var(--v-ent-red);
+  font-size: var(--fs-p-size-desktop);
+  margin: 0;
+}
+
+/* Section */
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0 0 1.25rem;
+}
+
+/* Round */
+.roundBlock {
+  margin-bottom: 1.75rem;
+}
+
+.roundLabel {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem;
+}
+
+/* Match grid */
+.matchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.matchBlock {
+  background-color: var(--overlay-gray);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.matchHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.matchNumber {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  color: rgba(255,255,255,0.55);
+}
+
+.statusBadge {
+  font-size: 0.65rem;
+  font-weight: var(--fw-semi-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status_upcoming   { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); }
+.status_in_progress { background: rgba(212, 175, 55,0.15);  color: var(--v-ent-light-gold); }
+.status_completed  { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
+
+/* Score form */
+.tbdNote {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+.scoreForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.participantLabel {
+  font-size: 0.85rem;
+  color: var(--primary-bg);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scoreInput {
+  width: 56px;
+  background-color: #1a1c1f;
+
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: var(--fw-semi-bold);
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  outline: none;
+  transition: background-color 0.15s;
+  flex-shrink: 0;
+}
+.scoreInput:focus { border-color: var(--v-ent-gold); }
+.scoreInput:disabled { opacity: 0.5; }
+
+/* Remove number input arrows */
+.scoreInput::-webkit-outer-spin-button,
+.scoreInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.scoreInput[type=number] { -moz-appearance: textfield; }
+
+.formError   { color: var(--v-ent-red);   font-size: 0.75rem; margin: 0; }
+.formSuccess { color: var(--v-ent-gold);   font-size: 0.75rem; margin: 0; }
+
+.saveBtn {
+  margin-top: 0.25rem;
+  background-color: var(--v-ent-gold);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  transition: background-color 0.15s;
+  align-self: flex-start;
+}
+.saveBtn:hover:not(:disabled) { background-color: var(--v-ent-light-gold); }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 2rem 1.5rem;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem;
+  }
+}
+
+/* ── Buttons ── */
+.btn {
+  height: 38px;
+  padding: 0 1.25rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.outlineBtn {
+  height: 38px;
+  padding: 0 1.25rem;
+  background-color: transparent;
+
+  color: rgba(255,255,255,0.75);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.outlineBtn:hover { border-color: rgba(255,255,255,0.4); color: var(--primary-bg); }
+.outlineBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.dangerBtn {
+  background-color: rgba(237,28,36,0.1);
+
+  color: var(--v-ent-red);
+}
+
+.dangerBtn:hover:not(:disabled) { background-color: var(--v-ent-red); color: #fff; }
+.dangerBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Header actions / game tag (summary) ── */
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.gameTag {
+  background-color: rgba(237,28,36,0.15);
+  color: var(--v-ent-red);
+  font-size: 0.65rem;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* ── Pending BE-deploy banner ── */
+.pendingBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(212, 175, 55, 0.1);
+
+  color: var(--v-ent-gold);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  margin-bottom: 1rem;
+}
+
+/* ── Summary card ── */
+.summaryCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.summaryTop {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.summaryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255,255,255,0.65);
+}
+
+.summaryMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ── Actions row ── */
+.actionsRow {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* ── Participants / registrations table ── */
+.partTable {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.partTableHeader,
+.partTableRow {
+  display: grid;
+  grid-template-columns: 60px 2fr 1fr 1.4fr;
+  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.partTableHeader {
+  background-color: #28292d;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.55);
+  font-weight: var(--fw-semi-bold);
+}
+
+.partTableRow {
+
+  font-size: var(--fs-p-size-mobile);
+}
+
+.seedCell { font-weight: var(--fw-bold); color: var(--primary-bg); }
+.partTeamName { color: var(--primary-bg); font-weight: var(--fw-semi-bold); }
+
+.partStatusBadge {
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.05em;
+  padding: 3px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  width: fit-content;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Empty state ── */
+.emptyState {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.emptyIcon { font-size: 2.5rem; color: rgba(255,255,255,0.2); margin-bottom: 0.5rem; }
+.emptyTitle { font-size: var(--desktop-h6-size); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
+.emptySub { font-size: var(--fs-p-size-mobile); color: rgba(255,255,255,0.45); margin: 0; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--v-ent-gold);
+  color: #fff;
+  padding: 0.7rem 1.25rem;
+  border-radius: 8px;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  z-index: 1100;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+/* ── Modal (Cancel & Refund) ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: #1e1f23;
+
+  border-radius: 12px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+
+}
+
+.modalTitle { font-size: var(--fs-p-size-desktop); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
+
+.modalClose { background: transparent; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 1.1rem; }
+
+.modalBody { padding: 1.25rem 1.5rem 1.5rem; }
+
+.modalSub { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin: 0 0 0.75rem; line-height: 1.5; }
+
+.modalInput {
+  width: 100%;
+  background-color: var(--overlay-gray);
+
+  border-radius: 6px;
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  padding: 0.6rem 0.85rem;
+  outline: none;
+  resize: vertical;
+}
+
+.modalInput:focus { background-color: rgba(255, 255, 255, 0.05); }
+
+.modalActions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.modalActions .outlineBtn,
+.modalActions .btn { flex: 1; justify-content: center; }
+
+/* ── Skeleton (loading state) ── */
+.skeletonBlock {
+  border-radius: 10px;
+  background-color: #303136;
+  background-size: 400% 100%;
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBlock { animation: none; }
+}
+
+/* ── Inline error card (in-page fetch failure) ── */
+.inlineErrorCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.inlineErrorIcon { font-size: 2.5rem; color: var(--v-ent-gold); margin-bottom: 0.5rem; }
+.inlineErrorTitle { font-size: var(--desktop-h6-size); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
+.inlineErrorSub { font-size: var(--fs-p-size-mobile); color: rgba(255, 255, 255, 0.45); margin: 0 0 1rem; }
+
+/* ── Responsive: registrations table on small screens ── */
+@media only screen and (max-width: 767px) {
+  .partTableHeader,
+  .partTableRow {
+    grid-template-columns: 44px 1.6fr 1fr;
+  }
+  .partTableHeader span:nth-child(4),
+  .partTableRow span:nth-child(4) {
+    display: none;
+  }
+}

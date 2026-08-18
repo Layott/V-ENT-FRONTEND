@@ -23,10 +23,10 @@ const EventsComponent = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [byGameEvents, setByGameEvents] = useState({});
 
   const { data: session, status } = useSession();
 
-  console.log("Session:", session); // Debugging log
 
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
@@ -57,11 +57,11 @@ const EventsComponent = () => {
 
   const fetchEvents = useCallback(async () => {
     if (!session || !session.user?.sessionToken) {
-      console.error("No session token available.");
+      // First render lands here before NextAuth hydrates. Effect re-fires when
+      // session arrives - no need to treat this as an error.
       return;
     }
 
-    console.log("Session Token:", session.user.sessionToken); // Debugging log
     const sessionToken = session.user.sessionToken;
 
     try {
@@ -77,17 +77,13 @@ const EventsComponent = () => {
 
       const featured = processEventImages(response.data.data.featured || []);
       const upcoming = processEventImages(response.data.data.upcoming || []);
+      const byGame = response.data.data.by_game || {};
 
-      setFeaturedEvents(featured); 
+      setFeaturedEvents(featured);
       setUpcomingEvents(upcoming);
-      console.log("Fetched events:", response.data);
-      // assuming your response contains this structure
+      setByGameEvents(byGame);
     } catch (error) {
       console.error("Failed to fetch events:", error);
-      if (error.response) {
-        console.log("Response status:", error.response.status);
-        console.log("Response data:", error.response.data);
-      }
     }
   }, [session, processEventImages]);
 
@@ -179,7 +175,7 @@ const EventsComponent = () => {
       <EventsFeatured featuredEvents={featuredEvents} />
       <UpcomingEvents upcomingEvents={upcomingEvents} />
 
-      <AllEvents />
+      <AllEvents data={byGameEvents} />
     </div>
   );
 };

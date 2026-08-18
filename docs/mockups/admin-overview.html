@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT Admin — Overview (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ── Clash Grotesk (mirroring clash-grotesk.css) ────────────────── */
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    :root {
+      --v-ent-red:        #ED1C24;
+      --v-ent-light-red:  #FF3B45;
+      --v-ent-grn:        #2E8B3E;
+      --v-ent-light-grn:  #3FB554;
+      --overlay-gray:     #212225;   /* card / mid layer */
+      --surface-2:        #303136;   /* top layer */
+      --page-bg:          #131316;   /* deepest bg, sidebar */
+      --header-bg:        #17181A;   /* header / topbar */
+      --border-subtle:    rgba(255,255,255,0.25);
+      --border-faint:     rgba(255,255,255,0.08);
+      --border-divider:   rgba(204,204,204,0.3);
+      --text-white:       #ffffff;
+      --text-muted:       #A7A6A6;
+      --text-dim:         rgba(255,255,255,0.45);
+      --active-nav-bg:    rgba(237,28,36,0.2392); /* exact from Sidebar.module.css */
+      --sidebar-w:        250px;
+      --sidebar-w-md:     180px;
+      --header-h:         60px;
+      --bottom-nav-h:     70px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR — matches Sidebar.module.css exactly
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    /* Logo — ClashGrotesk-Medium, 1.75rem (at 1024px+), red */
+    .logo-container {
+      width: 100%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-left: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .logo-img  { height: 25px; width: auto; }
+    .logo-text {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--v-ent-red);
+    }
+
+    /* Role badge */
+    .admin-role-row {
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 0.5px solid var(--border-faint);
+    }
+    .role-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .role-super   { background: rgba(237,28,36,0.15); color: var(--v-ent-red); border: 1px solid rgba(237,28,36,0.3); }
+    .role-finance { background: rgba(76,175,80,0.12); color: var(--v-ent-grn); border: 1px solid rgba(76,175,80,0.25); }
+    .role-mod     { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.15); }
+
+    /* Nav — ClashGrotesk-Light 0.9rem, items calc(100% - 1.5rem), border-radius 5px */
+    .sidebar-nav { margin-top: 0.25rem; flex: 1; }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0 0 1rem;
+    }
+    .nav-section-label {
+      width: calc(100% - 1.5rem);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0.75rem 0.75rem 0.2rem;
+    }
+    .sidebar-item {
+      display: flex;
+      min-height: 20px;
+      align-items: center;
+      gap: 0.5rem;
+      width: calc(100% - 1.5rem);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { border-color: #6e6e6e; }
+    .sidebar-item.active-item { background-color: var(--active-nav-bg); border-color: transparent; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      border-radius: 5px;
+      text-decoration: none;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+    .nav-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background-color: var(--v-ent-red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+    }
+    .nav-divider {
+      width: calc(100% - 1.5rem);
+      height: 1px;
+      background: var(--border-divider);
+      margin: 0.35rem 0;
+    }
+
+    /* Sidebar footer — logged-in admin user */
+    .sidebar-footer {
+      padding: 0.75rem 0.75rem 1rem;
+      border-top: 0.5px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      border: 1px solid transparent;
+    }
+    .sidebar-user:hover { border-color: #6e6e6e; }
+    .s-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .s-user-info { flex: 1; overflow: hidden; }
+    .s-username {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
+
+    /* ════════════════════════════════════════════════════════════════
+       HEADER — height 60px, #17181A, padding 0 1.5rem 0 2rem
+    ════════════════════════════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--header-h);
+      background-color: var(--header-bg);
+      border-bottom: 0.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem 0 2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .header-breadcrumb {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .header-breadcrumb span { color: rgba(255,255,255,0.75); }
+    .hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: var(--text-white);
+    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .notif-btn {
+      width: 32px; height: 32px;
+      border-radius: 5px;
+      background: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .notif-btn:hover { border-color: #6e6e6e; }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+    }
+    .header-admin {
+      display: flex; align-items: center; gap: 0.5rem;
+      cursor: pointer;
+    }
+    .h-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700;
+      color: #fff;
+    }
+    .h-admin-info { display: flex; flex-direction: column; align-items: flex-end; }
+    .h-name  { font-size: 0.8rem; font-weight: 600; }
+    .h-role  { font-size: 0.65rem; color: var(--text-dim); }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOBILE BOTTOM NAV — height 70px, #131316, hidden at 768px+
+    ════════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background-color: var(--page-bg);
+      border-top: 0.5px solid var(--border-subtle);
+      z-index: 300;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 0.5rem;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      min-width: 44px; min-height: 44px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .bottom-nav-item:hover { border-color: #6e6e6e; }
+    .bottom-nav-item.active-bn .bn-icon { color: var(--v-ent-red); stroke: var(--v-ent-red); }
+    .bottom-nav-item.active-bn .bn-label { color: var(--v-ent-red); }
+    .bn-icon { width: 1.35rem; height: 1.35rem; color: #797B86; }
+    .bn-label {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-size: 0.7rem;
+      color: #797B86;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 190;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ════════════════════════════════════════════════════════════════
+       CONTENT AREA
+    ════════════════════════════════════════════════════════════════ */
+    .content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 2rem;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+    .page-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .page-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+    .btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      height: 37px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, border-color 0.3s;
+      white-space: nowrap;
+    }
+    .ghostBTN { background: transparent; border: 1px solid var(--border-faint); color: var(--text-muted); }
+    .ghostBTN:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
+    .redBTN:hover   { background-color: var(--v-ent-light-red); }
+
+    /* ── Metrics grid — 6 cards ──────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    /* Cards — bg #212225, border-radius 10px, padding 1.25rem */
+    .card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+    }
+    .metric-card { position: relative; }
+    .metric-icon-wrap {
+      position: absolute;
+      top: 1.25rem; right: 1.25rem;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .ic-blue   { background: rgba(33,150,243,0.15); }
+    .ic-grn    { background: rgba(76,175,80,0.15); }
+    .ic-purple { background: var(--gold-soft-bg); }
+    .ic-gold   { background: var(--gold-soft-bg); border: 1px solid rgba(201,162,39,0.35); }
+    .metric-value.gold { color: var(--v-ent-gold-bright); font-family: "Editorial New", "ClashGrotesk-Bold", serif; }
+    .ic-teal   { background: rgba(0,188,212,0.15); }
+    .ic-yellow { background: rgba(255,193,7,0.15); }
+    .ic-red    { background: rgba(237,28,36,0.15); }
+    .metric-label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .metric-value {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .metric-delta {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+    }
+    .delta-up   { color: var(--v-ent-gold-bright); font-weight: 600; }
+    .delta-down { color: var(--v-ent-red); }
+    .delta-neu  { color: var(--text-dim); }
+
+    /* ── Lower grid: payouts + feed ──────────────────────────────── */
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .section-link {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.8rem;
+      color: var(--v-ent-gold);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .section-link:hover { color: var(--v-ent-gold-bright); }
+
+    /* Payouts table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead th {
+      text-align: left;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      padding: 0 0 0.75rem;
+      border-bottom: 1px solid var(--border-divider);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(204,204,204,0.1);
+      color: rgba(255,255,255,0.75);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background-color: rgba(255,255,255,0.015); }
+    .user-cell { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      flex-shrink: 0;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .s-pending  { background: rgba(255,193,7,0.12);   color: #FFC107; }
+    .s-approved { background: rgba(76,175,80,0.12);   color: var(--v-ent-grn); }
+    .s-rejected { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
+    .s-banned   { background: rgba(237,28,36,0.15);   color: var(--v-ent-red); }
+    .s-active   { background: rgba(76,175,80,0.1);    color: var(--v-ent-grn); }
+    .s-ongoing  { background: rgba(33,150,243,0.12);  color: #64B5F6; }
+    .s-draft    { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+    .s-kyc      { background: rgba(255,193,7,0.1);    color: #FFD54F; }
+
+    /* Action buttons in table rows */
+    .act-group { display: flex; gap: 0.4rem; }
+    .act-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      min-height: 24px;
+      white-space: nowrap;
+    }
+    .act-approve { background: rgba(76,175,80,0.15);   color: var(--v-ent-grn); }
+    .act-approve:hover { background: rgba(76,175,80,0.28); }
+    .act-reject  { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
+    .act-reject:hover  { background: rgba(237,28,36,0.25); }
+    .act-view    { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .act-view:hover    { background: rgba(255,255,255,0.12); }
+
+    /* ── Activity feed ─────────────────────────────────────────────── */
+    .feed-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+      display: flex;
+      flex-direction: column;
+    }
+    .feed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .feed-note {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.28);
+      font-style: italic;
+    }
+    .feed-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .feed-list::-webkit-scrollbar { width: 4px; }
+    .feed-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .feed-item { display: flex; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(204,204,204,0.08); }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-dot-col { display: flex; flex-direction: column; align-items: center; padding-top: 5px; }
+    .feed-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .feed-line { flex: 1; width: 1px; background: rgba(255,255,255,0.06); margin-top: 3px; min-height: 12px; }
+    .feed-body { flex: 1; }
+    .feed-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.4;
+      margin-bottom: 0.15rem;
+    }
+    .feed-text strong { color: #fff; font-family: "ClashGrotesk-Regular", sans-serif; }
+    .feed-meta { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .feed-time { font-size: 0.65rem; color: rgba(255,255,255,0.3); font-family: "ClashGrotesk-Light", sans-serif; }
+    .feed-actor { font-size: 0.65rem; color: rgba(237,28,36,0.75); font-family: "ClashGrotesk-Light", sans-serif; }
+
+    /* ── Three-col row: KYC + Tournaments + Users ─────────────────── */
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    /* KYC queue */
+    .kyc-item, .tourn-row, .user-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(204,204,204,0.1);
+    }
+    .kyc-item:last-child, .tourn-row:last-child, .user-row:last-child { border-bottom: none; }
+    .kyc-thumb, .tourn-thumb {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+    .tourn-thumb { font-size: 1rem; }
+    .kyc-info, .tourn-info, .u-info { flex: 1; min-width: 0; }
+    .kyc-name, .tourn-name, .u-name {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kyc-doc, .tourn-meta, .u-meta {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+    .kyc-age {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem;
+      color: rgba(255,193,7,0.75);
+      flex-shrink: 0;
+    }
+    .u-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      flex-shrink: 0;
+    }
+
+    /* ── Mockup notes banner ─────────────────────────────────────── */
+    .mockup-notes {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.32);
+      line-height: 1.9;
+      margin-top: 1.75rem;
+    }
+    .mockup-notes strong { color: rgba(255,255,255,0.48); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ════════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ════════════════════════════════════════════════════════════════ */
+
+    /* Mobile — max 767px */
+    @media (max-width: 767px) {
+      :root { --sidebar-w: 250px; }
+
+      /* Sidebar slides in from left (hidden by default on mobile) */
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* Header spans full width */
+      .header { left: 0; padding: 0 1rem; }
+      .hamburger { display: flex; }
+      .h-admin-info { display: none; }
+
+      /* Content full width + bottom nav padding */
+      .content {
+        margin-left: 0;
+        padding: 1.25rem 1rem;
+        padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+      }
+
+      /* Bottom nav visible */
+      .bottom-nav { display: flex; }
+
+      /* Page header stacks */
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-title { font-size: 1.25rem; }
+
+      /* Metrics 2-col on mobile */
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+      .metric-value { font-size: 1.3rem; }
+
+      /* Lower grid stacks */
+      .lower-grid { grid-template-columns: 1fr; }
+
+      /* Feed height on mobile */
+      .feed-list { max-height: 220px; }
+
+      /* Three-col stacks */
+      .three-col { grid-template-columns: 1fr; }
+
+      /* Hide some table columns on mobile */
+      .hide-mobile { display: none; }
+    }
+
+    /* Small tablet 768px–1023px */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --sidebar-w: var(--sidebar-w-md); } /* 180px */
+
+      .header { left: var(--sidebar-w-md); }
+      .sidebar { width: var(--sidebar-w-md); }
+      .logo-text { font-size: 1.5rem; }
+
+      .content { margin-left: var(--sidebar-w-md); padding: 1.5rem; }
+
+      .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+      .lower-grid   { grid-template-columns: 1fr; }
+      .three-col    { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Tablet/laptop 1024px–1439px */
+    @media (min-width: 1024px) and (max-width: 1439px) {
+      .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+      .lower-grid   { grid-template-columns: 1fr 340px; }
+      .three-col    { grid-template-columns: 1fr 1fr 300px; }
+    }
+
+    /* Desktop 1440px+ */
+    @media (min-width: 1440px) {
+      .metrics-grid { grid-template-columns: repeat(6, 1fr); }
+      .lower-grid   { grid-template-columns: 1fr 360px; }
+      .three-col    { grid-template-columns: 1fr 1fr 360px; }
+    }
+
+    /* Large desktop 1920px+ */
+    @media (min-width: 1920px) {
+      .content { padding: 2.5rem 3rem; }
+      .metrics-grid { gap: 1.25rem; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       HEADER SEARCH
+    ════════════════════════════════════════════════════════════════ */
+    .header-search {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px;
+      padding: 5px 12px;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      transition: border-color 0.2s;
+    }
+    .header-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .header-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+    .header-search input::placeholder { color: var(--text-dim); }
+    @media (max-width: 767px) { .header-search { display: none; } }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .header-search input { width: 120px; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       PROFILE DROPDOWN  (matches wallet.html pattern)
+    ════════════════════════════════════════════════════════════════ */
+    .header-admin {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .header-admin:hover { border-color: #6e6e6e; }
+    .caret {
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.5);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .header-admin.open .caret { transform: rotate(180deg); }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .profile-dropdown.open { display: block; }
+    .pd-user {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .pd-name  { font-size: 0.85rem; font-weight: 600; color: var(--text-white); }
+    .pd-role  { font-size: 0.7rem; color: var(--text-dim); font-family: "ClashGrotesk-Light", sans-serif; margin-top: 0.1rem; }
+    .pd-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pd-item:hover { background-color: rgba(255,255,255,0.06); }
+    .pd-item.danger { color: var(--v-ent-red); border-top: 1px solid var(--border-faint); }
+
+    /* ════════════════════════════════════════════════════════════════
+       NOTIFICATION PANEL
+    ════════════════════════════════════════════════════════════════ */
+    .notif-panel {
+      display: none;
+      position: absolute;
+      top: calc(var(--header-h) + 4px);
+      right: 1.5rem;
+      width: 320px;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .notif-panel-title { font-size: 0.9rem; font-weight: 600; }
+    .notif-mark-read {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem;
+      color: var(--v-ent-gold);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .notif-mark-read:hover { color: var(--v-ent-gold-bright); }
+    .notif-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .notif-item:hover { background: rgba(255,255,255,0.04); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item.unread { background: rgba(237,28,36,0.04); }
+    .notif-icon-wrap {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.8rem;
+    }
+    .notif-body { flex: 1; }
+    .notif-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.4; font-family: "ClashGrotesk-Light", sans-serif; }
+    .notif-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: "ClashGrotesk-Light", sans-serif; }
+    .unread-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ent-red); flex-shrink: 0; margin-top: 6px; }
+
+    /* ════════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ════════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      pointer-events: none;
+    }
+    @media (max-width: 767px) {
+      #toast-container { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; }
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: slideUp 0.25s ease forwards;
+      max-width: 340px;
+    }
+    .toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast-msg { flex: 1; }
+    .toast-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem; line-height: 1; padding: 0 0.1rem; }
+    .toast-close:hover { color: var(--text-white); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
+
+    /* ════════════════════════════════════════════════════════════════
+       MODAL — Add Admin
+    ════════════════════════════════════════════════════════════════ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 1rem;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 10px;
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .overlay { align-items: flex-end; padding: 0; }
+      .modal { border-radius: 12px 12px 0 0; max-width: 100%; }
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.1rem; right: 1.1rem;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: var(--surface-2);
+      border: none;
+      color: var(--text-white);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+    }
+    .modal-close:hover { background-color: rgba(237,28,36,0.2); }
+    .modal-title { font-family: "ClashGrotesk-Semibold", sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .modal-sub   { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.4rem; }
+    .form-group  { margin-bottom: 1rem; }
+    .form-label  { display: block; font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .form-input  {
+      width: 100%;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: rgba(255,255,255,0.3); }
+    .form-select {
+      width: 100%;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      height: auto;
+    }
+    .form-select option { background-color: var(--surface-2); }
+    .role-info {
+      background: rgba(237,28,36,0.06);
+      border: 1px solid rgba(237,28,36,0.15);
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+    }
+    .btn-row { display: flex; gap: 0.65rem; margin-top: 0.25rem; }
+
+    /* ════════════════════════════════════════════════════════════════
+       APPROVED / REJECTED ROW STATE
+    ════════════════════════════════════════════════════════════════ */
+    tr.row-approved td { opacity: 0.45; transition: opacity 0.3s; }
+    tr.row-rejected td { opacity: 0.45; text-decoration: line-through; transition: opacity 0.3s; }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <!-- Logo -->
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+
+  <!-- Role indicator -->
+  <div class="admin-role-row">
+    <span class="role-badge role-super">Super Admin</span>
+    <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.72rem;color:var(--text-dim);">superadmin</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+
+      <!-- General (all roles) -->
+      <li class="nav-section-label">Overview</li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+
+      <!-- Management (Super Admin + Moderator) -->
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Management</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+          <span class="nav-badge">3</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          KYC Review
+          <span class="nav-badge">7</span>
+        </a>
+      </li>
+
+      <!-- Finance (Super Admin + Finance role) -->
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Finance</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Payouts
+          <span class="nav-badge">12</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue
+        </a>
+      </li>
+
+      <!-- System (Super Admin only) -->
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">System</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted);">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- Footer — logged-in user -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="s-avatar">SA</div>
+      <div class="s-user-info">
+        <div class="s-username">superadmin</div>
+        <div class="s-user-role">Super Admin</div>
+      </div>
+      <svg style="width:13px;height:13px;color:rgba(255,255,255,0.28);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="header-breadcrumb">
+      Admin&nbsp;/&nbsp;<span>Dashboard</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <!-- Search -->
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="global-search" placeholder="Search users, tournaments..." oninput="handleSearch(this.value)" />
+    </div>
+
+    <!-- Notification bell -->
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="header-admin" id="profile-trigger" onclick="toggleProfileDropdown(event)">
+      <div class="h-admin-info">
+        <span class="h-name">superadmin</span>
+        <span class="h-role">Super Admin</span>
+      </div>
+      <div class="h-avatar">SA</div>
+      <div class="caret"></div>
+      <div class="profile-dropdown" id="profile-dropdown" onclick="event.stopPropagation()">
+        <div class="pd-user">
+          <div class="pd-name">superadmin</div>
+          <div class="pd-role">Super Admin · admin@v-ent.gg</div>
+        </div>
+        <button class="pd-item" onclick="showToast('Settings page coming in next mockup.', 'info')">Settings</button>
+        <button class="pd-item" onclick="showToast('Switched to Finance role view.', 'info')">Switch Role View</button>
+        <button class="pd-item danger" onclick="showToast('Logged out. Redirecting to /admin/login…', 'error')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notification panel (positioned fixed, outside header flow) -->
+<div class="notif-panel" id="notif-panel" onclick="event.stopPropagation()">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.12);">⏳</div>
+    <div class="notif-body">
+      <p class="notif-text">12 payout requests are pending review</p>
+      <p class="notif-time">5 min ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(237,28,36,0.12);">⚡</div>
+    <div class="notif-body">
+      <p class="notif-text">Dispute on PUBG Masters Match 7 unresolved for 48h</p>
+      <p class="notif-time">2h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.1);">📄</div>
+    <div class="notif-body">
+      <p class="notif-text">7 KYC documents awaiting review</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(76,175,80,0.1);">✓</div>
+    <div class="notif-body">
+      <p class="notif-text">Tournament "Tekken 8 Open" was published</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🏆</div>
+    <div class="notif-body">
+      <p class="notif-text">COD Warzone Cup registration opened — 0 participants so far</p>
+      <p class="notif-time">5h ago</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<main class="content">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Overview</h1>
+      <p class="page-subtitle">Platform snapshot · Updated just now</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn ghostBTN" onclick="showToast('Report exported as CSV. Check your downloads.', 'success')">Export Report</button>
+      <button class="btn redBTN" onclick="openModal('add-admin-modal')">+ Add Admin</button>
+    </div>
+  </div>
+
+  <!-- ── 6 Metric cards ──────────────────────────────────────────── -->
+  <div class="metrics-grid">
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-blue">👤</div>
+      <p class="metric-label">Total Users</p>
+      <p class="metric-value">14,302</p>
+      <p class="metric-delta delta-up">↑ 8.3% this month</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-grn">🏆</div>
+      <p class="metric-label">Active Tournaments</p>
+      <p class="metric-value">41</p>
+      <p class="metric-delta delta-up">↑ 12 since last week</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-gold">🪙</div>
+      <p class="metric-label">VENT Coins</p>
+      <p class="metric-value gold">2.1M</p>
+      <p class="metric-delta delta-neu">No change today</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-teal">💰</div>
+      <p class="metric-label">Revenue (30d)</p>
+      <p class="metric-value">₦3.8M</p>
+      <p class="metric-delta delta-up">↑ 4.1% vs prior</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-yellow">⏳</div>
+      <p class="metric-label">Pending Payouts</p>
+      <p class="metric-value">12</p>
+      <p class="metric-delta delta-down">↑ 5 new today</p>
+    </div>
+
+    <div class="card metric-card">
+      <div class="metric-icon-wrap ic-red">⚡</div>
+      <p class="metric-label">Open Disputes</p>
+      <p class="metric-value">3</p>
+      <p class="metric-delta delta-down">2 unresolved &gt;48h</p>
+    </div>
+
+  </div>
+
+  <!-- ── Payouts preview + Activity Feed ────────────────────────── -->
+  <div class="lower-grid">
+
+    <!-- Pending payouts -->
+    <div class="card">
+      <div class="section-header">
+        <p class="section-title">Pending Payouts</p>
+        <a class="section-link" href="#">View all →</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th class="hide-mobile">Amount</th>
+              <th class="hide-mobile">Tournament</th>
+              <th class="hide-mobile">Requested</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="payout-row-1">
+              <td><div class="user-cell"><div class="user-avatar">JD</div>johndoe_ng</div></td>
+              <td class="hide-mobile">₦25,000</td>
+              <td class="hide-mobile">PUBG Masters</td>
+              <td class="hide-mobile">2h ago</td>
+              <td><span class="badge s-pending" id="payout-badge-1">Pending</span></td>
+              <td><div class="act-group"><button class="act-btn act-approve" onclick="payoutAction('1','johndoe_ng','₦25,000','approve')">Approve</button><button class="act-btn act-reject" onclick="payoutAction('1','johndoe_ng','₦25,000','reject')">Reject</button></div></td>
+            </tr>
+            <tr id="payout-row-2">
+              <td><div class="user-cell"><div class="user-avatar">AK</div>akintunde_k</div></td>
+              <td class="hide-mobile">₦15,500</td>
+              <td class="hide-mobile">FIFA Weekend</td>
+              <td class="hide-mobile">5h ago</td>
+              <td><span class="badge s-pending" id="payout-badge-2">Pending</span></td>
+              <td><div class="act-group"><button class="act-btn act-approve" onclick="payoutAction('2','akintunde_k','₦15,500','approve')">Approve</button><button class="act-btn act-reject" onclick="payoutAction('2','akintunde_k','₦15,500','reject')">Reject</button></div></td>
+            </tr>
+            <tr id="payout-row-3">
+              <td><div class="user-cell"><div class="user-avatar">FE</div>femtech_pro</div></td>
+              <td class="hide-mobile">₦8,200</td>
+              <td class="hide-mobile">Tekken 8 Open</td>
+              <td class="hide-mobile">1d ago</td>
+              <td><span class="badge s-pending" id="payout-badge-3">Pending</span></td>
+              <td><div class="act-group"><button class="act-btn act-approve" onclick="payoutAction('3','femtech_pro','₦8,200','approve')">Approve</button><button class="act-btn act-reject" onclick="payoutAction('3','femtech_pro','₦8,200','reject')">Reject</button></div></td>
+            </tr>
+            <tr id="payout-row-4">
+              <td><div class="user-cell"><div class="user-avatar">OA</div>oluwaseun_a</div></td>
+              <td class="hide-mobile">₦42,000</td>
+              <td class="hide-mobile">COD Warzone Cup</td>
+              <td class="hide-mobile">2d ago</td>
+              <td><span class="badge s-pending" id="payout-badge-4">Pending</span></td>
+              <td><div class="act-group"><button class="act-btn act-approve" onclick="payoutAction('4','oluwaseun_a','₦42,000','approve')">Approve</button><button class="act-btn act-reject" onclick="payoutAction('4','oluwaseun_a','₦42,000','reject')">Reject</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Persistent activity feed -->
+    <div class="feed-card">
+      <div class="feed-header">
+        <p class="section-title">Activity Feed</p>
+        <span class="feed-note">Persistent · stored in DB</span>
+      </div>
+      <div class="feed-list">
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:var(--v-ent-grn);"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">Payout of <strong>₦25,000</strong> approved for <strong>johndoe_ng</strong></p>
+            <div class="feed-meta"><span class="feed-time">2 min ago</span><span class="feed-actor">by superadmin</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:var(--v-ent-red);"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">User <strong>spammer_01</strong> was <strong>banned</strong></p>
+            <div class="feed-meta"><span class="feed-time">14 min ago</span><span class="feed-actor">by mod_chidi</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:#FFC107;"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">Dispute opened on <strong>PUBG Masters</strong> Match 7</p>
+            <div class="feed-meta"><span class="feed-time">31 min ago</span><span class="feed-actor">by system</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:rgba(33,150,243,0.9);"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">Score overridden for <strong>FIFA Weekend</strong> QF Match 3</p>
+            <div class="feed-meta"><span class="feed-time">1h ago</span><span class="feed-actor">by superadmin</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:#FFD54F;"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">KYC approved for <strong>adaeze_wins</strong></p>
+            <div class="feed-meta"><span class="feed-time">2h ago</span><span class="feed-actor">by mod_chidi</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:var(--v-ent-grn);"></div>
+            <div class="feed-line"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">New tournament <strong>Tekken 8 Open</strong> published</p>
+            <div class="feed-meta"><span class="feed-time">3h ago</span><span class="feed-actor">by system</span></div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-dot-col">
+            <div class="feed-dot" style="background:rgba(156,39,176,0.9);"></div>
+          </div>
+          <div class="feed-body">
+            <p class="feed-text">Admin role <strong>Finance</strong> assigned to <strong>finance_tunde</strong></p>
+            <div class="feed-meta"><span class="feed-time">5h ago</span><span class="feed-actor">by superadmin</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── KYC Queue + Recent Tournaments + Recent Sign-ups ─────────── -->
+  <div class="three-col">
+
+    <!-- KYC queue preview -->
+    <div class="card">
+      <div class="section-header">
+        <p class="section-title">KYC Queue</p>
+        <a class="section-link" href="#">View all →</a>
+      </div>
+
+      <div class="kyc-item" id="kyc-row-1">
+        <div class="kyc-thumb">NG</div>
+        <div class="kyc-info">
+          <p class="kyc-name">ngozi_gamer</p>
+          <p class="kyc-doc">National ID · Submitted</p>
+        </div>
+        <span class="kyc-age">2h</span>
+        <div class="act-group" style="flex-shrink:0;">
+          <button class="act-btn act-approve" onclick="kycAction('1','ngozi_gamer','approve')">✓</button>
+          <button class="act-btn act-reject"  onclick="kycAction('1','ngozi_gamer','reject')">✕</button>
+        </div>
+      </div>
+
+      <div class="kyc-item" id="kyc-row-2">
+        <div class="kyc-thumb">BK</div>
+        <div class="kyc-info">
+          <p class="kyc-name">bk_esports</p>
+          <p class="kyc-doc">Driver's License · Submitted</p>
+        </div>
+        <span class="kyc-age">5h</span>
+        <div class="act-group" style="flex-shrink:0;">
+          <button class="act-btn act-approve" onclick="kycAction('2','bk_esports','approve')">✓</button>
+          <button class="act-btn act-reject"  onclick="kycAction('2','bk_esports','reject')">✕</button>
+        </div>
+      </div>
+
+      <div class="kyc-item" id="kyc-row-3">
+        <div class="kyc-thumb">TL</div>
+        <div class="kyc-info">
+          <p class="kyc-name">tolu_plays</p>
+          <p class="kyc-doc">Int'l Passport · Submitted</p>
+        </div>
+        <span class="kyc-age">8h</span>
+        <div class="act-group" style="flex-shrink:0;">
+          <button class="act-btn act-view" onclick="showToast('Opening KYC document for tolu_plays… (goes to /admin/kyc in real build)', 'info')">View</button>
+        </div>
+      </div>
+
+      <div class="kyc-item" id="kyc-row-4">
+        <div class="kyc-thumb">EM</div>
+        <div class="kyc-info">
+          <p class="kyc-name">emeka_ctrl</p>
+          <p class="kyc-doc">National ID · Submitted</p>
+        </div>
+        <span class="kyc-age">1d</span>
+        <div class="act-group" style="flex-shrink:0;">
+          <button class="act-btn act-approve" onclick="kycAction('4','emeka_ctrl','approve')">✓</button>
+          <button class="act-btn act-reject"  onclick="kycAction('4','emeka_ctrl','reject')">✕</button>
+        </div>
+      </div>
+
+      <div class="kyc-item" id="kyc-row-5">
+        <div class="kyc-thumb">AD</div>
+        <div class="kyc-info">
+          <p class="kyc-name">adaeze_wins</p>
+          <p class="kyc-doc">National ID · Resubmitted</p>
+        </div>
+        <span class="kyc-age">1d</span>
+        <div class="act-group" style="flex-shrink:0;">
+          <button class="act-btn act-approve" onclick="kycAction('5','adaeze_wins','approve')">✓</button>
+          <button class="act-btn act-reject"  onclick="kycAction('5','adaeze_wins','reject')">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent tournaments -->
+    <div class="card">
+      <div class="section-header">
+        <p class="section-title">Recent Tournaments</p>
+        <a class="section-link" href="#">View all →</a>
+      </div>
+
+      <div class="tourn-row">
+        <div class="tourn-thumb">🎮</div>
+        <div class="tourn-info">
+          <p class="tourn-name">PUBG Masters Lagos</p>
+          <p class="tourn-meta">64 players · Ongoing · 2 disputes</p>
+        </div>
+        <span class="badge s-ongoing">Live</span>
+      </div>
+
+      <div class="tourn-row">
+        <div class="tourn-thumb">⚽</div>
+        <div class="tourn-info">
+          <p class="tourn-name">FIFA Weekend Cup</p>
+          <p class="tourn-meta">32 players · Completed</p>
+        </div>
+        <span class="badge s-approved">Done</span>
+      </div>
+
+      <div class="tourn-row">
+        <div class="tourn-thumb">🥊</div>
+        <div class="tourn-info">
+          <p class="tourn-name">Tekken 8 Open</p>
+          <p class="tourn-meta">16 players · Registration open</p>
+        </div>
+        <span class="badge s-active">Open</span>
+      </div>
+
+      <div class="tourn-row">
+        <div class="tourn-thumb">🔫</div>
+        <div class="tourn-info">
+          <p class="tourn-name">COD Warzone Cup</p>
+          <p class="tourn-meta">128 players · Upcoming</p>
+        </div>
+        <span class="badge s-kyc">Soon</span>
+      </div>
+
+      <div class="tourn-row">
+        <div class="tourn-thumb">🃏</div>
+        <div class="tourn-info">
+          <p class="tourn-name">V-ENT Card Showdown</p>
+          <p class="tourn-meta">8 players · Draft</p>
+        </div>
+        <span class="badge s-draft">Draft</span>
+      </div>
+    </div>
+
+    <!-- Recent sign-ups -->
+    <div class="card">
+      <div class="section-header">
+        <p class="section-title">Recent Sign-ups</p>
+        <a class="section-link" href="#">View all →</a>
+      </div>
+
+      <div class="user-row">
+        <div class="u-avatar">NG</div>
+        <div class="u-info">
+          <p class="u-name">ngozi_gamer</p>
+          <p class="u-meta">2h ago · Lagos</p>
+        </div>
+        <span class="badge s-kyc">KYC</span>
+      </div>
+
+      <div class="user-row">
+        <div class="u-avatar">BK</div>
+        <div class="u-info">
+          <p class="u-name">bk_esports</p>
+          <p class="u-meta">3h ago · Abuja</p>
+        </div>
+        <span class="badge s-active">Active</span>
+      </div>
+
+      <div class="user-row">
+        <div class="u-avatar">TL</div>
+        <div class="u-info">
+          <p class="u-name">tolu_plays</p>
+          <p class="u-meta">6h ago · PH</p>
+        </div>
+        <span class="badge s-active">Active</span>
+      </div>
+
+      <div class="user-row">
+        <div class="u-avatar">SO</div>
+        <div class="u-info">
+          <p class="u-name">sola_off</p>
+          <p class="u-meta">9h ago · Ibadan</p>
+        </div>
+        <span class="badge s-banned">Banned</span>
+      </div>
+
+      <div class="user-row">
+        <div class="u-avatar">KT</div>
+        <div class="u-info">
+          <p class="u-name">ktech_gamer</p>
+          <p class="u-meta">12h ago · Enugu</p>
+        </div>
+        <span class="badge s-active">Active</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mockup notes (remove in real build) -->
+  <div class="mockup-notes">
+    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    · <strong>Roles:</strong> Super Admin (all sections) · Finance (Overview + Finance only) · Moderator (Overview + Management only)<br>
+    · <strong>Activity feed:</strong> Persistent — every admin action (ban, approve, override, KYC, role change) auto-appends a row via AdminAction Django model. Never auto-clears.<br>
+    · <strong>KYC queue:</strong> Quick approve/reject on Overview; full document view at /admin/kyc<br>
+    · <strong>Disputes:</strong> Surfaced inside /admin/tournaments/[id] — not a standalone page<br>
+    · <strong>Production/streaming:</strong> NOT in admin — user-facing premium feature at /tournaments/production?id=...<br>
+    · <strong>Pages to build:</strong> Overview · Users · User detail · Tournaments · Tournament detail (disputes + score override) · Payouts · KYC · Audit Log · Admin login (/admin/login)<br>
+    · <strong>References used:</strong> sidebar → Sidebar.module.css · cards → profile-page.module.css · tables → tournament participants tab · layout → wallets/page.js + wallet.html gold standard
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ADD ADMIN MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="add-admin-modal" onclick="closeModal('add-admin-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('add-admin-modal')">✕</button>
+    <h2 class="modal-title">Add New Admin</h2>
+    <p class="modal-sub">Invite a team member and assign their role.</p>
+
+    <div class="form-group">
+      <label class="form-label">Username or Email</label>
+      <input class="form-input" type="text" placeholder="e.g. chidi@v-ent.gg" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Role</label>
+      <select class="form-select" onchange="updateRoleInfo(this.value)">
+        <option value="moderator">Moderator</option>
+        <option value="finance">Finance</option>
+        <option value="super">Super Admin</option>
+      </select>
+    </div>
+
+    <div class="role-info" id="role-info-text">
+      <strong>Moderator</strong> — Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghostBTN" style="flex:1;" onclick="closeModal('add-admin-modal')">Cancel</button>
+      <button class="btn redBTN"   style="flex:1;" onclick="submitAddAdmin()">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item active-bn" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="bn-label">Dashboard</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <span class="bn-label">Users</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="bn-label">Tourns</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span class="bn-label">Payouts</span>
+  </a>
+  <a class="bottom-nav-item" href="#" onclick="openSidebar(); return false;">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    <span class="bn-label">More</span>
+  </a>
+</nav>
+
+<script>
+  /* ── Sidebar ──────────────────────────────────────────────────── */
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Profile dropdown ─────────────────────────────────────────── */
+  function toggleProfileDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.getElementById('profile-trigger');
+    const dd = document.getElementById('profile-dropdown');
+    const isOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  /* ── Notification panel ───────────────────────────────────────── */
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-panel');
+    const isOpen = panel.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      panel.classList.add('open');
+    }
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-pip').forEach(el => el.style.display = 'none');
+    document.getElementById('notif-dot').style.display = 'none';
+    showToast('All notifications marked as read.', 'success');
+  }
+
+  /* ── Close all dropdowns/panels ──────────────────────────────── */
+  function closeAllDropdowns() {
+    document.getElementById('profile-dropdown').classList.remove('open');
+    document.getElementById('profile-trigger').classList.remove('open');
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeAllDropdowns(); closeAllModals(); }
+  });
+
+  /* ── Modal ────────────────────────────────────────────────────── */
+  function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+  function closeAllModals() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('open')); document.body.style.overflow = ''; }
+
+  /* ── Toast ────────────────────────────────────────────────────── */
+  const COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(255,255,255,0.35)' };
+  function showToast(msg, type) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-dot" style="background:${COLORS[type] || COLORS.info};"></div>
+      <span class="toast-msg">${msg}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 320);
+    }, 3500);
+  }
+
+  /* ── Payout approve/reject ────────────────────────────────────── */
+  function payoutAction(id, user, amount, action) {
+    const row = document.getElementById('payout-row-' + id);
+    const badge = document.getElementById('payout-badge-' + id);
+    if (!row || row.classList.contains('row-approved') || row.classList.contains('row-rejected')) return;
+
+    if (action === 'approve') {
+      badge.className = 'badge s-approved';
+      badge.textContent = 'Approved';
+      row.classList.add('row-approved');
+      showToast(`Payout of ${amount} approved for ${user}.`, 'success');
+      addFeedItem('success', `Payout of <strong>${amount}</strong> approved for <strong>${user}</strong>`);
+    } else {
+      badge.className = 'badge s-rejected';
+      badge.textContent = 'Rejected';
+      row.classList.add('row-rejected');
+      showToast(`Payout for ${user} rejected.`, 'error');
+      addFeedItem('error', `Payout for <strong>${user}</strong> was <strong>rejected</strong>`);
+    }
+    // Disable buttons
+    row.querySelectorAll('.act-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; b.style.cursor = 'not-allowed'; });
+  }
+
+  /* ── KYC approve/reject ───────────────────────────────────────── */
+  function kycAction(id, user, action) {
+    const row = document.getElementById('kyc-row-' + id);
+    if (!row || row.dataset.resolved) return;
+    row.dataset.resolved = '1';
+
+    if (action === 'approve') {
+      showToast(`KYC approved for ${user}. They can now withdraw.`, 'success');
+      addFeedItem('kyc', `KYC <strong>approved</strong> for <strong>${user}</strong>`);
+    } else {
+      showToast(`KYC rejected for ${user}. They have been notified.`, 'error');
+      addFeedItem('error', `KYC <strong>rejected</strong> for <strong>${user}</strong>`);
+    }
+    row.style.transition = 'opacity 0.4s';
+    row.style.opacity = '0.35';
+    row.querySelectorAll('.act-btn').forEach(b => { b.disabled = true; b.style.cursor = 'not-allowed'; });
+  }
+
+  /* ── Add admin form ───────────────────────────────────────────── */
+  const ROLE_DESCRIPTIONS = {
+    moderator: '<strong>Moderator</strong> — Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.',
+    finance:   '<strong>Finance</strong> — Can approve/reject payouts and view revenue metrics. Cannot ban users or manage tournaments.',
+    super:     '<strong>Super Admin</strong> — Full access to all sections including system settings, audit log, and role assignment.'
+  };
+  function updateRoleInfo(val) {
+    document.getElementById('role-info-text').innerHTML = ROLE_DESCRIPTIONS[val] || '';
+  }
+  function submitAddAdmin() {
+    showToast('Invite sent! They will receive an email to set up their admin account.', 'success');
+    closeModal('add-admin-modal');
+    addFeedItem('purple', 'Admin invite sent to <strong>new moderator</strong>');
+  }
+
+  /* ── Feed — append new item ───────────────────────────────────── */
+  const DOT_COLORS = { success: '#2E8B3E', error: '#ED1C24', kyc: '#FFD54F', purple: 'rgba(156,39,176,0.9)', info: 'rgba(33,150,243,0.9)' };
+  function addFeedItem(type, text) {
+    const feed = document.querySelector('.feed-list');
+    const now = 'Just now';
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.style.animation = 'slideUp 0.25s ease';
+    item.innerHTML = `
+      <div class="feed-dot-col">
+        <div class="feed-dot" style="background:${DOT_COLORS[type] || DOT_COLORS.info};"></div>
+        <div class="feed-line"></div>
+      </div>
+      <div class="feed-body">
+        <p class="feed-text">${text}</p>
+        <div class="feed-meta"><span class="feed-time">${now}</span><span class="feed-actor">by superadmin</span></div>
+      </div>
+    `;
+    feed.insertBefore(item, feed.firstChild);
+  }
+
+  /* ── Global search (demo — filters visible user/tourn names) ─── */
+  function handleSearch(q) {
+    const lower = q.trim().toLowerCase();
+    // Filter payout table rows
+    document.querySelectorAll('tbody tr').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = (!lower || text.includes(lower)) ? '' : 'none';
+    });
+    // Filter kyc items, tourn rows, user rows
+    ['kyc-item', 'tourn-row', 'user-row'].forEach(cls => {
+      document.querySelectorAll('.' + cls).forEach(el => {
+        el.style.display = (!lower || el.textContent.toLowerCase().includes(lower)) ? '' : 'none';
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

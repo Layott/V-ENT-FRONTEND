@@ -1,36 +1,20 @@
 'use client'
 
-import Header from "@/components/header/Header"
-import MobileHeader from '@/components/mobile-header/MobileHeader';
-import Sidebar from "@/components/sidebar/Sidebar"
-import BottomMenu from "@/components/bottom-menu/BottomMenu"
-import styles from './anime.module.css'
+import ComingSoon from '@/components/coming-soon/ComingSoon';
 
-const Anime = () => {
-    return (
-      <div className={styles.pageContainer}>
-        <Header />
-        <MobileHeader />
-  
-        <main className={styles.mainContainer}>
-              <Sidebar />
-  
-              <div className={styles.rightPaneContainer}>
-                  <div className={styles.header}>
-                      <h3>Anime Page</h3>
-  
-                      <div className={styles.searchFilterContainer}>
-                          Filter and Search
-                      </div>
-                  </div>
-  
-              </div>
-          </main>
+// This module has no backend yet. It used to render hardcoded sample content,
+// which was indistinguishable from real data. The designed layout is preserved
+// in docs/wip/ and returns when the API lands.
+const Page = () => (
+  <ComingSoon
+    phase="Phase 5"
+    title="Anime hub"
+    blurb="Manga reading, AMV galleries and co-watch rooms are part of a later phase. Nothing here is live yet."
+    alternatives={[
+      { href: "/tournaments", label: "Tournaments" },
+      { href: "/events", label: "Events" },
+    ]}
+  />
+);
 
-          <BottomMenu />
-  
-      </div>
-    )
-  }
-  
-  export default Anime
+export default Page;

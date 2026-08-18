@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT Admin — Audit Log (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ── Clash Grotesk (mirroring clash-grotesk.css) ────────────────── */
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    :root {
+      --v-ent-red:        #ED1C24;
+      --v-ent-light-red:  #FF3B45;
+      --v-ent-grn:        #2E8B3E;
+      --v-ent-light-grn:  #3FB554;
+      --overlay-gray:     #212225;
+      --surface-2:        #303136;
+      --page-bg:          #131316;
+      --header-bg:        #17181A;
+      --border-subtle:    rgba(255,255,255,0.25);
+      --border-faint:     rgba(255,255,255,0.08);
+      --border-divider:   rgba(204,204,204,0.3);
+      --text-white:       #ffffff;
+      --text-muted:       #A7A6A6;
+      --text-dim:         rgba(255,255,255,0.45);
+      --active-nav-bg:    rgba(237,28,36,0.2392);
+      --sidebar-w:        250px;
+      --sidebar-w-md:     180px;
+      --header-h:         60px;
+      --bottom-nav-h:     70px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR — matches Sidebar.module.css exactly
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-container {
+      width: 100%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-left: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .logo-img  { height: 25px; width: auto; }
+    .logo-text {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--v-ent-red);
+    }
+
+    .admin-role-row {
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 0.5px solid var(--border-faint);
+    }
+    .role-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .role-super   { background: rgba(237,28,36,0.15); color: var(--v-ent-red); border: 1px solid rgba(237,28,36,0.3); }
+    .role-finance { background: rgba(76,175,80,0.12); color: var(--v-ent-grn); border: 1px solid rgba(76,175,80,0.25); }
+    .role-mod     { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.15); }
+
+    .sidebar-nav { margin-top: 0.25rem; flex: 1; }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0 0 1rem;
+    }
+    .nav-section-label {
+      width: calc(100% - 1.5rem);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0.75rem 0.75rem 0.2rem;
+    }
+    .sidebar-item {
+      display: flex;
+      min-height: 20px;
+      align-items: center;
+      gap: 0.5rem;
+      width: calc(100% - 1.5rem);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { border-color: #6e6e6e; }
+    .sidebar-item.active-item { background-color: var(--active-nav-bg); border-color: transparent; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      border-radius: 5px;
+      text-decoration: none;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+    .nav-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background-color: var(--v-ent-red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+    }
+    .nav-divider {
+      width: calc(100% - 1.5rem);
+      height: 1px;
+      background: var(--border-divider);
+      margin: 0.35rem 0;
+    }
+
+    .sidebar-footer {
+      padding: 0.75rem 0.75rem 1rem;
+      border-top: 0.5px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      border: 1px solid transparent;
+    }
+    .sidebar-user:hover { border-color: #6e6e6e; }
+    .s-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .s-user-info { flex: 1; overflow: hidden; }
+    .s-username {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
+
+    /* ════════════════════════════════════════════════════════════════
+       HEADER
+    ════════════════════════════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--header-h);
+      background-color: var(--header-bg);
+      border-bottom: 0.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem 0 2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .header-breadcrumb {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .header-breadcrumb span { color: rgba(255,255,255,0.75); }
+    .hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: var(--text-white);
+    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .notif-btn {
+      width: 32px; height: 32px;
+      border-radius: 5px;
+      background: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .notif-btn:hover { border-color: #6e6e6e; }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+    }
+    .header-admin {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .header-admin:hover { border-color: #6e6e6e; }
+    .caret {
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.5);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .header-admin.open .caret { transform: rotate(180deg); }
+    .h-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700;
+      color: #fff;
+    }
+    .h-admin-info { display: flex; flex-direction: column; align-items: flex-end; }
+    .h-name  { font-size: 0.8rem; font-weight: 600; }
+    .h-role  { font-size: 0.65rem; color: var(--text-dim); }
+
+    .header-search {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px;
+      padding: 5px 12px;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      transition: border-color 0.2s;
+    }
+    .header-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .header-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+    .header-search input::placeholder { color: var(--text-dim); }
+
+    /* Profile dropdown */
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .profile-dropdown.open { display: block; }
+    .pd-user {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .pd-name  { font-size: 0.85rem; font-weight: 600; color: var(--text-white); }
+    .pd-role  { font-size: 0.7rem; color: var(--text-dim); font-family: "ClashGrotesk-Light", sans-serif; margin-top: 0.1rem; }
+    .pd-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pd-item:hover { background-color: rgba(255,255,255,0.06); }
+    .pd-item.danger { color: var(--v-ent-red); border-top: 1px solid var(--border-faint); }
+
+    /* Notification panel */
+    .notif-panel {
+      display: none;
+      position: fixed;
+      top: calc(var(--header-h) + 4px);
+      right: 1.5rem;
+      width: 320px;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .notif-panel-title { font-size: 0.9rem; font-weight: 600; }
+    .notif-mark-read {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem;
+      color: var(--v-ent-grn);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .notif-mark-read:hover { color: var(--v-ent-light-grn); }
+    .notif-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .notif-item:hover { background: rgba(255,255,255,0.04); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item.unread { background: rgba(237,28,36,0.04); }
+    .notif-icon-wrap {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.8rem;
+    }
+    .notif-body { flex: 1; }
+    .notif-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.4; font-family: "ClashGrotesk-Light", sans-serif; }
+    .notif-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: "ClashGrotesk-Light", sans-serif; }
+    .unread-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ent-red); flex-shrink: 0; margin-top: 6px; }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOBILE BOTTOM NAV
+    ════════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background-color: var(--page-bg);
+      border-top: 0.5px solid var(--border-subtle);
+      z-index: 300;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 0.5rem;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      min-width: 44px; min-height: 44px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .bottom-nav-item:hover { border-color: #6e6e6e; }
+    .bottom-nav-item.active-bn .bn-icon { color: var(--v-ent-red); stroke: var(--v-ent-red); }
+    .bottom-nav-item.active-bn .bn-label { color: var(--v-ent-red); }
+    .bn-icon { width: 1.35rem; height: 1.35rem; color: #797B86; }
+    .bn-label {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-size: 0.7rem;
+      color: #797B86;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 190;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ════════════════════════════════════════════════════════════════
+       CONTENT AREA
+    ════════════════════════════════════════════════════════════════ */
+    .content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 2rem;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+    .page-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .page-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+    .btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      height: 37px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.4rem;
+      transition: background-color 0.3s, border-color 0.3s;
+      white-space: nowrap;
+    }
+    .ghostBTN { background: transparent; border: 1px solid var(--border-faint); color: var(--text-muted); }
+    .ghostBTN:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
+    .redBTN:hover   { background-color: var(--v-ent-light-red); }
+    .grnBTN   { background-color: var(--v-ent-grn); border: 1px solid var(--v-ent-grn); color: #fff; }
+    .grnBTN:hover   { background-color: #43a047; }
+
+    /* ── Info banner (compliance notice) ────────────────────────── */
+    .info-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background: rgba(255,193,7,0.06);
+      border: 1px solid rgba(255,193,7,0.22);
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 1.75rem;
+    }
+    .info-banner-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .info-banner-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,193,7,0.85);
+      line-height: 1.5;
+    }
+    .info-banner-text strong {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      color: #FFC107;
+    }
+
+    /* ── Stats row ───────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+    }
+    .stat-card { position: relative; }
+    .stat-icon-wrap {
+      position: absolute;
+      top: 1.25rem; right: 1.25rem;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .ic-blue   { background: rgba(33,150,243,0.15); }
+    .ic-grn    { background: rgba(76,175,80,0.15); }
+    .ic-yellow { background: rgba(255,193,7,0.15); }
+    .ic-purple { background: rgba(156,39,176,0.15); }
+    .ic-red    { background: rgba(237,28,36,0.15); }
+    .stat-label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-sub {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* ── Filters row ─────────────────────────────────────────────── */
+    .filters-row {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .filter-search {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px;
+      padding: 0 0.85rem;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      height: 37px;
+      transition: border-color 0.2s;
+      flex: 1;
+      min-width: 220px;
+    }
+    .filter-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .filter-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .filter-search input::placeholder { color: var(--text-dim); }
+    .filter-select {
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0 0.85rem;
+      height: 37px;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.7rem center;
+      padding-right: 2rem;
+    }
+    .filter-select:focus { border-color: rgba(255,255,255,0.3); }
+    .filter-select option { background-color: var(--surface-2); }
+
+    /* ── Table card ──────────────────────────────────────────────── */
+    .table-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      border: 1px solid var(--border-faint);
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .table-title {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .result-count {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead th {
+      text-align: left;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-divider);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    thead th:hover { color: rgba(255,255,255,0.75); }
+    thead th.sort-asc::after  { content: " ↑"; color: var(--v-ent-red); }
+    thead th.sort-desc::after { content: " ↓"; color: var(--v-ent-red); }
+    tbody td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(204,204,204,0.08);
+      color: rgba(255,255,255,0.75);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background-color: rgba(255,255,255,0.02); }
+
+    /* ── Admin cell (avatar + name + role badge) ─────────────────── */
+    .admin-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .admin-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .av-super   { background: var(--v-ent-red); }
+    .av-mod     { background: #5c6bc0; }
+    .av-finance { background: var(--v-ent-grn); }
+    .admin-name {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+    }
+
+    /* ── Action badges ───────────────────────────────────────────── */
+    .action-badge {
+      display: inline-block;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .ab-grn    { background: rgba(76,175,80,0.14);   color: #66bb6a; }
+    .ab-red    { background: rgba(237,28,36,0.13);   color: #ef5350; }
+    .ab-yellow { background: rgba(255,193,7,0.12);   color: #FFC107; }
+    .ab-blue   { background: rgba(33,150,243,0.13);  color: #64B5F6; }
+    .ab-purple { background: rgba(156,39,176,0.14);  color: #ce93d8; }
+
+    /* ── Target cell ─────────────────────────────────────────────── */
+    .target-link {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.82rem;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .target-link:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+    /* ── Timestamp cell ──────────────────────────────────────────── */
+    .ts-date {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap;
+    }
+    .ts-time {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ── Details cell ────────────────────────────────────────────── */
+    .details-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      max-width: 240px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+
+    /* ── IP cell ─────────────────────────────────────────────────── */
+    .ip-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      white-space: nowrap;
+    }
+
+    /* ── Role badge in admin cell ────────────────────────────────── */
+    .role-pill {
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .rp-super   { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
+    .rp-mod     { background: rgba(92,107,192,0.18); color: #9fa8da; }
+    .rp-finance { background: rgba(76,175,80,0.14); color: var(--v-ent-grn); }
+
+    /* ── Empty state ─────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+    }
+
+    /* ── Pagination ──────────────────────────────────────────────── */
+    .pagination-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--border-faint);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .pagination-info {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .pagination-info strong { color: rgba(255,255,255,0.65); font-family: "ClashGrotesk-Regular", sans-serif; }
+    .pagination-btns { display: flex; gap: 0.35rem; }
+    .pg-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      cursor: pointer;
+      min-height: 28px;
+      display: flex; align-items: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .pg-btn:hover { border-color: #6e6e6e; color: #fff; }
+    .pg-btn.active { background: rgba(237,28,36,0.15); border-color: rgba(237,28,36,0.35); color: var(--v-ent-red); }
+    .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Tooltip on details ──────────────────────────────────────── */
+    [data-tooltip] { position: relative; }
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 5px;
+      padding: 0.45rem 0.75rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      max-width: 320px;
+      white-space: normal;
+      z-index: 1000;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ════════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: slideUp 0.25s ease forwards;
+      max-width: 340px;
+    }
+    .toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast-msg { flex: 1; }
+    .toast-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem; line-height: 1; padding: 0 0.1rem; }
+    .toast-close:hover { color: var(--text-white); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
+
+    /* ── Mockup notes banner ─────────────────────────────────────── */
+    .mockup-notes {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.32);
+      line-height: 1.9;
+      margin-top: 1.75rem;
+    }
+    .mockup-notes strong { color: rgba(255,255,255,0.48); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ════════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ════════════════════════════════════════════════════════════════ */
+
+    @media (max-width: 767px) {
+      :root { --sidebar-w: 250px; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .header { left: 0; padding: 0 1rem; }
+      .hamburger { display: flex; }
+      .h-admin-info { display: none; }
+      .content {
+        margin-left: 0;
+        padding: 1.25rem 1rem;
+        padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+      }
+      .bottom-nav { display: flex; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-title { font-size: 1.25rem; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .stat-value { font-size: 1.3rem; }
+      .filters-row { flex-direction: column; align-items: stretch; }
+      .filter-search { min-width: unset; }
+      .hide-mobile { display: none; }
+      #toast-container { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; }
+      .header-search { display: none; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --sidebar-w: var(--sidebar-w-md); }
+      .header { left: var(--sidebar-w-md); }
+      .sidebar { width: var(--sidebar-w-md); }
+      .logo-text { font-size: 1.5rem; }
+      .content { margin-left: var(--sidebar-w-md); padding: 1.5rem; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .header-search input { width: 120px; }
+    }
+
+    @media (min-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (min-width: 1920px) {
+      .content { padding: 2.5rem 3rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <!-- Logo -->
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+
+  <!-- Role indicator -->
+  <div class="admin-role-row">
+    <span class="role-badge role-super">Super Admin</span>
+    <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.72rem;color:var(--text-dim);">superadmin</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+
+      <li class="nav-section-label">Overview</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Management</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+          <span class="nav-badge">3</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          KYC Review
+          <span class="nav-badge">7</span>
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Finance</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Payouts
+          <span class="nav-badge">12</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">System</li>
+      <!-- ACTIVE: Audit Log -->
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted);">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- Footer — logged-in user -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="s-avatar">SA</div>
+      <div class="s-user-info">
+        <div class="s-username">superadmin</div>
+        <div class="s-user-role">Super Admin</div>
+      </div>
+      <svg style="width:13px;height:13px;color:rgba(255,255,255,0.28);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="header-breadcrumb">
+      Admin&nbsp;/&nbsp;<span>Audit Log</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <!-- Search -->
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search users, tournaments..." />
+    </div>
+
+    <!-- Notification bell -->
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="header-admin" id="profile-trigger" onclick="toggleProfileDropdown(event)">
+      <div class="h-admin-info">
+        <span class="h-name">superadmin</span>
+        <span class="h-role">Super Admin</span>
+      </div>
+      <div class="h-avatar">SA</div>
+      <div class="caret"></div>
+      <div class="profile-dropdown" id="profile-dropdown" onclick="event.stopPropagation()">
+        <div class="pd-user">
+          <div class="pd-name">superadmin</div>
+          <div class="pd-role">Super Admin · admin@v-ent.gg</div>
+        </div>
+        <button class="pd-item" onclick="showToast('Settings page coming soon.', 'info')">Settings</button>
+        <button class="pd-item" onclick="showToast('Switched to Finance role view.', 'info')">Switch Role View</button>
+        <button class="pd-item danger" onclick="showToast('Logged out. Redirecting to /admin/login…', 'error')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notification panel -->
+<div class="notif-panel" id="notif-panel" onclick="event.stopPropagation()">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.12);">⏳</div>
+    <div class="notif-body">
+      <p class="notif-text">12 payout requests are pending review</p>
+      <p class="notif-time">5 min ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(237,28,36,0.12);">⚡</div>
+    <div class="notif-body">
+      <p class="notif-text">Dispute on PUBG Masters Match 7 unresolved for 48h</p>
+      <p class="notif-time">2h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.1);">📄</div>
+    <div class="notif-body">
+      <p class="notif-text">7 KYC documents awaiting review</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<main class="content">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Audit Log</h1>
+      <p class="page-subtitle">All admin actions · System of record for compliance and dispute resolution</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn ghostBTN" onclick="exportCSV()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Compliance banner -->
+  <div class="info-banner">
+    <div class="info-banner-icon">🔒</div>
+    <p class="info-banner-text">
+      <strong>Read-only record.</strong> All admin actions are permanently stored and cannot be deleted. This log is used for compliance and dispute resolution. Tampering with this data is a violation of the platform's Terms of Service and may result in legal action.
+    </p>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-blue">🛡</div>
+      <p class="stat-label">Total Actions Logged</p>
+      <p class="stat-value">1,847</p>
+      <p class="stat-sub">Across all time</p>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-yellow">📋</div>
+      <p class="stat-label">Actions Today</p>
+      <p class="stat-value">34</p>
+      <p class="stat-sub">Mar 22, 2026</p>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-grn">👤</div>
+      <p class="stat-label">Admins Active Today</p>
+      <p class="stat-value">2</p>
+      <p class="stat-sub">superadmin, finance_tunde</p>
+    </div>
+  </div>
+
+  <!-- Filters row -->
+  <div class="filters-row">
+    <!-- Search -->
+    <div class="filter-search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="filter-search-input" placeholder="Search actions, users, admins…" oninput="applyFilters()" />
+    </div>
+    <!-- Action type -->
+    <select class="filter-select" id="filter-action" onchange="applyFilters()">
+      <option value="">All Action Types</option>
+      <option value="Payout Approved">Payout Approved</option>
+      <option value="Payout Rejected">Payout Rejected</option>
+      <option value="User Banned">User Banned</option>
+      <option value="User Unbanned">User Unbanned</option>
+      <option value="KYC Approved">KYC Approved</option>
+      <option value="KYC Rejected">KYC Rejected</option>
+      <option value="Score Override">Score Override</option>
+      <option value="Role Assigned">Role Assigned</option>
+      <option value="Tournament Cancelled">Tournament Cancelled</option>
+      <option value="Dispute Resolved">Dispute Resolved</option>
+    </select>
+    <!-- Admin -->
+    <select class="filter-select" id="filter-admin" onchange="applyFilters()">
+      <option value="">All Admins</option>
+      <option value="superadmin">superadmin</option>
+      <option value="mod_chidi">mod_chidi</option>
+      <option value="finance_tunde">finance_tunde</option>
+    </select>
+    <!-- Date range -->
+    <select class="filter-select" id="filter-date" onchange="applyFilters()">
+      <option value="">All Time</option>
+      <option value="24h">Last 24h</option>
+      <option value="7d">Last 7 days</option>
+      <option value="30d">Last 30 days</option>
+    </select>
+  </div>
+
+  <!-- Audit log table -->
+  <div class="table-card">
+    <div class="table-header">
+      <p class="table-title">Audit Log</p>
+      <span class="result-count" id="result-count">Showing <strong>30</strong> of <strong>1,847</strong> entries</span>
+    </div>
+    <div class="table-wrap">
+      <table id="audit-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)" data-col="0">Timestamp</th>
+            <th onclick="sortTable(1)" data-col="1">Admin</th>
+            <th onclick="sortTable(2)" data-col="2">Action</th>
+            <th onclick="sortTable(3)" data-col="3">Target</th>
+            <th class="hide-mobile" onclick="sortTable(4)" data-col="4">Details</th>
+            <th class="hide-mobile" onclick="sortTable(5)" data-col="5">IP Address</th>
+          </tr>
+        </thead>
+        <tbody id="audit-tbody">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        <div class="empty-state-icon">🔍</div>
+        <p class="empty-state-text">No actions match your filters.</p>
+      </div>
+    </div>
+    <div class="pagination-row">
+      <span class="pagination-info">Showing <strong id="pg-showing">1–30</strong> of <strong>1,847</strong> entries</span>
+      <div class="pagination-btns">
+        <button class="pg-btn" disabled>← Prev</button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn">2</button>
+        <button class="pg-btn">3</button>
+        <span style="display:flex;align-items:center;padding:0 0.25rem;font-size:0.75rem;color:var(--text-dim);">…</span>
+        <button class="pg-btn">62</button>
+        <button class="pg-btn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mockup notes -->
+  <div class="mockup-notes">
+    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    · <strong>Read-only:</strong> No approve/reject/edit actions — this page is purely a compliance record viewer<br>
+    · <strong>Backend model:</strong> AdminAuditLog — fields: id, admin_user, action_type, target_id, target_type, detail, ip_address, created_at (immutable)<br>
+    · <strong>Export CSV:</strong> Streams all filtered rows server-side — no client-side limit<br>
+    · <strong>Sorting:</strong> Default timestamp DESC; all columns sortable client-side on current page data<br>
+    · <strong>IP addresses:</strong> Nigerian ranges shown (105.x.x.x = Airtel, 197.x.x.x = MTN)<br>
+    · <strong>Access:</strong> Super Admin only — Finance and Moderator roles do not see this nav item<br>
+    · <strong>References used:</strong> sidebar → admin-overview.html · cards → admin-overview metric-card · table → admin-overview payouts table · filters → tournament listing page
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="bn-label">Dashboard</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <span class="bn-label">Users</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span class="bn-label">Payouts</span>
+  </a>
+  <a class="bottom-nav-item active-bn" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span class="bn-label">Audit</span>
+  </a>
+  <a class="bottom-nav-item" href="#" onclick="openSidebar(); return false;">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    <span class="bn-label">More</span>
+  </a>
+</nav>
+
+<script>
+  /* ════════════════════════════════════════════════════════════════
+     AUDIT LOG DATA — 30 sample rows
+  ════════════════════════════════════════════════════════════════ */
+  const ALL_ROWS = [
+    // Mar 22 2026 (today)
+    { ts: "Mar 22 2026", time: "14:32", admin: "superadmin", role: "super", action: "Payout Approved",      target: "johndoe_ng",        detail: "Approved ₦25,000 payout for PUBG Masters tournament win", ip: "105.112.14.88" },
+    { ts: "Mar 22 2026", time: "14:18", admin: "finance_tunde", role: "finance", action: "Payout Approved", target: "akintunde_k",       detail: "Approved ₦15,500 payout for FIFA Weekend Series (1st place)", ip: "197.210.65.33" },
+    { ts: "Mar 22 2026", time: "13:55", admin: "superadmin",   role: "super",   action: "User Banned",      target: "spam_user99",       detail: "Banned for repeated promotional spam in tournament chat", ip: "105.112.14.88" },
+    { ts: "Mar 22 2026", time: "13:41", admin: "mod_chidi",    role: "mod",     action: "KYC Approved",     target: "ngozi_gamer",       detail: "NIN + BVN verified. Withdrawal limit raised to ₦500,000", ip: "105.58.240.107" },
+    { ts: "Mar 22 2026", time: "13:12", admin: "superadmin",   role: "super",   action: "Role Assigned",    target: "mod_chidi",         detail: "Role changed from User to Moderator by superadmin", ip: "105.112.14.88" },
+    { ts: "Mar 22 2026", time: "12:47", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "bk_esports",        detail: "Rejected — bank account details do not match KYC record", ip: "197.210.65.33" },
+    { ts: "Mar 22 2026", time: "12:05", admin: "mod_chidi",    role: "mod",     action: "Score Override",   target: "PUBG Masters Qtr-F",detail: "Score corrected: Team A 14pts → 18pts after screenshot review", ip: "105.58.240.107" },
+    { ts: "Mar 22 2026", time: "11:39", admin: "superadmin",   role: "super",   action: "Dispute Resolved", target: "femtech_pro",       detail: "Dispute #47 closed in favour of femtech_pro after evidence review", ip: "105.112.14.88" },
+    { ts: "Mar 22 2026", time: "10:58", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "tolu_plays",        detail: "Rejected — ID document appears altered/edited. User notified.", ip: "105.58.240.107" },
+    { ts: "Mar 22 2026", time: "10:22", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "oluwaseun_a",       detail: "Approved ₦42,000 payout for COD Warzone Cup (1st place)", ip: "197.210.65.33" },
+    { ts: "Mar 22 2026", time: "09:50", admin: "superadmin",   role: "super",   action: "User Unbanned",    target: "sola_off",          detail: "7-day ban expired. Account restored to active status.", ip: "105.112.14.88" },
+    { ts: "Mar 22 2026", time: "09:14", admin: "mod_chidi",    role: "mod",     action: "Tournament Cancelled", target: "Tekken 8 Lagos Open", detail: "Cancelled due to insufficient registrations (min 8, got 3)", ip: "105.58.240.107" },
+
+    // Mar 21 2026 (yesterday)
+    { ts: "Mar 21 2026", time: "22:14", admin: "superadmin",   role: "super",   action: "Payout Approved",  target: "ktech_gamer",       detail: "Approved ₦12,000 payout for Tekken 8 Open (2nd place)", ip: "105.112.14.88" },
+    { ts: "Mar 21 2026", time: "21:30", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "chike_fps",         detail: "Rejected — wallet address unverified. Follow-up required.", ip: "197.210.65.33" },
+    { ts: "Mar 21 2026", time: "20:05", admin: "mod_chidi",    role: "mod",     action: "User Banned",      target: "toxic_abioye",      detail: "Banned 30 days for harassment and abusive language in Discord", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "18:47", admin: "superadmin",   role: "super",   action: "KYC Approved",     target: "bk_esports",        detail: "Passport + utility bill verified. Full withdrawal enabled.", ip: "105.112.14.88" },
+    { ts: "Mar 21 2026", time: "17:22", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "PUBG Masters QF-3", detail: "Dispute #45 closed — no score change, original result stands", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "16:10", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "emeka_gg",          detail: "Approved ₦8,500 payout for FIFA Weekend (3rd place bonus)", ip: "197.210.65.33" },
+    { ts: "Mar 21 2026", time: "15:03", admin: "superadmin",   role: "super",   action: "Score Override",   target: "COD Warzone Cup SF",detail: "Match 6 score adjusted after replay file review. 11-9 → 11-10", ip: "105.112.14.88" },
+    { ts: "Mar 21 2026", time: "14:28", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "gamer_musa_11",     detail: "Rejected — NIN not found in NIMC database. User asked to resubmit.", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "13:11", admin: "superadmin",   role: "super",   action: "Role Assigned",    target: "finance_tunde",     detail: "Role changed from Moderator to Finance Admin", ip: "105.112.14.88" },
+    { ts: "Mar 21 2026", time: "11:55", admin: "mod_chidi",    role: "mod",     action: "User Unbanned",    target: "chike_fps",         detail: "14-day ban served. Account restored. Warning note added.", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "10:38", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "femtech_pro",       detail: "Approved ₦18,750 payout for Tekken 8 Open (1st place)", ip: "197.210.65.33" },
+
+    // Mar 20 2026
+    { ts: "Mar 20 2026", time: "23:01", admin: "superadmin",   role: "super",   action: "Tournament Cancelled", target: "VALORANT Open Beta", detail: "Cancelled — organizer withdrew. All registrants refunded automatically.", ip: "105.112.14.88" },
+    { ts: "Mar 20 2026", time: "21:14", admin: "mod_chidi",    role: "mod",     action: "User Banned",      target: "bet_rigger_01",     detail: "Permanent ban — confirmed match manipulation attempt", ip: "105.58.240.107" },
+    { ts: "Mar 20 2026", time: "19:45", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "david_fps_ng",      detail: "Approved ₦30,000 payout for COD Warzone Cup (1st place)", ip: "197.210.65.33" },
+    { ts: "Mar 20 2026", time: "17:32", admin: "superadmin",   role: "super",   action: "KYC Approved",     target: "tolu_plays",        detail: "NIN re-verified successfully after resubmission. Account unlocked.", ip: "105.112.14.88" },
+    { ts: "Mar 20 2026", time: "16:18", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "FIFA Weekend Final", detail: "Dispute #43 — lag compensation review complete. Score stands.", ip: "105.58.240.107" },
+    { ts: "Mar 20 2026", time: "14:50", admin: "superadmin",   role: "super",   action: "Score Override",   target: "PUBG Masters SF-2", detail: "Score corrected: Team C 22pts → 24pts per match admin review #112", ip: "105.112.14.88" },
+    { ts: "Mar 20 2026", time: "12:03", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "emeka_gg",          detail: "Rejected — duplicate payout request. Original already processed.", ip: "197.210.65.33" },
+    { ts: "Mar 20 2026", time: "09:27", admin: "mod_chidi",    role: "mod",     action: "User Unbanned",    target: "ngozi_gamer",       detail: "24-hour cooling-off ban lifted. User warned about repeat offences.", ip: "105.58.240.107" },
+  ];
+
+  /* Map action name → badge class */
+  const ACTION_BADGE = {
+    "Payout Approved":      "ab-grn",
+    "Payout Rejected":      "ab-red",
+    "User Banned":          "ab-red",
+    "User Unbanned":        "ab-grn",
+    "KYC Approved":         "ab-yellow",
+    "KYC Rejected":         "ab-red",
+    "Score Override":       "ab-blue",
+    "Role Assigned":        "ab-purple",
+    "Tournament Cancelled": "ab-red",
+    "Dispute Resolved":     "ab-grn",
+  };
+
+  /* Admin avatar and role pill classes */
+  const ADMIN_META = {
+    superadmin:    { initials: "SA", avClass: "av-super",   pillClass: "rp-super",   label: "Super" },
+    mod_chidi:     { initials: "MC", avClass: "av-mod",     pillClass: "rp-mod",     label: "Mod" },
+    finance_tunde: { initials: "FT", avClass: "av-finance", pillClass: "rp-finance", label: "Finance" },
+  };
+
+  /* ── Sort state ─────────────────────────────────────────────── */
+  let sortCol = 0;
+  let sortDir = -1; // -1 = desc, 1 = asc
+
+  /* ── Render table ───────────────────────────────────────────── */
+  function renderTable(rows) {
+    const tbody = document.getElementById('audit-tbody');
+    const empty = document.getElementById('empty-state');
+
+    if (!rows.length) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      document.getElementById('result-count').innerHTML = 'Showing <strong>0</strong> of <strong>1,847</strong> entries';
+      return;
+    }
+
+    empty.style.display = 'none';
+    document.getElementById('result-count').innerHTML =
+      `Showing <strong>${rows.length}</strong> of <strong>1,847</strong> entries`;
+
+    tbody.innerHTML = rows.map(row => {
+      const meta = ADMIN_META[row.admin] || { initials: row.admin.substring(0,2).toUpperCase(), avClass: "av-mod", pillClass: "rp-mod", label: "Admin" };
+      const badgeClass = ACTION_BADGE[row.action] || "ab-blue";
+      return `
+        <tr>
+          <td>
+            <div class="ts-date">${row.ts}</div>
+            <div class="ts-time">${row.time}</div>
+          </td>
+          <td>
+            <div class="admin-cell">
+              <div class="admin-avatar ${meta.avClass}">${meta.initials}</div>
+              <div>
+                <div class="admin-name">${row.admin}</div>
+                <span class="role-pill ${meta.pillClass}">${meta.label}</span>
+              </div>
+            </div>
+          </td>
+          <td><span class="action-badge ${badgeClass}">${row.action}</span></td>
+          <td><span class="target-link" onclick="showToast('Viewing: ${escHtml(row.target)}', 'info')">${row.target}</span></td>
+          <td class="hide-mobile">
+            <div class="details-text" data-tooltip="${escHtml(row.detail)}">${row.detail}</div>
+          </td>
+          <td class="hide-mobile"><span class="ip-text">${row.ip}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Filter logic ───────────────────────────────────────────── */
+  function applyFilters() {
+    const q      = document.getElementById('filter-search-input').value.trim().toLowerCase();
+    const action = document.getElementById('filter-action').value;
+    const admin  = document.getElementById('filter-admin').value;
+    const date   = document.getElementById('filter-date').value;
+
+    let rows = ALL_ROWS.filter(row => {
+      /* Text search — action, admin, target, detail */
+      if (q) {
+        const haystack = [row.action, row.admin, row.target, row.detail, row.ip].join(' ').toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      /* Action type */
+      if (action && row.action !== action) return false;
+      /* Admin */
+      if (admin && row.admin !== admin) return false;
+      /* Date range — uses index position in ALL_ROWS as proxy for age */
+      if (date === '24h' && !row.ts.includes('Mar 22 2026')) return false;
+      if (date === '7d'  && row.ts.includes('Mar 20 2026') && row.time < '09:00') return false; // simplistic demo
+      /* All time — no filter */
+      return true;
+    });
+
+    /* Apply current sort */
+    rows = sortRows(rows);
+    renderTable(rows);
+  }
+
+  /* ── Sort logic ─────────────────────────────────────────────── */
+  const COL_KEYS = ['ts', 'admin', 'action', 'target', 'detail', 'ip'];
+
+  function sortTable(col) {
+    if (sortCol === col) {
+      sortDir = -sortDir;
+    } else {
+      sortCol = col;
+      sortDir = col === 0 ? -1 : 1; // default timestamp = newest first
+    }
+    /* Update header classes */
+    document.querySelectorAll('thead th').forEach((th, i) => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (i === col) th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    });
+    applyFilters();
+  }
+
+  function sortRows(rows) {
+    const key = COL_KEYS[sortCol];
+    return [...rows].sort((a, b) => {
+      let av = a[key], bv = b[key];
+      /* For timestamp, combine ts + time */
+      if (key === 'ts') {
+        av = a.ts + ' ' + a.time;
+        bv = b.ts + ' ' + b.time;
+      }
+      if (av < bv) return -1 * sortDir;
+      if (av > bv) return  1 * sortDir;
+      return 0;
+    });
+  }
+
+  /* ── Export CSV ─────────────────────────────────────────────── */
+  function exportCSV() {
+    showToast('Audit log exported as CSV.', 'success');
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────────── */
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Profile dropdown ───────────────────────────────────────── */
+  function toggleProfileDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.getElementById('profile-trigger');
+    const dd = document.getElementById('profile-dropdown');
+    const isOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  /* ── Notification panel ─────────────────────────────────────── */
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-panel');
+    const isOpen = panel.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) panel.classList.add('open');
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-pip').forEach(el => el.style.display = 'none');
+    document.getElementById('notif-dot').style.display = 'none';
+    showToast('All notifications marked as read.', 'success');
+  }
+
+  /* ── Close all dropdowns/panels ─────────────────────────────── */
+  function closeAllDropdowns() {
+    document.getElementById('profile-dropdown').classList.remove('open');
+    document.getElementById('profile-trigger').classList.remove('open');
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeAllDropdowns(); }
+  });
+
+  /* ── Toast ──────────────────────────────────────────────────── */
+  const COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(255,255,255,0.35)' };
+  function showToast(msg, type) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-dot" style="background:${COLORS[type] || COLORS.info};"></div>
+      <span class="toast-msg">${msg}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 320);
+    }, 3500);
+  }
+
+  /* ── Init — render default (timestamp desc) ─────────────────── */
+  (function init() {
+    /* Set default sort header indicator */
+    const headers = document.querySelectorAll('thead th');
+    if (headers[0]) headers[0].classList.add('sort-desc');
+    renderTable(sortRows(ALL_ROWS));
+  })();
+</script>
+
+</body>
+</html>

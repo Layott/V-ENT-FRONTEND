@@ -5,10 +5,14 @@
   --white: #FFFFFF;
   --black: #000000;
   --green: #008000;
-  --v-ent-grn: #4caf50;
-  --v-ent-light-grn: #00FF08;
+  --v-ent-gold: #D4AF37;
+  --v-ent-light-gold: #E8C760;
+  --v-ent-deep-gold: #8C6A1A;
   --v-ent-red: #ED1C24;
   --v-ent-light-red: #FF0008;
+  --v-ent-success: #4caf50;
+  --v-ent-success-light: #66bb6a;
+  --v-ent-success-deep: #2e7d32;
   --overlay-gray: #212225;
   --desktop-h1-size: 3.5rem;
   --desktop-h2-size: 3rem;
@@ -38,16 +42,17 @@
 
 input:-webkit-autofill,
 /* input:-webkit-autofill:hover,  */
-input:-webkit-autofill:focus, 
-textarea:-webkit-autofill, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
 /* textarea:-webkit-autofill:hover,  */
-textarea:-webkit-autofill:focus, 
-select:-webkit-autofill, 
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
 /* select:-webkit-autofill:hover,  */
 select:-webkit-autofill:focus {
-  -webkit-border: 1px solid var(--overlay-gray) !important;
   -webkit-text-fill-color: var(--primary-bg) !important;
-  -webkit-box-shadow: 0 0 0px 1000px #303136 inset !important;
+  /* Paints the autofilled field with our own surface colour (Chrome ignores
+     background-color on autofill). 0-blur inset fill, not a glow. */
+  -webkit-box-shadow: 0 0 0 1000px #303136 inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -55,30 +60,60 @@ select:-webkit-autofill:focus {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "ClashGrotesk-Regular", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--primary-bg);
+}
+
+/* Form controls ship with a browser-drawn border (buttons default to
+   `2px outset`). With the platform's own strokes removed from our CSS, that
+   default would surface as an outlined box - so clear it here once.
+   Keyboard focus keeps a visible ring via :focus-visible below. */
+button,
+input,
+select,
+textarea,
+fieldset {
+  border: 0;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4,
+.displayTitle,
+.heroTitle {
+  font-family: "Fraunces", "Inter", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 a {
   text-decoration: none;
 }
 
-.grnBTN {
+.goldBTN {
   color: var(--primary-bg);
-  background-color: var(--v-ent-grn);
-  border: 1px solid var(--v-ent-grn);
+  background-color: var(--v-ent-gold);
+
   transform: scale(1);
   transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
   cursor: pointer;
 }
 
-.grnBTN:hover {
+.goldBTN:hover {
   color: var(--primary-bg);
-  background-color: var(--v-ent-light-grn);
-  border: 1px solid var(--primary-bg);
+  background-color: var(--v-ent-light-gold);
+
 }
 
-.grnBTN:active {
+.goldBTN:active {
   transform: scale(1.01);
 }
 
@@ -94,7 +129,7 @@ a {
 .redBTN {
   color: var(--primary-bg);
   background-color: var(--v-ent-red);
-  border: 1px solid var(--v-ent-red);
+
   transform: scale(1);
   transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
   cursor: pointer;
@@ -103,7 +138,7 @@ a {
 .redBTN:hover {
   color: var(--primary-bg);
   background-color: var(--v-ent-light-red);
-  border: 1px solid var(--primary-bg);
+
 }
 
 .redBTN:active {
@@ -111,7 +146,7 @@ a {
 }
 
 select {
-  border: 1px solid var(--overlay-gray);
+
   height: 40px;
   color: var(--primary-bg);
   background-color: #303136 !important;
@@ -123,7 +158,7 @@ select {
 
 select:focus,
 select:active {
-  border: 1px solid var(--primary-bg);
+  outline: none;
   color: var(--primary-bg);
 }
 

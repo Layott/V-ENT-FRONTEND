@@ -1,3 +1,30 @@
+.stateText {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: var(--fs-p-size-desktop);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.errorText {
+  color: var(--v-ent-red);
+  font-size: var(--fs-p-size-desktop);
+  padding: 1rem 0;
+}
+
+.avatarFallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: var(--fw-bold);
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
 .gridHeader > :nth-child(2),
 .gridHeader > :nth-child(3),
 .gridHeader > :nth-child(4),
@@ -17,7 +44,7 @@
 .gridRowExpanded {
   display: grid;
   grid-template-columns: minmax(200px, 200px) minmax(110px, 110px) minmax(100px, 100px) minmax(150px, 150px) minmax(110px, 110px) minmax(110px, 110px) minmax(110px, 110px) minmax(160px, 160px);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+
   width: 100%;
   width: max-content;
 }

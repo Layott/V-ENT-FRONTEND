@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT Admin — Users (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ── Clash Grotesk (mirroring clash-grotesk.css) ────────────────── */
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    /* ── CSS Variables — exact from globals.css + project ────────── */
+    :root {
+      --v-ent-red:        #ED1C24;
+      --v-ent-light-red:  #FF3B45;
+      --v-ent-grn:        #2E8B3E;
+      --v-ent-light-grn:  #3FB554;
+      --overlay-gray:     #212225;
+      --surface-2:        #303136;
+      --page-bg:          #131316;
+      --header-bg:        #17181A;
+      --border-subtle:    rgba(255,255,255,0.25);
+      --border-faint:     rgba(255,255,255,0.08);
+      --border-divider:   rgba(204,204,204,0.3);
+      --text-white:       #ffffff;
+      --text-muted:       #A7A6A6;
+      --text-dim:         rgba(255,255,255,0.45);
+      --active-nav-bg:    rgba(237,28,36,0.2392);
+      --sidebar-w:        250px;
+      --sidebar-w-md:     180px;
+      --header-h:         60px;
+      --bottom-nav-h:     70px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    /* ── Reset ──────────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SIDEBAR — matches Sidebar.module.css exactly
+    ══════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-container {
+      width: 100%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-left: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .logo-img  { height: 25px; width: auto; }
+    .logo-text {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--v-ent-red);
+    }
+
+    /* Role badge row */
+    .admin-role-row {
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 0.5px solid var(--border-faint);
+    }
+    .role-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .role-super { background: rgba(237,28,36,0.15); color: var(--v-ent-red); border: 1px solid rgba(237,28,36,0.3); }
+
+    /* Nav */
+    .sidebar-nav { margin-top: 0.25rem; flex: 1; }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0 0 1rem;
+    }
+    .nav-section-label {
+      width: calc(100% - 1.5rem);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0.75rem 0.75rem 0.2rem;
+    }
+    .sidebar-item {
+      display: flex;
+      min-height: 20px;
+      align-items: center;
+      gap: 0.5rem;
+      width: calc(100% - 1.5rem);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { border-color: #6e6e6e; }
+    .sidebar-item.active-item { background-color: var(--active-nav-bg); border-color: transparent; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      border-radius: 5px;
+      text-decoration: none;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+    .nav-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background-color: var(--v-ent-red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+    }
+    .nav-divider {
+      width: calc(100% - 1.5rem);
+      height: 1px;
+      background: var(--border-divider);
+      margin: 0.35rem 0;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 0.75rem 0.75rem 1rem;
+      border-top: 0.5px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      border: 1px solid transparent;
+    }
+    .sidebar-user:hover { border-color: #6e6e6e; }
+    .s-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .s-user-info { flex: 1; overflow: hidden; }
+    .s-username {
+      font-size: 0.8rem; font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
+
+    /* ══════════════════════════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--header-h);
+      background-color: var(--header-bg);
+      border-bottom: 0.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem 0 2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .header-breadcrumb {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .header-breadcrumb span { color: rgba(255,255,255,0.75); }
+    .hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: var(--text-white);
+    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* Header search */
+    .header-search {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px;
+      padding: 5px 12px;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      transition: border-color 0.2s;
+    }
+    .header-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .header-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+    .header-search input::placeholder { color: var(--text-dim); }
+
+    /* Notification bell */
+    .notif-btn {
+      width: 32px; height: 32px;
+      border-radius: 5px;
+      background: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .notif-btn:hover { border-color: #6e6e6e; }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+    }
+
+    /* Header admin / profile */
+    .header-admin {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .header-admin:hover { border-color: #6e6e6e; }
+    .h-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700; color: #fff;
+    }
+    .h-admin-info { display: flex; flex-direction: column; align-items: flex-end; }
+    .h-name { font-size: 0.8rem; font-weight: 600; }
+    .h-role { font-size: 0.65rem; color: var(--text-dim); }
+    .caret {
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.5);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .header-admin.open .caret { transform: rotate(180deg); }
+
+    /* Profile dropdown */
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px); right: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .profile-dropdown.open { display: block; }
+    .pd-user { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-faint); }
+    .pd-name { font-size: 0.85rem; font-weight: 600; color: var(--text-white); }
+    .pd-role { font-size: 0.7rem; color: var(--text-dim); font-family: "ClashGrotesk-Light", sans-serif; margin-top: 0.1rem; }
+    .pd-item {
+      display: block; width: 100%; text-align: left;
+      padding: 0.6rem 1rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      text-decoration: none; background: transparent; border: none;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .pd-item:hover { background-color: rgba(255,255,255,0.06); }
+    .pd-item.danger { color: var(--v-ent-red); border-top: 1px solid var(--border-faint); }
+
+    /* ══════════════════════════════════════════════════════════════
+       NOTIFICATION PANEL
+    ══════════════════════════════════════════════════════════════ */
+    .notif-panel {
+      display: none;
+      position: fixed;
+      top: calc(var(--header-h) + 4px);
+      right: 1.5rem;
+      width: 320px;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .notif-panel-title { font-size: 0.9rem; font-weight: 600; }
+    .notif-mark-read {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.75rem; color: var(--v-ent-grn);
+      cursor: pointer; background: none; border: none;
+    }
+    .notif-mark-read:hover { color: var(--v-ent-light-grn); }
+    .notif-item {
+      display: flex; gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .notif-item:hover { background: rgba(255,255,255,0.04); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item.unread { background: rgba(237,28,36,0.04); }
+    .notif-icon-wrap {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.8rem;
+    }
+    .notif-body { flex: 1; }
+    .notif-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.4; font-family: "ClashGrotesk-Light", sans-serif; }
+    .notif-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: "ClashGrotesk-Light", sans-serif; }
+    .unread-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ent-red); flex-shrink: 0; margin-top: 6px; }
+
+    /* ══════════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ══════════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 190;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ══════════════════════════════════════════════════════════════
+       MOBILE BOTTOM NAV — 70px, #131316, hidden at 768px+
+    ══════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background-color: var(--page-bg);
+      border-top: 0.5px solid var(--border-subtle);
+      z-index: 300;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 0.5rem;
+    }
+    .bottom-nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.2rem; padding: 0.25rem 0.5rem;
+      border-radius: 5px; border: 1px solid transparent;
+      min-width: 44px; min-height: 44px;
+      cursor: pointer; text-decoration: none;
+    }
+    .bottom-nav-item:hover { border-color: #6e6e6e; }
+    .bottom-nav-item.active-bn .bn-icon { color: var(--v-ent-red); stroke: var(--v-ent-red); }
+    .bottom-nav-item.active-bn .bn-label { color: var(--v-ent-red); }
+    .bn-icon { width: 1.35rem; height: 1.35rem; color: #797B86; }
+    .bn-label { font-family: "ClashGrotesk-Medium", sans-serif; font-size: 0.7rem; color: #797B86; }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONTENT AREA
+    ══════════════════════════════════════════════════════════════ */
+    .content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 2rem;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.75rem; font-weight: 700;
+      color: #fff; margin-bottom: 0.2rem;
+    }
+    .page-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-dim);
+    }
+    .page-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+
+    /* ── Buttons ─────────────────────────────────────────────────── */
+    .btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      padding: 0.45rem 1rem;
+      border-radius: 5px; cursor: pointer;
+      height: 37px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, border-color 0.3s;
+      white-space: nowrap;
+    }
+    .ghostBTN { background: transparent; border: 1px solid var(--border-faint); color: var(--text-muted); }
+    .ghostBTN:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
+    .redBTN:hover   { background-color: var(--v-ent-light-red); }
+    .grnBTN   { background-color: var(--v-ent-grn); border: 1px solid var(--v-ent-grn); color: #fff; }
+    .grnBTN:hover   { background-color: var(--v-ent-light-grn); color: #000; }
+
+    /* ── Stats row (3 cards) ─────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+    }
+    .stat-card { position: relative; }
+    .stat-icon-wrap {
+      position: absolute;
+      top: 1.25rem; right: 1.25rem;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .ic-blue   { background: rgba(33,150,243,0.15); }
+    .ic-grn    { background: rgba(76,175,80,0.15); }
+    .ic-red    { background: rgba(237,28,36,0.15); }
+    .stat-label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+      color: #fff; line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-delta { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.72rem; }
+    .delta-up  { color: var(--v-ent-grn); }
+    .delta-neu { color: var(--text-dim); }
+
+    /* ── Filters + search row ────────────────────────────────────── */
+    .filters-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .filter-search {
+      display: flex; align-items: center;
+      gap: 0.4rem;
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0.4rem 0.75rem;
+      flex: 1;
+      min-width: 220px;
+      transition: border-color 0.2s;
+    }
+    .filter-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .filter-search input {
+      background: transparent; border: none; outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; width: 100%;
+    }
+    .filter-search input::placeholder { color: var(--text-dim); }
+    .filter-select {
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px;
+      padding: 0.4rem 0.75rem;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem;
+      outline: none; cursor: pointer;
+      height: 37px;
+    }
+    .filter-select option { background-color: var(--surface-2); }
+    .results-count {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      margin-left: auto;
+    }
+    .results-count strong { color: var(--text-white); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ── Users table ─────────────────────────────────────────────── */
+    .table-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      border: 1px solid var(--border-faint);
+      overflow: hidden;
+    }
+    .table-wrap { overflow-x: auto; }
+    .users-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .users-table thead tr { background-color: var(--surface-2); }
+    .users-table th {
+      text-align: left;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      padding: 0.75rem 1rem;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border-divider);
+      cursor: pointer;
+      user-select: none;
+    }
+    .users-table th:hover { color: rgba(255,255,255,0.75); }
+    .users-table th.sort-asc::after  { content: " ↑"; color: var(--v-ent-grn); }
+    .users-table th.sort-desc::after { content: " ↓"; color: var(--v-ent-grn); }
+    .users-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(204,204,204,0.08);
+      color: rgba(255,255,255,0.8);
+      vertical-align: middle;
+    }
+    .users-table tbody tr:last-child td { border-bottom: none; }
+    .users-table tbody tr:hover td { background-color: rgba(255,255,255,0.015); }
+    .users-table tbody tr.row-banned { opacity: 0.65; transition: opacity 0.35s; }
+    .users-table tbody tr.row-fading { opacity: 0.35; transition: opacity 0.35s; }
+
+    /* Avatar + name cell */
+    .user-cell {
+      display: flex; align-items: center; gap: 0.65rem;
+    }
+    .u-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      flex-shrink: 0;
+    }
+    .u-name-col { flex: 1; min-width: 0; }
+    .u-display-name {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .u-handle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem; color: var(--text-dim);
+      margin-top: 0.05rem;
+    }
+
+    /* Role and status badges */
+    .badge {
+      display: inline-block;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 2px 8px; border-radius: 20px;
+      white-space: nowrap;
+    }
+    /* Role badges */
+    .r-user      { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
+    .r-organizer { background: rgba(76,175,80,0.12);   color: var(--v-ent-grn);      border: 1px solid rgba(76,175,80,0.25); }
+    .r-admin     { background: rgba(237,28,36,0.12);   color: var(--v-ent-red);      border: 1px solid rgba(237,28,36,0.25); }
+    /* Status badges */
+    .s-active    { background: rgba(76,175,80,0.1);    color: var(--v-ent-grn); }
+    .s-banned    { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
+    .s-suspended { background: rgba(255,193,7,0.12);   color: #FFC107; }
+    .s-kyc       { background: rgba(255,193,7,0.1);    color: #FFD54F; }
+
+    /* Action buttons in table */
+    .act-group { display: flex; gap: 0.4rem; flex-wrap: nowrap; }
+    .act-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 4px;
+      cursor: pointer; border: none;
+      min-height: 24px; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .act-view { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .act-view:hover { background: rgba(255,255,255,0.12); color: var(--text-white); }
+    .act-ban  { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
+    .act-ban:hover  { background: rgba(237,28,36,0.25); }
+    .act-unban { background: rgba(76,175,80,0.12);  color: var(--v-ent-grn); }
+    .act-unban:hover { background: rgba(76,175,80,0.25); }
+    .act-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Email / location text */
+    .cell-dim {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.8rem; color: var(--text-dim);
+    }
+    .cell-count {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.82rem; color: rgba(255,255,255,0.7);
+      text-align: center;
+    }
+    .cell-date {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem; color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* Empty state */
+    .table-empty {
+      padding: 3rem 1rem;
+      text-align: center;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: none;
+    }
+    .table-empty.visible { display: block; }
+
+    /* ── Pagination ───────────────────────────────────────────────── */
+    .pagination-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border-faint);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .pag-info {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem; color: var(--text-dim);
+    }
+    .pag-btns { display: flex; gap: 0.3rem; align-items: center; }
+    .pag-btn {
+      width: 30px; height: 30px; border-radius: 5px;
+      border: 1px solid var(--border-faint);
+      background: transparent; color: var(--text-white);
+      font-size: 0.82rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pag-btn:hover:not(:disabled) { border-color: #6e6e6e; }
+    .pag-btn.on { background-color: var(--v-ent-red); border-color: var(--v-ent-red); }
+    .pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .pag-ellipsis {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.82rem; color: var(--text-dim);
+      padding: 0 0.25rem;
+    }
+
+    /* ── Mockup notes ─────────────────────────────────────────────── */
+    .mockup-notes {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem; color: rgba(255,255,255,0.32);
+      line-height: 1.9; margin-top: 1.75rem;
+    }
+    .mockup-notes strong { color: rgba(255,255,255,0.48); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ══════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ══════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem; right: 1.5rem;
+      z-index: 9999;
+      display: flex; flex-direction: column;
+      gap: 0.6rem; pointer-events: none;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 0.65rem;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: slideUp 0.25s ease forwards;
+      max-width: 340px;
+    }
+    .toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast-msg { flex: 1; }
+    .toast-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem; line-height: 1; padding: 0 0.1rem; }
+    .toast-close:hover { color: var(--text-white); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONFIRM MODAL
+    ══════════════════════════════════════════════════════════════ */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: none; align-items: center; justify-content: center;
+      z-index: 500; padding: 1rem;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 10px;
+      padding: 1.75rem;
+      width: 100%; max-width: 420px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.1rem; right: 1.1rem;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: var(--surface-2);
+      border: none; color: var(--text-white);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+    }
+    .modal-close:hover { background-color: rgba(237,28,36,0.2); }
+    .modal-icon {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(237,28,36,0.12);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .modal-title { font-family: "ClashGrotesk-Semibold", sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .modal-body  { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.5; }
+    .modal-body strong { color: var(--text-white); font-family: "ClashGrotesk-Regular", sans-serif; }
+    .btn-row { display: flex; gap: 0.65rem; }
+
+    /* ══════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ══════════════════════════════════════════════════════════════ */
+
+    /* Mobile — max 767px */
+    @media (max-width: 767px) {
+      :root { --sidebar-w: 250px; }
+
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+
+      .header { left: 0; padding: 0 1rem; }
+      .hamburger { display: flex; }
+      .h-admin-info { display: none; }
+      .header-search { display: none; }
+
+      .content {
+        margin-left: 0;
+        padding: 1.25rem 1rem;
+        padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+      }
+
+      .bottom-nav { display: flex; }
+
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-title { font-size: 1.25rem; }
+
+      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .stat-value { font-size: 1.2rem; }
+      .stat-icon-wrap { display: none; }
+
+      .filters-row { flex-direction: column; align-items: stretch; }
+      .filter-search { min-width: unset; }
+      .filter-select { width: 100%; }
+      .results-count { margin-left: 0; }
+
+      /* Hide non-essential columns on mobile */
+      .hide-mobile { display: none; }
+
+      .act-group { flex-wrap: wrap; }
+
+      #toast-container { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; }
+
+      .overlay { align-items: flex-end; padding: 0; }
+      .modal { border-radius: 12px 12px 0 0; max-width: 100%; }
+    }
+
+    /* Tablet 768px–1023px */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --sidebar-w: var(--sidebar-w-md); }
+
+      .header { left: var(--sidebar-w-md); }
+      .sidebar { width: var(--sidebar-w-md); }
+      .logo-text { font-size: 1.5rem; }
+
+      .content { margin-left: var(--sidebar-w-md); padding: 1.5rem; }
+
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .header-search input { width: 120px; }
+    }
+
+    /* Desktop 1024px+ */
+    @media (min-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Wide desktop 1440px+ */
+    @media (min-width: 1440px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); max-width: 900px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+
+  <div class="admin-role-row">
+    <span class="role-badge role-super">Super Admin</span>
+    <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.72rem;color:var(--text-dim);">superadmin</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+
+      <li class="nav-section-label">Overview</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Management</li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          KYC Review
+          <span class="nav-badge">7</span>
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Finance</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Payouts
+          <span class="nav-badge">12</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">System</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted);">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="s-avatar">SA</div>
+      <div class="s-user-info">
+        <div class="s-username">superadmin</div>
+        <div class="s-user-role">Super Admin</div>
+      </div>
+      <svg style="width:13px;height:13px;color:rgba(255,255,255,0.28);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="header-breadcrumb">
+      Admin&nbsp;/&nbsp;<span>Users</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search users, tournaments..." />
+    </div>
+
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+
+    <div class="header-admin" id="profile-trigger" onclick="toggleProfileDropdown(event)">
+      <div class="h-admin-info">
+        <span class="h-name">superadmin</span>
+        <span class="h-role">Super Admin</span>
+      </div>
+      <div class="h-avatar">SA</div>
+      <div class="caret"></div>
+      <div class="profile-dropdown" id="profile-dropdown" onclick="event.stopPropagation()">
+        <div class="pd-user">
+          <div class="pd-name">superadmin</div>
+          <div class="pd-role">Super Admin · admin@v-ent.gg</div>
+        </div>
+        <button class="pd-item" onclick="showToast('Settings page coming soon.', 'info')">Settings</button>
+        <button class="pd-item" onclick="showToast('Switched to Finance role view.', 'info')">Switch Role View</button>
+        <button class="pd-item danger" onclick="showToast('Logged out. Redirecting to /admin/login…', 'error')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notification panel -->
+<div class="notif-panel" id="notif-panel" onclick="event.stopPropagation()">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.12);">⏳</div>
+    <div class="notif-body">
+      <p class="notif-text">12 payout requests are pending review</p>
+      <p class="notif-time">5 min ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(237,28,36,0.12);">🚫</div>
+    <div class="notif-body">
+      <p class="notif-text">sola_off was reported by 3 users for toxic behaviour</p>
+      <p class="notif-time">1h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.1);">📄</div>
+    <div class="notif-body">
+      <p class="notif-text">7 KYC documents awaiting review</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(76,175,80,0.1);">✓</div>
+    <div class="notif-body">
+      <p class="notif-text">ngozi_gamer completed KYC verification</p>
+      <p class="notif-time">4h ago</p>
+    </div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">👤</div>
+    <div class="notif-body">
+      <p class="notif-text">New admin registered: emeka_ctrl</p>
+      <p class="notif-time">6h ago</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<main class="content">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Users</h1>
+      <p class="page-subtitle">Manage platform accounts, roles, and moderation</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn ghostBTN" onclick="showToast('User list exported as CSV. Check your downloads.', 'success')">Export CSV</button>
+    </div>
+  </div>
+
+  <!-- Stats row (3 small cards) -->
+  <div class="stats-row">
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-blue">👤</div>
+      <p class="stat-label">Total Users</p>
+      <p class="stat-value">14,302</p>
+      <p class="stat-delta delta-up">↑ 8.3% this month</p>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-grn">⚡</div>
+      <p class="stat-label">Active This Month</p>
+      <p class="stat-value">3,847</p>
+      <p class="stat-delta delta-up">↑ 12.1% vs prior</p>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-red">🚫</div>
+      <p class="stat-label">Banned Users</p>
+      <p class="stat-value">23</p>
+      <p class="stat-delta delta-neu">No change</p>
+    </div>
+  </div>
+
+  <!-- Filters + search row -->
+  <div class="filters-row">
+    <div class="filter-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="user-search" placeholder="Search by username, email, location…" oninput="filterTable()" />
+    </div>
+
+    <select class="filter-select" id="filter-role" onchange="filterTable()">
+      <option value="">Role: All</option>
+      <option value="user">User</option>
+      <option value="organizer">Organizer</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <select class="filter-select" id="filter-status" onchange="filterTable()">
+      <option value="">Status: All</option>
+      <option value="active">Active</option>
+      <option value="banned">Banned</option>
+      <option value="suspended">Suspended</option>
+    </select>
+
+    <select class="filter-select" id="filter-sort" onchange="filterTable()">
+      <option value="newest">Sort: Newest</option>
+      <option value="oldest">Sort: Oldest</option>
+      <option value="tournaments">Most Tournaments</option>
+    </select>
+
+    <div class="results-count" id="results-count"><strong>14,302</strong> users</div>
+  </div>
+
+  <!-- Users table -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table class="users-table" id="users-table">
+        <thead>
+          <tr>
+            <th onclick="sortBy('name')" id="th-name">User</th>
+            <th class="hide-mobile" onclick="sortBy('email')" id="th-email">Email</th>
+            <th onclick="sortBy('role')" id="th-role">Role</th>
+            <th class="hide-mobile" onclick="sortBy('location')" id="th-location">Location</th>
+            <th class="hide-mobile" onclick="sortBy('tournaments')" id="th-tournaments" style="text-align:center;">Tournaments</th>
+            <th onclick="sortBy('status')" id="th-status">Status</th>
+            <th class="hide-mobile" onclick="sortBy('joined')" id="th-joined">Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+
+          <!-- Row 1: sola_off — Banned -->
+          <tr id="row-1" data-name="sola_off" data-email="sola@example.ng" data-role="user" data-location="Ibadan" data-tournaments="0" data-status="banned" data-joined="2024-01-10" class="row-banned">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar" style="background:rgba(237,28,36,0.18);color:var(--v-ent-red);">SO</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">sola_off</div>
+                  <div class="u-handle">@sola_off</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">sola@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Ibadan</span></td>
+            <td class="hide-mobile"><span class="cell-count">0</span></td>
+            <td><span class="badge s-banned" id="status-badge-1">Banned</span></td>
+            <td class="hide-mobile"><span class="cell-date">10 Jan 2024</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('sola_off')">View</button>
+                <button class="act-btn act-unban" id="ban-btn-1" onclick="unbanUser(1, 'sola_off')">Unban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 2: ngozi_gamer — Active, KYC pending -->
+          <tr id="row-2" data-name="ngozi_gamer" data-email="ngozi@example.ng" data-role="user" data-location="Lagos" data-tournaments="0" data-status="active" data-joined="2025-03-01">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar" style="background:rgba(255,193,7,0.15);color:#FFD54F;">NG</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">ngozi_gamer</div>
+                  <div class="u-handle">@ngozi_gamer</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">ngozi@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Lagos</span></td>
+            <td class="hide-mobile"><span class="cell-count">0</span></td>
+            <td><span class="badge s-kyc" id="status-badge-2">KYC Pending</span></td>
+            <td class="hide-mobile"><span class="cell-date">1 Mar 2025</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('ngozi_gamer')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-2" onclick="confirmBan(2, 'ngozi_gamer')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3: johndoe_ng — Active, Organizer, 12 tourns -->
+          <tr id="row-3" data-name="johndoe_ng" data-email="john@example.ng" data-role="organizer" data-location="Lagos" data-tournaments="12" data-status="active" data-joined="2023-08-15">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar" style="background:rgba(76,175,80,0.18);color:var(--v-ent-grn);">JD</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">johndoe_ng</div>
+                  <div class="u-handle">@johndoe_ng</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">john@example.ng</span></td>
+            <td><span class="badge r-organizer">Organizer</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Lagos</span></td>
+            <td class="hide-mobile"><span class="cell-count">12</span></td>
+            <td><span class="badge s-active" id="status-badge-3">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">15 Aug 2023</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('johndoe_ng')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-3" onclick="confirmBan(3, 'johndoe_ng')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 4: bk_esports — Active, 8 tourns -->
+          <tr id="row-4" data-name="bk_esports" data-email="bk@bkesports.ng" data-role="user" data-location="Abuja" data-tournaments="8" data-status="active" data-joined="2023-11-22">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar">BK</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">bk_esports</div>
+                  <div class="u-handle">@bk_esports</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">bk@bkesports.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Abuja</span></td>
+            <td class="hide-mobile"><span class="cell-count">8</span></td>
+            <td><span class="badge s-active" id="status-badge-4">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">22 Nov 2023</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('bk_esports')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-4" onclick="confirmBan(4, 'bk_esports')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 5: emeka_ctrl — Active, Admin, 0 tourns -->
+          <tr id="row-5" data-name="emeka_ctrl" data-email="emeka@v-ent.gg" data-role="admin" data-location="Abuja" data-tournaments="0" data-status="active" data-joined="2023-05-01">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar" style="background:rgba(237,28,36,0.18);color:var(--v-ent-red);">EC</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">emeka_ctrl</div>
+                  <div class="u-handle">@emeka_ctrl</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">emeka@v-ent.gg</span></td>
+            <td><span class="badge r-admin">Admin</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Abuja</span></td>
+            <td class="hide-mobile"><span class="cell-count">0</span></td>
+            <td><span class="badge s-active" id="status-badge-5">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">1 May 2023</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('emeka_ctrl')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-5" onclick="confirmBan(5, 'emeka_ctrl')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 6: femtech_pro — Active, Organizer, 5 tourns -->
+          <tr id="row-6" data-name="femtech_pro" data-email="femtech@example.ng" data-role="organizer" data-location="Port Harcourt" data-tournaments="5" data-status="active" data-joined="2024-02-14">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar" style="background:rgba(76,175,80,0.18);color:var(--v-ent-grn);">FT</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">femtech_pro</div>
+                  <div class="u-handle">@femtech_pro</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">femtech@example.ng</span></td>
+            <td><span class="badge r-organizer">Organizer</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Port Harcourt</span></td>
+            <td class="hide-mobile"><span class="cell-count">5</span></td>
+            <td><span class="badge s-active" id="status-badge-6">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">14 Feb 2024</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('femtech_pro')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-6" onclick="confirmBan(6, 'femtech_pro')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 7: tolu_plays — Active, 3 tourns -->
+          <tr id="row-7" data-name="tolu_plays" data-email="tolu@example.ng" data-role="user" data-location="Port Harcourt" data-tournaments="3" data-status="active" data-joined="2024-06-19">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar">TL</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">tolu_plays</div>
+                  <div class="u-handle">@tolu_plays</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">tolu@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Port Harcourt</span></td>
+            <td class="hide-mobile"><span class="cell-count">3</span></td>
+            <td><span class="badge s-active" id="status-badge-7">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">19 Jun 2024</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('tolu_plays')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-7" onclick="confirmBan(7, 'tolu_plays')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 8: akintunde_k — Active, 6 tourns -->
+          <tr id="row-8" data-name="akintunde_k" data-email="akintunde@example.ng" data-role="user" data-location="Enugu" data-tournaments="6" data-status="active" data-joined="2024-03-08">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar">AK</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">akintunde_k</div>
+                  <div class="u-handle">@akintunde_k</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">akintunde@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Enugu</span></td>
+            <td class="hide-mobile"><span class="cell-count">6</span></td>
+            <td><span class="badge s-active" id="status-badge-8">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">8 Mar 2024</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('akintunde_k')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-8" onclick="confirmBan(8, 'akintunde_k')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 9: ktech_gamer — Active, 1 tourn -->
+          <tr id="row-9" data-name="ktech_gamer" data-email="ktech@example.ng" data-role="user" data-location="Enugu" data-tournaments="1" data-status="active" data-joined="2024-09-03">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar">KT</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">ktech_gamer</div>
+                  <div class="u-handle">@ktech_gamer</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">ktech@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Enugu</span></td>
+            <td class="hide-mobile"><span class="cell-count">1</span></td>
+            <td><span class="badge s-active" id="status-badge-9">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">3 Sep 2024</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('ktech_gamer')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-9" onclick="confirmBan(9, 'ktech_gamer')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 10: adaeze_wins — Active, 2 tourns -->
+          <tr id="row-10" data-name="adaeze_wins" data-email="adaeze@example.ng" data-role="user" data-location="Ibadan" data-tournaments="2" data-status="active" data-joined="2025-01-17">
+            <td>
+              <div class="user-cell">
+                <div class="u-avatar">AW</div>
+                <div class="u-name-col">
+                  <div class="u-display-name">adaeze_wins</div>
+                  <div class="u-handle">@adaeze_wins</div>
+                </div>
+              </div>
+            </td>
+            <td class="hide-mobile"><span class="cell-dim">adaeze@example.ng</span></td>
+            <td><span class="badge r-user">User</span></td>
+            <td class="hide-mobile"><span class="cell-dim">Ibadan</span></td>
+            <td class="hide-mobile"><span class="cell-count">2</span></td>
+            <td><span class="badge s-active" id="status-badge-10">Active</span></td>
+            <td class="hide-mobile"><span class="cell-date">17 Jan 2025</span></td>
+            <td>
+              <div class="act-group">
+                <button class="act-btn act-view" onclick="viewUser('adaeze_wins')">View</button>
+                <button class="act-btn act-ban" id="ban-btn-10" onclick="confirmBan(10, 'adaeze_wins')">Ban</button>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div class="table-empty" id="table-empty">
+        No users match your current filters. Try adjusting the search or filters above.
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row">
+      <span class="pag-info" id="pag-info">Showing 1–10 of 14,302</span>
+      <div class="pag-btns">
+        <button class="pag-btn" disabled title="Previous page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="pag-btn on">1</button>
+        <button class="pag-btn" onclick="showToast('Page 2 — not built in mockup.', 'info')">2</button>
+        <button class="pag-btn" onclick="showToast('Page 3 — not built in mockup.', 'info')">3</button>
+        <span class="pag-ellipsis">…</span>
+        <button class="pag-btn" onclick="showToast('Page 1,431 — not built in mockup.', 'info')">1431</button>
+        <button class="pag-btn" onclick="showToast('Page 2 — not built in mockup.', 'info')" title="Next page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mockup notes -->
+  <div class="mockup-notes">
+    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    · <strong>Table:</strong> 8 columns at 1024px+; on mobile hides Email, Location, Tournaments, Joined — shows User, Role, Status, Actions only<br>
+    · <strong>Search:</strong> Real-time filter on username + email fields as user types<br>
+    · <strong>Filters:</strong> Role, Status, Sort dropdowns combine with search; results count updates live<br>
+    · <strong>Ban:</strong> Confirm dialog → row fades to 65% opacity → badge changes to Banned → Ban button becomes Unban<br>
+    · <strong>Unban (sola_off):</strong> No confirm needed — immediate → badge reverts to Active → button reverts to Ban<br>
+    · <strong>View:</strong> In real build goes to /admin/users/[id] — full profile detail, activity log, wallet history, audit trail<br>
+    · <strong>Role badges:</strong> User (grey) · Organizer (green) · Admin (red)<br>
+    · <strong>Status badges:</strong> Active (green) · Banned (red) · Suspended (yellow) · KYC Pending (yellow-gold)<br>
+    · <strong>Pagination:</strong> Shows 10/page; real build fetches from /admin/users/?page=N&amp;role=&amp;status=&amp;q=<br>
+    · <strong>References:</strong> sidebar → Sidebar.module.css · cards → profile-page.module.css · table → tournament participants tab · pagination → wallet.html · toast + dropdowns → admin-overview.html
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BAN CONFIRM MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="ban-modal" onclick="closeModal('ban-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('ban-modal')">✕</button>
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--v-ent-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+    </div>
+    <h2 class="modal-title">Ban User</h2>
+    <p class="modal-body" id="ban-modal-body">
+      Are you sure you want to ban <strong id="ban-username-display">this user</strong>?<br>
+      They will lose access to all platform features immediately. This action is logged in the Audit Log and can be reversed.
+    </p>
+    <div class="btn-row">
+      <button class="btn ghostBTN" style="flex:1;" onclick="closeModal('ban-modal')">Cancel</button>
+      <button class="btn redBTN"   style="flex:1;" id="confirm-ban-btn" onclick="executeBan()">Ban User</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="bn-label">Dashboard</span>
+  </a>
+  <a class="bottom-nav-item active-bn" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <span class="bn-label">Users</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="bn-label">Tourns</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span class="bn-label">Payouts</span>
+  </a>
+  <a class="bottom-nav-item" href="#" onclick="openSidebar(); return false;">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    <span class="bn-label">More</span>
+  </a>
+</nav>
+
+<script>
+  /* ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+  ═══════════════════════════════════════════════════════════════ */
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     PROFILE DROPDOWN
+  ═══════════════════════════════════════════════════════════════ */
+  function toggleProfileDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.getElementById('profile-trigger');
+    const dd = document.getElementById('profile-dropdown');
+    const isOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     NOTIFICATION PANEL
+  ═══════════════════════════════════════════════════════════════ */
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-panel');
+    const isOpen = panel.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) panel.classList.add('open');
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-pip').forEach(el => el.style.display = 'none');
+    document.getElementById('notif-dot').style.display = 'none';
+    showToast('All notifications marked as read.', 'success');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CLOSE ALL DROPDOWNS
+  ═══════════════════════════════════════════════════════════════ */
+  function closeAllDropdowns() {
+    document.getElementById('profile-dropdown').classList.remove('open');
+    document.getElementById('profile-trigger').classList.remove('open');
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeAllDropdowns(); closeAllModals(); }
+  });
+
+  /* ═══════════════════════════════════════════════════════════════
+     MODAL
+  ═══════════════════════════════════════════════════════════════ */
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeAllModals() {
+    document.querySelectorAll('.overlay').forEach(el => el.classList.remove('open'));
+    document.body.style.overflow = '';
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     TOAST
+  ═══════════════════════════════════════════════════════════════ */
+  const TOAST_COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(255,255,255,0.35)' };
+  function showToast(msg, type) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-dot" style="background:${TOAST_COLORS[type] || TOAST_COLORS.info};"></div>
+      <span class="toast-msg">${msg}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 320);
+    }, 3500);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     VIEW USER
+  ═══════════════════════════════════════════════════════════════ */
+  function viewUser(username) {
+    showToast(`Opening user profile… (goes to /admin/users/${username} in real build)`, 'info');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     BAN FLOW
+  ═══════════════════════════════════════════════════════════════ */
+  let pendingBanRowId = null;
+  let pendingBanUsername = null;
+
+  function confirmBan(rowId, username) {
+    pendingBanRowId = rowId;
+    pendingBanUsername = username;
+    document.getElementById('ban-username-display').textContent = username;
+    openModal('ban-modal');
+  }
+
+  function executeBan() {
+    if (!pendingBanRowId) return;
+    closeModal('ban-modal');
+
+    const rowId = pendingBanRowId;
+    const username = pendingBanUsername;
+    const row = document.getElementById('row-' + rowId);
+    const badge = document.getElementById('status-badge-' + rowId);
+    const banBtn = document.getElementById('ban-btn-' + rowId);
+
+    // Fade row
+    row.classList.add('row-fading');
+    setTimeout(() => {
+      row.classList.remove('row-fading');
+      row.classList.add('row-banned');
+    }, 370);
+
+    // Update badge
+    badge.className = 'badge s-banned';
+    badge.textContent = 'Banned';
+
+    // Swap Ban → Unban button
+    banBtn.className = 'act-btn act-unban';
+    banBtn.textContent = 'Unban';
+    banBtn.onclick = function() { unbanUser(rowId, username); };
+
+    // Update row dataset
+    row.dataset.status = 'banned';
+
+    showToast(`User banned.`, 'error');
+
+    pendingBanRowId = null;
+    pendingBanUsername = null;
+
+    // Re-run filter to keep display consistent
+    filterTable();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     UNBAN FLOW
+  ═══════════════════════════════════════════════════════════════ */
+  function unbanUser(rowId, username) {
+    const row = document.getElementById('row-' + rowId);
+    const badge = document.getElementById('status-badge-' + rowId);
+    const banBtn = document.getElementById('ban-btn-' + rowId);
+
+    // Remove banned styling
+    row.classList.remove('row-banned');
+
+    // Update badge
+    badge.className = 'badge s-active';
+    badge.textContent = 'Active';
+
+    // Swap Unban → Ban button
+    banBtn.className = 'act-btn act-ban';
+    banBtn.textContent = 'Ban';
+    banBtn.onclick = function() { confirmBan(rowId, username); };
+
+    // Update row dataset
+    row.dataset.status = 'active';
+
+    showToast(`User unbanned.`, 'success');
+
+    // Re-run filter
+    filterTable();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SEARCH + FILTER TABLE
+  ═══════════════════════════════════════════════════════════════ */
+  let currentSort = { col: null, dir: 'asc' };
+
+  function filterTable() {
+    const query  = document.getElementById('user-search').value.toLowerCase().trim();
+    const role   = document.getElementById('filter-role').value.toLowerCase();
+    const status = document.getElementById('filter-status').value.toLowerCase();
+    const sort   = document.getElementById('filter-sort').value;
+
+    const tbody = document.getElementById('users-tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+
+    let visibleCount = 0;
+
+    // Filter rows
+    rows.forEach(row => {
+      const name     = (row.dataset.name     || '').toLowerCase();
+      const email    = (row.dataset.email    || '').toLowerCase();
+      const rowRole  = (row.dataset.role     || '').toLowerCase();
+      const rowStat  = (row.dataset.status   || '').toLowerCase();
+      const loc      = (row.dataset.location || '').toLowerCase();
+
+      const matchQ = !query  || name.includes(query) || email.includes(query) || loc.includes(query);
+      const matchR = !role   || rowRole === role;
+      const matchS = !status || rowStat === status;
+
+      if (matchQ && matchR && matchS) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Sort visible rows
+    const visibleRows = rows.filter(r => r.style.display !== 'none');
+    visibleRows.sort((a, b) => {
+      if (sort === 'newest') {
+        return new Date(b.dataset.joined) - new Date(a.dataset.joined);
+      } else if (sort === 'oldest') {
+        return new Date(a.dataset.joined) - new Date(b.dataset.joined);
+      } else if (sort === 'tournaments') {
+        return parseInt(b.dataset.tournaments) - parseInt(a.dataset.tournaments);
+      }
+      return 0;
+    });
+    visibleRows.forEach(r => tbody.appendChild(r));
+
+    // Empty state
+    const emptyEl = document.getElementById('table-empty');
+    if (visibleCount === 0) {
+      emptyEl.classList.add('visible');
+    } else {
+      emptyEl.classList.remove('visible');
+    }
+
+    // Update results count
+    const countEl = document.getElementById('results-count');
+    const pagInfo = document.getElementById('pag-info');
+    if (query || role || status) {
+      countEl.innerHTML = `<strong>${visibleCount}</strong> user${visibleCount !== 1 ? 's' : ''}`;
+      pagInfo.textContent = `Showing ${Math.min(visibleCount, 10)} of ${visibleCount}`;
+    } else {
+      countEl.innerHTML = `<strong>14,302</strong> users`;
+      pagInfo.textContent = 'Showing 1–10 of 14,302';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     COLUMN SORT (header click)
+  ═══════════════════════════════════════════════════════════════ */
+  function sortBy(col) {
+    const tbody = document.getElementById('users-tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+
+    // Clear all header sort classes
+    document.querySelectorAll('.users-table th').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+    });
+
+    // Toggle direction
+    if (currentSort.col === col) {
+      currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      currentSort.col = col;
+      currentSort.dir = 'asc';
+    }
+
+    // Mark header
+    const thMap = { name:'th-name', email:'th-email', role:'th-role', location:'th-location', tournaments:'th-tournaments', status:'th-status', joined:'th-joined' };
+    const thEl = document.getElementById(thMap[col]);
+    if (thEl) thEl.classList.add(currentSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+
+    // Sort
+    rows.sort((a, b) => {
+      let aVal = a.dataset[col] || '';
+      let bVal = b.dataset[col] || '';
+
+      if (col === 'tournaments' || col === 'joined') {
+        aVal = col === 'tournaments' ? parseInt(aVal) : new Date(aVal);
+        bVal = col === 'tournaments' ? parseInt(bVal) : new Date(bVal);
+      } else {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+
+      if (aVal < bVal) return currentSort.dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return currentSort.dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+  }
+</script>
+
+</body>
+</html>

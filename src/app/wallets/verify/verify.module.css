@@ -1,0 +1,264 @@
+/* ─────────────────────────────────────────────────────────────────
+   V-ENT Wallet - KYC / Identity Verification page-specific styles.
+   Companion to wallets.module.css (shared shell + form classes).
+   Only NEW patterns live here: doc-type radio, upload dropzone,
+   file preview, status pills, verified (green) icon.
+   Uses ONLY existing CSS variables from globals.css.
+   ───────────────────────────────────────────────────────────────── */
+
+/* Visually-hidden but accessible (native radio / file inputs) */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Document-type selector (radio cards) ── */
+.docTypeGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+}
+
+.docTypeOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #303136;
+
+  border-radius: 5px;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, background 0.2s;
+}
+
+.docTypeOption:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.docTypeOptionActive {
+
+  background-color: rgba(212, 175, 55, 0.06);
+}
+
+.docRadio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.docRadioActive {
+  background-color: rgba(237, 28, 36, 0.16);
+}
+
+.docRadioDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--v-ent-gold);
+}
+
+.docOptionText {
+  display: flex;
+  flex-direction: column;
+}
+
+.docOptionLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: var(--primary-bg);
+}
+
+.docOptionHint {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.1rem;
+}
+
+/* ── Upload dropzone ── */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #303136;
+
+  border-radius: 8px;
+  padding: 1.6rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s, background 0.2s;
+}
+
+.dropzone:hover {
+
+  background-color: rgba(212, 175, 55, 0.04);
+}
+
+.dropIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(212, 175, 55, 0.12);
+  color: #E8C760;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropTitle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: var(--primary-bg);
+}
+
+.dropHint {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── File preview (after a file is chosen) ── */
+.filePreview {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background-color: #303136;
+
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+}
+
+.fileThumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: var(--overlay-gray);
+
+}
+
+.fileMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  color: var(--primary-bg);
+  margin: 0;
+  word-break: break-all;
+}
+
+.fileSize {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0.1rem 0 0;
+}
+
+.fileActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.fileChange {
+  font-family: "Inter", sans-serif;
+  font-size: 0.74rem;
+  color: rgba(212, 175, 55, 0.95);
+  cursor: pointer;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.fileChange:hover {
+  background-color: rgba(212, 175, 55, 0.1);
+}
+
+.fileRemove {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: "Inter", sans-serif;
+  font-size: 0.74rem;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.fileRemove:hover {
+  color: #ff8a80;
+  background-color: rgba(237, 28, 36, 0.08);
+}
+
+/* ── Status pills (pending / rejected cards) ── */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.statusPillPending {
+  background-color: rgba(251, 198, 75, 0.12);
+  color: rgba(251, 198, 75, 0.9);
+}
+
+.statusPillRejected {
+  background-color: rgba(237, 28, 36, 0.12);
+  color: #ef9a9a;
+}
+
+.pillRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+/* ── Verified (green) success icon ── */
+.verifiedIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(76, 175, 80, 0.14);
+  color: var(--v-ent-success-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+/* Section label above the form groups */
+.blockLabel {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  color: #A7A6A6;
+  margin-bottom: 0.5rem;
+}

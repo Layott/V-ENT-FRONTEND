@@ -1,168 +1,319 @@
-'use client'
+'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { SlArrowRight } from "react-icons/sl";
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
-import EditUserProfileInfo from '@/components/edit-user-profile/edit-user-profile-info/EditUserProfileInfo';
-import EditUserProfileFavouriteGames from '@/components/edit-user-profile/edit-user-profile-favourite-games/EditUserProfileFavouriteGames';
-import EditUserProfileGamingAccounts from '@/components/edit-user-profile/edit-user-profile-gaming-accounts/EditUserProfileGamingAccounts';
-import EditLinks from '@/components/edit-user-profile/edit-user-profile-links/EditUserProfileLinks';
-import editProfileStyles from '@/styles/profile/edit-profile/edit-profile.module.css';
+import ProfileInfoPanel from '@/components/edit-profile-panels/ProfileInfoPanel';
+import FavoriteGamesEditPanel from '@/components/edit-profile-panels/FavoriteGamesEditPanel';
+import GamingAccountsPanel from '@/components/edit-profile-panels/GamingAccountsPanel';
+import SocialLinksEditPanel from '@/components/edit-profile-panels/SocialLinksEditPanel';
+import { jsonHeaders, multipartHeaders } from '@/lib/authHeader';
+import shared from '@/components/edit-profile-panels/editProfileShared.module.css';
+import styles from './edit-user-profile.module.css';
 
-// Create a separate component for the search params logic
+const PANELS = [
+  { id: 'info', label: 'Profile Info' },
+  { id: 'games', label: 'Favorite Games' },
+  { id: 'accounts', label: 'Gaming Accounts' },
+  { id: 'social', label: 'Web and Social Links' },
+];
+
 const EditUserProfileContent = () => {
-  const [activeTab, setActiveTab] = useState('edit-profile-details');
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  // Check URL parameters and set active tab
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && ['edit-profile-details', 'favourite-games', 'gaming-accounts', 'web-social-links', 'forgot-password'].includes(tab)) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
 
-  // Check if user is authenticated
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState('');
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+
+  const activePanel = (() => {
+    const p = searchParams.get('panel');
+    return PANELS.some((pp) => pp.id === p) ? p : 'info';
+  })();
+
+  const setPanel = (id) => {
+    router.push(`/edit-user-profile?panel=${id}`, { scroll: false });
+  };
+
+  const showToast = useCallback((msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  }, []);
+
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/login?callbackUrl=/edit-profile');
+      router.push('/login?callbackUrl=/edit-user-profile');
     }
   }, [status, router]);
 
-  // Show loading state while checking authentication
-  if (status === 'loading') {
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user?.sessionToken) return;
+
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const userId = session.user.id;
+        const res = await fetch(`${apiBase}/auth/get-user-informations/?user_id=${userId}`, {
+          headers: jsonHeaders(session.user.sessionToken),
+        });
+        const data = await res.json();
+        const raw = data.data || data;
+        setProfileData(raw);
+      } catch (err) {
+        try {
+          const stored = localStorage.getItem('userProfile');
+          if (stored) setProfileData(JSON.parse(stored));
+        } catch {}
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [status, session, apiBase]);
+
+  const handleCancel = () => {
+    router.push('/user-profile');
+  };
+
+  // JSON POST helper - canonical Bearer header, envelope-tolerant.
+  const postJson = async (path, body) => {
+    const token = session?.user?.sessionToken;
+    if (!token) return { status: 'error', message: 'Not authenticated' };
+    try {
+      const res = await fetch(`${apiBase}${path}`, {
+        method: 'POST',
+        headers: jsonHeaders(token),
+        body: JSON.stringify(body),
+      });
+      return await res.json();
+    } catch (err) {
+      return { status: 'error', message: 'Network error' };
+    }
+  };
+
+  // Multipart POST helper - browser sets the boundary; only Bearer is added.
+  const postMultipart = async (path, formData) => {
+    const token = session?.user?.sessionToken;
+    if (!token) return { status: 'error', message: 'Not authenticated' };
+    try {
+      const res = await fetch(`${apiBase}${path}`, {
+        method: 'POST',
+        headers: multipartHeaders(token),
+        body: formData,
+      });
+      return await res.json();
+    } catch (err) {
+      return { status: 'error', message: 'Network error' };
+    }
+  };
+
+  // Profile info - text fields go to /auth/edit-profile-info/; images go to the
+  // dedicated upload endpoints (upload-avatar / upload-banner) as real File
+  // objects (no DataURL-only path).
+  const handleSaveProfileInfo = async (payload) => {
+    const fd = new FormData();
+    if (payload.username != null) fd.append('username', payload.username);
+    if (payload.full_name != null) fd.append('fullname', payload.full_name); // BE field: fullname
+    if (payload.country != null) fd.append('country', payload.country);
+    if (payload.description != null) fd.append('description', payload.description);
+    fd.append('interests', JSON.stringify(payload.interests || []));
+    await postMultipart('/auth/edit-profile-info/', fd);
+
+    // Avatar + banner uploads - only when the user picked a new file.
+    if (payload.profilePicFile) {
+      const af = new FormData();
+      af.append('profile_picture', payload.profilePicFile);
+      await postMultipart('/auth/upload-avatar/', af);
+    }
+    if (payload.bannerFile) {
+      const bf = new FormData();
+      bf.append('banner', payload.bannerFile);
+      await postMultipart('/auth/upload-banner/', bf);
+    }
+
+    // Reflect display-only fields immediately in the profile view + header.
+    const display = {
+      username: payload.username,
+      full_name: payload.full_name,
+      fullname: payload.full_name,
+      description: payload.description,
+      bio: payload.description,
+      country: payload.country,
+      interests: payload.interests,
+    };
+    if (payload.profilePicPreview) {
+      display.profile_picture = payload.profilePicPreview;
+      display.profile_pic = payload.profilePicPreview;
+    }
+    if (payload.bannerPreview) {
+      display.banner = payload.bannerPreview;
+      display.banner_picture = payload.bannerPreview;
+    }
+    setProfileData((prev) => ({ ...(prev || {}), ...display }));
+    try {
+      const stored = localStorage.getItem('userProfile');
+      const merged = { ...(stored ? JSON.parse(stored) : {}), ...display };
+      localStorage.setItem('userProfile', JSON.stringify(merged));
+    } catch {}
+  };
+
+  // Favorite games - POST /auth/update-favorite-games/ (Bearer header auth,
+  // JSON { game_ids }). Preferred over the legacy edit-favorite-games endpoint
+  // that took the token in the body.
+  const handleSaveGames = async (payload) => {
+    const games = payload.games || [];
+    const game_ids = games.map((g) => g.id).filter(Boolean);
+    await postJson('/auth/update-favorite-games/', { game_ids });
+  };
+
+  // Gaming accounts - BE-GAP: endpoint not yet confirmed server-side.
+  // TODO(M1/BE): confirm /auth/update-gaming-accounts/ before treating as source of truth.
+  const handleSaveAccounts = async (payload) => {
+    await postJson('/auth/update-gaming-accounts/', { accounts: payload.accounts || {} });
+  };
+
+  // Social links - real endpoint POST /auth/update-web-and-social-links/ ({ links }).
+  const handleSaveSocial = async (payload) => {
+    const links = {
+      facebook: payload.facebook || '',
+      twitter: payload.twitter || '',
+      instagram: payload.instagram || '',
+      youtube: payload.youtube || '',
+    };
+    (payload.custom || []).forEach((l) => {
+      if (l.title && l.url) links[l.title] = l.url;
+    });
+    await postJson('/auth/update-web-and-social-links/', { links });
+  };
+
+  if (loading || status === 'loading') {
     return (
-      <div className={editProfileStyles.loadingContainer}>
-        <p>Loading profile editor...</p>
+      <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            {/* Render the panel-switcher in the loading state too - the URL
+                `?panel=info|games|accounts|social` is the source of truth and
+                the audit checks the tab UI is visible before data lands. */}
+            <div className={shared.pageGrid}>
+              <aside className={shared.submenuCard}>
+                <div className={shared.submenuLabel}>Menu</div>
+                <ul className={shared.submenuList}>
+                  {PANELS.map((p) => (
+                    <li
+                      key={p.id}
+                      className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}
+                    >
+                      <button type="button" onClick={() => setPanel(p.id)}>
+                        {p.label}
+                        <span className={shared.chev}>›</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+              <section>
+                <div className={styles.loadingState}>Loading editor…</div>
+              </section>
+            </div>
+          </div>
+        </main>
+        <BottomMenu />
       </div>
     );
   }
 
-  // Only render the profile editor if authenticated
-  if (!session) {
-    return null; // Don't render anything while redirecting
-  }
-
   return (
-    <div className={editProfileStyles.pageContainer}>
-      <Header className={editProfileStyles.customHeader} />
+    <div className={styles.pageContainer}>
+      <Header />
       <MobileHeader />
-      
-      <main className={editProfileStyles.mainContainer}> 
-        <Sidebar customClass={editProfileStyles.customSidebar} />
-      
-        <div className={editProfileStyles.rightPaneEditProfileContainer}>
-          <div className={editProfileStyles.menuContainer}>
-            <div className={editProfileStyles.nameMenu}>
-              <p>Menu</p>
-            </div>
 
-            <div className={editProfileStyles.buttonContainer}>
-              <button
-                className={`${editProfileStyles.tabBTN} ${activeTab === 'edit-profile-details' ? editProfileStyles.activeTab : ''}`}
-                onClick={() => setActiveTab('edit-profile-details')}
-              >
-                Profile Info {activeTab === 'edit-profile-details' && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
-              </button>
+      <main className={styles.mainContainer}>
+        <Sidebar />
 
-              <button
-                className={`${editProfileStyles.tabBTN} ${editProfileStyles.notAllowed} ${activeTab === 'favourite-games' ? editProfileStyles.activeTab : ''}`}
-                onClick={() => setActiveTab('favourite-games')}
-                disabled={true}
-                 
-              >
-                Favourite Games <span className={`${editProfileStyles.notAllowedSpan}`} >Coming Soon</span> {activeTab === "favourite-games" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
-              </button>
+        <div className={styles.rightPaneContainer}>
+          <div className={shared.pageGrid}>
+            <aside className={shared.submenuCard}>
+              <div className={shared.submenuLabel}>Menu</div>
+              <ul className={shared.submenuList}>
+                {PANELS.map((p) => (
+                  <li
+                    key={p.id}
+                    className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}
+                  >
+                    <button type="button" onClick={() => setPanel(p.id)}>
+                      {p.label}
+                      <span className={shared.chev}>›</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </aside>
 
-              <button
-                className={`${editProfileStyles.tabBTN} ${editProfileStyles.notAllowed} ${activeTab === 'gaming-accounts' ? editProfileStyles.activeTab : ''}`}
-                onClick={() => setActiveTab('gaming-accounts')}
-                disabled={true}
-                
-              >
-                Gaming Accounts <span className={`${editProfileStyles.notAllowedSpan}`}>Coming Soon</span> {activeTab === "gaming-accounts" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
-              </button>
-
-              <button
-                className={`${editProfileStyles.tabBTN} ${activeTab === 'web-social-links' ? editProfileStyles.activeTab : ''}`}
-                onClick={() => setActiveTab('web-social-links')}
-              >
-                Web and Social Links {activeTab === "web-social-links" && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
-              </button>
-
-              <button
-                className={`${editProfileStyles.tabBTN} ${activeTab === 'forgot-password' ? editProfileStyles.activeTab : ''}`}
-                onClick={() => {
-                  if(session) {
-                    setActiveTab('forgot-password');
-                    router.push('/forgot-password?from=edit-profile');
-                  }
-                  }}
-              >
-                Forgot Password {activeTab === 'forgot-password' && <SlArrowRight className={editProfileStyles.rightArrowIcon} />}
-              </button>
-            </div>
+            <section>
+              {activePanel === 'info' && (
+                <ProfileInfoPanel
+                  initialData={profileData || {}}
+                  onSave={handleSaveProfileInfo}
+                  onCancel={handleCancel}
+                  showToast={showToast}
+                />
+              )}
+              {activePanel === 'games' && (
+                <FavoriteGamesEditPanel
+                  initialGames={profileData?.favorite_games}
+                  onSave={handleSaveGames}
+                  onCancel={handleCancel}
+                  showToast={showToast}
+                />
+              )}
+              {activePanel === 'accounts' && (
+                <GamingAccountsPanel
+                  initialAccounts={profileData?.gaming_accounts || {}}
+                  onSave={handleSaveAccounts}
+                  onCancel={handleCancel}
+                  showToast={showToast}
+                />
+              )}
+              {activePanel === 'social' && (
+                <SocialLinksEditPanel
+                  initialLinks={profileData?.social_links_object || {}}
+                  initialCustom={profileData?.custom_links || []}
+                  onSave={handleSaveSocial}
+                  onCancel={handleCancel}
+                  showToast={showToast}
+                />
+              )}
+            </section>
           </div>
-
-          <div className={editProfileStyles.profileEditDashboard}>
-            {activeTab === 'edit-profile-details' && (
-              <div className={editProfileStyles.editProfileDetailsContainer}>
-                <EditUserProfileInfo />
-              </div>            
-            )}
-
-            {activeTab === 'favourite-games' && (
-              <div className={editProfileStyles.editFavouriteGamesContainer}>
-                <EditUserProfileFavouriteGames />
-              </div>
-            )}
-
-            {activeTab === 'gaming-accounts' && (
-              <div className={editProfileStyles.editGamingAccountsContainer}>
-                <EditUserProfileGamingAccounts />
-              </div>
-            )}
-
-            {activeTab === 'web-social-links' && (
-              <div className={editProfileStyles.editLinksContainer}>
-                <EditLinks />
-              </div>
-            )}
-
-            {/* {activeTab === 'forgot-password' && (
-              <div className={editProfileStyles.editLinksContainer}>
-                <EditLinks />
-              </div>
-            )} */}
-          </div>
-      
         </div>
-      
       </main>
 
       <BottomMenu />
 
+      {toast && <div className={styles.toast}>{toast}</div>}
     </div>
   );
 };
 
-const EditUserProfile = () => {
-  return (
-    <Suspense fallback={
-      <div className={editProfileStyles.loadingContainer}>
-        <p>Loading profile editor...</p>
-      </div>
-    }>
-      <EditUserProfileContent />
-    </Suspense>
-  );
-};
+const EditUserProfile = () => (
+  <Suspense fallback={
+    <div style={{ minHeight: '100vh', backgroundColor: '#131316', color: '#A7A6A6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      Loading…
+    </div>
+  }>
+    <EditUserProfileContent />
+  </Suspense>
+);
 
 export default EditUserProfile;

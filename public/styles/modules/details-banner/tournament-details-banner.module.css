@@ -60,14 +60,14 @@
 }
 
 .tournamentStatus {
-  border: 1px solid #FFE097;
+
   background-color: #FFE097;
   color: #000000;
   padding: 3px;
 }
 
 .tournamentTimeRemaining {
-  border: 0.5px solid #28292D;
+
   background-color: #28292D;
   color: #EEEEF0;
   display: flex;
@@ -126,7 +126,7 @@
 }
 
 .shareBTN {
-  border: 1px solid #797B86;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .shareIcon {
@@ -138,16 +138,16 @@
 }
 
 .shareBTN:hover {
-  border: 1px solid #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .joinTournamentBTN {
-  border: 1px solid var(--v-ent-red);
+
   background-color: var(--v-ent-red);
 }
 
 .joinTournamentBTN:hover {
-  border: 1px solid #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 @media only screen and (min-width: 650px) {

@@ -1,0 +1,349 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer { width: 100%; }
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem 6rem;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.backLink {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.78rem;
+  text-decoration: none;
+  font-weight: var(--fw-medium);
+  transition: color 0.2s;
+}
+
+.backLink:hover { color: var(--primary-bg); }
+
+.pageTitle {
+  font-size: var(--desktop-h4-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--primary-bg);
+  margin: 0.4rem 0 0.25rem;
+  line-height: 1.1;
+}
+
+.pageSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+.btn {
+  height: 38px;
+  padding: 0 1.25rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Tab bar ── */
+.tabBar {
+  display: flex;
+  gap: 0.25rem;
+
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabBar::-webkit-scrollbar { display: none; }
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-medium);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+
+  margin-bottom: -1px;
+  transition: color 0.2s, background-color 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tabBtn:hover { color: rgba(255,255,255,0.85); }
+
+.tabBtnActive {
+  color: var(--primary-bg);
+
+}
+
+.tabCount {
+  font-size: 0.7rem;
+  background-color: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-weight: var(--fw-medium);
+}
+
+.tabBtnActive .tabCount {
+  background-color: rgba(237,28,36,0.2);
+  color: var(--v-ent-red);
+}
+
+/* ── Tournament list ── */
+.tournamentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tournamentRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  flex-wrap: wrap;
+  transition: background-color 0.2s;
+}
+
+.tournamentRow:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.bannerThumb {
+  width: 60px;
+  height: 60px;
+  background-color: #303136;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.tournamentInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.titleLine {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tournamentName {
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0;
+}
+
+.tournamentMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+}
+
+.tournamentMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.statusBadge {
+  font-size: 0.6rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.status_upcoming { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.status_in_progress { background: rgba(0,255,8,0.12); color: var(--v-ent-light-gold); }
+.status_completed { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+.status_draft { background: rgba(245,158,11,0.15); color: #f59e0b; }
+
+
+
+.rowActions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: transparent;
+
+  color: rgba(255,255,255,0.8);
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+
+  color: var(--primary-bg);
+}
+
+.manageBtn {
+  background-color: rgba(212, 175, 55,0.1);
+
+  color: var(--v-ent-gold);
+}
+
+.manageBtn:hover {
+  background-color: var(--v-ent-gold);
+  color: #fff;
+}
+
+/* ── Empty ── */
+.emptyState {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 0.5rem;
+}
+
+.emptyTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0;
+}
+
+.emptySub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255,255,255,0.45);
+  margin: 0 0 1rem;
+}
+
+/* ── Responsive ── */
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 2rem 1.5rem 4rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem;
+  }
+}
+
+/* ── Skeleton (loading state) ── */
+.skeletonRow {
+  height: 88px;
+  background-color: var(--overlay-gray);
+  background-size: 400% 100%;
+  border-radius: 10px;
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonRow { animation: none; }
+}
+
+/* ── Inline error card (in-page fetch failure) ── */
+.inlineErrorCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.inlineErrorIcon {
+  font-size: 2.5rem;
+  color: var(--v-ent-gold);
+  margin-bottom: 0.5rem;
+}
+
+.inlineErrorTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0;
+}
+
+.inlineErrorSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 1rem;
+}
+
+/* ── Optional count badges (reg_count / dispute_count - shown only when the
+   backend includes them) ── */
+.regBadge,
+.disputeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: var(--fw-semi-bold);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.regBadge { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+.disputeBadge { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }

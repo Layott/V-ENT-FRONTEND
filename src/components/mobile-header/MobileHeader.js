@@ -8,14 +8,16 @@ import { MdKeyboardArrowRight, MdOutlineClose } from "react-icons/md";
 import { LuSearch } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
 import { FaCaretDown } from "react-icons/fa";
+import { IoNotificationsOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import breadCrumbTitles from '../header/BreadCrumbData';
+import { unreadCount } from '@/components/notifications/notificationsApi';
 import styles from './mobile-header.module.css';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import MobileSidebar from '../mobile-sidebar/MobileSidebar';
 
-import { signOut } from "next-auth/react";  // Import signOut function from next-auth
+import { signOut, useSession } from "next-auth/react";  // Import signOut function from next-auth
 
 const MobileHeader = ({ className = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +27,11 @@ const MobileHeader = ({ className = '' }) => {
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const sessionToken = session?.user?.sessionToken;
   const dropdownRef = useRef(null);
 
   const { title: currentSection, showBackArrow, fallbackURL } = breadCrumbTitles[pathname] || {
@@ -56,6 +62,25 @@ const MobileHeader = ({ className = '' }) => {
     }
   }, []);
 
+  // Poll the unread notification count for the bell badge. Guarded on the token
+  // (no tokenless request), polls every 60s, clears on unmount. Failures are
+  // swallowed silently - the bell simply shows no badge.
+  useEffect(() => {
+    if (!sessionToken) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const data = await unreadCount(sessionToken);
+        if (!cancelled) setNotifCount(Number(data?.unread_count || 0));
+      } catch {
+        /* silent - leave the badge as-is */
+      }
+    };
+    poll();
+    const intervalId = setInterval(poll, 60000);
+    return () => { cancelled = true; clearInterval(intervalId); };
+  }, [sessionToken]);
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -81,16 +106,24 @@ const MobileHeader = ({ className = '' }) => {
   }, [isDropdownOpen]);
 
   const handleSearch = () => {
-    if (searchQuery.trim() !== '') {
-      console.log(`Searching for: ${searchQuery}`);
-      // Add your search logic here
-    }
+    const trimmed = searchQuery.trim();
+    // Always navigate to /search - see Header.js for rationale. This makes the
+    // Enter key behaviour predictable regardless of nested-form weirdness.
+    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+    setIsSearchBarVisible(false);
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
       handleSearch();
     }
+  };
+
+  const handleSearchFormSubmit = (event) => {
+    event.preventDefault();
+    handleSearch();
   };
 
   const toggleSearchBar = () => setIsSearchBarVisible((prev) => !prev);
@@ -113,7 +146,7 @@ const MobileHeader = ({ className = '' }) => {
 
         <div className={styles.leftHeaderContainer}>
           <div className={styles.logoContainer}>
-              <Link className={styles.logoLink} href={'/'}>
+              <Link className={styles.logoLink} href={session ? '/home' : '/'}>
                 <div className={styles.innerLogoContainer}>
                   <Image
                     src={logoRed}
@@ -160,17 +193,23 @@ const MobileHeader = ({ className = '' }) => {
           </div>
         </div>
 
-        <div className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}>
+        <form
+          className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}
+          onSubmit={handleSearchFormSubmit}
+          role="search"
+        >
           <CiSearch className={styles.searchIcon} onClick={handleSearch}/>
           <input
-            type="text"
+            type="search"
             placeholder="Search tournaments, events, users..."
             className={styles.searchInput}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label="Search V-ENT"
           />
-        </div>
+          <button type="submit" style={{ display: 'none' }} aria-hidden="true" tabIndex={-1}>Search</button>
+        </form>
 
         <div className={`${styles.searchIconMobileContainer}`}>
           {isSearchBarVisible ? (
@@ -185,6 +224,15 @@ const MobileHeader = ({ className = '' }) => {
             />
           )}
         </div>
+
+        {!isSearchBarVisible && (
+          <Link href="/notifications" className={styles.bellContainer} aria-label="Notifications">
+            <IoNotificationsOutline className={styles.bellIconMobile} />
+            {notifCount > 0 && (
+              <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>
+            )}
+          </Link>
+        )}
 
         <div className={styles.hamburgerContainer} onClick={toggleMobileMenu}>
           <label className={styles.hamburger}>

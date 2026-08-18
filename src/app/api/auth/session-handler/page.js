@@ -15,7 +15,7 @@ export default function SessionHandler() {
       try {
         // If already has session, redirect to profile
         if (session) {
-          router.push('/user-profile');
+          router.push('/home');
           return;
         }
 
@@ -76,7 +76,7 @@ export default function SessionHandler() {
         
         // Short delay before redirect
         setTimeout(() => {
-          router.push('/user-profile');
+          router.push('/home');
         }, 1000);
       } catch (error) {
         console.error('Session creation error:', error);

@@ -67,9 +67,7 @@ const ReviewSponsorLinks = () => {
         ))}
       </div>
 
-      <hr className={createTournamentStyles.reviewHR} />
-
-      <h3 className={bioInfoStyles.headerH3}>Web and Social Links</h3>
+<h3 className={bioInfoStyles.headerH3}>Web and Social Links</h3>
       {linksInfo.map((link, index) => (
         <div key={index} className={bioInfoStyles.infoContainer}>
           <div className={bioInfoStyles.leftSideContainer}>

@@ -1,7 +1,7 @@
 .desktopSidebar {
   background-color: #131316;
   display: none;
-  border-right: 0.5px solid rgba(255, 255, 255, 0.25);
+
 }
 
 .logoContainer {
@@ -13,7 +13,7 @@
 }
 
 .logoContainer h1 {
-  font-family: "ClashGrotesk-Medium", sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
   color: var(--v-ent-red);
@@ -57,7 +57,7 @@
   width: calc(100% - 1.5rem);
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
-  border: 1px solid transparent;
+
 }
 
 .logoutButton {
@@ -67,12 +67,12 @@
   padding: 0.5rem 0.75rem;
   width: 100%;
   border-radius: 5px;
-  background-color: #131316;
+  background-color: transparent;
   
 }
 
 .logoutButtonLink:hover {
-  border: 1px solid #6e6e6e;
+
   background-color: rgba(237, 28, 36, 0.2392156863);
 }
 
@@ -85,18 +85,17 @@
   width: 100%;
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
-  border: 1px solid transparent;
-  background-color: #131316;
+  background-color: transparent;
   cursor: pointer;
   
 }
 .sidebarItem:hover {
-  border: 1px solid #6e6e6e;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .activeLink {
   background-color: rgba(237, 28, 36, 0.2392156863);
-  border: 1px solid transparent;
+
 }
 
 .iconTextLink {
@@ -107,13 +106,21 @@
   padding: 0.5rem 0.75rem;
   width: 100%;
   border-radius: 5px;
-  
+}
+
+.iconTextLink:has(.comingSoon) {
+  justify-content: space-between;
+}
+
+.iconTextLink .iconMarketplaceSpan,
+.iconTextLink .iconShopSpan {
+  color: var(--white);
 }
 
 .iconShopSpan,
 .iconMarketplaceSpan {
   color: #A7A6A6;
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -132,7 +139,7 @@
 }
 
 .sidebarItem a {
-  font-family: "ClashGrotesk-Light", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -145,6 +152,15 @@
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
   border-radius: 3px;
+}
+
+.betaPill {
+  font-size: 0.6rem;
+  background-color: rgba(212, 175, 55, 0.24);
+  color: var(--v-ent-light-gold);
+  padding: 3px 5px;
+  border-radius: 3px;
+  font-family: "Inter", sans-serif;
 }
 
 @media only screen and (min-width: 768px) {
@@ -164,6 +180,12 @@
     align-items: flex-start;
     justify-content: center;
   }
+  .iconTextLink:has(.comingSoon) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.35rem;
+  }
   .iconShopSpan,
   .iconMarketplaceSpan {
     display: flex;
@@ -180,6 +202,11 @@
   .sidebarItem span.disabledLink {
     flex-direction: row;
     justify-content: flex-start;
+    align-items: center;
+  }
+  .iconTextLink:has(.comingSoon) {
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
   }
   .logoContainer h1 {

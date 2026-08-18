@@ -30,7 +30,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px 0 32px;
-  border-bottom: 1px solid #404040;
+
   padding-bottom: 20px;
   margin-bottom: 24px;
 }
@@ -57,6 +57,16 @@
 .backButton:hover {
   background-color: #404040;
   color: white;
+}
+
+.backButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.backButton:disabled:hover {
+  background-color: transparent;
+  color: #9ca3af;
 }
 
 .modalTitle {
@@ -93,7 +103,7 @@
 
 .entryFeeSection {
   background-color: #1f1f1f;
-  border: 1px solid #404040;
+
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 32px;
@@ -149,7 +159,7 @@
 
 .paymentMethod {
   background-color: #3a3a3a;
-  border: 2px solid #4a4a4a;
+
   border-radius: 12px;
   padding: 24px;
   cursor: pointer;
@@ -157,12 +167,12 @@
 }
 
 .paymentMethod:hover {
-  border-color: #6b7280;
+
   background-color: #404040;
 }
 
 .paymentMethod.insufficient {
-  border-color: #ef4444;
+
   background-color: #4a2a2a;
 }
 
@@ -178,9 +188,9 @@
 }
 
 .paymentMethod.selected {
-  border-color: #ef4444;
+
   background-color: #4a3a3a;
-  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3);
+
 }
 
 .paymentMethodContent {
@@ -262,7 +272,7 @@
 .radioButton {
   width: 24px;
   height: 24px;
-  border: 2px solid #6b7280;
+  background-color: rgba(255, 255, 255, 0.04);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -271,7 +281,7 @@
 }
 
 .paymentMethod.selected .radioButton {
-  border-color: #ef4444;
+  background-color: rgba(237, 28, 36, 0.16);
 }
 
 .radioInner {
@@ -291,13 +301,13 @@
   justify-content: flex-end;
   gap: 16px;
   padding: 24px 32px 32px 32px;
-  border-top: 1px solid #404040;
+
   margin-top: 24px;
 }
 
 .cancelButton {
   background: none;
-  border: 2px solid #6b7280;
+
   color: #9ca3af;
   padding: 12px 24px;
   border-radius: 8px;
@@ -308,37 +318,167 @@
 }
 
 .cancelButton:hover {
-  border-color: #9ca3af;
+
   color: white;
 }
 
 .payButton {
-  background-color: #ef4444;
-  border: 2px solid #ef4444;
-  color: white;
+  background-color: var(--v-ent-gold);
+
+  color: var(--primary-bg);
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  text-decoration: none;
 }
 
-.payButton:hover:not(.disabled) {
-  background-color: #dc2626;
-  border-color: #dc2626;
+.payButton:hover:not(.disabled):not(:disabled) {
+  background-color: var(--v-ent-light-gold);
+
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
 }
 
-.payButton.disabled {
+.payButton.disabled,
+.payButton:disabled {
   background-color: #4a4a4a;
-  border-color: #4a4a4a;
+
   color: #6b7280;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Loading / verifying states ── */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(212, 175, 55, 0.25);
+
+  animation: paymentSpin 0.8s linear infinite;
+}
+
+@keyframes paymentSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── KYC gate ── */
+.kycBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  background-color: #1f1f1f;
+
+  border-radius: 8px;
+  padding: 32px 24px;
+  margin-bottom: 24px;
+}
+
+.kycIcon {
+  color: var(--v-ent-gold);
+}
+
+.kycTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.kycText {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 420px;
+}
+
+/* ── Wallet summary (single, non-selectable card - no more method radios) ── */
+.walletSummaryCard {
+  background-color: #3a3a3a;
+
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.walletSummaryCard.insufficient {
+
+  background-color: #4a2a2a;
+}
+
+.walletSummaryLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Inline 4-digit PIN entry ── */
+.pinRow {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.pinDigit {
+  width: 52px;
+  height: 60px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  background-color: #1f1f1f;
+
+  border-radius: 8px;
+  outline: none;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+}
+
+.pinDigit:focus {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Resume-after-topup banner ── */
+.resumeBanner {
+  background-color: rgba(212, 175, 55, 0.12);
+
+  color: var(--v-ent-gold);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.paymentError {
+  background-color: #4a1a1a;
+
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 14px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
 }
 
 /* Responsive design */
@@ -379,5 +519,11 @@
   .payButton {
     width: 100%;
     justify-content: center;
+  }
+
+  .pinDigit {
+    width: 44px;
+    height: 52px;
+    font-size: 20px;
   }
 }

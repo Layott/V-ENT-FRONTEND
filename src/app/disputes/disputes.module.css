@@ -1,0 +1,287 @@
+/* ─────────────────────────────────────────────────────────────────
+   V-ENT - My Disputes. Shell + card styling mirrors /wallets so the
+   page reads as the same designer's work. All colors from globals.css
+   variables or the established status tints used across /wallets.
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Page shell (mirrors wallets.module.css) ── */
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+/* ── Page header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pageHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--primary-bg);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.pageSubtitle {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+/* ── List ── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dTitle {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a.dTitle:hover {
+  color: var(--v-ent-gold);
+}
+
+.matchLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+.desc {
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Status badges ── */
+.badge {
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-family: "Inter", sans-serif;
+  flex-shrink: 0;
+}
+
+.badgeOpen {
+  background: rgba(251, 198, 75, 0.12);
+  color: rgba(251, 198, 75, 0.95);
+}
+
+.badgeReview {
+  background: rgba(33, 150, 243, 0.12);
+  color: #64B5F6;
+}
+
+.badgeResolved {
+  background: rgba(76, 175, 80, 0.14);
+  color: var(--v-ent-success-light);
+}
+
+.badgeDismissed {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Resolution note ── */
+.resolutionBox {
+  background-color: #303136;
+  border-radius: 6px;
+  padding: 0.7rem 0.9rem;
+
+}
+
+.resolutionLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 0.25rem;
+}
+
+.resolutionText {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Meta row ── */
+.metaRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.1rem;
+}
+
+.metaItem {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── State cards (loading / empty / error) ── */
+.stateCard {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+}
+
+.stateText {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.errorText {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #ff8a80;
+  margin: 0;
+}
+
+.emptyIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.4rem;
+}
+
+.emptyTitle {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  margin: 0;
+}
+
+.emptySub {
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+  max-width: 380px;
+}
+
+/* ── Spinner ── */
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+
+  margin-bottom: 0.4rem;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive - desktop layout (mirrors wallets sidebar offsets) ── */
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+    padding: 1.75rem 1.5rem 2rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 2rem;
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  .rightPaneContainer {
+    padding: 2.25rem 2.5rem 2.5rem;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  /* Keep the 250px fixed-sidebar offset - do NOT center with margin:auto here,
+     which would slide content left underneath the fixed sidebar. */
+  .rightPaneContainer {
+    padding: 2.5rem 3rem 3rem;
+  }
+}

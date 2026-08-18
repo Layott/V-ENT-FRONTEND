@@ -4,7 +4,7 @@
   padding: 1rem 1.5rem;
   margin: 1rem 0;
   color: #ffffff;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -18,6 +18,14 @@
 .cardHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -47,7 +55,7 @@
 
 .viewDetailsButton {
   background-color: transparent;
-  border: 1px solid #ccc;
+
   color: #fff;
   padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
@@ -65,7 +73,7 @@
   font-size: 0.95rem;
   color: #ccc;
   line-height: 1.6;
-  border-top: 1px solid #333;
+
   padding-top: 1rem;
 }
 
@@ -73,10 +81,36 @@
   margin: 0.3rem 0;
 }
 
+.deleteButton {
+  background-color: transparent;
+
+  color: var(--v-ent-red, #ED1C24);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: rgba(237, 28, 36, 0.1);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteError {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
 .resumeButton {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #16a34a; /* Tailwind's green-600 */
+  background-color: #A88826; /* Tailwind's green-600 */
   color: #fff;
   border: none;
   font-size: 0.9rem;
@@ -86,7 +120,7 @@
 }
 
 .resumeButton:hover {
-  background-color: #15803d;
+  background-color: #8C6A1A;
 }
 
 @media (max-width: 768px) {

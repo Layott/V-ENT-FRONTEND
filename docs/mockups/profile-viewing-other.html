@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT — Viewing Profile (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    :root {
+      --v-ent-red:       #ED1C24;
+      --v-ent-light-red: #FF3B45;
+      --v-ent-grn:       #2E8B3E;
+      --v-ent-light-grn: #3FB554;
+      --overlay-gray:    #212225;
+      --surface-2:       #303136;
+      --page-bg:         #131316;
+      --header-bg:       #17181A;
+      --border-subtle:   rgba(255,255,255,0.25);
+      --border-faint:    rgba(255,255,255,0.08);
+      --text-white:      #ffffff;
+      --text-muted:      #A7A6A6;
+      --text-dim:        rgba(255,255,255,0.45);
+      --active-nav-bg:   rgba(237,28,36,0.24);
+      --coming-soon-bg:  rgba(251,198,75,0.24);
+      --coming-soon-col: rgba(251,198,75,0.9);
+      --sidebar-w:       250px;
+      --header-h:        60px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+    a { color: inherit; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top:0; left:0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .logo-container { width:100%; height:var(--header-h); display:flex; align-items:center; }
+    .logo-link { display:flex; align-items:center; gap:0.25rem; padding-left:1rem; text-decoration:none; width:100%; }
+    .logo-img  { height:25px; width:auto; }
+    .logo-text { font-family:"ClashGrotesk-Medium",sans-serif; font-weight:700; font-size:1.75rem; color:var(--v-ent-red); }
+    .sidebar-nav { margin-top:0.25rem; padding-bottom:1rem; }
+    .sidebar-list { display:flex; flex-direction:column; align-items:center; gap:0.6rem; list-style:none; padding:0; }
+    .sidebar-item { display:flex; min-height:20px; align-items:center; gap:0.5rem; width:calc(100% - 1.5rem); border-radius:5px; transition:all 0.3s; border:1px solid transparent; }
+    .sidebar-item:hover { border-color:#6e6e6e; }
+    .sidebar-item.active-item { background-color:var(--active-nav-bg); }
+    .nav-link { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; border-radius:5px; text-decoration:none; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-white); }
+    .nav-icon { width:0.9rem; height:0.9rem; flex-shrink:0; }
+    .disabled-item { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; width:100%; cursor:not-allowed; }
+    .disabled-label { display:flex; align-items:center; gap:0.5rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.9rem; color:var(--text-muted); }
+    .coming-soon { font-size:0.6rem; background-color:var(--coming-soon-bg); color:var(--coming-soon-col); padding:3px 5px; border-radius:3px; }
+
+    /* ── HEADER ── */
+    .header {
+      position:fixed; top:0; left:var(--sidebar-w); right:0;
+      height:var(--header-h); background-color:var(--header-bg);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 1.5rem 0 1.25rem; z-index:100;
+    }
+    .header-title-wrap { display:flex; align-items:center; gap:0.6rem; min-width:0; }
+    .back-btn {
+      width:30px; height:30px; border-radius:5px;
+      background-color:var(--surface-2); border:1px solid var(--border-faint);
+      color:var(--text-white); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .back-btn:hover { border-color:#6e6e6e; }
+    .header-title-block { display:flex; flex-direction:column; min-width:0; }
+    .header-title { font-family:"ClashGrotesk-Regular",sans-serif; font-size:1.05rem; font-weight:600; line-height:1.1; }
+    .breadcrumb { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.7rem; color:var(--text-dim); margin-top:0.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .breadcrumb a { color:var(--text-muted); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--text-white); }
+    .breadcrumb .crumb-current { color:var(--v-ent-red); }
+    .breadcrumb .crumb-sep { margin:0 0.35rem; color:var(--text-dim); }
+
+    .header-right { display:flex; align-items:center; gap:0.75rem; }
+    .header-search { display:flex; align-items:center; background-color:var(--surface-2); border-radius:5px; padding:5px 12px; gap:0.4rem; border:1px solid var(--surface-2); }
+    .header-search input { background:transparent; border:none; outline:none; color:var(--text-white); font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; width:200px; }
+    .header-search input::placeholder { color:var(--text-dim); }
+
+    .vc-pill { display:flex; align-items:center; gap:0.4rem; padding:0.3rem 0.7rem; background-color:var(--surface-2); border:1px solid var(--border-faint); border-radius:5px; }
+    .vc-amount { font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.85rem; color:var(--v-ent-grn); }
+    .vc-label  { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; }
+
+    .user-info { display:flex; flex-direction:column; align-items:flex-end; }
+    .user-name   { font-size:0.85rem; font-weight:700; }
+    .user-handle { font-size:0.65rem; color:var(--text-dim); }
+    .user-avatar { width:35px; height:35px; border-radius:50%; background-color:var(--overlay-gray); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:"ClashGrotesk-Bold",sans-serif; font-size:0.75rem; cursor:pointer; }
+    .user-avatar img { width:35px; height:35px; object-fit:cover; border-radius:50%; pointer-events:none; }
+    .user-details { position:relative; display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
+    .caret-icon { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid rgba(255,255,255,0.6); flex-shrink:0; }
+    .profile-dropdown {
+      display:none; position:absolute; top:calc(100% + 10px); right:0;
+      background-color:var(--surface-2); border:1px solid var(--border-subtle);
+      border-radius:6px; min-width:140px; z-index:400;
+      box-shadow:0 8px 24px rgba(0,0,0,0.5); overflow:hidden;
+    }
+    .profile-dropdown.open { display:block; }
+    .profile-dropdown a, .profile-dropdown button {
+      display:block; width:100%; text-align:left; padding:0.65rem 1rem;
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem;
+      color:var(--text-white); text-decoration:none; background:transparent; border:none;
+      cursor:pointer; transition:background 0.15s;
+    }
+    .profile-dropdown a:hover, .profile-dropdown button:hover { background-color:rgba(255,255,255,0.07); }
+    .profile-dropdown button { color:var(--v-ent-red); border-top:1px solid var(--border-faint); }
+
+    /* ── CONTENT ── */
+    .content { margin-left:var(--sidebar-w); margin-top:var(--header-h); padding:1.5rem 2rem 2rem; min-height:calc(100vh - var(--header-h)); }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      position:relative;
+      width:100%;
+      height:280px;
+      border-radius:14px;
+      overflow:hidden;
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+    }
+    .hero-img {
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+    }
+    .hero-fade {
+      position:absolute; left:0; right:0; bottom:0; height:60%;
+      background:linear-gradient(180deg, rgba(19,19,22,0) 0%, rgba(19,19,22,0.55) 100%);
+    }
+
+    /* ── PROFILE HEADER (avatar, name, actions) ── */
+    .profile-header {
+      display:flex; gap:1.5rem; align-items:flex-start;
+      padding:0 0.5rem; margin-top:-60px;
+      position:relative; z-index:2;
+      flex-wrap:wrap;
+    }
+    .avatar-wrap {
+      width:140px; height:140px;
+      border-radius:50%;
+      border:4px solid var(--page-bg);
+      background-color:var(--overlay-gray);
+      overflow:hidden; flex-shrink:0;
+      box-shadow:0 8px 32px rgba(0,0,0,0.45);
+    }
+    .avatar-wrap img { width:100%; height:100%; object-fit:cover; }
+    .profile-meta { flex:1; min-width:240px; padding-top:70px; }
+    .name-row {
+      display:flex; align-items:center; gap:0.5rem;
+      flex-wrap:wrap;
+    }
+    .profile-name { font-family:"ClashGrotesk-Semibold",sans-serif; font-size:1.5rem; font-weight:600; line-height:1.1; }
+    .verified {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:20px; height:20px; border-radius:50%;
+      background-color:var(--v-ent-grn); color:#fff;
+      flex-shrink:0;
+    }
+    .profile-handle { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem; color:var(--text-dim); margin-top:0.2rem; }
+    .profile-loc { display:flex; align-items:center; gap:0.35rem; font-family:"ClashGrotesk-Light",sans-serif; font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem; }
+    .profile-loc svg { flex-shrink:0; }
+
+    .profile-actions {
+      display:flex; gap:0.5rem; padding-top:70px;
+      flex-wrap:wrap;
+    }
+    .pa-btn {
+      padding:0.55rem 1.1rem;
+      border-radius:6px;
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+      font-size:0.82rem; font-weight:600;
+      cursor:pointer;
+      display:inline-flex; align-items:center; gap:0.4rem;
+      transition:all 0.2s;
+      white-space:nowrap;
+      height:38px;
+    }
+    .pa-follow { background-color:var(--v-ent-grn); border:1px solid var(--v-ent-grn); color:#fff; }
+    .pa-follow:hover { background-color:var(--v-ent-light-grn); }
+    .pa-follow.following { background-color:transparent; color:var(--v-ent-grn); }
+    .pa-follow.following:hover { background-color:rgba(237,28,36,0.12); border-color:var(--v-ent-red); color:var(--v-ent-red); }
+    .pa-message { background-color:var(--surface-2); border:1px solid var(--border-faint); color:var(--text-white); }
+    .pa-message:hover { border-color:#6e6e6e; }
+    .pa-icon-btn {
+      width:38px; height:38px; padding:0;
+      background-color:var(--surface-2); border:1px solid var(--border-faint);
+      color:var(--text-muted); justify-content:center;
+      position:relative;
+    }
+    .pa-icon-btn:hover { border-color:#6e6e6e; color:var(--text-white); }
+    .pa-menu {
+      display:none; position:absolute; top:calc(100% + 6px); right:0;
+      background-color:var(--surface-2); border:1px solid var(--border-subtle);
+      border-radius:6px; min-width:180px; z-index:300;
+      box-shadow:0 8px 24px rgba(0,0,0,0.5); overflow:hidden;
+    }
+    .pa-menu.open { display:block; }
+    .pa-menu button {
+      display:block; width:100%; text-align:left;
+      padding:0.65rem 1rem;
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.85rem;
+      color:var(--text-white); background:transparent; border:none;
+      cursor:pointer; transition:background 0.15s;
+    }
+    .pa-menu button:hover { background-color:rgba(255,255,255,0.07); }
+    .pa-menu button.danger { color:var(--v-ent-red); border-top:1px solid var(--border-faint); }
+
+    /* ── BIO ── */
+    .bio-wrap { padding:1rem 0.5rem 0; max-width:780px; }
+    .bio-text {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.92rem;
+      color:var(--text-muted);
+      line-height:1.55;
+    }
+
+    /* ── TABS ── */
+    .tabs-wrap {
+      margin-top:1.5rem;
+      border-bottom:1px solid var(--border-faint);
+      padding:0 0.5rem;
+      display:flex; gap:1.5rem;
+      overflow-x:auto;
+      scrollbar-width:none;
+    }
+    .tabs-wrap::-webkit-scrollbar { display:none; }
+    .tab-btn {
+      background:transparent; border:none;
+      padding:0.85rem 0.1rem;
+      font-family:"ClashGrotesk-Regular",sans-serif;
+      font-size:0.92rem;
+      color:var(--text-muted);
+      cursor:pointer;
+      border-bottom:2px solid transparent;
+      margin-bottom:-1px;
+      white-space:nowrap;
+      transition:color 0.2s, border-color 0.2s;
+    }
+    .tab-btn:hover { color:var(--text-white); }
+    .tab-btn.active { color:var(--v-ent-red); border-bottom-color:var(--v-ent-red); }
+
+    /* ── BODY GRID ── */
+    .body-grid {
+      display:grid;
+      grid-template-columns:340px 1fr;
+      gap:1.25rem;
+      padding:1.5rem 0.5rem 0;
+      align-items:start;
+    }
+
+    /* ── CARD BASE ── */
+    .card {
+      background-color:var(--overlay-gray);
+      border:1px solid var(--border-faint);
+      border-radius:10px;
+      padding:1.25rem;
+    }
+    .card-title {
+      font-family:"ClashGrotesk-Semibold",sans-serif;
+      font-size:0.95rem; font-weight:600;
+      margin-bottom:0.85rem;
+      display:flex; align-items:center; gap:0.4rem;
+    }
+    .card-title svg { color:var(--text-muted); flex-shrink:0; }
+    .card-head-row {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:0.85rem; gap:0.5rem;
+    }
+    .card-head-row .card-title { margin-bottom:0; }
+    .see-more {
+      background:transparent; border:none; cursor:pointer;
+      font-family:"ClashGrotesk-Light",sans-serif; font-size:0.78rem;
+      color:var(--text-muted); display:inline-flex; align-items:center; gap:0.25rem;
+      padding:0.2rem 0.4rem; border-radius:4px;
+    }
+    .see-more:hover { color:var(--text-white); background-color:rgba(255,255,255,0.05); }
+
+    /* ── LEFT COLUMN STACK ── */
+    .left-stack { display:flex; flex-direction:column; gap:1.25rem; }
+    .right-stack { display:flex; flex-direction:column; gap:1.25rem; }
+
+    /* ── INTERESTS / CHIPS ── */
+    .chip-row { display:flex; flex-wrap:wrap; gap:0.5rem; }
+    .chip {
+      padding:0.4rem 0.85rem;
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:20px;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.78rem;
+      color:var(--text-white);
+      white-space:nowrap;
+    }
+    .chip-more {
+      background:transparent; border:none;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.75rem; color:var(--text-dim);
+      cursor:pointer; padding:0.4rem 0.5rem;
+    }
+    .chip-more:hover { color:var(--text-white); }
+
+    /* ── GAMING ACCOUNTS ── */
+    .ga-list { display:flex; flex-direction:column; gap:0.7rem; }
+    .ga-item {
+      display:flex; align-items:center; gap:0.75rem;
+      padding:0.4rem 0;
+    }
+    .ga-icon-wrap {
+      width:36px; height:36px; border-radius:6px;
+      background-color:var(--surface-2);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; overflow:hidden;
+    }
+    .ga-icon-wrap img { width:100%; height:100%; object-fit:cover; }
+    .ga-meta { display:flex; flex-direction:column; min-width:0; }
+    .ga-name { font-family:"ClashGrotesk-Regular",sans-serif; font-size:0.88rem; font-weight:500; }
+    .ga-handle { font-family:"ClashGrotesk-Light",sans-serif; font-size:0.72rem; color:var(--text-dim); margin-top:0.1rem; }
+
+    /* ── SOCIAL LINKS ── */
+    .social-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0.6rem;
+    }
+    .social-pill {
+      display:flex; align-items:center; gap:0.5rem;
+      padding:0.55rem 0.85rem;
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:24px;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.82rem;
+      color:var(--text-white);
+      text-decoration:none;
+      transition:border-color 0.2s;
+      cursor:pointer;
+    }
+    .social-pill:hover { border-color:#6e6e6e; }
+    .social-pill .si {
+      width:22px; height:22px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      color:#fff;
+    }
+    .si.fb { background-color:#1877F2; }
+    .si.ig { background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
+    .si.x  { background-color:#000; border:1px solid var(--border-faint); }
+    .si.yt { background-color:#FF0000; }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:0.85rem;
+    }
+    .stat-cell {
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:8px;
+      padding:0.85rem 1rem;
+      display:flex; flex-direction:column; gap:0.35rem;
+      min-width:0;
+    }
+    .stat-label-row {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:0.5rem;
+    }
+    .stat-label {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.75rem; color:var(--text-muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .stat-link {
+      background:transparent; border:none; cursor:pointer;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.7rem; color:var(--text-dim);
+      padding:0; white-space:nowrap;
+    }
+    .stat-link:hover { color:var(--text-white); }
+    .stat-value {
+      font-family:"ClashGrotesk-Bold",sans-serif;
+      font-size:1.4rem; font-weight:700;
+      color:var(--text-white);
+      line-height:1.1;
+    }
+    .stat-value.rank { color:var(--v-ent-grn); }
+
+    /* ── FAVORITE GAMES ── */
+    .games-grid {
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:0.75rem;
+    }
+    .game-card {
+      display:flex; flex-direction:column;
+      gap:0.45rem;
+    }
+    .game-cover {
+      aspect-ratio: 3/4;
+      background-color:var(--surface-2);
+      border:1px solid var(--border-faint);
+      border-radius:8px;
+      overflow:hidden;
+    }
+    .game-cover img { width:100%; height:100%; object-fit:cover; }
+    .game-cover.empty {
+      display:flex; align-items:center; justify-content:center;
+      color:var(--text-dim);
+    }
+    .game-title {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.72rem;
+      color:var(--text-muted);
+      text-align:center;
+      line-height:1.25;
+      min-height:2em;
+    }
+
+    /* ── ACHIEVEMENTS ── */
+    .achv-grid {
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:0.85rem;
+    }
+    .achv-card {
+      display:flex; flex-direction:column; align-items:center; gap:0.45rem;
+    }
+    .achv-badge {
+      width:100%;
+      aspect-ratio:1;
+      max-width:84px;
+      border-radius:10px;
+      background:linear-gradient(135deg, var(--surface-2), rgba(48,49,54,0.5));
+      border:1px solid var(--border-faint);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .achv-badge img { width:80%; height:80%; object-fit:contain; }
+    .achv-title {
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.7rem;
+      color:var(--text-muted);
+      text-align:center;
+      line-height:1.25;
+      min-height:2.4em;
+    }
+
+    /* ── BUTTONS shared ── */
+    .btn { padding:0.6rem 1rem; border-radius:5px; border:none; font-family:"ClashGrotesk-Semibold",sans-serif; font-size:0.85rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; }
+    .grnBTN { background-color:var(--v-ent-grn); border:1px solid var(--v-ent-grn); color:#fff; transition:background-color 0.3s; }
+    .grnBTN:hover { background-color:var(--v-ent-light-grn); }
+    .ghostBTN { background:transparent; border:1px solid var(--border-faint); color:var(--text-muted); }
+    .ghostBTN:hover { border-color:#6e6e6e; color:var(--text-white); }
+
+    /* ── BOTTOM MENU (mobile) ── */
+    .bottom-menu {
+      display:none;
+      position:fixed; bottom:0; left:0; right:0;
+      background-color:var(--page-bg);
+      border-top:1px solid var(--border-subtle);
+      height:60px;
+      align-items:center; justify-content:space-around;
+      z-index:200;
+      padding:0 0.5rem;
+    }
+    .bm-item {
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+      color:var(--text-muted);
+      text-decoration:none;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.62rem;
+      padding:0.4rem 0.5rem;
+      border-radius:6px;
+      min-width:56px;
+    }
+    .bm-item.on { color:var(--v-ent-red); }
+    .bm-item svg { width:18px; height:18px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1280px) {
+      .games-grid { grid-template-columns:repeat(5, 1fr); }
+      .achv-grid  { grid-template-columns:repeat(5, 1fr); }
+    }
+
+    @media (max-width: 1100px) {
+      .body-grid { grid-template-columns:300px 1fr; }
+      .games-grid { grid-template-columns:repeat(4, 1fr); }
+      .achv-grid  { grid-template-columns:repeat(4, 1fr); }
+    }
+
+    @media (max-width: 1024px) {
+      .body-grid { grid-template-columns:1fr; }
+      .stats-grid { grid-template-columns:repeat(2, 1fr); }
+      .header-search input { width:140px; }
+    }
+
+    @media (max-width: 900px) {
+      .hero { height:230px; }
+      .avatar-wrap { width:120px; height:120px; }
+      .profile-meta { padding-top:62px; }
+      .profile-actions { padding-top:0; width:100%; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display:none; }
+      .header { left:0; padding:0 1rem; }
+      .header-search { display:none; }
+      .vc-pill { display:none; }
+      .user-info { display:none; }
+      .content { margin-left:0; padding:1rem 1rem 5.5rem; }
+      .hero { height:180px; border-radius:10px; }
+      .profile-header { gap:1rem; margin-top:-50px; padding:0; }
+      .avatar-wrap { width:96px; height:96px; border-width:3px; }
+      .profile-meta { padding-top:54px; flex:1 1 100%; }
+      .profile-name { font-size:1.25rem; }
+      .profile-actions { padding-top:0.25rem; flex:1 1 100%; }
+      .pa-btn { flex:1; justify-content:center; min-width:0; }
+      .pa-icon-btn { flex:0 0 38px; }
+      .bio-wrap { padding:1rem 0 0; }
+      .tabs-wrap { padding:0; gap:1.1rem; margin-top:1.25rem; }
+      .body-grid { padding:1.25rem 0 0; gap:1rem; }
+      .card { padding:1rem; }
+      .games-grid { grid-template-columns:repeat(3, 1fr); gap:0.6rem; }
+      .achv-grid  { grid-template-columns:repeat(3, 1fr); gap:0.7rem; }
+      .social-grid { grid-template-columns:1fr 1fr; }
+      .bottom-menu { display:flex; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { height:160px; }
+      .stats-grid { gap:0.6rem; }
+      .stat-cell { padding:0.7rem 0.8rem; }
+      .stat-value { font-size:1.2rem; }
+      .games-grid { grid-template-columns:repeat(3, 1fr); }
+      .achv-grid  { grid-template-columns:repeat(3, 1fr); }
+    }
+
+    @media (max-width: 380px) {
+      .content { padding:1rem 0.75rem 5.5rem; }
+      .profile-name { font-size:1.1rem; }
+      .header-title { font-size:0.95rem; }
+      .breadcrumb { font-size:0.65rem; }
+      .pa-btn { font-size:0.78rem; padding:0.5rem 0.85rem; }
+    }
+
+    /* ── TAB PANELS ── */
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .empty-state {
+      padding:3rem 1rem; text-align:center;
+      font-family:"ClashGrotesk-Light",sans-serif;
+      font-size:0.88rem; color:var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Profile
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Events
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Teams
+        </a>
+      </li>
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Rankings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+          Wallets
+        </a>
+      </li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg>Anime</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Community</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01"/></svg>Organizations</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Marketplace</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item"><span class="disabled-item"><span class="disabled-label"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Shop</span><span class="coming-soon">Coming Soon</span></span></li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="header">
+  <div class="header-title-wrap">
+    <button class="back-btn" title="Back" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title-block">
+      <span class="header-title">Profile</span>
+      <div class="breadcrumb">
+        <a href="#">Rankings</a><span class="crumb-sep">›</span><a href="#">FIFA · Top 200</a><span class="crumb-sep">›</span><span class="crumb-current">Julio Astor</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search tournaments, events, users..." />
+    </div>
+    <div class="vc-pill">
+      <span class="vc-amount">526</span>
+      <span class="vc-label">v-ent coins</span>
+    </div>
+    <div class="user-details" id="profile-trigger" onclick="toggleProfileDropdown()">
+      <div class="user-info">
+        <span class="user-name">Emeka Okafor</span>
+        <span class="user-handle">@emeka_plays</span>
+      </div>
+      <div class="user-avatar">
+        <img src="https://i.pravatar.cc/80?img=12" alt="EO" onerror="this.style.display='none';this.parentElement.textContent='EO'" />
+      </div>
+      <div class="caret-icon"></div>
+      <div class="profile-dropdown" id="profile-dropdown">
+        <a href="#">View Profile</a>
+        <button onclick="event.stopPropagation(); alert('Logout — would call NextAuth signOut() in the real app.')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<main class="content">
+
+  <!-- HERO BANNER -->
+  <div class="hero">
+    <img class="hero-img" src="https://picsum.photos/id/1062/1600/500" alt="Cover" onerror="this.style.display='none'" />
+    <div class="hero-fade"></div>
+  </div>
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img src="https://i.pravatar.cc/280?img=33" alt="Julio Astor" onerror="this.parentElement.style.background='var(--surface-2)'" />
+    </div>
+
+    <div class="profile-meta">
+      <div class="name-row">
+        <h1 class="profile-name">Julio Astor</h1>
+        <span class="verified" title="Verified player">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+      </div>
+      <div class="profile-handle">@mikeyboy</div>
+      <div class="profile-loc">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Lviv, Ukraine
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button class="pa-btn pa-follow" id="follow-btn" onclick="toggleFollow()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        <span id="follow-label">Follow</span>
+      </button>
+      <button class="pa-btn pa-message" onclick="alert('Message — would open DM with @mikeyboy.')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Message
+      </button>
+      <div style="position:relative;">
+        <button class="pa-btn pa-icon-btn" id="more-trigger" title="More" onclick="toggleMoreMenu(event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+          <div class="pa-menu" id="more-menu">
+            <button onclick="event.stopPropagation(); alert('Share profile link copied.')">Share Profile</button>
+            <button onclick="event.stopPropagation(); alert('Mute @mikeyboy')">Mute User</button>
+            <button class="danger" onclick="event.stopPropagation(); alert('Block @mikeyboy — confirmation modal in real app.')">Block User</button>
+            <button class="danger" onclick="event.stopPropagation(); alert('Report @mikeyboy — opens report flow in real app.')">Report User</button>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIO -->
+  <div class="bio-wrap">
+    <p class="bio-text">
+      Passionate gamer with a sharp eye for detail, always on the lookout for the next big win. Whether it's dominating in-game or leveling up your project with killer design, I'm here to make it happen. Let's team up and create something epic!
+    </p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap" role="tablist">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab(this)">Overview</button>
+    <button class="tab-btn" data-tab="activity" onclick="switchTab(this)">Activity</button>
+    <button class="tab-btn" data-tab="gallery" onclick="switchTab(this)">Image Gallery</button>
+    <button class="tab-btn" data-tab="social" onclick="switchTab(this)">Social Links</button>
+    <button class="tab-btn" data-tab="games" onclick="switchTab(this)">Favorite Games</button>
+  </div>
+
+  <!-- ═══════ TAB: OVERVIEW ═══════ -->
+  <div class="tab-panel active" data-panel="overview">
+    <div class="body-grid">
+
+      <!-- ── LEFT COLUMN ── -->
+      <div class="left-stack">
+
+        <!-- Interests -->
+        <section class="card">
+          <h3 class="card-title">Interests</h3>
+          <div class="chip-row">
+            <span class="chip">Anime</span>
+            <span class="chip">Uncharted</span>
+            <span class="chip">FIFA</span>
+            <span class="chip">Elden Ring</span>
+            <span class="chip">Mortal Kombat</span>
+            <span class="chip">God of War</span>
+            <span class="chip">Manga</span>
+            <span class="chip">Black Myth Wukong</span>
+            <span class="chip">Battle Royale</span>
+            <button class="chip-more">See more · +12</button>
+          </div>
+        </section>
+
+        <!-- Gaming Accounts -->
+        <section class="card">
+          <h3 class="card-title">Gaming Accounts</h3>
+          <div class="ga-list">
+            <div class="ga-item">
+              <div class="ga-icon-wrap" style="background-color:#003791;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M9.4 5.4v13l3.5 1.1V8.4c0-.6.3-1 .8-.8.6.2 1 .9 1 1.6v3.7c2.2 1.1 3.9 0 3.9-2.8 0-2.9-1-4.2-4-5.2-1.2-.4-3.3-1.1-5.2-1.5zm10 11.7c1-.4 1-1 .3-1.3-.7-.3-2-.5-3.1-.1l-2.3.8v1.4l3.7-1.3c.5-.2 1.2-.2 1.7 0 .4.2.4.4-.3.6l-5.1 1.8v1.4l5.1-1.7zm-15 .2c-1-.3-1.2-.9-.7-1.3.5-.4 1.3-.6 2.4-.5l3 .5v-1.5l-3.7-.6c-.7-.1-1.5-.1-2.2.1-.7.2-1.2.5-1.4.9-.4.7.4 1.4 1.6 1.7l4.3 1v-1.5l-3.3-.8z"/></svg>
+              </div>
+              <div class="ga-meta">
+                <span class="ga-name">PlayStation</span>
+                <span class="ga-handle">@frostbite_psn</span>
+              </div>
+            </div>
+            <div class="ga-item">
+              <div class="ga-icon-wrap" style="background-color:#107C10;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M4.1 6.5C2.6 8.4 1.5 10.7 1.5 12c0 1.4 1 4.5 4 7.7 1.4 1.4 4 2.4 5.7 2.5.7 0 1.4-.4 2-.9-2.7-1.7-5.3-4.5-7.5-7.5-1.7-2.4-2.7-5-1.6-7.3zm15.8 0c1.1 2.3.1 4.9-1.6 7.3-2.2 3-4.8 5.8-7.5 7.5.6.5 1.3.9 2 .9 1.7-.1 4.3-1.1 5.7-2.5 3-3.2 4-6.3 4-7.7 0-1.3-1.1-3.6-2.6-5.5zM12 1.7c-1.6 0-3.3 1.1-3.3 1.1S6.5 3.4 4.5 5C7 4.4 9.7 5.4 12 7c2.3-1.6 5-2.6 7.5-2 -2-1.6-4.2-2.2-4.2-2.2S13.6 1.7 12 1.7z"/></svg>
+              </div>
+              <div class="ga-meta">
+                <span class="ga-name">XBox</span>
+                <span class="ga-handle">@frostbite_xbox</span>
+              </div>
+            </div>
+            <div class="ga-item">
+              <div class="ga-icon-wrap">
+                <img src="https://picsum.photos/id/1043/80/80" alt="" onerror="this.style.display='none'" />
+              </div>
+              <div class="ga-meta">
+                <span class="ga-name">God of War</span>
+                <span class="ga-handle">@frostbite_gow</span>
+              </div>
+            </div>
+            <div class="ga-item">
+              <div class="ga-icon-wrap">
+                <img src="https://picsum.photos/id/1059/80/80" alt="" onerror="this.style.display='none'" />
+              </div>
+              <div class="ga-meta">
+                <span class="ga-name">FC25</span>
+                <span class="ga-handle">@frostbiteFC</span>
+              </div>
+            </div>
+          </div>
+          <button class="chip-more" style="margin-top:0.5rem;">See more · +2</button>
+        </section>
+
+        <!-- Social Links (visible in overview as quick view) -->
+        <section class="card">
+          <h3 class="card-title">Social Links</h3>
+          <div class="social-grid">
+            <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens Facebook profile in new tab.')">
+              <span class="si fb">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-3h2.4V9.5c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.5.7-1.5 1.5V12h2.6l-.4 3h-2.2v7A10 10 0 0 0 22 12z"/></svg>
+              </span>
+              Facebook
+            </a>
+            <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens Instagram profile in new tab.')">
+              <span class="si ig">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+              </span>
+              Instagram
+            </a>
+            <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens X profile in new tab.')">
+              <span class="si x">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h3l-7.5 8.5L22 22h-7l-5-6.5L4 22H1l8-9L1.5 2h7l4.5 6L18 2z"/></svg>
+              </span>
+              X(Twitter)
+            </a>
+            <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens YouTube channel in new tab.')">
+              <span class="si yt">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5s-.2-1.6-.9-2.3c-.8-1-1.7-1-2.1-1C16.7 4 12 4 12 4s-4.7 0-8 .2c-.4 0-1.3 0-2.1 1C1.2 5.9 1 7.5 1 7.5S.8 9.4.8 11.3v1.4c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.8 1 1.9.9 2.4 1 1.7.2 7.7.2 7.7.2s4.7 0 8-.2c.4 0 1.3 0 2.1-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.4c0-1.9-.2-3.8-.2-3.8zM9.7 15V8.5l6.2 3.3-6.2 3.2z"/></svg>
+              </span>
+              YouTube
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ── RIGHT COLUMN ── -->
+      <div class="right-stack">
+
+        <!-- Stats -->
+        <section class="card">
+          <h3 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zm2 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm4 4v6m6-6v6m-3-9v9"/></svg>
+            Stats
+          </h3>
+          <div class="stats-grid">
+            <div class="stat-cell">
+              <div class="stat-label-row">
+                <span class="stat-label">Ranking</span>
+                <button class="stat-link" onclick="alert('Opens FIFA leaderboard in real app.')">View Table</button>
+              </div>
+              <span class="stat-value rank">#198</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Tournaments played</span>
+              <span class="stat-value">240</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Wins</span>
+              <span class="stat-value">224</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Losses</span>
+              <span class="stat-value">16</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Favorite Games -->
+        <section class="card">
+          <div class="card-head-row">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01"/></svg>
+              Favorite Games
+            </h3>
+            <button class="see-more">See more →</button>
+          </div>
+          <div class="games-grid">
+            <div class="game-card">
+              <div class="game-cover"><img src="https://picsum.photos/id/1011/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div>
+              <span class="game-title">Elden Ring</span>
+            </div>
+            <div class="game-card">
+              <div class="game-cover"><img src="https://picsum.photos/id/1015/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div>
+              <span class="game-title">God of War Ragnarök</span>
+            </div>
+            <div class="game-card">
+              <div class="game-cover"><img src="https://picsum.photos/id/1018/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div>
+              <span class="game-title">Call of Duty: Black Ops III</span>
+            </div>
+            <div class="game-card">
+              <div class="game-cover"><img src="https://picsum.photos/id/1025/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div>
+              <span class="game-title">Tekken 8</span>
+            </div>
+            <div class="game-card">
+              <div class="game-cover"><img src="https://picsum.photos/id/1035/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div>
+              <span class="game-title">PlayerUnknown's Battlegrounds</span>
+            </div>
+            <div class="game-card">
+              <div class="game-cover empty">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 16l5-5 4 4 7-7 2 2"/></svg>
+              </div>
+              <span class="game-title">Mortal Kombat</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="card">
+          <div class="card-head-row">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 9a6 6 0 0 0 12 0M6 9H4a2 2 0 0 1 0-4h2m12 4h2a2 2 0 0 0 0-4h-2M9 22h6M12 17v5"/></svg>
+              Achievements (12)
+            </h3>
+            <button class="see-more">See more →</button>
+          </div>
+          <div class="achv-grid">
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/200/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">Call of Duty · Kill spree · 100 Kills</span>
+            </div>
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/201/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">Counter Strike · King Cache</span>
+            </div>
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/202/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">Mortal Kombat · Premium</span>
+            </div>
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/203/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">Mario Kart · King Banana</span>
+            </div>
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/204/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">NBA 2k2024 · 3K wins</span>
+            </div>
+            <div class="achv-card">
+              <div class="achv-badge"><img src="https://picsum.photos/id/206/120/120" alt="" onerror="this.style.display='none'" /></div>
+              <span class="achv-title">Counter Strike · Icarus</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ TAB: ACTIVITY ═══════ -->
+  <div class="tab-panel" data-panel="activity">
+    <div class="body-grid">
+      <div class="left-stack">
+        <section class="card">
+          <h3 class="card-title">Recent Activity</h3>
+          <div style="display:flex; flex-direction:column; gap:0.85rem;">
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; padding:0.5rem 0; border-bottom:1px solid var(--border-faint);">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(76,175,80,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#81c784" stroke-width="2"><circle cx="12" cy="8" r="6"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              </div>
+              <div>
+                <div style="font-size:0.85rem;">Won <strong>FIFA Pro League — Week 12</strong></div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-top:0.15rem;">2 days ago · +50 VC prize</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; padding:0.5rem 0; border-bottom:1px solid var(--border-faint);">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(237,28,36,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef9a9a" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/></svg>
+              </div>
+              <div>
+                <div style="font-size:0.85rem;">Joined <strong>Mortal Kombat Lagos Open</strong></div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-top:0.15rem;">5 days ago</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; padding:0.5rem 0;">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div style="font-size:0.85rem;">Joined team <strong>Lagos Phantoms</strong></div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-top:0.15rem;">1 week ago</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="right-stack">
+        <section class="card">
+          <h3 class="card-title">Tournaments Joined</h3>
+          <div class="empty-state" style="padding:2rem 1rem;">A more detailed activity timeline will appear here.</div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ TAB: GALLERY ═══════ -->
+  <div class="tab-panel" data-panel="gallery">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0.8rem; padding:1.5rem 0.5rem 0;">
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/1062/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/1080/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/106/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/110/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/119/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/124/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/133/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+      <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background-color:var(--surface-2);"><img src="https://picsum.photos/id/137/400/400" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'" /></div>
+    </div>
+  </div>
+
+  <!-- ═══════ TAB: SOCIAL LINKS ═══════ -->
+  <div class="tab-panel" data-panel="social">
+    <div style="max-width:640px; padding:1.5rem 0.5rem 0;">
+      <section class="card">
+        <h3 class="card-title">Social Links</h3>
+        <div class="social-grid">
+          <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens Facebook profile in new tab.')">
+            <span class="si fb"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-3h2.4V9.5c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.5.7-1.5 1.5V12h2.6l-.4 3h-2.2v7A10 10 0 0 0 22 12z"/></svg></span>
+            Facebook
+          </a>
+          <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens Instagram profile in new tab.')">
+            <span class="si ig"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span>
+            Instagram
+          </a>
+          <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens X profile in new tab.')">
+            <span class="si x"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h3l-7.5 8.5L22 22h-7l-5-6.5L4 22H1l8-9L1.5 2h7l4.5 6L18 2z"/></svg></span>
+            X(Twitter)
+          </a>
+          <a class="social-pill" href="#" onclick="event.preventDefault(); alert('Opens YouTube channel in new tab.')">
+            <span class="si yt"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5s-.2-1.6-.9-2.3c-.8-1-1.7-1-2.1-1C16.7 4 12 4 12 4s-4.7 0-8 .2c-.4 0-1.3 0-2.1 1C1.2 5.9 1 7.5 1 7.5S.8 9.4.8 11.3v1.4c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.8 1 1.9.9 2.4 1 1.7.2 7.7.2 7.7.2s4.7 0 8-.2c.4 0 1.3 0 2.1-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.4c0-1.9-.2-3.8-.2-3.8zM9.7 15V8.5l6.2 3.3-6.2 3.2z"/></svg></span>
+            YouTube
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══════ TAB: FAVORITE GAMES (full) ═══════ -->
+  <div class="tab-panel" data-panel="games">
+    <section class="card" style="margin-top:1.5rem;">
+      <div class="games-grid">
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1011/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">Elden Ring</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1015/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">God of War Ragnarök</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1018/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">Call of Duty: Black Ops III</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1025/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">Tekken 8</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1035/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">PUBG</span></div>
+        <div class="game-card"><div class="game-cover empty"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 16l5-5 4 4 7-7 2 2"/></svg></div><span class="game-title">Mortal Kombat</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1043/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">Black Myth Wukong</span></div>
+        <div class="game-card"><div class="game-cover"><img src="https://picsum.photos/id/1059/240/320" alt="" onerror="this.parentElement.classList.add('empty'); this.remove();" /></div><span class="game-title">FC25</span></div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<!-- ═══════ BOTTOM MENU (mobile) ═══════ -->
+<nav class="bottom-menu">
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Profile
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/></svg>
+    Tournaments
+  </a>
+  <a class="bm-item on" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+    Rankings
+  </a>
+  <a class="bm-item" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+    Wallet
+  </a>
+</nav>
+
+<script>
+  // ── Tabs ──
+  function switchTab(btn) {
+    const target = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.getAttribute('data-panel') === target));
+    window.scrollTo({ top: document.querySelector('.tabs-wrap').offsetTop - 80, behavior: 'smooth' });
+  }
+
+  // ── Header dropdown ──
+  function toggleProfileDropdown() {
+    document.getElementById('profile-dropdown').classList.toggle('open');
+  }
+
+  // ── Follow toggle ──
+  function toggleFollow() {
+    const btn = document.getElementById('follow-btn');
+    const lbl = document.getElementById('follow-label');
+    const following = btn.classList.toggle('following');
+    lbl.textContent = following ? 'Following' : 'Follow';
+  }
+
+  // ── More menu (block / report / share / mute) ──
+  function toggleMoreMenu(e) {
+    e.stopPropagation();
+    document.getElementById('more-menu').classList.toggle('open');
+  }
+
+  // ── Click-away closers ──
+  document.addEventListener('click', (e) => {
+    const pd = document.getElementById('profile-dropdown');
+    const pt = document.getElementById('profile-trigger');
+    if (pd && !pt.contains(e.target)) pd.classList.remove('open');
+
+    const mm = document.getElementById('more-menu');
+    const mt = document.getElementById('more-trigger');
+    if (mm && !mt.contains(e.target)) mm.classList.remove('open');
+  });
+</script>
+
+</body>
+</html>

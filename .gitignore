@@ -37,3 +37,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local run artefacts
+.dev-server.log
+.dev-server.err
+scripts/audit-out/
+scripts/mobile-shots/

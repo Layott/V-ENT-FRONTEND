@@ -6,7 +6,7 @@ import tableStyles from "@/styles/modules/tables/tables.module.css"
 import tabStyles from '@/styles/modules/tabs/tabs.module.css';
 import styles from './team-members.module.css'
 
-const TeamProfileMembers = () => {
+const TeamProfileMembers = ({ teamId }) => {
   const [activeTab, setActiveTab] = useState('requests')
 
   const handleTabClick = (tab) => {
@@ -38,11 +38,11 @@ const TeamProfileMembers = () => {
 
       <>
         {activeTab === 'members' && (
-          <MembersTabComponent />
+          <MembersTabComponent teamId={teamId} />
         )}
 
         {activeTab === 'requests' && (
-          <MembersRequestsTabComponent />
+          <MembersRequestsTabComponent teamId={teamId} />
         )}
       </>
 
