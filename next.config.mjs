@@ -5,6 +5,15 @@
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig = {
+  // next-auth's browser bundle reads process.env.NEXTAUTH_URL to work out its
+  // own origin. Next only inlines NEXT_PUBLIC_* into client code, so in the
+  // browser that read is undefined and next-auth falls back to its built-in
+  // default of http://localhost:3000 - which is where relative callback URLs
+  // then point in production. Inlining it here makes the client agree with the
+  // server. It is a public URL, not a secret.
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  },
   reactStrictMode: true,
   swcMinify: true,
   // Emits .next/standalone with a self-contained server.js, which is what the
