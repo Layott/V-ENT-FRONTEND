@@ -22,7 +22,7 @@ const KPI_DEFS = [
   { key: 'active_users_today',   label: 'Active Today',            color: 'ic-neutral', Icon: LuActivity,   fmt: 'num' },
   { key: 'active_tournaments',   label: 'Active Tournaments',      color: 'ic-neutral', Icon: LuTrophy,     fmt: 'num' },
   { key: 'pending_payouts',      label: 'Pending Payouts',         color: 'ic-red',     Icon: LuBanknote,   fmt: 'num', linkTo: '/admin/payouts' },
-  { key: 'total_vc_circulation', label: 'Total VC in circulation',  color: 'ic-gold',    Icon: LuCoins,      fmt: 'num' },
+  { key: 'total_vc_circulation', label: 'VC in circulation',     color: 'ic-gold',    Icon: LuCoins,      fmt: 'num' },
   { key: 'pending_kyc',          label: 'Pending KYC',             color: 'ic-red',     Icon: LuShield,     fmt: 'num', linkTo: '/admin/kyc' },
   { key: 'open_disputes',        label: 'Open Disputes',           color: 'ic-red',     Icon: LuGavel,      fmt: 'num', linkTo: '/admin/disputes' },
 ]

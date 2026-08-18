@@ -25,8 +25,14 @@ export default function RootLayout({ children }) {
           <meta name="description" content={metadata.description} />
           <meta name="keywords" content={metadata.keywords} />
           <meta name="author" content={metadata.author} />
-          <meta name="viewport" content={metadata.viewport} />
           <meta charSet={metadata.charset} />
+          {/* One viewport tag, and it has to be the right one. There were two:
+              this correct one, and above it `content={metadata.viewport}` where
+              metadata has no `viewport` key, so it rendered content="". Browsers
+              honour the first viewport tag they see, so every page on every
+              phone laid out at a fallback width instead of device-width - which
+              is why the app looked slightly zoomed out and the header ran off
+              the right edge. */}
           <meta name="viewport" content={`width=${viewport.width}, initial-scale=${viewport.initialScale}`} />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
