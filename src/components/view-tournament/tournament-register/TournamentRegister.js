@@ -54,6 +54,22 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament, resu
     setSelectedOption(option);
   };
 
+  // `tournament_access` decides who may enter: solo players, teams, or either.
+  // Both cards were shown on every tournament regardless, so a solo-only
+  // tournament invited people to register a team and only failed at the API
+  // several steps later.
+  const access = tournament?.tournament_access || tournament?.participant_type || 'team_and_individual';
+  const allowsIndividual = access !== 'team';
+  const allowsTeam = access !== 'individual';
+
+  // With one mode available there is nothing to choose. Pick it, so the first
+  // screen the entrant sees is the one that does something.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (allowsIndividual && !allowsTeam) setSelectedOption('individual');
+    else if (allowsTeam && !allowsIndividual) setSelectedOption('team');
+  }, [isOpen, allowsIndividual, allowsTeam]);
+
   const handleNext = () => {
     if (selectedOption === 'individual') {
       setRegistrationData({ type: 'individual' });
@@ -202,9 +218,14 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament, resu
             </div>
 
             <div className={styles.modalBody}>
-              <p className={styles.subtitle}>Select how you want to register this tournament</p>
+              <p className={styles.subtitle}>
+                {allowsIndividual && allowsTeam
+                  ? 'Choose how you want to enter this tournament'
+                  : `This tournament is ${allowsTeam ? 'team' : 'solo'} entry only`}
+              </p>
 
               <div className={styles.optionsContainer}>
+                {allowsIndividual && (
                 <button
                   className={`${styles.optionCard} ${selectedOption === 'individual' ? styles.selected : ''}`}
                   onClick={() => handleOptionSelect('individual')}
@@ -222,7 +243,9 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament, resu
                   <h3 className={styles.optionTitle}>As an individual</h3>
                   <p className={styles.optionDescription}>Register and play solo</p>
                 </button>
+                )}
 
+                {allowsTeam && (
                 <button
                   className={`${styles.optionCard} ${selectedOption === 'team' ? styles.selected : ''}`}
                   onClick={() => handleOptionSelect('team')}
@@ -240,6 +263,7 @@ const TournamentRegistrationModal = ({ isOpen, onClose, onNext, tournament, resu
                   <h3 className={styles.optionTitle}>As a team</h3>
                   <p className={styles.optionDescription}>Register and play with your team</p>
                 </button>
+                )}
               </div>
             </div>
 
