@@ -72,7 +72,11 @@ export default function SessionExpiryGuard() {
               localStorage.removeItem('userProfile');
               localStorage.removeItem('authToken');
             } catch {}
-            signOut({ callbackUrl: '/login?expired=1' });
+            // Absolute URL on purpose. NEXTAUTH_URL is a server-only variable,
+            // so it is not inlined into the browser bundle and next-auth's client
+            // falls back to http://localhost:3000 - which is what a relative
+            // callbackUrl resolves against in production.
+            signOut({ callbackUrl: `${window.location.origin}/login?expired=1` });
           }
         }
       } catch {
