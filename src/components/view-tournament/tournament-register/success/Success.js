@@ -1,24 +1,9 @@
 // SuccessModal.js
-import { useState, useEffect } from 'react';
 import styles from './success.module.css';
 import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 
 const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setShowConfetti(true);
-      // Auto close after 5 seconds if desired
-      // const timer = setTimeout(() => {
-      //   onClose();
-      // }, 5000);
-      // return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const handleClose = () => {
-    setShowConfetti(false);
     if (onClose) {
       onClose();
     }
@@ -29,18 +14,6 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
   return (
     <div className={styles.modalOverlay} onClick={handleClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        {showConfetti && (
-          <div className={styles.confetti}>
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className={styles.confettiPiece} style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                backgroundColor: ['#ef4444', '#f59e0b', '#D4AF37', '#3b82f6', '#8b5cf6'][Math.floor(Math.random() * 5)]
-              }} />
-            ))}
-          </div>
-        )}
-        
         <div className={styles.modalBody}>
           {/* Success Icon */}
           <div className={styles.successIcon}>
@@ -106,8 +79,8 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
           <div className={styles.nextSteps}>
             <h4 className={styles.nextStepsTitle}>What&apos;s Next?</h4>
             <ul className={styles.nextStepsList}>
-              <li>Check your email for tournament confirmation</li>
-              <li>Join the tournament Discord server for updates</li>
+              <li>A confirmation with your slot details is on its way to your email</li>
+              <li>Check in opens 30 minutes before your first match</li>
               <li>
                 Tournament starts on {(() => {
                   const raw = tournament?.start_date_and_time || tournament?.start_date;
