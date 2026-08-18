@@ -1,0 +1,185 @@
+.cardHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.cardHeaderRow .cardSub {
+  margin-bottom: 0;
+}
+
+.emptyCard {
+  background: #303136;
+
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cardItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: #303136;
+
+  border-radius: 8px;
+}
+
+.cardChip {
+  width: 56px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: "Fraunces", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.cardMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cardNum {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.cardExp {
+  font-family: "Inter", sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.removeBtn:hover {
+
+  color: var(--v-ent-red) !important;
+}
+
+.kycGate {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(251, 198, 75, 0.06);
+
+  border-radius: 8px;
+  padding: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.kycGateIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(251, 198, 75, 0.15);
+  color: #fbc64b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kycGateTitle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  margin: 0 0 0.2rem 0;
+}
+
+.kycGateSub {
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  max-width: 380px;
+  line-height: 1.4;
+}
+
+.bankList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bankItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: #303136;
+
+  border-radius: 8px;
+}
+
+.bankMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bankName {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.bankNum {
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.bankHolder {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+@media (max-width: 540px) {
+  .cardHeaderRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cardHeaderRow > button {
+    width: 100%;
+  }
+  .cardItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+  .cardActions {
+    justify-content: space-between;
+  }
+}

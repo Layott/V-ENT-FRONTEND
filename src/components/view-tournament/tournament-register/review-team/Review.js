@@ -194,11 +194,15 @@ const ReviewModal = ({ isOpen, onClose, onBack, onProceed, tournament, selectedT
               <div className={styles.teamHeader}>
                 <div className={styles.teamInfo}>
                   <div className={styles.teamAvatar}>
-                    <Image 
-                      src={selectedTeam?.image || image} 
-                      alt={selectedTeam?.name || "Kill Streak Team"}
+                    {/* Plain img so remote backend/CDN team logos render without
+                        next/image domain config; falls back to the bundled avatar. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selectedTeam?.logo || selectedTeam?.image || image.src}
+                      alt={selectedTeam?.name || "Team"}
                       width={40}
                       height={40}
+                      style={{ objectFit: 'cover', borderRadius: '8px' }}
                     />
                   </div>
                   <div className={styles.teamDetails}>

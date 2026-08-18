@@ -8,7 +8,11 @@ import styles from './sponsors.module.css';
 
 
 const Sponsors = ({ formData, updateFormData }) => {
-  const [fields, setFields] = useState([{ name: '', username: '', logo: null }]);
+  const [fields, setFields] = useState(() => (
+    Array.isArray(formData?.sponsors) && formData.sponsors.length > 0
+      ? formData.sponsors
+      : [{ name: '', username: '', logo: null }]
+  ));
   const fileInputs = useRef([]);
 
   const handleAddField = () => {

@@ -1,0 +1,91 @@
+.checkbox {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+
+  border-radius: 3px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  transition: background-color 0.15s;
+}
+.checkbox:checked {
+  background-color: var(--v-ent-red);
+
+}
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  background-color: rgba(237, 28, 36, 0.14);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(212, 175, 55, 0.06);
+
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  margin-bottom: 1rem;
+}
+.bulkCount {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: auto;
+}
+
+.code {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.rejectPop {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #303136;
+
+  border-radius: 6px;
+  padding: 0.75rem;
+  z-index: 300;
+  min-width: 220px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.rejectLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.rejectSelect {
+  width: 100%;
+  background: #212225;
+
+  border-radius: 4px;
+  color: #fff;
+  padding: 0.4rem 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+  outline: none;
+}
+.rejectBtns {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}

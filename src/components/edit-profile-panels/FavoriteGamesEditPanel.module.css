@@ -1,0 +1,479 @@
+.gamesHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.gamesHeadLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.gamesTitle {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.gamesSub {
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.gamesHeadRight {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ctrlSearch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #303136;
+
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+}
+
+.ctrlSearch input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  width: 180px;
+}
+
+.ctrlSearch input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #303136;
+
+  color: #fff;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background-color 0.2s, background 0.2s;
+}
+
+.addBtn:hover {
+
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.gameCard {
+  background-color: #303136;
+
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.gameCard:hover {
+
+  transform: translateY(-2px);
+}
+
+.gameCardMain:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.gameCoverWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #0a0a0c;
+}
+
+.gameCoverWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.gameCard:hover .gameCoverWrap img {
+  transform: scale(1.04);
+}
+
+.gameRemove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, background-color 0.15s;
+  z-index: 2;
+}
+
+.gameRemove:hover {
+  background: rgba(237, 28, 36, 0.85);
+
+}
+
+.mainBadge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(212, 175, 55, 0.92);
+  color: #fff;
+  padding: 0.28rem 0.55rem;
+  border-radius: 99px;
+  font-family: "Fraunces", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.mainBadge svg {
+  width: 11px;
+  height: 11px;
+}
+
+.gameBody {
+  padding: 0.85rem 0.85rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.gameTitle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.92rem;
+  color: #fff;
+  line-height: 1.2;
+  min-height: 2.2em;
+  margin: 0;
+}
+
+.platformRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.platformTag {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: #A7A6A6;
+  border-radius: 4px;
+  padding: 0.18rem 0.4rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.66rem;
+}
+
+.tagPc { color: #9fd5ff; background: rgba(95, 170, 255, 0.12); }
+.tagPs { color: #b8b8ff; background: rgba(120, 120, 255, 0.14); }
+.tagXbox { color: #a5d6a7; background: rgba(212, 175, 55, 0.12); }
+.tagMobile { color: #ffd6a8; background: rgba(255, 180, 80, 0.12); }
+
+.gtagRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--page-bg, #131316);
+
+  border-radius: 6px;
+  padding: 0.35rem 0.55rem;
+  transition: background-color 0.2s;
+}
+
+.gtagRow:focus-within {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.gtagRow svg {
+  width: 11px;
+  height: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
+.gtagRow input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.gtagRow input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.setMainBtn {
+  width: 100%;
+  background: transparent;
+
+  color: #A7A6A6;
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: background-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.setMainBtn:hover {
+
+  color: var(--v-ent-gold);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.setMainBtn svg {
+  width: 11px;
+  height: 11px;
+}
+
+.mainMarker {
+  width: 100%;
+  background: rgba(212, 175, 55, 0.1);
+
+  color: var(--v-ent-gold);
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.mainMarker svg {
+  width: 11px;
+  height: 11px;
+}
+
+.gamesEmpty {
+  grid-column: 1 / -1;
+  padding: 3rem 1.5rem;
+  text-align: center;
+
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+}
+
+/* Modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #303136;
+
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalClose:hover {
+
+  color: var(--v-ent-red);
+}
+
+.modalTitle {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.05rem;
+  margin: 0 0 0.3rem;
+  color: #fff;
+}
+
+.modalSub {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1rem;
+}
+
+.modalSearch {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #303136;
+
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.modalSearch:focus-within {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.modalSearch input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  width: 100%;
+}
+
+.modalList {
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  padding: 0.15rem;
+}
+
+.modalGame {
+  background: #303136;
+
+  border-radius: 8px;
+  padding: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modalGame:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.modalGameCover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0a0a0c;
+}
+
+.modalGameCover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalGameName {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  text-align: center;
+  color: #A7A6A6;
+}
+
+.modalFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+
+}
+
+@media (max-width: 1280px) {
+  .gamesGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .gamesGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .gamesHeadRight { width: 100%; }
+  .ctrlSearch { flex: 1; }
+  .ctrlSearch input { width: 100%; }
+  .modalList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .gamesGrid { grid-template-columns: 1fr; gap: 0.85rem; }
+  .gameCoverWrap { aspect-ratio: 16/10; }
+}
+
+/* Initial shown when a game in the catalogue has no uploaded logo. */
+.coverFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font-weight: var(--fw-bold);
+  font-size: 1.25rem;
+}

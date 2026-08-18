@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import googleLogo from "../../../public/images/google.svg";
-import facebookLogo from "../../../public/images/facebook.svg";
 import { signIn } from "next-auth/react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -34,6 +33,7 @@ const Signup = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [password, setPassword] = useState("");
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
@@ -83,8 +83,7 @@ const Signup = () => {
         });
         
         const data = await response.json();
-        console.log("Username verification response:", data);
-        
+
         if (data.status === 'success' && data.username) {
           setFormData((prev) => ({...prev, username: data.username }));
           setUsernameEditable(false);
@@ -96,7 +95,6 @@ const Signup = () => {
           setUsernameError("");
         }
         } catch (err) {
-        console.error("Error verifying email:", err);
         setEmailError("Verification failed. Try again.");
         clearError(setEmailError);
         setUsernameEditable(true);
@@ -106,11 +104,15 @@ const Signup = () => {
     }
 
     if (name === "username" && usernameEditable) {
-      if (value.trim().length > 30) {
-        setUsernameError("Username must not exceed 30 characters");
-        clearError(setUsernameError);
+      const uname = value.trim();
+      // Inline rule: 3-30 chars, letters/numbers/underscore only.
+      if (uname && !usernameRegex.test(uname)) {
+        setUsernameError("3-30 characters - letters, numbers, and underscores only");
         return;
       }
+      setUsernameError("");
+
+      if (!uname) return;
 
       try {
         const res = await fetch(VENT.USER_VERIFICATION, {
@@ -127,7 +129,7 @@ const Signup = () => {
           clearError(setUsernameError);
         }
       } catch (err) {
-        console.error("Username check failed:", err);
+        // Uniqueness check is best-effort; ignore network failures here.
       }
     }
   };
@@ -145,26 +147,29 @@ const Signup = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // Inline validation gate - runs before any network call.
+    const validationMessage = (() => {
+      if (!emailRegex.test(formData.email)) return "Enter a valid email address";
+      if (!usernameRegex.test((formData.username || "").trim()))
+        return "Username must be 3-30 characters (letters, numbers, underscores)";
+      if (!isPasswordValid(formData.password))
+        return "Password needs 8+ characters with upper case, lower case, and a number";
+      if (formData.password !== formData.confirmPassword) return "Passwords do not match";
+      if (!formData.country) return "Please select your country";
+      if (!formData.state || !formData.state.trim()) return "Please enter your state/area/province";
+      if (usernameError) return "Please choose a different username";
+      return null;
+    })();
+    if (validationMessage) {
+      setSnackbarMessage(validationMessage);
+      setSnackbarType("error");
+      setOpen(true);
+      return;
+    }
+
     setLoading(true);
-    
-    // Check if passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setSnackbarMessage("Passwords do not match");
-      setSnackbarType("error");
-      setOpen(true);
-      setLoading(false);
-      return;
-    }
-    
-    // Check if username is valid (not already taken)
-    if (usernameError) {
-      setSnackbarMessage("Please choose a different username");
-      setSnackbarType("error");
-      setOpen(true);
-      setLoading(false);
-      return;
-    }
-    
+
     // Create payload to match expected format
     const payload = {
       email: formData.email,
@@ -174,9 +179,7 @@ const Signup = () => {
       password: formData.password,
       full_name: formData.full_name
     };
-    
-    console.log("Data being sent to API:", payload);
-    
+
     try {
       const response = await fetch(VENT.SIGNUP, {
         method: "POST",
@@ -185,37 +188,35 @@ const Signup = () => {
         },
         body: JSON.stringify(payload),
       });
-      
+
       const responseText = await response.text();
-      console.log("Raw server response:", responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
       } catch (e) {
-        console.error("Failed to parse response:", e);
         data = { error: "Invalid server response" };
       }
-      
+
       if (response.ok) {
         localStorage.setItem("signupData", JSON.stringify(payload));
+        // Flag first-run so the first login routes through /onboarding.
+        localStorage.setItem("needsOnboarding", "true");
         router.push("/verify-email");
         setSnackbarMessage(data.message || "Account created successfully!");
         setSnackbarType("success");
         setOpen(true);
       } else {
-        const errorMessage = data.error || 
-                            data.message || 
-                            data.detail || 
+        const errorMessage = data.error ||
+                            data.message ||
+                            data.detail ||
                             "Failed to create account";
-        
-        console.error("Signup error:", data);
+
         setSnackbarMessage(errorMessage);
         setSnackbarType("error");
         setOpen(true);
       }
     } catch (error) {
-      console.error("Error during signup:", error);
       setSnackbarMessage("An error occurred. Please try again.");
       setSnackbarType("error");
       setOpen(true);
@@ -237,7 +238,6 @@ const Signup = () => {
         
         setLoading(false);
     } catch (error) {
-        console.error("Error during OAuth signup:", error);
         setSnackbarMessage("An error occurred during signup. Please try again.");
         setSnackbarType("error");
         setOpen(true);
@@ -249,7 +249,8 @@ const isPasswordValid = (password) => {
     return (
       password.length >= 8 &&
       /[a-z]/.test(password) &&
-      /[A-Z]/.test(password)
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password)
     );
 };
 
@@ -392,7 +393,14 @@ return (
                             {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create account'}
                         </button>
                         <p className={styles.termsAndPrivacy}>By creating an account, you agree to our&nbsp;
-                            <Link href={'/term-of-use'}>Terms of Use</Link>
+                            {/* /term-of-use is not a route - the terms live as a PDF in /public. */}
+                            <a
+                              href="/V-ENT%20TERMS%20OF%20USE.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Terms of Use
+                            </a>
                             &nbsp;&amp;&nbsp;
                             {/* <Link href={'/privacy-policy'}>Privacy Policy</Link> */}
                             <a
@@ -405,34 +413,28 @@ return (
                         </p>
                     </form>
 
-                    {/* <div className={generalStyles.alternativeAuthContainer}>
+                    <div className={generalStyles.alternativeAuthContainer}>
                         <p>Or sign up with</p>
                         <div className={generalStyles.logoContainer}>
-                            <Image
-                                src={googleLogo}
-                                alt="Google Logo"
-                                className={`${styles.googleLogo} ${generalStyles.authLogo}`}
-                                // onClick={() => handleOAuthSignUp('google')}
+                            <button
+                                type="button"
+                                className={generalStyles.oauthButton}
+                                aria-label="Sign up with Google"
                                 onClick={() =>
-                                handleOAuthSignUp("google", {
-                                    callbackUrl: `${window.location.origin}/user-profile`,
+                                    handleOAuthSignUp("google", {
+                                        callbackUrl: `${window.location.origin}/onboarding`,
                                     })
                                 }
-                            />
-
-                            <Image
-                                src={facebookLogo}
-                                alt="Facebook Logo"
-                                className={`${styles.facebookLogo} ${generalStyles.authLogo}`}
-                                // onClick={() => handleOAuthSignUp('facebook')}
-                                onClick={() =>
-                                    handleOAuthSignUp("facebook", {
-                                      callbackUrl: `${window.location.origin}/user-profile`,
-                                    })
-                                }
-                            />
+                            >
+                                <Image
+                                    src={googleLogo}
+                                    alt=""
+                                    className={`${styles.googleLogo} ${generalStyles.authLogo}`}
+                                />
+                                <span>Google</span>
+                            </button>
                         </div>
-                    </div> */}
+                    </div>
 
                     <div className={generalStyles.formHelperContainer}>
                         <p>Already have an account?&nbsp;</p>

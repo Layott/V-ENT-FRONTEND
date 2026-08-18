@@ -1,0 +1,317 @@
+/* Transparent root - full bleed for OBS Browser source */
+.root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none;
+  font-family: 'Inter', 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* Scoreboard at top */
+.scoreboard {
+  --accent: #ED1C24;
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(180deg, rgba(13,13,16,0.92), rgba(13,13,16,0.85));
+  backdrop-filter: blur(8px);
+
+  border-top: 3px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  pointer-events: none;
+  min-width: 580px;
+}
+
+.sbBlock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  flex: 1;
+}
+
+.sbLogo {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.sbInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sbTag {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+}
+
+.sbName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.sbScore {
+  font-size: 38px;
+  font-weight: 800;
+  color: #D4AF37;
+  min-width: 50px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+
+.sbCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+
+  background: rgba(0,0,0,0.25);
+  gap: 4px;
+}
+
+.timerCard {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timerLabel {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  background: rgba(237,28,36,0.15);
+  padding: 2px 6px;
+  border-radius: 3px;
+
+}
+
+.timerValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.06em;
+}
+
+.matchLabel {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Lower third (caster card) */
+.lowerThird {
+  --accent: #D4AF37;
+  position: absolute;
+  bottom: 96px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(90deg, rgba(13,13,16,0.95), rgba(13,13,16,0.7));
+  backdrop-filter: blur(8px);
+  border-left: 4px solid var(--accent);
+  padding: 12px 18px 12px 14px;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+
+.lowerLogo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.lowerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lowerName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lowerSub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.05em;
+}
+
+.liveDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ED1C24;
+  margin-left: 4px;
+  animation: liveBlink 1.2s ease-in-out infinite;
+
+}
+
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Sponsor bar */
+.sponsorBar {
+  --accent: #FBC64B;
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  background: linear-gradient(180deg, rgba(13,13,16,0) 0%, rgba(13,13,16,0.92) 30%, rgba(13,13,16,0.92) 100%);
+
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sponsorLabel {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  padding: 0 24px;
+
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.sponsorTrack {
+  display: flex;
+  gap: 56px;
+  align-items: center;
+  padding: 0 24px;
+  white-space: nowrap;
+  animation: sponsorScroll 28s linear infinite;
+}
+
+.sponsorItem {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.18em;
+  flex-shrink: 0;
+}
+
+@keyframes sponsorScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Preview controls - only visible when this overlay page is opened directly,
+   not in OBS. OBS doesn't render hover, so they stay hidden in production. */
+.previewControls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.85);
+
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 10px;
+  color: #ccc;
+  font-family: 'Inter', sans-serif;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.root:hover .previewControls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.previewBadge {
+  font-size: 8px;
+  background: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  align-self: flex-start;
+}
+
+.previewControlsInner {
+  display: flex;
+  gap: 4px;
+}
+
+.previewControls button {
+  background: rgba(255,255,255,0.08);
+
+  color: #fff;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.previewControls button:hover {
+  background: rgba(212, 175, 55,0.3);
+
+}
+
+.previewHint {
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+}
+
+/* Responsive - overlays scale down on smaller streams */
+@media only screen and (max-width: 768px) {
+  .scoreboard { min-width: unset; width: calc(100% - 32px); }
+  .sbBlock { padding: 8px 12px; gap: 8px; }
+  .sbLogo { width: 32px; height: 32px; font-size: 0.85rem; }
+  .sbName { font-size: 12px; }
+  .sbScore { font-size: 24px; min-width: 32px; }
+  .sbCenter { padding: 0 8px; }
+  .lowerThird { left: 12px; bottom: 80px; padding: 8px 12px 8px 10px; }
+  .lowerName { font-size: 11px; }
+  .lowerSub { font-size: 9px; }
+  .sponsorItem { font-size: 11px; }
+}

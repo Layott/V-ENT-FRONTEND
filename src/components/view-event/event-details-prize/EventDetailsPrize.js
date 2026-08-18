@@ -94,7 +94,7 @@ const EventDetailsPrize = ({ event }) => {
 
       try {
         // Try to fetch prize data from the backend
-        const response = await fetch(`https://vermillionent.pythonanywhere.com/event/prizes/${eventId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/prizes/${eventId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

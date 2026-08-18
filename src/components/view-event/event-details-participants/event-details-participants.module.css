@@ -17,7 +17,7 @@
 .gridRowExpanded {
   display: grid;
   grid-template-columns: minmax(200px, 200px) minmax(90px, 100px) minmax(80px, 80px) minmax(150px, 150px) minmax(110px, 110px) minmax(110px, 110px) minmax(110px, 110px) minmax(160px, 160px);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+
   width: 100%;
   width: max-content;
 }
@@ -125,4 +125,26 @@
   .gridRow > :nth-child(7) {
     display: grid;
   }
+}
+/* Honest empty state - shown until event registration/ticketing ships. */
+.emptyStateBox {
+  background-color: var(--overlay-gray);
+
+  border-radius: 10px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.emptyStateTitle {
+  font-weight: var(--fw-semi-bold);
+  margin: 0 0 0.5rem;
+}
+
+.emptyStateBody {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--fs-p-size-desktop);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 46ch;
 }

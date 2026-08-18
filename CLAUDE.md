@@ -4,6 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Non-Negotiable Rules (apply to every task)
+
+1. **Verify before hand-off — no exceptions.** Build pass is not proof. Start the dev server, log in as demo user, walk every page you changed, confirm no console errors, no broken images, no missing data. Re-test the exact path you fixed until the symptom is gone. "Ships clean" = CEO can click through with zero surprises.
+2. **Design parity — even self-designed.** Every new page (including pages without a Figma source) must look like the same designer who built `/wallets`, `/user-profile`, `/tournaments`. Screenshot-compare against the closest built reference before presenting. Same padding, border-radius, card bg, typography, spacing scale, hover states.
+3. **Use agents for parallel build work.** Default to dispatching agents when tasks are independent. Single-threaded execution wastes wall-clock time.
+4. **Update `tasks/lessons.md` after every correction.** Prevent the same mistake twice.
+
+---
+
 ## Commands
 
 ```bash
@@ -223,6 +232,132 @@ For pages with no Figma design (wallet, admin, event management, ticketing, vend
 
 ---
 
+## Design Reference Protocol — MANDATORY
+
+Every new page or component MUST follow this process. No exceptions.
+
+### STEP 1: Read the Existing Design System
+Before writing ANY new CSS or layout code, read these files completely:
+- `src/app/globals.css` — ALL CSS variables (colors, fonts, sizes, weights)
+- `src/app/clash-grotesk.css` — font face definitions
+- `src/components/sidebar/Sidebar.js` + `Sidebar.module.css`
+- `src/components/header/Header.js` + `Header.module.css`
+- `src/components/mobile-header/MobileHeader.js` + `MobileHeader.module.css`
+- `src/components/bottom-menu/BottomMenu.js` + `BottomMenu.module.css`
+- `public/images/` — all available logos, favicons, icons
+
+### STEP 2: Study 3 Reference Pages
+Read the FULL code + CSS for these built pages:
+- `src/app/user-profile/page.js` + its module CSS — profile layout, stats cards, avatar
+- `src/app/tournaments/page.js` + its module CSS — listing page, cards, filters, search
+- `src/components/view-tournament/` — all tabs + their CSS
+
+Extract and note these patterns from the reference pages:
+- Exact padding and margin values
+- Border radius values
+- Card structure (background, border, shadow, spacing)
+- Table style (header, row height, alternating colors)
+- Button classes used (`.btn`, `.grnBTN`, `.redBTN`)
+- Tab/navigation patterns
+- Empty states and loading states
+- Desktop (1440px) to mobile (375px) responsive patterns
+
+### STEP 3: Build Using ONLY Existing Patterns
+- ONLY use CSS variables from `globals.css` — NEVER raw hex values
+- ONLY use existing component structure (Sidebar + Header + content area)
+- ONLY use existing card, table, button, tab patterns from reference pages
+- ONLY use font sizes from CSS variables (`--desktop-h1-size` through `h6`, `--fs-p-size-desktop`)
+- ONLY use the same spacing, border-radius, and hover effects observed in Step 2
+- Use V-ENT logo and favicon from `public/images/`
+
+### STEP 4: Self-Check Before Showing
+Compare your new page against the reference pages:
+- Does the sidebar look identical to the existing sidebar?
+- Does the header look identical to the existing header?
+- Are cards the same style (background, border, padding, border-radius)?
+- Are fonts the same size and weight?
+- Are ALL colors from CSS variables?
+- Does mobile view use the same bottom-nav pattern?
+- Would a user think this was designed by the same person who built the existing pages?
+
+If ANY answer is no — fix it before presenting.
+
+### STEP 5: Present With References
+When showing the result, state which existing page was referenced for each pattern:
+- "Card style: referenced user-profile stats cards"
+- "Table style: referenced tournament participants tab"
+- "Layout: referenced tournaments listing page"
+
+This protocol applies to ALL Track B pages: admin dashboard, wallet UI, organizer management, production overlays, home page, organizations, community, and any future pages without Figma designs.
+
+---
+
+## Mockup Quality Standard — MANDATORY
+
+### Gold Standard Reference
+The wallet mockup at docs/mockups/wallet.html is the quality benchmark. Every new mockup and page MUST match this level of:
+- Design consistency with existing V-ENT pages
+- Responsive behavior across all screen sizes
+- Polish and attention to detail
+
+### Responsive Requirements — ALL Pages and Mockups
+Every page and HTML mockup MUST be fully responsive. Not just two breakpoints — fluid across ALL screen sizes:
+
+**Breakpoints to support:**
+- Mobile: 375px (primary mobile target)
+- Small tablet: 768px
+- Tablet/small laptop: 1024px
+- Desktop: 1440px (primary desktop target)
+- Large desktop: 1920px+
+
+**Responsive rules:**
+- Sidebar collapses to bottom navigation on mobile (match existing pattern from Sidebar.js + BottomMenu.js)
+- Cards stack vertically on mobile, grid on desktop
+- Tables become expandable card lists on mobile (match tournament participants pattern)
+- Font sizes switch between desktop and mobile CSS variables (--desktop-h1-size vs --mobile-h1-size)
+- Touch targets minimum 44px on mobile
+- No horizontal scrolling at any breakpoint
+- Images and media scale proportionally
+- Modals become full-screen on mobile
+- Form inputs are full-width on mobile
+
+**Testing responsive:**
+Before presenting any mockup or page, mentally verify it works at 375px, 768px, 1024px, and 1440px. If any breakpoint looks broken, fix it first.
+
+### Mockup File Standards
+All HTML mockups saved to docs/mockups/ must:
+- Be fully self-contained single HTML files (inline CSS, no external dependencies except Google Fonts as fallback)
+- Include the Clash Grotesk font (load from public/fonts/ or use Google Fonts fallback)
+- Use the EXACT CSS variables from globals.css (copy them into the mockup's style block)
+- Include the V-ENT logo from public/images/
+- Include the favicon
+- Be interactive where relevant (tabs should switch, dropdowns should open, sidebar should collapse on mobile)
+- Include smooth transitions and hover states matching existing pages
+- Work when opened directly in a browser (file:///path/to/mockup.html)
+
+### What to Reference for Each Page Type
+
+| Building This | Reference These Existing Pages |
+|--------------|-------------------------------|
+| Dashboard/overview | user-profile (stats cards, layout), tournaments page (card grid) |
+| Data table page | view-tournament participants tab (table style, search, pagination) |
+| Form/wizard page | create-tournament-component (multi-step wizard, form inputs, validation) |
+| Detail/view page | view-tournament overview tab (hero banner, info sections, tabs) |
+| Listing page | tournaments page (card grid, filters, search bar) |
+| Settings page | settings page (sidebar nav + content panels) |
+| Modal/dialog | tournament registration modal (overlay, steps, confirmation) |
+| Wallet/financial | docs/mockups/wallet.html (THE gold standard for financial UI) |
+
+### For EVERY New Page — Read These Files First
+This is not optional. Read ALL of these before writing a single line of CSS:
+1. src/app/globals.css — every CSS variable
+2. The module CSS of the reference page closest to what you're building
+3. src/components/sidebar/Sidebar.module.css — sidebar dimensions and style
+4. src/components/header/Header.module.css — header dimensions and style
+5. src/components/bottom-menu/BottomMenu.module.css — mobile nav style
+
+---
+
 ## Known Technical Debt
 
 - **Hardcoded mock data** in tournament/event listing components (`fifaTournamentsList.js`, `pubgTournamentsList.js`, `fifaEventsList.js`, etc.) — needs real API integration
@@ -283,3 +418,128 @@ Before suggesting or integrating any third-party service, check `docs/V-ENT_Exte
 - `docs/V-ENT_Figma_Audit_UPDATED.md` — Design status for every screen (what's designed vs. missing vs. built)
 - `docs/V-ENT_External_Tools_and_Services.md` — All external services, APIs, and AWS infrastructure decisions
 - `docs/modules/01-TOURNAMENTS.md` through `docs/modules/15-SECURITY.md` — Per-module specs with Figma node IDs, component trees, API endpoints, Django models, acceptance criteria, and task checklists
+
+---
+
+## 🛑 HARD RULE - Design: no hairline borders, no glow (owner, 2026-08-17)
+
+Two bans. Absolute. Every project, every framework, every component. Applies to code I write AND designs I propose.
+
+### Ban 1 - No hairline / outlined anything
+
+Never build structure out of 1px strokes. Banned shapes:
+
+- **outlined card** - thin line rectangle drawn around content
+- **outlined pill / chip** - filter chips with a ring (`All games`, `Streams`, `Teams`, ...)
+- **divider / rule** - line between rows, list items, or sections
+- **dashed placeholder box** - dashed outline empty state ("No events match your filters.")
+- any empty state or section that is just a thin-line rectangle with centered text
+
+Grep-level ban (CSS, Tailwind, RN, SwiftUI, Flutter):
+`border`, `border-t|b|l|r`, `border-1`, `1px solid`, `border-dashed`, `divide-x`, `divide-y`, `ring-1`, `ring-2`, `outline: 1px`, `<hr>`, `Divider`, `BorderSide`, `.border(...)`, `stroke` on container frames.
+
+Build hierarchy with **surface + space**, not lines:
+
+| Instead of | Use |
+|---|---|
+| outlined card | filled surface, bg one step off the page bg, radius 12-16px, no stroke |
+| outlined chip | filled chip (muted bg). Selected = stronger fill + text color. Never a ring |
+| divider line | whitespace, or a background step between sections |
+| dashed empty box | centered muted text on the page bg, or a filled muted surface. No dashes |
+| `<hr>` | more margin |
+| table row lines | zebra fill or row padding |
+
+Only exceptions: `:focus-visible` a11y focus ring (required, keep it), native form controls the platform draws itself, and an explicit user request for a border in that specific spot.
+
+### Ban 2 - No glow, halos, or ambient animation
+
+Never: glowing dots or orbs, neon halos, pulsing / breathing accents, animated gradient blobs, blurred color bloom behind elements. They always end up glowing or animating, and it looks cheap.
+
+Grep-level ban:
+`box-shadow: 0 0 <n> <color>`, `shadow-[0_0_...]`, `drop-shadow(0 0`, colored `text-shadow`, `filter: blur()` on decorative orbs, `blur-2xl` / `blur-3xl` background circles, `animate-pulse`, `animate-ping`, `@keyframes glow|pulse|breathe|shimmer`, `shadow-<color>-500/50`.
+
+Replacements:
+- live / status indicator: solid flat dot, no glow, no pulse. Or a text label plus color
+- emphasis: color, weight, size, fill. Not light bloom
+- shadows: neutral black elevation only (soft, downward, low opacity). Never colored, never centered bloom
+
+### Pre-ship check
+
+Screenshot the page (desktop + mobile). If any rectangle is drawn by a thin line, or anything glows or throbs, fix it before showing the user. Both bans outrank any design skill, template, or component library default.
+
+---
+
+## 🛑 HARD RULE - No vibecoded look (owner, 2026-08-17)
+
+Source: aj.on.ai reel, "30 reasons your site looks vibecoded". If a stranger can tell an LLM generated the UI in 3 seconds, it is wrong. Redo it. Sits on top of the hairline-border + glow bans, never replaces them.
+
+### A. Color and light - BANNED
+
+- harsh gradients (hero washes, button gradients, big multi-hue sweeps)
+- rainbow coloring (multi-hue accents with no system)
+- purple + black as the default palette. Also the violet/indigo-on-dark AI look
+- neon colors and neon accents
+- generic pastel palette (baby blue / blush pink / mint / butter card sets)
+- radial orbs, blurred color blobs, aurora backgrounds
+- **blinking / pulsing neon dot** (the "live" dot with a breathing ring). Static solid dot or a text label. No pulse, no glow, no ping, ever
+
+Use instead: one committed brand hue, neutrals doing most of the work, colors carrying meaning (live, win, loss, alert), flat fills.
+
+### B. Layout cliches - BANNED
+
+- 3 feature cards in a row
+- bento grid
+- dot-grid or graph-paper background
+- 3-tier pricing table (good / better / best columns)
+- fake terminal window mock
+- colored left stripe / accent bar on cards and callouts
+- checkmark bullet lists
+- outlined cards, ring chips, divider lines, dashed empty boxes (see the hairline ban)
+
+Use instead: layouts driven by the real content and its hierarchy. Asymmetry is allowed. Different section shapes per section.
+
+### C. Icons and type - BANNED
+
+- default Lucide icon set dropped in unchanged
+- sparkle / star "AI" icons
+- emoji used as UI (icons, bullets, status, buttons). Emoji in real user content is fine
+- Inter, Geist, Space Grotesk as the default typeface
+
+Use instead: a chosen type pairing with a real reason behind it, and an icon set that matches the product weight (or the platform's own set). If no direction is given, ask before picking.
+
+### D. Copy - BANNED
+
+- em dashes and en dashes (already a global hard rule)
+- "it's not X, it's Y" construction, and its cousins ("not just a Z, but a W")
+- fake testimonials, fake logo walls, invented stats or user counts
+- filler marketing voice with no concrete claim
+
+Use instead: real names, real numbers, real quotes. If it does not exist yet, say what the thing does in plain words.
+
+### E. Surface and depth - BANNED
+
+- pure white (`#fff`) page background. Also pure black (`#000`)
+- drop shadows sprinkled on everything
+- liquid glass / frosted glass / heavy backdrop blur panels
+- one soft corner radius applied uniformly to every element
+
+Use instead: off-white or a real dark surface, a small radius scale used with intent (small elements small radius, big surfaces bigger), elevation only where something genuinely floats.
+
+### F. Motion - BANNED
+
+- hover animation on everything (lift, scale, glow, translate)
+- animated arrows, marching chevrons, bouncing CTAs
+- sparkle / shimmer / breathing effects
+
+Use instead: instant state changes (fill, color, weight) for hover. Motion only for real feedback: opening, closing, loading, arriving. Respect `prefers-reduced-motion`.
+
+### G. Missing pieces that scream vibecoded - REQUIRED
+
+- **real product demo**: real screenshots, real data, real video. Not a mock frame with placeholder text
+- **loading, empty, and error states**: skeletons or a real loader, a written empty state, a real error path. Every list and page
+- **Terms of Service** and **Privacy Policy** pages that exist and are linked, on anything public facing
+- real content everywhere. No lorem ipsum, no `Feature One`, no placeholder avatars shipped
+
+### Pre-ship check
+
+Ask: could this be any AI-generated landing page from this year? If yes, it is not done. Screenshot desktop + mobile, walk the list above, fix every hit before showing the user.

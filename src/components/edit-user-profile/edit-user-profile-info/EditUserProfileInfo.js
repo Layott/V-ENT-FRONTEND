@@ -105,7 +105,6 @@ const EditUserProfileInfo = () => {
         }));
         
         console.log("==== EDIT PROFILE API DEBUG ====");
-        console.log("Session token:", sessionToken);
         console.log("User ID:", userId);
         console.log("API Endpoint:", VENT.USER_PROFILE);
         
@@ -157,12 +156,11 @@ const EditUserProfileInfo = () => {
               await handleSessionExpiration();
               return;
             }
-            // Try with Token prefix instead of Bearer
-            console.log("Trying with Token prefix instead of Bearer");
+            // Retry once more with the canonical Bearer scheme.
             const tokenResponse = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
               method: "GET",
               headers: {
-                Authorization: `Token ${sessionToken}`,
+                Authorization: `Bearer ${sessionToken}`,
                 "Content-Type": "application/json",
               }
             });

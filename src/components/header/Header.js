@@ -6,11 +6,14 @@ import { MdKeyboardArrowRight, MdOutlineClose } from "react-icons/md";
 import { FcSearch } from "react-icons/fc";
 import { CiSearch } from "react-icons/ci";
 import { FaCaretDown } from "react-icons/fa";
+import { IoNotificationsOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import breadCrumbTitles from './BreadCrumbData';
+import { unreadCount } from '@/components/notifications/notificationsApi';
+import { getJson } from '@/lib/apiCache';
 import styles from './header.module.css';
-import { usePathname } from 'next/navigation';
-import { signOut } from "next-auth/react";  // Import signOut function from next-auth
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut, useSession } from "next-auth/react";  // Import signOut function from next-auth
 
 const Header = ({ className = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,8 +22,11 @@ const Header = ({ className = '' }) => {
   const [fullName, setFullName] = useState(null);
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
   const pathname = usePathname();
+  const router = useRouter();
   const dropdownRef = useRef(null);
+  const { data: session } = useSession();
 
   const { title: currentSection, showBackArrow, fallbackURL } = breadCrumbTitles[pathname] || {
     title: '',
@@ -36,19 +42,76 @@ const Header = ({ className = '' }) => {
     }
   }
 
+  // Instant paint from cache - but ONLY if the cached profile belongs to the
+  // current session. localStorage.userProfile can be stale from a prior account
+  // (logout via an expired session / non-Sidebar path doesn't clear it), so
+  // painting it blindly leaks the previous user's name, avatar, and wallet.
+  const sessionIdentity = session?.user?.email; // username-or-email used at login
   useEffect(() => {
     try {
       const storedData = localStorage.getItem('userProfile');
       if (storedData) {
         const parsedData = JSON.parse(storedData);
-        setProfileImage(parsedData?.profile_picture || null);
-        setFullName(parsedData?.full_name || null);
-        setUsername(parsedData?.username || null);
+        const belongsToSession =
+          sessionIdentity &&
+          (parsedData?.username === sessionIdentity || parsedData?.email === sessionIdentity);
+        if (belongsToSession) {
+          setProfileImage(parsedData?.profile_picture || null);
+          setFullName(parsedData?.full_name || null);
+          setUsername(parsedData?.username || null);
+        }
       }
     } catch (error) {
       console.error("Failed to load profile picture from localStorage:", error);
     }
-  }, []);
+  }, [sessionIdentity]);
+
+  // Authoritative hydrate: fetch the logged-in user's real profile and overwrite
+  // both state and the cache. This is the source of truth for the header chip and
+  // heals any stale/cross-account localStorage.
+  const sessionToken = session?.user?.sessionToken;
+  useEffect(() => {
+    if (!sessionToken) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        // Shared GET: the page body usually wants this same profile, and the
+        // effect re-runs when the session resolves. One request serves them all.
+        const json = await getJson(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/get-user-informations/`,
+          { token: sessionToken },
+        );
+        if (cancelled || json?.status !== 'success') return;
+        const d = json.data || {};
+        setProfileImage(d.profile_picture || null);
+        setFullName(d.full_name || null);
+        setUsername(d.username || null);
+        try { localStorage.setItem('userProfile', JSON.stringify(d)); } catch { /* ignore */ }
+      } catch (error) {
+        console.error("Failed to hydrate header profile:", error);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionToken]);
+
+  // Poll the unread notification count for the bell badge. Guarded on the token
+  // (no tokenless request), polls every 60s, clears on unmount. Failures are
+  // swallowed silently - the bell simply shows no badge.
+  useEffect(() => {
+    if (!sessionToken) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const data = await unreadCount(sessionToken);
+        if (!cancelled) setNotifCount(Number(data?.unread_count || 0));
+      } catch {
+        /* silent - leave the badge as-is */
+      }
+    };
+    poll();
+    const intervalId = setInterval(poll, 60000);
+    return () => { cancelled = true; clearInterval(intervalId); };
+  }, [sessionToken]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -75,16 +138,27 @@ const Header = ({ className = '' }) => {
   }, [isDropdownOpen]);
 
   const handleSearch = () => {
-    if (searchQuery.trim() !== '') {
-      console.log(`Searching for: ${searchQuery}`);
-      // Add your search logic here
-    }
+    const trimmed = searchQuery.trim();
+    // Always navigate to search - empty query lands on /search and shows
+    // recent/empty state. This guarantees the Enter key binding is reliable
+    // even on pages that nest the Header inside another <form> or rich-text
+    // editor that may try to swallow the event.
+    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
+      // Stop the parent form (or any keydown listener bubbling up from a
+      // RichText editor / wizard step) from intercepting the Enter key.
+      event.preventDefault();
+      event.stopPropagation();
       handleSearch();
     }
+  };
+
+  const handleSearchFormSubmit = (event) => {
+    event.preventDefault();
+    handleSearch();
   };
 
   const toggleSearchBar = () => setIsSearchBarVisible((prev) => !prev);
@@ -143,17 +217,25 @@ const Header = ({ className = '' }) => {
           )}
         </div>
 
-        <div className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}>
+        <form
+          className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}
+          onSubmit={handleSearchFormSubmit}
+          role="search"
+        >
           <CiSearch className={styles.searchIcon} onClick={handleSearch}/>
           <input
-            type="text"
+            type="search"
             placeholder="Search tournaments, events, users..."
             className={styles.searchInput}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label="Search V-ENT"
           />
-        </div>
+          {/* Hidden submit so Enter triggers form submission even when the
+              input sits inside a parent <form> that already swallowed the key. */}
+          <button type="submit" style={{ display: 'none' }} aria-hidden="true" tabIndex={-1}>Search</button>
+        </form>
 
         <div className={`${styles.searchIconMobileContainer} ${isSearchBarVisible ? styles.moveRight : ''}`}>
           {isSearchBarVisible ? (
@@ -169,10 +251,23 @@ const Header = ({ className = '' }) => {
           )}
         </div>
 
+        <Link href="/notifications" className={styles.bellBtn} aria-label="Notifications">
+          <IoNotificationsOutline className={styles.bellIcon} />
+          {notifCount > 0 && (
+            <span className={styles.bellBadge}>{notifCount > 99 ? '99+' : notifCount}</span>
+          )}
+        </Link>
+
+        {/* Signed out: offer the way in rather than a placeholder identity. */}
+        {!session ? (
+          <Link href="/login" className={`btn redBTN ${styles.headerLoginBtn}`}>
+            Log in
+          </Link>
+        ) : (
         <div className={styles.userDetails} ref={dropdownRef}>
           <div className={styles.userInfo}>
-            <p className={styles.userName}>{fullName || 'Signed in user'}</p>
-            <p className={styles.userUsername}>@{username || 'username'}</p>
+            <p className={styles.userName}>{fullName || session?.user?.name || 'Your account'}</p>
+            {username && <p className={styles.userUsername}>@{username}</p>}
           </div>
           <div className={styles.userAvatar}>
             <Image
@@ -197,6 +292,7 @@ const Header = ({ className = '' }) => {
               </div>
             )}
         </div>
+        )}
       </div>
     </div>
   );

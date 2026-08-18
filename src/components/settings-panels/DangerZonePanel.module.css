@@ -1,0 +1,62 @@
+.action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.warnBtn {
+
+  color: #fbc64b !important;
+}
+
+.warnBtn:hover {
+
+  color: #fff !important;
+  background: rgba(251, 198, 75, 0.08) !important;
+}
+
+.warnBox {
+  background: rgba(237, 28, 36, 0.06);
+
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.warnBox strong {
+  font-family: "Fraunces", sans-serif;
+  color: #fff;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.warnBox ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.warnBox li {
+  margin-bottom: 0.2rem;
+}
+
+.kbd {
+  font-family: "Courier New", monospace;
+  background: #303136;
+
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.78rem;
+  color: var(--v-ent-red);
+}
+
+@media (max-width: 540px) {
+  .action {
+    justify-content: stretch;
+  }
+  .action > button {
+    width: 100%;
+  }
+}

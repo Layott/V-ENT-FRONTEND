@@ -4,7 +4,7 @@ import TeamEventsHistory from "./team-profile-events-history/TeamEventsHistory";
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import styles from './team-profile-activity.module.css'
 
-const TeamProfileActivity = () => {
+const TeamProfileActivity = ({ teamId }) => {
   const [selectedTab, setSelectedTab] = useState("tournaments")
 
   return (
@@ -30,9 +30,9 @@ const TeamProfileActivity = () => {
       </div>
 
       {selectedTab === "tournaments" ? (
-        <TournamentsHistory />
+        <TournamentsHistory teamId={teamId} />
       ) : (
-        <TeamEventsHistory />
+        <TeamEventsHistory teamId={teamId} />
       )}
 
     </div>

@@ -60,7 +60,6 @@ const EmailVerified = () => {
       setOpen(true);
     }
   } catch (error) {
-    console.error('Error verifying token:', error);
     setVerificationStatus('error');
     setSnackbarMessage('An error occurred. Please try again.');
     setSnackbarType('error');
@@ -82,10 +81,8 @@ const EmailVerified = () => {
   const handleResend = async () => {
     setResendLoadingg(true); 
 
-    const storedSignupData = JSON.parse(localStorage.getItem('signupData'));
-
-    console.log('Email used for resend:', storedSignupData.email);
-
+    const raw = localStorage.getItem('signupData');
+    const storedSignupData = raw ? JSON.parse(raw) : null;
 
     if (!storedSignupData) {
       setSnackbarMessage('No signup data found. Please try signing up again.');
@@ -106,9 +103,6 @@ const EmailVerified = () => {
 
       const data = await response.json();
 
-      console.log('RESEND LINK URL:', VENT.RESEND_LINK);
-
-
       if (response.ok) {
         setSnackbarMessage(data.message || 'Verification email sent!');
         setSnackbarType('success');
@@ -117,12 +111,11 @@ const EmailVerified = () => {
         setSnackbarType('error');
       }
     } catch (error) {
-      console.error('Error resending verification email:', error);
       setSnackbarMessage('An error occurred. Please try again.');
       setSnackbarType('error');
     } finally {
       setOpen(true);
-      setResendLoadingg(false); 
+      setResendLoadingg(false);
     }
   };
 
@@ -145,7 +138,7 @@ const EmailVerified = () => {
             <p>You can now proceed.</p>
 
             <button
-              className={`btn grnBTN ${styles.resendBTN}`}
+              className={`btn goldBTN ${styles.resendBTN}`}
               onClick={handleAction}
               disabled={resendLoading}
             >

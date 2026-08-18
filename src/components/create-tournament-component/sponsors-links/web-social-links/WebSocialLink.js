@@ -3,17 +3,21 @@ import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './web-social-link.module.css';
 
+const DEFAULT_LINK_FIELDS = [
+  { label: 'Facebook', key: 'facebook_link', placeholder: 'https://facebook.com/tournamentpage' },
+  { label: 'X (Twitter)', key: 'twitter_link', placeholder: 'https://twitter.com/tournamentpage' },
+  { label: 'Instagram', key: 'instagram_link', placeholder: 'https://instagram.com/tournamentpage' },
+  { label: 'YouTube', key: 'youtube_link', placeholder: 'https://youtube.com/tournamentpage' },
+  { label: 'Twitch', key: 'twitch_link', placeholder: 'https://twitch.tv/tournamentpage' },
+  { label: 'Kick', key: 'kick_link', placeholder: 'https://kick.com/tournamentpage' },
+  { label: 'TikTok', key: 'tiktok_link', placeholder: 'https://tiktok.com/tournamentpage' },
+  { label: 'Bigo Live', key: 'bigolive_link', placeholder: 'https://bigolive.com/tournamentpage' },
+];
+
 const WebSocialLink = ({ formData, updateFormData }) => {
-  const [fields, setFields] = useState([
-    { label: 'Facebook', key: 'facebook_link', placeholder: 'https://facebook.com/tournamentpage', value: '' },
-    { label: 'X (Twitter)', key: 'twitter_link', placeholder: 'https://twitter.com/tournamentpage', value: '' },
-    { label: 'Instagram', key: 'instagram_link', placeholder: 'https://instagram.com/tournamentpage', value: '' },
-    { label: 'YouTube', key: 'youtube_link', placeholder: 'https://youtube.com/tournamentpage', value: '' },
-    { label: 'Twitch', key: 'twitch_link', placeholder: 'https://twitch.tv/tournamentpage', value: '' },
-    { label: 'Kick', key: 'kick_link', placeholder: 'https://kick.com/tournamentpage', value: '' },
-    { label: 'TikTok', key: 'tiktok_link', placeholder: 'https://tiktok.com/tournamentpage', value: '' },
-    { label: 'Bigo Live', key: 'bigolive_link', placeholder: 'https://bigolive.com/tournamentpage', value: '' },
-  ]);
+  const [fields, setFields] = useState(() => (
+    DEFAULT_LINK_FIELDS.map((field) => ({ ...field, value: formData?.webSocialLinks?.[field.key] || '' }))
+  ));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newLabel, setNewLabel] = useState('');
 

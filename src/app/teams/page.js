@@ -1,11 +1,44 @@
 'use client'
 
+import { Suspense } from 'react'
 import Header from '@/components/header/Header'
-import MobileHeader from '@/components/mobile-header/MobileHeader';
+import MobileHeader from '@/components/mobile-header/MobileHeader'
 import Sidebar from '@/components/sidebar/Sidebar'
 import BottomMenu from '@/components/bottom-menu/BottomMenu'
 import AllTeams from '@/components/teams/all-teams/AllTeams'
 import styles from './teams.module.css'
+
+// Static, URL-driven shell - used as the Suspense fallback so the page heading
+// and tab row render immediately, before AllTeams reads `useSearchParams`.
+const TABS = [
+  { id: 'all', label: 'All' },
+  { id: 'owned', label: 'Owned by me' },
+  { id: 'joined', label: 'Joined' },
+  { id: 'invited', label: 'Invited' },
+]
+
+const TeamsShellFallback = () => (
+  <div style={{ padding: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <h1 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#fff', margin: 0 }}>Teams</h1>
+    <p style={{ color: 'rgba(255,255,255,0.5)', margin: 0 }}>Browse, join and manage competitive squads.</p>
+    <div style={{ display: 'flex', gap: '0.5rem', paddingBottom: '0.4rem' }}>
+      {TABS.map((t) => (
+        <span
+          key={t.id}
+          style={{
+            padding: '0.5rem 0.9rem',
+            fontSize: '0.85rem',
+            color: 'rgba(255,255,255,0.5)',
+            borderRadius: '4px',
+          }}
+        >
+          {t.label}
+        </span>
+      ))}
+    </div>
+    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading teams…</p>
+  </div>
+)
 
 const Teams = () => {
   return (
@@ -14,15 +47,16 @@ const Teams = () => {
       <MobileHeader />
 
       <main className={styles.mainContainer}>
-            <Sidebar />
+        <Sidebar />
 
-            <div className={styles.rightPaneContainer}>
-              <AllTeams />
-            </div>
-        </main>
+        <div className={styles.rightPaneContainer}>
+          <Suspense fallback={<TeamsShellFallback />}>
+            <AllTeams />
+          </Suspense>
+        </div>
+      </main>
 
       <BottomMenu />
-      
     </div>
   )
 }

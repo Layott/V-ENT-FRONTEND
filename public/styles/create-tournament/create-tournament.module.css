@@ -38,7 +38,7 @@
 }
 
 .halfBoxContainer {
-  border: 1px solid #28292D;
+
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -50,11 +50,11 @@
   border-radius: 0.6rem;
   background-color: #28292D;
   cursor: pointer;
-  transition: border-color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
 }
 
 .halfBoxContainer.activeBox {
-  border-color: var(--v-ent-red);
+  background-color: rgba(237, 28, 36, 0.16);
 }
 
 .boxTextContainer {
@@ -125,7 +125,7 @@
 }
 
 .oneThirdBoxContainer {
-  border: 1px solid #28292D;
+
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -137,17 +137,17 @@
   border-radius: 0.6rem;
   background-color: #28292D;
   cursor: pointer;
-  transition: border-color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
 }
 
 .oneThirdBoxContainer.activeBox {
-  border-color: var(--v-ent-red);
+  background-color: rgba(237, 28, 36, 0.16);
 }
 
 .inputNumber,
 .inputText {
   background-color: #393A40;
-  border: 0.5px solid #393A40;
+
   outline: none;
   padding: 0.5rem;
   padding-left: 0.6rem;
@@ -162,7 +162,7 @@
 
 .inputNumber:hover,
 .inputText:hover {
-  border: 0.5px solid #FFF;
+  background-color: #1a1b1f;
 }
 
 .option {
@@ -170,7 +170,7 @@
   min-height: 17px;
   border-radius: 50%;
   background-color: #28292D;
-  border: 1px solid #B2B3BD;
+
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
@@ -212,14 +212,14 @@
 
 .saveDraftBTN {
   background-color: #28292D;
-  border: 1px solid #B2B3BD;
+
 }
 
 .publishBTN,
 .backBTN,
 .proceedBTN {
   background-color: var(--v-ent-red);
-  border: 1px solid var(--v-ent-red);
+
   color: #FFF;
   display: flex;
   justify-content: center;
@@ -233,7 +233,7 @@
 }
 
 .btn:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .backArrowIcon,
@@ -298,7 +298,7 @@
 .reviewHR {
   height: 0;
   border: none;
-  border-bottom: 0.5px solid #B2B3BD;
+
 }
 
 .completeAndEditContainer {
@@ -347,12 +347,12 @@
 }
 
 .checkIconSpan {
-  border: 1px solid #178C4E;
+
   background-color: #178C4E;
 }
 
 .unCheckIconSpan {
-  border: 1px solid #A83232;
+
   background-color: #A83232;
 }
 
@@ -363,7 +363,7 @@
 
 .editBTN {
   background-color: #303136;
-  border: 1px solid #303136;
+
   outline: none;
   padding: 0.3rem 0.5rem;
   font-size: 0.95rem;
@@ -379,7 +379,7 @@
 }
 
 .editBTN:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .editBTNIcon {

@@ -65,12 +65,12 @@
   cursor: pointer;
   position: relative;
   background-color: #393A40;
-  border: 1px solid #393A40;
+
   transition: all ease-in-out 1.5;
 }
 
 .logoUploadBox:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .logoUploadPlaceholder {

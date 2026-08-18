@@ -281,9 +281,7 @@ const lastCycleEnd = getLastCycleEndDate();
 
       {selectedOption === 'recurring' && (
         <>
-          <hr className={styles.hrLine} />
-
-          <div className={styles.moreDetails}>
+<div className={styles.moreDetails}>
             <div className={styles.monthlyYearlyContainer}>
               <p className={styles.howOftenParagraph}>How often do you want this tournament to reoccur?
                 <span className={createTournamentStyles.asteriskSpan}>

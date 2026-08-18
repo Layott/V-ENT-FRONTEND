@@ -80,7 +80,7 @@
   border-radius: 5px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
-  border: 1px solid #303136;
+
   left: 50%;
   transform: translateX(-50%);
   display: none;
@@ -108,7 +108,7 @@
 }
 
 .searchBar:focus-within {
-  border: 1px solid var(--primary-bg);
+  outline: none;
 }
 
 .searchBar:hover {
@@ -138,9 +138,49 @@
 }
 
 .searchInput::placeholder {
-  font-family: "ClashGrotesk-Extralight", sans-serif;
+  font-family: "Inter", sans-serif;
   color: white;
   font-size: 0.85rem;
+}
+
+.bellBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: 1.25rem;
+  color: var(--primary-bg);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.bellBtn:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.bellIcon {
+  font-size: 1.35rem;
+}
+
+.bellBadge {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background-color: var(--v-ent-red);
+  color: #FFF;
+  font-family: "Inter", sans-serif;
+  font-size: 0.6rem;
+  font-weight: var(--fw-bold);
+  line-height: 16px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .userDetails {
@@ -219,13 +259,13 @@
 }
 
 .viewProfile {
-  border: 1px solid var(--v-ent-red);
+
   margin-top: 0.5rem;
 }
 
 .logoutBTN {
   outline: none;
-  border: 1px solid var(--v-ent-red);
+
   width: 80px;
   margin-bottom: 0.6rem;
   background-color: var(--v-ent-red);
@@ -233,11 +273,11 @@
 }
 
 .viewProfile:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .logoutBTN:hover {
-  border: 1px solid #FFF;
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 @media only screen and (min-width: 300px) {
@@ -339,4 +379,11 @@
   .searchInput {
     width: 240px;
   }
+}
+.headerLoginBtn {
+  padding: 0.45rem 1.1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  white-space: nowrap;
 }

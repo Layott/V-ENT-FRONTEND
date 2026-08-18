@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V-ENT Admin — KYC Review (Mockup)</title>
+  <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
+  <style>
+    @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
+    /* ── Clash Grotesk (mirroring clash-grotesk.css) ────────────────── */
+    @font-face {
+      font-family: "ClashGrotesk-Regular";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Regular.woff") format("woff");
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Light";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Light.woff") format("woff");
+      font-weight: 300; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Medium";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Medium.woff") format("woff");
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Semibold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Semibold.woff") format("woff");
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: "ClashGrotesk-Bold";
+      src: url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff2") format("woff2"),
+           url("../../public/fonts/clash_grotesk/ClashGrotesk-Bold.woff") format("woff");
+      font-weight: 700; font-display: swap;
+    }
+
+    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    :root {
+      --v-ent-red:        #ED1C24;
+      --v-ent-light-red:  #FF3B45;
+      --v-ent-grn:        #2E8B3E;
+      --v-ent-light-grn:  #3FB554;
+      --overlay-gray:     #212225;
+      --surface-2:        #303136;
+      --page-bg:          #131316;
+      --header-bg:        #17181A;
+      --border-subtle:    rgba(255,255,255,0.25);
+      --border-faint:     rgba(255,255,255,0.08);
+      --border-divider:   rgba(204,204,204,0.3);
+      --text-white:       #ffffff;
+      --text-muted:       #A7A6A6;
+      --text-dim:         rgba(255,255,255,0.45);
+      --active-nav-bg:    rgba(237,28,36,0.2392);
+      --sidebar-w:        250px;
+      --sidebar-w-md:     180px;
+      --header-h:         60px;
+      --bottom-nav-h:     70px;
+      --v-ent-red-deep:   #8A0F18;
+      --v-ent-red-soft:   #FF3B45;
+      --v-ent-gold:       #C9A227;
+      --v-ent-gold-bright:#E8BF3D;
+      --v-ent-gold-dim:   #7A6118;
+      --gold-soft-bg:     rgba(201,162,39,0.18);
+      --confirm-green:    #2E8B3E;
+      --confirm-green-hi: #3FB554;
+      --font-display:     "Editorial New", "ClashGrotesk-Bold", Georgia, serif;
+      --font-body:        "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      --font-numeric:     "ClashGrotesk-Medium", "Cabinet Grotesk", monospace;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Cabinet Grotesk", "ClashGrotesk-Regular", "Inter", system-ui, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR — matches Sidebar.module.css exactly
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background-color: var(--page-bg);
+      border-right: 0.5px solid var(--border-subtle);
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    .logo-container {
+      width: 100%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-left: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .logo-img  { height: 25px; width: auto; }
+    .logo-text {
+      font-family: "ClashGrotesk-Medium", sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--v-ent-red);
+    }
+    .admin-role-row {
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 0.5px solid var(--border-faint);
+    }
+    .role-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .role-super { background: rgba(237,28,36,0.15); color: var(--v-ent-red); border: 1px solid rgba(237,28,36,0.3); }
+    .sidebar-nav { margin-top: 0.25rem; flex: 1; }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0 0 1rem;
+    }
+    .nav-section-label {
+      width: calc(100% - 1.5rem);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0.75rem 0.75rem 0.2rem;
+    }
+    .sidebar-item {
+      display: flex;
+      min-height: 20px;
+      align-items: center;
+      gap: 0.5rem;
+      width: calc(100% - 1.5rem);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { border-color: #6e6e6e; }
+    .sidebar-item.active-item { background-color: var(--active-nav-bg); border-color: transparent; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      border-radius: 5px;
+      text-decoration: none;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-white);
+    }
+    .nav-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background-color: var(--v-ent-red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+    }
+    .nav-divider {
+      width: calc(100% - 1.5rem);
+      height: 1px;
+      background: var(--border-divider);
+      margin: 0.35rem 0;
+    }
+    .sidebar-footer {
+      padding: 0.75rem 0.75rem 1rem;
+      border-top: 0.5px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      border: 1px solid transparent;
+    }
+    .sidebar-user:hover { border-color: #6e6e6e; }
+    .s-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      color: #fff; flex-shrink: 0;
+    }
+    .s-user-info { flex: 1; overflow: hidden; }
+    .s-username {
+      font-size: 0.8rem; font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
+
+    /* ════════════════════════════════════════════════════════════════
+       HEADER
+    ════════════════════════════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--header-h);
+      background-color: var(--header-bg);
+      border-bottom: 0.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem 0 2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .header-breadcrumb {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .header-breadcrumb span { color: rgba(255,255,255,0.75); }
+    .hamburger {
+      display: none;
+      background: transparent; border: none; cursor: pointer;
+      padding: 0.25rem; color: var(--text-white);
+    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .header-search {
+      display: flex; align-items: center;
+      background-color: var(--surface-2);
+      border-radius: 5px; padding: 5px 12px; gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      transition: border-color 0.2s;
+    }
+    .header-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .header-search input {
+      background: transparent; border: none; outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; width: 180px;
+    }
+    .header-search input::placeholder { color: var(--text-dim); }
+    .notif-btn {
+      width: 32px; height: 32px; border-radius: 5px;
+      background: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; flex-shrink: 0;
+    }
+    .notif-btn:hover { border-color: #6e6e6e; }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background-color: var(--v-ent-red);
+    }
+    .header-admin {
+      position: relative; display: flex; align-items: center; gap: 0.5rem;
+      cursor: pointer; padding: 0.25rem 0.4rem;
+      border-radius: 5px; border: 1px solid transparent;
+      transition: border-color 0.2s; user-select: none;
+    }
+    .header-admin:hover { border-color: #6e6e6e; }
+    .h-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background-color: var(--v-ent-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700; color: #fff;
+    }
+    .h-admin-info { display: flex; flex-direction: column; align-items: flex-end; }
+    .h-name  { font-size: 0.8rem; font-weight: 600; }
+    .h-role  { font-size: 0.65rem; color: var(--text-dim); }
+    .caret {
+      width: 0; height: 0;
+      border-left: 4px solid transparent; border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.5); flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .header-admin.open .caret { transform: rotate(180deg); }
+    .profile-dropdown {
+      display: none; position: absolute;
+      top: calc(100% + 8px); right: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px; min-width: 160px; z-index: 400;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55); overflow: hidden;
+    }
+    .profile-dropdown.open { display: block; }
+    .pd-user { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-faint); }
+    .pd-name  { font-size: 0.85rem; font-weight: 600; color: var(--text-white); }
+    .pd-role  { font-size: 0.7rem; color: var(--text-dim); font-family: "ClashGrotesk-Light", sans-serif; margin-top: 0.1rem; }
+    .pd-item {
+      display: block; width: 100%; text-align: left;
+      padding: 0.6rem 1rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      text-decoration: none; background: transparent;
+      border: none; cursor: pointer; transition: background 0.15s;
+    }
+    .pd-item:hover { background-color: rgba(255,255,255,0.06); }
+    .pd-item.danger { color: var(--v-ent-red); border-top: 1px solid var(--border-faint); }
+
+    /* ════════════════════════════════════════════════════════════════
+       NOTIFICATION PANEL
+    ════════════════════════════════════════════════════════════════ */
+    .notif-panel {
+      display: none; position: fixed;
+      top: calc(var(--header-h) + 4px); right: 1.5rem;
+      width: 320px; background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle); border-radius: 8px;
+      z-index: 400; box-shadow: 0 8px 24px rgba(0,0,0,0.55); overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-faint);
+    }
+    .notif-panel-title { font-size: 0.9rem; font-weight: 600; }
+    .notif-mark-read {
+      font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.75rem;
+      color: var(--v-ent-grn); cursor: pointer; background: none; border: none;
+    }
+    .notif-mark-read:hover { color: var(--v-ent-light-grn); }
+    .notif-item {
+      display: flex; gap: 0.75rem; padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-faint);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .notif-item:hover { background: rgba(255,255,255,0.04); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item.unread { background: rgba(237,28,36,0.04); }
+    .notif-icon-wrap {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.8rem;
+    }
+    .notif-body { flex: 1; }
+    .notif-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.4; font-family: "ClashGrotesk-Light", sans-serif; }
+    .notif-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: "ClashGrotesk-Light", sans-serif; }
+    .unread-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ent-red); flex-shrink: 0; margin-top: 6px; }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOBILE BOTTOM NAV
+    ════════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      display: none; position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background-color: var(--page-bg);
+      border-top: 0.5px solid var(--border-subtle);
+      z-index: 300; flex-direction: row;
+      align-items: center; justify-content: space-around; padding: 0 0.5rem;
+    }
+    .bottom-nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.2rem;
+      padding: 0.25rem 0.5rem; border-radius: 5px;
+      border: 1px solid transparent; min-width: 44px; min-height: 44px;
+      cursor: pointer; text-decoration: none;
+    }
+    .bottom-nav-item:hover { border-color: #6e6e6e; }
+    .bottom-nav-item.active-bn .bn-icon { color: var(--v-ent-red); stroke: var(--v-ent-red); }
+    .bottom-nav-item.active-bn .bn-label { color: var(--v-ent-red); }
+    .bn-icon { width: 1.35rem; height: 1.35rem; color: #797B86; }
+    .bn-label { font-family: "ClashGrotesk-Medium", sans-serif; font-size: 0.7rem; color: #797B86; }
+
+    /* ════════════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ════════════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 190;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ════════════════════════════════════════════════════════════════
+       CONTENT AREA
+    ════════════════════════════════════════════════════════════════ */
+    .content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 2rem;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.75rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem;
+    }
+    .page-subtitle {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.85rem; color: var(--text-dim);
+    }
+    .page-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+
+    /* ── Shared buttons ──────────────────────────────────────────── */
+    .btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      padding: 0.45rem 1rem; border-radius: 5px;
+      cursor: pointer; height: 37px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, border-color 0.3s; white-space: nowrap;
+    }
+    .ghostBTN { background: transparent; border: 1px solid var(--border-faint); color: var(--text-muted); }
+    .ghostBTN:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .grnBTN   { background-color: var(--v-ent-grn); border: 1px solid var(--v-ent-grn); color: #fff; }
+    .grnBTN:hover { background-color: var(--v-ent-light-grn); color: #000; }
+    .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
+    .redBTN:hover { background-color: var(--v-ent-light-red); }
+
+    /* ── Shared card ─────────────────────────────────────────────── */
+    .card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px; padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+    }
+
+    /* ── Status badges ───────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 2px 7px; border-radius: 20px; white-space: nowrap;
+    }
+    .s-pending    { background: rgba(255,193,7,0.12);   color: #FFC107; }
+    .s-approved   { background: rgba(76,175,80,0.12);   color: var(--v-ent-grn); }
+    .s-rejected   { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
+    .s-resubmit   { background: rgba(33,150,243,0.12);  color: #64B5F6; }
+    .s-doc-natid  { background: rgba(156,39,176,0.12);  color: #CE93D8; }
+    .s-doc-dl     { background: rgba(255,152,0,0.12);   color: #FFB74D; }
+    .s-doc-pass   { background: rgba(0,188,212,0.12);   color: #4DD0E1; }
+
+    /* ── Action buttons (card-level) ─────────────────────────────── */
+    .act-group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .act-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 4px; cursor: pointer;
+      border: none; min-height: 24px; white-space: nowrap;
+    }
+    .act-approve { background: rgba(76,175,80,0.15);  color: var(--v-ent-grn); }
+    .act-approve:hover { background: rgba(76,175,80,0.28); }
+    .act-reject  { background: rgba(237,28,36,0.12);  color: var(--v-ent-red); }
+    .act-reject:hover  { background: rgba(237,28,36,0.25); }
+
+    /* ════════════════════════════════════════════════════════════════
+       STAT CARDS ROW (3 cards)
+    ════════════════════════════════════════════════════════════════ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .stat-card { position: relative; }
+    .stat-icon-wrap {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      width: 32px; height: 32px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .ic-yellow { background: rgba(255,193,7,0.15); }
+    .ic-grn    { background: rgba(76,175,80,0.15); }
+    .ic-red    { background: rgba(237,28,36,0.15); }
+    .stat-label {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-dim); margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-family: "ClashGrotesk-Bold", sans-serif;
+      font-size: 1.6rem; font-weight: 700; color: #fff;
+      line-height: 1; margin-bottom: 0.4rem;
+    }
+    .stat-delta { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.72rem; }
+    .delta-up   { color: var(--v-ent-grn); }
+    .delta-neu  { color: var(--text-dim); }
+    .delta-down { color: var(--v-ent-red); }
+
+    /* ════════════════════════════════════════════════════════════════
+       FILTER TABS
+    ════════════════════════════════════════════════════════════════ */
+    .filter-tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: #6e6e6e; color: var(--text-white); }
+    .tab-btn.active-tab {
+      background-color: var(--overlay-gray);
+      border-color: var(--border-subtle);
+      color: var(--text-white);
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       FILTER ROW (search + sort)
+    ════════════════════════════════════════════════════════════════ */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .filter-search {
+      flex: 1; min-width: 200px;
+      display: flex; align-items: center; gap: 0.5rem;
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px; padding: 0.55rem 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .filter-search:focus-within { border-color: rgba(255,255,255,0.3); }
+    .filter-search input {
+      background: transparent; border: none; outline: none;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.88rem; width: 100%;
+    }
+    .filter-search input::placeholder { color: var(--text-dim); }
+    .sort-select {
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 5px; padding: 0.55rem 0.9rem;
+      color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; cursor: pointer; outline: none;
+    }
+    .sort-select option { background-color: var(--surface-2); }
+
+    /* ════════════════════════════════════════════════════════════════
+       KYC CARD GRID
+    ════════════════════════════════════════════════════════════════ */
+    .kyc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    /* KYC individual card */
+    .kyc-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px;
+      border: 1px solid var(--border-faint);
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .kyc-card:hover { border-color: rgba(255,255,255,0.18); }
+    .kyc-card.card-approved {
+      border-color: rgba(76,175,80,0.35);
+      box-shadow: 0 0 0 1px rgba(76,175,80,0.12);
+    }
+    .kyc-card.card-rejected {
+      border-color: rgba(237,28,36,0.35);
+      box-shadow: 0 0 0 1px rgba(237,28,36,0.1);
+    }
+
+    /* Card top: user info */
+    .kyc-card-top {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1rem 0.75rem;
+    }
+    .kyc-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background-color: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700;
+      color: rgba(255,255,255,0.65); flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .kyc-user-info { flex: 1; min-width: 0; }
+    .kyc-username {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.92rem; font-weight: 600; color: var(--text-white);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .kyc-email {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.72rem; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-top: 0.1rem;
+    }
+    .kyc-join {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.68rem; color: rgba(255,255,255,0.28);
+      margin-top: 0.1rem;
+    }
+
+    /* Card meta row: doc type badge + status badge + time */
+    .kyc-card-meta {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0 1rem 0.75rem; flex-wrap: wrap;
+    }
+    .kyc-time {
+      margin-left: auto;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.7rem; color: var(--text-dim);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* Document preview placeholder */
+    .doc-preview {
+      margin: 0 1rem 0.75rem;
+      width: calc(100% - 2rem);
+      height: 150px;
+      background-color: var(--surface-2);
+      border-radius: 6px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.5rem;
+      color: rgba(255,255,255,0.22);
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .doc-preview-icon {
+      width: 28px; height: 28px; opacity: 0.35;
+    }
+    .doc-preview-label { opacity: 0.55; }
+    .doc-preview-lock {
+      position: absolute; bottom: 8px; right: 8px;
+      font-size: 0.7rem; opacity: 0.28;
+    }
+
+    /* Card actions */
+    .kyc-card-actions {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border-faint);
+      background: rgba(0,0,0,0.12);
+    }
+    .kyc-act-btn {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.78rem; font-weight: 600;
+      padding: 0.45rem 1rem; border-radius: 5px;
+      cursor: pointer; border: none; flex: 1;
+      height: 34px; display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.2s, opacity 0.2s;
+      white-space: nowrap;
+    }
+    .kyc-act-btn:disabled { cursor: not-allowed; opacity: 0.4; }
+    .kyc-btn-approve {
+      background: rgba(76,175,80,0.15); color: var(--v-ent-grn);
+      border: 1px solid rgba(76,175,80,0.25);
+    }
+    .kyc-btn-approve:not(:disabled):hover { background: rgba(76,175,80,0.28); }
+    .kyc-btn-reject {
+      background: rgba(237,28,36,0.12); color: var(--v-ent-red);
+      border: 1px solid rgba(237,28,36,0.2);
+    }
+    .kyc-btn-reject:not(:disabled):hover { background: rgba(237,28,36,0.25); }
+    .kyc-resolved-state {
+      flex: 1; text-align: center;
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.01em;
+    }
+    .kyc-resolved-state.approved { color: var(--v-ent-grn); }
+    .kyc-resolved-state.rejected { color: var(--v-ent-red); }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 3rem 1rem; gap: 0.75rem;
+      color: var(--text-dim);
+    }
+    .empty-state-icon { font-size: 2.5rem; opacity: 0.3; }
+    .empty-state-text {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.9rem; color: rgba(255,255,255,0.3); text-align: center;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       ACTIVITY FEED (below grid)
+    ════════════════════════════════════════════════════════════════ */
+    .feed-card {
+      background-color: var(--overlay-gray);
+      border-radius: 10px; padding: 1.25rem;
+      border: 1px solid var(--border-faint);
+      margin-top: 1.5rem;
+    }
+    .feed-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: "ClashGrotesk-Semibold", sans-serif;
+      font-size: 1rem; font-weight: 600;
+    }
+    .feed-note {
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.65rem; color: rgba(255,255,255,0.28); font-style: italic;
+    }
+    .feed-list {
+      overflow-y: auto; max-height: 240px;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .feed-list::-webkit-scrollbar { width: 4px; }
+    .feed-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .feed-item { display: flex; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(204,204,204,0.08); }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-dot-col { display: flex; flex-direction: column; align-items: center; padding-top: 5px; }
+    .feed-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .feed-line { flex: 1; width: 1px; background: rgba(255,255,255,0.06); margin-top: 3px; min-height: 12px; }
+    .feed-body { flex: 1; }
+    .feed-text { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.4; margin-bottom: 0.15rem; }
+    .feed-text strong { color: #fff; font-family: "ClashGrotesk-Regular", sans-serif; }
+    .feed-meta { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .feed-time  { font-size: 0.65rem; color: rgba(255,255,255,0.3); font-family: "ClashGrotesk-Light", sans-serif; }
+    .feed-actor { font-size: 0.65rem; color: rgba(237,28,36,0.75); font-family: "ClashGrotesk-Light", sans-serif; }
+
+    /* ════════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ════════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      z-index: 9999; display: flex; flex-direction: column;
+      gap: 0.6rem; pointer-events: none;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 0.65rem;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 0.75rem 1rem;
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.85rem; color: var(--text-white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      pointer-events: all; animation: slideUp 0.25s ease forwards; max-width: 340px;
+    }
+    .toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast-msg { flex: 1; }
+    .toast-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem; line-height: 1; padding: 0 0.1rem; }
+    .toast-close:hover { color: var(--text-white); }
+    @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(4px); } }
+
+    /* ════════════════════════════════════════════════════════════════
+       REJECT MODAL
+    ════════════════════════════════════════════════════════════════ */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: none; align-items: center; justify-content: center;
+      z-index: 500; padding: 1rem;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background-color: var(--overlay-gray);
+      border: 1px solid var(--border-faint);
+      border-radius: 10px; padding: 1.75rem;
+      width: 100%; max-width: 440px; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1.1rem; right: 1.1rem;
+      width: 26px; height: 26px; border-radius: 50%;
+      background-color: var(--surface-2); border: none;
+      color: var(--text-white); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+    }
+    .modal-close:hover { background-color: rgba(237,28,36,0.2); }
+    .modal-title { font-family: "ClashGrotesk-Semibold", sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .modal-sub   { font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.4rem; }
+    .form-group  { margin-bottom: 1rem; }
+    .form-label  { display: block; font-family: "ClashGrotesk-Light", sans-serif; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .form-select {
+      width: 100%; background-color: var(--surface-2);
+      border: 1px solid var(--border-faint); border-radius: 5px;
+      padding: 0.7rem 0.9rem; color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.9rem; outline: none; cursor: pointer;
+    }
+    .form-select option { background-color: var(--surface-2); }
+    .form-textarea {
+      width: 100%; background-color: var(--surface-2);
+      border: 1px solid var(--border-faint); border-radius: 5px;
+      padding: 0.7rem 0.9rem; color: var(--text-white);
+      font-family: "ClashGrotesk-Regular", sans-serif;
+      font-size: 0.9rem; outline: none; resize: vertical;
+      min-height: 90px; transition: border-color 0.2s;
+    }
+    .form-textarea:focus { border-color: rgba(255,255,255,0.3); }
+    .form-textarea::placeholder { color: var(--text-dim); }
+    .btn-row { display: flex; gap: 0.65rem; margin-top: 0.25rem; }
+    .warning-banner {
+      background: rgba(237,28,36,0.06);
+      border: 1px solid rgba(237,28,36,0.15);
+      border-radius: 6px; padding: 0.65rem 0.85rem;
+      margin-bottom: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem; color: rgba(255,255,255,0.55); line-height: 1.6;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOCKUP NOTES
+    ════════════════════════════════════════════════════════════════ */
+    .mockup-notes {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 1.25rem;
+      font-family: "ClashGrotesk-Light", sans-serif;
+      font-size: 0.78rem; color: rgba(255,255,255,0.32);
+      line-height: 1.9; margin-top: 1.75rem;
+    }
+    .mockup-notes strong { color: rgba(255,255,255,0.48); font-family: "ClashGrotesk-Regular", sans-serif; }
+
+    /* ════════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ════════════════════════════════════════════════════════════════ */
+    @media (max-width: 767px) {
+      :root { --sidebar-w: 250px; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .header { left: 0; padding: 0 1rem; }
+      .hamburger { display: flex; }
+      .h-admin-info { display: none; }
+      .content {
+        margin-left: 0; padding: 1.25rem 1rem;
+        padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+      }
+      .bottom-nav { display: flex; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-title { font-size: 1.25rem; }
+      .stats-row { grid-template-columns: 1fr; gap: 0.65rem; }
+      .kyc-grid { grid-template-columns: 1fr; }
+      .header-search { display: none; }
+      #toast-container { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; }
+      .overlay { align-items: flex-end; padding: 0; }
+      .modal { border-radius: 12px 12px 0 0; max-width: 100%; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --sidebar-w: var(--sidebar-w-md); }
+      .header { left: var(--sidebar-w-md); }
+      .sidebar { width: var(--sidebar-w-md); }
+      .logo-text { font-size: 1.5rem; }
+      .content { margin-left: var(--sidebar-w-md); padding: 1.5rem; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .kyc-grid { grid-template-columns: 1fr; }
+      .header-search input { width: 120px; }
+    }
+    @media (min-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .kyc-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1920px) {
+      .content { padding: 2.5rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <!-- Logo -->
+  <div class="logo-container">
+    <a class="logo-link" href="#">
+      <img src="../../public/images/logo_mark_red.svg" alt="V-ENT" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-text">v-ent</span>
+    </a>
+  </div>
+
+  <!-- Role indicator -->
+  <div class="admin-role-row">
+    <span class="role-badge role-super">Super Admin</span>
+    <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.72rem;color:var(--text-dim);">superadmin</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <ul class="sidebar-list">
+
+      <li class="nav-section-label">Overview</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="admin-overview.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Management</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+          <span class="nav-badge">3</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Tournaments
+        </a>
+      </li>
+      <!-- KYC Review — ACTIVE -->
+      <li class="sidebar-item active-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          KYC Review
+          <span class="nav-badge" id="kyc-nav-badge">7</span>
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">Finance</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Payouts
+          <span class="nav-badge">12</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+      <li class="nav-section-label">System</li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="nav-link" href="#" style="color:var(--text-muted);">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- Footer — logged-in user -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="s-avatar">SA</div>
+      <div class="s-user-info">
+        <div class="s-username">superadmin</div>
+        <div class="s-user-role">Super Admin</div>
+      </div>
+      <svg style="width:13px;height:13px;color:rgba(255,255,255,0.28);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="header-breadcrumb">
+      Admin&nbsp;/&nbsp;<span>KYC Review</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <!-- Global search -->
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search users, tournaments..." />
+    </div>
+
+    <!-- Notification bell -->
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="header-admin" id="profile-trigger" onclick="toggleProfileDropdown(event)">
+      <div class="h-admin-info">
+        <span class="h-name">superadmin</span>
+        <span class="h-role">Super Admin</span>
+      </div>
+      <div class="h-avatar">SA</div>
+      <div class="caret"></div>
+      <div class="profile-dropdown" id="profile-dropdown" onclick="event.stopPropagation()">
+        <div class="pd-user">
+          <div class="pd-name">superadmin</div>
+          <div class="pd-role">Super Admin · admin@v-ent.gg</div>
+        </div>
+        <button class="pd-item" onclick="showToast('Settings page coming soon.', 'info')">Settings</button>
+        <button class="pd-item" onclick="showToast('Switched to Finance role view.', 'info')">Switch Role View</button>
+        <button class="pd-item danger" onclick="showToast('Logged out. Redirecting to /admin/login…', 'error')">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notification panel -->
+<div class="notif-panel" id="notif-panel" onclick="event.stopPropagation()">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(255,193,7,0.1);">📄</div>
+    <div class="notif-body">
+      <p class="notif-text">7 KYC documents awaiting review</p>
+      <p class="notif-time">3h ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🔄</div>
+    <div class="notif-body">
+      <p class="notif-text">adaeze_wins resubmitted KYC documents</p>
+      <p class="notif-time">1d ago</p>
+    </div>
+    <div class="unread-pip"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon-wrap" style="background:rgba(76,175,80,0.1);">✓</div>
+    <div class="notif-body">
+      <p class="notif-text">KYC approved for wale_gg</p>
+      <p class="notif-time">5d ago</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<main class="content">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">KYC Review</h1>
+      <p class="page-subtitle">Identity verification queue · 7 pending review</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn ghostBTN" onclick="showToast('KYC report exported as CSV.', 'success')">Export CSV</button>
+    </div>
+  </div>
+
+  <!-- ── 3 Stat cards ──────────────────────────────────────────── -->
+  <div class="stats-row">
+
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-yellow">⏳</div>
+      <p class="stat-label">Pending Review</p>
+      <p class="stat-value" id="stat-pending">7</p>
+      <p class="stat-delta delta-neu">Awaiting action</p>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-grn">✓</div>
+      <p class="stat-label">Approved (30d)</p>
+      <p class="stat-value">142</p>
+      <p class="stat-delta delta-up">↑ 18% vs prior month</p>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-icon-wrap ic-red">✕</div>
+      <p class="stat-label">Rejected (30d)</p>
+      <p class="stat-value">18</p>
+      <p class="stat-delta delta-neu">Stable this month</p>
+    </div>
+
+  </div>
+
+  <!-- ── Filter tabs ────────────────────────────────────────────── -->
+  <div class="filter-tabs-row">
+    <button class="tab-btn active-tab" data-tab="all" onclick="setTab(this, 'all')">All</button>
+    <button class="tab-btn" data-tab="pending" onclick="setTab(this, 'pending')">Pending</button>
+    <button class="tab-btn" data-tab="approved" onclick="setTab(this, 'approved')">Approved</button>
+    <button class="tab-btn" data-tab="rejected" onclick="setTab(this, 'rejected')">Rejected</button>
+    <button class="tab-btn" data-tab="resubmitted" onclick="setTab(this, 'resubmitted')">Resubmitted</button>
+  </div>
+
+  <!-- ── Filter row: search + sort ─────────────────────────────── -->
+  <div class="filter-row">
+    <div class="filter-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="kyc-search" placeholder="Search by username…" oninput="applyFilters()" />
+    </div>
+    <select class="sort-select" id="kyc-sort" onchange="applyFilters()">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="resubmit">Resubmissions first</option>
+    </select>
+  </div>
+
+  <!-- ── KYC Card Grid ──────────────────────────────────────────── -->
+  <div class="kyc-grid" id="kyc-grid">
+
+    <!-- ── CARD 1: ngozi_gamer — Pending ── -->
+    <div class="kyc-card" data-status="pending" data-username="ngozi_gamer" data-age-rank="1">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar">NG</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">ngozi_gamer</p>
+          <p class="kyc-email">ngozi.okonkwo@gmail.com</p>
+          <p class="kyc-join">Joined Jan 14, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-pending">Submitted</span>
+        <span class="kyc-time">2h ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <button class="kyc-act-btn kyc-btn-approve" onclick="approveKYC(this, 'ngozi_gamer')">Approve</button>
+        <button class="kyc-act-btn kyc-btn-reject"  onclick="openRejectModal('ngozi_gamer', this)">Reject</button>
+      </div>
+    </div>
+
+    <!-- ── CARD 2: bk_esports — Pending ── -->
+    <div class="kyc-card" data-status="pending" data-username="bk_esports" data-age-rank="2">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar">BK</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">bk_esports</p>
+          <p class="kyc-email">bukola.k@outlook.com</p>
+          <p class="kyc-join">Joined Feb 2, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-dl">Driver's License</span>
+        <span class="badge s-pending">Submitted</span>
+        <span class="kyc-time">5h ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <button class="kyc-act-btn kyc-btn-approve" onclick="approveKYC(this, 'bk_esports')">Approve</button>
+        <button class="kyc-act-btn kyc-btn-reject"  onclick="openRejectModal('bk_esports', this)">Reject</button>
+      </div>
+    </div>
+
+    <!-- ── CARD 3: tolu_plays — Pending ── -->
+    <div class="kyc-card" data-status="pending" data-username="tolu_plays" data-age-rank="3">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar">TP</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">tolu_plays</p>
+          <p class="kyc-email">toluwalase.p@yahoo.com</p>
+          <p class="kyc-join">Joined Jan 28, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-pass">Int'l Passport</span>
+        <span class="badge s-pending">Submitted</span>
+        <span class="kyc-time">8h ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <button class="kyc-act-btn kyc-btn-approve" onclick="approveKYC(this, 'tolu_plays')">Approve</button>
+        <button class="kyc-act-btn kyc-btn-reject"  onclick="openRejectModal('tolu_plays', this)">Reject</button>
+      </div>
+    </div>
+
+    <!-- ── CARD 4: emeka_ctrl — Pending ── -->
+    <div class="kyc-card" data-status="pending" data-username="emeka_ctrl" data-age-rank="4">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar">EC</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">emeka_ctrl</p>
+          <p class="kyc-email">emeka.ctrl@proton.me</p>
+          <p class="kyc-join">Joined Dec 10, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-pending">Submitted</span>
+        <span class="kyc-time">1d ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <button class="kyc-act-btn kyc-btn-approve" onclick="approveKYC(this, 'emeka_ctrl')">Approve</button>
+        <button class="kyc-act-btn kyc-btn-reject"  onclick="openRejectModal('emeka_ctrl', this)">Reject</button>
+      </div>
+    </div>
+
+    <!-- ── CARD 5: adaeze_wins — Resubmitted ── -->
+    <div class="kyc-card" data-status="resubmitted" data-username="adaeze_wins" data-age-rank="5">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(33,150,243,0.25);color:#64B5F6;">AW</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">adaeze_wins</p>
+          <p class="kyc-email">adaeze.w@gmail.com</p>
+          <p class="kyc-join">Joined Nov 5, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-resubmit">Resubmitted</span>
+        <span class="kyc-time">1d ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <button class="kyc-act-btn kyc-btn-approve" onclick="approveKYC(this, 'adaeze_wins')">Approve</button>
+        <button class="kyc-act-btn kyc-btn-reject"  onclick="openRejectModal('adaeze_wins', this)">Reject</button>
+      </div>
+    </div>
+
+    <!-- ── CARD 6: wale_gg — Approved ── -->
+    <div class="kyc-card card-approved" data-status="approved" data-username="wale_gg" data-age-rank="7">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">WG</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">wale_gg</p>
+          <p class="kyc-email">wale.gaming@gmail.com</p>
+          <p class="kyc-join">Joined Oct 19, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-dl">Driver's License</span>
+        <span class="badge s-approved">Approved</span>
+        <span class="kyc-time">5d ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state approved">Approved ✓</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 7: sola_prg — Approved ── -->
+    <div class="kyc-card card-approved" data-status="approved" data-username="sola_prg" data-age-rank="8">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">SP</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">sola_prg</p>
+          <p class="kyc-email">sola.prg@vent.gg</p>
+          <p class="kyc-join">Joined Sep 3, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-pass">Int'l Passport</span>
+        <span class="badge s-approved">Approved</span>
+        <span class="kyc-time">1w ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state approved">Approved ✓</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 8: femtech_pro — Approved ── -->
+    <div class="kyc-card card-approved" data-status="approved" data-username="femtech_pro" data-age-rank="9">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">FP</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">femtech_pro</p>
+          <p class="kyc-email">femtech.pro@v-ent.gg</p>
+          <p class="kyc-join">Joined Aug 12, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-approved">Approved</span>
+        <span class="kyc-time">2w ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state approved">Approved ✓</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 9: adaeze_wins (first submission) — Approved ── -->
+    <div class="kyc-card card-approved" data-status="approved" data-username="adaeze_wins_v1" data-age-rank="6">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(76,175,80,0.2);color:var(--v-ent-grn);">AW</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">adaeze_wins <span style="font-size:0.65rem;color:var(--text-dim);font-family:'ClashGrotesk-Light',sans-serif;">(1st submission)</span></p>
+          <p class="kyc-email">adaeze.w@gmail.com</p>
+          <p class="kyc-join">Joined Nov 5, 2025</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-approved">Approved</span>
+        <span class="kyc-time">3d ago</span>
+      </div>
+      <div class="doc-preview">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state approved">Approved ✓</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 10: spammer_01 — Rejected ── -->
+    <div class="kyc-card card-rejected" data-status="rejected" data-username="spammer_01" data-age-rank="10">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(237,28,36,0.15);color:var(--v-ent-red);">S1</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">spammer_01</p>
+          <p class="kyc-email">anon_s01@tempmail.io</p>
+          <p class="kyc-join">Joined Mar 1, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-natid">National ID</span>
+        <span class="badge s-rejected">Rejected</span>
+        <span class="kyc-time">2d ago</span>
+      </div>
+      <div class="doc-preview" style="border-color:rgba(237,28,36,0.2);">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state rejected">Rejected ✗</span>
+        <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.68rem;color:var(--text-dim);flex-shrink:0;">Fake/altered document</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 11: fraud_acc — Rejected ── -->
+    <div class="kyc-card card-rejected" data-status="rejected" data-username="fraud_acc" data-age-rank="11">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(237,28,36,0.15);color:var(--v-ent-red);">FA</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">fraud_acc</p>
+          <p class="kyc-email">fraud_acc@proton.me</p>
+          <p class="kyc-join">Joined Feb 27, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-dl">Driver's License</span>
+        <span class="badge s-rejected">Rejected</span>
+        <span class="kyc-time">3d ago</span>
+      </div>
+      <div class="doc-preview" style="border-color:rgba(237,28,36,0.2);">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state rejected">Rejected ✗</span>
+        <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.68rem;color:var(--text-dim);flex-shrink:0;">Name mismatch</span>
+      </div>
+    </div>
+
+    <!-- ── CARD 12: temp_user — Rejected ── -->
+    <div class="kyc-card card-rejected" data-status="rejected" data-username="temp_user" data-age-rank="12">
+      <div class="kyc-card-top">
+        <div class="kyc-avatar" style="background:rgba(237,28,36,0.15);color:var(--v-ent-red);">TU</div>
+        <div class="kyc-user-info">
+          <p class="kyc-username">temp_user</p>
+          <p class="kyc-email">temp_user99@gmail.com</p>
+          <p class="kyc-join">Joined Feb 14, 2026</p>
+        </div>
+      </div>
+      <div class="kyc-card-meta">
+        <span class="badge s-doc-pass">Int'l Passport</span>
+        <span class="badge s-rejected">Rejected</span>
+        <span class="kyc-time">1w ago</span>
+      </div>
+      <div class="doc-preview" style="border-color:rgba(237,28,36,0.2);">
+        <svg class="doc-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        <span class="doc-preview-label">ID Document Preview</span>
+        <span class="doc-preview-lock">🔒</span>
+      </div>
+      <div class="kyc-card-actions">
+        <span class="kyc-resolved-state rejected">Rejected ✗</span>
+        <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.68rem;color:var(--text-dim);flex-shrink:0;">Expired document</span>
+      </div>
+    </div>
+
+  </div><!-- /kyc-grid -->
+
+  <!-- ── Activity feed ──────────────────────────────────────────── -->
+  <div class="feed-card">
+    <div class="feed-header">
+      <p class="section-title">KYC Activity Feed</p>
+      <span class="feed-note">Persistent · auto-appended on every action</span>
+    </div>
+    <div class="feed-list" id="kyc-feed-list">
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:var(--v-ent-grn);"></div>
+          <div class="feed-line"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text">KYC <strong>approved</strong> for <strong>adaeze_wins</strong> (1st submission)</p>
+          <div class="feed-meta"><span class="feed-time">3d ago</span><span class="feed-actor">by mod_chidi</span></div>
+        </div>
+      </div>
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:var(--v-ent-red);"></div>
+          <div class="feed-line"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text">KYC <strong>rejected</strong> for <strong>fraud_acc</strong> — Name mismatch</p>
+          <div class="feed-meta"><span class="feed-time">3d ago</span><span class="feed-actor">by superadmin</span></div>
+        </div>
+      </div>
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:rgba(33,150,243,0.9);"></div>
+          <div class="feed-line"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text"><strong>adaeze_wins</strong> resubmitted KYC documents for review</p>
+          <div class="feed-meta"><span class="feed-time">1d ago</span><span class="feed-actor">by system</span></div>
+        </div>
+      </div>
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:var(--v-ent-red);"></div>
+          <div class="feed-line"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text">KYC <strong>rejected</strong> for <strong>spammer_01</strong> — Fake/altered document</p>
+          <div class="feed-meta"><span class="feed-time">2d ago</span><span class="feed-actor">by superadmin</span></div>
+        </div>
+      </div>
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:var(--v-ent-grn);"></div>
+          <div class="feed-line"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text">KYC <strong>approved</strong> for <strong>wale_gg</strong></p>
+          <div class="feed-meta"><span class="feed-time">5d ago</span><span class="feed-actor">by mod_chidi</span></div>
+        </div>
+      </div>
+
+      <div class="feed-item">
+        <div class="feed-dot-col">
+          <div class="feed-dot" style="background:var(--v-ent-red);"></div>
+        </div>
+        <div class="feed-body">
+          <p class="feed-text">KYC <strong>rejected</strong> for <strong>temp_user</strong> — Expired document</p>
+          <div class="feed-meta"><span class="feed-time">1w ago</span><span class="feed-actor">by superadmin</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mockup notes -->
+  <div class="mockup-notes">
+    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    · <strong>Document preview:</strong> Grey placeholder in mockup — real build loads from AWS S3 via CloudFront signed URL (time-limited, private bucket)<br>
+    · <strong>Approve flow:</strong> POST /admin/kyc/&lt;id&gt;/approve/ → card border turns green, buttons disabled, toast fires, feed appended<br>
+    · <strong>Reject flow:</strong> Modal captures reason + optional notes → POST /admin/kyc/&lt;id&gt;/reject/ → card border turns red, feed appended with reason<br>
+    · <strong>Resubmit:</strong> User re-uploads via their profile page after rejection — admin sees updated card with "Resubmitted" badge<br>
+    · <strong>Notifications:</strong> User emailed on approve/reject via AWS SES<br>
+    · <strong>References used:</strong> sidebar → admin-overview.html · cards → user-profile stats cards · badges → admin-overview.html status badges · layout → admin-overview.html content area
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     REJECT MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="reject-modal" onclick="closeRejectModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeRejectModal()">✕</button>
+    <h2 class="modal-title" id="reject-modal-title">Reject KYC</h2>
+    <p class="modal-sub">The user will be notified by email and prompted to resubmit.</p>
+
+    <div class="warning-banner">
+      ⚠ This action is logged permanently in the audit trail. Ensure the reason accurately reflects the document issue before confirming.
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Rejection Reason</label>
+      <select class="form-select" id="reject-reason">
+        <option value="fake">Fake / altered document</option>
+        <option value="mismatch">Name mismatch</option>
+        <option value="expired">Expired document</option>
+        <option value="quality">Low quality image</option>
+        <option value="wrong-type">Wrong document type</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes <span style="color:var(--text-dim);font-size:0.75rem;">(optional — internal only)</span></label>
+      <textarea class="form-textarea" id="reject-notes" placeholder="Add any internal context about this rejection…"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghostBTN" style="flex:1;" onclick="closeRejectModal()">Cancel</button>
+      <button class="btn redBTN"   style="flex:1;" onclick="confirmReject()">Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="admin-overview.html">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="bn-label">Dashboard</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <span class="bn-label">Users</span>
+  </a>
+  <a class="bottom-nav-item active-bn" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span class="bn-label">KYC</span>
+  </a>
+  <a class="bottom-nav-item" href="#">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span class="bn-label">Payouts</span>
+  </a>
+  <a class="bottom-nav-item" href="#" onclick="openSidebar(); return false;">
+    <svg class="bn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    <span class="bn-label">More</span>
+  </a>
+</nav>
+
+<script>
+  /* ════════════════════════════════════════════════════════════════
+     STATE
+  ════════════════════════════════════════════════════════════════ */
+  let activeTab = 'all';
+  let pendingRejectUsername = null;
+  let pendingRejectBtn = null;
+  let pendingCount = 7; // tracks live pending count
+
+  /* ════════════════════════════════════════════════════════════════
+     SIDEBAR
+  ════════════════════════════════════════════════════════════════ */
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     PROFILE DROPDOWN
+  ════════════════════════════════════════════════════════════════ */
+  function toggleProfileDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.getElementById('profile-trigger');
+    const dd = document.getElementById('profile-dropdown');
+    const isOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     NOTIFICATION PANEL
+  ════════════════════════════════════════════════════════════════ */
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-panel');
+    const isOpen = panel.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) panel.classList.add('open');
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-pip').forEach(el => el.style.display = 'none');
+    document.getElementById('notif-dot').style.display = 'none';
+    showToast('All notifications marked as read.', 'success');
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     CLOSE ALL DROPDOWNS
+  ════════════════════════════════════════════════════════════════ */
+  function closeAllDropdowns() {
+    document.getElementById('profile-dropdown').classList.remove('open');
+    document.getElementById('profile-trigger').classList.remove('open');
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeAllDropdowns(); closeRejectModal(); }
+  });
+
+  /* ════════════════════════════════════════════════════════════════
+     TOAST
+  ════════════════════════════════════════════════════════════════ */
+  const TOAST_COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(255,255,255,0.35)' };
+  function showToast(msg, type) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-dot" style="background:${TOAST_COLORS[type] || TOAST_COLORS.info};"></div>
+      <span class="toast-msg">${msg}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 320);
+    }, 3800);
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     FILTER TABS
+  ════════════════════════════════════════════════════════════════ */
+  function setTab(btn, tab) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+    btn.classList.add('active-tab');
+    applyFilters();
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     APPLY FILTERS (tab + search + sort)
+  ════════════════════════════════════════════════════════════════ */
+  function applyFilters() {
+    const query   = (document.getElementById('kyc-search').value || '').trim().toLowerCase();
+    const sort    = document.getElementById('kyc-sort').value;
+    const cards   = Array.from(document.querySelectorAll('.kyc-card'));
+
+    // Show/hide by tab + search
+    let visible = [];
+    cards.forEach(card => {
+      const status   = card.dataset.status;
+      const username = (card.dataset.username || '').toLowerCase();
+
+      const tabMatch = (activeTab === 'all') ||
+                       (activeTab === 'pending'     && (status === 'pending')) ||
+                       (activeTab === 'approved'    && (status === 'approved')) ||
+                       (activeTab === 'rejected'    && (status === 'rejected')) ||
+                       (activeTab === 'resubmitted' && (status === 'resubmitted'));
+
+      const searchMatch = !query || username.includes(query) ||
+                          card.textContent.toLowerCase().includes(query);
+
+      if (tabMatch && searchMatch) {
+        card.style.display = '';
+        visible.push(card);
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Sort visible cards
+    const grid = document.getElementById('kyc-grid');
+    if (sort === 'newest') {
+      visible.sort((a, b) => parseInt(a.dataset.ageRank) - parseInt(b.dataset.ageRank));
+    } else if (sort === 'oldest') {
+      visible.sort((a, b) => parseInt(b.dataset.ageRank) - parseInt(a.dataset.ageRank));
+    } else if (sort === 'resubmit') {
+      visible.sort((a, b) => {
+        const aR = a.dataset.status === 'resubmitted' ? 0 : 1;
+        const bR = b.dataset.status === 'resubmitted' ? 0 : 1;
+        if (aR !== bR) return aR - bR;
+        return parseInt(a.dataset.ageRank) - parseInt(b.dataset.ageRank);
+      });
+    }
+
+    // Re-append in sorted order
+    visible.forEach(card => grid.appendChild(card));
+
+    // Empty state
+    let emptyEl = document.getElementById('empty-state');
+    if (visible.length === 0) {
+      if (!emptyEl) {
+        emptyEl = document.createElement('div');
+        emptyEl.id = 'empty-state';
+        emptyEl.className = 'empty-state';
+        emptyEl.innerHTML = `
+          <div class="empty-state-icon">📄</div>
+          <p class="empty-state-text">No KYC submissions match this filter.</p>
+        `;
+        grid.appendChild(emptyEl);
+      }
+    } else {
+      if (emptyEl) emptyEl.remove();
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     APPROVE KYC
+  ════════════════════════════════════════════════════════════════ */
+  function approveKYC(btn, username) {
+    const card = btn.closest('.kyc-card');
+    if (!card || card.dataset.resolved) return;
+    card.dataset.resolved = '1';
+
+    // Update card visual
+    card.classList.remove('card-rejected');
+    card.classList.add('card-approved');
+    card.dataset.status = 'approved';
+
+    // Replace action buttons with resolved state
+    const actionsDiv = card.querySelector('.kyc-card-actions');
+    actionsDiv.innerHTML = `<span class="kyc-resolved-state approved">Approved ✓</span>`;
+
+    // Update stat counter
+    if (pendingCount > 0) {
+      pendingCount--;
+      document.getElementById('stat-pending').textContent = pendingCount;
+      const navBadge = document.getElementById('kyc-nav-badge');
+      if (navBadge) navBadge.textContent = pendingCount;
+    }
+
+    showToast(`KYC approved for ${username}. They can now participate in paid tournaments.`, 'success');
+    addFeedEntry('success', `KYC <strong>approved</strong> for <strong>${username}</strong>`);
+    applyFilters();
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     REJECT MODAL — OPEN / CLOSE / CONFIRM
+  ════════════════════════════════════════════════════════════════ */
+  function openRejectModal(username, btn) {
+    pendingRejectUsername = username;
+    pendingRejectBtn = btn;
+    document.getElementById('reject-modal-title').textContent = `Reject KYC for ${username}`;
+    document.getElementById('reject-reason').value = 'fake';
+    document.getElementById('reject-notes').value = '';
+    document.getElementById('reject-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRejectModal() {
+    document.getElementById('reject-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    pendingRejectUsername = null;
+    pendingRejectBtn = null;
+  }
+  function confirmReject() {
+    const username = pendingRejectUsername;
+    const btn = pendingRejectBtn;
+    if (!username || !btn) return;
+
+    const reasonEl = document.getElementById('reject-reason');
+    const reasonText = reasonEl.options[reasonEl.selectedIndex].text;
+
+    const card = btn.closest('.kyc-card');
+    if (!card || card.dataset.resolved) { closeRejectModal(); return; }
+    card.dataset.resolved = '1';
+
+    // Update card visual
+    card.classList.remove('card-approved');
+    card.classList.add('card-rejected');
+    card.dataset.status = 'rejected';
+
+    // Replace action buttons with resolved state + reason
+    const actionsDiv = card.querySelector('.kyc-card-actions');
+    actionsDiv.innerHTML = `
+      <span class="kyc-resolved-state rejected">Rejected ✗</span>
+      <span style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.68rem;color:var(--text-dim);flex-shrink:0;">${reasonText}</span>
+    `;
+
+    // Update stat counter
+    if (pendingCount > 0) {
+      pendingCount--;
+      document.getElementById('stat-pending').textContent = pendingCount;
+      const navBadge = document.getElementById('kyc-nav-badge');
+      if (navBadge) navBadge.textContent = pendingCount;
+    }
+
+    closeRejectModal();
+    showToast(`KYC rejected for ${username}. They have been notified by email.`, 'error');
+    addFeedEntry('error', `KYC <strong>rejected</strong> for <strong>${username}</strong> — ${reasonText}`);
+    applyFilters();
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     FEED — prepend new entry
+  ════════════════════════════════════════════════════════════════ */
+  const DOT_COLORS = { success: '#2E8B3E', error: '#ED1C24', info: 'rgba(33,150,243,0.9)' };
+  function addFeedEntry(type, html) {
+    const list = document.getElementById('kyc-feed-list');
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.style.animation = 'slideUp 0.25s ease';
+    item.innerHTML = `
+      <div class="feed-dot-col">
+        <div class="feed-dot" style="background:${DOT_COLORS[type] || DOT_COLORS.info};"></div>
+        <div class="feed-line"></div>
+      </div>
+      <div class="feed-body">
+        <p class="feed-text">${html}</p>
+        <div class="feed-meta">
+          <span class="feed-time">Just now</span>
+          <span class="feed-actor">by superadmin</span>
+        </div>
+      </div>
+    `;
+    list.insertBefore(item, list.firstChild);
+  }
+</script>
+
+</body>
+</html>

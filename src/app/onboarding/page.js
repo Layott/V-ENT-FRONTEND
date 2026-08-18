@@ -1,0 +1,278 @@
+'use client';
+
+import { useState, useRef, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import AuthHeader from '@/components/auth-header/AuthHeader';
+import generalStyles from '@/styles/auth/auth.module.css';
+import styles from './onboarding.module.css';
+import useGames from '@/hooks/useGames';
+
+const STEPS = [
+  { id: 'profile', label: 'Profile' },
+  { id: 'games', label: 'Games' },
+  { id: 'region', label: 'Region' },
+  { id: 'wallet', label: 'Wallet' },
+  { id: 'done', label: 'Done' },
+];
+
+
+const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Other'];
+
+const OnboardingContent = () => {
+  const { gameTitles: GAME_CHOICES } = useGames();
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const [step, setStep] = useState(0);
+  const [handle, setHandle] = useState(session?.user?.username || session?.user?.name || '');
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [games, setGames] = useState([]);
+  const [region, setRegion] = useState('');
+  const [city, setCity] = useState('');
+  const avatarInputRef = useRef(null);
+
+  const isLast = step === STEPS.length - 1;
+
+  const goNext = () => setStep((s) => Math.min(STEPS.length - 1, s + 1));
+  const goBack = () => setStep((s) => Math.max(0, s - 1));
+
+  const finish = () => {
+    // Persist choices locally so the app can pick them up later. No required
+    // network call - onboarding must work in mock mode with no backend.
+    try {
+      localStorage.setItem(
+        'onboarding',
+        JSON.stringify({ handle, games, region, city, completed: true })
+      );
+      localStorage.removeItem('needsOnboarding');
+    } catch {}
+    router.push('/home');
+  };
+
+  const handleAvatar = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => setAvatarPreview(e.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const toggleGame = (name) => {
+    setGames((prev) => {
+      if (prev.includes(name)) return prev.filter((g) => g !== name);
+      if (prev.length >= 15) return prev;
+      return [...prev, name];
+    });
+  };
+
+  const initials = (handle || 'V').split(' ').slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
+
+  return (
+    <div className={generalStyles.pageContainer}>
+      <header className={generalStyles.pageHeader}>
+        <AuthHeader />
+      </header>
+
+      <main className={generalStyles.mainContainer}>
+        <div className={`${generalStyles.formContainer} ${styles.wizard}`}>
+          {/* Progress stepper */}
+          <div className={styles.stepper} role="tablist" aria-label="Onboarding steps">
+            {STEPS.map((s, i) => (
+              <div key={s.id} className={styles.stepItem}>
+                <div
+                  className={`${styles.stepDot} ${i === step ? styles.stepDotActive : ''} ${i < step ? styles.stepDotDone : ''}`}
+                >
+                  {i < step ? (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                  ) : (
+                    i + 1
+                  )}
+                </div>
+                <span className={`${styles.stepLabel} ${i === step ? styles.stepLabelActive : ''}`}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* STEP 1 - Profile */}
+          {step === 0 && (
+            <section className={styles.stepBody}>
+              <h3 className={styles.stepTitle}>Welcome to V-ENT</h3>
+              <p className={styles.stepSub}>Let&apos;s set up your profile. You can skip anything and change it later.</p>
+
+              <div className={styles.avatarRow}>
+                <div className={styles.avatarCircle}>
+                  {avatarPreview ? <img src={avatarPreview} alt="Avatar preview" /> : <span>{initials}</span>}
+                </div>
+                <div>
+                  <button type="button" className={`btn goldBTN ${styles.smallBtn}`} onClick={() => avatarInputRef.current?.click()}>
+                    Upload photo
+                  </button>
+                  <p className={styles.hint}>JPG or PNG · square looks best</p>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className={styles.hiddenInput}
+                    onChange={(e) => handleAvatar(e.target.files?.[0])}
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="handle">Your handle</label>
+                <input
+                  id="handle"
+                  className={styles.input}
+                  type="text"
+                  placeholder="@yourhandle"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                />
+              </div>
+            </section>
+          )}
+
+          {/* STEP 2 - Favorite games */}
+          {step === 1 && (
+            <section className={styles.stepBody}>
+              <h3 className={styles.stepTitle}>Pick your favorite games</h3>
+              <p className={styles.stepSub}>We&apos;ll use these to surface the right tournaments. Choose as many as you like.</p>
+
+              <div className={styles.gameGrid}>
+                {GAME_CHOICES.map((g) => {
+                  const on = games.includes(g);
+                  return (
+                    <button
+                      type="button"
+                      key={g}
+                      className={`${styles.gameChip} ${on ? styles.gameChipOn : ''}`}
+                      onClick={() => toggleGame(g)}
+                      aria-pressed={on}
+                    >
+                      {on && (
+                        <svg className={styles.gameCheck} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                      )}
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className={styles.hint}>{games.length} selected</p>
+            </section>
+          )}
+
+          {/* STEP 3 - Region */}
+          {step === 2 && (
+            <section className={styles.stepBody}>
+              <h3 className={styles.stepTitle}>Where are you playing from?</h3>
+              <p className={styles.stepSub}>Helps us match you with local events and payment options.</p>
+
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="region">Country / Region</label>
+                <select id="region" className={styles.select} value={region} onChange={(e) => setRegion(e.target.value)}>
+                  <option value="">Select your region</option>
+                  {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="city">State / City (optional)</label>
+                <input
+                  id="city"
+                  className={styles.input}
+                  type="text"
+                  placeholder="e.g. Lagos"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+            </section>
+          )}
+
+          {/* STEP 4 - Wallet + PIN intro */}
+          {step === 3 && (
+            <section className={styles.stepBody}>
+              <h3 className={styles.stepTitle}>Your VENT COINS wallet</h3>
+              <p className={styles.stepSub}>
+                VENT COINS (VC) are the in-app currency for entry fees, prizes, and payouts.
+                <strong> 1,000 NGN = 1 VC.</strong>
+              </p>
+
+              <div className={styles.walletCard}>
+                <div className={styles.walletHead}>Starting balance</div>
+                <div className={styles.walletAmount}>
+                  <span className={styles.coinDot} />
+                  0 VC
+                </div>
+                <p className={styles.walletNote}>Top up any time from your wallet to register for paid tournaments.</p>
+              </div>
+
+              <div className={styles.pinBlock}>
+                <label className={styles.label}>Wallet PIN</label>
+                <div className={styles.pinRow} aria-hidden="true">
+                  {[0, 1, 2, 3].map((i) => <div key={i} className={styles.pinBox} />)}
+                </div>
+                <p className={styles.hint}>You&apos;ll set a 4-digit PIN to authorize payments. You can do this later in your wallet.</p>
+              </div>
+            </section>
+          )}
+
+          {/* STEP 5 - Done */}
+          {step === 4 && (
+            <section className={styles.stepBody}>
+              <div className={styles.doneIcon}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+              </div>
+              <h3 className={styles.stepTitle}>You&apos;re all set</h3>
+              <p className={styles.stepSub}>Here&apos;s what we&apos;ve got. You can change any of it from your profile and wallet.</p>
+
+              <ul className={styles.recap}>
+                <li><span>Handle</span><strong>{handle ? `@${handle.replace(/^@/, '')}` : 'Not set'}</strong></li>
+                <li><span>Favorite games</span><strong>{games.length > 0 ? games.join(', ') : 'None yet'}</strong></li>
+                <li><span>Region</span><strong>{region || 'Not set'}{city ? ` · ${city}` : ''}</strong></li>
+                <li><span>Wallet PIN</span><strong>Set up later</strong></li>
+              </ul>
+            </section>
+          )}
+
+          {/* Controls */}
+          <div className={styles.controls}>
+            <div className={styles.controlsLeft}>
+              {step > 0 && (
+                <button type="button" className={styles.ghostBtn} onClick={goBack}>Back</button>
+              )}
+            </div>
+            <div className={styles.controlsRight}>
+              {!isLast && (
+                <button type="button" className={styles.ghostBtn} onClick={step === STEPS.length - 2 ? finish : goNext}>
+                  Skip
+                </button>
+              )}
+              {isLast ? (
+                <button type="button" className={`btn ${styles.primaryBtn}`} onClick={finish}>
+                  Go to dashboard
+                </button>
+              ) : (
+                <button type="button" className={`btn ${styles.primaryBtn}`} onClick={goNext}>
+                  Continue
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+const Onboarding = () => (
+  <Suspense fallback={
+    <div style={{ minHeight: '100vh', backgroundColor: '#131316', color: '#A7A6A6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      Loading…
+    </div>
+  }>
+    <OnboardingContent />
+  </Suspense>
+);
+
+export default Onboarding;

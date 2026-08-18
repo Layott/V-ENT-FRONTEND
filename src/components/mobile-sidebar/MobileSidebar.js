@@ -2,12 +2,12 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 // import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
-import { FaUsers, FaTv } from 'react-icons/fa';
+import { FaUsers, FaTv, FaUserFriends } from 'react-icons/fa';
 import { PiRankingBold } from "react-icons/pi";
 import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
-import { MdOutlineSettings } from "react-icons/md";
+import { MdOutlineSettings, MdBusiness } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
@@ -32,12 +32,12 @@ const MobileSidebar = ({ isOpen }) => {
             localStorage.removeItem('userProfile');
             localStorage.removeItem('authToken');
             sessionStorage.clear();
-            
+
             // Set the logged out cookie
             document.cookie = "isLoggedOut=true; path=/; max-age=60";
-            
+
             // Use NextAuth signOut but handle it properly
-            await signOut({ 
+            await signOut({
                 redirect: false // Change this to false
             }).then(() => {
                 // Manual redirect after successful signOut
@@ -57,7 +57,7 @@ const MobileSidebar = ({ isOpen }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        Profile <PiUserCircle className={styles.sidebarIcon} />    
+                        Profile <PiUserCircle className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
@@ -72,24 +72,16 @@ const MobileSidebar = ({ isOpen }) => {
                         Events <MdOutlineEvent className={styles.sidebarIcon} />
                     </Link>
                 </li>
-                {/* 
-                <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
-                    <Link href={'/anime'} className={styles.iconTextLink}>
-                        Animne <FaTv className={styles.sidebarIcon} />
-                    </Link>
-                </li>
-                
-                
-                
-                <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
-                    <Link href={'/rankings'} className={styles.iconTextLink}>
-                        Rankings <PiRankingBold className={styles.sidebarIcon} />
-                    </Link>
-                </li>
-                
+
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
                         Teams <FaUsers className={styles.sidebarIcon} />
+                    </Link>
+                </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
+                    <Link href={'/rankings'} className={styles.iconTextLink}>
+                        Rankings <PiRankingBold className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
@@ -97,51 +89,42 @@ const MobileSidebar = ({ isOpen }) => {
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         Wallets <IoWalletOutline className={styles.sidebarIcon} />
                     </Link>
-                </li> */}
-
-                <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Anime <FaTv className={styles.sidebarIcon} /> </span>
-                    </span>
-                </li>
-                 
-                 <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Ranking <PiRankingBold className={styles.sidebarIcon} /> </span>
-                    </span>
                 </li>
 
-                 <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Team <FaUsers className={styles.sidebarIcon} /></span>
-                    </span>
+                <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
+                    <Link href={'/anime'} className={styles.iconTextLink}>
+                        Anime <FaTv className={styles.sidebarIcon} />
+                    </Link>
                 </li>
 
-                 <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
+                <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
+                    <Link href={'/community'} className={styles.iconTextLink}>
                         <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Wallet <IoWalletOutline className={styles.sidebarIcon} /></span>
-                    </span>
+                        <span className={styles.iconMarketplaceSpan}>Community <FaUserFriends className={styles.sidebarIcon} /></span>
+                    </Link>
                 </li>
 
-                            
-                <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
+                <li className={`${styles.sidebarItem} ${isActive('/organizations') ? styles.activeLink : ''}`}>
+                    <Link href={'/organizations'} className={styles.iconTextLink}>
+                        <span className={styles.comingSoon}>Coming Soon</span>
+                        <span className={styles.iconMarketplaceSpan}>Organizations <MdBusiness className={styles.sidebarIcon} /></span>
+                    </Link>
+                </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/marketplace') ? styles.activeLink : ''}`}>
+                    <Link href={'/marketplace'} className={styles.iconTextLink}>
                         <span className={styles.comingSoon}>Coming Soon</span>
                         <span className={styles.iconMarketplaceSpan}>Marketplace <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
-                    </span>
+                    </Link>
                 </li>
-            
-                <li className={styles.sidebarItem}>
-                    <span className={styles.disabledLink}>
+
+                <li className={`${styles.sidebarItem} ${isActive('/shop') ? styles.activeLink : ''}`}>
+                    <Link href={'/shop'} className={styles.iconTextLink}>
                         <span className={styles.comingSoon}>Coming Soon</span>
                         <span className={styles.iconShopSpan}>Shop <FiShoppingBag className={styles.sidebarIcon} /></span>
-                    </span>
+                    </Link>
                 </li>
-            
+
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
                         Settings <MdOutlineSettings className={styles.sidebarIcon} />

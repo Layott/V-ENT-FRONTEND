@@ -19,7 +19,7 @@
 }
 
 .addImage {
-  border: 1px dashed var(--primary-bg);
+
   min-height: 140px;
   border-radius: 7.5px;
   display: flex;

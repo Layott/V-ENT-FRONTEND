@@ -21,8 +21,7 @@ const EditUserProfileLinks = () => {
   const [youtube, setYoutube] = useState('');
   const router = useRouter();
 
-  // Get base URL - adjust this to match your actual base URL
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vermillionent.pythonanywhere.com';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch user information and populate form
   useEffect(() => {
@@ -32,7 +31,6 @@ const EditUserProfileLinks = () => {
         return;
       }
 
-      console.log('Fetching user info with token:', session.user.sessionToken);
       console.log('Base URL:', baseUrl);
 
       try {

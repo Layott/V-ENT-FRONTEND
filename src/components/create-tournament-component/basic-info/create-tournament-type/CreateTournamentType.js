@@ -15,15 +15,15 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   const { data: session } = useSession();
-  const baseUrl = "https://vermillionent.pythonanywhere.com";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Helper function to get absolute URLs
   const getAbsoluteUrl = useCallback((url, type = "default") => {
     if (!url) {
       if (type === "banner") {
-        return "https://vermillionent.pythonanywhere.com/media/default-banner.jpg";
+        return `${process.env.NEXT_PUBLIC_API_URL}/media/default-banner.jpg`;
       }
-      return "https://vermillionent.pythonanywhere.com/media/default-profile.jpg";
+      return `${process.env.NEXT_PUBLIC_API_URL}/media/default-profile.jpg`;
     }
     
     if (url.startsWith("http")) {
@@ -45,7 +45,6 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   // Fetch events from backend
   const fetchEvents = useCallback(async () => {
     if (!session || !session.user?.sessionToken) {
-      console.error("No session token available for fetching events.");
       return;
     }
 
@@ -54,7 +53,7 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
 
     try {
       const response = await axios.get(
-        "https://vermillionent.pythonanywhere.com/event/get-all-events/",
+        `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -63,14 +62,11 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
         }
       );
 
-      console.log("Raw API response:", response.data);
       
       // Combine featured and upcoming events
       const featured = response.data.data.featured || [];
       const upcoming = response.data.data.upcoming || [];
       const allEvents = [...featured, ...upcoming];
-      
-      console.log("Combined events before processing:", allEvents);
 
       // Process the events to include absolute URLs
       const processedEvents = processEventImages(allEvents);
@@ -87,13 +83,7 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
       })).filter(event => event.id && event.name); // Filter out events without ID or name
 
       setAvailableEvents(formattedEvents);
-      console.log("Fetched events for tournament creation:", formattedEvents);
     } catch (error) {
-      console.error("Failed to fetch events:", error);
-      if (error.response) {
-        console.log("Response status:", error.response.status);
-        console.log("Response data:", error.response.data);
-      }
       // Fallback to empty array if fetch fails
       setAvailableEvents([]);
     } finally {
@@ -146,7 +136,6 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const handleEventSelect = (eventId) => {
     // Add safety check for eventId
     if (!eventId) {
-      console.error('Event ID is undefined');
       return;
     }
     

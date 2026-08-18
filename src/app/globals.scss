@@ -7,8 +7,8 @@
   --white: #FFFFFF;
   --black: #000000; 
   --green: #008000;
-  --v-ent-grn: #1CED24;
-  --v-ent-light-grn: #00FF08;
+  --v-ent-gold: #1CED24;
+  --v-ent-light-gold: #E8C760;
   --v-ent-red: #ED1C24;
   --v-ent-light-red: #FF0008;
   --overlay-gray: #212225;
@@ -48,7 +48,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'ClashGrotesk-Regular', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--primary-bg);
 }
 
@@ -57,22 +57,22 @@ a {
 }
 
 
-.grnBTN {
+.goldBTN {
   color: var(--primary-bg);
-  background-color: var(--v-ent-grn);
-  border: 1px solid var(--v-ent-grn);
+  background-color: var(--v-ent-gold);
+  border: 1px solid var(--v-ent-gold);
   transform: scale(1);
   transition: background-color ease-in-out 0.5s, color ease-in-out 0.5s, border ease-in-out 0.5s, transform ease-in-out 0s;
   cursor: pointer;
 }
 
-.grnBTN:hover {
+.goldBTN:hover {
   color: var(--primary-bg);
-  background-color: var(--v-ent-light-grn);
+  background-color: var(--v-ent-light-gold);
   border: 1px solid var(--primary-bg);
 }
 
-.grnBTN:active {
+.goldBTN:active {
   transform: scale(1.01);
 }
 

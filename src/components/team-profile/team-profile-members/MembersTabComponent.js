@@ -1,81 +1,91 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { CiSearch } from 'react-icons/ci'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import { BsChevronLeft, BsChevronRight, BsThreeDots } from 'react-icons/bs'
 import { RiGalleryView2 } from "react-icons/ri";
 import { IoGridOutline } from "react-icons/io5";
 import { LuUserRoundPlus } from "react-icons/lu";
-import { membersList } from './membersList'
 import profileStyles from "@/styles/profile/profile-page.module.css"
 import tableStyles from "@/styles/modules/tables/tables.module.css"
 import styles from './team-members.module.css'
 
-const MembersTabComponent = () => {
+const MembersTabComponent = ({ teamId }) => {
+    const [members, setMembers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [searchQuery, setSearchQuery] = useState('')
     const [showGalleryView, setShowGalleryView] = useState(false);
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        if (!teamId) {
+            setLoading(false);
+            return;
+        }
+        const fetchMembers = async () => {
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (session?.user?.sessionToken) {
+                    headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
+                }
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/team/view-team/${teamId}/`,
+                    { method: 'GET', headers }
+                );
+                if (!response.ok) throw new Error(`Failed to load members (${response.status})`);
+                const data = await response.json();
+                const memberList = data?.data?.members ?? data?.members ?? [];
+                setMembers(Array.isArray(memberList) ? memberList : []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMembers();
+    }, [teamId, session]);
 
     const indexOfLastParticipant = currentPage * rowsPerPage
     const indexOfFirstParticipant = indexOfLastParticipant - rowsPerPage
-    const currentParticipants = membersList.slice(indexOfFirstParticipant, indexOfLastParticipant)
+    const currentParticipants = members.slice(indexOfFirstParticipant, indexOfLastParticipant)
 
-    // Pagination Handler
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber)
-    }
+    const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+    const handlePrevClick = () => { if (currentPage > 1) setCurrentPage(currentPage - 1) }
+    const handleNextClick = () => { if (currentPage < Math.ceil(members.length / rowsPerPage)) setCurrentPage(currentPage + 1) }
+    const handleRowsPerPageChange = (event) => { setRowsPerPage(Number(event.target.value)); setCurrentPage(1) }
 
-    const handlePrevClick = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1)
-        }
-    }
-
-    const handleNextClick = () => {
-        if (currentPage < Math.ceil(membersList.length / rowsPerPage)) {
-            setCurrentPage(currentPage + 1)
-        }
-    }
-
-    // Row Count Handler
-    const handleRowsPerPageChange = (event) => {
-        setRowsPerPage(Number(event.target.value))
-        setCurrentPage(1)     // Reset to first page when changing row count
-    }  
-
-    // Pagination Controls
     const pageNumbers = []
-        for (let i = 1; i <= Math.ceil(membersList.length / rowsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(members.length / rowsPerPage); i++) {
         pageNumbers.push(i)
     }
 
-    const handleSearch = () => {
-        if (searchQuery.trim() != '') {
-            console.log(`Searching for: ${searchQuery}`)
-        }
-    }
+    const handleSearch = () => {}
+    const handleKeyDown = (event) => { if (event.key === 'Enter') handleSearch() }
+    const toggleTableView = () => setShowGalleryView(!showGalleryView)
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
-            handleSearch()
-        }
-    }
+    const getAvatarUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+    };
 
-    const toggleTableView = () => {
-      setShowGalleryView(!showGalleryView)
-    }
+    if (loading) return <p>Loading members...</p>;
+    if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div className={tableStyles.tournamentDetailsParticipantsContainer}>
       <div className={styles.tabsAndDetailsContainer}>
 
         <div className={`${tableStyles.tournamentsEventsFilterSearchContainer} ${styles.tournamentsEventsFilterSearchContainer}`}>
-          
+
           <div className={styles.inviteAndSearchContainer}>
             <div className={`${tableStyles.tournamentsEventsFilterContainer} ${styles.tournamentsEventsFilterContainer}`}>
-                <p className={styles.tournamentNumber}>{membersList.length} members</p>
+                <p className={styles.tournamentNumber}>{members.length} members</p>
 
                 <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
                 {showGalleryView ? (
@@ -94,16 +104,16 @@ const MembersTabComponent = () => {
             </div>
 
           </div>
-          
+
           <div className={`${tableStyles.searchContainer} ${styles.searchContainer}`}>
             <div className={`${tableStyles.searchBar} ${styles.searchBar}`}>
-              <CiSearch 
+              <CiSearch
                 className={tableStyles.searchIcon}
                 onClick={handleSearch}
               />
               <input
                 type='text'
-                placeholder='Search tournaments'
+                placeholder='Search members'
                 className={tableStyles.searchInput}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -113,7 +123,7 @@ const MembersTabComponent = () => {
           </div>
 
         </div>
-        
+
       </div>
 
       {!showGalleryView ? (
@@ -127,53 +137,56 @@ const MembersTabComponent = () => {
             <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>Actions</div>
           </div>
 
-          {currentParticipants.map((participant, index) => (
-            <div key={index} className={`${styles.gridRow} ${tableStyles.gridRow} ${profileStyles.middleLayerColor}`}>
-              <div className={`${tableStyles.gridItem} ${tableStyles.nameColumn}`}>
-                <div className={tableStyles.gameImageContainer}>
-                  <Image
-                    src={participant.src}
-                    alt={participant.participant}
-                    className={tableStyles.gameImage}
-                  />
+          {currentParticipants.map((member, index) => {
+            const avatarUrl = getAvatarUrl(member.profile_pic);
+            return (
+              <div key={member.user_id || index} className={`${styles.gridRow} ${tableStyles.gridRow} ${profileStyles.middleLayerColor}`}>
+                <div className={`${tableStyles.gridItem} ${tableStyles.nameColumn}`}>
+                  <div className={tableStyles.gameImageContainer}>
+                    {avatarUrl ? (
+                      <Image src={avatarUrl} alt={member.username || ''} className={tableStyles.gameImage} width={36} height={36} />
+                    ) : (
+                      <div className={tableStyles.gameImage} style={{ background: 'var(--overlay-gray)' }} />
+                    )}
+                  </div>
+                  <div className={styles.memberNamesContainer}>
+                    <p className={styles.memberName}>{member.display_name || member.username}</p>
+                    <p className={styles.memberUsername}>@{member.username}</p>
+                  </div>
                 </div>
-                <div class name={styles.memberNamesContainer}>
-                  <p className={styles.memberName}>{participant.member}</p>
-                  <p className={styles.memberUsername}>{participant.username}</p>
+
+                <div className={`${tableStyles.gridItem} ${styles.participantDiv}`}>
+                  {member.role || 'Member'}
                 </div>
-              </div>
 
-              <div className={`${tableStyles.gridItem} ${styles.participantDiv}`}>
-                {participant.role}
-              </div>
-              
-              <div className={tableStyles.gridItem}>{participant.ranking}</div>
-              <div className={tableStyles.gridItem}>{participant.location}</div>
+                <div className={tableStyles.gridItem}>{member.ranking || 'N/A'}</div>
+                <div className={tableStyles.gridItem}>{member.location || 'N/A'}</div>
 
-              <div className={`${tableStyles.gridItemExpanded} ${styles.gridItemStatusExpanded}`}>
-                  <span className={`${styles.statusSpan} ${participant.status === 'Confirmed' ? styles.confirmedStatus : styles.invitedStatus}`}>
-                    {participant.status}
+                <div className={`${tableStyles.gridItemExpanded} ${styles.gridItemStatusExpanded}`}>
+                  <span className={`${styles.statusSpan} ${styles.confirmedStatus}`}>
+                    Active
                   </span>
                 </div>
 
-              <div className={`${tableStyles.gridItem} ${tableStyles.viewProfileBTNContainer}`}>
-                <Link
-                  href={'/user-profile'}
-                  className={`${tableStyles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
-                >
-                  View Profile
-                </Link>
+                <div className={`${tableStyles.gridItem} ${tableStyles.viewProfileBTNContainer}`}>
+                  <Link
+                    href={'/user-profile'}
+                    className={`${tableStyles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
+                  >
+                    View Profile
+                  </Link>
 
-                <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
-                  <BsThreeDots className={styles.iconThreeDots} />
-                </button>
+                  <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
+                    <BsThreeDots className={styles.iconThreeDots} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        
+
         ) : (
-        
+
         <div className={tableStyles.participantsTableExpandedContainer}>
           <div className={`${tableStyles.participantsTableExpanded}`}>
             <div className={`${styles.gridHeaderExpanded} ${tableStyles.gridHeaderExpanded} ${profileStyles.middleLayerColor}`}>
@@ -185,33 +198,34 @@ const MembersTabComponent = () => {
               <div className={`${tableStyles.gridItemExpanded} ${tableStyles.gridItemHeaderExpanded}`}>Actions</div>
             </div>
 
-            {currentParticipants.map((participant, index) => (
-                <div key={index} className={`${styles.gridRowExpanded} ${tableStyles.gridRowExpanded} ${profileStyles.middleLayerColor}`}>
+            {currentParticipants.map((member, index) => {
+              const avatarUrl = getAvatarUrl(member.profile_pic);
+              return (
+                <div key={member.user_id || index} className={`${styles.gridRowExpanded} ${tableStyles.gridRowExpanded} ${profileStyles.middleLayerColor}`}>
                   <div className={`${tableStyles.gridItemExpanded} ${tableStyles.nameColumn}`}>
                     <div className={tableStyles.gameImageContainer}>
-                      <Image
-                        src={participant.src}
-                        alt={participant.participant}
-                        className={tableStyles.gameImage}
-                      />
+                      {avatarUrl ? (
+                        <Image src={avatarUrl} alt={member.username || ''} className={tableStyles.gameImage} width={36} height={36} />
+                      ) : (
+                        <div className={tableStyles.gameImage} style={{ background: 'var(--overlay-gray)' }} />
+                      )}
                     </div>
-                    <div class name={styles.memberNamesContainer}>
-                      <p className={styles.memberName}>{participant.member}</p>
-                      <p className={styles.memberUsername}>{participant.username}</p>
+                    <div className={styles.memberNamesContainer}>
+                      <p className={styles.memberName}>{member.display_name || member.username}</p>
+                      <p className={styles.memberUsername}>@{member.username}</p>
                     </div>
-
                   </div>
 
                   <div className={`${tableStyles.gridItemExpanded} ${styles.participantDiv}`}>
-                    {participant.role}
+                    {member.role || 'Member'}
                   </div>
-                
-                  <div className={tableStyles.gridItemExpanded}>{participant.ranking}</div>
-                  <div className={tableStyles.gridItemExpanded}>{participant.location}</div>
+
+                  <div className={tableStyles.gridItemExpanded}>{member.ranking || 'N/A'}</div>
+                  <div className={tableStyles.gridItemExpanded}>{member.location || 'N/A'}</div>
 
                   <div className={`${tableStyles.gridItemExpanded}`}>
-                    <span className={`${styles.statusSpan} ${participant.status === 'Confirmed' ? styles.confirmedStatus : styles.invitedStatus}`}>
-                      {participant.status}
+                    <span className={`${styles.statusSpan} ${styles.confirmedStatus}`}>
+                      Active
                     </span>
                   </div>
 
@@ -228,11 +242,13 @@ const MembersTabComponent = () => {
                     </button>
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         </div>
       )}
 
+      {members.length === 0 && <p>No members found.</p>}
 
       <div className={tableStyles.paginationContainer}>
         <div className={tableStyles.rowCountSelector}>
@@ -249,7 +265,6 @@ const MembersTabComponent = () => {
               <option value={20}>20</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
-              <option value={200}>100</option>
             </select>
             <TiArrowSortedDown className={tableStyles.dropDownIcon} />
           </div>
@@ -257,7 +272,7 @@ const MembersTabComponent = () => {
 
         <p className={profileStyles.showingNumber}>
           Showing {indexOfFirstParticipant + 1} -{" "}
-          {indexOfLastParticipant > membersList.length ? membersList.length : indexOfLastParticipant}{" "} of {membersList.length}
+          {indexOfLastParticipant > members.length ? members.length : indexOfLastParticipant}{" "} of {members.length}
         </p>
 
         <div className={tableStyles.pagination}>
@@ -278,9 +293,9 @@ const MembersTabComponent = () => {
             </button>
           ))}
           <button
-            className={`${tableStyles.navIconBTN} ${currentPage === Math.ceil(membersList.length / rowsPerPage) ? tableStyles.hidden : ''}`}
+            className={`${tableStyles.navIconBTN} ${currentPage === Math.ceil(members.length / rowsPerPage) ? tableStyles.hidden : ''}`}
             onClick={handleNextClick}
-            disabled={currentPage === Math.ceil(membersList.length / rowsPerPage)}
+            disabled={currentPage === Math.ceil(members.length / rowsPerPage)}
           >
             <BsChevronRight className={tableStyles.navIcon}/>
           </button>

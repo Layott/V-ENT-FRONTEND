@@ -1,0 +1,28 @@
+.validationSummary {
+  background-color: rgba(237, 28, 36, 0.08);
+
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.validationSummaryTitle {
+  color: var(--v-ent-red);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+.validationSummaryList {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.validationSummaryList li {
+  color: var(--v-ent-red);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
