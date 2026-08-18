@@ -7,7 +7,6 @@ import googleLogo from "../../../public/images/google.svg";
 import { signIn } from "next-auth/react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { countries } from "./countries";
 import PasswordStrength from "./passwordStrength";
 import { VENT } from "@/app/api/auth/[...nextauth]/route";
 import MessageSnackbar from "../../components/Snackbar/MessageSnackbar";
@@ -20,9 +19,6 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
-    full_name: "",
-    country: "",
-    state: "",
     password: "",
     confirmPassword: "",
   });
@@ -30,7 +26,6 @@ const Signup = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("success");
   const [showPassword, setShowPassword] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState("");
   const [password, setPassword] = useState("");
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
@@ -134,11 +129,6 @@ const Signup = () => {
     }
   };
 
-  const handleCountrySelection = (event) => {
-    setSelectedCountry(event.target.value);
-    setFormData({ ...formData, country: event.target.value });
-  };
-
   const handlePasswordChange = (e) => {
     const { value } = e.target;
     setPassword(value);
@@ -156,8 +146,6 @@ const Signup = () => {
       if (!isPasswordValid(formData.password))
         return "Password needs 8+ characters with upper case, lower case, and a number";
       if (formData.password !== formData.confirmPassword) return "Passwords do not match";
-      if (!formData.country) return "Please select your country";
-      if (!formData.state || !formData.state.trim()) return "Please enter your state/area/province";
       if (usernameError) return "Please choose a different username";
       return null;
     })();
@@ -171,13 +159,12 @@ const Signup = () => {
     setLoading(true);
 
     // Create payload to match expected format
+    // Three fields. Country and state are resolved server-side from the request
+    // IP, and the display name defaults to the username until onboarding.
     const payload = {
       email: formData.email,
       username: formData.username,
-      country: formData.country,
-      state: formData.state,
       password: formData.password,
-      full_name: formData.full_name
     };
 
     try {
@@ -303,49 +290,6 @@ return (
                             ) : (
                                 <p className={styles.toolTip}>This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)</p>
                             )}
-                        </div>
-
-                        <div className={generalStyles.inputGroup}>
-                            <label>Full name:</label>
-                            <input
-                                type="text"
-                                name="full_name" 
-                                placeholder="Enter your name"
-                                value={formData.full_name}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className={generalStyles.inputGroup}>
-                            <label>Country:</label>
-                            <select
-                                value={selectedCountry}
-                                onChange={handleCountrySelection}
-                                className={styles.countryDropdown}
-                                required
-                            >
-                                <option value="">Select your country</option>
-                                {countries.map((country) => (
-                                    <option key={country.code} value={country.name}>
-                                        {country.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className={generalStyles.inputGroup}>
-                            <label>State/Area/Province:</label>
-                            <div className={generalStyles.inputGroup}>
-                            <input
-                                type='text'
-                                name="state"
-                                placeholder="Enter your state/area/province"
-                                required
-                                value={formData.state}
-                                onChange={handleInputChange} 
-                            />
-                            </div>
                         </div>
 
                         <div className={generalStyles.inputGroup}>
