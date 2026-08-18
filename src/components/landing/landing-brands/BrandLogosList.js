@@ -1,11 +1,8 @@
 import itelLogo from '@/images/itel_logo.svg'
 import cadeESports from '@/images/cade_esports.png'
-import oppoLogo from '@/images/oppo_logo.svg'
-import gamrLogo from '@/images/gamr_logo.svg'
 import redBullLogo from '@/images/red_bull_logo.svg'
 import ngcLogo from '@/images/ngc_logo.svg'
 import gameEvoESports from '@/images/gameEvo_esports_white.png'
-import carryFirstLogo from '@/images/carry_first_logo.svg'
 
 export const brandLogos = [
     {
@@ -15,14 +12,6 @@ export const brandLogos = [
     {
         src: cadeESports,
         alt: "Cade ESports"
-    },
-    {
-        src: oppoLogo,
-        alt: "Oppo Logo"
-    },
-    {
-        src: gamrLogo,
-        alt: "Gamr Logo"
     },
     {
         src: redBullLogo,
@@ -35,9 +24,5 @@ export const brandLogos = [
     {
         src: gameEvoESports,
         alt: "Game Evo ESports"
-    },
-    {
-        src: carryFirstLogo,
-        alt: "Carry First Logo"
     }
 ];

@@ -63,7 +63,7 @@ const FooterLanding = () => {
 
         <div className={styles.footerBottom}>
             <p>
-                &copy; 2025 Vermillion Enterprise (V-ENT)
+                &copy; 2026 Vermillion Enterprise (V-ENT)
             </p>
             <p>
                 All rights reserved
