@@ -30,12 +30,11 @@
   font-size: 0.95rem;
 }
 
-.ic-blue   { background: rgba(33,150,243,0.15); }
-.ic-grn    { background: rgba(212, 175, 55,0.15); }
-.ic-purple { background: rgba(156,39,176,0.15); }
-.ic-teal   { background: rgba(0,188,212,0.15); }
-.ic-yellow { background: rgba(255,193,7,0.15); }
-.ic-red    { background: rgba(237,28,36,0.15); }
+/* Three tiles, not six hues. Red means a queue is waiting on somebody, gold
+   means money, neutral means it is only a number. */
+.ic-neutral { background: rgba(255,255,255,0.06); color: #9A9AA3; }
+.ic-gold    { background: rgba(212,175,55,0.15); color: #D4AF37; }
+.ic-red     { background: rgba(237,28,36,0.15);  color: #ED1C24; }
 
 @media (min-width: 768px) {
   .kpiGrid { grid-template-columns: repeat(4, 1fr); }

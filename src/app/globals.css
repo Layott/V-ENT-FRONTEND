@@ -226,3 +226,14 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator {
     line-height: 1.5;
   }
 }
+
+/* The mobile menu is an off-canvas panel parked at translateX(100%). A fixed
+   element sitting past the right edge still counts toward the document's
+   scrollable width, so on a phone the page could be dragged sideways into an
+   empty strip beside the content. Clipping the horizontal axis at the root ends
+   that without touching the drawer's slide-in animation. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { LuUsers, LuActivity, LuTrophy, LuBanknote, LuCoins, LuShield, LuGavel } from 'react-icons/lu'
 import AdminNav from '@/components/admin/AdminNav'
 import AdminHeader from '@/components/admin/AdminHeader'
 import { useAdminAuth } from '@/components/admin/useAdminAuth'
@@ -10,13 +11,20 @@ import shared from '@/components/admin/admin.module.css'
 import styles from './overview.module.css'
 
 const KPI_DEFS = [
-  { key: 'total_users',         label: 'Total Users',          color: 'ic-blue',   icon: '👤', fmt: 'num' },
-  { key: 'active_users_today',  label: 'Active Today',         color: 'ic-grn',    icon: '⚡', fmt: 'num' },
-  { key: 'active_tournaments',  label: 'Active Tournaments',   color: 'ic-yellow', icon: '🏆', fmt: 'num' },
-  { key: 'pending_payouts',     label: 'Pending Payouts',      color: 'ic-red',    icon: '💸', fmt: 'num', linkTo: '/admin/payouts' },
-  { key: 'total_vc_circulation',label: 'Total VC in circulation', color: 'ic-purple', icon: '🪙', fmt: 'num' },
-  { key: 'pending_kyc',         label: 'Pending KYC',          color: 'ic-teal',   icon: '🛡', fmt: 'num', linkTo: '/admin/kyc' },
-  { key: 'open_disputes',       label: 'Open Disputes',        color: 'ic-red',    icon: '⚠', fmt: 'num' },
+  // Icons come from the set the admin nav already uses, not emoji: emoji render
+  // as a different picture on every operating system and read as decoration on a
+  // console people work in.
+  //
+  // Colour is meaning, not decoration. The tiles were six different hues with no
+  // system behind them. Now: red is a queue waiting on a human, gold is money,
+  // everything else is neutral.
+  { key: 'total_users',          label: 'Total Users',             color: 'ic-neutral', Icon: LuUsers,      fmt: 'num' },
+  { key: 'active_users_today',   label: 'Active Today',            color: 'ic-neutral', Icon: LuActivity,   fmt: 'num' },
+  { key: 'active_tournaments',   label: 'Active Tournaments',      color: 'ic-neutral', Icon: LuTrophy,     fmt: 'num' },
+  { key: 'pending_payouts',      label: 'Pending Payouts',         color: 'ic-red',     Icon: LuBanknote,   fmt: 'num', linkTo: '/admin/payouts' },
+  { key: 'total_vc_circulation', label: 'VC in circulation',     color: 'ic-gold',    Icon: LuCoins,      fmt: 'num' },
+  { key: 'pending_kyc',          label: 'Pending KYC',             color: 'ic-red',     Icon: LuShield,     fmt: 'num', linkTo: '/admin/kyc' },
+  { key: 'open_disputes',        label: 'Open Disputes',           color: 'ic-red',     Icon: LuGavel,      fmt: 'num', linkTo: '/admin/disputes' },
 ]
 
 function fmt(n) {
@@ -122,7 +130,7 @@ function OverviewInner() {
                 className={`${shared.card} ${styles.kpiCard}`}
                 onClick={(e) => { if (!k.linkTo) e.preventDefault() }}
               >
-                <span className={`${styles.kpiIcon} ${styles[k.color]}`}>{k.icon}</span>
+                <span className={`${styles.kpiIcon} ${styles[k.color]}`}><k.Icon /></span>
                 <p className={shared.metricLabel}>{k.label}</p>
                 <p className={shared.metricValue}>
                   {dataLoading ? '…' : fmt(kpis[k.key])}
@@ -138,7 +146,7 @@ function OverviewInner() {
               title="30-day Sign-ups"
               subtitle="New user registrations per day"
               type="line"
-              color="#64B5F6"
+              color="var(--v-ent-gold)"
               format={fmt}
             />
             <AdminChart
@@ -146,7 +154,7 @@ function OverviewInner() {
               title="30-day VC Issued"
               subtitle="VENT COINS issued via top-up + prizes"
               type="bar"
-              color="#9C27B0"
+              color="var(--v-ent-gold)"
               format={fmt}
             />
             <AdminChart

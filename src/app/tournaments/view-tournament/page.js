@@ -8,7 +8,9 @@ import {
   LuTrophy, LuCalendar, LuUsers, LuMapPin, LuShare2,
   LuRadio, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket,
 } from 'react-icons/lu';
-import { FaTwitter, FaInstagram, FaTwitch, FaYoutube, FaDiscord } from 'react-icons/fa';
+import { FaTwitter, FaInstagram, FaTwitch, FaYoutube, FaFacebookF, FaTiktok } from 'react-icons/fa';
+import { SiKick } from 'react-icons/si';
+import { coinsAsNgn } from '@/lib/currency';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -48,6 +50,28 @@ const formatLabel = (f) => ({
 const pick = (...vals) => vals.find((v) => v !== undefined && v !== null && v !== '');
 
 const getOrganizer = (t) => t?.tournament_creator || t?.organizer || null;
+
+// The backend sends a bare position number. "1" on its own in a prize table is
+// ambiguous next to a column of amounts; "1st Place" is not.
+const ordinalPlace = (value) => {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return String(value);
+  const suffix = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+  return `${n}${suffix} Place`;
+};
+
+// Only the channels the organizer actually filled in get an icon. The row used
+// to be five hardcoded links pointing at "#", which looked like the tournament
+// had a following and went nowhere when clicked.
+const SOCIAL_CHANNELS = [
+  { field: 'twitter_link', label: 'Twitter', Icon: FaTwitter },
+  { field: 'instagram_link', label: 'Instagram', Icon: FaInstagram },
+  { field: 'facebook_link', label: 'Facebook', Icon: FaFacebookF },
+  { field: 'twitch_link', label: 'Twitch', Icon: FaTwitch },
+  { field: 'youtube_link', label: 'YouTube', Icon: FaYoutube },
+  { field: 'kick_link', label: 'Kick', Icon: SiKick },
+  { field: 'tiktok_link', label: 'TikTok', Icon: FaTiktok },
+];
 
 /* ──────────────── SHELL STATES (loading / error / 404) ──────────────── */
 
@@ -335,14 +359,20 @@ const OverviewPanel = ({ tournament }) => {
   const createdAt = tournament?.created_at;
   const hasSchedule = !!(startDate || endDate || regDeadline || createdAt);
   const entryFee = entryFeeVc(tournament);
+  // The API sends the organizer's blurb as `tournament_description`. Reading
+  // only `description` meant the About section never appeared on any tournament.
+  const about = pick(tournament?.description, tournament?.tournament_description);
+  const socials = SOCIAL_CHANNELS
+    .map((channel) => ({ ...channel, url: tournament?.[channel.field] }))
+    .filter((channel) => channel.url);
 
   return (
     <div className={styles.overviewGrid}>
       <div className={styles.overviewMain}>
-        {tournament?.description && (
+        {about && (
           <section className={styles.section}>
             <h3 className={styles.sectionTitle}>About this tournament</h3>
-            <p className={styles.sectionText}>{tournament.description}</p>
+            <p className={styles.sectionText}>{about}</p>
           </section>
         )}
 
@@ -417,16 +447,25 @@ const OverviewPanel = ({ tournament }) => {
           </section>
         )}
 
-        <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Social</h3>
-          <div className={styles.socialRow}>
-            <a className={styles.socialBtn} href="#" aria-label="Twitter"><FaTwitter /></a>
-            <a className={styles.socialBtn} href="#" aria-label="Instagram"><FaInstagram /></a>
-            <a className={styles.socialBtn} href="#" aria-label="Twitch"><FaTwitch /></a>
-            <a className={styles.socialBtn} href="#" aria-label="YouTube"><FaYoutube /></a>
-            <a className={styles.socialBtn} href="#" aria-label="Discord"><FaDiscord /></a>
-          </div>
-        </section>
+        {socials.length > 0 && (
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Social</h3>
+            <div className={styles.socialRow}>
+              {socials.map(({ field, label, Icon, url }) => (
+                <a
+                  key={field}
+                  className={styles.socialBtn}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                >
+                  <Icon />
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
@@ -835,15 +874,13 @@ const BracketPanel = ({ tournamentId, isOrganizer, token, tournament, session })
   const teamsCount = rounds[0]?.matches?.length
     ? rounds[0].matches.length * (rounds[0].matches[0]?.participants?.length || 2)
     : null;
+  const entrantWord = tournament?.participant_type === 'team' ? 'Teams' : 'Players';
 
   return (
     <div className={styles.bracketWrap}>
       <div className={styles.bracketHeader}>
-        <p className={styles.bracketSub}>{formatLabel(bracketType)}{teamsCount ? ` · ${teamsCount} Teams` : ''}</p>
+        <p className={styles.bracketSub}>{formatLabel(bracketType)}{teamsCount ? ` · ${teamsCount} ${entrantWord}` : ''}</p>
         <p className={styles.bracketHint}>Click any match to view details{isOrganizer ? ' or edit score' : ''}.</p>
-        {isOrganizer && (
-          <p className={styles.infoBanner}><LuInfo /> Auto-advance pending - set winners manually for next round.</p>
-        )}
         {pendingBanner && (
           <p className={styles.pendingBanner}><LuTriangleAlert /> Pending BE deploy - score changes aren&apos;t saved server-side yet.</p>
         )}
@@ -856,7 +893,7 @@ const BracketPanel = ({ tournamentId, isOrganizer, token, tournament, session })
               <div className={styles.roundHeader}>
                 <span className={styles.roundName}>{round.name || `Round ${round.round_number || rIdx + 1}`}</span>
                 <span className={`${styles.roundBadge} ${round.matches.every((m) => m.status === 'completed') ? styles.roundBadgeDone : round.matches.some((m) => m.status === 'in_progress') ? styles.roundBadgeLive : styles.roundBadgeUpcoming}`}>
-                  {round.matches.length} matches
+                  {round.matches.length} {round.matches.length === 1 ? 'match' : 'matches'}
                 </span>
               </div>
               <div className={styles.matchList}>
@@ -1124,16 +1161,21 @@ const ParticipantsPanel = ({ tournamentId, token }) => {
     return () => { cancelled = true; };
   }, [tournamentId, token, reloadKey]);
 
+  // The API nests the entrant under `participant` and does not send `team` or
+  // `user` at the top level. Reading those made every row render as "Unknown".
   const normalized = useMemo(() => rows.map((r, i) => {
-    const name = r?.team?.name || r?.user?.username || r?.user?.full_name || 'Unknown';
+    const entrant = r?.participant || {};
+    const played = Number(r?.matches_played ?? 0);
     return {
-      key: r?.id ?? i,
+      key: r?.registration_id ?? i,
       seed: r?.seed ?? i + 1,
-      name,
-      tag: r?.team?.tag || '',
-      region: r?.region || '-',
-      captain: r?.captain_username || r?.team?.captain_username || r?.user?.username || '-',
-      winRate: Number(r?.win_rate ?? 0),
+      name: entrant.name || entrant.username || 'Unknown',
+      tag: r?.type === 'team' ? 'Team' : (entrant.username && entrant.username !== entrant.name ? `@${entrant.username}` : ''),
+      region: entrant.country || '-',
+      captain: entrant.captain || '-',
+      played,
+      record: played ? `${r?.wins ?? 0}W ${r?.losses ?? 0}L` : 'Not played yet',
+      winRate: r?.win_rate === null || r?.win_rate === undefined ? null : Number(r.win_rate),
       status: r?.status || 'pending',
     };
   }), [rows]);
@@ -1184,9 +1226,9 @@ const ParticipantsPanel = ({ tournamentId, token }) => {
             <div className={styles.tableHeader}>
               <div className={styles.colSeed}>Seed</div>
               <div className={styles.colTeam}>Team / Player</div>
-              <div className={styles.colRegion}>Region</div>
+              <div className={styles.colRegion}>Country</div>
               <div className={styles.colCap}>Captain</div>
-              <div className={styles.colWR}>Win Rate</div>
+              <div className={styles.colWR}>Record</div>
               <div className={styles.colStatus}>Status</div>
             </div>
             {filtered.map((r) => (
@@ -1204,10 +1246,16 @@ const ParticipantsPanel = ({ tournamentId, token }) => {
                 <div className={styles.colRegion}>{r.region}</div>
                 <div className={styles.colCap}>@{r.captain}</div>
                 <div className={styles.colWR}>
-                  <div className={styles.wrBar}>
-                    <div className={styles.wrFill} style={{ width: `${Math.min(100, Math.max(0, r.winRate))}%` }} />
-                  </div>
-                  <span>{r.winRate}%</span>
+                  {r.winRate === null ? (
+                    <span>{r.record}</span>
+                  ) : (
+                    <>
+                      <div className={styles.wrBar}>
+                        <div className={styles.wrFill} style={{ width: `${Math.min(100, Math.max(0, r.winRate))}%` }} />
+                      </div>
+                      <span>{r.record}</span>
+                    </>
+                  )}
                 </div>
                 <div className={styles.colStatus}>
                   <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>
@@ -1233,9 +1281,9 @@ const ParticipantsPanel = ({ tournamentId, token }) => {
                   <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>{r.status}</span>
                 </div>
                 <div className={styles.partCardBody}>
-                  <div><span className={styles.cardLabel}>Region</span><span>{r.region}</span></div>
+                  <div><span className={styles.cardLabel}>Country</span><span>{r.region}</span></div>
                   <div><span className={styles.cardLabel}>Captain</span><span>@{r.captain}</span></div>
-                  <div><span className={styles.cardLabel}>Win Rate</span><span style={{ color: 'var(--v-ent-gold)', fontWeight: 600 }}>{r.winRate}%</span></div>
+                  <div><span className={styles.cardLabel}>Record</span><span style={{ color: 'var(--v-ent-gold)', fontWeight: 600 }}>{r.record}</span></div>
                 </div>
               </div>
             ))}
@@ -1256,13 +1304,21 @@ const PrizePanel = ({ tournament }) => {
     : null;
 
   const dist = realDist
-    ? realDist.map((d, i) => ({
-      pos: d.position || d.pos || `Position ${i + 1}`,
-      percent: d.percent != null ? Number(d.percent) : null,
-      amount: d.prize != null ? Number(d.prize) : null,
-      label: d.label || '',
-      count: d.count,
-    }))
+    ? realDist.map((d, i) => {
+      const amount = d.prize != null ? Number(d.prize) : null;
+      // The API sends amounts, not percentages. Every row read "-" because it
+      // waited for a `percent` the backend has never sent.
+      const percent = d.percent != null
+        ? Number(d.percent)
+        : (amount != null && total > 0 ? Math.round((amount / total) * 100) : null);
+      return {
+        pos: ordinalPlace(d.position ?? d.pos ?? i + 1),
+        percent,
+        amount,
+        label: d.label || '',
+        count: d.count,
+      };
+    })
     : [
       { pos: '1st Place', percent: 50, label: 'Champion' },
       { pos: '2nd Place', percent: 25, label: 'Runner-up' },
@@ -1278,7 +1334,7 @@ const PrizePanel = ({ tournament }) => {
       <div className={styles.prizeHero}>
         <p className={styles.metaLabel}>Total Prize Pool</p>
         <h2 className={styles.prizeAmount}>{total.toLocaleString()} <span className={styles.vcUnit}>VC</span></h2>
-        <p className={styles.prizeFiat}>≈ ₦{(total * 1000).toLocaleString()} NGN</p>
+        <p className={styles.prizeFiat}>≈ {coinsAsNgn(total)} NGN</p>
       </div>
 
       <section className={styles.section}>

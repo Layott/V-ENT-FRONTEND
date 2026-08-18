@@ -22,6 +22,18 @@ import {
 import { MdOutlineClose } from 'react-icons/md';
 import { FiExternalLink } from 'react-icons/fi';
 import { BsTwitter, BsInstagram, BsYoutube, BsFacebook, BsTwitch } from 'react-icons/bs';
+
+// The Connect row and the sponsor chips were hardcoded: five links pointing at
+// "#" and four invented sponsor names on every event, whoever ran it. Both now
+// come from the event itself and disappear when the organizer has not set them.
+const SOCIAL_ICONS = {
+  twitter: BsTwitter,
+  x: BsTwitter,
+  instagram: BsInstagram,
+  youtube: BsYoutube,
+  facebook: BsFacebook,
+  twitch: BsTwitch,
+};
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -35,7 +47,10 @@ const TABS = [
   { id: 'schedule', label: 'Schedule' },
   { id: 'vendors', label: 'Vendors' },
   { id: 'tournaments', label: 'Tournaments' },
-  { id: 'map', label: 'Map' },
+  // The Map tab draws VENUE_BOOTHS, a fixed floor plan with a main stage, a food
+  // court and a VIP lounge. It is the same plan for every event, and no event
+  // has ever supplied one, so it was showing attendees a layout of a venue that
+  // does not exist. Restore this tab when events can carry a real floor plan.
 ];
 
 const formatDateTime = (iso) => {
@@ -184,6 +199,15 @@ const ViewEventContent = () => {
   const [buyError, setBuyError] = useState('');
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyResult, setBuyResult] = useState(null);
+
+  const eventSponsors = Array.isArray(event?.sponsors) ? event.sponsors : [];
+  const eventSocials = Object.entries(event?.social_links || {})
+    .filter(([platform, url]) => url && SOCIAL_ICONS[String(platform).toLowerCase()])
+    .map(([platform, url]) => ({
+      platform,
+      url,
+      Icon: SOCIAL_ICONS[String(platform).toLowerCase()],
+    }));
 
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
@@ -657,29 +681,31 @@ const ViewEventContent = () => {
                 <div>
                   <h3 className={styles.sectionTitle}>About this event</h3>
                   <p className={styles.body}>
-                    {event.description || 'Come play, meet streamers, and win prizes at the biggest gaming event in Lagos.'}
+                    {event.description || event.desc
+                      || 'The organizer has not written a description for this event yet.'}
                   </p>
 
-                  <h3 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
-                    What to expect
-                  </h3>
-                  <ul className={styles.expectList}>
-                    <li><FaCheckCircle /> Live tournaments with prize pools</li>
-                    <li><FaCheckCircle /> Vendor zone with exclusive merch drops</li>
-                    <li><FaCheckCircle /> Cosplay competitions and meet & greets</li>
-                    <li><FaCheckCircle /> AMV showcase + after-party</li>
-                  </ul>
-
-                  <h3 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
-                    Connect
-                  </h3>
-                  <div className={styles.socialRow}>
-                    <a href="#" className={styles.socialBtn} aria-label="Twitter"><BsTwitter /></a>
-                    <a href="#" className={styles.socialBtn} aria-label="Instagram"><BsInstagram /></a>
-                    <a href="#" className={styles.socialBtn} aria-label="YouTube"><BsYoutube /></a>
-                    <a href="#" className={styles.socialBtn} aria-label="Facebook"><BsFacebook /></a>
-                    <a href="#" className={styles.socialBtn} aria-label="Twitch"><BsTwitch /></a>
-                  </div>
+                  {eventSocials.length > 0 && (
+                    <>
+                      <h3 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                        Connect
+                      </h3>
+                      <div className={styles.socialRow}>
+                        {eventSocials.map(({ platform, url, Icon }) => (
+                          <a
+                            key={platform}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.socialBtn}
+                            aria-label={platform}
+                          >
+                            <Icon />
+                          </a>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <aside className={styles.sideCard}>
@@ -703,16 +729,20 @@ const ViewEventContent = () => {
                     </div>
                   </div>
 
-                  <p className={styles.sideLabel} style={{ marginTop: '1.25rem' }}>
-                    Sponsors
-                  </p>
-                  <div className={styles.sponsorRow}>
-                    {['NetEase', 'Pulse', 'Konga', 'Paystack'].map((s) => (
-                      <span key={s} className={styles.sponsorChip}>
-                        <FaStar className={styles.sponsorStar} /> {s}
-                      </span>
-                    ))}
-                  </div>
+                  {eventSponsors.length > 0 && (
+                    <>
+                      <p className={styles.sideLabel} style={{ marginTop: '1.25rem' }}>
+                        Sponsors
+                      </p>
+                      <div className={styles.sponsorRow}>
+                        {eventSponsors.map((sponsor) => (
+                          <span key={sponsor.sponsor_id || sponsor.name} className={styles.sponsorChip}>
+                            <FaStar className={styles.sponsorStar} /> {sponsor.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
                   <p className={styles.sideLabel} style={{ marginTop: '1.25rem' }}>
                     Quick stats
@@ -720,7 +750,11 @@ const ViewEventContent = () => {
                   <div className={styles.miniStats}>
                     <div className={styles.miniStatRow}>
                       <span>Capacity</span>
-                      <strong>{event.attendees_count?.toLocaleString() || '-'}</strong>
+                      <strong>{event.capacity ? event.capacity.toLocaleString() : 'Unlimited'}</strong>
+                    </div>
+                    <div className={styles.miniStatRow}>
+                      <span>Attending</span>
+                      <strong>{(event.attendees_count || 0).toLocaleString()}</strong>
                     </div>
                     <div className={styles.miniStatRow}>
                       <span>Type</span>
