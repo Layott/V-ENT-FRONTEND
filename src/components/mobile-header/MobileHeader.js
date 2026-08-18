@@ -137,7 +137,9 @@ const MobileHeader = ({ className = '' }) => {
     localStorage.removeItem('authToken');
     
     // Sign out the user using NextAuth's signOut function
-    signOut({ callbackUrl: '/login' }); // Redirect to home page after logout
+    // Absolute: next-auth's client baseUrl falls back to localhost:3000 in the
+    // browser, so a relative callbackUrl points at the wrong host in production.
+    signOut({ callbackUrl: `${window.location.origin}/login` });
   }
 
   return (
