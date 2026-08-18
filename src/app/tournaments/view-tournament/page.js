@@ -196,8 +196,20 @@ const ViewTournamentContent = () => {
   }
   if (!tournament) return <NotFoundShell />;
 
-  const statusLabel = { upcoming: 'Upcoming', in_progress: 'Live', completed: 'Completed' }[tournament.status]
-    || (tournament.status || 'Status Unknown');
+  // The map only covered three of the seven lifecycle statuses, so a tournament
+  // taking entries showed the raw enum: "REGISTRATION_OPEN".
+  const statusLabel = {
+    draft: 'Draft',
+    published: 'Published',
+    registration_open: 'Registration open',
+    registration_closed: 'Registration closed',
+    upcoming: 'Upcoming',
+    live: 'Live',
+    in_progress: 'Live',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+  }[tournament.status]
+    || (tournament.status ? String(tournament.status).replace(/_/g, ' ') : 'Status unknown');
   const organizer = getOrganizer(tournament);
   const organizerDisplayName = organizer?.full_name || organizer?.username || 'Unknown organizer';
   const bannerUrl = tournament.banner_image || tournament.banner;
@@ -220,7 +232,7 @@ const ViewTournamentContent = () => {
                   <div className={styles.heroTags}>
                     <span className={styles.gameTag}>{tournament.game || 'Game'}</span>
                     <span className={`${styles.statusBadge} ${styles[`status_${tournament.status}`] || ''}`}>
-                      {tournament.status === 'in_progress' && <LuRadio />} {statusLabel}
+                      {(tournament.status === 'in_progress' || tournament.status === 'live') && <LuRadio />} {statusLabel}
                     </span>
                   </div>
                   <h1 className={styles.heroTitle}>{tournament.name || tournament.tournament_title || 'Untitled Tournament'}</h1>

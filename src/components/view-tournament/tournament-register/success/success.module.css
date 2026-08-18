@@ -26,34 +26,8 @@
   position: relative;
 }
 
-.confetti {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: 12px;
-}
-
-.confettiPiece {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  animation: confettiFall 3s linear infinite;
-}
-
-@keyframes confettiFall {
-  0% {
-    transform: translateY(-100vh) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
+/* Confetti removed: twenty squares in five unrelated colours raining
+   forever behind the receipt. The gold tick already says it worked. */
 
 .modalBody {
   padding: 40px 32px;
@@ -136,9 +110,11 @@
   max-width: 60%;
 }
 
+/* Was a navy panel with pale blue text and blue bullets - a colour that appears
+   nowhere else in V-ENT. It is a quiet aside next to the receipt, so it reads as
+   one: a surface a step off the card, and the platform's own neutrals. */
 .nextSteps {
-  background-color: #1e3a8a;
-  background-color: #1e3a8a;
+  background-color: #26262C;
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 32px;
@@ -162,7 +138,7 @@
 
 .nextStepsList li {
   font-size: 14px;
-  color: #e0e7ff;
+  color: #C8C8CE;
   margin-bottom: 8px;
   padding-left: 20px;
   position: relative;
@@ -171,7 +147,7 @@
 
 .nextStepsList li:before {
   content: "•";
-  color: #60a5fa;
+  color: var(--v-ent-gold);
   font-weight: bold;
   position: absolute;
   left: 0;
