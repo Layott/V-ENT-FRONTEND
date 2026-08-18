@@ -2,7 +2,8 @@
    .pageContainer / .mainContainer / .formContainer). Surfaces reuse the app's
    established dark palette: --overlay-gray for the outer card (from the shell),
    #303136 for inner inputs/surfaces (matches globals.css select bg), and
-   --v-ent-success as the primary green action. No raw brand hex. */
+   --v-ent-gold for brand actions. Green is kept only where it means success:
+   a step already completed, and the final done icon. No raw brand hex. */
 
 .wizard {
   align-items: stretch;
@@ -85,7 +86,7 @@
 }
 
 .stepSub strong {
-  color: var(--v-ent-success);
+  color: var(--v-ent-gold);
   font-weight: var(--fw-semi-bold);
 }
 
@@ -197,13 +198,14 @@
 }
 
 .gameChipOn {
-  background-color: rgba(76, 175, 80, 0.14);
-
-  color: var(--primary-bg);
+  /* Selected, not succeeded. Stronger fill plus the brand hue, per the
+     filled-chip rule - never a ring, never green. */
+  background-color: rgba(212, 175, 55, 0.16);
+  color: var(--primary-text);
 }
 
 .gameCheck {
-  color: var(--v-ent-success);
+  color: var(--v-ent-gold);
 }
 
 /* ── Wallet (step 4) ─────────────────────────────────────── */
@@ -347,8 +349,11 @@
 .primaryBtn {
   height: 40px;
   padding: 0 1.4rem;
-  background-color: var(--v-ent-success);
-  color: var(--white);
+  /* Gold, not green. Green carries success meaning across the app - verified,
+     completed, live - and a "Continue" button is a brand action, not a
+     confirmation. Matches .goldBTN in globals.css. */
+  background-color: var(--v-ent-gold);
+  color: var(--primary-bg);
 
   border-radius: 6px;
   font-weight: var(--fw-semi-bold);
@@ -356,7 +361,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: var(--v-ent-success-light);
+  background-color: var(--v-ent-light-gold);
 }
 
 .primaryBtn:active {

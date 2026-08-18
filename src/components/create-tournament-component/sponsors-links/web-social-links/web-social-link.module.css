@@ -49,8 +49,10 @@
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
   font-size: 0.9rem;
-  background-color: var(--v-ent-success);
-  color: #FFF;
+  /* Gold: "Add" is a brand action. Green means success across the app
+     (verified, completed, live) and does not belong on a CTA. */
+  background-color: var(--v-ent-gold);
+  color: var(--primary-bg);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -58,7 +60,7 @@
 }
 
 .addButton:hover {
-  background-color: var(--v-ent-success-deep);
+  background-color: var(--v-ent-light-gold);
 }
 
 .modalOverlay {
