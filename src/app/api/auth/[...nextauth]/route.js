@@ -19,6 +19,10 @@ export const VENT = {
   RESET_PASSWORD: `${BASE_URL}/auth/forgot-password/change-password/`,
   USER_PROFILE: `${BASE_URL}/auth/get-user-informations/`,
   RESEND_LINK: `${BASE_URL}/auth/resend-link/`,
+  // Pre-launch waitlist claim. The token in the emailed link is the credential,
+  // so neither call carries a session.
+  WAITLIST_CLAIM_PREVIEW: `${BASE_URL}/auth/waitlist/claim`,
+  WAITLIST_CLAIM: `${BASE_URL}/auth/waitlist/claim/`,
   EDIT_PROFILE: `${BASE_URL}/auth/edit-profile-info/`,
   EDIT_LINKS: `${BASE_URL}/auth/update-web-and-social-links/`,
   CREATE_EVENT: `${BASE_URL}/event/create-event/`,

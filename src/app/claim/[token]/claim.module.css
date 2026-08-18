@@ -1,0 +1,182 @@
+/* Claim page. Follows the same shell as /verify-email and /reset-password:
+   dark page, one filled card, no strokes anywhere. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 100px;
+}
+
+.mainContainer {
+  padding: 2.5rem 1.5rem;
+  background-color: var(--overlay-gray);
+  width: 90%;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--v-ent-gold);
+}
+
+.mainContainer h3 {
+  margin: 0;
+  text-align: center;
+}
+
+.muted {
+  margin: 0;
+  font-weight: var(--fw-extra-light);
+  font-size: var(--fs-p-size-sm-desktop);
+  text-align: center;
+  line-height: 1.6;
+  color: #a7a6a6;
+}
+
+/* The reserved handle is the reason they opened the email, so it gets a
+   surface of its own rather than sitting inside body copy. */
+.reservedBlock {
+  width: 100%;
+  background-color: #303136;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.reservedLabel {
+  font-size: 0.8125rem;
+  color: #a7a6a6;
+}
+
+.reservedName {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--v-ent-gold);
+  word-break: break-all;
+  text-align: center;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fieldLabel {
+  font-size: 0.875rem;
+  color: #d4d4d4;
+}
+
+.input {
+  width: 100%;
+  background-color: #303136;
+  color: var(--primary-text);
+  border: none;
+  border-radius: 5px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--v-ent-gold);
+  outline-offset: 2px;
+}
+
+.passwordWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrap .input {
+  padding-right: 3rem;
+}
+
+.eyeBTN {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #a7a6a6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.15rem;
+  padding: 0.35rem;
+}
+
+.eyeBTN:hover {
+  color: var(--primary-text);
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: #a7a6a6;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.ghostBTN {
+  width: 100%;
+  background-color: #303136;
+  color: var(--primary-text);
+}
+
+.ghostBTN:hover {
+  background-color: #3a3b41;
+}
+
+.footnote {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #7a7a82;
+  text-align: center;
+  line-height: 1.5;
+}
+
+@media only screen and (min-width: 600px) {
+  .mainContainer {
+    width: 450px;
+    padding: 3rem 2rem;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .mainContainer {
+    width: 520px;
+    padding: 3rem 3rem;
+  }
+}
