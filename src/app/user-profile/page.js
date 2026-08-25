@@ -119,6 +119,7 @@ const UserProfileContent = () => {
           setProfileData(raw);
           if (isOwner) {
             try { localStorage.setItem('userProfile', JSON.stringify(raw)); } catch {}
+            window.dispatchEvent(new Event('vent:profile-updated'));
           }
         }
       } catch (err) {

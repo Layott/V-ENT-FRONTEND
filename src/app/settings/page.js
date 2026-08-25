@@ -207,6 +207,7 @@ const SettingsContent = () => {
       const stored = localStorage.getItem('userProfile');
       const merged = { ...(stored ? JSON.parse(stored) : {}), ...payload };
       localStorage.setItem('userProfile', JSON.stringify(merged));
+      window.dispatchEvent(new Event('vent:profile-updated'));
     } catch {}
     if (out?.status === 'error') {
       showToast(out?.message || 'Save failed', 'error');

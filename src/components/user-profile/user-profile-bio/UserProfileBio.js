@@ -128,6 +128,7 @@ const UserProfileBio = ({
             userData.profile_picture = uploadedUrl;
             userData.lastUpdated = new Date().toISOString();
             localStorage.setItem("userProfile", JSON.stringify(userData));
+            window.dispatchEvent(new Event('vent:profile-updated'));
             console.log("Updated profile picture in localStorage");
   
             
