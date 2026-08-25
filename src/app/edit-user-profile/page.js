@@ -146,7 +146,6 @@ const EditUserProfileContent = () => {
       fullname: payload.full_name,
       description: payload.description,
       bio: payload.description,
-      country: payload.country,
       interests: payload.interests,
     };
     if (payload.profilePicPreview) {

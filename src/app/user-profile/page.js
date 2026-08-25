@@ -290,7 +290,12 @@ const UserProfileContent = () => {
   const fullName = profileData.full_name || profileData.fullname || profileData.username || 'Unknown';
   const username = profileData.username || 'username';
   const bio = profileData.description || profileData.bio || '';
-  const country = profileData.country || profileData.location || '';
+  // "Lagos, Nigeria" when both halves are known, otherwise whichever half is.
+  // Both come from the daily location refresh at sign-in.
+  const country = [profileData.state, profileData.country || profileData.location]
+    .map((part) => (part || '').trim())
+    .filter(Boolean)
+    .join(', ');
   const verified = profileData.is_verified || profileData.kyc_verified || false;
   const avatarUrl = profileData.profile_picture;
   const bannerUrl = profileData.banner;

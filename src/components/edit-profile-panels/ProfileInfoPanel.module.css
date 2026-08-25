@@ -197,3 +197,21 @@
 .hiddenInput {
   display: none;
 }
+
+/* Location is read from the sign-in, so it reads as a value rather than a
+   control: same surface as an input, no affordance to type into it. */
+.locationValue {
+  background: #303136;
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  margin: 0;
+}
+
+.locationNote {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #9A9AA3;
+}

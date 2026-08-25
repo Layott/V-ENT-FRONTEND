@@ -26,10 +26,24 @@ const Login = () => {
   const [expired, setExpired] = useState(false);
   const router = useRouter();
 
-  // Show a notice when the session-expiry guard bounced the user here.
+  // Show a notice when the session-expiry guard bounced the user here, and
+  // report a sign-in that failed on the way back from Google. Without the
+  // second half, a rejected social sign-in landed on a blank login form with
+  // no explanation at all.
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setExpired(new URLSearchParams(window.location.search).get("expired") === "1");
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setExpired(params.get("expired") === "1");
+
+    const failed = params.get("error");
+    if (failed) {
+      setSnackbarMessage(params.get("message") || "Sign-in did not complete. Please try again.");
+      setSnackbarType("error");
+      setOpen(true);
+      params.delete("error");
+      params.delete("message");
+      const rest = params.toString();
+      window.history.replaceState({}, "", rest ? `/login?${rest}` : "/login");
     }
   }, []);
 
@@ -108,10 +122,12 @@ const Login = () => {
         prompt: "select_account consent", // Explicitly request prompt and consent
       });
 
-      // This code will only run if redirect: false
-      setSnackbarMessage(`${provider} login successful!`);
-      setSnackbarType("success");
-      setOpen(true);
+      // Nothing is announced here. signIn() with redirect: true resolves as
+      // soon as the browser starts leaving for Google, which is long before
+      // anyone has picked an account - so a success message at this point
+      // claimed the sign-in had worked while the chooser was still open. The
+      // real outcome arrives back on /home or, if it failed, on
+      // /login?error=..., and it is reported there.
     } catch (error) {
       setSnackbarMessage(`Failed to log in with ${provider}`);
       setSnackbarType("error");
