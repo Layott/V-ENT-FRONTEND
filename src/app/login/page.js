@@ -169,8 +169,14 @@ const Login = () => {
               Your session expired. Please sign in again.
             </div>
           )}
+            {/* method="post" is not there to be used - onSubmit handles the
+                request. It is there because a form defaults to GET, and a
+                submit that lands before React has hydrated puts whatever was
+                typed into the URL. On these pages that means a password in the
+                address bar, in history, and in any referrer. */}
 
           <form
+            method="post"
             className={`${generalStyles.generalForm} ${styles.loginForm}`}
             onSubmit={handleSubmit}
           >

@@ -116,8 +116,14 @@ const ResetEmail = () => {
             <p>We just sent you a link to your email address.</p>
             <p>Enter the 6-digit code to reset your password</p>
             </section>
+            {/* method="post" is not there to be used - onSubmit handles the
+                request. It is there because a form defaults to GET, and a
+                submit that lands before React has hydrated puts whatever was
+                typed into the URL. On these pages that means a password in the
+                address bar, in history, and in any referrer. */}
 
-          <form className={generalStyles.resetForm} onSubmit={handleSubmit}>
+          <form
+            method="post" className={generalStyles.resetForm} onSubmit={handleSubmit}>
           <div className={generalStyles.pinForm}>
             {values.map((val, i) => (
               <input

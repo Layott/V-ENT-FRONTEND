@@ -124,8 +124,14 @@ const ResetPassword = () => {
                         <h3 className={generalStyles.formHeaderH3}>Reset password?</h3>
                         <p>Enter your new password</p>
                     </section>
+            {/* method="post" is not there to be used - onSubmit handles the
+                request. It is there because a form defaults to GET, and a
+                submit that lands before React has hydrated puts whatever was
+                typed into the URL. On these pages that means a password in the
+                address bar, in history, and in any referrer. */}
 
-                    <form className={`${generalStyles.generalForm}`} onSubmit={handleSubmit}>
+                    <form
+            method="post" className={`${generalStyles.generalForm}`} onSubmit={handleSubmit}>
 
                         <div className={generalStyles.inputGroup}>
                             <label>New Password:</label>
