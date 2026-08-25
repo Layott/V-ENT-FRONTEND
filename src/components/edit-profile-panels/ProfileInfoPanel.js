@@ -4,11 +4,15 @@ import { useRef, useState } from 'react';
 import shared from './editProfileShared.module.css';
 import styles from './ProfileInfoPanel.module.css';
 
-const LOCATIONS = [
-  'Lagos, Nigeria', 'Abuja, Nigeria', 'Port Harcourt, Nigeria',
-  'Ibadan, Nigeria', 'Kano, Nigeria', 'Accra, Ghana',
-  'Nairobi, Kenya', 'Johannesburg, South Africa',
-];
+// Location is not chosen here any more. The server reads it from the address
+// the first sign-in of each day arrives from, so the profile says where the
+// person actually is rather than which of eight cities they once picked.
+const describeLocation = (data = {}) => {
+  const city = (data.state || '').trim();
+  const country = (data.country || '').trim();
+  if (city && country) return `${city}, ${country}`;
+  return country || city || '';
+};
 
 const ProfileInfoPanel = ({ initialData = {}, onSave, onCancel, showToast }) => {
   const [avatarPreview, setAvatarPreview] = useState(initialData.profile_picture || initialData.profile_pic || null);
@@ -21,7 +25,7 @@ const ProfileInfoPanel = ({ initialData = {}, onSave, onCancel, showToast }) => 
   const [username, setUsername] = useState(initialData.username || '');
   const [profileName, setProfileName] = useState(initialData.full_name || initialData.fullname || '');
   const [bio, setBio] = useState(initialData.description || initialData.bio || '');
-  const [location, setLocation] = useState(initialData.country || LOCATIONS[0]);
+  const location = describeLocation(initialData);
   const [interests, setInterests] = useState(Array.isArray(initialData.interests) ? initialData.interests : []);
   const [interestSearch, setInterestSearch] = useState('');
   const [saving, setSaving] = useState(false);
@@ -59,7 +63,6 @@ const ProfileInfoPanel = ({ initialData = {}, onSave, onCancel, showToast }) => 
         username,
         full_name: profileName,
         description: bio,
-        country: location,
         interests,
         profilePicFile: avatarFile,
         bannerFile,
@@ -172,15 +175,11 @@ const ProfileInfoPanel = ({ initialData = {}, onSave, onCancel, showToast }) => 
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="location">Location</label>
-          <select
-            className={shared.formSelect}
-            id="location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          >
-            {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
-          </select>
+          <span className={shared.formLabel}>Location</span>
+          <p className={styles.locationValue}>{location || 'Set on your next sign-in'}</p>
+          <span className={styles.locationNote}>
+            Taken from where you sign in, updated once a day.
+          </span>
         </div>
       </div>
 
