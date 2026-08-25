@@ -35,7 +35,7 @@ const TeamProfileOverview = ({ team }) => {
       <div className={styles.overviewLeft}>
         <section className={styles.panel}>
           <h3 className={styles.panelTitle}>About</h3>
-          <p className={styles.bioText}>{team.bio || team.description || 'No bio yet.'}</p>
+          <p className={styles.bioText}>{team.bio || team.description || 'This team has not written a description yet.'}</p>
         </section>
 
         <section className={styles.panel}>

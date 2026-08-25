@@ -71,12 +71,29 @@ const TeamProfileContent = () => {
     window.setTimeout(() => setToast(''), 2200)
   }
 
+  // The server settles this now. The three-way comparison below it stays as a
+  // fallback for a payload that predates viewer_is_owner.
   const isOwner =
     !!team && (
-      team?.owner?.id === session?.user?.id ||
-      team?.owner?.username === session?.user?.username ||
-      team?.owner?.user_id === session?.user?.id
+      team?.viewer_is_owner ??
+      (
+        team?.owner?.id === session?.user?.id ||
+        team?.owner?.username === session?.user?.username ||
+        team?.owner?.user_id === session?.user?.id
+      )
     )
+
+  // Share used to be a Link back to the page you were already on. It copies a
+  // link to this team, and says what the link is if the clipboard is refused.
+  const handleShare = async () => {
+    const link = `${window.location.origin}/teams/team-profile?id=${team?.id ?? teamId}`
+    try {
+      await navigator.clipboard.writeText(link)
+      showToast?.('Team link copied')
+    } catch {
+      showToast?.(link)
+    }
+  }
 
   const handleRequestJoin = async () => {
     setRequestState('loading')
@@ -148,6 +165,7 @@ const TeamProfileContent = () => {
                 requestState={requestState}
                 onRequestJoin={handleRequestJoin}
                 onLeave={handleLeaveTeam}
+                onShare={handleShare}
               />
 
               <div className={styles.tabsRow}>
