@@ -19,11 +19,14 @@ const GamingAccountsPanel = ({ initialAccounts = {}, onSave, onCancel, showToast
   const [accounts, setAccounts] = useState(() => {
     const seed = {};
     PLATFORMS.forEach((p) => {
+      // The API speaks snake_case; this component was written in camelCase and
+      // read a key the server never sends, so a saved handle came back blank.
       const fromInit = initialAccounts[p.id] || {};
       seed[p.id] = {
-        displayName: fromInit.displayName || '',
+        displayName: fromInit.displayName || fromInit.display_name || '',
         gamertag: fromInit.gamertag || '',
         connected: !!fromInit.connected,
+        verified: !!fromInit.verified,
       };
     });
     return seed;

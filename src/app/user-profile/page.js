@@ -339,11 +339,22 @@ const UserProfileContent = () => {
   };
 
   const handleMessage = () => showToast('DMs coming soon');
-  const handleShare = () => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
+  // window.location.href is /user-profile with nothing on it, so the button was
+  // copying a link that showed the reader their own profile - or the login
+  // screen. The link now names whose profile it is.
+  const handleShare = async () => {
+    const id = profileId || sessionUserId || profileData.user_id;
+    const link = id
+      ? `${window.location.origin}/user-profile?id=${id}`
+      : window.location.href;
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast('Profile link copied');
+    } catch {
+      // Clipboard access can be refused outright. Say what the link is rather
+      // than claiming a copy that did not happen.
+      showToast(link);
     }
-    showToast('Profile link copied');
   };
 
   return (

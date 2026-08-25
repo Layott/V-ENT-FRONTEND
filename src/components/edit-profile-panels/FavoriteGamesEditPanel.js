@@ -29,7 +29,7 @@ const FavoriteGamesEditPanel = ({ initialGames, onSave, onCancel, showToast }) =
         platforms: g.platforms || ['PC'],
         gamertag: g.gamertag || '',
         gamertagLabel: g.gamertagLabel || 'Gamertag',
-        isMain: g.isMain || false,
+        isMain: g.isMain || g.is_main || false,
       }))
     : []);
 
