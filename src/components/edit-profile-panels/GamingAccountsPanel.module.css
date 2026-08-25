@@ -37,7 +37,7 @@
 }
 
 .platformName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
 }
@@ -50,7 +50,7 @@
 }
 
 .fieldLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
@@ -64,7 +64,7 @@
   color: #fff;
   padding: 8px 12px;
   border-radius: 6px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   outline: none;
   transition: background-color 0.2s;
@@ -81,7 +81,7 @@
 }
 
 .toggleLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.45);
 }

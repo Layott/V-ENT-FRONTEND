@@ -5,12 +5,12 @@
 }
 
 .boxTextContainer h4 {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-weight: 400;
 }
 
 .boxTextContainer p {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .hideLocationContainer label {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -72,7 +72,7 @@
 }
 
 .questionContainer p {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .optionContainer {
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .optionInput {

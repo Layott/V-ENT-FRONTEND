@@ -66,7 +66,7 @@
   text-align: center;
   margin-top: 2.5px;
   color: #797B86;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .openUpMenu {
@@ -144,7 +144,7 @@
 .iconShopSpan,
 .iconMarketplaceSpan {
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -161,7 +161,7 @@
 }
 
 .sidebarItem a {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-size: 0.7rem;
   color: #797B86;
 }

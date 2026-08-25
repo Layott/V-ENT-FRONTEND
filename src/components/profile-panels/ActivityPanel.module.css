@@ -14,7 +14,7 @@
 }
 
 .filterCount {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: #A7A6A6;
 }
@@ -41,7 +41,7 @@
   border: none;
   outline: none;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   width: 180px;
 }
@@ -56,7 +56,7 @@
   border-radius: 6px;
   padding: 0.45rem 0.75rem;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   outline: none;
   cursor: pointer;
@@ -87,7 +87,7 @@
 .tx th {
   padding: 0.75rem 1.1rem;
   text-align: left;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -106,7 +106,7 @@
 
   vertical-align: middle;
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .tx tbody tr:last-child td {
@@ -120,7 +120,7 @@
 .txEmpty {
   padding: 2.5rem 1.25rem;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.45);
 }
@@ -154,7 +154,7 @@
 }
 
 .tNameText {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   color: #fff;
@@ -165,14 +165,14 @@
 }
 
 .tNameSub {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.45);
   margin-top: 0.15rem;
 }
 
 .tPrize {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-weight: 600;
   color: #fff;
 }
@@ -192,7 +192,7 @@
 .bronze { color: #d8a368; }
 .dnp {
   color: rgba(255, 255, 255, 0.45);
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-weight: 400;
 }
 
@@ -203,7 +203,7 @@
   padding: 0.22rem 0.6rem;
   border-radius: 20px;
   font-size: 0.72rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   white-space: nowrap;
 }
 
@@ -233,7 +233,7 @@
 
   border-radius: 6px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   cursor: pointer;
   white-space: nowrap;
@@ -310,13 +310,13 @@
 }
 
 .txRowKey {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.45);
 }
 
 .txRowVal {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: #fff;
   text-align: right;
@@ -330,7 +330,7 @@
 
   border-radius: 6px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   text-align: center;
@@ -358,7 +358,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.45);
 }
@@ -369,7 +369,7 @@
   border-radius: 5px;
   padding: 0.3rem 0.55rem;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   outline: none;
   cursor: pointer;
@@ -377,7 +377,7 @@
 }
 
 .pagInfo {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.45);
 }
@@ -399,7 +399,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .pagBtn:hover:not(:disabled) {

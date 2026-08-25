@@ -125,7 +125,7 @@
 
 .teamProfileLink {
   font-style: italic;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .requestsContainer {
@@ -209,7 +209,7 @@
   justify-content: center;
   align-items: center;
   font-weight: 600;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   transition: all ease-in-out 0.5s;
 }
 
@@ -238,7 +238,7 @@
 }
 
 .name {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
 }
 
 .timeAgo {

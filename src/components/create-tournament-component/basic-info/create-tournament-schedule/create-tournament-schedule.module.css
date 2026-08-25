@@ -13,7 +13,7 @@
 }
 
 .hideLocationContainer label {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .questionContainer p {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .tournamentStartEndDateContainer {
@@ -178,7 +178,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .optionInput {

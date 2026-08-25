@@ -44,7 +44,7 @@
 }
 
 .welcomeSub {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: #A7A6A6;
   margin-top: 0.1rem;
@@ -56,7 +56,7 @@
   background-color: var(--v-ent-red);
 
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -129,7 +129,7 @@
   color: rgba(255, 255, 255, 0.45);
   padding: 0.18rem 0.55rem;
   border-radius: 20px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 .state {
@@ -168,7 +168,7 @@
 }
 
 .stateText {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: #A7A6A6;
   max-width: 340px;

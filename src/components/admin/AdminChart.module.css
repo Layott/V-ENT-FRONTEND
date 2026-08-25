@@ -22,7 +22,7 @@
 }
 
 .subtitle {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.38);
   margin-top: 0.15rem;
@@ -35,7 +35,7 @@
 }
 
 .empty {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   color: rgba(255, 255, 255, 0.35);
   font-size: 0.85rem;
   padding: 2rem 0;

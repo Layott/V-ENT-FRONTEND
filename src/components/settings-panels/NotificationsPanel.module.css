@@ -15,7 +15,7 @@
   background: #303136;
   padding: 0.85rem 1rem;
   text-align: left;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
 
@@ -41,7 +41,7 @@
   background: transparent;
 
   color: rgba(255, 255, 255, 0.55);
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -67,14 +67,14 @@
 }
 
 .eventLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
   margin-bottom: 0.2rem;
 }
 
 .eventSub {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.4;

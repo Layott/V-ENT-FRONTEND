@@ -60,7 +60,7 @@ select:-webkit-autofill:focus {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   color: var(--primary-bg);
 }
 
@@ -89,7 +89,7 @@ textarea:focus-visible,
 h1, h2, h3, h4,
 .displayTitle,
 .heroTitle {
-  font-family: "Fraunces", "Inter", serif;
+  font-family: "Fraunces", "ClashGrotesk-Variable", serif;
   font-weight: 700;
   letter-spacing: -0.01em;
 }

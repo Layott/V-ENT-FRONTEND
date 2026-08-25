@@ -5,7 +5,7 @@
   margin-bottom: 1.25rem;
 }
 .tab {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.5);
   background: transparent;
@@ -28,7 +28,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 .kycEmail {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.4);
   margin-top: 0.1rem;
@@ -71,7 +71,7 @@
   margin-bottom: 0.25rem;
 }
 .modalSub {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -107,7 +107,7 @@
 
 .docCol { display: flex; flex-direction: column; }
 .docLabel {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -126,7 +126,7 @@
 .formRow { margin-bottom: 1rem; }
 .formLabel {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -140,7 +140,7 @@
   border-radius: 5px;
   padding: 0.6rem 0.8rem;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   outline: none;
   resize: vertical;
@@ -158,7 +158,7 @@
 
   border-radius: 5px;
   padding: 0.6rem 0.85rem;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(237, 28, 36, 0.8);
 }

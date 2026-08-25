@@ -717,7 +717,7 @@ select.input {
 }
 
 .orderNumber {
-  font-family: "Inter", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   background-color: #131316;
 
   border-radius: 6px;

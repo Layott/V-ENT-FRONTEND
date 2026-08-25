@@ -138,7 +138,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Extralight", sans-serif;
   color: white;
   font-size: 0.85rem;
 }
@@ -173,7 +173,7 @@
   border-radius: 8px;
   background-color: var(--v-ent-red);
   color: #FFF;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.6rem;
   font-weight: var(--fw-bold);
   line-height: 16px;

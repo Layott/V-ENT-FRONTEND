@@ -152,7 +152,7 @@
 }
 
 .searchInput::placeholder {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   color: #B2B3BD;
   font-size: 0.9rem;
 }
@@ -263,7 +263,7 @@
 }
 
 .logoContainer h1 {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
   color: var(--v-ent-red);
@@ -318,7 +318,7 @@
   border-radius: 8px;
   background-color: var(--v-ent-red);
   color: #FFF;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.55rem;
   font-weight: var(--fw-bold);
   line-height: 15px;

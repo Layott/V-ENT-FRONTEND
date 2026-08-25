@@ -33,7 +33,7 @@
   background-color: #303136;
 
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
@@ -54,5 +54,5 @@
   justify-content: center;
   min-height: calc(100vh - 60px);
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }

@@ -37,7 +37,7 @@
 .iconYoutube { background: rgba(237, 28, 36, 0.16); color: var(--v-ent-red); }
 
 .socialLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
 }
@@ -49,7 +49,7 @@
 }
 
 .customLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: #fff;
   margin-bottom: 1rem;
@@ -78,7 +78,7 @@
 }
 
 .fieldLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: #fff;
 }
@@ -108,7 +108,7 @@
   background: transparent;
   border: none;
   color: var(--v-ent-red);
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0.45rem 0;

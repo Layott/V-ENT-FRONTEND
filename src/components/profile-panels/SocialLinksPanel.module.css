@@ -33,7 +33,7 @@
 
   border-radius: 20px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -58,7 +58,7 @@
 .empty {
   padding: 1.5rem 0;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.45);
 }

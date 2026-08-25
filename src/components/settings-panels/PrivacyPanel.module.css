@@ -70,13 +70,13 @@
 }
 
 .radioLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
 }
 
 .radioSub {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.4;
@@ -94,7 +94,7 @@
   color: rgba(255, 255, 255, 0.65);
   padding: 0.55rem 1.1rem;
   border-radius: 999px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;

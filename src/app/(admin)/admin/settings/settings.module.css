@@ -15,7 +15,7 @@
   margin-bottom: 0.3rem;
 }
 .sectionSub {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 1.25rem;
@@ -24,7 +24,7 @@
 .formGroup { margin-bottom: 0.85rem; }
 .label {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -38,7 +38,7 @@
   border-radius: 5px;
   padding: 0.55rem 0.8rem;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   outline: none;
   resize: vertical;
@@ -60,7 +60,7 @@
   font-weight: 500;
 }
 .toggleHint {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.35);
   margin-top: 0.1rem;

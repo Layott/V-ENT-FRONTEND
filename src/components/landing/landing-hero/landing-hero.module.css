@@ -46,7 +46,7 @@
 }
 
 .headerLogoContainer h1 {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
   color: var(--v-ent-red);
@@ -129,7 +129,7 @@
 
 .gamingAnimeTribeContainer h1 {
   font-size: 3rem;
-  font-family: "Fraunces", sans-serif;
+  font-family: "ClashGrotesk-Semi-Bold", sans-serif;
 }
 
 .h1Anime {
@@ -185,7 +185,7 @@
 }
 
 .inputText::placeholder {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   color: #CCC;
   font-size: 0.85rem;
 }
