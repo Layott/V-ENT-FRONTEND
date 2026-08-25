@@ -1,22 +1,29 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import shared from './settingsShared.module.css';
 import styles from './SecurityPanel.module.css';
 
-// ── Mock recent login data (10 rows) ─────────────────────────────────────
-const RECENT_LOGINS = [
-  { id: 'l1', device: 'MacBook Pro 14"', browser: 'Chrome 124', ip: '102.89.221.5', location: 'Lagos, NG', time: 'Just now', current: true },
-  { id: 'l2', device: 'iPhone 15', browser: 'Safari 17', ip: '102.89.221.5', location: 'Lagos, NG', time: '2 hours ago' },
-  { id: 'l3', device: 'Windows 11 PC', browser: 'Edge 125', ip: '102.89.198.2', location: 'Abuja, NG', time: '3 days ago' },
-  { id: 'l4', device: 'iPad Air', browser: 'Safari 17', ip: '102.89.198.2', location: 'Abuja, NG', time: '5 days ago' },
-  { id: 'l5', device: 'Android Phone', browser: 'Chrome 124', ip: '197.210.65.32', location: 'Port Harcourt, NG', time: '1 week ago' },
-  { id: 'l6', device: 'MacBook Pro 14"', browser: 'Chrome 124', ip: '102.89.221.5', location: 'Lagos, NG', time: '1 week ago' },
-  { id: 'l7', device: 'Linux Workstation', browser: 'Firefox 126', ip: '102.89.221.5', location: 'Lagos, NG', time: '2 weeks ago' },
-  { id: 'l8', device: 'Windows 11 PC', browser: 'Chrome 124', ip: '102.89.221.5', location: 'Lagos, NG', time: '3 weeks ago' },
-  { id: 'l9', device: 'Android Phone', browser: 'Chrome 123', ip: '197.210.65.32', location: 'Port Harcourt, NG', time: '1 month ago' },
-  { id: 'l10', device: 'iPhone 14', browser: 'Safari 16', ip: '154.113.99.18', location: 'Accra, GH', time: '2 months ago' },
-];
+// Recent sign-ins are read from the account. There used to be a fixed list of
+// ten invented ones here - a MacBook, an iPad, addresses in Lagos and Abuja -
+// shown identically to every user, which defeats the only purpose this table
+// has: letting somebody notice a sign-in that was not theirs.
+const relativeTime = (iso) => {
+  if (!iso) return '';
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '';
+  const seconds = Math.max(0, Math.round((Date.now() - then) / 1000));
+  if (seconds < 60) return 'Just now';
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  const days = Math.round(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`;
+  const months = Math.round(days / 30);
+  return `${months} month${months === 1 ? '' : 's'} ago`;
+};
 
 // ── Password strength scoring ────────────────────────────────────────────
 const scorePassword = (pw) => {
@@ -40,6 +47,31 @@ const scorePassword = (pw) => {
 };
 
 const SecurityPanel = ({ security = {}, onSave, showToast }) => {
+  const { data: session } = useSession();
+  const [logins, setLogins] = useState([]);
+  const [loginsLoading, setLoginsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = session?.user?.sessionToken;
+    if (!token) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setting/login-activity/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const body = await res.json();
+        if (!cancelled) setLogins(body?.data?.events || []);
+      } catch {
+        if (!cancelled) setLogins([]);
+      } finally {
+        if (!cancelled) setLoginsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [session]);
+
   const [twoFA, setTwoFA] = useState(!!security.two_factor_enabled);
   const [loginAlerts, setLoginAlerts] = useState(security.login_alerts !== false);
   const [showQR, setShowQR] = useState(false);
@@ -230,19 +262,31 @@ const SecurityPanel = ({ security = {}, onSave, showToast }) => {
               </tr>
             </thead>
             <tbody>
-              {RECENT_LOGINS.map((row) => (
+              {loginsLoading && (
+                <tr>
+                  <td colSpan={4}>Loading your recent sign-ins...</td>
+                </tr>
+              )}
+              {!loginsLoading && logins.length === 0 && (
+                <tr>
+                  <td colSpan={4}>No sign-ins recorded yet. This fills in from your next sign-in.</td>
+                </tr>
+              )}
+              {!loginsLoading && logins.map((row) => (
                 <tr key={row.id}>
                   <td>
                     <div className={styles.devCell}>
                       <span className={styles.devName}>{row.device}</span>
-                      <span className={styles.devBrowser}>{row.browser}</span>
+                      <span className={styles.devBrowser}>
+                        {row.method === 'google' ? 'Signed in with Google' : 'Password sign-in'}
+                      </span>
                     </div>
                   </td>
-                  <td>{row.ip}</td>
+                  <td>{row.ip || 'Unknown'}</td>
                   <td>{row.location}</td>
                   <td>
                     <span className={styles.timeCell}>
-                      {row.time}
+                      {relativeTime(row.time)}
                       {row.current && <span className={styles.currentPill}>Current</span>}
                     </span>
                   </td>
