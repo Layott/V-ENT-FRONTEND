@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import shared from './settingsShared.module.css';
 import styles from './AccountPanel.module.css';
 
