@@ -19,7 +19,14 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
   const handleEntryTypeChange = (e) => {
     const selectedEntryType = e.target.value;
     setEntryType(selectedEntryType);
-    updateFormData('entry_type', selectedEntryType );
+    updateFormData('entry_type', selectedEntryType);
+
+    // Switching to Free drops any fee already typed, so a tournament cannot be
+    // saved as free while carrying a price nobody sees.
+    if (selectedEntryType !== 'Paid' && entryFee !== '') {
+      setEntryFee('');
+      updateFormData('entry_fee', '');
+    }
   };
 
   const handleEntryFeeChange = (e) => {
@@ -125,16 +132,23 @@ const CreateTournamentVisibility = ({formData = {}, updateFormData}) => {
             </div>
 
 
-            <div className={createTournamentStyles.inputGroup}>
-              <label htmlFor="">Entry Fee</label>
-              <input
-                type="number"
-                placeholder='Enter amount'
-                value={entryFee}
-                className={createTournamentStyles.inputText}
-                onChange={handleEntryFeeChange}                
-              />
-            </div>
+            {/* A free tournament has no fee, so asking for one invites a
+                number that is then ignored. The field appears when Paid is
+                chosen, and choosing Free clears whatever was typed. */}
+            {entryType === 'Paid' && (
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="entry-fee">Entry Fee (VENT COINS)</label>
+                <input
+                  id="entry-fee"
+                  type="number"
+                  min="0"
+                  placeholder="Enter amount"
+                  value={entryFee}
+                  className={createTournamentStyles.inputText}
+                  onChange={handleEntryFeeChange}
+                />
+              </div>
+            )}
 
         </div>
         

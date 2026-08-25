@@ -97,7 +97,12 @@ const Participants = ({ formData = {}, updateFormData }) => {
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || /^[0-9]+$/.test(value)) {
-                    updateFormData('number_of_teams', value); // Update value
+                    // This field is the tournament's slot count. It only ever
+                    // wrote number_of_teams, which the submit does not read, so
+                    // a tournament created for 4 teams was sent with the
+                    // default 32 and displayed as 0/32.
+                    updateFormData('number_of_teams', value);
+                    updateFormData('max_number_of_participants', value);
                   }
                 }}
                 onBlur={(e) => {
