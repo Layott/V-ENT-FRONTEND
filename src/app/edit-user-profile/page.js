@@ -171,19 +171,28 @@ const EditUserProfileContent = () => {
     } catch {}
   };
 
-  // Favorite games - POST /auth/update-favorite-games/ (Bearer header auth,
-  // JSON { game_ids }). Preferred over the legacy edit-favorite-games endpoint
-  // that took the token in the body.
+  // Favorite games - POST /auth/update-favorite-games/ (Bearer header auth).
+  // The gamertag and the main game travel with each entry. Sending bare ids,
+  // which is what this did, was why both came back empty every time.
   const handleSaveGames = async (payload) => {
-    const games = payload.games || [];
-    const game_ids = games.map((g) => g.id).filter(Boolean);
-    await postJson('/auth/update-favorite-games/', { game_ids });
+    const games = (payload.games || [])
+      .filter((g) => g.id)
+      .map((g) => ({ game_id: g.id, gamertag: g.gamertag || '', is_main: !!g.isMain }));
+    const res = await postJson('/auth/update-favorite-games/', { games });
+    const saved = res?.data?.favorite_games;
+    if (Array.isArray(saved)) {
+      setProfileData((prev) => ({ ...(prev || {}), favorite_games: saved }));
+    }
   };
 
-  // Gaming accounts - BE-GAP: endpoint not yet confirmed server-side.
-  // TODO(M1/BE): confirm /auth/update-gaming-accounts/ before treating as source of truth.
+  // Gaming accounts - POST /auth/update-gaming-accounts/. The endpoint exists
+  // now; until it did, every save here answered 404 and nothing was stored.
   const handleSaveAccounts = async (payload) => {
-    await postJson('/auth/update-gaming-accounts/', { accounts: payload.accounts || {} });
+    const res = await postJson('/auth/update-gaming-accounts/', { accounts: payload.accounts || {} });
+    const saved = res?.data?.gaming_accounts;
+    if (saved && typeof saved === 'object') {
+      setProfileData((prev) => ({ ...(prev || {}), gaming_accounts: saved }));
+    }
   };
 
   // Social links - real endpoint POST /auth/update-web-and-social-links/ ({ links }).
