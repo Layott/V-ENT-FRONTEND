@@ -20,7 +20,6 @@ const computeCompletion = (u) => {
     !!u.full_name,
     !!u.username,
     !!u.email,
-    !!u.phone || !!u.phone_number,
     !!u.bio || !!u.description,
     !!u.profile_picture || !!u.profile_pic,
     !!u.banner || !!u.banner_picture,
@@ -33,8 +32,93 @@ const computeCompletion = (u) => {
 };
 
 const AccountPanel = ({ user = {}, onSave, showToast }) => {
+  const { data: session } = useSession();
+  const apiBase = process.env.NEXT_PUBLIC_API_URL;
+  const token = session?.user?.sessionToken;
+
+  // Member ID, Date joined and KYC status rendered as "-" because nothing
+  // served them. /setting/account/ does now.
+  const [account, setAccount] = useState(null);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [emailCode, setEmailCode] = useState('');
+
+  const loadAccount = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${apiBase}/setting/account/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const body = await res.json();
+      setAccount(body?.data?.account || null);
+    } catch {
+      /* the panel still renders from the profile it was handed */
+    }
+  }, [apiBase, token]);
+
+  useEffect(() => { loadAccount(); }, [loadAccount]);
+
+  const authed = (path, body) => fetch(`${apiBase}${path}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  const saveUsername = async (value) => {
+    setSavingField('username');
+    try {
+      const res = await authed('/setting/username/', { username: value });
+      const data = await res.json();
+      showToast?.(data.message || (res.ok ? 'Username updated' : 'Could not update username'));
+      if (res.ok) await loadAccount();
+    } catch {
+      showToast?.('Could not update username');
+    } finally {
+      setSavingField(null);
+    }
+  };
+
+  const startEmailChange = async (value) => {
+    setSavingField('email');
+    try {
+      const res = await authed('/auth/change-email/', { new_email: value });
+      const data = await res.json();
+      if (res.ok) {
+        setPendingEmail(value);
+        showToast?.(`We sent a six-digit code to ${value}.`);
+      } else {
+        showToast?.(data.message || data.error || 'Could not send the code');
+      }
+    } catch {
+      showToast?.('Could not send the code');
+    } finally {
+      setSavingField(null);
+    }
+  };
+
+  const confirmEmailChange = async () => {
+    setSavingField('email-code');
+    try {
+      const res = await authed('/auth/verify-new-email/', {
+        new_email: pendingEmail, token: emailCode,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPendingEmail('');
+        setEmailCode('');
+        showToast?.('Email address updated');
+        await loadAccount();
+      } else {
+        showToast?.(data.message || data.error || 'That code did not match');
+      }
+    } catch {
+      showToast?.('That code did not match');
+    } finally {
+      setSavingField(null);
+    }
+  };
+
   const [email, setEmail] = useState(user.email || '');
-  const [phone, setPhone] = useState(user.phone || user.phone_number || '');
   const [fullName, setFullName] = useState(user.full_name || user.fullname || '');
   const [username, setUsername] = useState(user.username || '');
   const [savingField, setSavingField] = useState(null);
@@ -42,15 +126,13 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
   // Re-sync when user prop arrives later.
   useEffect(() => {
     setEmail(user.email || '');
-    setPhone(user.phone || user.phone_number || '');
     setFullName(user.full_name || user.fullname || '');
     setUsername(user.username || '');
   }, [user]);
 
   const completion = useMemo(() => computeCompletion(user), [user]);
-  const emailVerified = !!user.email_verified || !!user.is_email_verified;
-  const phoneVerified = !!user.phone_verified || !!user.is_phone_verified;
-  const memberId = user.id || user.user_id || '-';
+  const emailVerified = account?.email_verified ?? (!!user.email_verified || !!user.is_email_verified);
+  const memberId = account?.user_id || user.id || user.user_id || '-';
 
   const saveField = async (field, value) => {
     setSavingField(field);
@@ -59,10 +141,6 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
     } finally {
       setSavingField(null);
     }
-  };
-
-  const triggerVerify = (label) => {
-    showToast?.(`Verification ${label} sent`);
   };
 
   return (
@@ -103,60 +181,41 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
             />
-            {!emailVerified && (
-              <button
-                type="button"
-                className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`}
-                onClick={() => triggerVerify('email')}
-              >
-                Verify
-              </button>
-            )}
             <button
               type="button"
               className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`}
-              onClick={() => saveField('email', email)}
-              disabled={savingField === 'email' || email === (user.email || '')}
+              onClick={() => startEmailChange(email)}
+              disabled={savingField === 'email' || !email || email === (account?.email || user.email || '')}
             >
-              {savingField === 'email' ? 'Saving…' : 'Save'}
+              {savingField === 'email' ? 'Sending…' : 'Send code'}
             </button>
           </div>
-        </div>
 
-        <div className={shared.formGroup}>
-          <div className={shared.labelRow}>
-            <label className={shared.formLabel} htmlFor="acc-phone">Phone number</label>
-            <span className={`${shared.verifyBadge} ${phoneVerified ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
-              {phoneVerified ? 'Verified' : 'Not verified'}
-            </span>
-          </div>
-          <div className={shared.inputWithAction}>
-            <input
-              id="acc-phone"
-              type="tel"
-              className={shared.formInput}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+234 …"
-            />
-            {!phoneVerified && (
+          {/* Changing an address is not a save, it is a proof. The code goes to
+              the new address, so a typo cannot lock anyone out of their own
+              account and nobody can move an account onto an address they do not
+              read. */}
+          {pendingEmail && (
+            <div className={shared.inputWithAction}>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                className={shared.formInput}
+                value={emailCode}
+                onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, ''))}
+                placeholder={`Six-digit code sent to ${pendingEmail}`}
+              />
               <button
                 type="button"
-                className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`}
-                onClick={() => triggerVerify('SMS code')}
+                className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`}
+                onClick={confirmEmailChange}
+                disabled={savingField === 'email-code' || emailCode.length !== 6}
               >
-                Verify
+                {savingField === 'email-code' ? 'Checking…' : 'Confirm'}
               </button>
-            )}
-            <button
-              type="button"
-              className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`}
-              onClick={() => saveField('phone', phone)}
-              disabled={savingField === 'phone' || phone === (user.phone || user.phone_number || '')}
-            >
-              {savingField === 'phone' ? 'Saving…' : 'Save'}
-            </button>
-          </div>
+            </div>
+          )}
         </div>
 
         <div className={shared.formGroup}>
@@ -195,13 +254,13 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
             <button
               type="button"
               className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`}
-              onClick={() => saveField('username', username)}
+              onClick={() => saveUsername(username)}
               disabled={savingField === 'username' || !username || username === (user.username || '')}
             >
               {savingField === 'username' ? 'Saving…' : 'Save'}
             </button>
           </div>
-          <span className={shared.fieldHelper}>Letters, numbers, and underscores only.</span>
+          <span className={shared.fieldHelper}>Letters, numbers and underscores, 3 to 20 characters. Case does not create a new name.</span>
         </div>
       </div>
 
@@ -217,17 +276,21 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
           </div>
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>Date joined</span>
-            <span className={styles.metaValue}>{formatDate(user.date_joined)}</span>
+            <span className={styles.metaValue}>{formatDate(account?.date_joined || user.date_joined)}</span>
           </div>
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>KYC status</span>
-            <span className={`${shared.verifyBadge} ${user.kyc_verified ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
-              {user.kyc_verified ? 'Verified' : 'Pending'}
+            {/* KYC is deliberately parked, so it says parked rather than
+                sitting on "Pending" while nobody is reviewing anything. */}
+            <span className={`${shared.verifyBadge} ${(account?.kyc_verified ?? user.kyc_verified) ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
+              {(account?.kyc_verified ?? user.kyc_verified)
+                ? 'Verified'
+                : account?.kyc_status === 'parked' ? 'Parked for now' : 'Under review'}
             </span>
           </div>
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>Penalty points</span>
-            <span className={styles.metaValue}>{user.penalty_point ?? 0}</span>
+            <span className={styles.metaValue}>{account?.penalty_points ?? user.penalty_point ?? 0}</span>
           </div>
         </div>
       </div>
