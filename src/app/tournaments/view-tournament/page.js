@@ -1405,78 +1405,117 @@ const PrizePanel = ({ tournament }) => {
 };
 
 /* ──────────────── STREAM ──────────────── */
-const StreamPanel = ({ tournament, session }) => {
-  const [chatInput, setChatInput] = useState('');
-  const [messages, setMessages] = useState([
-    { user: 'fury_king', body: 'GG that comeback was insane', color: '#fbc64b' },
-    { user: 'crimson_ace', body: 'who is in the next match?', color: '#a78bfa' },
-    { user: 'shadow_zero', body: 'TEAM CRIMSON LETSGO 🐺', color: '#60a5fa' },
-    { user: 'neon_wolf', body: 'casting is fire today', color: '#34d399' },
-    { user: 'reaper_x', body: 'pop off pop off', color: '#f87171' },
-    { user: 'ghost_zero', body: 'production team eating', color: '#D4AF37' },
-    { user: 'viper_prime', body: 'imagine missing that 1v3', color: '#fb923c' },
-  ]);
+// This tab used to show a Twitch placeholder reading "Live in mock mode", 2,148
+// invented viewers, two invented casters and seven invented chat messages - on
+// every tournament, including one created five minutes earlier. It shows the
+// stream the organiser actually linked, or says there is not one yet.
 
-  const myName = session?.user?.username || session?.user?.name || 'you';
-  const tournamentName = tournament?.name || tournament?.tournament_title || 'Tournament';
-  const game = tournament?.game || 'Game';
+const STREAM_SOURCES = [
+  { key: 'twitch_link', label: 'Twitch' },
+  { key: 'youtube_link', label: 'YouTube' },
+  { key: 'kick_link', label: 'Kick' },
+  { key: 'tiktok_link', label: 'TikTok' },
+  { key: 'facebook_link', label: 'Facebook' },
+  { key: 'bigolive_link', label: 'Bigo Live' },
+];
 
-  const sendMessage = () => {
-    if (!chatInput.trim()) return;
-    setMessages((m) => [...m, { user: myName, body: chatInput.trim(), color: '#ED1C24' }]);
-    setChatInput('');
-  };
+// Turn a channel or video link into something an iframe can show. Anything we
+// cannot embed is offered as a link out instead of a dead black rectangle.
+const toEmbed = (url, label) => {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, '');
+    const parent = typeof window !== 'undefined' ? window.location.hostname : 'v-ent.co';
+
+    if (host.endsWith('twitch.tv')) {
+      const channel = u.pathname.split('/').filter(Boolean)[0];
+      if (!channel) return null;
+      return `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}`;
+    }
+    if (host.endsWith('youtube.com')) {
+      const v = u.searchParams.get('v');
+      if (v) return `https://www.youtube.com/embed/${encodeURIComponent(v)}`;
+      const live = u.pathname.match(/\/live\/([^/]+)/);
+      if (live) return `https://www.youtube.com/embed/${encodeURIComponent(live[1])}`;
+      return null;
+    }
+    if (host.endsWith('youtu.be')) {
+      const id = u.pathname.split('/').filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}` : null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+const StreamPanel = ({ tournament }) => {
+  const tournamentName = tournament?.name || tournament?.tournament_title || 'This tournament';
+
+  const source = STREAM_SOURCES
+    .map((s) => ({ ...s, url: tournament?.[s.key] }))
+    .find((s) => s.url);
+
+  if (!source) {
+    return (
+      <div className={styles.streamWrap}>
+        <div className={styles.streamMain}>
+          <div className={styles.emptyState}>
+            <h3 className={styles.sectionTitle}>No stream linked yet</h3>
+            <p className={styles.sectionText}>
+              When the organiser adds a Twitch, YouTube or Kick link to {tournamentName},
+              the broadcast appears here.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const embed = toEmbed(source.url, source.label);
 
   return (
     <div className={styles.streamWrap}>
       <div className={styles.streamMain}>
         <div className={styles.streamFrame}>
-          <iframe
-            title={`${tournamentName} stream`}
-            src="about:blank"
-            className={styles.streamIframe}
-          />
-          <div className={styles.streamPlaceholder}>
-            <LuRadio className={styles.streamIcon} />
-            <p className={styles.streamPlaceholderTitle}>Twitch embed placeholder</p>
-            <p className={styles.streamPlaceholderSub}>twitch.tv/v-ent · Live in mock mode</p>
-            <div className={styles.streamMeta}>
-              <span className={styles.viewerCount}>● 2,148 viewers</span>
-              <span>Casters: jay_o · ada_a</span>
+          {embed ? (
+            <iframe
+              title={`${tournamentName} stream`}
+              src={embed}
+              className={styles.streamIframe}
+              allowFullScreen
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+            />
+          ) : (
+            <div className={styles.streamPlaceholder}>
+              <LuRadio className={styles.streamIcon} />
+              <p className={styles.streamPlaceholderTitle}>Watch on {source.label}</p>
+              <p className={styles.streamPlaceholderSub}>
+                {source.label} does not allow the broadcast to be embedded here.
+              </p>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.primaryBtn} goldBTN`}
+              >
+                Open the stream
+              </a>
             </div>
-          </div>
+          )}
         </div>
         <div className={styles.streamCaption}>
-          <h3 className={styles.sectionTitle} style={{ marginBottom: '0.4rem' }}>{tournamentName} - Live</h3>
-          <p className={styles.sectionText}>Live broadcast of the {game} {formatLabel(tournament?.format)} bracket. Casters call every match in English.</p>
+          <h3 className={styles.sectionTitle} style={{ marginBottom: '0.4rem' }}>{tournamentName}</h3>
+          <p className={styles.sectionText}>
+            Streamed on {source.label} by the organiser.{' '}
+            <a href={source.url} target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>
+              Open it on {source.label}
+            </a>
+            .
+          </p>
         </div>
       </div>
-
-      <aside className={styles.chatSide}>
-        <div className={styles.chatHeader}>
-          <LuMessageCircle /> Live Chat
-          <span className={styles.chatViewers}>2.1k watching</span>
-        </div>
-        <div className={styles.chatMessages}>
-          {messages.map((m, i) => (
-            <div key={i} className={styles.chatMsg}>
-              <span className={styles.chatUser} style={{ color: m.color }}>{m.user}:</span>
-              <span className={styles.chatBody}>{m.body}</span>
-            </div>
-          ))}
-        </div>
-        <div className={styles.chatInputRow}>
-          <input
-            type="text"
-            placeholder="Send a message..."
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            className={styles.chatInput}
-          />
-          <button className={`${styles.primaryBtn} goldBTN`} onClick={sendMessage}>Send</button>
-        </div>
-      </aside>
     </div>
   );
 };

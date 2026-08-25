@@ -216,3 +216,20 @@
     height: 25px;
   }
 }
+/* A module that is switched off: readable, obviously not clickable, no ring. */
+.unavailableItem {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.unavailableItem .iconTextLink {
+  cursor: default;
+}
+
+.unavailableTag {
+  margin-left: 8px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9A9AA3;
+}

@@ -97,10 +97,14 @@ const Sidebar = ({ customClass }) => {
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/production') ? styles.activeLink : ''}`}>
-                    <Link href={'/production'} className={styles.iconTextLink}>
+                {/* Production is off. Nothing behind it works yet, so the row
+                    is not a link at all - a disabled control that still
+                    navigates is just a slower disappointment. */}
+                <li className={`${styles.sidebarItem} ${styles.unavailableItem}`} aria-disabled="true">
+                    <span className={styles.iconTextLink} title="Production is not available yet">
                         <BsBroadcast className={styles.sidebarIcon} /> Production
-                    </Link>
+                        <span className={styles.unavailableTag}>Unavailable</span>
+                    </span>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>

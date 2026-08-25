@@ -1442,3 +1442,17 @@
 }
 
 .eventTicketLink:hover { background-color: rgba(255, 255, 255, 0.18); }
+
+/* An empty state is written text on the page surface. No dashed box, no rule -
+   the design bans building structure out of thin lines. */
+.emptyState {
+  padding: 48px 24px;
+  text-align: center;
+  background: #1a1b1f;
+  border-radius: 14px;
+}
+
+.inlineLink {
+  color: var(--v-ent-gold);
+  text-decoration: underline;
+}
