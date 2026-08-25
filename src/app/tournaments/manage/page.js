@@ -157,9 +157,9 @@ const ManageContent = () => {
               <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`}>
                 <button className={styles.outlineBtn}><LuEye /> View Public Page</button>
               </Link>
-              <Link href={`/tournaments/production?id=${tournament.tournament_id}`}>
+              <span aria-disabled="true" title="Production is not available yet" style={{ opacity: 0.45, cursor: 'default' }}>
                 <button className={`${styles.btn} goldBTN`}><LuRadio /> Production Panel</button>
-              </Link>
+              </span>
             </div>
           </div>
 
@@ -444,32 +444,32 @@ const ProductionLinkPanel = ({ tournament }) => (
       live stream yet.
     </p>
     <div className={styles.linkGrid}>
-      <Link href={`/tournaments/production?id=${tournament.tournament_id}`} className={styles.linkCard}>
+      <span className={styles.linkCard} aria-disabled="true" title="Production is not available yet" style={{ opacity: 0.45, cursor: 'default' }}>
         <LuRadio className={styles.linkIcon} />
         <div>
           <p className={styles.linkTitle}>Production Panel</p>
           <p className={styles.linkSub}>Match selector, score input and scoreboard preview.</p>
         </div>
         <LuArrowRight className={styles.linkArrow} />
-      </Link>
+      </span>
 
-      <Link href={`/tournaments/overlay?id=${tournament.tournament_id}`} className={styles.linkCard} target="_blank">
+      <span className={styles.linkCard} aria-disabled="true" title="Production is not available yet" style={{ opacity: 0.45, cursor: 'default' }}>
         <LuExternalLink className={styles.linkIcon} />
         <div>
           <p className={styles.linkTitle}>OBS Overlay URL</p>
           <p className={styles.linkSub}>Transparent overlay for streaming software.</p>
         </div>
         <LuArrowRight className={styles.linkArrow} />
-      </Link>
+      </span>
 
-      <Link href="/production" className={styles.linkCard}>
+      <span className={styles.linkCard} aria-disabled="true" title="Production is not available yet" style={{ opacity: 0.45, cursor: 'default' }}>
         <LuPencil className={styles.linkIcon} />
         <div>
           <p className={styles.linkTitle}>V-ENT Production Hub</p>
           <p className={styles.linkSub}>Scene and overlay configuration.</p>
         </div>
         <LuArrowRight className={styles.linkArrow} />
-      </Link>
+      </span>
     </div>
   </div>
 );
