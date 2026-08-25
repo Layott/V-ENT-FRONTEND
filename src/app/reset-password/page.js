@@ -37,6 +37,14 @@ const ResetPassword = () => {
         e.preventDefault(); 
         setShowError(false)
         const email = typeof window !== 'undefined' ? localStorage.getItem('forgotPasswordEmail') : '';
+        const ticket = typeof window !== 'undefined' ? localStorage.getItem('resetTicket') : '';
+
+        if (!ticket) {
+            setSnackbarMessage('This reset has expired. Start again from Forgot Password.');
+            setSnackbarType('error');
+            setOpen(true);
+            return;
+        }
 
         if (!email) {
             setSnackbarMessage('Email not found. Please try again from the Forgot Password page.');
@@ -57,7 +65,7 @@ const ResetPassword = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, new_password: password }),
+                body: JSON.stringify({ email, new_password: password, ticket }),
             });
 
             const data = await response.json();
@@ -66,8 +74,9 @@ const ResetPassword = () => {
                 setSnackbarMessage(data.message || 'Done!');
                 setSnackbarType('success');
                 localStorage.removeItem('forgotPasswordEmail');
+                localStorage.removeItem('resetTicket');
               } else {
-                setSnackbarMessage(data.error || 'Failed!');
+                setSnackbarMessage(data.error || data.message || 'Failed!');
                 setSnackbarType('error');
               }
             } catch (error) {
