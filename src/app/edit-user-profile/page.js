@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -24,6 +24,12 @@ const PANELS = [
 
 const EditUserProfileContent = () => {
   const { data: session, status } = useSession();
+
+  // True once the session has answered once. next-auth reports "loading" again
+  // on every re-check, and a loader returned at that point discards whatever is
+  // on screen - which is how a part-filled form came back empty.
+  const hasSettled = useRef(false);
+  if (status !== 'loading') hasSettled.current = true;
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -161,6 +167,7 @@ const EditUserProfileContent = () => {
       const stored = localStorage.getItem('userProfile');
       const merged = { ...(stored ? JSON.parse(stored) : {}), ...display };
       localStorage.setItem('userProfile', JSON.stringify(merged));
+      window.dispatchEvent(new Event('vent:profile-updated'));
     } catch {}
   };
 
@@ -193,7 +200,7 @@ const EditUserProfileContent = () => {
     await postJson('/auth/update-web-and-social-links/', { links });
   };
 
-  if (loading || status === 'loading') {
+  if (loading || (status === 'loading' && !hasSettled.current)) {
     return (
       <div className={styles.pageContainer}>
         <Header />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import ProgressMenu from './progress-menu/ProgressMenu';
@@ -11,6 +11,12 @@ import styles from './create-tournament-component.module.css';
 
 const CreateEventComponent = () => {
   const { data: session, status } = useSession();
+
+  // True once the session has answered once. next-auth reports "loading" again
+  // on every re-check, and a loader returned at that point discards whatever is
+  // on screen - which is how a part-filled form came back empty.
+  const hasSettled = useRef(false);
+  if (status !== 'loading') hasSettled.current = true;
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(1);
 
@@ -354,8 +360,10 @@ const handleSubmit = async () => {
     }
   };
 
-  // Show loading state while checking authentication
-  if (status === "loading") {
+  // Only before the first answer. next-auth flips back to "loading" whenever
+  // it re-checks the session, and returning a loader at that point unmounted a
+  // half-filled event form and rebuilt it empty.
+  if (status === "loading" && !hasSettled.current) {
     return (
       <div className={styles.createTournamentContainer}>
         <div className={`${styles.loading}`}>

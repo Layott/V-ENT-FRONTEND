@@ -78,12 +78,17 @@ const BottomMenu = ({ customClass }) => {
 
     window.addEventListener('storage', handleStorageChange);
     
-    // Also check periodically for localStorage updates within the same tab
-    const interval = setInterval(getUserInfo, 1000);
+    // There used to be a setInterval(getUserInfo, 1000) here, "to check for
+    // localStorage updates within the same tab". It re-ran on every tick and
+    // wrote fresh state objects whether anything had changed or not, so the
+    // navigation re-rendered once a second for as long as the app was open.
+    // A write in this tab now announces itself instead; a write in another tab
+    // still arrives as a storage event.
+    window.addEventListener('vent:profile-updated', handleStorageChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
+      window.removeEventListener('vent:profile-updated', handleStorageChange);
     };
   }, [session]);
 

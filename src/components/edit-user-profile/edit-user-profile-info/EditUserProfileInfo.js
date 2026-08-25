@@ -467,6 +467,7 @@ const EditUserProfileInfo = () => {
               lastUpdated: new Date().toISOString(),
             };
             localStorage.setItem("userProfile", JSON.stringify(updatedProfileData));
+            window.dispatchEvent(new Event('vent:profile-updated'));
             console.log("Updated localStorage with new profile data");
           } catch (error) {
             console.error("Error updating localStorage:", error);

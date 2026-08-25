@@ -87,6 +87,7 @@ const Header = ({ className = '' }) => {
         setFullName(d.full_name || null);
         setUsername(d.username || null);
         try { localStorage.setItem('userProfile', JSON.stringify(d)); } catch { /* ignore */ }
+        window.dispatchEvent(new Event('vent:profile-updated'));
       } catch (error) {
         console.error("Failed to hydrate header profile:", error);
       }
