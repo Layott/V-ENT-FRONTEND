@@ -4,15 +4,13 @@ import { useState } from 'react';
 import shared from './editProfileShared.module.css';
 import styles from './GamingAccountsPanel.module.css';
 
+// Two platforms, because these are the two that can be confirmed. The other six
+// that used to be listed - PSN, Xbox Live, Riot, EA, Epic, Activision - have no
+// public way for a site to check that a handle belongs to the person typing it,
+// so a row for them was a text box that proved nothing.
 const PLATFORMS = [
-  { id: 'psn', name: 'PSN', color: '#0070D1', initials: 'PS' },
-  { id: 'xbl', name: 'Xbox Live', color: '#107C10', initials: 'XB' },
-  { id: 'steam', name: 'Steam', color: '#171a21', initials: 'ST' },
-  { id: 'riot', name: 'Riot ID', color: '#D32E29', initials: 'RT' },
-  { id: 'ea', name: 'EA ID', color: '#FF4747', initials: 'EA' },
-  { id: 'epic', name: 'Epic Games', color: '#2A2A2A', initials: 'EP' },
-  { id: 'activision', name: 'Activision', color: '#000', initials: 'AC' },
   { id: 'discord', name: 'Discord', color: '#5865F2', initials: 'DC' },
+  { id: 'steam', name: 'Steam', color: '#1b2838', initials: 'ST' },
 ];
 
 const GamingAccountsPanel = ({ initialAccounts = {}, onSave, onCancel, showToast }) => {
