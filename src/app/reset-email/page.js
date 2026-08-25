@@ -66,6 +66,12 @@ const ResetEmail = () => {
       const data = await response.json();
   
       if (response.ok) {
+        // The ticket is what proves, on the next screen, that this code was
+        // entered correctly. Without it the server refuses the change, so a
+        // stranger who only knows an email address can do nothing.
+        if (data.ticket) {
+          localStorage.setItem('resetTicket', data.ticket);
+        }
         setSnackbarMessage('Token verified successfully');
         setSnackbarType('success');
         setOpen(true);
