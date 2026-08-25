@@ -1,5 +1,5 @@
 .backLink {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.45);
   text-decoration: none;
@@ -41,7 +41,7 @@
 }
 
 .label {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -62,7 +62,7 @@
   overflow-x: auto;
 }
 .tab {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.5);
   background: transparent;
@@ -106,7 +106,7 @@
   margin-bottom: 0.25rem;
 }
 .banMeta {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.4);
 }
@@ -137,7 +137,7 @@
   margin-bottom: 0.4rem;
 }
 .modalSub {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 1rem;
@@ -149,7 +149,7 @@
   border-radius: 5px;
   padding: 0.6rem 0.8rem;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   margin-bottom: 1rem;
   outline: none;

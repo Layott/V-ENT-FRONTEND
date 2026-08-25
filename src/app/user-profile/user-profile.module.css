@@ -84,7 +84,7 @@
 
   border-radius: 6px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -174,7 +174,7 @@
   align-items: center;
   background-color: rgba(212, 175, 55, 0.16);
   color: #a5d6a7;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
   padding: 0.18rem 0.55rem;
   border-radius: 20px;
@@ -183,7 +183,7 @@
 }
 
 .identityHandle {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.45);
   margin-top: 2px;
@@ -193,7 +193,7 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   color: #A7A6A6;
   margin-top: 0.4rem;
@@ -217,7 +217,7 @@
 
   border-radius: 6px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -290,7 +290,7 @@
   width: 100%;
   text-align: left;
   padding: 0.65rem 1rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: #fff;
   background: transparent;
@@ -309,7 +309,7 @@
 }
 
 .heroBio {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   line-height: 1.55;
   color: #A7A6A6;
@@ -337,7 +337,7 @@
   background: transparent;
   border: none;
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -373,7 +373,7 @@
   color: rgba(255, 255, 255, 0.45);
   padding: 0.12rem 0.5rem;
   border-radius: 20px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 /* ── SUB TABS (Activity) ── */
@@ -393,7 +393,7 @@
   border: none;
   border-radius: 6px;
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   cursor: pointer;
   white-space: nowrap;
@@ -406,7 +406,7 @@
 .subTabActive {
   background-color: #303136;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 /* ── PANEL CONTENT ── */
@@ -423,7 +423,7 @@
   background-color: #303136;
 
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
@@ -446,7 +446,7 @@
   justify-content: center;
   min-height: calc(100vh - 60px);
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 /* ── RESPONSIVE ── */

@@ -147,7 +147,7 @@
   font-size: 0.95rem;
   font-weight: var(--fw-bold);
   color: var(--primary-bg);
-  font-family: "Inter", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .orderDate {

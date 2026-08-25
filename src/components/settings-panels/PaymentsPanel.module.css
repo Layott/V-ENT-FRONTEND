@@ -16,7 +16,7 @@
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -61,14 +61,14 @@
 }
 
 .cardNum {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: #fff;
   letter-spacing: 0.06em;
 }
 
 .cardExp {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -110,14 +110,14 @@
 }
 
 .kycGateTitle {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: #fff;
   margin: 0 0 0.2rem 0;
 }
 
 .kycGateSub {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.55);
   margin: 0;
@@ -149,19 +149,19 @@
 }
 
 .bankName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: #fff;
 }
 
 .bankNum {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .bankHolder {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.45);
 }

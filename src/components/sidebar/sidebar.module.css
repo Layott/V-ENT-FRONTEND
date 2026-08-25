@@ -13,7 +13,7 @@
 }
 
 .logoContainer h1 {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
   color: var(--v-ent-red);
@@ -120,7 +120,7 @@
 .iconShopSpan,
 .iconMarketplaceSpan {
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -139,7 +139,7 @@
 }
 
 .sidebarItem a {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -160,7 +160,7 @@
   color: var(--v-ent-light-gold);
   padding: 3px 5px;
   border-radius: 3px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
 @media only screen and (min-width: 768px) {

@@ -90,14 +90,14 @@
 
 .activityBody { flex: 1; min-width: 0; }
 .activityText {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.4;
   margin-bottom: 0.2rem;
 }
 .activityMeta {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.35);
 }

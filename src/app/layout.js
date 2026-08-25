@@ -1,8 +1,5 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "V-ENT (Vermillion Enterprise) - Elevating the Gaming and Anime Community",
@@ -38,11 +35,11 @@ export default function RootLayout({ children }) {
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@300..800&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&display=swap"
           />
           <title>{metadata.title}</title>
         </head>
-        <body className={inter.className}>{children}</body>
+        <body>{children}</body>
       </html>
     </SessionWrapper>
     

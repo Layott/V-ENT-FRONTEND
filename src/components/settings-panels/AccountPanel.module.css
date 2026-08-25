@@ -48,7 +48,7 @@
 }
 
 .metaLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -56,7 +56,7 @@
 }
 
 .metaValue {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
   word-break: break-all;

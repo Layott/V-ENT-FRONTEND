@@ -4,7 +4,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 .tGame {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.4);
   margin-top: 0.1rem;
@@ -35,7 +35,7 @@
   margin-bottom: 0.4rem;
 }
 .modalSub {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 1.25rem;
@@ -50,7 +50,7 @@
 }
 .formLabel {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -64,7 +64,7 @@
   border-radius: 5px;
   padding: 0.6rem 0.8rem;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   outline: none;
   resize: vertical;

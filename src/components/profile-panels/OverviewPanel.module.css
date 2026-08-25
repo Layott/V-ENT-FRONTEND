@@ -45,7 +45,7 @@
 }
 
 .cardLink {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: var(--v-ent-red);
   cursor: pointer;
@@ -74,7 +74,7 @@
   background-color: #303136;
 
   border-radius: 20px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: #fff;
   white-space: nowrap;
@@ -83,7 +83,7 @@
 .chipMore {
   background: transparent;
   border: none;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
@@ -143,14 +143,14 @@
 }
 
 .acctName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: #fff;
 }
 
 .acctHandle {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.45);
   margin-top: 1px;
@@ -172,7 +172,7 @@
 
   border-radius: 20px;
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -212,7 +212,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   color: #fff;
@@ -270,7 +270,7 @@
 }
 
 .statCellLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.74rem;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
@@ -279,7 +279,7 @@
 }
 
 .statCellLink {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.66rem;
   color: var(--v-ent-red);
   cursor: pointer;
@@ -341,7 +341,7 @@
 }
 
 .gameName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: #A7A6A6;
   text-align: center;
@@ -382,7 +382,7 @@
 }
 
 .achvName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: #A7A6A6;
   text-align: center;

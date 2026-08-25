@@ -6,7 +6,7 @@
   height: 100vh;
   background: transparent;
   pointer-events: none;
-  font-family: 'Inter', 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   overflow: hidden;
 }
 
@@ -77,7 +77,7 @@
   color: #D4AF37;
   min-width: 50px;
   text-align: center;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   line-height: 1;
 }
 
@@ -254,7 +254,7 @@
   gap: 6px;
   font-size: 10px;
   color: #ccc;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;

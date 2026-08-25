@@ -105,7 +105,7 @@
 .iconShopSpan,
 .iconMarketplaceSpan {
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -125,7 +125,7 @@
 }
 
 .sidebarItem a {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Light", sans-serif;
   font-size: 0.9rem;
 }
 

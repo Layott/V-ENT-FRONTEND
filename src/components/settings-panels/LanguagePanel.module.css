@@ -25,7 +25,7 @@
 }
 
 .regionPreviewLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -33,7 +33,7 @@
 }
 
 .regionPreviewValue {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.88rem;
   color: #fff;
 }
@@ -44,7 +44,7 @@
   gap: 0.3rem;
   padding: 0.18rem 0.5rem;
   border-radius: 999px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   background-color: rgba(212, 175, 55, 0.14);
   color: var(--v-ent-gold);

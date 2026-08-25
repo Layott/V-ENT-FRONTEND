@@ -13,7 +13,7 @@
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -72,7 +72,7 @@
 }
 
 .devName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: #fff;
 }
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 0.4rem;
   flex-wrap: wrap;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.55);
 }
@@ -92,7 +92,7 @@
 }
 
 .devTime {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.45);
 }

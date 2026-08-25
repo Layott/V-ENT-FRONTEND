@@ -27,7 +27,7 @@
 .meter_great { background: var(--v-ent-light-gold); }
 
 .meterLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   min-width: 70px;
   text-align: right;
@@ -40,7 +40,7 @@
 .meterLabel_great { color: var(--v-ent-light-gold); }
 
 .mismatch {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: var(--v-ent-red);
 }
@@ -63,7 +63,7 @@
   background: #303136;
   text-align: left;
   padding: 0.8rem 1rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.65);
 
@@ -73,7 +73,7 @@
 .loginTable tbody td {
   padding: 0.85rem 1rem;
 
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.83rem;
   color: rgba(255, 255, 255, 0.85);
   vertical-align: middle;
@@ -90,13 +90,13 @@
 }
 
 .devName {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   color: #fff;
   font-size: 0.85rem;
 }
 
 .devBrowser {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   color: rgba(255, 255, 255, 0.45);
   font-size: 0.74rem;
 }
@@ -115,7 +115,7 @@
   background: rgba(212, 175, 55, 0.14);
 
   color: var(--v-ent-gold);
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .qrManualLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
 }

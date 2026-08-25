@@ -24,7 +24,7 @@
 
   border-radius: 999px;
   color: #A7A6A6;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -42,7 +42,7 @@
 }
 
 .galleryCount {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.45);
 }
@@ -102,7 +102,7 @@
   color: #fff;
   font-size: 0.66rem;
   border-radius: 3px;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -112,7 +112,7 @@
 
 .tileCaption {
   margin-top: 0.3rem;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   color: #fff;
   line-height: 1.25;
@@ -150,12 +150,12 @@
 }
 
 .uploadLabel {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
 }
 
 .uploadHint {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.45);
 }
@@ -163,7 +163,7 @@
 .empty {
   padding: 3rem 1rem;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.45);
 

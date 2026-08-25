@@ -44,7 +44,7 @@
 }
 
 .title {
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.76rem;
   color: #A7A6A6;
   text-align: center;
@@ -54,7 +54,7 @@
 .empty {
   padding: 3rem 1rem;
   text-align: center;
-  font-family: "Inter", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.45);
 

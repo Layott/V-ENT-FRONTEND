@@ -29,7 +29,7 @@
   padding: 0.25rem;
 }
 .breadcrumb {
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.4);
 }
@@ -59,7 +59,7 @@
   border: none;
   outline: none;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   width: 180px;
 }
@@ -150,7 +150,7 @@
   width: 100%;
   text-align: left;
   padding: 0.6rem 1rem;
-  font-family: 'Inter', sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   color: #fff;
   background: transparent;
