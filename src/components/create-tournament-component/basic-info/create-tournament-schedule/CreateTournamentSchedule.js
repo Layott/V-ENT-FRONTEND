@@ -3,6 +3,13 @@ import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './create-tournament-schedule.module.css'
 
+const RECURRENCE_OPTIONS = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Yearly' },
+];
+
 const CreateTournamentSchedule = ({formData={}, updateFormData}) => {
   const [selectedOption, setSelectedOption] = useState(formData?.scheduleType || null);
   const [recurrenceFrequency, setRecurrenceFrequency] = useState(formData?.recurrenceFrequency || null);
@@ -288,6 +295,24 @@ const lastCycleEnd = getLastCycleEndDate();
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span>
               </p>
+            </div>
+
+            {/* Daily and Weekly were missing, so a weekly ladder - the most
+                common recurring format there is - could not be described. */}
+            <div className={styles.optionContainer}>
+              {RECURRENCE_OPTIONS.map((option) => (
+                <label className={styles.optionLabel} key={option.value}>
+                  <input
+                    type="radio"
+                    name="recurrenceFrequency"
+                    value={option.value}
+                    className={styles.optionInput}
+                    checked={recurrenceFrequency === option.value}
+                    onChange={handleRecurrenceFrequencyChange}
+                  />
+                  {option.label}
+                </label>
+              ))}
             </div>
 
             <div className={styles.optionContainer}>

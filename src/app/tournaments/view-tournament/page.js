@@ -42,6 +42,8 @@ const formatLabel = (f) => ({
   single_elimination: 'Single Elimination',
   double_elimination: 'Double Elimination',
   round_robin: 'Round Robin',
+  swiss: 'Swiss System',
+  battle_royale: 'Battle Royale',
 }[f] || (f ? String(f).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '-'));
 
 // Pick the first defined/non-empty value - used to tolerate field-name drift
@@ -324,7 +326,7 @@ const ViewTournamentContent = () => {
               <LuMapPin className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>Format</p>
-                <p className={styles.metaValue}>{formatLabel(tournament.format)}</p>
+                <p className={styles.metaValue}>{tournament.format_label || formatLabel(tournament.format)}</p>
               </div>
             </div>
           </div>
