@@ -1,8 +1,12 @@
 .landingHeroContainer {
   width: 100%;
-  background-color: rgba(255, 0, 0, 0.5);
-  background-position: left center;
-  background-size: 130%;
+  /* The hero used to be a red radial glow over black. The glow went in the
+     design sweep on 18 August, but it was replaced with the red on its own,
+     which left the whole first screen washed flat red - the grey tunnel
+     pattern draws on transparency, so it has nothing to sit on. Dark surface,
+     one step off the page, and the red stays where it means something: the
+     mark, the Signup button, the accents. */
+  background-color: #131316;
   position: relative;
   min-height: calc(100vh + 100px);
   max-height: calc(100vh + 200px);
