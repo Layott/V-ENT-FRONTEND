@@ -122,7 +122,7 @@ const EditTeamProfileContent = () => {
               <button
                 type="button"
                 className={styles.gateBtn}
-                onClick={() => router.push(`/teams/team-profile?id=${team.id}`)}
+                onClick={() => router.push(`/teams/${team.slug || team.id}`)}
               >
                 Back to team profile
               </button>

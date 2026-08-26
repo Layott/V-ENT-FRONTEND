@@ -1050,7 +1050,7 @@ const Select = ({ value, onChange, children }) => (
 const TournamentCard = ({ t }) => {
   const statusLabel = { upcoming: 'Upcoming', in_progress: 'Live', completed: 'Completed' }[t.status] || t.status;
   return (
-    <Link href={`/tournaments/view-tournament?id=${t.id}`} className={styles.tCard}>
+    <Link href={`/tournaments/${t.slug || t.id}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={{ backgroundImage: `url(${t.banner_image})` }}>
         <span className={`${styles.statusBadge} ${styles[`status_${t.status}`] || ''}`}>
           {statusLabel}
@@ -1090,7 +1090,7 @@ const TournamentCard = ({ t }) => {
 const EventCard = ({ e }) => {
   const statusLabel = { upcoming: 'Upcoming', in_progress: 'Live', completed: 'Completed' }[e.status] || e.status;
   return (
-    <Link href={`/events/view-event?id=${e.id}`} className={styles.tCard}>
+    <Link href={`/events/${e.slug || e.id}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={{ backgroundImage: `url(${e.banner_image})` }}>
         <span className={`${styles.statusBadge} ${styles[`status_${e.status}`] || ''}`}>
           {statusLabel}
@@ -1119,7 +1119,7 @@ const EventCard = ({ e }) => {
 };
 
 const TeamCard = ({ t }) => (
-  <Link href={`/teams/team-profile?id=${t.id}`} className={styles.teamCard}>
+  <Link href={`/teams/${t.slug || t.id}`} className={styles.teamCard}>
     <div className={styles.teamHeader}>
       <div className={styles.teamLogo}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

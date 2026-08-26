@@ -193,7 +193,7 @@ const ManageContent = () => {
               </h1>
               {tournament?.id && (
                 <div className={styles.headerActions}>
-                  <Link href={`/tournaments/view-tournament?id=${tournament.id}`}>
+                  <Link href={`/tournaments/${tournament.slug || tournament.id}`}>
                     <button className={styles.outlineBtn}><LuEye /> View Public Page</button>
                   </Link>
                   <Link href={`/tournaments/create-tournament?draft_id=${tournament.id}`}>

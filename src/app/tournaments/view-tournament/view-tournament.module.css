@@ -1456,3 +1456,14 @@
   color: var(--v-ent-gold);
   text-decoration: underline;
 }
+
+/* What sharing did, said next to the button rather than in a corner. Carries
+   the link itself when the clipboard was refused, so the person can still copy
+   it by hand. */
+.shareNotice {
+  display: inline-block;
+  margin-left: 10px;
+  color: #d4af37;
+  font-size: 0.8rem;
+  word-break: break-all;
+}

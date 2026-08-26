@@ -81,7 +81,7 @@ const TournamentsFeatured = ({ data }) => {
                         </div>
                             
                         <div>
-                            <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`} className={menuContentStyles.viewDetailsLink}>
+                            <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={menuContentStyles.viewDetailsLink}>
                                 <span className={menuContentStyles.viewDetails}>View Details</span>
                                 <span><FaArrowRight className={menuContentStyles.rightArrowIcon} /></span>
                             </Link>

@@ -165,10 +165,11 @@ const useCountdown = (target, endTarget) => {
   };
 };
 
-const ViewEventContent = () => {
+export const ViewEventContent = ({ slug }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  // `/events/anime-night-lagos` passes the slug; `?id=` still resolves.
+  const id = slug || searchParams.get('id');
   const tabParam = searchParams.get('tab');
   const { data: session, status: sessionStatus } = useSession();
 
@@ -1012,7 +1013,7 @@ const ViewEventContent = () => {
                     {linkedTournaments.map((t) => (
                       <div key={t.id} className={styles.tournamentCard}>
                         <Link
-                          href={`/tournaments/view-tournament?id=${t.id}`}
+                          href={`/tournaments/${t.slug || t.id}`}
                           className={styles.tournamentCardLink}
                         >
                           <div className={styles.tournamentImgWrap}>

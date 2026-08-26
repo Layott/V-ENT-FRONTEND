@@ -99,7 +99,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
           <button className={styles.viewTournamentButton} onClick={() => {
             // Navigate to tournament details
             window.location.href = tournament?.id
-              ? `/tournaments/view-tournament?id=${tournament.id}`
+              ? `/tournaments/${tournament.slug || tournament.id}`
               : '/tournaments';
           }}>
             View Tournament

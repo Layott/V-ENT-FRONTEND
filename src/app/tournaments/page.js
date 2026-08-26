@@ -287,7 +287,7 @@ const TournamentsContent = () => {
               {featured.map((t, i) => (
                 <Link
                   key={t?.id ?? i}
-                  href={`/tournaments/view-tournament?id=${t?.id ?? ''}`}
+                  href={`/tournaments/${t?.slug || t?.id || ''}`}
                   className={styles.featuredCard}
                 >
                   <div
@@ -437,7 +437,7 @@ const TournamentCard = ({ t }) => {
   const max = t?.max_participants ?? 0;
 
   return (
-    <Link href={`/tournaments/view-tournament?id=${t?.id ?? ''}`} className={styles.tCard}>
+    <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={banner ? { backgroundImage: `url(${banner})` } : undefined}>
         <span className={`${styles.statusBadge} ${badgeClass}`}>
           {isLive && <LuRadio className={styles.liveDot} />} {statusLabel}

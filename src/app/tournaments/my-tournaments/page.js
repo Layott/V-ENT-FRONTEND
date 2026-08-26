@@ -237,7 +237,7 @@ const MyTournaments = () => {
                       </p>
                     </div>
                     <div className={styles.rowActions}>
-                      <Link href={`/tournaments/view-tournament?id=${t?.id ?? ''}`}>
+                      <Link href={`/tournaments/${t?.slug || t?.id || ''}`}>
                         <button className={styles.actionBtn}>View</button>
                       </Link>
                       {status !== 'completed' && (

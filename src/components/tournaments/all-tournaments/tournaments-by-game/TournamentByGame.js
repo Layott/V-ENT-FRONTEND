@@ -191,7 +191,7 @@ const TournamentsByGame = ({ data }) => {
                     </div>
                     
                     <div className={`${newTournamentsStyles.buttonContainer} ${allTournamentsStyles.buttonContainer}`}>
-                      <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`} className={newTournamentsStyles.viewDetailsBTN}>
+                      <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={newTournamentsStyles.viewDetailsBTN}>
                         View Details
                       </Link>
                       <Link href={`/tournaments/register-tournament?id=${tournament.tournament_id}`} className={newTournamentsStyles.registerBTN}>

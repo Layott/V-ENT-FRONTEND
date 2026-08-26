@@ -188,6 +188,8 @@ const CreateTournamentComponent = () => {
       });
 
       const tournamentId = data?.tournament_id || data?.tournament?.id || data?.id || null;
+      // The readable address, so the organiser lands on the link they will copy.
+      const tournamentSlug = data?.slug || data?.data?.slug || data?.tournament?.slug || null;
 
       setFormData({});
       setLogoFile(null);
@@ -204,7 +206,8 @@ const CreateTournamentComponent = () => {
       if (isDraft) {
         router.push('/tournaments/drafts');
       } else if (tournamentId) {
-        router.push(`/tournaments/view-tournament?id=${tournamentId}`);
+        // Land on the readable address, which is what the organiser will copy.
+        router.push(`/tournaments/${tournamentSlug || tournamentId}`);
       } else {
         router.push('/tournaments/drafts');
       }

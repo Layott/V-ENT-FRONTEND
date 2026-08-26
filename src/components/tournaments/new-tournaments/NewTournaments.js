@@ -129,7 +129,7 @@ const NewTournaments = ({ data = [] }) => {
                         </div>
             
                         <div className={styles.buttonContainer}>
-                            <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`} className={styles.viewDetailsBTN}>
+                            <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={styles.viewDetailsBTN}>
                               View Details
                             </Link>
                             <Link href={`/tournaments/register-tournament?id=${tournament.tournament_id}`} className={styles.registerBTN}>

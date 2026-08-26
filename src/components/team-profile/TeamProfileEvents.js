@@ -55,7 +55,7 @@ const TeamProfileEvents = ({ team }) => {
               </div>
               <div>
                 <p className={styles.memberName}>{e.name}</p>
-                <Link href={`/events/view-event?id=${e.id}`} className={styles.activityLink}>View →</Link>
+                <Link href={`/events/${e.slug || e.id}`} className={styles.activityLink}>View →</Link>
               </div>
             </div>
             <div className={styles.cellMuted} style={{ textTransform: 'capitalize' }}>{e.type}</div>

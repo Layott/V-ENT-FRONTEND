@@ -125,7 +125,7 @@ const Disputes = () => {
                     <div className={styles.cardTop}>
                       {d.tournament_id ? (
                         <Link
-                          href={`/tournaments/view-tournament?id=${d.tournament_id}`}
+                          href={`/tournaments/${d.slug || d.tournament_id}`}
                           className={styles.dTitle}
                         >
                           {d.tournament_title || 'Tournament'}

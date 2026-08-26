@@ -25,9 +25,10 @@ const ALL_TABS = [
   { id: 'requests', label: 'Requests', ownerOnly: true },
 ]
 
-const TeamProfileContent = () => {
+export const TeamProfileContent = ({ slug }) => {
   const searchParams = useSearchParams()
-  const teamId = searchParams.get('id') || ''
+  // `/teams/lagos-rangers` passes the slug; `?id=` still resolves.
+  const teamId = slug || searchParams.get('id') || ''
   const { data: session } = useSession()
 
   const [team, setTeam] = useState(null)

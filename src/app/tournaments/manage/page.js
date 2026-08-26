@@ -154,7 +154,7 @@ const ManageContent = () => {
               </div>
             </div>
             <div className={styles.headerActions}>
-              <Link href={`/tournaments/view-tournament?id=${tournament.tournament_id}`}>
+              <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`}>
                 <button className={styles.outlineBtn}><LuEye /> View Public Page</button>
               </Link>
               <span aria-disabled="true" title="Production is not available yet" style={{ opacity: 0.45, cursor: 'default' }}>

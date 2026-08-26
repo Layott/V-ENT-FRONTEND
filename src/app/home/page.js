@@ -528,13 +528,13 @@ const HomePage = () => {
                       key={m.id}
                       className={`${styles.matchCard} ${isLive ? styles.matchCardLive : ''}`}
                       onClick={() =>
-                        router.push(`/tournaments/view-tournament?id=${m.tournament_id}`)
+                        router.push(`/tournaments/${m.slug || m.tournament_id}`)
                       }
                       role="link"
                       tabIndex={0}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          router.push(`/tournaments/view-tournament?id=${m.tournament_id}`);
+                          router.push(`/tournaments/${m.slug || m.tournament_id}`);
                         }
                       }}
                     >
@@ -577,7 +577,7 @@ const HomePage = () => {
                         }
                         onClick={(e) => {
                           e.stopPropagation();
-                          router.push(`/tournaments/view-tournament?id=${m.tournament_id}`);
+                          router.push(`/tournaments/${m.slug || m.tournament_id}`);
                         }}
                       >
                         {isLive ? (
@@ -642,7 +642,7 @@ const HomePage = () => {
                         type="button"
                         className={`btn goldBTN ${styles.gridCta}`}
                         onClick={() =>
-                          router.push(`/tournaments/view-tournament?id=${t.id}`)
+                          router.push(`/tournaments/${t.slug || t.id}`)
                         }
                       >
                         View tournament
@@ -702,7 +702,7 @@ const HomePage = () => {
                       <button
                         type="button"
                         className={`btn redBTN ${styles.gridCta}`}
-                        onClick={() => router.push(`/events/view-event?id=${e.id}`)}
+                        onClick={() => router.push(`/events/${e.slug || e.id}`)}
                       >
                         View event
                       </button>
@@ -737,7 +737,7 @@ const HomePage = () => {
                 {teams.map((team) => (
                   <Link
                     key={team.id}
-                    href={`/teams/team-profile?id=${team.id}`}
+                    href={`/teams/${team.slug || team.id}`}
                     className={styles.teamAvatarCard}
                   >
                     <div className={styles.teamAvatar}>
@@ -952,7 +952,7 @@ const HomePage = () => {
                         type="button"
                         className={`btn goldBTN ${styles.recoCta}`}
                         onClick={() =>
-                          router.push(`/tournaments/view-tournament?id=${t.id}`)
+                          router.push(`/tournaments/${t.slug || t.id}`)
                         }
                       >
                         Register now

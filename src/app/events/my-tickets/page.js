@@ -347,7 +347,7 @@ const MyTickets = () => {
               </div>
 
               <Link
-                href={`/events/view-event?id=${activeTicket.event_id}`}
+                href={`/events/${activeTicket.slug || activeTicket.event_id}`}
                 className={`${styles.viewEventBtn} redBTN`}
               >
                 View event

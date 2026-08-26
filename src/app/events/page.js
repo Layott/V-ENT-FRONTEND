@@ -265,7 +265,7 @@ const EventsListingContent = () => {
                   return (
                     <Link
                       key={e.id}
-                      href={`/events/view-event?id=${e.id}`}
+                      href={`/events/${e.slug || e.id}`}
                       className={`${styles.featuredCard} ${i === 0 ? styles.featuredCardLarge : ''}`}
                     >
                       <div className={styles.featuredImgWrap}>
@@ -452,7 +452,7 @@ const EventsListingContent = () => {
                   return (
                     <Link
                       key={e.id}
-                      href={`/events/view-event?id=${e.id}`}
+                      href={`/events/${e.slug || e.id}`}
                       className={styles.eventCard}
                     >
                       <div className={styles.cardImgWrap}>

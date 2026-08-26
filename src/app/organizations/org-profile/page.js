@@ -536,7 +536,7 @@ const OrgProfileContent = () => {
                 {teams.map((team) => (
                   <Link
                     key={team.id}
-                    href={`/teams/team-profile?id=${team.id}`}
+                    href={`/teams/${team.slug || team.id}`}
                     className={styles.miniCard}
                   >
                     <div className={styles.miniBanner}>
@@ -597,7 +597,7 @@ const OrgProfileContent = () => {
                         <td>{formatDate(t.start_date)}</td>
                         <td>
                           <Link
-                            href={`/tournaments/view-tournament?id=${t.id}`}
+                            href={`/tournaments/${t.slug || t.id}`}
                             className={styles.smallBtn}
                           >
                             View
@@ -639,7 +639,7 @@ const OrgProfileContent = () => {
                         </td>
                         <td>{formatDate(e.start_date)}</td>
                         <td>
-                          <Link href={`/events/view-event?id=${e.id}`} className={styles.smallBtn}>
+                          <Link href={`/events/${e.slug || e.id}`} className={styles.smallBtn}>
                             View
                           </Link>
                         </td>

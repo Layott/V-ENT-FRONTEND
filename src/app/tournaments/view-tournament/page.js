@@ -17,6 +17,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ventFetch, API, tokenFrom, toTournament, entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 import styles from './view-tournament.module.css';
+import { shareLink, linkTo } from '@/lib/share';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -139,12 +140,14 @@ const SkeletonShell = () => (
 
 /* ──────────────── MAIN ──────────────── */
 
-const ViewTournamentContent = () => {
+export const ViewTournamentContent = ({ slug }) => {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const token = tokenFrom(session);
 
-  const id = searchParams.get('id');
+  // `/tournaments/naija-weekly` passes the slug down; `?id=25` still works, so
+  // every link already shared keeps resolving.
+  const id = slug || searchParams.get('id');
   const initialTab = searchParams.get('tab') || 'overview';
 
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -152,6 +155,9 @@ const ViewTournamentContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  // Sharing needs somewhere to say what happened, including the case where the
+  // clipboard is refused and the link itself has to be shown.
+  const [shareNotice, setShareNotice] = useState('');
 
   // Keep tab in sync with URL when search params change (the audit checks
   // that ?tab=prize actually selects the prize tab regardless of mount order).
@@ -241,7 +247,22 @@ const ViewTournamentContent = () => {
                   <p className={styles.heroOrganizer}>by {organizerDisplayName}</p>
                 </div>
                 <div className={styles.heroActions}>
-                  <button className={styles.shareBtn}><LuShare2 /> Share</button>
+                  <button
+                    type="button"
+                    className={styles.shareBtn}
+                    onClick={() => shareLink({
+                      path: linkTo.tournament(tournament),
+                      title: tournament?.name || tournament?.tournament_title,
+                      text: 'Tournament on V-ENT',
+                      notify: (message) => {
+                        setShareNotice(message);
+                        window.setTimeout(() => setShareNotice(''), 4000);
+                      },
+                    })}
+                  >
+                    <LuShare2 /> Share
+                  </button>
+                  {shareNotice && <span className={styles.shareNotice}>{shareNotice}</span>}
                   {isOrganizer ? (
                     <Link href={`/tournaments/my-tournaments/manage?id=${id}`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>Manage</button>
@@ -274,7 +295,7 @@ const ViewTournamentContent = () => {
               <div className={styles.eventStripMain}>
                 <p className={styles.eventStripLabel}>Part of</p>
                 <Link
-                  href={`/events/view-event?id=${tournament.event.id}`}
+                  href={`/events/${tournament.event.slug || tournament.event.id}`}
                   className={styles.eventStripName}
                 >
                   {tournament.event.name}
@@ -290,7 +311,7 @@ const ViewTournamentContent = () => {
                 </p>
               ) : tournament.shared_ticketing ? (
                 <Link
-                  href={`/events/view-event?id=${tournament.event.id}&tab=tickets`}
+                  href={`/events/${tournament.event.slug || tournament.event.id}&tab=tickets`}
                   className={styles.eventTicketLink}
                 >
                   <LuTicket /> Entry is free with an event ticket

@@ -56,7 +56,7 @@ const TeamProfileTournaments = ({ team }) => {
               </div>
               <div>
                 <p className={styles.memberName}>{t.name}</p>
-                <Link href={`/tournaments/view-tournament?id=${t.id}`} className={styles.activityLink}>View →</Link>
+                <Link href={`/tournaments/${t.slug || t.id}`} className={styles.activityLink}>View →</Link>
               </div>
             </div>
             <div className={styles.cellMuted}>{t.game}</div>
