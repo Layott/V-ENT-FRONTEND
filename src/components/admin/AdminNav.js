@@ -44,6 +44,15 @@ const NAV = [
     ],
   },
   {
+    section: 'Partners',
+    items: [
+      // Partner access is a super-admin decision: it hands somebody outside the
+      // platform a key to read our data, and SSO on top of that hands them
+      // people's identities.
+      { label: 'Partner access', href: '/admin/partners', icon: LuShield, roles: ['super'], perms: ['manage_admins'] },
+    ],
+  },
+  {
     section: 'System',
     items: [
       { label: 'Audit Log', href: '/admin/audit-log', icon: LuFileText, roles: ['super', 'moderator', 'finance', 'support'], perms: ['view_audit_log'] },

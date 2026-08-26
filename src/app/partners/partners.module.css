@@ -1,0 +1,267 @@
+/* Surfaces and space, never strokes. Same scale as /wallets and /settings:
+   page #131316, cards #1a1b1f, inputs #303136, gold for the one action that
+   matters on each card. */
+
+.page {
+  min-height: 100vh;
+  background: #131316;
+  color: #fff;
+}
+
+.main {
+  display: flex;
+  gap: 24px;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  max-width: 980px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pageHead {
+  margin-bottom: 20px;
+}
+
+.pageTitle {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 2rem;
+  margin: 0 0 6px;
+}
+
+.pageSub,
+.muted {
+  color: #9A9AA3;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.card {
+  background: #1a1b1f;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 1.25rem;
+  margin: 0 0 12px;
+}
+
+.subTitle {
+  font-size: 1rem;
+  margin: 22px 0 6px;
+}
+
+.rowBetween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  background: #303136;
+  color: #C9C9CF;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pill_approved { background: #1f3a24; color: #7ddc8f; }
+.pill_pending  { background: #3a3320; color: #d4af37; }
+.pill_rejected,
+.pill_suspended { background: #3a2020; color: #ff8a8a; }
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.metaGrid dt {
+  color: #8A8A93;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.metaGrid dd {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field span {
+  font-size: 0.85rem;
+  color: #C9C9CF;
+}
+
+.input,
+.textarea {
+  background: #303136;
+  color: #fff;
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.scopeGroup {
+  background: #202126;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.scopeGroupTitle {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8A8A93;
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  color: #C9C9CF;
+  cursor: pointer;
+}
+
+.checkRow code {
+  color: #d4af37;
+  font-size: 0.85rem;
+  margin-right: 6px;
+}
+
+.ssoBlock {
+  background: #202126;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0 18px;
+}
+
+.primaryBtn {
+  background: #d4af37;
+  color: #131316;
+  font-weight: 600;
+  padding: 11px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ghostBtn {
+  background: #303136;
+  color: #C9C9CF;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.keyList {
+  margin: 14px 0;
+}
+
+.keyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #202126;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.keyName {
+  margin: 0 0 2px;
+  font-weight: 600;
+}
+
+.secretBox {
+  background: #2a2416;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 14px 0;
+}
+
+.secretLabel {
+  margin: 0 0 8px;
+  color: #d4af37;
+  font-size: 0.85rem;
+}
+
+.secret,
+.code {
+  display: block;
+  background: #131316;
+  border-radius: 8px;
+  padding: 12px;
+  color: #C9C9CF;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #303136;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  z-index: 40;
+  max-width: 90vw;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .content { padding: 16px 16px 96px; }
+  .pageTitle { font-size: 1.5rem; }
+  .keyRow { flex-direction: column; align-items: flex-start; }
+}

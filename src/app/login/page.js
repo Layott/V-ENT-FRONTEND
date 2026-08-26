@@ -24,6 +24,9 @@ const Login = () => {
   const [snackbarType, setSnackbarType] = useState("success");
   const [errors, setErrors] = useState({});
   const [expired, setExpired] = useState(false);
+  // Outside sign-ins appear only when their keys exist. A button that leads to
+  // a 503 is worse than no button.
+  const [externalProviders, setExternalProviders] = useState({});
   const router = useRouter();
 
   // Show a notice when the session-expiry guard bounced the user here, and
@@ -46,6 +49,44 @@ const Login = () => {
       window.history.replaceState({}, "", rest ? `/login?${rest}` : "/login");
     }
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/inbound/providers/`);
+        if (!res.ok) return;
+        const body = await res.json();
+        if (!cancelled) setExternalProviders(body?.data?.providers || {});
+      } catch {
+        /* the page works without them */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const startExternal = async (slug) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/partners/inbound/${slug}/start/`,
+      );
+      const body = await res.json();
+      if (res.ok && body?.data?.url) {
+        window.location.href = body.data.url;
+        return;
+      }
+      setSnackbarMessage(body.message || 'That sign-in is not available yet.');
+      setSnackbarType('error');
+      setOpen(true);
+    } catch {
+      setSnackbarMessage('That sign-in could not be started.');
+      setSnackbarType('error');
+      setOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -248,6 +289,20 @@ const Login = () => {
                 />
                 <span>Google</span>
               </button>
+
+              {Object.entries(externalProviders)
+                .filter(([, meta]) => meta.configured)
+                .map(([slug, meta]) => (
+                  <button
+                    key={slug}
+                    type="button"
+                    className={styles.oauthBTN}
+                    onClick={() => startExternal(slug)}
+                    disabled={loading}
+                  >
+                    Continue with {meta.label}
+                  </button>
+                ))}
             </div>
           </div>
 
