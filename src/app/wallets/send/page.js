@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo } from 'react';
@@ -130,7 +131,7 @@ const SendPage = () => {
           setRecipient(data.data.user);
         } else {
           setRecipient(null);
-          setRecipientError(data.message || tt("api.noUserFoundWithThat", "No user found with that username."));
+          setRecipientError(apiMessage(tt, data, "api.noUserFoundWithThat", "No user found with that username."));
         }
       } catch (err) {
         if (err?.name !== 'AbortError') {
@@ -180,7 +181,7 @@ const SendPage = () => {
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(data?.message || tt("api.transferFailed", "Transfer failed."));
+        setError(apiMessage(tt, data, "api.transferFailed", "Transfer failed."));
         setSubmitting(false);
         return;
       }

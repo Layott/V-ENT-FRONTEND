@@ -2,6 +2,7 @@
 // GET /team/my-teams/ endpoint (Bearer). The BE serializer emits every
 // field-name variant the FE reads (id, name, team_logo/logo, member_count/
 // members, game/core_game), so we normalise defensively below.
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
@@ -57,7 +58,7 @@ const ChooseTeamModal = ({
       } catch (err) {
         if (!cancelled) {
           setTeams([]);
-          setError(err?.message || tt("api.couldNotLoadYourTeams", "Could not load your teams."));
+          setError(apiMessage(tt, err, "api.couldNotLoadYourTeams", "Could not load your teams."));
         }
       } finally {
         if (!cancelled) setLoading(false);

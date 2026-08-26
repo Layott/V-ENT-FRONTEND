@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -50,7 +51,7 @@ const EditTeamProfileMembershipNew = ({
           password_protected: passwordProtected
         });
       } else {
-        setError(data?.message || tt("api.saveFailed", "Save failed"));
+        setError(apiMessage(tt, data, "api.saveFailed", "Save failed"));
       }
     } catch {
       setError(tt("msg.networkError", "Network error"));

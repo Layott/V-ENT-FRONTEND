@@ -1,5 +1,6 @@
 "use client";
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useActionState, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -76,7 +77,7 @@ const Login = () => {
         window.location.href = body.data.url;
         return;
       }
-      setSnackbarMessage(body.message || tt("api.thatSignInIsNot", "That sign-in is not available yet."));
+      setSnackbarMessage(apiMessage(tt, body, "api.thatSignInIsNot", "That sign-in is not available yet."));
       setSnackbarType('error');
       setOpen(true);
     } catch {

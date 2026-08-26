@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -162,7 +163,7 @@ const ManageOrgContent = ({
         } : x));
         showToast(`${m.user?.full_name || m.user?.username} → ${role}`);
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));
@@ -188,7 +189,7 @@ const ManageOrgContent = ({
         setMembers(prev => prev.filter(x => x.user?.id !== m.user?.id));
         showToast(`${m.user?.full_name || m.user?.username} removed.`);
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));
@@ -222,7 +223,7 @@ const ManageOrgContent = ({
         }]);
         showToast(`${r.user?.full_name || r.user?.username} approved.`);
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));
@@ -247,7 +248,7 @@ const ManageOrgContent = ({
         setRequests(prev => prev.filter(x => x.id !== r.id));
         showToast(tt("msg.requestRejected", "Request rejected."));
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));
@@ -276,7 +277,7 @@ const ManageOrgContent = ({
         setAllTeams(prev => prev.filter(t => (t.id ?? t.team_id) !== (team.id ?? team.team_id)));
         showToast(data.message || `${team.name} linked.`);
       } else {
-        showToast(data?.message || tt("api.couldNotLinkThatTeam", "Could not link that team."));
+        showToast(apiMessage(tt, data, "api.couldNotLinkThatTeam", "Could not link that team."));
       }
     } catch {
       showToast(tt("msg.couldNotReachTheServer", "Could not reach the server."));
@@ -302,7 +303,7 @@ const ManageOrgContent = ({
         setAllTeams(prev => prev.find(t => (t.id ?? t.team_id) === (team.id ?? team.team_id)) ? prev : [...prev, team]);
         showToast(data.message || `${team.name} unlinked.`);
       } else {
-        showToast(data?.message || tt("api.couldNotUnlinkThatTeam", "Could not unlink that team."));
+        showToast(apiMessage(tt, data, "api.couldNotUnlinkThatTeam", "Could not unlink that team."));
       }
     } catch {
       showToast(tt("msg.couldNotReachTheServer", "Could not reach the server."));
@@ -328,7 +329,7 @@ const ManageOrgContent = ({
         setVerificationSubmitted(true);
         showToast(tt("msg.verificationRequestSubmitted", "Verification request submitted."));
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));

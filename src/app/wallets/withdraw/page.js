@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -184,7 +185,7 @@ const WithdrawPage = () => {
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(data?.message || tt("api.withdrawalRequestFailed", "Withdrawal request failed."));
+        setError(apiMessage(tt, data, "api.withdrawalRequestFailed", "Withdrawal request failed."));
         setSubmitting(false);
         return;
       }

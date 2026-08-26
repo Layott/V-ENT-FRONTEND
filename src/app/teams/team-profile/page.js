@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -130,7 +131,7 @@ export const TeamProfileContent = ({
         showToast(tt("msg.requestSent", "Request sent"));
       } else {
         setRequestState(null);
-        showToast(data?.message || tt("api.requestFailed", "Request failed"));
+        showToast(apiMessage(tt, data, "api.requestFailed", "Request failed"));
       }
     } catch {
       setRequestState(null);
@@ -149,7 +150,7 @@ export const TeamProfileContent = ({
         }
       });
       const data = await res.json();
-      if (data?.status === 'success') showToast(tt("msg.leftTeam", "Left team"));else showToast(data?.message || tt("api.couldNotLeave", "Could not leave"));
+      if (data?.status === 'success') showToast(tt("msg.leftTeam", "Left team"));else showToast(apiMessage(tt, data, "api.couldNotLeave", "Could not leave"));
     } catch {
       showToast(tt("msg.networkError", "Network error"));
     }

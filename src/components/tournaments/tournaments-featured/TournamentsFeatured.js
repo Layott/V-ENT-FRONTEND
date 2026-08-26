@@ -1,3 +1,4 @@
+import { imagePlaceholder, mediaIn } from '@/lib/mediaUrl';
 import Image from 'next/image'
 import Link from 'next/link'
 import { FiCalendar } from "react-icons/fi";
@@ -8,20 +9,8 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css'
 
 const TournamentsFeatured = ({ data }) => {
   // Function to get the correct image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666'%3ETournament%3C/text%3E%3C/svg%3E";
-    
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) return imagePath;
-    
-    // If it starts with /media, prepend your backend URL
-    if (imagePath.startsWith('/media')) {
-      return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
-    }
-    
-    // If it's just a filename, construct the full path
-    return `${process.env.NEXT_PUBLIC_API_URL}/media/tournament_banners/${imagePath}`;
-  };
+  const getImageUrl = (imagePath) =>
+    imagePath ? mediaIn(imagePath, '/media/tournament_banners') : imagePlaceholder('Tournament');
 
   // Function to format date from API format to your display format
   const formatTournamentDate = (startDate, endDate) => {

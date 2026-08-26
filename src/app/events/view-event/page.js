@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -439,7 +440,7 @@ export const ViewEventContent = ({
       const data = await res.json();
       if (data.status === 'success') setLinkable(data.data.tournaments || []);else {
         setLinkable([]);
-        setLinkError(data.message || tt("api.couldNotLoadYourTournaments", "Could not load your tournaments."));
+        setLinkError(apiMessage(tt, data, "api.couldNotLoadYourTournaments", "Could not load your tournaments."));
       }
     } catch (err) {
       setLinkable([]);
@@ -469,7 +470,7 @@ export const ViewEventContent = ({
         await loadTournaments();
         await loadLinkable();
       } else {
-        setLinkError(data.message || tt("api.couldNotLinkThatTournament", "Could not link that tournament."));
+        setLinkError(apiMessage(tt, data, "api.couldNotLinkThatTournament", "Could not link that tournament."));
       }
     } catch (err) {
       setLinkError('Network error while linking.');
@@ -493,7 +494,7 @@ export const ViewEventContent = ({
         await loadTournaments();
         if (linkPanelOpen) await loadLinkable();
       } else {
-        setLinkError(data.message || tt("api.couldNotUnlinkThatTournament", "Could not unlink that tournament."));
+        setLinkError(apiMessage(tt, data, "api.couldNotUnlinkThatTournament", "Could not unlink that tournament."));
       }
     } catch (err) {
       setLinkError('Network error while unlinking.');
@@ -513,7 +514,7 @@ export const ViewEventContent = ({
         })
       });
       const data = await res.json();
-      if (data.status === 'success') await loadTournaments();else setLinkError(data.message || tt("api.couldNotChangeSharedTicketing", "Could not change shared ticketing."));
+      if (data.status === 'success') await loadTournaments();else setLinkError(apiMessage(tt, data, "api.couldNotChangeSharedTicketing", "Could not change shared ticketing."));
     } catch (err) {
       setLinkError('Network error while changing shared ticketing.');
     } finally {
@@ -606,7 +607,7 @@ export const ViewEventContent = ({
         }
         setBuyStep(3);
       } else {
-        setBuyError(data.message || tt("api.failedToPurchaseTicket", "Failed to purchase ticket."));
+        setBuyError(apiMessage(tt, data, "api.failedToPurchaseTicket", "Failed to purchase ticket."));
       }
     } catch (err) {
       setBuyError('Network error. Please try again.');

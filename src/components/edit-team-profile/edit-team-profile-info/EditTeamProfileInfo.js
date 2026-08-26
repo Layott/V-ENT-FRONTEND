@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
@@ -231,12 +232,12 @@ const EditTeamProfileInfo = () => {
           // Delay navigation slightly to ensure fetch completes
           setTimeout(() => {
             router.push('/user-profile');
-            setSnackbarMessage(data.message || tt("api.profileUpdatedSuccessfully", "Profile updated successfully!"));
+            setSnackbarMessage(apiMessage(tt, data, "api.profileUpdatedSuccessfully", "Profile updated successfully!"));
             setSnackbarType('success');
             setOpen(true);
           }, 1000);
         } else {
-          setSnackbarMessage(data.message || tt("api.failedToUpdateProfile", "Failed to update profile."));
+          setSnackbarMessage(apiMessage(tt, data, "api.failedToUpdateProfile", "Failed to update profile."));
           setSnackbarType('error');
           setOpen(true);
         }

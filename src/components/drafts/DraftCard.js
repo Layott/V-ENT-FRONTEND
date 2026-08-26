@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -32,7 +33,7 @@ const DraftCard = ({
         if (onDelete) onDelete(draft.id);
       } else {
         const data = await res.json().catch(() => ({}));
-        setDeleteError(data.message || tt("api.failedToDeleteDraft", "Failed to delete draft."));
+        setDeleteError(apiMessage(tt, data, "api.failedToDeleteDraft", "Failed to delete draft."));
         setDeleting(false);
       }
     } catch (err) {

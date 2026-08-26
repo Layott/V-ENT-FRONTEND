@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -86,7 +87,7 @@ const MyTournaments = () => {
         });
         if (!cancelled) setTournaments(toTournamentArray(data));
       } catch (err) {
-        if (!cancelled) setError(err instanceof ApiError ? err : new ApiError(err?.message || tt("api.failedToLoadYourTournaments", "Failed to load your tournaments.")));
+        if (!cancelled) setError(err instanceof ApiError ? err : new ApiError(apiMessage(tt, err, "api.failedToLoadYourTournaments", "Failed to load your tournaments.")));
       } finally {
         if (!cancelled) setLoading(false);
       }

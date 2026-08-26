@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -166,7 +167,7 @@ const OrganizationsContent = () => {
           ...s,
           [orgId]: null
         }));
-        showToast(data?.message || tt("api.applicationFailed", "Application failed"));
+        showToast(apiMessage(tt, data, "api.applicationFailed", "Application failed"));
       }
     } catch {
       setPendingApplications(s => ({

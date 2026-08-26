@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -98,7 +99,7 @@ const ManageContent = () => {
       const bBody = bRes.ok ? await bRes.json() : null;
       setRounds(bBody?.data?.rounds || []);
     } catch (err) {
-      setError(err.message || tt("api.failedToLoadThisTournament", "Failed to load this tournament."));
+      setError(apiMessage(tt, err, "api.failedToLoadThisTournament", "Failed to load this tournament."));
     } finally {
       setLoading(false);
     }

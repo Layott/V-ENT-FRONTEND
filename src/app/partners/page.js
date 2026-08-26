@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -147,7 +148,7 @@ const PartnersPage = () => {
         setIssuedSecret(body.data.secret);
         await load();
       }
-      say(body.message || tt("api.keyIssued", "Key issued."));
+      say(apiMessage(tt, body, "api.keyIssued", "Key issued."));
     } catch {
       say('Could not issue a key.');
     } finally {
@@ -165,7 +166,7 @@ const PartnersPage = () => {
         }
       });
       const body = await res.json();
-      say(body.message || tt("api.keyRevoked", "Key revoked."));
+      say(apiMessage(tt, body, "api.keyRevoked", "Key revoked."));
       await load();
     } catch {
       say('Could not revoke that key.');

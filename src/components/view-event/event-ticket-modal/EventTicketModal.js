@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { MdOutlineClose } from 'react-icons/md';
@@ -149,7 +150,7 @@ const EventTicketModal = ({
         if (data.data.new_balance !== undefined) setBalance(data.data.new_balance);
         setStep(4);
       } else {
-        setPayError(data.message || tt("api.paymentFailed", "Payment failed."));
+        setPayError(apiMessage(tt, data, "api.paymentFailed", "Payment failed."));
       }
     } catch {
       setPayError('Network error. Please try again.');

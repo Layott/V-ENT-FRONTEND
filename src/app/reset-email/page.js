@@ -1,5 +1,6 @@
 "use client";
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -70,7 +71,7 @@ const ResetEmail = () => {
         setSnackbarType('success');
         setOpen(true);
       } else {
-        setSnackbarMessage(data.message || tt("api.invalidToken", "Invalid token"));
+        setSnackbarMessage(apiMessage(tt, data, "api.invalidToken", "Invalid token"));
         setSnackbarType('error');
         setOpen(true);
       }

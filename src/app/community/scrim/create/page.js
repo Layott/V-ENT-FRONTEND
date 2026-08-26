@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -119,7 +120,7 @@ const ScrimCreateInner = () => {
       if (data.status === 'success' && data.data?.scrim) {
         setSuccess(data.data.scrim);
       } else {
-        setSubmitError(data.message || tt("api.couldNotPostThatScrim", "Could not post that scrim."));
+        setSubmitError(apiMessage(tt, data, "api.couldNotPostThatScrim", "Could not post that scrim."));
       }
     } catch (err) {
       console.error('Create scrim error:', err);

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -125,7 +126,7 @@ function UserDetailInner() {
         fetchDetail();
         return true;
       }
-      toast.push(data.message || tt("api.actionFailed", "Action failed."), 'error');
+      toast.push(apiMessage(tt, data, "api.actionFailed", "Action failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

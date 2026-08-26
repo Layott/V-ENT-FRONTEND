@@ -75,11 +75,7 @@ const TeamEventsHistory = ({
   for (let i = 1; i <= Math.ceil(events.length / rowsPerPage); i++) {
     pageNumbers.push(i);
   }
-  const getImageUrl = path => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
-  };
+  const getImageUrl = (path) => mediaUrl(path);
   if (loading) return <p>{tt("ui.loading.event.history.d944", "Loading event history...")}</p>;
   if (error) return <p style={{
     color: 'red'

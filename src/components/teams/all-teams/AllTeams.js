@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl, teamLogo } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -133,7 +134,7 @@ const AllTeams = () => {
           ...s,
           [teamId]: null
         }));
-        showToast(data?.message || tt("api.requestFailed", "Request failed"));
+        showToast(apiMessage(tt, data, "api.requestFailed", "Request failed"));
       }
     } catch {
       setPendingRequests(s => ({
@@ -143,11 +144,7 @@ const AllTeams = () => {
       showToast(tt("msg.networkError", "Network error"));
     }
   };
-  const getImageUrl = path => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
-  };
+  const getImageUrl = (path) => mediaUrl(path);
   const isOwner = team => team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username;
   // Real win rate only. This used to add a flat +30 and clamp to 8-95, so a
   // team that had never played a match still advertised "30%".
@@ -292,7 +289,7 @@ const AllTeams = () => {
 
                   <div className={styles.cardActions}>
                     {owned || reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
-                        {owned ? 'Manage' : tx("Pending request")}
+                        {owned ? tx("Manage") : tx("Pending request")}
                       </button> : open ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
                         {reqState === 'loading' ? tx("Requesting…") : tx("Request to join")}
                       </button> : <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>

@@ -26,6 +26,40 @@
 // backend stays free to reword its messages without silently un-translating
 // the interface.
 
+/** Fill `{name}` and `{a.b}` from the response body.
+ *
+ *  Rung 1 was losing to rung 2 on exactly the errors worth reading. Several
+ *  views build their sentence around a number or a name - "All 64 places have
+ *  been taken", "This runs at the same time as Lagos Open" - and a code alone
+ *  cannot say that, so translating it would have traded the fact for the
+ *  language. Those views already publish the same values as structured fields,
+ *  so the translation can name them and keep both.
+ *
+ *  A placeholder with nothing behind it leaves the text untouched rather than
+ *  printing an empty gap, and the caller falls back to the server's sentence.
+ */
+const fill = (text, body) => {
+  if (!text || text.indexOf('{') === -1) return text;
+
+  // The envelope nests the useful fields under `data`; a few views put them at
+  // the top level instead. Reading both means a translation does not have to
+  // know which shape this particular view chose.
+  const scopes = [body?.data, body].filter((s) => s && typeof s === 'object');
+
+  let missing = false;
+  const out = text.replace(/\{([a-z0-9_]+(?:\.[a-z0-9_]+)*)\}/gi, (whole, path) => {
+    for (const scope of scopes) {
+      const found = path.split('.').reduce(
+        (acc, part) => (acc == null ? acc : acc[part]), scope);
+      if (found !== undefined && found !== null && found !== '') return String(found);
+    }
+    missing = true;
+    return whole;
+  });
+
+  return missing ? null : out;
+};
+
 /**
  * @param t         the translator from useT()
  * @param data      the parsed response body
@@ -35,7 +69,7 @@
 export const apiMessage = (t, data, key, english) => {
   const code = data?.code;
   if (code) {
-    const translated = t(`api.${code}`, '');
+    const translated = fill(t(`api.${code}`, ''), data);
     if (translated) return translated;
   }
   if (data?.message) return data.message;

@@ -1,3 +1,4 @@
+import { imagePlaceholder, mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,11 +19,8 @@ const formatDate = dateString => {
     day: 'numeric'
   });
 };
-const getImageUrl = imagePath => {
-  if (!imagePath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23212225'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23797B86'%3EEvent%3C/text%3E%3C/svg%3E";
-  if (imagePath.startsWith('http')) return imagePath;
-  return `${process.env.NEXT_PUBLIC_API_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
-};
+const getImageUrl = (imagePath) =>
+  imagePath ? mediaUrl(imagePath) : imagePlaceholder('Event');
 const GameSection = ({
   game,
   events

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -190,7 +191,7 @@ const TournamentsContent = () => {
         setTournaments(toTournamentArray(data));
       } catch (err) {
         if (cancelled || err?.name === 'AbortError') return;
-        setError(err instanceof ApiError ? err : new ApiError(err?.message || tt("api.failedToLoadTournaments", "Failed to load tournaments.")));
+        setError(err instanceof ApiError ? err : new ApiError(apiMessage(tt, err, "api.failedToLoadTournaments", "Failed to load tournaments.")));
       } finally {
         if (!cancelled) setLoading(false);
       }

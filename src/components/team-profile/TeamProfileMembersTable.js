@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -78,7 +79,7 @@ const TeamProfileMembersTable = ({
       } : x));
       onToast?.(`${m.full_name || m.username} promoted to ${role}`);
     } else {
-      onToast?.(data?.message || tt("api.failed", "Failed"));
+      onToast?.(apiMessage(tt, data, "api.failed", "Failed"));
     }
   };
   const kick = async m => {
@@ -91,7 +92,7 @@ const TeamProfileMembersTable = ({
       setMembers(prev => prev.filter(x => x.user_id !== m.user_id));
       onToast?.(`${m.full_name || m.username} removed`);
     } else {
-      onToast?.(data?.message || tt("api.failed", "Failed"));
+      onToast?.(apiMessage(tt, data, "api.failed", "Failed"));
     }
   };
   const fmtDate = d => {

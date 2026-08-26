@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import styles from './tournament-details-bracket.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -184,7 +185,7 @@ const TournamentDetailsBracket = ({
         setBracketType(payload.bracket_type || 'single_elimination');
         setRounds(Array.isArray(payload) ? payload : payload.rounds || []);
       } else {
-        setError(data.message || tt("api.failedToLoadBracket", "Failed to load bracket."));
+        setError(apiMessage(tt, data, "api.failedToLoadBracket", "Failed to load bracket."));
       }
     } catch {
       setError(tt("msg.failedToLoadBracketPlease", "Failed to load bracket. Please try again."));

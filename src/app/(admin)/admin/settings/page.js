@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
@@ -90,7 +91,7 @@ function SettingsInner() {
       const data = await res.json();
       if (data.status === 'success') {
         toast.push(tt("msg.settingsSaved", "Settings saved."), 'success');
-      } else toast.push(data.message || tt("api.saveFailed", "Save failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.saveFailed", "Save failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

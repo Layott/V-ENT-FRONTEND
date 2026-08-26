@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -66,7 +67,7 @@ function PartnersInner() {
         setScopes(data.data?.scopes || {});
         setCounts(data.data?.counts || {});
       } else {
-        setError(data.message || tt("api.couldNotLoadPartners", "Could not load partners."));
+        setError(apiMessage(tt, data, "api.couldNotLoadPartners", "Could not load partners."));
       }
     } catch {
       if (requestRef.current === ticket) setError(tt("msg.couldNotLoadPartners", "Could not load partners."));
@@ -109,7 +110,7 @@ function PartnersInner() {
         scopes: draftScopes,
         note
       });
-      toast[res.ok ? 'success' : 'error'](body.message || tt("api.done", "Done."));
+      toast[res.ok ? 'success' : 'error'](apiMessage(tt, body, "api.done", "Done."));
       if (res.ok) {
         setOpen(null);
         await fetchPartners();
@@ -134,7 +135,7 @@ function PartnersInner() {
           secret: body.data.client_secret
         });
       }
-      toast[res.ok ? 'success' : 'error'](body.message || tt("api.done", "Done."));
+      toast[res.ok ? 'success' : 'error'](apiMessage(tt, body, "api.done", "Done."));
       if (res.ok) await fetchPartners();
     } finally {
       setBusy(false);

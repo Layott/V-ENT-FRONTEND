@@ -11,6 +11,7 @@
 //   5. Sufficient balance → inline 4-digit PIN → verify → register.
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -150,15 +151,16 @@ const PaymentModal = ({
         setPhase('insufficient');
       } else if (err?.code === 'KYC_REQUIRED') {
         setPhase('kyc');
-      } else if (err?.code === 'ALREADY_REGISTERED' || err?.code === 'DEADLINE_PASSED') {
-        setBlockedMessage(err?.message || tt("api.thisRegistrationCanNoLonger", "This registration can no longer be completed."));
+      } else if (err?.code === 'ALREADY_REGISTERED' || err?.code === 'TEAM_ALREADY_REGISTERED'
+                 || err?.code === 'DEADLINE_PASSED') {
+        setBlockedMessage(apiMessage(tt, err, "api.thisRegistrationCanNoLonger", "This registration can no longer be completed."));
         setPhase('blocked');
       } else {
-        setBlockedMessage(err?.message || tt("api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
+        setBlockedMessage(apiMessage(tt, err, "api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
         if (fee === 0) {
           setPhase('blocked');
         } else {
-          setPinError(err?.message || tt("api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
+          setPinError(apiMessage(tt, err, "api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
           setPin(EMPTY_PIN);
           setPhase('pin');
           pinRefs.current[0]?.focus();
@@ -208,7 +210,7 @@ const PaymentModal = ({
         afterTopup
       });
     } catch (err) {
-      setLoadError(err?.message || tt("api.couldNotLoadWalletBalance", "Could not load wallet balance."));
+      setLoadError(apiMessage(tt, err, "api.couldNotLoadWalletBalance", "Could not load wallet balance."));
       setPhase('error');
     }
   };
@@ -245,7 +247,7 @@ const PaymentModal = ({
           });
         } catch (err) {
           if (cancelled) return;
-          setTopUpError(err?.message || tt("api.couldNotVerifyYourTop", "Could not verify your top-up. Please try again."));
+          setTopUpError(apiMessage(tt, err, "api.couldNotVerifyYourTop", "Could not verify your top-up. Please try again."));
           stripReferenceFromUrl();
           setPhase('insufficient');
         }
@@ -294,7 +296,7 @@ const PaymentModal = ({
       if (err?.code === 'WRONG_PIN' || err?.status === 403) {
         setPinError('Incorrect PIN');
       } else {
-        setPinError(err?.message || tt("api.couldNotVerifyPinPlease", "Could not verify PIN. Please try again."));
+        setPinError(apiMessage(tt, err, "api.couldNotVerifyPinPlease", "Could not verify PIN. Please try again."));
       }
       setPin(EMPTY_PIN);
       pinRefs.current[0]?.focus();
@@ -323,7 +325,7 @@ const PaymentModal = ({
       setTopUpError('Could not start top-up. Please try again.');
       setToppingUp(false);
     } catch (err) {
-      setTopUpError(err?.message || tt("api.couldNotStartTopUp", "Could not start top-up. Please try again."));
+      setTopUpError(apiMessage(tt, err, "api.couldNotStartTopUp", "Could not start top-up. Please try again."));
       setToppingUp(false);
     }
   };

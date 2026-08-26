@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook } from 'react-icons/fa';
@@ -76,7 +77,7 @@ const EditTeamProfileLinksNew = ({
       const data = await res.json();
       if (data?.status === 'success') onSaved?.({
         social_links: links
-      });else setError(data?.message || tt("api.saveFailed", "Save failed"));
+      });else setError(apiMessage(tt, data, "api.saveFailed", "Save failed"));
     } catch {
       setError(tt("msg.networkError", "Network error"));
     } finally {

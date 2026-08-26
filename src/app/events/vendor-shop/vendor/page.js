@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
@@ -63,7 +64,7 @@ const VendorStallContent = () => {
         if (data.status === 'success') {
           setVendor(data.data.vendor);
         } else {
-          setError(data.message || tt("api.vendorNotFound", "Vendor not found."));
+          setError(apiMessage(tt, data, "api.vendorNotFound", "Vendor not found."));
         }
       } catch (err) {
         console.error('Vendor fetch error:', err);
@@ -143,7 +144,7 @@ const VendorStallContent = () => {
       });
       const data = await res.json();
       if (data.status !== 'success') {
-        setOrderError(data.message || tt("api.couldNotPlaceTheOrder", "Could not place the order."));
+        setOrderError(apiMessage(tt, data, "api.couldNotPlaceTheOrder", "Could not place the order."));
         return;
       }
       setPlacedOrder(data.data.order);

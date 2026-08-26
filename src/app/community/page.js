@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import UserPicker from '@/components/community/UserPicker';
 import { mediaUrl } from '@/lib/mediaUrl';
@@ -365,7 +366,7 @@ const CommunityInner = () => {
           unread_count: 0
         } : t));
       } else {
-        setDmError(data.message || tt("api.couldNotOpenThatConversation", "Could not open that conversation."));
+        setDmError(apiMessage(tt, data, "api.couldNotOpenThatConversation", "Could not open that conversation."));
       }
     } catch (err) {
       console.error('Open DM error:', err);
@@ -403,7 +404,7 @@ const CommunityInner = () => {
       });
       const data = await res.json();
       const serverMsg = data.status === 'success' ? data.data?.message : null;
-      if (!serverMsg) setDmError(data.message || tt("api.messageNotSent", "Message not sent."));
+      if (!serverMsg) setDmError(apiMessage(tt, data, "api.messageNotSent", "Message not sent."));
       setActiveDm(prev => prev ? {
         ...prev,
         messages: replaceLocal(prev.messages, serverMsg)
@@ -459,7 +460,7 @@ const CommunityInner = () => {
           id: data.data.conversation_id
         });
       } else {
-        setNewDmError(data.message || tt("api.couldNotStartThatConversation", "Could not start that conversation."));
+        setNewDmError(apiMessage(tt, data, "api.couldNotStartThatConversation", "Could not start that conversation."));
       }
     } catch (err) {
       console.error('Start DM error:', err);
@@ -536,7 +537,7 @@ const CommunityInner = () => {
       if (data.status === 'success' && data.data?.scrim) {
         setScrims(prev => prev.map(s => s.id === scrimId ? data.data.scrim : s));
       } else {
-        setScrimError(data.message || tt("api.couldNotAcceptThatScrim", "Could not accept that scrim."));
+        setScrimError(apiMessage(tt, data, "api.couldNotAcceptThatScrim", "Could not accept that scrim."));
       }
     } catch (err) {
       console.error('Accept scrim error:', err);

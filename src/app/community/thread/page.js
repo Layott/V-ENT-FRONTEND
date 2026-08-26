@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import SignInToEngage from '@/components/community/SignInToEngage';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
@@ -185,7 +186,7 @@ const ThreadInner = ({
         const lastPage = Math.ceil(all.length / PAGE_SIZE);
         setPage(lastPage);
       } else {
-        setReplyError(data.message || tt("api.couldNotPostThatReply", "Could not post that reply."));
+        setReplyError(apiMessage(tt, data, "api.couldNotPostThatReply", "Could not post that reply."));
       }
     } catch (err) {
       console.error('Reply error:', err);

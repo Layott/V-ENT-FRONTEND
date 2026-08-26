@@ -8,6 +8,7 @@
  * left is choosing a password. The username they reserved is shown as already
  * settled, unless they never picked one, in which case they choose here.
  */
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
@@ -53,7 +54,7 @@ const ClaimAccount = () => {
         if (response.ok) {
           setReservation(data.data);
         } else {
-          setLoadError(data.message || tt("api.thisClaimLinkIsNot", "This claim link is not valid."));
+          setLoadError(apiMessage(tt, data, "api.thisClaimLinkIsNot", "This claim link is not valid."));
         }
       } catch {
         if (!cancelled) setLoadError('Could not reach V-ENT. Check your connection and try again.');
@@ -93,7 +94,7 @@ const ClaimAccount = () => {
       });
       const data = await response.json();
       if (!response.ok) {
-        notify(data.message || tt("api.couldNotClaimYourAccount", "Could not claim your account. Please try again."));
+        notify(apiMessage(tt, data, "api.couldNotClaimYourAccount", "Could not claim your account. Please try again."));
         setSubmitting(false);
         return;
       }

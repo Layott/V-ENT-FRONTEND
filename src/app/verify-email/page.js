@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './verify-email.module.css';
@@ -37,7 +38,7 @@ const VerifyEmail = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setSnackbarMessage(data.message || tt("api.verificationEmailSent", "Verification email sent!"));
+        setSnackbarMessage(apiMessage(tt, data, "api.verificationEmailSent", "Verification email sent!"));
         setSnackbarType('success');
       } else {
         setSnackbarMessage(data.error || tt("msg.failedToResendVerification", "Failed to resend verification email."));

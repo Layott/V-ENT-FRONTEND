@@ -28,7 +28,39 @@ SRC = pathlib.Path('src')
 IMG = re.compile(r'<(?:Image|img)\b((?:[^>]|\n)*?)/?>', re.S)
 SRCATTR = re.compile(r'\bsrc\s*=\s*\{([^}]*)\}', re.S)
 MEDIA = re.compile(r'logo|avatar|banner|picture|profile_pic|cover|image', re.I)
-NORMALISER = re.compile(r'getImageUrl|buildAbsolute|mediaUrl|normalise\w*|absolute', re.I)
+NORMALISER = re.compile(
+    r'getImageUrl|buildAbsolute|mediaUrl|mediaIn|pickMedia|teamLogo|avatarOf'
+    r'|bannerOf|imagePlaceholder|normalise\w*|absolute', re.I)
+
+# `import logoRed from '@/images/...'` - a bundled asset. next/image gets an
+# object with { src, width, height }, never a path from the API.
+IMPORTED = re.compile(r'^\s*import\s+(?:(\w+)|\{([^}]*)\})\s+from', re.M)
+# `const [bannerPreview, setBannerPreview] = useState(...)` - a blob: URL from
+# a file input, or a URL the person supplied. Also not an API path.
+LOCAL_STATE = re.compile(r'const\s*\[\s*(\w+)\s*,')
+
+
+def safe_roots(text):
+    """Identifiers in this file that cannot be a relative API path."""
+    names = set()
+    for default, named in IMPORTED.findall(text):
+        if default:
+            names.add(default)
+        for part in named.split(','):
+            part = part.strip().split(' as ')[-1].strip()
+            if part:
+                names.add(part)
+    names.update(LOCAL_STATE.findall(text))
+    return names
+
+# Render sites that read raw on purpose, with the reason. Keep this short: an
+# allowlist is where a checker goes to die, so each entry states why the value
+# cannot be a relative path from the API.
+ALLOWED = {
+    ('src/components/landing/landing-brands/LandingBrands.js', 'brandLogo.src'):
+        'maps over a module-scope array of bundled imports; .src is the static '
+        'asset object, not an API field',
+}
 
 rows = []
 for path in sorted(SRC.rglob('*.js')):
@@ -42,7 +74,15 @@ for path in sorted(SRC.rglob('*.js')):
         expr = ' '.join(s.group(1).split())
         if not MEDIA.search(expr):
             continue
-        kind = 'helper' if NORMALISER.search(expr) else 'raw'
+        root = re.match(r'\s*(\w+)', expr)
+        if NORMALISER.search(expr):
+            kind = 'helper'
+        elif root and root.group(1) in safe_roots(src):
+            kind = 'helper'          # bundled asset or object URL
+        else:
+            kind = 'raw'
+        if kind == 'raw' and (path.as_posix(), expr) in ALLOWED:
+            kind = 'helper'
         rows.append((path.as_posix(), body[:m.start()].count('\n') + 1, kind, expr[:64]))
 
 raw = [r for r in rows if r[2] == 'raw']
@@ -52,10 +92,30 @@ print('=== media render sites: %d (%d normalised, %d raw) ===\n' % (len(rows), l
 for path, line, kind, expr in raw:
     print('  raw     %s:%d  %s' % (path, line, expr))
 
+def builds_its_own_url(text):
+    """A local helper that constructs a media URL instead of delegating.
+
+    Read line by line rather than by one regex: the helper bodies vary in
+    shape, and what matters is only whether an API base appears inside the few
+    lines that follow the definition.
+    """
+    lines = text.split(chr(10))
+    for i, line in enumerate(lines):
+        if 'getImageUrl' not in line and 'buildAbsolute' not in line:
+            continue
+        if '=' not in line:
+            continue
+        for follow in lines[i:i + 8]:
+            if any(name in follow for name in
+                   ('NEXT_PUBLIC_API_URL', 'API_BASE', 'apiBase', 'baseUrl')):
+                return True
+    return False
+
+
 copies = sorted({p.as_posix() for p in SRC.rglob('*.js')
-                 if re.search(r'getImageUrl\s*=|buildAbsolute\s*=', p.read_text(encoding='utf-8'))})
+                 if builds_its_own_url(p.read_text(encoding='utf-8'))})
 print('\n=== private copies of a URL helper: %d ===' % len(copies))
 for c in copies:
     print('  ' + c)
 
-sys.exit(1 if (raw or len(copies) > 1) else 0)
+sys.exit(1 if (raw or copies) else 0)

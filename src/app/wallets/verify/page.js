@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -82,7 +83,7 @@ const VerifyPage = () => {
         setKycVerified(!!data.data?.kyc_verified);
         setLatestSubmission(data.data?.latest_submission ?? null);
       } else {
-        setLoadError(data?.message || tt("api.couldNotLoadVerificationStatus", "Could not load verification status."));
+        setLoadError(apiMessage(tt, data, "api.couldNotLoadVerificationStatus", "Could not load verification status."));
       }
     } catch (err) {
       console.error('KYC status fetch error:', err);
@@ -141,7 +142,7 @@ const VerifyPage = () => {
         setDocType('');
         await fetchStatus(); // moves the view to "pending"
       } else {
-        setSubmitError(data?.message || tt("api.submissionFailedPleaseTryAgain", "Submission failed. Please try again."));
+        setSubmitError(apiMessage(tt, data, "api.submissionFailedPleaseTryAgain", "Submission failed. Please try again."));
       }
     } catch (err) {
       console.error('KYC submit error:', err);

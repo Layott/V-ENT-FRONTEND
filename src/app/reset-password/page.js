@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import { FaRegEyeSlash } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -73,12 +74,12 @@ const ResetPassword = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setSnackbarMessage(data.message || tt("api.done", "Done!"));
+        setSnackbarMessage(apiMessage(tt, data, "api.done", "Done!"));
         setSnackbarType('success');
         localStorage.removeItem('forgotPasswordEmail');
         localStorage.removeItem('resetTicket');
       } else {
-        setSnackbarMessage(data.error || data.message || tt("api.failed", "Failed!"));
+        setSnackbarMessage(data.error || apiMessage(tt, data, "api.failed", "Failed!"));
         setSnackbarType('error');
       }
     } catch (error) {
