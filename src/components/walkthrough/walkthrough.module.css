@@ -1,0 +1,305 @@
+/* The walkthrough overlay.
+   Motion here is movement between steps - real feedback about where attention
+   has gone. Nothing pulses, nothing loops, nothing glows, and the spotlight is
+   a hole in the dim rather than a ring of light. */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+}
+
+/* Four of these surround the highlighted element, so the element itself is
+   genuinely uncovered and still clickable. A single overlay with a giant
+   box-shadow would be one element, but that shadow is exactly the halo the
+   design rules ban. */
+.shade {
+  position: fixed;
+  background-color: rgba(10, 10, 12, 0.78);
+  transition: all 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shadeFull {
+  inset: 0;
+}
+
+/* The uncovered element. A flat, slightly lifted plate, not a glow. */
+.spotlight {
+  position: fixed;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  transition: top 260ms cubic-bezier(0.4, 0, 0.2, 1),
+              left 260ms cubic-bezier(0.4, 0, 0.2, 1),
+              width 260ms cubic-bezier(0.4, 0, 0.2, 1),
+              height 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ------------------------------------------------------------------ panel */
+
+.panel {
+  position: fixed;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background-color: #1c1d21;
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem 1.1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  transition: top 260ms cubic-bezier(0.4, 0, 0.2, 1),
+              left 260ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: panelIn 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--v-ent-light-red);
+  outline-offset: 3px;
+}
+
+.panelCentred {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 440px;
+}
+
+/* Runs once, on arrival. Not a loop. */
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.panelCentred {
+  animation: panelInCentred 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes panelInCentred {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ------------------------------------------------------------------- head */
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.chapterBtn {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--v-ent-light-red);
+  cursor: pointer;
+  text-align: left;
+}
+
+.chapterCount {
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.skipBtn {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.4rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 120ms ease-in-out;
+}
+
+.skipBtn:hover { color: #fff; }
+
+/* --------------------------------------------------------- chapter picker */
+
+.chapterMenu {
+  list-style: none;
+  margin: 0 0 0.9rem 0;
+  padding: 0.35rem;
+  background-color: #26272b;
+  border-radius: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.chapterMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 0.5rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out, color 120ms ease-in-out;
+}
+
+.chapterMenuItem:hover {
+  background-color: #303136;
+  color: #fff;
+}
+
+.chapterMenuItemOn,
+.chapterMenuItemOn:hover {
+  background-color: rgba(237, 28, 36, 0.18);
+  color: #fff;
+}
+
+.chapterMenuMeta {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ------------------------------------------------------------------- copy */
+
+.heading {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  line-height: 1.25;
+}
+
+.body {
+  margin: 0;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* A second thought, set apart by surface rather than by a stripe or a rule. */
+.aside {
+  margin: 0.75rem 0 0 0;
+  padding: 0.6rem 0.7rem;
+  background-color: #26272b;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* --------------------------------------------------------------- progress */
+
+.progressTrack {
+  height: 3px;
+  border-radius: 2px;
+  background-color: #303136;
+  margin: 1.1rem 0 0.85rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--v-ent-red);
+  transition: width 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------------------------------------------------------------- actions */
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.count {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.primaryBtn,
+.ghostBtn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+}
+
+.primaryBtn {
+  background-color: var(--v-ent-red);
+  color: #fff;
+}
+
+.primaryBtn:hover { background-color: var(--v-ent-light-red); }
+
+.ghostBtn {
+  background-color: #303136;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ghostBtn:hover { background-color: #3a3b41; color: #fff; }
+
+/* ----------------------------------------------------------------- mobile */
+
+@media (max-width: 759px) {
+  .panel,
+  .panelCentred {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    border-radius: 16px 16px 0 0;
+    padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+    animation: sheetIn 240ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  @keyframes sheetIn {
+    from { transform: translateY(14px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .primaryBtn,
+  .ghostBtn {
+    min-height: 44px;
+    padding-inline: 1.25rem;
+  }
+
+  .skipBtn { min-height: 44px; }
+}
+
+/* --------------------------------------------------- reduced motion: cuts */
+
+.noMotion .shade,
+.noMotion .spotlight,
+.noMotion .panel,
+.noMotion .panelCentred,
+.noMotion .progressFill {
+  transition: none;
+  animation: none;
+}

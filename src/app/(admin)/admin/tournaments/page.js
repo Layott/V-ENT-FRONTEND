@@ -1,163 +1,185 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import AdminNav from '@/components/admin/AdminNav'
-import AdminHeader from '@/components/admin/AdminHeader'
-import { useAdminAuth } from '@/components/admin/useAdminAuth'
-import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast'
-import shared from '@/components/admin/admin.module.css'
-import styles from './tournaments.module.css'
-
-const PAGE_SIZE = 20
-
+import InfoTip from '@/components/info-tip/InfoTip';
+import { useState, useEffect, useCallback } from 'react';
+import AdminNav from '@/components/admin/AdminNav';
+import AdminHeader from '@/components/admin/AdminHeader';
+import { useAdminAuth } from '@/components/admin/useAdminAuth';
+import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast';
+import shared from '@/components/admin/admin.module.css';
+import styles from './tournaments.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
-  if (s === 'active')    return shared.sActive
-  if (s === 'ongoing')   return shared.sOngoing
-  if (s === 'draft')     return shared.sDraft
-  if (s === 'cancelled') return shared.sCancelled
-  if (s === 'completed') return shared.sApproved
-  return shared.sDraft
+  if (s === 'active') return shared.sActive;
+  if (s === 'ongoing') return shared.sOngoing;
+  if (s === 'draft') return shared.sDraft;
+  if (s === 'cancelled') return shared.sCancelled;
+  if (s === 'completed') return shared.sApproved;
+  return shared.sDraft;
 }
-
 function TournamentsInner() {
-  const { admin, loading: authLoading, logout } = useAdminAuth()
-  const toast = useAdminToast()
-  const [tournaments, setTournaments] = useState([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [sortBy, setSortBy] = useState('-created_at')
-  const [dataLoading, setDataLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [cancelTarget, setCancelTarget] = useState(null)
-  const [overrideTarget, setOverrideTarget] = useState(null)
-  const [disqTarget, setDisqTarget] = useState(null)
-  const [actionLoading, setActionLoading] = useState({})
-
+  const tx = useTx();
+  const tt = useT();
+  const {
+    admin,
+    loading: authLoading,
+    logout
+  } = useAdminAuth();
+  const toast = useAdminToast();
+  const [tournaments, setTournaments] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortBy, setSortBy] = useState('-created_at');
+  const [dataLoading, setDataLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [overrideTarget, setOverrideTarget] = useState(null);
+  const [disqTarget, setDisqTarget] = useState(null);
+  const [actionLoading, setActionLoading] = useState({});
   const fetchTournaments = useCallback(async () => {
-    const token = localStorage.getItem('adminToken')
-    setDataLoading(true)
-    setError('')
+    const token = localStorage.getItem('adminToken');
+    setDataLoading(true);
+    setError('');
     try {
-      const params = new URLSearchParams({ page, page_size: PAGE_SIZE, ordering: sortBy })
-      if (search) params.set('search', search)
-      if (statusFilter) params.set('status', statusFilter)
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/?${params}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      const data = await res.json()
+      const params = new URLSearchParams({
+        page,
+        page_size: PAGE_SIZE,
+        ordering: sortBy
+      });
+      if (search) params.set('search', search);
+      if (statusFilter) params.set('status', statusFilter);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
       if (data.status === 'success') {
-        setTournaments(data.data?.results || [])
-        setTotal(data.data?.count ?? (data.data?.results || []).length)
+        setTournaments(data.data?.results || []);
+        setTotal(data.data?.count ?? (data.data?.results || []).length);
       } else {
-        setError(data.message || 'Failed to load tournaments.')
+        setError(data.message || tt("api.failedToLoadTournaments", "Failed to load tournaments."));
       }
     } catch {
-      setError('Connection error.')
+      setError(tt("msg.connectionError", "Connection error."));
     } finally {
-      setDataLoading(false)
+      setDataLoading(false);
     }
-  }, [page, search, statusFilter, sortBy])
-
+  }, [page, search, statusFilter, sortBy]);
   useEffect(() => {
-    if (!authLoading && admin) fetchTournaments()
-  }, [authLoading, admin, fetchTournaments])
-
-  useEffect(() => { setPage(1) }, [search, statusFilter, sortBy])
-
+    if (!authLoading && admin) fetchTournaments();
+  }, [authLoading, admin, fetchTournaments]);
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, sortBy]);
   async function cancelTournament(id) {
-    const token = localStorage.getItem('adminToken')
-    setActionLoading((p) => ({ ...p, [id]: true }))
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({
+      ...p,
+      [id]: true
+    }));
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${id}/cancel/`,
-        { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
-      )
-      const data = await res.json()
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${id}/cancel/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
       if (data.status === 'success') {
-        toast.push('Tournament cancelled.', 'success')
-        setCancelTarget(null)
-        fetchTournaments()
-      } else toast.push(data.message || 'Failed.', 'error')
-    } catch { toast.push('Connection error.', 'error') }
-    setActionLoading((p) => ({ ...p, [id]: false }))
+        toast.push(tt("msg.tournamentCancelled", "Tournament cancelled."), 'success');
+        setCancelTarget(null);
+        fetchTournaments();
+      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+    } catch {
+      toast.push(tt("msg.connectionError", "Connection error."), 'error');
+    }
+    setActionLoading(p => ({
+      ...p,
+      [id]: false
+    }));
   }
-
   async function overrideScore(id, payload) {
-    const token = localStorage.getItem('adminToken')
-    setActionLoading((p) => ({ ...p, [id]: true }))
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({
+      ...p,
+      [id]: true
+    }));
     try {
       // Score override is keyed on the MATCH id, not the tournament id.
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/matches/${payload.match_id}/score/`,
-        {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            score_p1: payload.score_p1,
-            score_p2: payload.score_p2,
-            winner_registration_id: payload.winner_registration_id,
-            reason: payload.reason,
-          }),
-        }
-      )
-      const data = await res.json()
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/matches/${payload.match_id}/score/`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          score_p1: payload.score_p1,
+          score_p2: payload.score_p2,
+          winner_registration_id: payload.winner_registration_id,
+          reason: payload.reason
+        })
+      });
+      const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Score overridden for Match ${payload.match_id}.`, 'success')
-        setOverrideTarget(null)
-      } else toast.push(data.message || 'Failed.', 'error')
-    } catch { toast.push('Connection error.', 'error') }
-    setActionLoading((p) => ({ ...p, [id]: false }))
+        toast.push(`Score overridden for Match ${payload.match_id}.`, 'success');
+        setOverrideTarget(null);
+      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+    } catch {
+      toast.push(tt("msg.connectionError", "Connection error."), 'error');
+    }
+    setActionLoading(p => ({
+      ...p,
+      [id]: false
+    }));
   }
-
   async function disqualifyTeam(id, teamName) {
-    const token = localStorage.getItem('adminToken')
-    setActionLoading((p) => ({ ...p, [id]: true }))
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({
+      ...p,
+      [id]: true
+    }));
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${id}/disqualify/`,
-        {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ team_name: teamName }),
-        }
-      )
-      const data = await res.json()
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${id}/disqualify/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          team_name: teamName
+        })
+      });
+      const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`${teamName} disqualified.`, 'success')
-        setDisqTarget(null)
-      } else toast.push(data.message || 'Failed.', 'error')
-    } catch { toast.push('Connection error.', 'error') }
-    setActionLoading((p) => ({ ...p, [id]: false }))
+        toast.push(`${teamName} disqualified.`, 'success');
+        setDisqTarget(null);
+      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+    } catch {
+      toast.push(tt("msg.connectionError", "Connection error."), 'error');
+    }
+    setActionLoading(p => ({
+      ...p,
+      [id]: false
+    }));
   }
-
-  const totalPages = Math.ceil(total / PAGE_SIZE) || 1
-  if (authLoading) return null
-
-  return (
-    <div className={shared.pageContainer}>
-      <div
-        className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-        onClick={() => setSidebarOpen(false)}
-      />
+  const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+  if (authLoading) return null;
+  return <div className={shared.pageContainer}>
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
-        <AdminHeader
-          admin={admin}
-          onLogout={logout}
-          onMenuOpen={() => setSidebarOpen(true)}
-          searchValue={search}
-          onSearch={setSearch}
-        />
+        <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
         <main className={shared.contentArea}>
           <div className={shared.pageHeader}>
             <div>
-              <h1 className={shared.pageTitle}>Tournaments</h1>
-              <p className={shared.pageSubtitle}>Oversee all platform tournaments.</p>
+              <h1 className={shared.pageTitle}>{tt("ui.tournaments.fee2", "Tournaments")}</h1>
+              <p className={shared.pageSubtitle}>{tt("ui.oversee.all.platform.tournaments.a1c4", "Oversee all platform tournaments.")}</p>
             </div>
           </div>
 
@@ -165,53 +187,39 @@ function TournamentsInner() {
 
           <div className={shared.card}>
             <div className={shared.filtersRow}>
-              <select
-                className={shared.filterSelect}
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="ongoing">Ongoing</option>
-                <option value="draft">Draft</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="completed">Completed</option>
+              <select className={shared.filterSelect} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                <option value="">{tt("ui.all.statuses.9cb2", "All Statuses")}</option>
+                <option value="active">{tt("ui.active.a733", "Active")}</option>
+                <option value="ongoing">{tt("ui.ongoing.2e02", "Ongoing")}</option>
+                <option value="draft">{tt("ui.draft.23d3", "Draft")}</option>
+                <option value="cancelled">{tt("ui.cancelled.a1bf", "Cancelled")}</option>
+                <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
               </select>
-              <select
-                className={shared.filterSelect}
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="-created_at">Newest First</option>
-                <option value="created_at">Oldest First</option>
-                <option value="name">Name A-Z</option>
-                <option value="-prize_pool">Prize (High-Low)</option>
-                <option value="-participants_count">Participants (High-Low)</option>
+              <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                <option value="-created_at">{tt("ui.newest.first.a40b", "Newest First")}</option>
+                <option value="created_at">{tt("ui.oldest.first.06dc", "Oldest First")}</option>
+                <option value="name">{tt("ui.name.z.257c", "Name A-Z")}</option>
+                <option value="-prize_pool">{tt("ui.prize.high.low.7215", "Prize (High-Low)")}</option>
+                <option value="-participants_count">{tt("ui.participants.high.low.d433", "Participants (High-Low)")}</option>
               </select>
               <span className={shared.resultsCount}>{total.toLocaleString()} {total === 1 ? 'tournament' : 'tournaments'}</span>
             </div>
 
-            {dataLoading ? (
-              <p className={shared.stateText}>Loading…</p>
-            ) : tournaments.length === 0 ? (
-              <p className={shared.stateText}>No tournaments found.</p>
-            ) : (
-              <div className={shared.tableWrap}>
+            {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : tournaments.length === 0 ? <p className={shared.stateText}>{tt("ui.no.tournaments.found.6976", "No tournaments found.")}</p> : <div className={shared.tableWrap}>
                 <table className={shared.table}>
                   <thead>
                     <tr>
-                      <th>Tournament</th>
-                      <th className={shared.hideMobile}>Organizer</th>
-                      <th>Status</th>
-                      <th className={shared.hideMobile}>Participants</th>
-                      <th className={shared.hideMobile}>Prize Pool</th>
-                      <th className={shared.hideMobile}>Created</th>
-                      <th>Actions</th>
+                      <th>{tt("ui.tournament.a2c1", "Tournament")}</th>
+                      <th className={shared.hideMobile}>{tt("ui.organizer.debd", "Organizer")}</th>
+                      <th>{tt("ui.status.bae7", "Status")}</th>
+                      <th className={shared.hideMobile}>{tt("ui.participants.cd56", "Participants")}</th>
+                      <th className={shared.hideMobile}>{tt("ui.prize.pool.548a", "Prize Pool")}</th>
+                      <th className={shared.hideMobile}>{tt("ui.created.accf", "Created")}</th>
+                      <th>{tt("ui.actions.c3cd", "Actions")}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {tournaments.map((t) => (
-                      <tr key={t.id}>
+                    {tournaments.map(t => <tr key={t.id}>
                         <td>
                           <div>
                             <p className={styles.tName}>{t.name || t.title}</p>
@@ -233,237 +241,154 @@ function TournamentsInner() {
                         </td>
                         <td>
                           <div className={shared.actGroup}>
-                            <button
-                              className={`${shared.actBtn} ${shared.actView}`}
-                              onClick={() => setOverrideTarget(t)}
-                              disabled={!!actionLoading[t.id]}
-                              title="Override match score"
-                            >
-                              Score
+                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
+                              {tt("ui.score.489f", "Score")}
                             </button>
-                            <button
-                              className={`${shared.actBtn} ${shared.actView}`}
-                              onClick={() => setDisqTarget(t)}
-                              disabled={!!actionLoading[t.id]}
-                              title="Disqualify team"
-                            >
+                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
                               DQ
                             </button>
-                            {t.status !== 'cancelled' && t.status !== 'completed' && (
-                              <button
-                                className={`${shared.actBtn} ${shared.actReject}`}
-                                onClick={() => setCancelTarget(t)}
-                                disabled={!!actionLoading[t.id]}
-                              >
-                                Cancel
-                              </button>
-                            )}
+                            {t.status !== 'cancelled' && t.status !== 'completed' && <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setCancelTarget(t)} disabled={!!actionLoading[t.id]}>
+                                {tt("ui.cancel.77df", "Cancel")}
+                              </button>}
                           </div>
                         </td>
-                      </tr>
-                    ))}
+                      </tr>)}
                   </tbody>
                 </table>
-              </div>
-            )}
+              </div>}
 
-            {totalPages > 1 && (
-              <div className={shared.pagination}>
-                <span className={shared.paginationInfo}>Page {page} of {totalPages}</span>
+            {totalPages > 1 && <div className={shared.pagination}>
+                <span className={shared.paginationInfo}>{tt("ui.page.fb06", "Page")} {page} of {totalPages}</span>
                 <div className={shared.paginationBtns}>
-                  <button className={shared.pageBtn} onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i
-                    return (
-                      <button key={p} className={`${shared.pageBtn} ${p === page ? shared.pageBtnActive : ''}`} onClick={() => setPage(p)}>{p}</button>
-                    )
-                  })}
-                  <button className={shared.pageBtn} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+                  {Array.from({
+                length: Math.min(5, totalPages)
+              }, (_, i) => {
+                const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
+                return <button key={p} className={`${shared.pageBtn} ${p === page ? shared.pageBtnActive : ''}`} onClick={() => setPage(p)}>{p}</button>;
+              })}
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </main>
       </div>
 
       {/* Cancel modal */}
-      {cancelTarget && (
-        <div className={styles.modalOverlay} onClick={() => setCancelTarget(null)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <p className={styles.modalTitle}>Cancel Tournament?</p>
+      {cancelTarget && <div className={styles.modalOverlay} onClick={() => setCancelTarget(null)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <p className={styles.modalTitle}>{tt("ui.cancel.tournament.0324", "Cancel Tournament?")}</p>
             <p className={styles.modalSub}>
-              &ldquo;{cancelTarget.name}&rdquo; will be cancelled and participants notified. This cannot be undone.
+              &ldquo;{cancelTarget.name}{tt("ui.will.be.cancelled.participants.e2ae", "” will be cancelled and participants notified. This cannot be undone.")}
             </p>
             <div className={styles.modalBtns}>
-              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setCancelTarget(null)}>Back</button>
-              <button
-                className={`${shared.actBtn} ${shared.actReject}`}
-                onClick={() => cancelTournament(cancelTarget.id)}
-                disabled={!!actionLoading[cancelTarget.id]}
-              >
-                {actionLoading[cancelTarget.id] ? 'Cancelling…' : 'Confirm Cancel'}
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setCancelTarget(null)}>{tt("ui.back.b52b", "Back")}</button>
+              <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => cancelTournament(cancelTarget.id)} disabled={!!actionLoading[cancelTarget.id]}>
+                {actionLoading[cancelTarget.id] ? tx("Cancelling…") : tx("Confirm Cancel")}
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Override score modal */}
-      {overrideTarget && (
-        <OverrideScoreModal
-          tournament={overrideTarget}
-          onCancel={() => setOverrideTarget(null)}
-          onSubmit={(payload) => overrideScore(overrideTarget.id, payload)}
-          loading={!!actionLoading[overrideTarget.id]}
-        />
-      )}
+      {overrideTarget && <OverrideScoreModal tournament={overrideTarget} onCancel={() => setOverrideTarget(null)} onSubmit={payload => overrideScore(overrideTarget.id, payload)} loading={!!actionLoading[overrideTarget.id]} />}
 
       {/* Disqualify modal */}
-      {disqTarget && (
-        <DisqualifyModal
-          tournament={disqTarget}
-          onCancel={() => setDisqTarget(null)}
-          onSubmit={(team) => disqualifyTeam(disqTarget.id, team)}
-          loading={!!actionLoading[disqTarget.id]}
-        />
-      )}
-    </div>
-  )
+      {disqTarget && <DisqualifyModal tournament={disqTarget} onCancel={() => setDisqTarget(null)} onSubmit={team => disqualifyTeam(disqTarget.id, team)} loading={!!actionLoading[disqTarget.id]} />}
+    </div>;
 }
-
-function OverrideScoreModal({ tournament, onCancel, onSubmit, loading }) {
-  const [matchId, setMatchId] = useState('')
-  const [scoreP1, setScoreP1] = useState(0)
-  const [scoreP2, setScoreP2] = useState(0)
-  const [winnerRegId, setWinnerRegId] = useState('')
-  const [reason, setReason] = useState('')
-
-  const canSubmit = matchId.trim() && winnerRegId.trim()
-
-  return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <p className={styles.modalTitle}>Override Match Score</p>
+function OverrideScoreModal({
+  tournament,
+  onCancel,
+  onSubmit,
+  loading
+}) {
+  const tx = useTx();
+  const tt = useT();
+  const [matchId, setMatchId] = useState('');
+  const [scoreP1, setScoreP1] = useState(0);
+  const [scoreP2, setScoreP2] = useState(0);
+  const [winnerRegId, setWinnerRegId] = useState('');
+  const [reason, setReason] = useState('');
+  const canSubmit = matchId.trim() && winnerRegId.trim();
+  return <div className={styles.modalOverlay} onClick={onCancel}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <p className={styles.modalTitle}>{tt("ui.override.match.score.4b28", "Override Match Score")}</p>
         <p className={styles.modalSub}>
-          For tournament &ldquo;{tournament.name}&rdquo;.
+          {tt("ui.tournament.9c45", "For tournament “")}{tournament.name}&rdquo;.
         </p>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>Match ID</label>
-          <input
-            className={styles.formInput}
-            value={matchId}
-            onChange={(e) => setMatchId(e.target.value)}
-            placeholder="Numeric match id"
-          />
+          <label className={styles.formLabel}>{tt("ui.match.id.ffcf", "Match ID")}<InfoTip id="adminMatchId" /></label>
+          <input className={styles.formInput} value={matchId} onChange={e => setMatchId(e.target.value)} placeholder={tt("ui.numeric.match.id.08ad", "Numeric match id")} />
         </div>
         <div className={styles.formRow2}>
           <div>
-            <label className={styles.formLabel}>Score P1</label>
-            <input
-              type="number"
-              className={styles.formInput}
-              value={scoreP1}
-              onChange={(e) => setScoreP1(parseInt(e.target.value || '0', 10))}
-            />
+            <label className={styles.formLabel}>{tt("ui.score.p.af0f", "Score P1")}<InfoTip id="adminScore" /></label>
+            <input type="number" className={styles.formInput} value={scoreP1} onChange={e => setScoreP1(parseInt(e.target.value || '0', 10))} />
           </div>
           <div>
-            <label className={styles.formLabel}>Score P2</label>
-            <input
-              type="number"
-              className={styles.formInput}
-              value={scoreP2}
-              onChange={(e) => setScoreP2(parseInt(e.target.value || '0', 10))}
-            />
+            <label className={styles.formLabel}>{tt("ui.score.p.f3ba", "Score P2")}<InfoTip id="adminScore" /></label>
+            <input type="number" className={styles.formInput} value={scoreP2} onChange={e => setScoreP2(parseInt(e.target.value || '0', 10))} />
           </div>
         </div>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>Winner registration ID</label>
-          <input
-            className={styles.formInput}
-            value={winnerRegId}
-            onChange={(e) => setWinnerRegId(e.target.value)}
-            placeholder="Registration id of the winning side"
-          />
+          <label className={styles.formLabel}>{tt("ui.winner.registration.id.e256", "Winner registration ID")}<InfoTip id="adminWinnerRegId" /></label>
+          <input className={styles.formInput} value={winnerRegId} onChange={e => setWinnerRegId(e.target.value)} placeholder={tt("ui.registration.id.winning.side.2c12", "Registration id of the winning side")} />
         </div>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>Reason</label>
-          <textarea
-            className={styles.formInput}
-            rows={3}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason for the override (logged in audit)"
-          />
+          <label className={styles.formLabel}>{tt("ui.reason.f219", "Reason")}</label>
+          <textarea className={styles.formInput} rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder={tt("ui.reason.override.logged.audit.eaa9", "Reason for the override (logged in audit)")} />
         </div>
         <div className={styles.modalBtns}>
-          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>Cancel</button>
-          <button
-            className={`${shared.actBtn} ${shared.actApprove}`}
-            onClick={() => onSubmit({
-              match_id: matchId,
-              score_p1: scoreP1,
-              score_p2: scoreP2,
-              winner_registration_id: winnerRegId,
-              reason,
-            })}
-            disabled={loading || !canSubmit}
-          >
-            {loading ? 'Saving…' : 'Apply Override'}
+          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
+          <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => onSubmit({
+          match_id: matchId,
+          score_p1: scoreP1,
+          score_p2: scoreP2,
+          winner_registration_id: winnerRegId,
+          reason
+        })} disabled={loading || !canSubmit}>
+            {loading ? tx("Saving…") : tx("Apply Override")}
           </button>
         </div>
       </div>
-    </div>
-  )
+    </div>;
 }
-
-function DisqualifyModal({ tournament, onCancel, onSubmit, loading }) {
-  const [team, setTeam] = useState('')
-  const [reason, setReason] = useState('')
-  return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <p className={styles.modalTitle}>Disqualify Team</p>
+function DisqualifyModal({
+  tournament,
+  onCancel,
+  onSubmit,
+  loading
+}) {
+  const tx = useTx();
+  const tt = useT();
+  const [team, setTeam] = useState('');
+  const [reason, setReason] = useState('');
+  return <div className={styles.modalOverlay} onClick={onCancel}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <p className={styles.modalTitle}>{tt("ui.disqualify.team.9c85", "Disqualify Team")}</p>
         <p className={styles.modalSub}>
-          From tournament &ldquo;{tournament.name}&rdquo;.
+          {tt("ui.from.tournament.bd57", "From tournament “")}{tournament.name}&rdquo;.
         </p>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>Team Name</label>
-          <input
-            className={styles.formInput}
-            value={team}
-            onChange={(e) => setTeam(e.target.value)}
-            placeholder="e.g. Crimson Wolves"
-          />
+          <label className={styles.formLabel}>{tt("ui.team.name.5d4f", "Team Name")}<InfoTip id="adminDqTeam" /></label>
+          <input className={styles.formInput} value={team} onChange={e => setTeam(e.target.value)} placeholder={tt("ui.e.g.crimson.wolves.98c1", "e.g. Crimson Wolves")} />
         </div>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>Reason</label>
-          <textarea
-            className={styles.formInput}
-            rows={3}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason for disqualification"
-          />
+          <label className={styles.formLabel}>{tt("ui.reason.f219", "Reason")}</label>
+          <textarea className={styles.formInput} rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder={tt("ui.reason.disqualification.2336", "Reason for disqualification")} />
         </div>
         <div className={styles.modalBtns}>
-          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>Cancel</button>
-          <button
-            className={`${shared.actBtn} ${shared.actReject}`}
-            onClick={() => team.trim() && onSubmit(team)}
-            disabled={loading || !team.trim()}
-          >
-            {loading ? 'Submitting…' : 'Disqualify'}
+          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
+          <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => team.trim() && onSubmit(team)} disabled={loading || !team.trim()}>
+            {loading ? tx("Submitting…") : 'Disqualify'}
           </button>
         </div>
       </div>
-    </div>
-  )
+    </div>;
 }
-
 export default function AdminTournamentsPage() {
-  return (
-    <AdminToastProvider>
+  return <AdminToastProvider>
       <TournamentsInner />
-    </AdminToastProvider>
-  )
+    </AdminToastProvider>;
 }

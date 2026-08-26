@@ -18,7 +18,7 @@
   justify-content: center;
 }
 
-.pageHeader h1 {
+.pageHeader .wordmark {
   color: var(--v-ent-red);
 }
 
@@ -42,7 +42,7 @@
   justify-content: center;
 }
 
-.formHeaderH3 {
+.formHeading {
   margin-bottom: 0.75rem;
   text-align: center;
   padding-left: 1rem;
@@ -79,14 +79,26 @@
   gap: 0.5rem;
 }
 
+/* The six boxes somebody types their reset code into.
+   The text was `black` on a `#1a1b1f` field, which is black on almost-black:
+   the digits were there and could not be read, so the only way to check what
+   you had typed was to delete it and start again. */
 .pinInputStyle {
   width: 3rem;
   height: 3rem;
   font-size: 2rem;
+  font-weight: var(--fw-semi-bold);
   text-align: center;
-  background-color: #1a1b1f;
-  border-radius: 5px;
-  color: black;
+  background-color: #2a2b30;
+  border-radius: 8px;
+  color: var(--primary-bg);
+  caret-color: var(--v-ent-red);
+}
+
+.pinInputStyle:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+  background-color: #303136;
 }
 
 .resetForm {

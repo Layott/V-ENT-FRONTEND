@@ -10,9 +10,11 @@ import styles from './edit-team-profile-info.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 // Improved utility function to parse interests from backend format
-const parseInterests = (interestsString) => {
+const parseInterests = interestsString => {
   if (!interestsString) return [];
   console.log("Parsing interests string:", interestsString);
   try {
@@ -20,7 +22,7 @@ const parseInterests = (interestsString) => {
     if (Array.isArray(interestsString)) {
       return interestsString;
     }
-    
+
     // Parse string representation
     const parsed = JSON.parse(interestsString);
     console.log("Parsed interests:", parsed);
@@ -30,10 +32,14 @@ const parseInterests = (interestsString) => {
     return [];
   }
 };
-
 const EditTeamProfileInfo = () => {
+  const tx = useTx();
+  const tt = useT();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const {
+    data: session,
+    status
+  } = useSession();
   const [profileData, setProfileData] = useState({
     profile_pic: null,
     banner: null,
@@ -41,9 +47,8 @@ const EditTeamProfileInfo = () => {
     fullname: '',
     description: '',
     country: '',
-    interests: [],
+    interests: []
   });
-  
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -54,20 +59,20 @@ const EditTeamProfileInfo = () => {
   useEffect(() => {
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
-      setProfileData((prevData) => ({
+      setProfileData(prevData => ({
         ...prevData,
-        login_session_token: sessionToken,
+        login_session_token: sessionToken
       }));
-      
+
       // Load initial profile data if not already loaded
       if (!initialLoaded) {
         fetchUserProfile(sessionToken);
       }
     }
   }, [session, status, initialLoaded]);
-  
+
   // Function to fetch user profile data including interests
-  const fetchUserProfile = async (sessionToken) => {
+  const fetchUserProfile = async sessionToken => {
     try {
       console.log("Fetching user profile...");
       const response = await fetch(VENT.GET_PROFILE, {
@@ -77,20 +82,19 @@ const EditTeamProfileInfo = () => {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0'
-        },
+        }
       });
-      
       if (response.ok) {
         const data = await response.json();
         console.log("PROFILE - Received raw profile data:", data);
-        
+
         // Parse interests from the backend format
         let parsedInterests = [];
         if (data.data && data.data.interests) {
           parsedInterests = parseInterests(data.data.interests);
           console.log("PROFILE - Parsed interests from profile:", parsedInterests);
         }
-        
+
         // Update profile data with fetched data
         setProfileData(prevData => ({
           ...prevData,
@@ -98,60 +102,55 @@ const EditTeamProfileInfo = () => {
           fullname: data.data?.fullname || '',
           description: data.data?.description || '',
           country: data.data?.country || '',
-          interests: parsedInterests,
+          interests: parsedInterests
         }));
-        
         setInitialLoaded(true);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
   };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData((prevData) => ({
+  const handleInputChange = e => {
+    const {
+      name,
+      value
+    } = e.target;
+    setProfileData(prevData => ({
       ...prevData,
-      [name]: value,
+      [name]: value
     }));
   };
-
-  const handleInterestsChange = (newInterests) => {
+  const handleInterestsChange = newInterests => {
     console.log("Interests changed to:", newInterests);
-    setProfileData((prevData) => ({
+    setProfileData(prevData => ({
       ...prevData,
-      interests: newInterests,
+      interests: newInterests
     }));
   };
-
-  const handleProfilePicChange = (newProfilePic) => {
-    setProfileData((prevData) => ({
+  const handleProfilePicChange = newProfilePic => {
+    setProfileData(prevData => ({
       ...prevData,
-      profile_pic: newProfilePic,
+      profile_pic: newProfilePic
     }));
   };
-
-  const handleBannerChange = (newBanner) => {
-    setProfileData((prevData) => ({
+  const handleBannerChange = newBanner => {
+    setProfileData(prevData => ({
       ...prevData,
-      banner: newBanner,
+      banner: newBanner
     }));
   };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
-
       try {
         console.log("SUBMIT - Current interests before sending to backend:", profileData.interests);
-        
+
         // APPROACH 1: Try with direct URL parameters
         // Create query string for interests
         const interestsQuery = encodeURIComponent(JSON.stringify(profileData.interests));
-        
+
         // Create the request data
         const formData = new FormData();
         formData.append('login_session_token', session.user.sessionToken);
@@ -161,31 +160,30 @@ const EditTeamProfileInfo = () => {
         formData.append('fullname', profileData.fullname || '');
         formData.append('description', profileData.description || '');
         formData.append('country', profileData.country || '');
-        
+
         // Try a direct string approach
         const stringifiedInterests = JSON.stringify(profileData.interests);
         console.log("SUBMIT - Stringified interests being sent:", stringifiedInterests);
         formData.append('interests', stringifiedInterests);
-        
+
         // Also try a more explicit approach
         formData.append('interests_array', stringifiedInterests);
-        
+
         // Debug the interests data
         console.log("SUBMIT - Interests array length:", profileData.interests.length);
         console.log("SUBMIT - Interests array content type:", typeof profileData.interests);
         console.log("SUBMIT - Stringified interests type:", typeof stringifiedInterests);
-        
+
         // Debug FormData entries
         console.log("SUBMIT - FormData entries:");
         for (let pair of formData.entries()) {
           console.log(pair[0] + ': ' + pair[1]);
         }
-        
+
         // Create URL with query params for interests
         const urlWithParams = `${VENT.EDIT_PROFILE}?interests_query=${interestsQuery}`;
-        
         console.log("SUBMIT - Sending profile update to:", VENT.EDIT_PROFILE);
-        
+
         // Also prepare JSON for alternative approach
         const plainObj = {
           login_session_token: session.user.sessionToken,
@@ -196,7 +194,7 @@ const EditTeamProfileInfo = () => {
           interests: profileData.interests // Direct array
         };
         console.log("SUBMIT - Plain object alternatives:", plainObj);
-        
+
         // Log URL with params approach
         console.log("SUBMIT - URL with interests param:", urlWithParams);
 
@@ -209,45 +207,42 @@ const EditTeamProfileInfo = () => {
             'Pragma': 'no-cache',
             'Expires': '0'
           },
-          body: formData,
+          body: formData
         });
-
         const data = await response.json();
         console.log("SUBMIT - Backend response:", data);
-
         if (response.ok) {
           // CRITICAL: Verify if the interests were actually updated
           if (data && data.data && data.data.interests) {
             console.log("Updated profile with interests:", data.data.interests);
-            
+
             // Check if returned interests match what we sent
             const sentInterests = JSON.stringify(profileData.interests);
             const receivedInterests = JSON.stringify(data.data.interests);
-            
             if (sentInterests !== receivedInterests) {
               console.error("WARNING: Interests mismatch between sent and received data!");
               console.error(`Sent: ${sentInterests}, Received: ${receivedInterests}`);
             }
           }
-          
+
           // CRITICAL: After successful update, force a fresh fetch of profile data
           await fetchUserProfile(sessionToken);
-          
+
           // Delay navigation slightly to ensure fetch completes
           setTimeout(() => {
             router.push('/user-profile');
-            setSnackbarMessage(data.message || 'Profile updated successfully!');
+            setSnackbarMessage(data.message || tt("api.profileUpdatedSuccessfully", "Profile updated successfully!"));
             setSnackbarType('success');
             setOpen(true);
           }, 1000);
         } else {
-          setSnackbarMessage(data.message || 'Failed to update profile.');
+          setSnackbarMessage(data.message || tt("api.failedToUpdateProfile", "Failed to update profile."));
           setSnackbarType('error');
           setOpen(true);
         }
       } catch (error) {
         console.error('Error updating profile:', error);
-        setSnackbarMessage('An error occurred while updating your profile.');
+        setSnackbarMessage(tt("msg.anErrorOccurredWhileUpdating", "An error occurred while updating your profile."));
         setSnackbarType('error');
         setOpen(true);
       } finally {
@@ -255,51 +250,33 @@ const EditTeamProfileInfo = () => {
       }
     }
   };
-
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
-
-  return (
-    <div>
+  return <div>
       <form className={styles.editProfileInfoContainer} onSubmit={handleSubmit}>
         <div className={styles.editProfilePictureBannerContainer}>
-          <h3>Profile Picture & Banner</h3>
+          <h3>{tt("ui.profile.picture.banner.ec34", "Profile Picture & Banner")}</h3>
           <div className={styles.profilePictureBannerContainer}>
             <EditProfileImageAvatar onChange={handleProfilePicChange} />
             <EditProfileBanner onChange={handleBannerChange} />
           </div>
         </div>
-        <EditUserProfileDetails
-          fullname={profileData.fullname}
-          username={profileData.username}
-          description={profileData.description}
-          country={profileData.country}
-          state={profileData.state}
-          handleInputChange={handleInputChange}
-        />
+        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} description={tx(profileData.description)} country={profileData.country} state={profileData.state} handleInputChange={handleInputChange} />
 
         <EditTeamProfileCoreGame />
 
-        <EditInterests
-          selectedInterests={profileData.interests}
-          handleInterestsChange={handleInterestsChange}
-        />
+        <EditInterests selectedInterests={profileData.interests} handleInterestsChange={handleInterestsChange} />
         <div className={styles.buttonContainer}>
         <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
+            {loading ? <CircularProgress size={24} sx={{
+            color: 'white'
+          }} /> : tx("Save Changes")}
           </button>
         </div>
       </form>
 
-      <MessageSnackbar
-        open={open}
-        handleClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        type={snackbarType}
-      />
-    </div>
-  );
+      <MessageSnackbar open={open} handleClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
+    </div>;
 };
-
 export default EditTeamProfileInfo;

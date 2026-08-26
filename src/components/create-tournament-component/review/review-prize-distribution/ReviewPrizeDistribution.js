@@ -1,23 +1,25 @@
+'use client';
+
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { prizeRows } from '../reviewFields';
 import styles from '../review-basic-info/review-basic-info.module.css';
 
-const ReviewPrizeDistribution = () => {
-  const infoSections = [
-    { title: "Format", content: "Distributed" },
-    { title: "1st Place (Winner)", content: "100 Vent Coins" },
-    { title: "2nd Place", content: "80 Vent Coins" },
-    { title: "3rd Place", content: "50 Vent Coins" },
-    { title: "4th Place", content: "30 Vent Coins" },
-  ];
+// The prize table as entered. Previously a fixed 100/80/50/30 split that bore
+// no relation to what had been typed on the prize step.
+
+const ReviewPrizeDistribution = ({ formData = {} }) => {
+  const { t } = useLanguage();
+  const rows = prizeRows(t, formData);
 
   return (
     <>
-      {infoSections.map((section, index) => (
-        <div key={index} className={styles.infoContainer}>
+      {rows.map(([label, value], index) => (
+        <div key={`${label}-${index}`} className={styles.infoContainer}>
           <div className={styles.leftSideContainer}>
-            <h3>{section.title}</h3>
+            <h3>{label}</h3>
           </div>
           <div className={styles.rightSideContainer}>
-            <p>{section.content}</p>
+            <p>{value}</p>
           </div>
         </div>
       ))}

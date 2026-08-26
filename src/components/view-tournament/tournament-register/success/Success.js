@@ -1,8 +1,12 @@
+'use client';
+
 // SuccessModal.js
+import { useT } from '@/i18n/LanguageProvider';
 import styles from './success.module.css';
 import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 
 const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
+  const tt = useT();
   const handleClose = () => {
     if (onClose) {
       onClose();
@@ -24,14 +28,14 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
           </div>
 
           {/* Success Message */}
-          <h2 className={styles.successTitle}>Registration Successful!</h2>
+          <h2 className={styles.successTitle}>{tt('register.success', 'You are registered')}</h2>
           <p className={styles.successMessage}>
-            You have successfully registered for <strong>{tournament?.tournament_title || tournament?.name || 'the tournament'}</strong>
+            {tt("register.successFor", "You have successfully registered for")} <strong>{tournament?.tournament_title || tournament?.name || 'the tournament'}</strong>
           </p>
 
           {/* Registration Details */}
           <div className={styles.detailsCard}>
-            <h3 className={styles.detailsTitle}>Registration Details</h3>
+            <h3 className={styles.detailsTitle}>{tt('register.details', 'Your registration')}</h3>
 
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Tournament:</span>
@@ -79,8 +83,8 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
           <div className={styles.nextSteps}>
             <h4 className={styles.nextStepsTitle}>What&apos;s Next?</h4>
             <ul className={styles.nextStepsList}>
-              <li>A confirmation with your slot details is on its way to your email</li>
-              <li>Check in opens 30 minutes before your first match</li>
+              <li>{tt('register.emailOnWay', 'A confirmation with your slot details is on its way to your email')}</li>
+              <li>{tt('register.checkInNote', 'Check-in opens 30 minutes before your first match')}</li>
               <li>
                 Tournament starts on {(() => {
                   const raw = tournament?.start_date_and_time || tournament?.start_date;
@@ -94,7 +98,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
 
         <div className={styles.modalFooter}>
           <button className={styles.closeButton} onClick={handleClose}>
-            Done
+            {tt("register.done", "Done")}
           </button>
           <button className={styles.viewTournamentButton} onClick={() => {
             // Navigate to tournament details
@@ -102,7 +106,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
               ? `/tournaments/${tournament.slug || tournament.id}`
               : '/tournaments';
           }}>
-            View Tournament
+            {tt("register.viewTournament", "View Tournament")}
           </button>
         </div>
       </div>

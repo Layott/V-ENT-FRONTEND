@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import Image from 'next/image'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import { brandLogos } from './BrandLogosList'
@@ -6,13 +9,14 @@ import observerStyle from '@/styles/intersection/intersection.module.css'
 import styles from './landing-brands.module.css'
 
 const LandingBrands = () => {
+  const tt = useT();
     const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
 
   return (
     <div className={`${landingStyles.brandsContainer} ${styles.brandsContainer}`}>
         <div className={`${landingStyles.innerBrandsContainer} ${styles.innerBrandsContainer}`}>
             <div className={styles.brandHeader}>
-                <h1>Brands That Trust Us</h1>
+                <h2>{tt('landing.brands', 'Brands that work with us')}</h2>
             </div>
 
             <div className={styles.brandsLogoContainer}>

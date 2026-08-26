@@ -228,3 +228,20 @@
   .formFooter { flex-direction: column-reverse; }
   .formFooter .btn { width: 100%; }
 }
+
+/* The page's own name. Level one, and visible - a title only a screen reader
+   can find is a title nobody notices has gone stale. */
+.pageTitle {
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--primary-bg);
+  margin: 0 0 1.25rem;
+  line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: var(--mobile-h3-size);
+    margin-bottom: 1rem;
+  }
+}

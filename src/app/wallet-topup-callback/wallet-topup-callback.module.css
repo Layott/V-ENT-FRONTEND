@@ -71,3 +71,18 @@
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
 }
+
+/* The page's own name, above whichever outcome is being reported. */
+.pageTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-extra-bold);
+  color: var(--primary-bg);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: var(--mobile-h4-size);
+  }
+}

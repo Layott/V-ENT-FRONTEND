@@ -3,8 +3,13 @@ import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import Sponsor from "./sponsors/Sponsors";
 import WebSocialLink from "./web-social-links/WebSocialLink";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
-
-const SponsorsLinks = ({ formData, setFormData, setSelectedTab }) => {
+import { useT } from '@/i18n/LanguageProvider';
+const SponsorsLinks = ({
+  formData,
+  setFormData,
+  setSelectedTab
+}) => {
+  const tt = useT();
   // Load initial data from localStorage only if formData is empty
   useEffect(() => {
     const savedData = localStorage.getItem('createTournamentData');
@@ -15,23 +20,22 @@ const SponsorsLinks = ({ formData, setFormData, setSelectedTab }) => {
 
   // Function to handle form data updates and localStorage sync
   const updateFormData = (field, value) => {
-    const updatedData = { ...formData, [field]: value };
+    const updatedData = {
+      ...formData,
+      [field]: value
+    };
     setFormData(updatedData);
     localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
   };
-
   const handleProceed = () => {
-    setSelectedTab((prevTab) => prevTab + 1);
+    setSelectedTab(prevTab => prevTab + 1);
   };
-
   const handleBack = () => {
-    setSelectedTab((prevTab) => prevTab - 1);
+    setSelectedTab(prevTab => prevTab - 1);
   };
-
-  return (
-    <div className={createTournamentStyles.generalTabContainer}>
+  return <div className={createTournamentStyles.generalTabContainer}>
       <header>
-        <h1>Sponsors & Links</h1>
+        <h2>{tt("ui.sponsors.links.bb0a", "Sponsors & Links")}</h2>
       </header>
 
       <Sponsor formData={formData} updateFormData={updateFormData} />
@@ -39,33 +43,22 @@ const SponsorsLinks = ({ formData, setFormData, setSelectedTab }) => {
       <WebSocialLink formData={formData} updateFormData={updateFormData} />
 
       <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={() => alert('Draft saved')}
-        >
-          Save Draft
+        <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={() => alert('Draft saved')}>
+          {tt("ui.save.draft.cc13", "Save Draft")}
         </button>
 
         <div className={createTournamentStyles.backAndProceedContainer}>
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-            onClick={handleBack}
-          >
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`} onClick={handleBack}>
             <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
+            {tt("ui.back.b52b", "Back")}
           </button>
 
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
-            onClick={handleProceed}
-          >
-            Proceed
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`} onClick={handleProceed}>
+            {tt("ui.proceed.02ed", "Proceed")}
             <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SponsorsLinks;

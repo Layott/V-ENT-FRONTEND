@@ -1,4 +1,6 @@
 "use client";
+
+import { mediaUrl } from '@/lib/mediaUrl';
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
@@ -7,47 +9,35 @@ import { IoLocationOutline } from "react-icons/io5";
 import Image from "next/image";
 import profileImageBig from "@/images/signed_in_user_big.webp";
 import styles from "./user-profile-bio.module.css";
-
+import { useT } from '@/i18n/LanguageProvider';
 const UserProfileBio = ({
   fullName,
   username,
   profilePicture,
   bio,
   country,
-  
-  onProfilePictureUpdate,
+  onProfilePictureUpdate
 }) => {
-  const { data: session } = useSession();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [displayedImage, setDisplayedImage] = useState(null);
   const [imageError, setImageError] = useState(false);
-
-  
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
-
-  
-  const addCacheBusting = useCallback((url) => {
+  const addCacheBusting = useCallback(url => {
     if (!url) return null;
     const cacheBuster = `t=${new Date().getTime()}`;
-    return url.includes("?")
-      ? `${url}&${cacheBuster}`
-      : `${url}?${cacheBuster}`;
+    return url.includes("?") ? `${url}&${cacheBuster}` : `${url}?${cacheBuster}`;
   }, []);
-
-  
   useEffect(() => {
-    
-    const getAbsoluteUrl = (url) => {
+    const getAbsoluteUrl = url => {
       if (!url) return null;
-      return url.startsWith("http")
-        ? url
-        : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+      return url.startsWith("http") ? url : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
     };
-
-    
     const loadProfileImage = () => {
-      
       if (profilePicture) {
         const absoluteUrl = getAbsoluteUrl(profilePicture);
         const cachedUrl = addCacheBusting(absoluteUrl);
@@ -74,54 +64,29 @@ const UserProfileBio = ({
       } catch (error) {
         console.error("Failed to load profile from localStorage:", error);
       }
-
-      
       console.log("No valid profile picture found, using fallback");
       setDisplayedImage(null);
     };
-
     loadProfileImage();
   }, [profilePicture, baseUrl, addCacheBusting]);
-
-  const handleProfileImageUploader = async (event) => {
+  const handleProfileImageUploader = async event => {
     const file = event.target.files[0];
     if (!file) return;
-  
-    
     let localPreviewUrl = null;
-
-    
-    const getAbsoluteUrl = (url) => {
+    const getAbsoluteUrl = url => {
       if (!url) return null;
-      return url.startsWith("http")
-        ? url
-        : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+      return url.startsWith("http") ? url : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
     };
-  
     try {
-      
       setIsUploading(true);
-  
-      
       localPreviewUrl = URL.createObjectURL(file);
       setDisplayedImage(localPreviewUrl);
-  
-      
-      if (
-        onProfilePictureUpdate &&
-        typeof onProfilePictureUpdate === "function"
-      ) {
+      if (onProfilePictureUpdate && typeof onProfilePictureUpdate === "function") {
         const uploadedUrl = await onProfilePictureUpdate(file);
-  
-        
         if (uploadedUrl) {
           console.log("Profile picture uploaded successfully:", uploadedUrl);
-  
-          
           const cachedUrl = addCacheBusting(uploadedUrl);
           setDisplayedImage(cachedUrl);
-  
-          
           try {
             const existingData = localStorage.getItem("userProfile") || "{}";
             const userData = JSON.parse(existingData);
@@ -130,8 +95,6 @@ const UserProfileBio = ({
             localStorage.setItem("userProfile", JSON.stringify(userData));
             window.dispatchEvent(new Event('vent:profile-updated'));
             console.log("Updated profile picture in localStorage");
-  
-            
             localStorage.setItem("userProfilePicture", uploadedUrl);
           } catch (error) {
             console.error("Failed to save profile to localStorage:", error);
@@ -145,59 +108,33 @@ const UserProfileBio = ({
       setImageError(true);
     } finally {
       setIsUploading(false);
-      
       if (localPreviewUrl) {
         URL.revokeObjectURL(localPreviewUrl);
       }
     }
   };
-
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
   };
-
-  return (
-    <div className={styles.profileBioContainer}>
+  return <div className={styles.profileBioContainer}>
       <div className={styles.profileBioHeader}>
         <div className={styles.profileBioInfo}>
           <div className={styles.profileImageContainer}>
             {/* Use the displayed image if available, otherwise use the fallback */}
-            <Image
-              src={displayedImage || profileImageBig}
-              alt="Profile Image"
-              width={100}
-              height={100}
-              onError={(e) => {
-                console.error("Image loading error:", e);
-                setImageError(true);
-                setDisplayedImage(null); 
-              }}
-              
-              priority
-              
-              key={displayedImage || "fallback"}
-            />
+            <Image src={mediaUrl(displayedImage || profileImageBig)} alt={tt("ui.profile.image.14dc", "Profile Image")} width={100} height={100} onError={e => {
+            console.error("Image loading error:", e);
+            setImageError(true);
+            setDisplayedImage(null);
+          }} priority key={displayedImage || "fallback"} />
             
 
             <div className={styles.profileImageUpload}>
-              <label
-                htmlFor="profileImageUpload"
-                className={styles.profileImageUploadLabel}
-              >
+              <label htmlFor="profileImageUpload" className={styles.profileImageUploadLabel}>
                 <FiCamera className={styles.uploadIcon} />
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleProfileImageUploader}
-                id="profileImageUpload"
-                className={styles.uploadInput}
-                disabled={isUploading}
-              />
+              <input type="file" accept="image/*" onChange={handleProfileImageUploader} id="profileImageUpload" className={styles.uploadInput} disabled={isUploading} />
             </div>
-            {isUploading && (
-              <div className={styles.uploadingIndicator}>Uploading...</div>
-            )}
+            {isUploading && <div className={styles.uploadingIndicator}>{tt("ui.uploading.070e", "Uploading...")}</div>}
           </div>
           <div className={styles.profileDetailsContainer}>
             <div className={styles.profileDetails}>
@@ -214,13 +151,9 @@ const UserProfileBio = ({
             </div>
 
             <div className={styles.profileEditButtonContainer}>
-              <Link
-                href={"/edit-user-profile"}
-                onClick={toggleEditMode}
-                className={styles.editButtonLink}
-              >
+              <Link href={"/edit-user-profile"} onClick={toggleEditMode} className={styles.editButtonLink}>
                 <FiEdit3 className={styles.editIcon} />
-                Edit Profile
+                {tt("ui.edit.profile.cd28", "Edit Profile")}
               </Link>
             </div>
           </div>
@@ -230,8 +163,6 @@ const UserProfileBio = ({
       <div className={styles.profileDescription}>
         <p className={styles.bioParagraph}>{bio}</p>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default UserProfileBio;

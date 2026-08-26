@@ -121,3 +121,18 @@
 
   color: var(--primary-bg);
 }
+
+/* The page's name for readers that work from structure. There is no room for
+   it in a full-bleed wizard, and inventing a header band for it would push the
+   first step below the fold on a phone. Not display:none - that would hide it
+   from the readers it exists for. */
+.srOnlyTitle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

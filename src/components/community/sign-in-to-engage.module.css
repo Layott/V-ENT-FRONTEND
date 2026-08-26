@@ -1,0 +1,44 @@
+/* The prompt that stands where a write control would be for a signed-in
+   reader. A filled surface rather than an outlined box, matching every other
+   empty state on the platform. */
+.prompt {
+  background-color: #212225;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin: 0 0 1.25rem;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: var(--fs-p-size-desktop);
+  line-height: 1.55;
+}
+
+.link {
+  color: var(--v-ent-red);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--v-ent-light-red);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Beside a control rather than in place of one: a like button, a join button. */
+.inline {
+  display: inline-block;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+}
+
+@media (max-width: 768px) {
+  .prompt {
+    font-size: var(--fs-p-size-mobile);
+    padding: 0.875rem 1rem;
+  }
+}

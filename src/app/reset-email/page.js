@@ -1,70 +1,64 @@
 "use client";
 
-import { useState, useRef, useEffect, } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
-import AuthHeader from '@/components/auth-header/AuthHeader'
+import AuthHeader from '@/components/auth-header/AuthHeader';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
-import generalStyles from "@/styles/auth/auth.module.css"
-
+import generalStyles from "@/styles/auth/auth.module.css";
+import { useT } from '@/i18n/LanguageProvider';
 const ResetEmail = () => {
+  const tt = useT();
   const router = useRouter();
   const [values, setValues] = useState(['', '', '', '', '', '']);
   const inputsRef = useRef([]);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
-
   const handleChange = (e, index) => {
     const val = e.target.value;
     if (!/^\d?$/.test(val)) return;
-
     const newValues = [...values];
     newValues[index] = val;
     setValues(newValues);
-
     if (val && index < 5) {
       inputsRef.current[index + 1].focus();
     }
   };
-
   const handleKeyDown = (e, index) => {
     if (e.key === 'Backspace' && !values[index] && index > 0) {
       inputsRef.current[index - 1].focus();
     }
   };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const token = values.join('');
     const email = typeof window !== 'undefined' ? localStorage.getItem('forgotPasswordEmail') : '';
-
     if (!email) {
-      setSnackbarMessage('Email not found. Please try again from the Forgot Password page.');
+      setSnackbarMessage(tt("msg.emailNotFoundPleaseTry", "Email not found. Please try again from the Forgot Password page."));
       setSnackbarType('error');
       setOpen(true);
       return;
     }
-
     if (token.length !== 6) {
-      setSnackbarMessage('Please enter a 6-digit token');
+      setSnackbarMessage(tt("msg.pleaseEnterADigitToken", "Please enter a 6-digit token"));
       setSnackbarType('error');
       setOpen(true);
       return;
     }
-
     try {
       const response = await fetch(VENT.FORGOT_PASSWORD_TOKEN, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, token }),
+        body: JSON.stringify({
+          email,
+          token
+        })
       });
-  
       const data = await response.json();
-  
       if (response.ok) {
         // The ticket is what proves, on the next screen, that this code was
         // entered correctly. Without it the server refuses the change, so a
@@ -72,16 +66,16 @@ const ResetEmail = () => {
         if (data.ticket) {
           localStorage.setItem('resetTicket', data.ticket);
         }
-        setSnackbarMessage('Token verified successfully');
+        setSnackbarMessage(tt("msg.tokenVerifiedSuccessfully", "Token verified successfully"));
         setSnackbarType('success');
         setOpen(true);
       } else {
-        setSnackbarMessage(data.message || 'Invalid token');
+        setSnackbarMessage(data.message || tt("api.invalidToken", "Invalid token"));
         setSnackbarType('error');
         setOpen(true);
       }
     } catch (error) {
-      setSnackbarMessage('Something went wrong. Please try again.');
+      setSnackbarMessage(tt("msg.somethingWentWrongPleaseTry", "Something went wrong. Please try again."));
       setSnackbarType('error');
       setOpen(true);
     }
@@ -90,21 +84,16 @@ const ResetEmail = () => {
     // setSnackbarType('success');
     // setOpen(true);
   };
-
   useEffect(() => {
-  if (open && snackbarType === 'success') {
-    const timer = setTimeout(() => {
-      router.push('/reset-password');
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }
-}, [open, snackbarType, router]);
-
+    if (open && snackbarType === 'success') {
+      const timer = setTimeout(() => {
+        router.push('/reset-password');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [open, snackbarType, router]);
   const handleCloseSnackbar = () => setOpen(false);
-
-    return (
-    <div className={generalStyles.pageContainer}>
+  return <div className={generalStyles.pageContainer}>
         <header className={generalStyles.pageHeader}>
             <AuthHeader />
         </header>
@@ -112,9 +101,9 @@ const ResetEmail = () => {
         <main className={generalStyles.mainContainer}>
           <div className={generalStyles.formContainer}>
             <section className={generalStyles.formHeader}>
-            <h3 className={generalStyles.formHeaderH3}>Check your email</h3>
-            <p>We just sent you a link to your email address.</p>
-            <p>Enter the 6-digit code to reset your password</p>
+            <h1 className={generalStyles.formHeading}>{tt("ui.check.email.fab9", "Check your email")}</h1>
+            <p>{tt("ui.just.sent.link.email.3b4b", "We just sent you a link to your email address.")}</p>
+            <p>{tt("ui.enter.digit.code.reset.f571", "Enter the 6-digit code to reset your password")}</p>
             </section>
             {/* method="post" is not there to be used - onSubmit handles the
                 request. It is there because a form defaults to GET, and a
@@ -122,50 +111,27 @@ const ResetEmail = () => {
                 typed into the URL. On these pages that means a password in the
                 address bar, in history, and in any referrer. */}
 
-          <form
-            method="post" className={generalStyles.resetForm} onSubmit={handleSubmit}>
+          <form method="post" className={generalStyles.resetForm} onSubmit={handleSubmit}>
           <div className={generalStyles.pinForm}>
-            {values.map((val, i) => (
-              <input
-                className={generalStyles.pinInputStyle}
-                key={i}
-                type="text"
-                inputMode="numeric"
-                maxLength="1"
-                value={val}
-                onChange={(e) => handleChange(e, i)}
-                onKeyDown={(e) => handleKeyDown(e, i)}
-                ref={(el) => (inputsRef.current[i] = el)}
-              />
-            ))}
+            {values.map((val, i) => <input className={generalStyles.pinInputStyle} key={i} type="text" inputMode="numeric" maxLength="1" value={val} onChange={e => handleChange(e, i)} onKeyDown={e => handleKeyDown(e, i)} ref={el => inputsRef.current[i] = el} />)}
           </div>
           <br />
-          <button
-            type="submit"
-            className={`btn redBTN ${generalStyles.formBTN}`}
-          >
-            Submit
+          <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
+            {tt("ui.submit.2dac", "Submit")}
           </button>
 
           </form>
               <div className={generalStyles.formHelperContainer}>
-                  <p>Didn&apos;t get the code?&nbsp;<Link href={'/forgot-password'}>Resend Code</Link></p>
+                  <p>{tt("ui.didn't.get.code.7ee6", "Didn't get the code?")} <Link href={'/forgot-password'}>{tt("ui.resend.code.a57d", "Resend Code")}</Link></p>
               </div>
 
               <div className={generalStyles.formHelperContainer}>
-                  <p>Remember password?&nbsp;<Link href={'/login'}>Login</Link></p>
+                  <p>{tt("ui.remember.password.62ad", "Remember password?")} <Link href={'/login'}>{tt("ui.login.4e5a", "Login")}</Link></p>
               </div>
           </div>
         </main>
 
-        <MessageSnackbar
-                open={open}
-                handleClose={handleCloseSnackbar}
-                message={snackbarMessage}
-                type={snackbarType}
-            />
-    </div>
-  )
-}
-
-export default ResetEmail
+        <MessageSnackbar open={open} handleClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
+    </div>;
+};
+export default ResetEmail;

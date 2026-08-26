@@ -1,3 +1,7 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
+import { useLanguage } from '@/i18n/LanguageProvider';
 import { IoMdArrowBack } from "react-icons/io";
 import ReviewHeaderComponent from "@/components/create-tournament-component/review/review-header-component/ReviewHeaderComponent";
 import ReviewBasicInfo from "@/components/create-tournament-component/review/review-basic-info/ReviewBasicInfo";
@@ -20,6 +24,8 @@ import styles from './review.module.css'
 // flash "incomplete" on mount (stale until its own effect fired) instead of
 // reflecting the always-current parent state immediately.
 const Review = ({ formData = {}, setSelectedTab, handleSubmit, isSavingDraft, isPublishing }) => {
+  const tt = useT();
+  const { t } = useLanguage();
   const basicInfoResult = validateBasicInfo(formData);
   const formatParticipantsResult = validateFormatParticipants(formData);
   const prizeDistributionResult = validatePrizeDistribution(formData);
@@ -33,48 +39,48 @@ const Review = ({ formData = {}, setSelectedTab, handleSubmit, isSavingDraft, is
   return (
     <div className={`${createTournamentStyles.generalTabContainer} ${styles.generalTabContainer}`}>
       <header>
-        <h1>Review</h1>
+        <h2>{t("review.heading", "Review")}</h2>
       </header>
 
       <ReviewHeaderComponent
-        title="Basic Info"
+        title={t("review.step.basic", "Basic info")}
         isCompleted={basicInfoResult.isValid}
         editTabIndex={1}
         setSelectedTab={setSelectedTab}
       >
-        <ReviewBasicInfo />
+        <ReviewBasicInfo formData={formData} />
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Format & Participants"
+        title={t("review.step.format", "Format and participants")}
         isCompleted={formatParticipantsResult.isValid}
         editTabIndex={2}
         setSelectedTab={setSelectedTab}
       >
-        <ReviewFormatParticipants />
+        <ReviewFormatParticipants formData={formData} />
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Prize Distribution"
+        title={t("review.step.prize", "Prize distribution")}
         isCompleted={prizeDistributionResult.isValid}
         editTabIndex={3}
         setSelectedTab={setSelectedTab}
       >
-        <ReviewPrizeDistribution />
+        <ReviewPrizeDistribution formData={formData} />
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Sponsors & Links"
+        title={t("review.step.sponsors", "Sponsors and links")}
         isCompleted={sponsorsLinksResult.isValid}
         editTabIndex={4}
         setSelectedTab={setSelectedTab}
       >
-        <ReviewSponsorLinks />
+        <ReviewSponsorLinks formData={formData} />
       </ReviewHeaderComponent>
 
       {!allValid && (
         <div className={styles.errorMessage} role="alert">
-          <p>Fix these before publishing:</p>
+          <p>{t("review.fixFirst", "Fix these before publishing:")}</p>
           <ul>
             {Object.entries(stepErrors).map(([step, stepInfo]) => (
               <li key={step}>
@@ -109,7 +115,7 @@ const Review = ({ formData = {}, setSelectedTab, handleSubmit, isSavingDraft, is
             disabled={isSavingDraft || isPublishing}
           >
             <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
+            {tt("review.back", "Back")}
           </button>
 
           <button

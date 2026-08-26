@@ -1,3 +1,4 @@
+import { mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image';
 import { FiCamera } from 'react-icons/fi';
 import teamProfileBanner from '@/images/team_profile_banner.webp'
@@ -28,7 +29,7 @@ const TeamProfileBanner = () => {
             />
         </div>
         <Image
-            src={teamProfileBanner}
+            src={mediaUrl(teamProfileBanner)}
             alt='Profile Banner Image'
         />
   </div>

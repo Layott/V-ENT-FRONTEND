@@ -1,47 +1,97 @@
+import { Fraunces } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
+import JsonLd from "@/components/seo/JsonLd";
+import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
+import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
+import { sectionCopy } from "@/lib/seoCopy";
 
-export const metadata = {
-  title: "V-ENT (Vermillion Enterprise) - Elevating the Gaming and Anime Community",
-  description: "Vermillion Enterprise (V-ENT) is revolutionizing the gaming and anime world by providing a comprehensive platform for gamers, anime enthusiasts, and creative minds. With automated esports analytics, seamless event management, and connections to industry gigs, V-ENT is the future of interactive entertainment.",
-  keywords: "Vermillion Enterprise, V-ENT, esports, gaming, anime, event management, esports analytics, streaming software, gaming community, anime events, industry jobs, creative minds",
-  author: "Vermillion Enterprise Team",
-  charset: "UTF-8"
-};
-export const viewport = {
-  width: "device-width",
-  initialScale: 1
+// Metadata is declared, not hand-written into <head>.
+//
+// This file used to do both: export a `metadata` object AND render <title> and
+// <meta name="description"> by hand inside <head>. Next emits the exported
+// object as well, so every page shipped two titles and two descriptions, and
+// which one a crawler honoured was up to the crawler. Everything below is
+// declared once and Next renders it.
+//
+// `metadataBase` is what makes every relative image and canonical resolve to an
+// absolute URL. Without it Next warns and Open Graph images silently break in
+// every preview, because a link preview cannot resolve `/images/og.png`.
+
+// Loaded through next/font rather than a <link> in a hand-written <head>.
+//
+// The root layout used to render its own <head>. App Router builds that element
+// itself from the metadata below, and the two fighting over it threw
+// HierarchyRequestError - "Only one element on document allowed" - during
+// hydration, which dropped every page to the client-side error screen. next/font
+// also self-hosts the file, so there is no render-blocking round trip to
+// fonts.googleapis.com and no third party watching who reads the site.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "600", "700", "900"],
+  variable: "--font-fraunces",
+});
+
+// A function rather than a const, for the same reason every section layout
+// uses one: a const is evaluated once at build time, where there is no request
+// and therefore no language, so /fr and /pt both shipped the English title and
+// the English description. That is the one line of a search result anybody
+// reads, and the only reason locale URLs exist at all.
+export async function generateMetadata() {
+  const locale = currentLocale();
+  const copy = sectionCopy('root', locale);
+
+  return {
+  metadataBase: new URL(SITE.url),
+  ...buildMetadata({ ...copy, path: '/', locale }),
+  // A per-page title becomes "Naija Free Fire Weekly | V-ENT" without every
+  // page having to remember to append the brand.
+  title: {
+    default: copy.title,
+    template: `%s | ${SITE.name}`,
+  },
+  applicationName: SITE.name,
+  authors: [{ name: SITE.legalName, url: SITE.url }],
+  creator: SITE.legalName,
+  publisher: SITE.legalName,
+  category: 'Esports',
+  formatDetection: { telephone: false, address: false, email: false },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/images/apple-touch-icon.png',
+  },
+  };
 }
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#131316",
+};
 
 export default function RootLayout({ children }) {
   return (
     <SessionWrapper>
-        <html lang="en">
-        <head>
-          <meta name="description" content={metadata.description} />
-          <meta name="keywords" content={metadata.keywords} />
-          <meta name="author" content={metadata.author} />
-          <meta charSet={metadata.charset} />
-          {/* One viewport tag, and it has to be the right one. There were two:
-              this correct one, and above it `content={metadata.viewport}` where
-              metadata has no `viewport` key, so it rendered content="". Browsers
-              honour the first viewport tag they see, so every page on every
-              phone laid out at a fallback width instead of device-width - which
-              is why the app looked slightly zoomed out and the header ran off
-              the right edge. */}
-          <meta name="viewport" content={`width=${viewport.width}, initial-scale=${viewport.initialScale}`} />
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&display=swap"
-          />
-          <title>{metadata.title}</title>
-        </head>
-        <body>{children}</body>
+      {/* `lang` is corrected on the client by LanguageProvider once the
+          person's choice is known. It starts as `en` because that is what the
+          server actually renders. */}
+      <html lang="en" className={fraunces.variable}>
+        <body>
+          {/* Site-wide structured data, inside body rather than head.
+              A fragment of <script> elements rendered into <head> made React
+              throw HierarchyRequestError ("Only one element on document
+              allowed") during hydration and the whole app fell over to the
+              client-side error page. JSON-LD is valid anywhere in the document
+              and Google reads it in body, so this is where it lives. */}
+          <JsonLd data={[organizationLd(), websiteLd()]} />
+          {/* Inside <body>, because the overlay it renders has to be a sibling
+              of the page and not of <html>. Inside the session and language
+              providers from SessionWrapper, so it knows who is signed in and
+              which language to speak. */}
+          <WalkthroughProvider>{children}</WalkthroughProvider>
+        </body>
       </html>
     </SessionWrapper>
-    
   );
 }

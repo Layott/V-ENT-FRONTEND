@@ -1,3 +1,5 @@
+import { getT } from '@/i18n/server';
+
 // Route-level skeleton for /tournaments. Pure inline Server Component - imports
 // NOTHING (no shell components: the surrounding layout already renders
 // Header/Sidebar/BottomMenu, so importing them here would double the shell and
@@ -6,6 +8,7 @@
 // layout shift once the real data lands.
 
 export default function TournamentsLoading() {
+  const t = getT();
   return (
     <>
       <style>{`
@@ -66,7 +69,7 @@ export default function TournamentsLoading() {
         }
       `}</style>
 
-      <div className="tmtSkelPage" aria-busy="true" aria-label="Loading tournaments">
+      <div className="tmtSkelPage" aria-busy="true" aria-label={t('loading.tournaments', 'Loading tournaments')}>
         <div className="tmtSkelPane">
           <div>
             <div className="tmtSkel tmtSkelTitle" />

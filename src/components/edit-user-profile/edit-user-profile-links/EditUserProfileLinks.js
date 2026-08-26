@@ -7,10 +7,19 @@ import styles from './edit-user-profile-links.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const EditUserProfileLinks = () => {
-  const { data: session, status } = useSession();
-  const [links, setLinks] = useState([{ title: '', link: '' }]);
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session,
+    status
+  } = useSession();
+  const [links, setLinks] = useState([{
+    title: '',
+    link: ''
+  }]);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
@@ -20,7 +29,6 @@ const EditUserProfileLinks = () => {
   const [instagram, setInstagram] = useState('');
   const [youtube, setYoutube] = useState('');
   const router = useRouter();
-
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch user information and populate form
@@ -30,39 +38,31 @@ const EditUserProfileLinks = () => {
         console.log('Not authenticated or no session token');
         return;
       }
-
       console.log('Base URL:', baseUrl);
-
       try {
         const response = await fetch(`${baseUrl}/auth/get-user-informations/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${session.user.sessionToken}`,
-          },
+            'Authorization': `Bearer ${session.user.sessionToken}`
+          }
         });
-
         console.log('Response status:', response.status);
         console.log('Response ok:', response.ok);
-
         if (response.ok) {
           const result = await response.json();
           console.log('Full API response:', result);
-          
           const userData = result.data;
           console.log('User data:', userData);
           console.log('Social links:', userData.social_links);
-          
+
           // Populate social media fields
           if (userData.social_links && Array.isArray(userData.social_links)) {
             const reservedTitles = ['facebook', 'twitter', 'instagram', 'youtube'];
             const dynamicLinks = [];
-
-            userData.social_links.forEach((linkObj) => {
+            userData.social_links.forEach(linkObj => {
               const title = linkObj.title.toLowerCase();
               const url = linkObj.url;
-
               console.log(`Processing link: ${title} = ${url}`);
-
               if (title === 'facebook') {
                 console.log('Setting facebook:', url);
                 setFacebook(url);
@@ -78,7 +78,10 @@ const EditUserProfileLinks = () => {
               } else {
                 // Add to dynamic links if it's not a reserved title
                 console.log('Adding to dynamic links:', linkObj.title, url);
-                dynamicLinks.push({ title: linkObj.title, link: url });
+                dynamicLinks.push({
+                  title: linkObj.title,
+                  link: url
+                });
               }
             });
 
@@ -97,40 +100,36 @@ const EditUserProfileLinks = () => {
         console.error('Error fetching user information:', error);
       }
     };
-
     fetchUserInfo();
   }, [session, status, baseUrl]);
-
   const handleAddLink = () => {
-    setLinks([...links, { title: '', link: '' }]);
+    setLinks([...links, {
+      title: '',
+      link: ''
+    }]);
   };
-
   const handleLinkChange = (index, field, value) => {
     const updatedLinks = [...links];
     updatedLinks[index][field] = value;
     setLinks(updatedLinks);
   };
-
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-
     console.log('=== DEBUGGING START ===');
     console.log('Current state values:', {
       facebook,
-      twitter, 
+      twitter,
       instagram,
       youtube
     });
     console.log('Dynamic links array:', links);
-    
     try {
       if (!session?.user?.sessionToken) {
-        setSnackbarMessage('Session token is missing. Please log in again.');
+        setSnackbarMessage(tt("msg.sessionTokenIsMissingPlease", "Session token is missing. Please log in again."));
         setSnackbarType('error');
         setOpen(true);
         setLoading(false);
@@ -140,21 +139,18 @@ const EditUserProfileLinks = () => {
       // Start with empty object
       const formattedLinks = {};
       const reservedTitles = ['facebook', 'twitter', 'instagram', 'youtube'];
-      
+
       // Check for reserved titles in dynamic links and show error if found
-      const invalidLinks = links.filter(link => 
-        link.title && link.title.trim() && reservedTitles.includes(link.title.toLowerCase().trim())
-      );
-      
+      const invalidLinks = links.filter(link => link.title && link.title.trim() && reservedTitles.includes(link.title.toLowerCase().trim()));
       if (invalidLinks.length > 0) {
         console.log('Found invalid links:', invalidLinks);
-        setSnackbarMessage('Please use the dedicated fields for Facebook, Twitter, Instagram, and YouTube instead of adding them as custom links.');
+        setSnackbarMessage(tt("msg.pleaseUseTheDedicatedFields", "Please use the dedicated fields for Facebook, Twitter, Instagram, and YouTube instead of adding them as custom links."));
         setSnackbarType('error');
         setOpen(true);
         setLoading(false);
         return;
       }
-      
+
       // Add predefined social media links if they have values
       if (facebook && facebook.trim()) {
         formattedLinks.facebook = facebook.trim();
@@ -172,13 +168,13 @@ const EditUserProfileLinks = () => {
         formattedLinks.youtube = youtube.trim();
         console.log('Added youtube:', youtube.trim());
       }
-      
+
       // Add dynamic links (filter out empty ones and reserved titles)
       links.forEach((link, index) => {
         if (link.title && link.title.trim() && link.link && link.link.trim()) {
           const trimmedTitle = link.title.trim();
           const trimmedLink = link.link.trim();
-          
+
           // Double check it's not a reserved title
           if (!reservedTitles.includes(trimmedTitle.toLowerCase())) {
             formattedLinks[trimmedTitle] = trimmedLink;
@@ -188,11 +184,10 @@ const EditUserProfileLinks = () => {
           }
         }
       });
-
       console.log('=== FINAL FORMATTED LINKS ===');
       console.log('Keys in formattedLinks:', Object.keys(formattedLinks));
       console.log('Full formattedLinks object:', formattedLinks);
-      
+
       // Check for any duplicate keys (this shouldn't happen, but let's be sure)
       const keys = Object.keys(formattedLinks);
       const uniqueKeys = [...new Set(keys)];
@@ -201,118 +196,98 @@ const EditUserProfileLinks = () => {
         console.error('Keys:', keys);
         console.error('Unique keys:', uniqueKeys);
       }
-
-      const payload = { links: formattedLinks };
+      const payload = {
+        links: formattedLinks
+      };
       console.log('=== PAYLOAD BEING SENT ===');
       console.log('Payload:', JSON.stringify(payload, null, 2));
-
       const response = await fetch(VENT.EDIT_LINKS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.user.sessionToken}`,
+          'Authorization': `Bearer ${session.user.sessionToken}`
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-
       const data = await response.json();
       console.log('=== RESPONSE ===');
       console.log('Response status:', response.status);
       console.log('Response data:', data);
-
       if (response.ok) {
-        setLinks([{ title: '', link: '' }]);
+        setLinks([{
+          title: '',
+          link: ''
+        }]);
         router.push('/user-profile');
-        setSnackbarMessage(data.message || 'Links updated successfully!');
+        setSnackbarMessage(data.message || tt("api.linksUpdatedSuccessfully", "Links updated successfully!"));
         setSnackbarType('success');
       } else {
-        setSnackbarMessage(data.message || 'Failed to update links.');
+        setSnackbarMessage(data.message || tt("api.failedToUpdateLinks", "Failed to update links."));
         setSnackbarType('error');
       }
       setOpen(true);
     } catch (error) {
       console.error('Error updating links:', error);
-      setSnackbarMessage('An error occurred while updating your links.');
+      setSnackbarMessage(tt("msg.anErrorOccurredWhileUpdating", "An error occurred while updating your links."));
       setSnackbarType('error');
       setOpen(true);
     } finally {
       setLoading(false);
     }
   };
-
-  return (
-    <div className={styles.editLinksContainer}>
-      <h3>Web and Social Links</h3>
+  return <div className={styles.editLinksContainer}>
+      <h3>{tt("ui.web.social.links.d9e8", "Web and Social Links")}</h3>
 
       <form onSubmit={handleSubmit}>
         <div className={editUserProfileDetailsStyles.profileDetailsContainer}>
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="facebook">Facebook</label>
-            <input id="facebook" type="text" placeholder="https://www.facebook.com" value={facebook} onChange={(e) => setFacebook(e.target.value)} />
+            <label htmlFor="facebook">{tt("ui.facebook.82da", "Facebook")}</label>
+            <input id="facebook" type="text" placeholder={tt("ui.https.www.facebook.com.686e", "https://www.facebook.com")} value={facebook} onChange={e => setFacebook(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="twitter">X (Twitter)</label>
-            <input id="twitter" type="text" placeholder="https://www.x.com" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
+            <label htmlFor="twitter">{tt("ui.x.twitter.9ae4", "X (Twitter)")}</label>
+            <input id="twitter" type="text" placeholder={tt("ui.https.www.x.com.91e2", "https://www.x.com")} value={twitter} onChange={e => setTwitter(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="instagram">Instagram</label>
-            <input id="instagram" type="text" placeholder="https://www.instagram.com" value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+            <label htmlFor="instagram">{tt("ui.instagram.5721", "Instagram")}</label>
+            <input id="instagram" type="text" placeholder={tt("ui.https.www.instagram.com.dd26", "https://www.instagram.com")} value={instagram} onChange={e => setInstagram(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="youtube">YouTube</label>
-            <input id="youtube" type="text" placeholder="https://www.youtube.com" value={youtube} onChange={(e) => setYoutube(e.target.value)} />
+            <label htmlFor="youtube">{tt("ui.youtube.5588", "YouTube")}</label>
+            <input id="youtube" type="text" placeholder={tt("ui.https.www.youtube.com.1e06", "https://www.youtube.com")} value={youtube} onChange={e => setYoutube(e.target.value)} />
           </div>
 
-          {links.map((link, index) => (
-            <div className={styles.titleLinkContainer} key={index}>
+          {links.map((link, index) => <div className={styles.titleLinkContainer} key={index}>
               <div className={`${editUserProfileDetailsStyles.inputGroup} ${styles.addInputGroup}`}>
-                <label htmlFor={`title-${index}`}>Title</label>
-                <input
-                  id={`title-${index}`}
-                  type="text"
-                  placeholder="e.g. YouTube, Instagram"
-                  value={link.title}
-                  onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
-                />
+                <label htmlFor={`title-${index}`}>{tt("ui.title.768e", "Title")}</label>
+                <input id={`title-${index}`} type="text" placeholder={tt("ui.e.g.youtube.instagram.8e75", "e.g. YouTube, Instagram")} value={tx(link.title)} onChange={e => handleLinkChange(index, 'title', e.target.value)} />
                 
               </div>
 
               <div className={`${editUserProfileDetailsStyles.inputGroup} ${styles.addInputGroup}`}>
-                <label htmlFor={`link-${index}`}>Link</label>
-                <input
-                  id={`link-${index}`}
-                  type="text"
-                  placeholder="https://www.youtube.com"
-                  value={link.link}
-                  onChange={(e) => handleLinkChange(index, 'link', e.target.value)}
-                />
+                <label htmlFor={`link-${index}`}>{tt("ui.link.d051", "Link")}</label>
+                <input id={`link-${index}`} type="text" placeholder={tt("ui.https.www.youtube.com.1e06", "https://www.youtube.com")} value={link.link} onChange={e => handleLinkChange(index, 'link', e.target.value)} />
               </div>
-            </div>
-          ))}
+            </div>)}
 
           <button className={styles.addAnotherLink} type="button" onClick={handleAddLink}>
-            <HiPlus className={styles.addLinkIcon} /> Add another link
+            <HiPlus className={styles.addLinkIcon} /> {tt("ui.add.another.link.da5e", "Add another link")}
           </button>
         </div>
 
         <div className={styles.buttonContainer}>
           <button className={`btn redBTN ${styles.resendBTN}`} type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
+            {loading ? <CircularProgress size={24} sx={{
+            color: 'white'
+          }} /> : tx("Save Changes")}
           </button>
         </div>
       </form>
 
-      <MessageSnackbar
-        open={open}
-        onClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        type={snackbarType}
-      />
-    </div>
-  );
+      <MessageSnackbar open={open} onClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
+    </div>;
 };
-
 export default EditUserProfileLinks;

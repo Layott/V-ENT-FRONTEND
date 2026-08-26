@@ -1,13 +1,17 @@
+'use client';
+
+import { useLanguage } from '@/i18n/LanguageProvider';
 import { IoMdArrowBack } from "react-icons/io";
 import ReviewHeaderComponent from "@/components/create-tournament-component/review/review-header-component/ReviewHeaderComponent";
 import ReviewBasicInfo from "@/components/create-tournament-component/review/review-basic-info/ReviewBasicInfo";
 import ReviewFormatParticipants from "@/components/create-tournament-component/review/review-format-participants/ReviewFormatParticipants";
 import ReviewPrizeDistribution from "@/components/create-tournament-component/review/review-prize-distribution/ReviewPrizeDistribution";
-import ReviewSponsorLinks from "./review-sponsor-links/ReviewSponsorLinks";
+import ReviewSponsorLinks from "@/components/create-tournament-component/review/review-sponsor-links/ReviewSponsorLinks";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css'
 import styles from './review.module.css'
 
 const Review = ({ formData, setFormData, handleSubmit, setSelectedTab }) => {
+  const { t } = useLanguage();
   const handleBack = () => {
     setSelectedTab((prevTab) => prevTab - 1);
   }
@@ -108,11 +112,11 @@ const isPrizeDistributionComplete = () => {
   return (
     <div className={`${createTournamentStyles.generalTabContainer} ${styles.generalTabContainer}`}>
       <header>
-          <h1>Review</h1>
+          <h2>{t("review.heading", "Review")}</h2>
       </header>
 
       <ReviewHeaderComponent
-        title="Basic Info"
+        title={t("review.step.basic", "Basic info")}
         isCompleted={isBasicInfoComplete()}
         editTabIndex={1}
         setSelectedTab={setSelectedTab}
@@ -121,7 +125,7 @@ const isPrizeDistributionComplete = () => {
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Format & Participants"
+        title={t("review.step.format", "Format and participants")}
         isCompleted={isFormatParticipantsComplete()}
         editTabIndex={2}
         setSelectedTab={setSelectedTab}
@@ -130,7 +134,7 @@ const isPrizeDistributionComplete = () => {
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Prize Distribution"
+        title={t("review.step.prize", "Prize distribution")}
         isCompleted={isPrizeDistributionComplete()}
         editTabIndex={3}
         setSelectedTab={setSelectedTab}
@@ -139,7 +143,7 @@ const isPrizeDistributionComplete = () => {
       </ReviewHeaderComponent>
 
       <ReviewHeaderComponent
-        title="Sponsors & Links"
+        title={t("review.step.sponsors", "Sponsors and links")}
         isCompleted={isSponsorsLinksComplete()}
         editTabIndex={4}
         setSelectedTab={setSelectedTab}

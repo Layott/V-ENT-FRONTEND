@@ -7,10 +7,19 @@ import styles from './edit-team-profile-links.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const EditTeamProfileLinks = () => {
-  const { data: session, status } = useSession();
-  const [links, setLinks] = useState([{ title: '', link: '' }]);
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session,
+    status
+  } = useSession();
+  const [links, setLinks] = useState([{
+    title: '',
+    link: ''
+  }]);
   const [sessionToken, setSessionToken] = useState('');
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -28,32 +37,30 @@ const EditTeamProfileLinks = () => {
       setSessionToken(session.user.sessionToken);
     }
   }, [session, status]);
-
   const handleAddLink = () => {
-    setLinks([...links, { title: '', link: '' }]);
+    setLinks([...links, {
+      title: '',
+      link: ''
+    }]);
   };
-
   const handleLinkChange = (index, field, value) => {
     const updatedLinks = [...links];
     updatedLinks[index][field] = value;
     setLinks(updatedLinks);
   };
-
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     try {
       if (!sessionToken) {
-        setSnackbarMessage('Session token is missing. Please log in again.');
+        setSnackbarMessage(tt("msg.sessionTokenIsMissingPlease", "Session token is missing. Please log in again."));
         setSnackbarType('error');
         setOpen(true);
         return;
       }
-
       const formattedLinks = {
         facebook,
         twitter,
@@ -64,111 +71,92 @@ const EditTeamProfileLinks = () => {
             acc[link.title] = link.link;
           }
           return acc;
-        }, {}),
+        }, {})
       };
-
       const response = await fetch(VENT.EDIT_LINKS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`,
+          'Authorization': `Bearer ${sessionToken}`
         },
-        body: JSON.stringify({ links: formattedLinks }),
+        body: JSON.stringify({
+          links: formattedLinks
+        })
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        setLinks([{ title: '', link: '' }]);
+        setLinks([{
+          title: '',
+          link: ''
+        }]);
         router.push('/user-profile');
-        setSnackbarMessage(data.message || 'Links updated successfully!');
+        setSnackbarMessage(data.message || tt("api.linksUpdatedSuccessfully", "Links updated successfully!"));
         setSnackbarType('success');
       } else {
-        setSnackbarMessage(data.message || 'Failed to update links.');
+        setSnackbarMessage(data.message || tt("api.failedToUpdateLinks", "Failed to update links."));
         setSnackbarType('error');
       }
       setOpen(true);
     } catch (error) {
       console.error('Error updating links:', error);
-      setSnackbarMessage('An error occurred while updating your links.');
+      setSnackbarMessage(tt("msg.anErrorOccurredWhileUpdating", "An error occurred while updating your links."));
       setSnackbarType('error');
       setOpen(true);
     }
     setLoading(false);
   };
-
-  return (
-    <div className={styles.editLinksContainer}>
-      <h3>Web and Social Links</h3>
+  return <div className={styles.editLinksContainer}>
+      <h3>{tt("ui.web.social.links.d9e8", "Web and Social Links")}</h3>
 
       <form onSubmit={handleSubmit}>
         <div className={editUserProfileDetailsStyles.profileDetailsContainer}>
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="facebook">Facebook</label>
-            <input id="facebook" type="text" placeholder="https://www.facebook.com" value={facebook} onChange={(e) => setFacebook(e.target.value)} />
+            <label htmlFor="facebook">{tt("ui.facebook.82da", "Facebook")}</label>
+            <input id="facebook" type="text" placeholder={tt("ui.https.www.facebook.com.686e", "https://www.facebook.com")} value={facebook} onChange={e => setFacebook(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="twitter">X (Twitter)</label>
-            <input id="twitter" type="text" placeholder="https://www.x.com" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
+            <label htmlFor="twitter">{tt("ui.x.twitter.9ae4", "X (Twitter)")}</label>
+            <input id="twitter" type="text" placeholder={tt("ui.https.www.x.com.91e2", "https://www.x.com")} value={twitter} onChange={e => setTwitter(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="instagram">Instagram</label>
-            <input id="instagram" type="text" placeholder="https://www.instagram.com" value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+            <label htmlFor="instagram">{tt("ui.instagram.5721", "Instagram")}</label>
+            <input id="instagram" type="text" placeholder={tt("ui.https.www.instagram.com.dd26", "https://www.instagram.com")} value={instagram} onChange={e => setInstagram(e.target.value)} />
           </div>
 
           <div className={editUserProfileDetailsStyles.inputGroup}>
-            <label htmlFor="youtube">YouTube</label>
-            <input id="youtube" type="text" placeholder="https://www.youtube.com" value={youtube} onChange={(e) => setYoutube(e.target.value)} />
+            <label htmlFor="youtube">{tt("ui.youtube.5588", "YouTube")}</label>
+            <input id="youtube" type="text" placeholder={tt("ui.https.www.youtube.com.1e06", "https://www.youtube.com")} value={youtube} onChange={e => setYoutube(e.target.value)} />
           </div>
 
-          {links.map((link, index) => (
-            <div className={styles.titleLinkContainer} key={index}>
+          {links.map((link, index) => <div className={styles.titleLinkContainer} key={index}>
               <div className={`${editUserProfileDetailsStyles.inputGroup} ${styles.addInputGroup}`}>
-                <label htmlFor={`title-${index}`}>Title</label>
-                <input
-                  id={`title-${index}`}
-                  type="text"
-                  placeholder="e.g. YouTube, Instagram"
-                  value={link.title}
-                  onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
-                />
+                <label htmlFor={`title-${index}`}>{tt("ui.title.768e", "Title")}</label>
+                <input id={`title-${index}`} type="text" placeholder={tt("ui.e.g.youtube.instagram.8e75", "e.g. YouTube, Instagram")} value={tx(link.title)} onChange={e => handleLinkChange(index, 'title', e.target.value)} />
               </div>
 
               <div className={`${editUserProfileDetailsStyles.inputGroup} ${styles.addInputGroup}`}>
-                <label htmlFor={`link-${index}`}>Link</label>
-                <input
-                  id={`link-${index}`}
-                  type="text"
-                  placeholder="https://www.youtube.com"
-                  value={link.link}
-                  onChange={(e) => handleLinkChange(index, 'link', e.target.value)}
-                />
+                <label htmlFor={`link-${index}`}>{tt("ui.link.d051", "Link")}</label>
+                <input id={`link-${index}`} type="text" placeholder={tt("ui.https.www.youtube.com.1e06", "https://www.youtube.com")} value={link.link} onChange={e => handleLinkChange(index, 'link', e.target.value)} />
               </div>
-            </div>
-          ))}
+            </div>)}
 
           <button className={styles.addAnotherLink} type="button" onClick={handleAddLink}>
-            <HiPlus className={styles.addLinkIcon} /> Add another link
+            <HiPlus className={styles.addLinkIcon} /> {tt("ui.add.another.link.da5e", "Add another link")}
           </button>
         </div>
 
         <div className={styles.buttonContainer}>
           <button className={`btn redBTN ${styles.resendBTN}`} type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
+            {loading ? <CircularProgress size={24} sx={{
+            color: 'white'
+          }} /> : tx("Save Changes")}
           </button>
         </div>
       </form>
 
-      <MessageSnackbar
-        open={open}
-        onClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        type={snackbarType}
-      />
-    </div>
-  );
+      <MessageSnackbar open={open} onClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
+    </div>;
 };
-
 export default EditTeamProfileLinks;

@@ -1139,3 +1139,12 @@
     padding: 2.5rem 4rem;
   }
 }
+
+/* The team crest inside the round avatar. Cropped to fill rather than letter-
+   boxed, because a crest is drawn square and the circle is what people read. */
+.teamAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

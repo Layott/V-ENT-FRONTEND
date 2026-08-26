@@ -12,7 +12,7 @@
   justify-content: flex-start;
 }
 
-.logoContainer h1 {
+.logoContainer .wordmark {
   font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
@@ -209,7 +209,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .logoContainer h1 {
+  .logoContainer .wordmark {
     font-size: 1.75rem;
   }
   .innerLogoContainer {

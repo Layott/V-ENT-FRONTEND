@@ -1,11 +1,20 @@
+'use client';
+
+import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { FaAsterisk } from "react-icons/fa6";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './create-tournament-type.module.css';
-
-const CreateTournamentType = ({ formData={}, updateFormData }) => {
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const CreateTournamentType = ({
+  formData = {},
+  updateFormData
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const [selectedOption, setSelectedOption] = useState(formData?.tournament_type || null);
   const [isLinkedToEvent, setIsLinkedToEvent] = useState(true);
   const [hideLocation, setHideLocation] = useState(false);
@@ -13,8 +22,9 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
   const [availableEvents, setAvailableEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [filteredEvents, setFilteredEvents] = useState([]);
-
-  const { data: session } = useSession();
+  const {
+    data: session
+  } = useSession();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Helper function to get absolute URLs
@@ -25,20 +35,18 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
       }
       return `${process.env.NEXT_PUBLIC_API_URL}/media/default-profile.jpg`;
     }
-    
     if (url.startsWith("http")) {
       return url;
     }
-    
     return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
   }, [baseUrl]);
 
   // Process event images to use absolute URLs
-  const processEventImages = useCallback((events) => {
-    return events.map((event) => ({
+  const processEventImages = useCallback(events => {
+    return events.map(event => ({
       ...event,
       banner_image: getAbsoluteUrl(event.banner),
-      organizer_logo: getAbsoluteUrl(event.logo),
+      organizer_logo: getAbsoluteUrl(event.logo)
     }));
   }, [getAbsoluteUrl]);
 
@@ -47,22 +55,16 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
     if (!session || !session.user?.sessionToken) {
       return;
     }
-
     setIsLoadingEvents(true);
     const sessionToken = session.user.sessionToken;
-
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+          "Content-Type": "application/json"
         }
-      );
+      });
 
-      
       // Combine featured and upcoming events
       const featured = response.data.data.featured || [];
       const upcoming = response.data.data.upcoming || [];
@@ -70,10 +72,11 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
 
       // Process the events to include absolute URLs
       const processedEvents = processEventImages(allEvents);
-      
+
       // Map to the format expected by the component
       const formattedEvents = processedEvents.map(event => ({
-        id: event.id || event.event_id, // Try both possible ID fields
+        id: event.id || event.event_id,
+        // Try both possible ID fields
         name: event.name || event.title || event.event_name,
         date: event.start_date || event.date || event.event_date,
         banner_image: event.banner_image,
@@ -104,19 +107,14 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
       setFilteredEvents([]);
       return;
     }
-
-    const filtered = availableEvents.filter(event =>
-      event.name.toLowerCase().includes(eventSearchTerm.toLowerCase())
-    );
+    const filtered = availableEvents.filter(event => event.name.toLowerCase().includes(eventSearchTerm.toLowerCase()));
     setFilteredEvents(filtered);
   }, [eventSearchTerm, availableEvents]);
-
-  const handleOptionClick = (option) => {
+  const handleOptionClick = option => {
     setSelectedOption(option);
     updateFormData('tournament_type', option);
   };
-  
-  const handleHideLocationChange = (event) => {
+  const handleHideLocationChange = event => {
     setHideLocation(event.target.checked);
     if (event.target.checked) {
       updateFormData('hide_location', 'true');
@@ -124,182 +122,106 @@ const CreateTournamentType = ({ formData={}, updateFormData }) => {
       updateFormData('hide_location', 'false');
     }
   };
-
-  const handleEventLinkChange = (value) => {
+  const handleEventLinkChange = value => {
     setIsLinkedToEvent(value === 'yes');
   };
-
-  const handleEventSearchChange = (e) => {
+  const handleEventSearchChange = e => {
     setEventSearchTerm(e.target.value);
   };
-
-  const handleEventSelect = (eventId) => {
+  const handleEventSelect = eventId => {
     // Add safety check for eventId
     if (!eventId) {
       return;
     }
-    
     updateFormData('event', eventId.toString());
     const selectedEvent = availableEvents.find(event => event.id === eventId);
     setEventSearchTerm(selectedEvent?.name || '');
   };
-
-  return (
-    <div className={createTournamentStyles.createSubSectionContainer}>
+  return <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
-        <h3 className={createTournamentStyles.tournamentTypeH3}>Tournament Type</h3>
+        <h3 className={createTournamentStyles.tournamentTypeH3}>{tt("ui.tournament.type.21bd", "Tournament Type")}</h3>
 
         <div className={createTournamentStyles.threeBoxesInRowContainer}>
-          {['virtual', 'physical', 'hybrid'].map((option) => (
-            <div
-              key={option}
-              className={`${createTournamentStyles.oneThirdBoxContainer} ${
-                selectedOption === option ? createTournamentStyles.activeBox : ''
-              }`}
-              onClick={() => handleOptionClick(option)}
-            >
-              <div
-                className={`${createTournamentStyles.option} ${
-                  selectedOption === option ? createTournamentStyles.selected : ''
-                }`}
-              ></div>
+          {['virtual', 'physical', 'hybrid'].map(option => <div key={option} className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === option ? createTournamentStyles.activeBox : ''}`} onClick={() => handleOptionClick(option)}>
+              <div className={`${createTournamentStyles.option} ${selectedOption === option ? createTournamentStyles.selected : ''}`}></div>
               <div className={createTournamentStyles.boxTextContainer}>
                 <h4>{option.charAt(0).toUpperCase() + option.slice(1)}</h4>
                 <p>
-                  {option === 'virtual'
-                    ? 'Your tournament will be held only as a virtual tournament.'
-                    : option === 'physical'
-                    ? 'Your tournament will be held as a physical event in a physical space.'
-                    : 'Your tournament will be both virtual and physical.'}
+                  {option === 'virtual' ? tx("Your tournament will be held only as a virtual tournament.") : option === 'physical' ? tx("Your tournament will be held as a physical event in a physical space.") : tx("Your tournament will be both virtual and physical.")}
                 </p>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
 
         <div className={styles.outerVenueVirtualLinkContainer}>
           <div className={createTournamentStyles.twoInputContainer}>
-            {selectedOption !== 'physical' && (
-              <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="virtualLink">Virtual Link</label>
-                <input
-                  id="virtualLink"
-                  type="text"
-                  placeholder="Paste link here"
-                  className={createTournamentStyles.inputText}
-                  onChange={(e) => updateFormData('virtual_link', e.target.value)}
-                  disabled={hideLocation}
-                />
-              </div>
-            )}
+            {selectedOption !== 'physical' && <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="virtualLink">{tt("ui.virtual.link.7e09", "Virtual Link")}<InfoTip id="virtualLink" /></label>
+                <input id="virtualLink" type="text" placeholder={tt("ui.paste.link.here.d7d4", "Paste link here")} className={createTournamentStyles.inputText} onChange={e => updateFormData('virtual_link', e.target.value)} disabled={hideLocation} />
+              </div>}
 
-            {selectedOption !== 'virtual' && (
-              <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="venue">Venue</label>
-                <input
-                  id="venue"
-                  type="text"
-                  placeholder="Enter physical location"
-                  className={createTournamentStyles.inputText}
-                  onChange={(e) => updateFormData('tournament_location', e.target.value)}
-                  disabled={hideLocation}
-                />
-              </div>
-            )}
+            {selectedOption !== 'virtual' && <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="venue">{tt("ui.venue.67cd", "Venue")}<InfoTip id="venue" /></label>
+                <input id="venue" type="text" placeholder={tt("ui.enter.physical.location.da63", "Enter physical location")} className={createTournamentStyles.inputText} onChange={e => updateFormData('tournament_location', e.target.value)} disabled={hideLocation} />
+              </div>}
           </div>
 
           <div className={styles.hideLocationContainer}>
-            <input
-              type="checkbox"
-              className={styles.hideCheckbox}
-              checked={hideLocation}
-              onChange={handleHideLocationChange}
-            />
-            <label>Hide location</label>
+            <input type="checkbox" className={styles.hideCheckbox} checked={hideLocation} onChange={handleHideLocationChange} />
+            <label>{tt("ui.hide.location.36ab", "Hide location")}<InfoTip id="hideLocation" /></label>
           </div>
 
           <div className={styles.outerQuestionContainer}>
             <div className={styles.questionContainer}>
-              <p>Is this tournament linked to an event?</p>
+              <p>{tt("ui.tournament.linked.event.46c7", "Is this tournament linked to an event?")}</p>
 
               <div className={styles.optionContainer}>
-                {['yes', 'no'].map((value) => (
-                  <label key={value} className={styles.optionLabel}>
-                    <input
-                      type="radio"
-                      name="linkedToEvent"
-                      value={value}
-                      className={styles.optionInput}
-                      checked={isLinkedToEvent === (value === 'yes')}
-                      onChange={() => handleEventLinkChange(value)}
-                    />
+                {['yes', 'no'].map(value => <label key={value} className={styles.optionLabel}>
+                    <input type="radio" name="linkedToEvent" value={value} className={styles.optionInput} checked={isLinkedToEvent === (value === 'yes')} onChange={() => handleEventLinkChange(value)} />
                     {value.charAt(0).toUpperCase() + value.slice(1)}
-                  </label>
-                ))}
+                  </label>)}
               </div>
             </div>
 
-            {isLinkedToEvent && (
-              <div className={styles.eventContainer}>
+            {isLinkedToEvent && <div className={styles.eventContainer}>
                 <label htmlFor="selectEvent" className={createTournamentStyles.labelWithAsterisk}>
-                  Select Event
+                  {tt("ui.select.event.c20e", "Select Event")}
                   <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                   </span>
-                </label>
+                <InfoTip id="selectEvent" /></label>
                 
                 <div className={styles.eventSearchContainer}>
-                  <input
-                    id="selectEvent"
-                    type="text"
-                    placeholder="Search for events..."
-                    className={createTournamentStyles.inputText}
-                    value={eventSearchTerm}
-                    onChange={handleEventSearchChange}
-                  />
+                  <input id="selectEvent" type="text" placeholder={tt("ui.search.events.7710", "Search for events...")} className={createTournamentStyles.inputText} value={eventSearchTerm} onChange={handleEventSearchChange} />
                   
-                  {isLoadingEvents && (
-                    <div className={styles.loadingMessage}>
-                      Loading events...
-                    </div>
-                  )}
+                  {isLoadingEvents && <div className={styles.loadingMessage}>
+                      {tt("ui.loading.events.f691", "Loading events...")}
+                    </div>}
                   
-                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length > 0 && (
-                    <div >
-                      {filteredEvents.map((event) => (
-                        <div
-                          key={event.id}
-                          className={styles.eventOption}
-                          onClick={() => handleEventSelect(event.id)}
-                        >
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length > 0 && <div>
+                      {filteredEvents.map(event => <div key={event.id} className={styles.eventOption} onClick={() => handleEventSelect(event.id)}>
                           <div className={styles.eventName}>{event.name}</div>
                           <div className={styles.eventDate}>{event.date}</div>
                           {/* Debug info - remove after fixing */}
-                          <div style={{fontSize: '10px', color: 'gray'}}>ID: {event.id}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                          <div style={{
+                    fontSize: '10px',
+                    color: 'gray'
+                  }}>{tt("ui.id.d789", "ID:")} {event.id}</div>
+                        </div>)}
+                    </div>}
                   
-                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && (
-                    <div className={styles.noEventsFound}>
-                      No events found matching your search.
-                    </div>
-                  )}
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && <div className={styles.noEventsFound}>
+                      {tt("ui.no.events.found.matching.105f", "No events found matching your search.")}
+                    </div>}
 
-                  {!isLoadingEvents && availableEvents.length === 0 && eventSearchTerm && (
-                    <div className={styles.noEventsFound}>
-                      No events available. Please try again later.
-                    </div>
-                  )}
+                  {!isLoadingEvents && availableEvents.length === 0 && eventSearchTerm && <div className={styles.noEventsFound}>
+                      {tt("ui.no.events.available.please.e682", "No events available. Please try again later.")}
+                    </div>}
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CreateTournamentType;

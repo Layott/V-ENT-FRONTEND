@@ -1,9 +1,11 @@
+import { getT } from '@/i18n/server';
 // Route-level skeleton for /home. Renders instantly on navigation (Server
 // Component) while the dashboard's client data fetch runs. Mirrors the real
 // layout - header gutter, sidebar gutter on desktop, hero + stat grid + two
 // section rows - so there is no jarring shift when the page hydrates.
 
 export default function HomeLoading() {
+  const t = getT();
   return (
     <>
       <style>{`
@@ -78,7 +80,7 @@ export default function HomeLoading() {
         }
       `}</style>
 
-      <div className="homeSkelPage" aria-busy="true" aria-label="Loading dashboard">
+      <div className="homeSkelPage" aria-busy="true" aria-label={t('loading.dashboard', 'Loading dashboard')}>
         <div className="homeSkelPane">
           <div className="homeSkel homeSkelHero" />
 

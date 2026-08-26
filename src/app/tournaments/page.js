@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
@@ -11,26 +11,27 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
-import {
-  ventFetch,
-  API,
-  tokenFrom,
-  toTournamentArray,
-  entryFeeVc,
-  tournamentStatus,
-  ApiError,
-} from '@/components/tournament-lib/tournamentApi';
+import { ventFetch, API, tokenFrom, toTournamentArray, entryFeeVc, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './tournament.module.css';
 import useGames from '@/hooks/useGames';
-
-const STATUS_TABS = [
-  { id: 'featured', label: 'Featured' },
-  { id: 'upcoming', label: 'Upcoming' },
-  { id: 'live', label: 'Live' },
-  { id: 'completed', label: 'Completed' },
-  { id: 'by_game', label: 'By Game' },
-];
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const STATUS_TABS = [{
+  id: 'featured',
+  label: 'Featured'
+}, {
+  id: 'upcoming',
+  label: 'Upcoming'
+}, {
+  id: 'live',
+  label: 'Live'
+}, {
+  id: 'completed',
+  label: 'Completed'
+}, {
+  id: 'by_game',
+  label: 'By Game'
+}];
 const FORMATS = ['All Formats', 'single_elimination', 'double_elimination', 'round_robin'];
 const ENTRY_TYPES = ['All Entries', 'free', 'paid'];
 
@@ -40,7 +41,6 @@ const ENTRY_TYPES = ['All Entries', 'free', 'paid'];
 const UPCOMING_STATUSES = ['upcoming', 'registration_open', 'published'];
 const LIVE_STATUSES = ['ongoing', 'live', 'in_progress'];
 const COMPLETED_STATUSES = ['completed'];
-
 const STATUS_LABELS = {
   upcoming: 'Upcoming',
   registration_open: 'Registration Open',
@@ -48,9 +48,8 @@ const STATUS_LABELS = {
   ongoing: 'Live',
   live: 'Live',
   in_progress: 'Live',
-  completed: 'Completed',
+  completed: 'Completed'
 };
-
 const STATUS_BADGE_CLASS = {
   upcoming: 'status_upcoming',
   registration_open: 'status_upcoming',
@@ -58,7 +57,7 @@ const STATUS_BADGE_CLASS = {
   ongoing: 'status_in_progress',
   live: 'status_in_progress',
   in_progress: 'status_in_progress',
-  completed: 'status_completed',
+  completed: 'status_completed'
 };
 
 // Best-effort mapping from a tab id to a single backend `status` value. Some
@@ -68,29 +67,37 @@ const STATUS_BADGE_CLASS = {
 const TAB_STATUS_HINT = {
   upcoming: 'upcoming',
   live: 'in_progress',
-  completed: 'completed',
+  completed: 'completed'
 };
-
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+}) : '-';
 const formatDateRange = (s, e) => `${formatDate(s)} - ${formatDate(e)}`;
 // The API has historically returned hyphens, underscores or title case for the
 // same format, so normalise before labelling.
-const formatLabel = (f) => {
+const formatLabel = f => {
   const slug = String(f || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
   return {
     single_elimination: 'Single Elim',
     double_elimination: 'Double Elim',
     round_robin: 'Round Robin',
-    swiss: 'Swiss',
-  }[slug] || (f ? String(f).replace(/[_-]+/g, ' ').replace(/\w/g, (c) => c.toUpperCase()) : '-');
+    swiss: 'Swiss'
+  }[slug] || (f ? String(f).replace(/[_-]+/g, ' ').replace(/\w/g, c => c.toUpperCase()) : '-');
 };
-
 const TournamentsContent = () => {
-  const { gameTitles } = useGames();
+  const tx = useTx();
+  const tt = useT();
+  const {
+    gameTitles
+  } = useGames();
   const gameOptions = ['All Games', ...gameTitles];
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const {
+    data: session
+  } = useSession();
   const token = tokenFrom(session);
 
   // ── State driven by URL ──
@@ -132,7 +139,9 @@ const TournamentsContent = () => {
     if (prizeMin) params.set('pmin', prizeMin);
     if (prizeMax) params.set('pmax', prizeMax);
     const qs = params.toString();
-    router.replace(`/tournaments${qs ? `?${qs}` : ''}`, { scroll: false });
+    router.replace(`/tournaments${qs ? `?${qs}` : ''}`, {
+      scroll: false
+    });
   }, [tab, search, game, format, entryType, dateFrom, dateTo, prizeMin, prizeMax, router]);
 
   // ── Fetch tournaments ──
@@ -142,31 +151,26 @@ const TournamentsContent = () => {
   // the already-fetched data client-side (see `filtered` below), it never
   // triggers a new network call on its own.
   useEffect(() => {
-    const hasActiveFilter = Boolean(
-      debouncedSearch.trim() ||
-      game !== 'All Games' ||
-      format !== 'All Formats' ||
-      entryType !== 'All Entries' ||
-      dateFrom ||
-      dateTo ||
-      prizeMin ||
-      prizeMax
-    );
-
+    const hasActiveFilter = Boolean(debouncedSearch.trim() || game !== 'All Games' || format !== 'All Formats' || entryType !== 'All Entries' || dateFrom || dateTo || prizeMin || prizeMax);
     const controller = new AbortController();
     let cancelled = false;
-
     const load = async () => {
       setLoading(true);
       setError(null);
       try {
         let data;
         if (!hasActiveFilter) {
-          data = await ventFetch(API.TOURNAMENT.LIST, { token, signal: controller.signal });
+          data = await ventFetch(API.TOURNAMENT.LIST, {
+            token,
+            signal: controller.signal
+          });
         } else {
           const qp = new URLSearchParams();
           if (debouncedSearch.trim()) qp.set('q', debouncedSearch.trim());
-          if (game !== 'All Games') { qp.set('game', game); qp.set('game_id', game); }
+          if (game !== 'All Games') {
+            qp.set('game', game);
+            qp.set('game_id', game);
+          }
           if (format !== 'All Formats') qp.set('format', format);
           if (entryType !== 'All Entries') qp.set('entry', entryType);
           if (dateFrom) qp.set('from', dateFrom);
@@ -176,55 +180,50 @@ const TournamentsContent = () => {
           if (TAB_STATUS_HINT[tab]) qp.set('status', TAB_STATUS_HINT[tab]);
           if (tab && tab !== 'featured') qp.set('tab', tab);
           const qs = qp.toString();
-          data = await ventFetch(`${API.TOURNAMENT.SEARCH}?${qs}`, { token, signal: controller.signal });
+          data = await ventFetch(`${API.TOURNAMENT.SEARCH}?${qs}`, {
+            token,
+            signal: controller.signal
+          });
         }
         if (cancelled) return;
         setRawData(data);
         setTournaments(toTournamentArray(data));
       } catch (err) {
         if (cancelled || err?.name === 'AbortError') return;
-        setError(err instanceof ApiError ? err : new ApiError(err?.message || 'Failed to load tournaments.'));
+        setError(err instanceof ApiError ? err : new ApiError(err?.message || tt("api.failedToLoadTournaments", "Failed to load tournaments.")));
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
-
     load();
-
     return () => {
       cancelled = true;
       controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, game, format, entryType, dateFrom, dateTo, prizeMin, prizeMax, token, retryKey]);
-
-  const handleRetry = () => setRetryKey((k) => k + 1);
+  const handleRetry = () => setRetryKey(k => k + 1);
 
   // ── Filter (client-side; mirrors the params sent to SEARCH so the page
   // still narrows correctly even when the backend/mock doesn't) ──
   const filtered = useMemo(() => {
     let list = [...tournaments];
-
-    if (tab === 'upcoming') list = list.filter((t) => UPCOMING_STATUSES.includes(tournamentStatus(t)));
-    else if (tab === 'live') list = list.filter((t) => LIVE_STATUSES.includes(tournamentStatus(t)));
-    else if (tab === 'completed') list = list.filter((t) => COMPLETED_STATUSES.includes(tournamentStatus(t)));
-
+    if (tab === 'upcoming') list = list.filter(t => UPCOMING_STATUSES.includes(tournamentStatus(t)));else if (tab === 'live') list = list.filter(t => LIVE_STATUSES.includes(tournamentStatus(t)));else if (tab === 'completed') list = list.filter(t => COMPLETED_STATUSES.includes(tournamentStatus(t)));
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      list = list.filter((t) => (t?.name || '').toLowerCase().includes(q) || (t?.game || '').toLowerCase().includes(q));
+      list = list.filter(t => (t?.name || '').toLowerCase().includes(q) || (t?.game || '').toLowerCase().includes(q));
     }
-    if (game !== 'All Games') list = list.filter((t) => t?.game === game);
+    if (game !== 'All Games') list = list.filter(t => t?.game === game);
     if (format !== 'All Formats') {
       const want = String(format).toLowerCase().replace(/[-\s]+/g, '_');
-      list = list.filter((t) => String(t?.format || '').toLowerCase().replace(/[-\s]+/g, '_') === want);
+      list = list.filter(t => String(t?.format || '').toLowerCase().replace(/[-\s]+/g, '_') === want);
     }
-    if (entryType === 'free') list = list.filter((t) => entryFeeVc(t) === 0);
-    if (entryType === 'paid') list = list.filter((t) => entryFeeVc(t) > 0);
-    if (dateFrom) list = list.filter((t) => t?.start_date && new Date(t.start_date) >= new Date(dateFrom));
-    if (dateTo) list = list.filter((t) => t?.start_date && new Date(t.start_date) <= new Date(dateTo));
-    if (prizeMin) list = list.filter((t) => Number(t?.prize_pool || 0) >= parseInt(prizeMin, 10));
-    if (prizeMax) list = list.filter((t) => Number(t?.prize_pool || 0) <= parseInt(prizeMax, 10));
-
+    if (entryType === 'free') list = list.filter(t => entryFeeVc(t) === 0);
+    if (entryType === 'paid') list = list.filter(t => entryFeeVc(t) > 0);
+    if (dateFrom) list = list.filter(t => t?.start_date && new Date(t.start_date) >= new Date(dateFrom));
+    if (dateTo) list = list.filter(t => t?.start_date && new Date(t.start_date) <= new Date(dateTo));
+    if (prizeMin) list = list.filter(t => Number(t?.prize_pool || 0) >= parseInt(prizeMin, 10));
+    if (prizeMax) list = list.filter(t => Number(t?.prize_pool || 0) <= parseInt(prizeMax, 10));
     return list;
   }, [tournaments, tab, search, game, format, entryType, dateFrom, dateTo, prizeMin, prizeMax]);
 
@@ -232,7 +231,7 @@ const TournamentsContent = () => {
   const grouped = useMemo(() => {
     if (tab !== 'by_game') return null;
     const map = {};
-    filtered.forEach((t) => {
+    filtered.forEach(t => {
       const g = t?.game || 'Unknown Game';
       (map[g] = map[g] || []).push(t);
     });
@@ -247,17 +246,18 @@ const TournamentsContent = () => {
     }
     return tournaments.slice(0, 3);
   }, [rawData, tournaments]);
-
   const isFeaturedTab = tab === 'featured';
-
   const clearFilters = () => {
-    setSearch(''); setGame('All Games'); setFormat('All Formats');
-    setEntryType('All Entries'); setDateFrom(''); setDateTo('');
-    setPrizeMin(''); setPrizeMax('');
+    setSearch('');
+    setGame('All Games');
+    setFormat('All Formats');
+    setEntryType('All Entries');
+    setDateFrom('');
+    setDateTo('');
+    setPrizeMin('');
+    setPrizeMax('');
   };
-
-  return (
-    <div className={styles.pageContainer}>
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -268,36 +268,29 @@ const TournamentsContent = () => {
           {/* Page header */}
           <div className={styles.pageHeader}>
             <div>
-              <h1 className={styles.pageTitle}>Tournaments</h1>
-              <p className={styles.pageSubtitle}>Compete. Climb. Cash out in VENT COINS.</p>
+              <h1 className={styles.pageTitle}>{tt("ui.tournaments.fee2", "Tournaments")}</h1>
+              <p className={styles.pageSubtitle}>{tt("ui.compete.climb.cash.out.a183", "Compete. Climb. Cash out in VENT COINS.")}</p>
             </div>
             <div className={styles.pageActions}>
               <Link href="/tournaments/my-tournaments">
-                <button className={styles.secondaryBtn}>My Tournaments</button>
+                <button className={styles.secondaryBtn}>{tt("ui.my.tournaments.3780", "My Tournaments")}</button>
               </Link>
               <Link href="/tournaments/create-tournament">
-                <button className={`${styles.primaryBtn} goldBTN`}>+ Create Tournament</button>
+                <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.create.tournament.23d0", "+ Create Tournament")}</button>
               </Link>
             </div>
           </div>
 
           {/* Featured carousel */}
-          {isFeaturedTab && !loading && !error && featured.length > 0 && (
-            <div className={styles.featuredRow}>
-              {featured.map((t, i) => (
-                <Link
-                  key={t?.id ?? i}
-                  href={`/tournaments/${t?.slug || t?.id || ''}`}
-                  className={styles.featuredCard}
-                >
-                  <div
-                    className={styles.featuredBanner}
-                    style={(t?.banner_image || t?.banner) ? { backgroundImage: `url(${t.banner_image || t.banner})` } : undefined}
-                  >
-                    <span className={styles.featuredPill}>FEATURED</span>
+          {isFeaturedTab && !loading && !error && featured.length > 0 && <div className={styles.featuredRow}>
+              {featured.map((t, i) => <Link key={t?.id ?? i} href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.featuredCard}>
+                  <div className={styles.featuredBanner} style={t?.banner_image || t?.banner ? {
+              backgroundImage: `url(${t.banner_image || t.banner})`
+            } : undefined}>
+                    <span className={styles.featuredPill}>{tt("ui.featured.c005", "FEATURED")}</span>
                     <div className={styles.featuredOverlay}>
-                      <span className={styles.gameTag}>{t?.game || 'Unknown Game'}</span>
-                      <h3 className={styles.featuredTitle}>{t?.name || 'Untitled Tournament'}</h3>
+                      <span className={styles.gameTag}>{t?.game || tx("Unknown Game")}</span>
+                      <h2 className={styles.featuredTitle}>{t?.name || tx("Untitled Tournament")}</h2>
                       <div className={styles.featuredMeta}>
                         <span><LuTrophy /> {Number(t?.prize_pool || 0).toLocaleString()} VC</span>
                         <span><LuCalendar /> {formatDate(t?.start_date)}</span>
@@ -305,127 +298,100 @@ const TournamentsContent = () => {
                       </div>
                     </div>
                   </div>
-                </Link>
-              ))}
-            </div>
-          )}
+                </Link>)}
+            </div>}
 
           {/* Tab nav */}
           <div className={styles.tabBar}>
-            {STATUS_TABS.map((t) => (
-              <button
-                key={t.id}
-                className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`}
-                onClick={() => setTab(t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
+            {STATUS_TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setTab(t.id)}>
+                {tx(t.label)}
+              </button>)}
           </div>
 
           {/* Filter bar */}
           <div className={styles.filterBar}>
             <div className={styles.searchBar}>
               <CiSearch className={styles.searchIcon} />
-              <input
-                type="text"
-                placeholder="Search tournaments..."
-                className={styles.searchInput}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <input type="text" placeholder={tt("ui.search.tournaments.5b1b", "Search tournaments...")} className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <div className={styles.filterSelect}>
-              <select value={game} onChange={(e) => setGame(e.target.value)} className={styles.select}>
-                {gameOptions.map((g) => <option key={g} value={g}>{g}</option>)}
+              <select value={game} onChange={e => setGame(e.target.value)} className={styles.select}>
+                {gameOptions.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.filterSelect}>
-              <select value={format} onChange={(e) => setFormat(e.target.value)} className={styles.select}>
-                {FORMATS.map((f) => <option key={f} value={f}>{f === 'All Formats' ? f : formatLabel(f)}</option>)}
+              <select value={format} onChange={e => setFormat(e.target.value)} className={styles.select}>
+                {FORMATS.map(f => <option key={f} value={f}>{f === 'All Formats' ? f : formatLabel(f)}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.filterSelect}>
-              <select value={entryType} onChange={(e) => setEntryType(e.target.value)} className={styles.select}>
-                {ENTRY_TYPES.map((e) => <option key={e} value={e}>{e === 'All Entries' ? e : (e === 'free' ? 'Free Entry' : 'Paid Entry')}</option>)}
+              <select value={entryType} onChange={e => setEntryType(e.target.value)} className={styles.select}>
+                {ENTRY_TYPES.map(e => <option key={e} value={e}>{e === 'All Entries' ? e : e === 'free' ? tx("Free Entry") : tx("Paid Entry")}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.dateRange}>
-              <input type="date" className={styles.dateInput} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <input type="date" className={styles.dateInput} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
               <span className={styles.dateSep}>-</span>
-              <input type="date" className={styles.dateInput} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+              <input type="date" className={styles.dateInput} value={dateTo} onChange={e => setDateTo(e.target.value)} />
             </div>
             <div className={styles.prizeRange}>
-              <input type="number" placeholder="Min VC" className={styles.prizeInput} value={prizeMin} onChange={(e) => setPrizeMin(e.target.value)} />
+              <input type="number" placeholder={tt("ui.min.vc.cd35", "Min VC")} className={styles.prizeInput} value={prizeMin} onChange={e => setPrizeMin(e.target.value)} />
               <span className={styles.dateSep}>-</span>
-              <input type="number" placeholder="Max VC" className={styles.prizeInput} value={prizeMax} onChange={(e) => setPrizeMax(e.target.value)} />
+              <input type="number" placeholder={tt("ui.max.vc.c5b8", "Max VC")} className={styles.prizeInput} value={prizeMax} onChange={e => setPrizeMax(e.target.value)} />
             </div>
-            <button className={styles.clearBtn} onClick={clearFilters}>Clear</button>
+            <button className={styles.clearBtn} onClick={clearFilters}>{tt("ui.clear.719e", "Clear")}</button>
           </div>
 
           {/* Result count */}
           <p className={styles.resultCount}>
-            {loading ? 'Loading tournaments…' : `${filtered.length} tournament${filtered.length !== 1 ? 's' : ''} found`}
+            {loading ? tx("Loading tournaments…") : `${filtered.length} tournament${filtered.length !== 1 ? 's' : ''} found`}
           </p>
 
           {/* Loading / error / empty / grid */}
-          {loading ? (
-            <TournamentSkeletonGrid />
-          ) : error ? (
-            <div className={styles.inlineErrorCard}>
+          {loading ? <TournamentSkeletonGrid /> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
-              <p className={styles.inlineErrorTitle}>Couldn&apos;t load tournaments</p>
-              <p className={styles.inlineErrorSub}>{error.message || 'Something went wrong. Please try again.'}</p>
-              <button className={`${styles.primaryBtn} goldBTN`} onClick={handleRetry}>Retry</button>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className={styles.emptyState}>
+              <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.fd5f", "Couldn't load tournaments")}</p>
+              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <button className={`${styles.primaryBtn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+            </div> : filtered.length === 0 ? <div className={styles.emptyState}>
               <LuTrophy className={styles.emptyIcon} />
-              <p className={styles.emptyTitle}>No tournaments match your filters</p>
-              <p className={styles.emptySub}>Try clearing some filters or check back later.</p>
-              <button className={`${styles.primaryBtn} goldBTN`} onClick={clearFilters}>Clear Filters</button>
-            </div>
-          ) : tab === 'by_game' && grouped ? (
-            Object.entries(grouped).map(([gameName, list]) => (
-              <div key={gameName} className={styles.gameGroup}>
-                <h3 className={styles.gameGroupTitle}>{gameName}<span className={styles.gameGroupCount}>{list.length}</span></h3>
+              <p className={styles.emptyTitle}>{tt("ui.no.tournaments.match.filters.b99b", "No tournaments match your filters")}</p>
+              <p className={styles.emptySub}>{tt("ui.try.clearing.some.filters.833a", "Try clearing some filters or check back later.")}</p>
+              <button className={`${styles.primaryBtn} goldBTN`} onClick={clearFilters}>{tt("ui.clear.filters.381c", "Clear Filters")}</button>
+            </div> : tab === 'by_game' && grouped ? Object.entries(grouped).map(([gameName, list]) => <div key={gameName} className={styles.gameGroup}>
+                <h2 className={styles.gameGroupTitle}>{gameName}<span className={styles.gameGroupCount}>{list.length}</span></h2>
                 <div className={styles.cardGrid}>
                   {list.map((t, i) => <TournamentCard key={t?.id ?? i} t={t} />)}
                 </div>
-              </div>
-            ))
-          ) : (
-            <div className={styles.cardGrid}>
+              </div>) : <div className={styles.cardGrid}>
               {filtered.map((t, i) => <TournamentCard key={t?.id ?? i} t={t} />)}
-            </div>
-          )}
+            </div>}
         </div>
       </main>
 
       <BottomMenu />
-    </div>
-  );
+    </div>;
 };
-
-const TournamentSkeletonGrid = () => (
-  <div className={styles.cardGrid} aria-hidden="true">
-    {Array.from({ length: 8 }).map((_, i) => (
-      <div key={i} className={styles.skeletonCard}>
+const TournamentSkeletonGrid = () => <div className={styles.cardGrid} aria-hidden="true">
+    {Array.from({
+    length: 8
+  }).map((_, i) => <div key={i} className={styles.skeletonCard}>
         <div className={styles.skeletonBanner} />
         <div className={styles.skeletonBody}>
           <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
           <div className={styles.skeletonLine} />
           <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
         </div>
-      </div>
-    ))}
-  </div>
-);
-
-const TournamentCard = ({ t }) => {
+      </div>)}
+  </div>;
+const TournamentCard = ({
+  t
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const status = tournamentStatus(t);
   const statusLabel = STATUS_LABELS[status] || (status && status !== 'unknown' ? status : 'Upcoming');
   const badgeClass = styles[STATUS_BADGE_CLASS[status]] || styles.status_upcoming;
@@ -435,18 +401,18 @@ const TournamentCard = ({ t }) => {
   const prize = Number(t?.prize_pool || 0);
   const current = t?.current_participants ?? 0;
   const max = t?.max_participants ?? 0;
-
-  return (
-    <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
-      <div className={styles.tCardBanner} style={banner ? { backgroundImage: `url(${banner})` } : undefined}>
+  return <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
+      <div className={styles.tCardBanner} style={banner ? {
+      backgroundImage: `url(${banner})`
+    } : undefined}>
         <span className={`${styles.statusBadge} ${badgeClass}`}>
           {isLive && <LuRadio className={styles.liveDot} />} {statusLabel}
         </span>
-        {fee === 0 && <span className={styles.freeBadge}>FREE ENTRY</span>}
+        {fee === 0 && <span className={styles.freeBadge}>{tt("ui.free.entry.2e48", "FREE ENTRY")}</span>}
       </div>
       <div className={styles.tCardBody}>
-        <span className={styles.gameTag}>{t?.game || 'Unknown Game'}</span>
-        <h3 className={styles.tCardTitle}>{t?.name || 'Untitled Tournament'}</h3>
+        <span className={styles.gameTag}>{t?.game || tx("Unknown Game")}</span>
+        <h2 className={styles.tCardTitle}>{t?.name || tx("Untitled Tournament")}</h2>
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>
             <LuTrophy className={styles.metaIcon} />
@@ -463,21 +429,15 @@ const TournamentCard = ({ t }) => {
         </div>
         <div className={styles.tCardFooter}>
           <span className={styles.formatTag}>{formatLabel(t?.format)}</span>
-          {fee > 0 ? (
-            <span className={styles.entryFee}>{fee.toLocaleString()} VC entry</span>
-          ) : (
-            <span className={styles.entryFreeText}>Free</span>
-          )}
+          {fee > 0 ? <span className={styles.entryFee}>{fee.toLocaleString()} {tt("ui.vc.entry.454e", "VC entry")}</span> : <span className={styles.entryFreeText}>{tt("ui.free.75f5", "Free")}</span>}
         </div>
       </div>
-    </Link>
-  );
+    </Link>;
 };
-
-const Tournaments = () => (
-  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+const Tournaments = () => <Suspense fallback={<div style={{
+  minHeight: '100vh',
+  backgroundColor: '#131316'
+}} />}>
     <TournamentsContent />
-  </Suspense>
-);
-
+  </Suspense>;
 export default Tournaments;

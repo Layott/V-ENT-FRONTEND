@@ -1,5 +1,7 @@
 'use client';
 
+import { mediaUrl } from '@/lib/mediaUrl';
+import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -9,42 +11,53 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
-import {
-  formatNumber,
-  ngnFromVc,
-} from '@/components/wallet/walletHelpers';
+import { formatNumber, ngnFromVc } from '@/components/wallet/walletHelpers';
 import styles from '../wallets.module.css';
-
-const STEPS = [
-  { n: 1, lbl: 'Recipient' },
-  { n: 2, lbl: 'Amount' },
-  { n: 3, lbl: 'Review' },
-  { n: 4, lbl: 'Done' },
-];
-
-const Stepper = ({ step }) => (
-  <div className={styles.steps}>
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const STEPS = [{
+  n: 1,
+  lbl: 'Recipient'
+}, {
+  n: 2,
+  lbl: 'Amount'
+}, {
+  n: 3,
+  lbl: 'Review'
+}, {
+  n: 4,
+  lbl: 'Done'
+}];
+const Stepper = ({
+  step
+}) => {
+  // Bound here rather than in the page: this is its own component, defined at
+  // module scope, so the page's translator is not in scope for it. That is
+  // what threw "tx is not defined" at prerender.
+  const tx = useTx();
+  return <div className={styles.steps}>
     {STEPS.map((s, i) => {
-      const status = step > s.n ? 'stepDone' : step === s.n ? 'stepActive' : 'stepWait';
-      return (
-        <div key={`wrap-${s.n}`} style={{ display: 'contents' }}>
+    const status = step > s.n ? 'stepDone' : step === s.n ? 'stepActive' : 'stepWait';
+    return <div key={`wrap-${s.n}`} style={{
+      display: 'contents'
+    }}>
           <div className={`${styles.step} ${styles[status]}`}>
             <div className={styles.stepCircle}>{step > s.n ? '✓' : s.n}</div>
-            <div className={styles.stepLbl}>{s.lbl}</div>
+            <div className={styles.stepLbl}>{tx(s.lbl)}</div>
           </div>
-          {i < STEPS.length - 1 && (
-            <div className={`${styles.stepLine} ${step > s.n ? styles.stepLineDone : ''}`} />
-          )}
-        </div>
-      );
-    })}
-  </div>
-);
+          {i < STEPS.length - 1 && <div className={`${styles.stepLine} ${step > s.n ? styles.stepLineDone : ''}`} />}
+        </div>;
+  })}
+  </div>;
+};
 
 const SendPage = () => {
+  const tx = useTx();
+  const tt = useT();
   const router = useRouter();
-  const { data: session } = useSession();
-
+  const {
+    data: session
+  } = useSession();
   const [step, setStep] = useState(1);
   const [balance, setBalance] = useState(null);
   const [query, setQuery] = useState('');
@@ -57,12 +70,11 @@ const SendPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [reference, setReference] = useState('');
   const [newBalance, setNewBalance] = useState(null);
-
   const authHeaders = () => ({
     'Content-Type': 'application/json',
-    ...(session?.user?.sessionToken
-      ? { Authorization: `Bearer ${session.user.sessionToken}` }
-      : {}),
+    ...(session?.user?.sessionToken ? {
+      Authorization: `Bearer ${session.user.sessionToken}`
+    } : {})
   });
 
   // Load balance + own username (used for self-send guard)
@@ -74,7 +86,7 @@ const SendPage = () => {
     (async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
-          headers: authHeaders(),
+          headers: authHeaders()
         });
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
@@ -84,7 +96,9 @@ const SendPage = () => {
         console.error('Balance fetch error:', err);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.sessionToken]);
 
@@ -93,25 +107,30 @@ const SendPage = () => {
   // show a person who does not exist.
   useEffect(() => {
     const q = query.trim();
-    if (!q) { setRecipient(null); setRecipientError(''); return undefined; }
+    if (!q) {
+      setRecipient(null);
+      setRecipientError('');
+      return undefined;
+    }
     const token = session?.user?.sessionToken;
     if (!token) return undefined;
-
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       setRecipientLoading(true);
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/user/lookup/?q=${encodeURIComponent(q)}`,
-          { headers: { Authorization: `Bearer ${token}` }, signal: controller.signal }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user/lookup/?q=${encodeURIComponent(q)}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          signal: controller.signal
+        });
         const data = await res.json();
         if (data.status === 'success') {
           setRecipientError('');
           setRecipient(data.data.user);
         } else {
           setRecipient(null);
-          setRecipientError(data.message || 'No user found with that username.');
+          setRecipientError(data.message || tt("api.noUserFoundWithThat", "No user found with that username."));
         }
       } catch (err) {
         if (err?.name !== 'AbortError') {
@@ -122,32 +141,30 @@ const SendPage = () => {
         setRecipientLoading(false);
       }
     }, 320);
-
-    return () => { clearTimeout(timer); controller.abort(); };
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query, session?.user?.sessionToken]);
-
   const numericAmount = Number(amount) || 0;
   const balanceAfter = (balance ?? 0) - numericAmount;
-  const canContinueAmount =
-    numericAmount > 0 && balance != null && numericAmount <= balance;
-
+  const canContinueAmount = numericAmount > 0 && balance != null && numericAmount <= balance;
   const goReview = () => {
     if (!recipient) {
-      setError('Pick a valid recipient first.');
+      setError(tt("msg.pickAValidRecipientFirst", "Pick a valid recipient first."));
       return;
     }
     if (!numericAmount || numericAmount < 1) {
-      setError('Enter how much you want to send.');
+      setError(tt("msg.enterHowMuchYouWant", "Enter how much you want to send."));
       return;
     }
     if (balance != null && numericAmount > balance) {
-      setError('Insufficient balance.');
+      setError(tt("msg.insufficientBalance", "Insufficient balance."));
       return;
     }
     setError('');
     setStep(3);
   };
-
   const handleSend = async () => {
     setSubmitting(true);
     setError('');
@@ -158,12 +175,12 @@ const SendPage = () => {
         body: JSON.stringify({
           recipient_username: recipient.username,
           amount: numericAmount,
-          note: memo,
-        }),
+          note: memo
+        })
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(data?.message || 'Transfer failed.');
+        setError(data?.message || tt("api.transferFailed", "Transfer failed."));
         setSubmitting(false);
         return;
       }
@@ -172,21 +189,13 @@ const SendPage = () => {
       setStep(4);
     } catch (err) {
       console.error(err);
-      setError('Network error. Please try again.');
+      setError(tt("msg.networkErrorPleaseTryAgain", "Network error. Please try again."));
     } finally {
       setSubmitting(false);
     }
   };
-
-  const initials = (recipient?.full_name || recipient?.username || '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((s) => s[0]?.toUpperCase())
-    .join('') || '?';
-
-  return (
-    <div className={styles.pageContainer}>
+  const initials = (recipient?.full_name || recipient?.username || '').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '?';
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -196,186 +205,139 @@ const SendPage = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
-              <h1 className={styles.pageTitle}>Send VENT COINS</h1>
-              <p className={styles.pageSubtitle}>Transfer coins instantly to another V-ENT user.</p>
+              <h1 className={styles.pageTitle}>{tt("ui.send.vent.coins.6a21", "Send VENT COINS")}</h1>
+              <p className={styles.pageSubtitle}>{tt("ui.transfer.coins.instantly.another.01bd", "Transfer coins instantly to another V-ENT user.")}</p>
             </div>
           </div>
 
           <div className={styles.formCard}>
             <Stepper step={step} />
 
-            {step === 1 && (
-              <>
+            {step === 1 && <>
                 <div className={styles.infoRow}>
-                  <span className={styles.infoRowLabel}>Your balance</span>
+                  <span className={styles.infoRowLabel}>{tt("ui.balance.ec62", "Your balance")}</span>
                   <span className={styles.infoRowVal}>{formatNumber(balance ?? 0)} VC</span>
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Recipient (username or email)</label>
-                  <input
-                    type="text"
-                    className={styles.formInput}
-                    placeholder="@username or user@email.com"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    autoFocus
-                  />
+                  <label className={styles.formLabel}>{tt("ui.recipient.username.email.9e0a", "Recipient (username or email)")}<InfoTip id="sendRecipient" /></label>
+                  <input type="text" className={styles.formInput} placeholder={tt("ui.username.user.email.com.26ca", "@username or user@email.com")} value={query} onChange={e => setQuery(e.target.value)} autoFocus />
                 </div>
 
-                {recipient && (
-                  <div className={styles.recipientCard}>
+                {recipient && <div className={styles.recipientCard}>
                     <div className={styles.recipientAvatar}>
-                      {recipient.avatar ? (
-                        <Image
-                          src={recipient.avatar}
-                          width={40}
-                          height={40}
-                          alt={recipient.full_name}
-                          unoptimized
-                        />
-                      ) : (
-                        initials
-                      )}
+                      {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.full_name} unoptimized /> : initials}
                     </div>
                     <div className={styles.recipientInfo}>
                       <p className={styles.recipientName}>{recipient.full_name}</p>
                       <p className={styles.recipientHandle}>@{recipient.username}</p>
                     </div>
                     <span className={`${styles.recipientStatus} ${styles.recipientFound}`}>
-                      ✓ Found
+                      {tt("ui.found.d7a7", "✓ Found")}
                     </span>
-                  </div>
-                )}
+                  </div>}
 
-                {recipientLoading && !recipient && (
-                  <p className={styles.pageSubtitle}>Checking that username...</p>
-                )}
+                {recipientLoading && !recipient && <p className={styles.pageSubtitle}>{tt("ui.checking.username.2eef", "Checking that username...")}</p>}
 
-                {recipientError && !recipientLoading && (
-                  <div className={`${styles.notice} ${styles.noticeError}`}>{recipientError}</div>
-                )}
+                {recipientError && !recipientLoading && <div className={`${styles.notice} ${styles.noticeError}`}>{recipientError}</div>}
 
                 <div className={styles.btnRow}>
-                  <Link href="/wallets" className={`${styles.btn} ${styles.btnGhost}`}>Cancel</Link>
-                  <button
-                    type="button"
-                    className={`${styles.btn} ${styles.btnRed}`}
-                    onClick={() => recipient && setStep(2)}
-                    disabled={!recipient}
-                  >
-                    Continue
+                  <Link href="/wallets" className={`${styles.btn} ${styles.btnGhost}`}>{tt("ui.cancel.77df", "Cancel")}</Link>
+                  <button type="button" className={`${styles.btn} ${styles.btnRed}`} onClick={() => recipient && setStep(2)} disabled={!recipient}>
+                    {tt("ui.continue.2e02", "Continue")}
                   </button>
                 </div>
-              </>
-            )}
+              </>}
 
-            {step === 2 && recipient && (
-              <>
+            {step === 2 && recipient && <>
                 <div className={styles.recipientCard}>
                   <div className={styles.recipientAvatar}>
-                    {recipient.avatar ? (
-                      <Image src={recipient.avatar} width={40} height={40} alt={recipient.full_name} unoptimized />
-                    ) : initials}
+                    {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.full_name} unoptimized /> : initials}
                   </div>
                   <div className={styles.recipientInfo}>
                     <p className={styles.recipientName}>{recipient.full_name}</p>
                     <p className={styles.recipientHandle}>@{recipient.username}</p>
                   </div>
-                  <button
-                    type="button"
-                    className={styles.btnGhost}
-                    style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '0.78rem', cursor: 'pointer' }}
-                    onClick={() => setStep(1)}
-                  >
-                    Change
+                  <button type="button" className={styles.btnGhost} style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '0.78rem',
+                cursor: 'pointer'
+              }} onClick={() => setStep(1)}>
+                    {tt("ui.change.64fb", "Change")}
                   </button>
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Amount (VENT COINS)</label>
+                  <label className={styles.formLabel}>{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")}<InfoTip id="ventCoins" /></label>
                   <div className={styles.inputPrefixWrap}>
                     <span className={styles.prefixTag}>VC</span>
-                    <input
-                      type="number"
-                      placeholder="e.g. 50"
-                      min="1"
-                      max={balance ?? undefined}
-                      value={amount}
-                      onChange={(e) => { setAmount(e.target.value); setError(''); }}
-                      autoFocus
-                    />
+                    <input type="number" placeholder="e.g. 50" min="1" max={balance ?? undefined} value={amount} onChange={e => {
+                  setAmount(e.target.value);
+                  setError('');
+                }} autoFocus />
                   </div>
                 </div>
 
                 <div className={styles.infoRow}>
-                  <span className={styles.infoRowLabel}>Balance after</span>
-                  <span
-                    className={`${styles.infoRowVal} ${balanceAfter < 0 ? styles.infoRed : styles.infoNeutral}`}
-                  >
+                  <span className={styles.infoRowLabel}>{tt("ui.balance.after.50e7", "Balance after")}</span>
+                  <span className={`${styles.infoRowVal} ${balanceAfter < 0 ? styles.infoRed : styles.infoNeutral}`}>
                     {numericAmount > 0 ? `${formatNumber(balanceAfter)} VC` : `${formatNumber(balance ?? 0)} VC`}
                   </span>
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Memo (optional)</label>
-                  <input
-                    type="text"
-                    className={styles.formInput}
-                    placeholder="e.g. team contribution"
-                    value={memo}
-                    onChange={(e) => setMemo(e.target.value)}
-                    maxLength={120}
-                  />
+                  <label className={styles.formLabel}>{tt("ui.memo.optional.40c6", "Memo (optional)")}<InfoTip id="sendMemo" /></label>
+                  <input type="text" className={styles.formInput} placeholder={tt("ui.e.g.team.contribution.6070", "e.g. team contribution")} value={memo} onChange={e => setMemo(e.target.value)} maxLength={120} />
                 </div>
 
                 {error && <div className={`${styles.notice} ${styles.noticeError}`}>{error}</div>}
 
                 <div className={styles.btnRow}>
                   <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setStep(1)}>
-                    Back
+                    {tt("ui.back.b52b", "Back")}
                   </button>
-                  <button
-                    type="button"
-                    className={`${styles.btn} ${styles.btnRed}`}
-                    onClick={goReview}
-                    disabled={!canContinueAmount}
-                  >
-                    Review
+                  <button type="button" className={`${styles.btn} ${styles.btnRed}`} onClick={goReview} disabled={!canContinueAmount}>
+                    {tt("ui.review.e29a", "Review")}
                   </button>
                 </div>
-              </>
-            )}
+              </>}
 
-            {step === 3 && recipient && (
-              <>
-                <h3 style={{ fontSize: '1rem', margin: '0 0 0.4rem' }}>Review your transfer</h3>
-                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', marginBottom: '1rem', fontFamily: 'Inter, sans-serif' }}>
-                  Double-check the recipient and amount. This action cannot be undone.
+            {step === 3 && recipient && <>
+                <h2 style={{
+              fontSize: '1rem',
+              margin: '0 0 0.4rem'
+            }}>{tt("ui.review.transfer.77cc", "Review your transfer")}</h2>
+                <p style={{
+              fontSize: '0.82rem',
+              color: 'rgba(255,255,255,0.5)',
+              marginBottom: '1rem',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+                  {tt("ui.double.check.recipient.amount.e347", "Double-check the recipient and amount. This action cannot be undone.")}
                 </p>
 
                 <div className={styles.summaryList}>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>To</span>
+                    <span className={styles.summaryKey}>{tt("ui.text.ae79", "To")}</span>
                     <span className={styles.summaryVal}>{recipient.full_name} (@{recipient.username})</span>
                   </div>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>Amount</span>
+                    <span className={styles.summaryKey}>{tt("ui.amount.43dc", "Amount")}</span>
                     <span className={`${styles.summaryVal} ${styles.summaryRed}`}>-{formatNumber(numericAmount)} VC</span>
                   </div>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>≈ NGN value</span>
+                    <span className={styles.summaryKey}>{tt("ui.ngn.value.bb32", "≈ NGN value")}</span>
                     <span className={styles.summaryVal}>₦{formatNumber(ngnFromVc(numericAmount))}</span>
                   </div>
-                  {memo && (
-                    <div className={styles.summaryRow}>
-                      <span className={styles.summaryKey}>Memo</span>
+                  {memo && <div className={styles.summaryRow}>
+                      <span className={styles.summaryKey}>{tt("ui.memo.1fd7", "Memo")}</span>
                       <span className={styles.summaryVal}>{memo}</span>
-                    </div>
-                  )}
+                    </div>}
                   <div className={styles.summaryHr} />
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>Balance after</span>
+                    <span className={styles.summaryKey}>{tt("ui.balance.after.50e7", "Balance after")}</span>
                     <span className={styles.summaryVal}>{formatNumber((balance ?? 0) - numericAmount)} VC</span>
                   </div>
                 </div>
@@ -384,68 +346,63 @@ const SendPage = () => {
 
                 <div className={styles.btnRow}>
                   <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setStep(2)} disabled={submitting}>
-                    Back
+                    {tt("ui.back.b52b", "Back")}
                   </button>
                   <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handleSend} disabled={submitting}>
-                    {submitting ? 'Sending…' : `Send ${formatNumber(numericAmount)} VC`}
+                    {submitting ? tx("Sending…") : `Send ${formatNumber(numericAmount)} VC`}
                   </button>
                 </div>
-              </>
-            )}
+              </>}
 
-            {step === 4 && recipient && (
-              <div className={styles.successCenter}>
+            {step === 4 && recipient && <div className={styles.successCenter}>
                 <div className={styles.successIcon}>
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--v-ent-gold)" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
-                <h3 className={styles.successTitle}>Transfer Successful</h3>
+                <h2 className={styles.successTitle}>{tt("ui.transfer.successful.9bd2", "Transfer Successful")}</h2>
                 <p className={styles.successSub}>
-                  <strong style={{ color: 'var(--v-ent-gold)' }}>{formatNumber(numericAmount)} VC</strong> sent to <strong style={{ color: 'var(--primary-bg)' }}>@{recipient.username}</strong>.
+                  <strong style={{
+                color: 'var(--v-ent-gold)'
+              }}>{formatNumber(numericAmount)} VC</strong> {tt("ui.sent.0a7e", "sent to")} <strong style={{
+                color: 'var(--primary-bg)'
+              }}>@{recipient.username}</strong>.
                 </p>
 
-                <div className={styles.summaryList} style={{ textAlign: 'left' }}>
+                <div className={styles.summaryList} style={{
+              textAlign: 'left'
+            }}>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>Reference</span>
+                    <span className={styles.summaryKey}>{tt("ui.reference.db1c", "Reference")}</span>
                     <span className={`${styles.summaryVal} ${styles.summaryRef}`}>{reference}</span>
                   </div>
-                  {newBalance != null && (
-                    <div className={styles.summaryRow}>
-                      <span className={styles.summaryKey}>New balance</span>
+                  {newBalance != null && <div className={styles.summaryRow}>
+                      <span className={styles.summaryKey}>{tt("ui.new.balance.193e", "New balance")}</span>
                       <span className={`${styles.summaryVal} ${styles.summaryGrn}`}>{formatNumber(newBalance)} VC</span>
-                    </div>
-                  )}
+                    </div>}
                 </div>
 
                 <div className={styles.btnRow}>
-                  <button
-                    type="button"
-                    className={`${styles.btn} ${styles.btnGhost}`}
-                    onClick={() => {
-                      setStep(1);
-                      setQuery('');
-                      setRecipient(null);
-                      setAmount('');
-                      setMemo('');
-                      setReference('');
-                    }}
-                  >
-                    Send another
+                  <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => {
+                setStep(1);
+                setQuery('');
+                setRecipient(null);
+                setAmount('');
+                setMemo('');
+                setReference('');
+              }}>
+                    {tt("ui.send.another.00e1", "Send another")}
                   </button>
                   <button type="button" className={`${styles.btn} ${styles.btnRed}`} onClick={() => router.push('/wallets')}>
-                    Done
+                    {tt("ui.done.e9b4", "Done")}
                   </button>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </main>
 
       <BottomMenu />
-    </div>
-  );
+    </div>;
 };
-
 export default SendPage;

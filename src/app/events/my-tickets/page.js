@@ -1,53 +1,49 @@
-'use client'
+'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import {
-  FaTicketAlt,
-  FaQrcode,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaRegClock,
-} from 'react-icons/fa';
-import {
-  IoCalendarOutline,
-  IoLocationOutline,
-} from 'react-icons/io5';
+import { FaTicketAlt, FaQrcode, FaCheckCircle, FaTimesCircle, FaRegClock } from 'react-icons/fa';
+import { IoCalendarOutline, IoLocationOutline } from 'react-icons/io5';
 import { MdOutlineClose } from 'react-icons/md';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './my-tickets.module.css';
-
-const STATUS_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'active', label: 'Active' },
-  { id: 'used', label: 'Used' },
-  { id: 'refunded', label: 'Refunded' },
-];
-
-const formatDate = (iso) => {
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const STATUS_FILTERS = [{
+  id: 'all',
+  label: 'All'
+}, {
+  id: 'active',
+  label: 'Active'
+}, {
+  id: 'used',
+  label: 'Used'
+}, {
+  id: 'refunded',
+  label: 'Refunded'
+}];
+const formatDate = iso => {
   if (!iso) return '-';
   return new Date(iso).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
-    year: 'numeric',
+    year: 'numeric'
   });
 };
-
-const formatDateTime = (iso) => {
+const formatDateTime = iso => {
   if (!iso) return '-';
   return new Date(iso).toLocaleString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit',
+    minute: '2-digit'
   });
 };
-
 const tierClass = (tier = '') => {
   const t = tier.toLowerCase();
   if (t.includes('vip')) return 'vip';
@@ -58,9 +54,12 @@ const tierClass = (tier = '') => {
 // A REAL scannable QR of the ticket code. The previous implementation drew a
 // decorative grid from a seed - it looked like a QR but encoded nothing, so it
 // could never be scanned at the door.
-const TicketQr = ({ value, size = 220, className }) => {
+const TicketQr = ({
+  value,
+  size = 220,
+  className
+}) => {
   const canvasRef = useRef(null);
-
   useEffect(() => {
     if (!canvasRef.current || !value) return;
     let cancelled = false;
@@ -71,24 +70,32 @@ const TicketQr = ({ value, size = 220, className }) => {
         await QRCode.toCanvas(canvasRef.current, value, {
           width: size,
           margin: 1,
-          color: { dark: '#000000', light: '#ffffff' },
-          errorCorrectionLevel: 'M',
+          color: {
+            dark: '#000000',
+            light: '#ffffff'
+          },
+          errorCorrectionLevel: 'M'
         });
       } catch {
         // Leave the canvas blank - the code is always shown as text beneath it.
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [value, size]);
-
   return <canvas ref={canvasRef} className={className} width={size} height={size} aria-label={`Ticket ${value}`} />;
 };
 
 // GET /event/my-tickets/ returns nested event/tier objects and the API's own
 // status vocabulary. Flatten it into what this page renders.
-const STATUS_MAP = { valid: 'active', checked_in: 'used', refunded: 'refunded', cancelled: 'refunded' };
-
-const normaliseTicket = (t) => ({
+const STATUS_MAP = {
+  valid: 'active',
+  checked_in: 'used',
+  refunded: 'refunded',
+  cancelled: 'refunded'
+};
+const normaliseTicket = t => ({
   ...t,
   id: t.id,
   code: t.code,
@@ -100,29 +107,30 @@ const normaliseTicket = (t) => ({
   event_date: t.event?.start_date || t.event?.event_date || null,
   location: t.event?.location || t.event?.event_link || '',
   price_vc: t.price_vc,
-  attendee_name: t.attendee_name || '',
+  attendee_name: t.attendee_name || ''
 });
-
 const MyTickets = () => {
-  const { data: session } = useSession();
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [activeTicket, setActiveTicket] = useState(null);
-
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   }), [session?.user?.sessionToken]);
-
   useEffect(() => {
     if (!session?.user?.sessionToken) return;
     const fetchTickets = async () => {
       setLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/my-tickets/`, {
-          headers: authHeaders(),
+          headers: authHeaders()
         });
         const data = await res.json();
         if (data.status === 'success') {
@@ -136,38 +144,35 @@ const MyTickets = () => {
     };
     fetchTickets();
   }, [authHeaders, session?.user?.sessionToken]);
-
   const filtered = useMemo(() => {
     let out = [...tickets];
     if (statusFilter !== 'all') {
-      out = out.filter((t) => t.status === statusFilter);
+      out = out.filter(t => t.status === statusFilter);
     }
     if (search.trim()) {
       const q = search.toLowerCase();
-      out = out.filter(
-        (t) =>
-          (t.event_name || '').toLowerCase().includes(q) ||
-          (t.location || '').toLowerCase().includes(q) ||
-          (t.qr_code || '').toLowerCase().includes(q)
-      );
+      out = out.filter(t => (t.event_name || '').toLowerCase().includes(q) || (t.location || '').toLowerCase().includes(q) || (t.qr_code || '').toLowerCase().includes(q));
     }
     return out;
   }, [tickets, statusFilter, search]);
-
   const counts = useMemo(() => {
-    const c = { all: tickets.length, active: 0, used: 0, refunded: 0 };
-    tickets.forEach((t) => { if (c[t.status] !== undefined) c[t.status] += 1; });
+    const c = {
+      all: tickets.length,
+      active: 0,
+      used: 0,
+      refunded: 0
+    };
+    tickets.forEach(t => {
+      if (c[t.status] !== undefined) c[t.status] += 1;
+    });
     return c;
   }, [tickets]);
-
-  const statusIcon = (s) => {
+  const statusIcon = s => {
     if (s === 'active') return <FaCheckCircle />;
     if (s === 'used') return <FaRegClock />;
     return <FaTimesCircle />;
   };
-
-  return (
-    <div className={styles.pageContainer}>
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -177,67 +182,43 @@ const MyTickets = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.headerRow}>
             <div>
-              <h2 className={styles.pageTitle}>
-                <FaTicketAlt className={styles.titleIcon} /> My Tickets
-              </h2>
+              <h1 className={styles.pageTitle}>
+                <FaTicketAlt className={styles.titleIcon} /> {tt("ui.my.tickets.4ff2", "My Tickets")}
+              </h1>
               <p className={styles.pageSub}>
-                Your purchased event passes - show the QR at the door.
+                {tt("ui.purchased.event.passes.show.be01", "Your purchased event passes - show the QR at the door.")}
               </p>
             </div>
             <Link href="/events" className={`${styles.browseBtn} goldBTN`}>
-              Browse events
+              {tt("ui.browse.events.2251", "Browse events")}
             </Link>
           </div>
 
           <div className={styles.controlsRow}>
             <div className={styles.filterRow}>
-              {STATUS_FILTERS.map((f) => (
-                <button
-                  key={f.id}
-                  className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`}
-                  onClick={() => setStatusFilter(f.id)}
-                  type="button"
-                >
-                  {f.label}
+              {STATUS_FILTERS.map(f => <button key={f.id} className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`} onClick={() => setStatusFilter(f.id)} type="button">
+                  {tx(f.label)}
                   <span className={styles.filterCount}>{counts[f.id] || 0}</span>
-                </button>
-              ))}
+                </button>)}
             </div>
-            <input
-              type="text"
-              placeholder="Search by event, code, venue…"
-              className={styles.searchInput}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <input type="text" placeholder={tt("ui.search.event.code.venue.0a2f", "Search by event, code, venue…")} className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} />
           </div>
 
-          {loading ? (
-            <p className={styles.stateText}>Loading your tickets…</p>
-          ) : filtered.length === 0 ? (
-            <div className={styles.emptyState}>
+          {loading ? <p className={styles.stateText}>{tt("ui.loading.tickets.7d1b", "Loading your tickets…")}</p> : filtered.length === 0 ? <div className={styles.emptyState}>
               <FaTicketAlt className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>
-                {tickets.length === 0 ? 'No tickets yet.' : 'No tickets match.'}
+                {tickets.length === 0 ? tx("No tickets yet.") : tx("No tickets match.")}
               </p>
               <p className={styles.emptySub}>
-                {tickets.length === 0 ? 'Buy a ticket to see it here.' : 'Try a different filter.'}
+                {tickets.length === 0 ? tx("Buy a ticket to see it here.") : tx("Try a different filter.")}
               </p>
               <Link href="/events" className={`${styles.emptyBtn} goldBTN`}>
-                Browse events
+                {tt("ui.browse.events.2251", "Browse events")}
               </Link>
-            </div>
-          ) : (
-            <div className={styles.ticketGrid}>
-              {filtered.map((t) => {
-                const tCls = tierClass(t.tier);
-                return (
-                  <button
-                    key={t.id}
-                    className={styles.ticketCard}
-                    onClick={() => setActiveTicket(t)}
-                    type="button"
-                  >
+            </div> : <div className={styles.ticketGrid}>
+              {filtered.map(t => {
+            const tCls = tierClass(t.tier);
+            return <button key={t.id} className={styles.ticketCard} onClick={() => setActiveTicket(t)} type="button">
                     <div className={`${styles.ticketLeft} ${styles['leftTier_' + tCls]}`}>
                       <div className={styles.qrThumb}>
                         <TicketQr value={t.code} size={92} className={styles.qrCanvasSmall} />
@@ -256,7 +237,7 @@ const MyTickets = () => {
                         </span>
                       </div>
 
-                      <h3 className={styles.eventName}>{t.event_name}</h3>
+                      <h2 className={styles.eventName}>{t.event_name}</h2>
 
                       <div className={styles.metaRow}>
                         <span className={styles.metaItem}>
@@ -268,29 +249,23 @@ const MyTickets = () => {
                       </div>
 
                       <p className={styles.attendee}>
-                        Attendee: {t.holder?.full_name || t.attendee_name || '-'}
+                        {tt("ui.attendee.7124", "Attendee:")} {t.holder?.full_name || t.attendee_name || '-'}
                       </p>
 
-                      <span className={styles.viewHint}>Tap to view full QR →</span>
+                      <span className={styles.viewHint}>{tt("ui.tap.view.full.qr.337d", "Tap to view full QR →")}</span>
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                  </button>;
+          })}
+            </div>}
         </div>
       </main>
 
       <BottomMenu />
 
       {/* Full QR modal */}
-      {activeTicket && (
-        <div
-          className={styles.modalOverlay}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setActiveTicket(null);
-          }}
-        >
+      {activeTicket && <div className={styles.modalOverlay} onClick={e => {
+      if (e.target === e.currentTarget) setActiveTicket(null);
+    }}>
           <div className={styles.qrModal}>
             <div className={styles.qrModalHeader}>
               <div>
@@ -299,12 +274,7 @@ const MyTickets = () => {
                   {formatDateTime(activeTicket.event_date)} • {activeTicket.location}
                 </p>
               </div>
-              <button
-                className={styles.qrModalClose}
-                onClick={() => setActiveTicket(null)}
-                type="button"
-                aria-label="Close"
-              >
+              <button className={styles.qrModalClose} onClick={() => setActiveTicket(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
                 <MdOutlineClose />
               </button>
             </div>
@@ -317,47 +287,41 @@ const MyTickets = () => {
 
               <div className={styles.qrFacts}>
                 <div className={styles.qrFact}>
-                  <span className={styles.qrFactLabel}>Tier</span>
+                  <span className={styles.qrFactLabel}>{tt("ui.tier.5bd4", "Tier")}</span>
                   <span className={styles.qrFactValue}>{activeTicket.tier}</span>
                 </div>
                 <div className={styles.qrFact}>
-                  <span className={styles.qrFactLabel}>Status</span>
+                  <span className={styles.qrFactLabel}>{tt("ui.status.bae7", "Status")}</span>
                   <span className={`${styles.qrFactValue} ${styles['status_' + activeTicket.status]}`}>
                     {activeTicket.status}
                   </span>
                 </div>
                 <div className={styles.qrFact}>
-                  <span className={styles.qrFactLabel}>Attendee</span>
+                  <span className={styles.qrFactLabel}>{tt("ui.attendee.aabc", "Attendee")}</span>
                   <span className={styles.qrFactValue}>
                     {activeTicket.holder?.full_name || activeTicket.attendee_name || '-'}
                   </span>
                 </div>
                 <div className={styles.qrFact}>
-                  <span className={styles.qrFactLabel}>Purchased</span>
+                  <span className={styles.qrFactLabel}>{tt("ui.purchased.8b70", "Purchased")}</span>
                   <span className={styles.qrFactValue}>
                     {formatDate(activeTicket.purchased_at)}
                   </span>
                 </div>
                 <div className={styles.qrFact}>
-                  <span className={styles.qrFactLabel}>Price</span>
+                  <span className={styles.qrFactLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.qrFactValue}>
                     ₦{Number(activeTicket.price_ngn || activeTicket.price || 0).toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              <Link
-                href={`/events/${activeTicket.slug || activeTicket.event_id}`}
-                className={`${styles.viewEventBtn} redBTN`}
-              >
-                View event
+              <Link href={`/events/${activeTicket.slug || activeTicket.event_id}`} className={`${styles.viewEventBtn} redBTN`}>
+                {tt("ui.view.event.7c27", "View event")}
               </Link>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default MyTickets;

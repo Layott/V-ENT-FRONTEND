@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import { TbUsers } from "react-icons/tb";
 import { LiaWalletSolid } from "react-icons/lia";
 import { IoAnalyticsSharp } from "react-icons/io5";
@@ -5,12 +8,13 @@ import landingStyles from '@/styles/landing/landing.module.css'
 import styles from './other-features.module.css'
 
 const OtherFeatures = () => {
+  const tt = useT();
 
   return (
     <div className={`${landingStyles.otherFeaturesContainer} ${styles.otherFeaturesContainer}`}>
         <div className={`${landingStyles.innerOtherFeaturesContainer} ${styles.innerOtherFeaturesContainer}`}>
             <div className={styles.headingTextContainer}>
-                <h1>Other Features</h1>
+                <h2>{tt('landing.otherFeatures', 'Other features')}</h2>
             </div>
 
             <div className={styles.cardsContainer}>
@@ -19,11 +23,11 @@ const OtherFeatures = () => {
                         <LiaWalletSolid className={styles.walletIcon} />
                     </div>
 
-                    <h2>Wallet System</h2>
+                    <h2>{tt('landing.walletSystem', 'Wallet')}</h2>
 
                     <div className={styles.paragraphContainer}>
                         <p>
-                            Secure, multi-functional wallets for teams, users, and organizations.
+                            {tt("landing.feature.wallet", "Secure, multi-functional wallets for teams, users, and organizations.")}
                         </p>
                     </div>
 
@@ -34,11 +38,11 @@ const OtherFeatures = () => {
                         <TbUsers className={styles.communityIcon} />
                     </div>
 
-                    <h2>Community</h2>
+                    <h2>{tt('landing.community', 'Community')}</h2>
 
                     <div className={styles.paragraphContainer}>
                         <p>
-                            Join thriving communities based on your favorite games and anime genres.
+                            {tt("landing.feature.community", "Join thriving communities based on your favorite games and anime genres.")}
                         </p>
                     </div>
 
@@ -49,11 +53,11 @@ const OtherFeatures = () => {
                         <IoAnalyticsSharp className={styles.analyticIcon} />
                     </div>
 
-                    <h2>Analytics</h2>
+                    <h2>{tt('landing.analytics', 'Analytics')}</h2>
 
                     <div className={styles.paragraphContainer}>
                         <p>
-                            Track team and individual performance metrics in real-time.
+                            {tt("landing.feature.analytics", "Track team and individual performance metrics in real-time.")}
                         </p>
                     </div>
 

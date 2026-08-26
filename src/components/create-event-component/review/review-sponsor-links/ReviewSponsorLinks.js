@@ -1,3 +1,4 @@
+import { mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image';
 import ventLogo from '@/images/logo_mark_red.png';
 import redBullLogo from '@/images/red_bull_logo.svg';
@@ -47,7 +48,7 @@ const SponsorCard = ({ sponsor, index }) => (
     <p>Sponsor {index + 1}</p>
     <div className={styles.sponsorContainer}>
       <div className={styles.logoImageContainer}>
-        <Image src={sponsor.logo} alt={`${sponsor.name} Logo`} />
+        <Image src={mediaUrl(sponsor.logo)} alt={`${sponsor.name} Logo`} />
       </div>
       <div className={styles.sponsorNameAndUsernameContainer}>
         <h3 className={bioInfoStyles.headerH3}>{sponsor.name}</h3>

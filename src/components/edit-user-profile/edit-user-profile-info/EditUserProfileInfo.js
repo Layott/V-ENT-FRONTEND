@@ -9,10 +9,16 @@ import styles from './edit-user-profile-info.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const EditUserProfileInfo = () => {
+  const tx = useTx();
+  const tt = useT();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const {
+    data: session,
+    status
+  } = useSession();
   const [profileData, setProfileData] = useState({
     login_session_token: '',
     profile_pic: null,
@@ -22,33 +28,26 @@ const EditUserProfileInfo = () => {
     description: '',
     country: '',
     state: '',
-    interests: [],
+    interests: []
   });
-
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
   const [loading, setLoading] = useState(false);
   const [isLoadingUserData, setIsLoadingUserData] = useState(true);
-
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
-
-  const getAbsoluteUrl = useCallback((url) => {
+  const getAbsoluteUrl = useCallback(url => {
     if (!url) return null;
-    return url.startsWith("http")
-      ? url
-      : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+    return url.startsWith("http") ? url : `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
   }, [baseUrl]);
-
-  const processUserData = useCallback((data) => {
+  const processUserData = useCallback(data => {
     if (!data) return null;
-    
-    const processed = { ...data };
-    
+    const processed = {
+      ...data
+    };
     if (processed.profile_pic && !processed.profile_picture) {
       processed.profile_picture = processed.profile_pic;
     }
-    
     processed.profile_picture = getAbsoluteUrl(processed.profile_picture);
     processed.banner = getAbsoluteUrl(processed.banner);
 
@@ -64,7 +63,6 @@ const EditUserProfileInfo = () => {
         processed.interests = [];
       }
     }
-
     console.log('Processed user data for edit:', processed);
     return processed;
   }, [getAbsoluteUrl]);
@@ -75,10 +73,12 @@ const EditUserProfileInfo = () => {
     // Clear local storage data
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userProfilePicture");
-    
+
     // Sign out from NextAuth
-    await signOut({ redirect: false });
-    
+    await signOut({
+      redirect: false
+    });
+
     // Redirect to login page
     router.push("/login");
   }, [router]);
@@ -87,46 +87,41 @@ const EditUserProfileInfo = () => {
   useEffect(() => {
     console.log("Edit Profile - Current session status:", status);
     console.log("Edit Profile - Session data:", session);
-    
     if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
-
     const fetchUserProfile = async () => {
       if (status === "authenticated" && session?.user?.sessionToken) {
         setIsLoadingUserData(true);
         const sessionToken = session.user.sessionToken;
         const userId = session.user.id;
-        
-        setProfileData((prevData) => ({
+        setProfileData(prevData => ({
           ...prevData,
-          login_session_token: sessionToken,
+          login_session_token: sessionToken
         }));
-        
         console.log("==== EDIT PROFILE API DEBUG ====");
         console.log("User ID:", userId);
         console.log("API Endpoint:", VENT.USER_PROFILE);
-        
         try {
           // Try with GET method first (mirroring user profile approach)
-          const timestamp = new Date().getTime(); 
+          const timestamp = new Date().getTime();
           console.log("Attempting GET request for edit profile...");
           let response = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&t=${timestamp}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
+              "Content-Type": "application/json"
             }
           });
-          
+
           // Check for unauthorized, token expired, or bad request responses
           if (response.status === 401 || response.status === 403 || response.status === 400) {
             console.log("Session expired, unauthorized, or bad request:", response.status);
             await handleSessionExpiration();
             return;
           }
-          
+
           // If GET fails, try again with POST method
           if (response.status === 405) {
             console.log("GET method not allowed, trying POST...");
@@ -134,11 +129,13 @@ const EditUserProfileInfo = () => {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
               },
-              body: JSON.stringify({ user_id: userId }),
+              body: JSON.stringify({
+                user_id: userId
+              })
             });
-            
+
             // Check for unauthorized, token expired, or bad request responses
             if (response.status === 401 || response.status === 403 || response.status === 400) {
               console.log("Session expired, unauthorized, or bad request:", response.status);
@@ -146,9 +143,7 @@ const EditUserProfileInfo = () => {
               return;
             }
           }
-          
           console.log("Edit Profile response status:", response.status);
-          
           if (!response.ok) {
             // Handle 400 error by logging out user
             if (response.status === 400) {
@@ -161,17 +156,16 @@ const EditUserProfileInfo = () => {
               method: "GET",
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
               }
             });
-            
+
             // Check for unauthorized, token expired, or bad request responses
             if (tokenResponse.status === 401 || tokenResponse.status === 403 || tokenResponse.status === 400) {
               console.log("Session expired, unauthorized, or bad request:", tokenResponse.status);
               await handleSessionExpiration();
               return;
             }
-            
             if (!tokenResponse.ok) {
               // Handle 400 error by logging out user
               if (tokenResponse.status === 400) {
@@ -181,23 +175,19 @@ const EditUserProfileInfo = () => {
               }
               // Try with session_token as a query param
               console.log("Trying with session_token as query param");
-              const tokenParamResponse = await fetch(
-                `${VENT.USER_PROFILE}?user_id=${userId}&session_token=${sessionToken}&t=${timestamp}`, 
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  }
+              const tokenParamResponse = await fetch(`${VENT.USER_PROFILE}?user_id=${userId}&session_token=${sessionToken}&t=${timestamp}`, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json"
                 }
-              );
-              
+              });
+
               // Check for unauthorized, token expired, or bad request responses
               if (tokenParamResponse.status === 401 || tokenParamResponse.status === 403) {
                 console.log("Session expired or unauthorized:", tokenParamResponse.status);
                 await handleSessionExpiration();
                 return;
               }
-              
               if (!tokenParamResponse.ok) {
                 // Handle 400 error by logging out user
                 if (tokenParamResponse.status === 400) {
@@ -207,32 +197,22 @@ const EditUserProfileInfo = () => {
                 }
                 throw new Error(`Failed to fetch profile: ${tokenParamResponse.status}`);
               }
-              
               const responseText = await tokenParamResponse.text();
               return handleProfileResponse(responseText);
             }
-            
             const responseText = await tokenResponse.text();
             return handleProfileResponse(responseText);
           }
-          
           const responseText = await response.text();
           return handleProfileResponse(responseText);
-          
         } catch (err) {
           console.error("Final error:", err.message);
-          
+
           // Check if error is related to authentication/authorization or bad request
-          if (err.message.includes("401") || 
-              err.message.includes("403") || 
-              err.message.includes("400") ||
-              err.message.includes("unauthorized") || 
-              err.message.includes("token") || 
-              err.message.includes("expired")) {
+          if (err.message.includes("401") || err.message.includes("403") || err.message.includes("400") || err.message.includes("unauthorized") || err.message.includes("token") || err.message.includes("expired")) {
             await handleSessionExpiration();
             return;
           }
-          
           setSnackbarMessage(`Failed to load profile data. ${err.message}`);
           setSnackbarType('error');
           setOpen(true);
@@ -244,40 +224,31 @@ const EditUserProfileInfo = () => {
         setIsLoadingUserData(false);
       }
     };
-    
+
     // Helper function to handle the profile response
-    const handleProfileResponse = (responseText) => {
+    const handleProfileResponse = responseText => {
       console.log("Edit Profile Raw response:", responseText);
-      
       try {
         const data = JSON.parse(responseText);
         console.log("Edit Profile Parsed data:", data);
-        
+
         // Check for error status or messages indicating session expiration
         if (data.status === "error" || data.error) {
           const errorMsg = data.message || data.error || "";
-          if (errorMsg.toLowerCase().includes("token") || 
-              errorMsg.toLowerCase().includes("expired") || 
-              errorMsg.toLowerCase().includes("session") ||
-              errorMsg.toLowerCase().includes("auth")) {
+          if (errorMsg.toLowerCase().includes("token") || errorMsg.toLowerCase().includes("expired") || errorMsg.toLowerCase().includes("session") || errorMsg.toLowerCase().includes("auth")) {
             handleSessionExpiration();
             return;
           }
         }
-        
+
         // Try different data structures
-        const rawUserData =
-          data.data ||
-          data.user ||
-          (data.status === "success" ? data : null);
-          
+        const rawUserData = data.data || data.user || (data.status === "success" ? data : null);
         if (rawUserData) {
           // Process to ensure absolute URLs
           const processedData = processUserData(rawUserData);
-          
           console.log('FETCH - Received interests from backend:', processedData.interests);
           console.log('FETCH - Full processed data:', processedData);
-          
+
           // Set the profile data with all fetched information
           setProfileData({
             login_session_token: session.user.sessionToken,
@@ -288,9 +259,8 @@ const EditUserProfileInfo = () => {
             description: processedData.description || '',
             country: processedData.country || '',
             state: processedData.state || '',
-            interests: Array.isArray(processedData.interests) ? processedData.interests : [],
+            interests: Array.isArray(processedData.interests) ? processedData.interests : []
           });
-          
           console.log('Profile data set successfully for edit');
         } else {
           throw new Error("Invalid user data format");
@@ -300,20 +270,18 @@ const EditUserProfileInfo = () => {
         throw parseError;
       }
     };
-
     if (status === "authenticated") {
       fetchUserProfile();
     }
-    
+
     // Handle visibility change to refresh data
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && status === "authenticated") {
         fetchUserProfile();
       }
     };
-    
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     // Cleanup event listener
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -329,7 +297,6 @@ const EditUserProfileInfo = () => {
         if (storedData) {
           const parsedData = JSON.parse(storedData);
           console.log("Loading profile data from localStorage for edit:", parsedData);
-          
           setProfileData({
             login_session_token: session?.user?.sessionToken || '',
             profile_pic: parsedData.profile_pic || parsedData.profile_picture || null,
@@ -339,7 +306,7 @@ const EditUserProfileInfo = () => {
             description: parsedData.description || '',
             country: parsedData.country || '',
             state: parsedData.state || '',
-            interests: Array.isArray(parsedData.interests) ? parsedData.interests : [],
+            interests: Array.isArray(parsedData.interests) ? parsedData.interests : []
           });
         }
       } catch (error) {
@@ -347,46 +314,41 @@ const EditUserProfileInfo = () => {
       }
     }
   }, [isLoadingUserData, status, profileData.username, session]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData((prevData) => ({
+  const handleInputChange = e => {
+    const {
+      name,
+      value
+    } = e.target;
+    setProfileData(prevData => ({
       ...prevData,
-      [name]: value,
+      [name]: value
     }));
   };
-
-  const handleInterestsChange = (newInterests) => {
+  const handleInterestsChange = newInterests => {
     console.log('Interests changed to:', newInterests);
-    setProfileData((prevData) => ({
+    setProfileData(prevData => ({
       ...prevData,
-      interests: newInterests,
+      interests: newInterests
     }));
   };
-
-  const handleProfilePicChange = (newProfilePic) => {
-    setProfileData((prevData) => ({
+  const handleProfilePicChange = newProfilePic => {
+    setProfileData(prevData => ({
       ...prevData,
-      profile_pic: newProfilePic,
+      profile_pic: newProfilePic
     }));
   };
-
-  const handleBannerChange = (newBanner) => {
-    setProfileData((prevData) => ({
+  const handleBannerChange = newBanner => {
+    setProfileData(prevData => ({
       ...prevData,
-      banner: newBanner,
+      banner: newBanner
     }));
   };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-  
     if (status === "authenticated" && session?.user?.sessionToken) {
       const sessionToken = session.user.sessionToken;
-  
       console.log('SUBMIT - Current interests before sending to backend:', profileData.interests);
-      
       try {
         // Check for session expiration before making API calls
         if (!sessionToken) {
@@ -400,30 +362,28 @@ const EditUserProfileInfo = () => {
           imageFormData.append('login_session_token', profileData.login_session_token);
           if (profileData.profile_pic) imageFormData.append('profile_pic', profileData.profile_pic);
           if (profileData.banner) imageFormData.append('banner', profileData.banner);
-          
           console.log('SUBMIT - Sending images as FormData...');
           const imageResponse = await fetch(VENT.EDIT_PROFILE, {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${sessionToken}`,
+              Authorization: `Bearer ${sessionToken}`
               // Don't include Content-Type for FormData
             },
-            body: imageFormData,
+            body: imageFormData
           });
-          
+
           // Check for token expiration or bad request
           if (imageResponse.status === 401 || imageResponse.status === 403 || imageResponse.status === 400) {
             console.log("Session expired or invalid during image upload:", imageResponse.status);
             await handleSessionExpiration();
             return;
           }
-          
           if (!imageResponse.ok) {
             const imageError = await imageResponse.json();
-            throw new Error(imageError.message || 'Failed to upload images');
+            throw new Error(imageError.message || tt("api.failedToUploadImages", "Failed to upload images"));
           }
         }
-  
+
         // Second API call: Send other data as JSON
         const jsonData = {
           login_session_token: profileData.login_session_token,
@@ -431,17 +391,16 @@ const EditUserProfileInfo = () => {
           fullname: profileData.fullname,
           description: profileData.description,
           country: profileData.country,
-          interests: profileData.interests,
+          interests: profileData.interests
         };
-        
         console.log('SUBMIT - Sending other data as JSON:', jsonData);
         const dataResponse = await fetch(VENT.EDIT_PROFILE, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${sessionToken}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(jsonData),
+          body: JSON.stringify(jsonData)
         });
 
         // Check for token expiration or bad request
@@ -450,13 +409,11 @@ const EditUserProfileInfo = () => {
           await handleSessionExpiration();
           return;
         }
-  
         const data = await dataResponse.json();
         console.log('SUBMIT - Backend response:', data);
-  
         if (dataResponse.ok) {
           console.log('Updated profile with interests:', profileData.interests);
-          
+
           // Update localStorage with new data
           try {
             const updatedProfileData = {
@@ -464,7 +421,7 @@ const EditUserProfileInfo = () => {
               profile_picture: getAbsoluteUrl(profileData.profile_pic),
               banner: getAbsoluteUrl(profileData.banner),
               full_name: profileData.fullname,
-              lastUpdated: new Date().toISOString(),
+              lastUpdated: new Date().toISOString()
             };
             localStorage.setItem("userProfile", JSON.stringify(updatedProfileData));
             window.dispatchEvent(new Event('vent:profile-updated'));
@@ -472,31 +429,24 @@ const EditUserProfileInfo = () => {
           } catch (error) {
             console.error("Error updating localStorage:", error);
           }
-          
           router.push('/user-profile');
-          setSnackbarMessage(data.message || 'Profile updated successfully!');
+          setSnackbarMessage(data.message || tt("api.profileUpdatedSuccessfully", "Profile updated successfully!"));
           setSnackbarType('success');
         } else {
           console.error('Backend returned error:', data);
-          setSnackbarMessage(data.message || 'Failed to update profile.');
+          setSnackbarMessage(data.message || tt("api.failedToUpdateProfile", "Failed to update profile."));
           setSnackbarType('error');
         }
         setOpen(true);
       } catch (error) {
         console.error('Error updating profile:', error);
-        
+
         // Check if error is related to authentication or bad request
-        if (error.message.includes("401") || 
-            error.message.includes("403") || 
-            error.message.includes("400") ||
-            error.message.includes("unauthorized") || 
-            error.message.includes("token") || 
-            error.message.includes("expired")) {
+        if (error.message.includes("401") || error.message.includes("403") || error.message.includes("400") || error.message.includes("unauthorized") || error.message.includes("token") || error.message.includes("expired")) {
           await handleSessionExpiration();
           return;
         }
-        
-        setSnackbarMessage('An error occurred while updating your profile.');
+        setSnackbarMessage(tt("msg.anErrorOccurredWhileUpdating", "An error occurred while updating your profile."));
         setSnackbarType('error');
         setOpen(true);
       } finally {
@@ -504,63 +454,36 @@ const EditUserProfileInfo = () => {
       }
     }
   };
-
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
-
   if (isLoadingUserData) {
-    return (
-      <div className={styles.loadingContainer}>
+    return <div className={styles.loadingContainer}>
         <CircularProgress />
-        <p>Loading profile data...</p>
-      </div>
-    );
+        <p>{tt("ui.loading.profile.data.80b2", "Loading profile data...")}</p>
+      </div>;
   }
-
-  return (
-    <div>
+  return <div>
       <form className={styles.editProfileInfoContainer} onSubmit={handleSubmit}>
         <div className={styles.editProfilePictureBannerContainer}>
-          <h3>Profile Picture & Banner</h3>
+          <h3>{tt("ui.profile.picture.banner.ec34", "Profile Picture & Banner")}</h3>
           <div className={styles.profilePictureBannerContainer}>
-            <EditProfileImageAvatar 
-              onChange={handleProfilePicChange} 
-              currentProfilePic={profileData.profile_pic}
-            />
-            <EditProfileBanner 
-              onChange={handleBannerChange} 
-              currentBanner={profileData.banner}
-            />
+            <EditProfileImageAvatar onChange={handleProfilePicChange} currentProfilePic={profileData.profile_pic} />
+            <EditProfileBanner onChange={handleBannerChange} currentBanner={profileData.banner} />
           </div>
         </div>
-        <EditUserProfileDetails
-          fullname={profileData.fullname}
-          username={profileData.username}
-          description={profileData.description}
-          country={profileData.country}
-          state={profileData.state}
-          handleInputChange={handleInputChange}
-        />
-        <EditInterests
-          selectedInterests={profileData.interests}
-          handleInterestsChange={handleInterestsChange}
-        />
+        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} description={tx(profileData.description)} country={profileData.country} state={profileData.state} handleInputChange={handleInputChange} />
+        <EditInterests selectedInterests={profileData.interests} handleInterestsChange={handleInterestsChange} />
         <div className={styles.buttonContainer}>
           <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Save Changes'}
+            {loading ? <CircularProgress size={24} sx={{
+            color: 'white'
+          }} /> : tx("Save Changes")}
           </button>
         </div>
       </form>
 
-      <MessageSnackbar
-        open={open}
-        handleClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        type={snackbarType}
-      />
-    </div>
-  );
+      <MessageSnackbar open={open} handleClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
+    </div>;
 };
-
 export default EditUserProfileInfo;

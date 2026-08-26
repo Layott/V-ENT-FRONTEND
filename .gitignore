@@ -43,3 +43,7 @@ next-env.d.ts
 .dev-server.err
 scripts/audit-out/
 scripts/mobile-shots/
+
+# Python bytecode from the scripts/ checkers.
+__pycache__/
+*.pyc

@@ -511,3 +511,16 @@
     justify-content: flex-start;
   }
 }
+/* "No sponsors added". A written answer on the page background rather than a
+   dashed rectangle, which is the empty state this design uses everywhere. */
+.mutedNote {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: var(--fs-p-size-desktop);
+  margin: 0.5rem 0 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .mutedNote {
+    font-size: var(--fs-p-size-mobile);
+  }
+}

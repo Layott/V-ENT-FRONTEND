@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react';
+import InfoTip from '@/components/info-tip/InfoTip';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './tournament-options.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 // The settings an organiser configures beyond the headline fields. Every one of
 // these changes what the platform does: who is refused at registration, how the
@@ -10,27 +13,49 @@ import styles from './tournament-options.module.css';
 // organiser thinks "who can enter" and "what happens if they do not show up",
 // not "booleans" and "integers".
 
-const CHECK_IN_CHOICES = [
-  { value: 0, label: 'No check-in' },
-  { value: 10, label: '10 minutes before' },
-  { value: 15, label: '15 minutes before' },
-  { value: 30, label: '30 minutes before' },
-  { value: 60, label: '1 hour before' },
-];
-
-const SEEDING_CHOICES = [
-  { value: 'registration', label: 'Registration order', hint: 'First to sign up gets the first seed.' },
-  { value: 'random', label: 'Random draw', hint: 'Shuffled when the bracket is generated.' },
-  { value: 'ranked', label: 'By ranking', hint: 'Strongest entrants are kept apart until late rounds.' },
-  { value: 'manual_order', label: 'I will seed it myself', hint: 'You set the order before generating.' },
-];
-
-const ROSTER_LOCK_CHOICES = [
-  { value: 'none', label: 'Anytime' },
-  { value: 'registration_close', label: 'When registration closes' },
-  { value: 'start', label: 'When the tournament starts' },
-];
-
+const CHECK_IN_CHOICES = [{
+  value: 0,
+  label: 'No check-in'
+}, {
+  value: 10,
+  label: '10 minutes before'
+}, {
+  value: 15,
+  label: '15 minutes before'
+}, {
+  value: 30,
+  label: '30 minutes before'
+}, {
+  value: 60,
+  label: '1 hour before'
+}];
+const SEEDING_CHOICES = [{
+  value: 'registration',
+  label: 'Registration order',
+  hint: 'First to sign up gets the first seed.'
+}, {
+  value: 'random',
+  label: 'Random draw',
+  hint: 'Shuffled when the bracket is generated.'
+}, {
+  value: 'ranked',
+  label: 'By ranking',
+  hint: 'Strongest entrants are kept apart until late rounds.'
+}, {
+  value: 'manual_order',
+  label: 'I will seed it myself',
+  hint: 'You set the order before generating.'
+}];
+const ROSTER_LOCK_CHOICES = [{
+  value: 'none',
+  label: 'Anytime'
+}, {
+  value: 'registration_close',
+  label: 'When registration closes'
+}, {
+  value: 'start',
+  label: 'When the tournament starts'
+}];
 export const DEFAULT_OPTIONS = {
   check_in_minutes: 15,
   forfeit_without_check_in: true,
@@ -47,280 +72,164 @@ export const DEFAULT_OPTIONS = {
   require_verified_email: true,
   require_kyc: false,
   require_screenshot: false,
-  dispute_window_minutes: 30,
+  dispute_window_minutes: 30
 };
-
-const Toggle = ({ id, label, hint, checked, onChange }) => (
-  <button
-    type="button"
-    id={id}
-    role="switch"
-    aria-checked={checked}
-    className={`${styles.toggleRow} ${checked ? styles.toggleRowOn : ''}`}
-    onClick={() => onChange(!checked)}
-  >
+const Toggle = ({
+  id,
+  label,
+  hint,
+  checked,
+  onChange,
+  tip
+}) => <button type="button" id={id} role="switch" aria-checked={checked} className={`${styles.toggleRow} ${checked ? styles.toggleRowOn : ''}`} onClick={() => onChange(!checked)}>
     <span className={styles.toggleText}>
-      <span className={styles.toggleLabel}>{label}</span>
+      <span className={styles.toggleLabel}>
+        {label}
+        {tip ? <InfoTip id={tip} /> : null}
+      </span>
       {hint ? <span className={styles.toggleHint}>{hint}</span> : null}
     </span>
     <span className={`${styles.toggleTrack} ${checked ? styles.toggleTrackOn : ''}`}>
       <span className={styles.toggleKnob} />
     </span>
-  </button>
-);
-
-const TournamentOptions = ({ formData = {}, updateFormData }) => {
-  const options = useMemo(
-    () => ({ ...DEFAULT_OPTIONS, ...(formData.options || {}) }),
-    [formData.options],
-  );
-
-  const set = useCallback(
-    (key, value) => {
-      updateFormData('options', { ...options, [key]: value });
-    },
-    [options, updateFormData],
-  );
-
+  </button>;
+const TournamentOptions = ({
+  formData = {},
+  updateFormData
+}) => {
+  const tx = useTx();
+  const tt = useT();
+  const options = useMemo(() => ({
+    ...DEFAULT_OPTIONS,
+    ...(formData.options || {})
+  }), [formData.options]);
+  const set = useCallback((key, value) => {
+    updateFormData('options', {
+      ...options,
+      [key]: value
+    });
+  }, [options, updateFormData]);
   const number = (key, value, fallback) => {
     const parsed = parseInt(value, 10);
     set(key, Number.isNaN(parsed) ? fallback : parsed);
   };
-
-  return (
-    <div className={createTournamentStyles.createSubSectionContainer}>
+  return <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
-        <h3 className={createTournamentStyles.tournamentTypeH3}>Tournament Settings</h3>
+        <h3 className={createTournamentStyles.tournamentTypeH3}>{tt("ui.tournament.settings.3aa2", "Tournament Settings")}</h3>
         <p className={styles.sectionIntro}>
-          These decide who can enter, how the draw is made, and what happens when somebody
-          does not turn up. You can change them until the bracket is generated.
+          {tt("ui.these.decide.who.can.4b61", "These decide who can enter, how the draw is made, and what happens when somebody\n          does not turn up. You can change them until the bracket is generated.")}
         </p>
 
         {/* ---------------------------------------------------- check-in */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Check-in</h4>
+          <h4 className={styles.groupTitle}>{tt("ui.check.4843", "Check-in")}<InfoTip id="checkInWindow" /></h4>
           <p className={styles.groupHint}>
-            Entrants confirm they are actually there before the bracket is built. Without it,
-            round one is full of people who signed up weeks ago and forgot.
+            {tt("ui.entrants.confirm.they.are.d80c", "Entrants confirm they are actually there before the bracket is built. Without it,\n            round one is full of people who signed up weeks ago and forgot.")}
           </p>
 
           <div className={styles.choiceRow}>
-            {CHECK_IN_CHOICES.map((choice) => (
-              <button
-                type="button"
-                key={choice.value}
-                className={`${styles.chip} ${
-                  options.check_in_minutes === choice.value ? styles.chipOn : ''
-                }`}
-                onClick={() => set('check_in_minutes', choice.value)}
-              >
-                {choice.label}
-              </button>
-            ))}
+            {CHECK_IN_CHOICES.map(choice => <button type="button" key={choice.value} className={`${styles.chip} ${options.check_in_minutes === choice.value ? styles.chipOn : ''}`} onClick={() => set('check_in_minutes', choice.value)}>
+                {tx(choice.label)}
+              </button>)}
           </div>
 
-          {options.check_in_minutes > 0 && (
-            <Toggle
-              id="forfeit_without_check_in"
-              label="Forfeit anyone who does not check in"
-              hint="You press the button. Nothing is removed automatically."
-              checked={options.forfeit_without_check_in}
-              onChange={(v) => set('forfeit_without_check_in', v)}
-            />
-          )}
+          {options.check_in_minutes > 0 && <Toggle id="forfeit_without_check_in" tip="forfeitNoCheckIn" label={tt("ui.forfeit.anyone.who.does.41e7", "Forfeit anyone who does not check in")} hint="You press the button. Nothing is removed automatically." checked={options.forfeit_without_check_in} onChange={v => set('forfeit_without_check_in', v)} />}
         </div>
 
         {/* ----------------------------------------------------- seeding */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Seeding</h4>
+          <h4 className={styles.groupTitle}>{tt("ui.seeding.2ac9", "Seeding")}<InfoTip id="seedingMethod" /></h4>
           <div className={styles.seedGrid}>
-            {SEEDING_CHOICES.map((choice) => (
-              <button
-                type="button"
-                key={choice.value}
-                className={`${styles.seedCard} ${
-                  options.seeding_method === choice.value ? styles.seedCardOn : ''
-                }`}
-                onClick={() => set('seeding_method', choice.value)}
-              >
-                <span className={styles.seedLabel}>{choice.label}</span>
-                <span className={styles.seedHint}>{choice.hint}</span>
-              </button>
-            ))}
+            {SEEDING_CHOICES.map(choice => <button type="button" key={choice.value} className={`${styles.seedCard} ${options.seeding_method === choice.value ? styles.seedCardOn : ''}`} onClick={() => set('seeding_method', choice.value)}>
+                <span className={styles.seedLabel}>{tx(choice.label)}</span>
+                <span className={styles.seedHint}>{tx(choice.hint)}</span>
+              </button>)}
           </div>
 
-          <Toggle
-            id="third_place_match"
-            label="Play a third-place match"
-            hint="The two semi-final losers play for third. Needed if your prize table pays a third place."
-            checked={options.third_place_match}
-            onChange={(v) => set('third_place_match', v)}
-          />
+          <Toggle id="third_place_match" tip="thirdPlaceMatch" label={tt("ui.play.third.place.match.f507", "Play a third-place match")} hint="The two semi-final losers play for third. Needed if your prize table pays a third place." checked={options.third_place_match} onChange={v => set('third_place_match', v)} />
         </div>
 
         {/* ----------------------------------------------------- matches */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Matches</h4>
+          <h4 className={styles.groupTitle}>{tt("ui.matches.ee2d", "Matches")}<InfoTip id="bestOfMode" /></h4>
 
           <div className={styles.choiceRow}>
-            <button
-              type="button"
-              className={`${styles.chip} ${options.best_of_mode === 'fixed' ? styles.chipOn : ''}`}
-              onClick={() => set('best_of_mode', 'fixed')}
-            >
-              Same length every round
+            <button type="button" className={`${styles.chip} ${options.best_of_mode === 'fixed' ? styles.chipOn : ''}`} onClick={() => set('best_of_mode', 'fixed')}>
+              {tt("ui.same.length.every.round.62d4", "Same length every round")}
             </button>
-            <button
-              type="button"
-              className={`${styles.chip} ${options.best_of_mode === 'escalating' ? styles.chipOn : ''}`}
-              onClick={() => set('best_of_mode', 'escalating')}
-            >
-              Longer as it progresses
+            <button type="button" className={`${styles.chip} ${options.best_of_mode === 'escalating' ? styles.chipOn : ''}`} onClick={() => set('best_of_mode', 'escalating')}>
+              {tt("ui.longer.as.progresses.f82f", "Longer as it progresses")}
             </button>
           </div>
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="best_of">
               <span className={styles.fieldLabel}>
-                {options.best_of_mode === 'escalating' ? 'First round is best of' : 'Best of'}
+                {options.best_of_mode === 'escalating' ? tx("First round is best of") : tx("Best of")}
               </span>
-              <select
-                id="best_of"
-                className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`}
-                value={options.best_of}
-                onChange={(e) => number('best_of', e.target.value, 1)}
-              >
-                {[1, 3, 5, 7, 9].map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
+              <select id="best_of" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.best_of} onChange={e => number('best_of', e.target.value, 1)}>
+                {[1, 3, 5, 7, 9].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
 
-            {options.best_of_mode === 'escalating' && (
-              <label className={styles.field} htmlFor="best_of_final">
-                <span className={styles.fieldLabel}>Final is best of</span>
-                <select
-                  id="best_of_final"
-                  className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`}
-                  value={options.best_of_final}
-                  onChange={(e) => number('best_of_final', e.target.value, 3)}
-                >
-                  {[1, 3, 5, 7, 9].map((n) => (
-                    <option key={n} value={n}>{n}</option>
-                  ))}
+            {options.best_of_mode === 'escalating' && <label className={styles.field} htmlFor="best_of_final">
+                <span className={styles.fieldLabel}>{tt("ui.final.best.ca0a", "Final is best of")}</span>
+                <select id="best_of_final" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.best_of_final} onChange={e => number('best_of_final', e.target.value, 3)}>
+                  {[1, 3, 5, 7, 9].map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
-              </label>
-            )}
+              </label>}
 
             <label className={styles.field} htmlFor="match_interval_minutes">
-              <span className={styles.fieldLabel}>Minutes between rounds</span>
-              <input
-                id="match_interval_minutes"
-                type="number"
-                min="5"
-                max="600"
-                className={`${createTournamentStyles.inputNumber} ${styles.select}`}
-                value={options.match_interval_minutes}
-                onChange={(e) => number('match_interval_minutes', e.target.value, 30)}
-              />
+              <span className={styles.fieldLabel}>{tt("ui.minutes.between.rounds.06e8", "Minutes between rounds")}<InfoTip id="matchInterval" /></span>
+              <input id="match_interval_minutes" type="number" min="5" max="600" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.match_interval_minutes} onChange={e => number('match_interval_minutes', e.target.value, 30)} />
             </label>
           </div>
 
-          <Toggle
-            id="require_screenshot"
-            label="Require a screenshot with every result"
-            hint="Disputes are far easier to settle when there is a picture attached."
-            checked={options.require_screenshot}
-            onChange={(v) => set('require_screenshot', v)}
-          />
+          <Toggle id="require_screenshot" tip="requireScreenshot" label={tt("ui.require.screenshot.every.result.bf3a", "Require a screenshot with every result")} hint="Disputes are far easier to settle when there is a picture attached." checked={options.require_screenshot} onChange={v => set('require_screenshot', v)} />
         </div>
 
         {/* ------------------------------------------------------ rosters */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Rosters</h4>
+          <h4 className={styles.groupTitle}>{tt("ui.rosters.bdba", "Rosters")}<InfoTip id="rosterLock" /></h4>
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="roster_lock">
-              <span className={styles.fieldLabel}>Teams can change their line-up until</span>
-              <select
-                id="roster_lock"
-                className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`}
-                value={options.roster_lock}
-                onChange={(e) => set('roster_lock', e.target.value)}
-              >
-                {ROSTER_LOCK_CHOICES.map((choice) => (
-                  <option key={choice.value} value={choice.value}>{choice.label}</option>
-                ))}
+              <span className={styles.fieldLabel}>{tt("ui.teams.can.change.their.a8af", "Teams can change their line-up until")}<InfoTip id="rosterLock" /></span>
+              <select id="roster_lock" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.roster_lock} onChange={e => set('roster_lock', e.target.value)}>
+                {ROSTER_LOCK_CHOICES.map(choice => <option key={choice.value} value={choice.value}>{tx(choice.label)}</option>)}
               </select>
             </label>
 
             <label className={styles.field} htmlFor="max_substitutes">
-              <span className={styles.fieldLabel}>Substitutes allowed</span>
-              <input
-                id="max_substitutes"
-                type="number"
-                min="0"
-                max="10"
-                className={`${createTournamentStyles.inputNumber} ${styles.select}`}
-                value={options.max_substitutes}
-                onChange={(e) => number('max_substitutes', e.target.value, 0)}
-              />
+              <span className={styles.fieldLabel}>{tt("ui.substitutes.allowed.2dd1", "Substitutes allowed")}<InfoTip id="maxSubstitutes" /></span>
+              <input id="max_substitutes" type="number" min="0" max="10" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.max_substitutes} onChange={e => number('max_substitutes', e.target.value, 0)} />
             </label>
           </div>
         </div>
 
         {/* --------------------------------------------------- who enters */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Who can enter</h4>
+          <h4 className={styles.groupTitle}>{tt("ui.who.can.enter.a8dd", "Who can enter")}<InfoTip id="restrictCountry" /></h4>
           <p className={styles.groupHint}>
-            Anyone who does not meet these is turned away at registration, before they pay
-            an entry fee.
+            {tt("ui.anyone.who.does.not.2351", "Anyone who does not meet these is turned away at registration, before they pay\n            an entry fee.")}
           </p>
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="restrict_country">
-              <span className={styles.fieldLabel}>Country</span>
-              <input
-                id="restrict_country"
-                type="text"
-                placeholder="Open to everyone"
-                className={`${createTournamentStyles.inputText} ${styles.select}`}
-                value={options.restrict_country}
-                onChange={(e) => set('restrict_country', e.target.value)}
-              />
+              <span className={styles.fieldLabel}>{tt("ui.country.d523", "Country")}<InfoTip id="restrictCountry" /></span>
+              <input id="restrict_country" type="text" placeholder={tt("ui.open.everyone.4558", "Open to everyone")} className={`${createTournamentStyles.inputText} ${styles.select}`} value={options.restrict_country} onChange={e => set('restrict_country', e.target.value)} />
             </label>
 
             <label className={styles.field} htmlFor="min_age">
-              <span className={styles.fieldLabel}>Minimum age</span>
-              <input
-                id="min_age"
-                type="number"
-                min="0"
-                max="99"
-                className={`${createTournamentStyles.inputNumber} ${styles.select}`}
-                value={options.min_age}
-                onChange={(e) => number('min_age', e.target.value, 0)}
-              />
+              <span className={styles.fieldLabel}>{tt("ui.minimum.age.6d60", "Minimum age")}<InfoTip id="minAge" /></span>
+              <input id="min_age" type="number" min="0" max="99" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.min_age} onChange={e => number('min_age', e.target.value, 0)} />
             </label>
           </div>
 
-          <Toggle
-            id="require_verified_email"
-            label="Verified email address required"
-            checked={options.require_verified_email}
-            onChange={(v) => set('require_verified_email', v)}
-          />
-          <Toggle
-            id="require_kyc"
-            label="Verified identity required"
-            hint="Already required automatically on any tournament that charges entry or pays a prize."
-            checked={options.require_kyc}
-            onChange={(v) => set('require_kyc', v)}
-          />
+          <Toggle id="require_verified_email" tip="requireVerifiedEmail" label={tt("ui.verified.email.address.required.4ad7", "Verified email address required")} checked={options.require_verified_email} onChange={v => set('require_verified_email', v)} />
+          <Toggle id="require_kyc" tip="requireKyc" label={tt("ui.verified.identity.required.299c", "Verified identity required")} hint="Already required automatically on any tournament that charges entry or pays a prize." checked={options.require_kyc} onChange={v => set('require_kyc', v)} />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default TournamentOptions;

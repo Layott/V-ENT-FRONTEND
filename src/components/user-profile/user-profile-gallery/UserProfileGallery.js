@@ -3,14 +3,18 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { FiPlus } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
-
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from "./user-profile-gallery.module.css";
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
-
 const UserProfileGallery = () => {
-  const { data: session, status } = useSession();
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session,
+    status
+  } = useSession();
   const [galleryData, setGalleryData] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -23,45 +27,35 @@ const UserProfileGallery = () => {
   const [imageToDelete, setImageToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef(null);
-
   const showSnackbarNotification = (message, type = "error") => {
     setSnackbarMessage(message);
     setSnackbarType(type);
     setShowSnackbar(true);
-
     setTimeout(() => {
       setShowSnackbar(false);
     }, 5000);
   };
-
   const fetchGalleryImages = useCallback(async () => {
     if (status === "loading") return;
-
     if (status === "unauthenticated" || !session?.user?.sessionToken) {
       setIsLoading(false);
       return;
     }
-
     try {
       setIsLoading(true);
       setFetchError(null);
-
       const token = session?.user?.sessionToken;
-
       const response = await fetch(`${baseUrl}/auth/get-user-gallery/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
+          Accept: "application/json"
+        }
       });
-
       if (response.ok) {
         const result = await response.json();
         console.log("Gallery images fetched:", result);
-
         let imageArray = [];
-
         if (Array.isArray(result)) {
           // Direct array response
           imageArray = result;
@@ -76,30 +70,24 @@ const UserProfileGallery = () => {
           imageArray = result.gallery;
         } else {
           // If it's not an array structure, create empty array
-          console.warn(
-            "Backend response is not in expected array format:",
-            result
-          );
+          console.warn("Backend response is not in expected array format:", result);
           imageArray = [];
         }
 
         // Transform backend data to match expected format
         const transformedData = imageArray.map((item, index) => ({
-          src: item.image || item.url || item.src || item.file || item.photo, // Handle different possible field names
-          name:
-            item.name || item.title || item.filename || `Image ${index + 1}`,
+          src: item.image || item.url || item.src || item.file || item.photo,
+          // Handle different possible field names
+          name: item.name || item.title || item.filename || `Image ${index + 1}`,
           id: item.image_id || item.id || item.pk || index,
           uploaded: true,
-          backendData: item,
+          backendData: item
         }));
-
         setGalleryData(transformedData);
       } else {
         const errorData = await response.text();
         console.error("Failed to fetch gallery:", response.status, errorData);
-        setFetchError(
-          `Failed to load gallery: ${response.status} ${response.statusText}`
-        );
+        setFetchError(`Failed to load gallery: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
       console.error("Error fetching gallery:", error);
@@ -121,111 +109,77 @@ const UserProfileGallery = () => {
       setUploadError("Please wait, checking authentication...");
       return;
     }
-
     if (status === "unauthenticated" || !session?.user?.sessionToken) {
       setUploadError("Please log in to upload images");
       return;
     }
-
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
   // Function to upload image to backend
-  const uploadImageToBackend = async (file) => {
+  const uploadImageToBackend = async file => {
     // Try different field names one by one
     const fieldNames = ["images", "image", "file", "upload", "picture"];
-
     for (const fieldName of fieldNames) {
       try {
         console.log(`Trying field name: '${fieldName}'`);
-
         const formData = new FormData();
         formData.append(fieldName, file);
-
         console.log("Uploading file:", {
           name: file.name,
           size: file.size,
           type: file.type,
-          fieldName: fieldName,
+          fieldName: fieldName
         });
 
         // Get token from NextAuth session
         const token = session?.user?.sessionToken;
-
         if (!token) {
-          throw new Error(
-            "No authentication token found. Please log in again."
-          );
+          throw new Error("No authentication token found. Please log in again.");
         }
-
         const response = await fetch(`${baseUrl}/auth/upload-images/`, {
           method: "POST",
           body: formData,
           headers: {
             Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+            Accept: "application/json"
+          }
         });
-
         console.log(`Response for '${fieldName}':`, response.status);
-
         if (response.ok) {
           const result = await response.json();
-          console.log(
-            `✅ Upload successful with field name '${fieldName}':`,
-            result
-          );
-          console.log(
-            `✅ Backend response data:`,
-            JSON.stringify(result, null, 2)
-          );
+          console.log(`✅ Upload successful with field name '${fieldName}':`, result);
+          console.log(`✅ Backend response data:`, JSON.stringify(result, null, 2));
           return result;
         } else {
           const errorData = await response.text();
-          console.log(
-            `❌ Failed with '${fieldName}':`,
-            response.status,
-            errorData
-          );
-
+          console.log(`❌ Failed with '${fieldName}':`, response.status, errorData);
           let errorMessage = errorData;
           try {
             const parsedError = JSON.parse(errorData);
-            errorMessage =
-              parsedError.message || parsedError.error || errorData;
+            errorMessage = parsedError.message || parsedError.error || errorData;
           } catch (e) {
             // Keep original errorData if not JSON
           }
 
           // Check for specific errors that shouldn't retry with different field names
-          if (
-            errorMessage.includes("Upload limit exceeded") ||
-            errorMessage.includes("limit") ||
-            errorMessage.includes("quota") ||
-            errorMessage.includes("maximum") ||
-            response.status === 413 || // Payload too large
-            response.status === 403
-          ) {
+          if (errorMessage.includes("Upload limit exceeded") || errorMessage.includes("limit") || errorMessage.includes("quota") || errorMessage.includes("maximum") || response.status === 413 ||
+          // Payload too large
+          response.status === 403) {
             // Forbidden (might be limit related)
 
             // Show snackbar for limit exceeded
-            if (
-              errorMessage.includes("Upload limit exceeded") ||
-              errorMessage.includes("limit")
-            ) {
+            if (errorMessage.includes("Upload limit exceeded") || errorMessage.includes("limit")) {
               showSnackbarNotification(errorMessage, "warning");
             }
-
             throw new Error(errorMessage);
           }
 
           // If this is the last field name to try, throw the error
           if (fieldName === fieldNames[fieldNames.length - 1]) {
-            throw new Error(
-              `${response.status} ${response.statusText} - ${errorMessage}`
-            );
+            throw new Error(`${response.status} ${response.statusText} - ${errorMessage}`);
           }
           // Otherwise, continue to the next field name
         }
@@ -233,20 +187,11 @@ const UserProfileGallery = () => {
         console.error(`Error with field name '${fieldName}':`, error);
 
         // If the error message indicates a limit or quota issue, don't try other field names
-        if (
-          error.message.includes("Upload limit exceeded") ||
-          error.message.includes("limit") ||
-          error.message.includes("quota") ||
-          error.message.includes("maximum")
-        ) {
+        if (error.message.includes("Upload limit exceeded") || error.message.includes("limit") || error.message.includes("quota") || error.message.includes("maximum")) {
           // Show snackbar for limit exceeded
-          if (
-            error.message.includes("Upload limit exceeded") ||
-            error.message.includes("limit")
-          ) {
+          if (error.message.includes("Upload limit exceeded") || error.message.includes("limit")) {
             showSnackbarNotification(error.message, "warning");
           }
-
           throw error;
         }
 
@@ -260,9 +205,8 @@ const UserProfileGallery = () => {
   };
 
   // Function to Handle the File Selection
-  const handleFileChange = async (event) => {
+  const handleFileChange = async event => {
     const file = event.target.files[0];
-
     if (!file) return;
 
     // Validate file type
@@ -277,17 +221,13 @@ const UserProfileGallery = () => {
       setUploadError("File size must be less than 5MB");
       return;
     }
-
     setIsUploading(true);
     setUploadError(null);
 
     // Set up 30-second timeout for upload
     const uploadTimeout = setTimeout(() => {
       if (isUploading) {
-        showSnackbarNotification(
-          "Upload is taking longer than expected. Please check your connection and try again.",
-          "warning"
-        );
+        showSnackbarNotification("Upload is taking longer than expected. Please check your connection and try again.", "warning");
       }
     }, 30000); // 30 seconds
 
@@ -305,13 +245,15 @@ const UserProfileGallery = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const newImage = {
-          src: reader.result, // Data URL for immediate preview
+          src: reader.result,
+          // Data URL for immediate preview
           name: file.name,
-          id: Date.now(), // Temporary ID, use uploadResult.id if available
+          id: Date.now(),
+          // Temporary ID, use uploadResult.id if available
           uploaded: true,
-          backendData: uploadResult, // Store backend response
+          backendData: uploadResult // Store backend response
         };
-        setGalleryData((prevData) => [...prevData, newImage]);
+        setGalleryData(prevData => [...prevData, newImage]);
       };
       reader.readAsDataURL(file);
 
@@ -322,12 +264,9 @@ const UserProfileGallery = () => {
     } catch (error) {
       // Clear timeout on error
       clearTimeout(uploadTimeout);
-      
+
       // ✅ ✅ ✅ FIXED HERE:
-      if (
-        !error.message.includes("Upload limit exceeded") &&
-        !error.message.includes("limit")
-      ) {
+      if (!error.message.includes("Upload limit exceeded") && !error.message.includes("limit")) {
         setUploadError(`Upload failed: ${error.message}`);
       }
     } finally {
@@ -340,44 +279,39 @@ const UserProfileGallery = () => {
   };
 
   // Function to handle delete icon click
-  const handleDeleteClick = (image) => {
+  const handleDeleteClick = image => {
     console.log("Image to delete:", image);
     console.log("Image ID:", image.id);
     console.log("Backend data:", image.backendData);
-
     setImageToDelete(image);
     setShowDeleteConfirm(true);
   };
 
   // Function to delete image from backend
-  const deleteImageFromBackend = async (imageId) => {
+  const deleteImageFromBackend = async imageId => {
     try {
       console.log(`Attempting to delete image with ID: ${imageId}`);
       console.log(`ID type: ${typeof imageId}`);
-
       const token = session?.user?.sessionToken;
-
       if (!token) {
         throw new Error("No authentication token found. Please log in again.");
       }
 
       // Use the exact format that works in Postman
-      const requestBody = { image_id: parseInt(imageId) };
-
+      const requestBody = {
+        image_id: parseInt(imageId)
+      };
       console.log("Sending delete request with body:", requestBody);
-
       const response = await fetch(`${baseUrl}/auth/delete-gallery-image/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Accept: "application/json",
+          Accept: "application/json"
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(requestBody)
       });
-
       console.log(`Response status:`, response.status);
-
       if (response.ok) {
         const result = await response.json();
         console.log(`✅ Image deleted successfully:`, result);
@@ -385,7 +319,6 @@ const UserProfileGallery = () => {
       } else {
         const errorData = await response.text();
         console.log(`❌ Delete failed:`, response.status, errorData);
-
         let errorMessage = errorData;
         try {
           const parsedError = JSON.parse(errorData);
@@ -393,10 +326,7 @@ const UserProfileGallery = () => {
         } catch (e) {
           // Keep original errorData if not JSON
         }
-
-        throw new Error(
-          `${response.status} ${response.statusText} - ${errorMessage}`
-        );
+        throw new Error(`${response.status} ${response.statusText} - ${errorMessage}`);
       }
     } catch (error) {
       console.error(`Error deleting image:`, error);
@@ -407,17 +337,13 @@ const UserProfileGallery = () => {
   // Function to confirm delete
   const confirmDelete = async () => {
     if (!imageToDelete) return;
-
     setIsDeleting(true);
-
     try {
       // Delete from backend
       await deleteImageFromBackend(imageToDelete.id);
 
       // Remove from local state
-      setGalleryData((prevData) =>
-        prevData.filter((img) => img.id !== imageToDelete.id)
-      );
+      setGalleryData(prevData => prevData.filter(img => img.id !== imageToDelete.id));
 
       // Show red background success snackbar for deletion
       showSnackbarNotification("Image deleted successfully!", "deleted");
@@ -438,93 +364,67 @@ const UserProfileGallery = () => {
   };
 
   // Get background color based on snackbar type
-  const getSnackbarBackgroundColor = (type) => {
+  const getSnackbarBackgroundColor = type => {
     switch (type) {
       case 'success':
-        return '#D4AF37'; // Green
+        return '#D4AF37';
+      // Green
       case 'error':
-        return '#f44336'; // Red
+        return '#f44336';
+      // Red
       case 'warning':
-        return '#ff9800'; // Orange
+        return '#ff9800';
+      // Orange
       case 'deleted':
-        return '#d32f2f'; // Dark Red for deletion
+        return '#d32f2f';
+      // Dark Red for deletion
       default:
-        return '#f44336'; // Default to red
+        return '#f44336';
+      // Default to red
     }
   };
-
-  return (
-    <div className={styles.galleryContainer}>
-      {showSnackbar && (
-        <div 
-          className={`${styles.snackbar} ${snackbarType}`}
-          style={{ backgroundColor: getSnackbarBackgroundColor(snackbarType) }}
-        >
+  return <div className={styles.galleryContainer}>
+      {showSnackbar && <div className={`${styles.snackbar} ${snackbarType}`} style={{
+      backgroundColor: getSnackbarBackgroundColor(snackbarType)
+    }}>
           <span>{snackbarMessage}</span>
-          <button
-            onClick={() => setShowSnackbar(false)}
-            className={`${styles.snackbarClose} ${styles.snackbarMessageBtn}`}
-            
-          >
+          <button onClick={() => setShowSnackbar(false)} className={`${styles.snackbarClose} ${styles.snackbarMessageBtn}`}>
             ×
           </button>
-        </div>
-      )}
+        </div>}
 
       {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className={styles.overlay}>
+      {showDeleteConfirm && <div className={styles.overlay}>
           <div className={styles.modalContent}>
-            <h3 className={styles.modalHeading}>Delete Image</h3>
+            <h3 className={styles.modalHeading}>{tt("ui.delete.image.d867", "Delete Image")}</h3>
             <p className={styles.modalText}>
-              Are you sure you want to delete this image? This action cannot be
-              undone.
+              {tt("ui.are.sure.want.delete.13e4", "Are you sure you want to delete this image? This action cannot be\n              undone.")}
             </p>
             <div className={styles.modalButtons}>
-              <button
-                onClick={cancelDelete}
-                disabled={isDeleting}
-                className={styles.cancelButton}
-              >
-                No, Cancel
+              <button onClick={cancelDelete} disabled={isDeleting} className={styles.cancelButton}>
+                {tt("ui.no.cancel.075d", "No, Cancel")}
               </button>
-              <button
-                onClick={confirmDelete}
-                disabled={isDeleting}
-                className={styles.deleteImageButton}
-              >
-                {isDeleting ? "Deleting..." : "Yes, Delete"}
+              <button onClick={confirmDelete} disabled={isDeleting} className={styles.deleteImageButton}>
+                {isDeleting ? tx("Deleting...") : tx("Yes, Delete")}
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-        disabled={isUploading}
-      />
+      <input type="file" accept="image/*" ref={fileInputRef} style={{
+      display: "none"
+    }} onChange={handleFileChange} disabled={isUploading} />
 
-      <div
-        className={`${styles.imageContainer} ${styles.addImageBTN}`}
-        onClick={handleUploadClick}
-        style={{
-          opacity: isUploading ? 0.6 : 1,
-          cursor: isUploading ? "not-allowed" : "pointer",
-        }}
-      >
-        <div
-          className={`${styles.addImage} ${profileStyles.topMostLayerColor}`}
-        >
+      <div className={`${styles.imageContainer} ${styles.addImageBTN}`} onClick={handleUploadClick} style={{
+      opacity: isUploading ? 0.6 : 1,
+      cursor: isUploading ? "not-allowed" : "pointer"
+    }}>
+        <div className={`${styles.addImage} ${profileStyles.topMostLayerColor}`}>
           <span className={styles.plusIcon}>
             {isUploading ? "⏳" : <FiPlus />}
           </span>
           <span className={styles.uploadImageText}>
-            {isUploading ? "Uploading..." : "Upload Image"}
+            {isUploading ? tx("Uploading...") : tx("Upload Image")}
           </span>
         </div>
       </div>
@@ -558,40 +458,19 @@ const UserProfileGallery = () => {
                 </div>
             )} */}
 
-      {isLoading ? (
-        <div className={styles.loadingMessage}>Loading gallery...</div>
-      ) : galleryData.length === 0 && status === "authenticated" ? (
-        <div
-          className={styles.emptyMessage}
-          
-        >
-          No images in your gallery yet. Upload your first image!
-        </div>
-      ) : null}
+      {isLoading ? <div className={styles.loadingMessage}>{tt("ui.loading.gallery.187a", "Loading gallery...")}</div> : galleryData.length === 0 && status === "authenticated" ? <div className={styles.emptyMessage}>
+          {tt("ui.no.images.gallery.yet.a5df", "No images in your gallery yet. Upload your first image!")}
+        </div> : null}
 
-      {galleryData.map((gallery, index) => (
-        <div
-          key={gallery.id || index}
-          className={styles.imageContainer}
-          style={{ position: "relative" }}
-        >
-          <Image
-            src={gallery.src}
-            alt={gallery.name}
-            width={300}
-            height={200}
-          />
+      {galleryData.map((gallery, index) => <div key={gallery.id || index} className={styles.imageContainer} style={{
+      position: "relative"
+    }}>
+          <Image src={gallery.src} alt={gallery.name} width={300} height={200} />
           {/* Delete Icon */}
-          <button
-            onClick={() => handleDeleteClick(gallery)}
-            className={styles.deleteButton}
-          >
+          <button onClick={() => handleDeleteClick(gallery)} className={styles.deleteButton}>
             <MdDeleteForever />
           </button>
-        </div>
-      ))}
-    </div>
-  );
+        </div>)}
+    </div>;
 };
-
 export default UserProfileGallery;

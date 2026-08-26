@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import logoRed from "@/images/logo_mark_red.svg"
+import logoRed from "@/images/logo_mark_red.svg";
 import { FiArrowLeft } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdOutlineClose } from "react-icons/md";
 // import { FcSearch } from "react-icons/fc";
@@ -14,12 +14,14 @@ import breadCrumbTitles from '../header/BreadCrumbData';
 import { unreadCount } from '@/components/notifications/notificationsApi';
 import styles from './mobile-header.module.css';
 import { usePathname, useRouter } from 'next/navigation';
-
 import MobileSidebar from '../mobile-sidebar/MobileSidebar';
+import { useT } from '@/i18n/LanguageProvider';
+import { signOut, useSession } from "next-auth/react"; // Import signOut function from next-auth
 
-import { signOut, useSession } from "next-auth/react";  // Import signOut function from next-auth
-
-const MobileHeader = ({ className = '' }) => {
+const MobileHeader = ({
+  className = ''
+}) => {
+  const tt = useT();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -30,24 +32,27 @@ const MobileHeader = ({ className = '' }) => {
   const [notifCount, setNotifCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
+  const {
+    data: session
+  } = useSession();
   const sessionToken = session?.user?.sessionToken;
   const dropdownRef = useRef(null);
-
-  const { title: currentSection, showBackArrow, fallbackURL } = breadCrumbTitles[pathname] || {
+  const {
+    title: currentSection,
+    showBackArrow,
+    fallbackURL
+  } = breadCrumbTitles[pathname] || {
     title: '',
     showBackArrow: false,
     fallbackURL: '/'
-  } 
-
+  };
   const handleBackNavigation = (fallbackURL = '/') => {
     if (typeof window !== 'undefined' && window.referrer) {
       window.history.back();
     } else {
       window.location.href = fallbackURL;
     }
-  }
-
+  };
   useEffect(() => {
     try {
       const storedData = localStorage.getItem('userProfile');
@@ -78,33 +83,31 @@ const MobileHeader = ({ className = '' }) => {
     };
     poll();
     const intervalId = setInterval(poll, 60000);
-    return () => { cancelled = true; clearInterval(intervalId); };
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, [sessionToken]);
-
   useEffect(() => {
-    const handleOutsideClick = (event) => {
+    const handleOutsideClick = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-    }
-
+    };
     if (typeof document !== 'undefined') {
       const handleVisibilityChange = () => {
         if (document.visibilityState === 'hidden') {
           setIsDropdownOpen(false);
         }
-      }
-
+      };
       window.addEventListener('mousedown', handleOutsideClick);
       window.addEventListener('visibilitychange', handleVisibilityChange);
-
       return () => {
-        window.removeEventListener('mousedown', handleOutsideClick)
-        window.removeEventListener('visibilitychange', handleVisibilityChange)
+        window.removeEventListener('mousedown', handleOutsideClick);
+        window.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }
   }, [isDropdownOpen]);
-
   const handleSearch = () => {
     const trimmed = searchQuery.trim();
     // Always navigate to /search - see Header.js for rationale. This makes the
@@ -112,129 +115,87 @@ const MobileHeader = ({ className = '' }) => {
     router.push(`/search?q=${encodeURIComponent(trimmed)}`);
     setIsSearchBarVisible(false);
   };
-
-  const handleKeyDown = (event) => {
+  const handleKeyDown = event => {
     if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
       handleSearch();
     }
   };
-
-  const handleSearchFormSubmit = (event) => {
+  const handleSearchFormSubmit = event => {
     event.preventDefault();
     handleSearch();
   };
-
-  const toggleSearchBar = () => setIsSearchBarVisible((prev) => !prev);
-  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
-
-  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
-
-  const handleLogout = () => {    
+  const toggleSearchBar = () => setIsSearchBarVisible(prev => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
+  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
+  const handleLogout = () => {
     // Remove the user profile and session data from localStorage
     localStorage.removeItem('userProfile');
     localStorage.removeItem('authToken');
-    
+
     // Sign out the user using NextAuth's signOut function
     // Absolute: next-auth's client baseUrl falls back to localhost:3000 in the
     // browser, so a relative callbackUrl points at the wrong host in production.
-    signOut({ callbackUrl: `${window.location.origin}/login` });
-  }
-
-  return (
-    <div className={`${styles.profileHeader} ${className}`}>
+    signOut({
+      callbackUrl: `${window.location.origin}/login`
+    });
+  };
+  return <div className={`${styles.profileHeader} ${className}`}>
       <div className={styles.headerContent}>
 
         <div className={styles.leftHeaderContainer}>
           <div className={styles.logoContainer}>
               <Link className={styles.logoLink} href={session ? '/home' : '/'}>
                 <div className={styles.innerLogoContainer}>
-                  <Image
-                    src={logoRed}
-                    alt='Logo'
-                    className={styles.logo}
-                  />
+                  <Image src={logoRed} alt="V-ENT" className={styles.logo} />
                 </div>
-                <h1 className={styles.vEntH1}>v-ent</h1>
+                <span className={styles.vEntH1}>v-ent</span>
               </Link>
           </div>
 
           <div className={styles.breadcrumbContainer}>
-            <h3 className={styles.breadcrumbTitle}>
-              {showBackArrow && (
-                <span 
-                  className={styles.backArrow} 
-                  onClick={() => handleBackNavigation(fallbackURL)}
-                >
+            <p className={styles.breadcrumbTitle}>
+              {showBackArrow && <span className={styles.backArrow} onClick={() => handleBackNavigation(fallbackURL)}>
                   
                   <FiArrowLeft className={styles.backArrowIcon} />
-                </span>
-              )}
+                </span>}
               <span className={styles.currentSection}>{currentSection}</span>
-            </h3>
+            </p>
             
-            {pathname === '/user-profile' && (
-              <nav className={styles.breadcrumbNav}>
-                <Link href={'./'}>Home</Link>
+            {pathname === '/user-profile' && <nav className={styles.breadcrumbNav}>
+                <Link href={'./'}>{tt("ui.home.70f8", "Home")}</Link>
                 <MdKeyboardArrowRight className={styles.arrowRightIcon} />
                 <Link href={'./user-profile'} className={styles.currentSectionLink}>
-                  My Profile
+                  {tt("ui.my.profile.9ba8", "My Profile")}
                 </Link>
-              </nav>
-            )}
-            {pathname === '/edit-user-profile' && (
-              <nav className={styles.breadcrumbNav}>
-                <Link href={'./'}>Home</Link>
+              </nav>}
+            {pathname === '/edit-user-profile' && <nav className={styles.breadcrumbNav}>
+                <Link href={'./'}>{tt("ui.home.70f8", "Home")}</Link>
                 <MdKeyboardArrowRight className={styles.arrowRightIcon} />
                 <Link href={'./edit-user-profile'} className={styles.currentSectionLink}>
-                  Edit My Profile
+                  {tt("ui.edit.my.profile.a837", "Edit My Profile")}
                 </Link>
-              </nav>
-            )}
+              </nav>}
           </div>
         </div>
 
-        <form
-          className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}
-          onSubmit={handleSearchFormSubmit}
-          role="search"
-        >
-          <CiSearch className={styles.searchIcon} onClick={handleSearch}/>
-          <input
-            type="search"
-            placeholder="Search tournaments, events, users..."
-            className={styles.searchInput}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            aria-label="Search V-ENT"
-          />
-          <button type="submit" style={{ display: 'none' }} aria-hidden="true" tabIndex={-1}>Search</button>
+        <form className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`} onSubmit={handleSearchFormSubmit} role="search">
+          <CiSearch className={styles.searchIcon} onClick={handleSearch} />
+          <input type="search" placeholder={tt("ui.search.tournaments.events.users.47ad", "Search tournaments, events, users...")} className={styles.searchInput} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={handleKeyDown} aria-label={tt("ui.search.v.ent.6327", "Search V-ENT")} />
+          <button type="submit" style={{
+          display: 'none'
+        }} aria-hidden="true" tabIndex={-1}>{tt("ui.search.bce0", "Search")}</button>
         </form>
 
         <div className={`${styles.searchIconMobileContainer}`}>
-          {isSearchBarVisible ? (
-            <MdOutlineClose
-              className={styles.searchCloseIconMobile}
-              onClick={toggleSearchBar}
-            />
-          ) : (
-            <LuSearch
-              className={styles.searchIconMobile}
-              onClick={toggleSearchBar}
-            />
-          )}
+          {isSearchBarVisible ? <MdOutlineClose className={styles.searchCloseIconMobile} onClick={toggleSearchBar} /> : <LuSearch className={styles.searchIconMobile} onClick={toggleSearchBar} />}
         </div>
 
-        {!isSearchBarVisible && (
-          <Link href="/notifications" className={styles.bellContainer} aria-label="Notifications">
+        {!isSearchBarVisible && <Link href="/notifications" className={styles.bellContainer} aria-label={tt("ui.notifications.753a", "Notifications")}>
             <IoNotificationsOutline className={styles.bellIconMobile} />
-            {notifCount > 0 && (
-              <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>
-            )}
-          </Link>
-        )}
+            {notifCount > 0 && <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>}
+          </Link>}
 
         <div className={styles.hamburgerContainer} onClick={toggleMobileMenu}>
           <label className={styles.hamburger}>
@@ -245,8 +206,6 @@ const MobileHeader = ({ className = '' }) => {
         <MobileSidebar isOpen={isMobileMenuOpen} />
 
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default MobileHeader;
