@@ -167,33 +167,30 @@ function withLocale(req, locale, hasPrefix) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
 
-  // Clone `nextUrl` and change only the path.
+  // The rewrite target has to be an origin that actually answers.
   //
-  // The origin matters more than it looks. Next decides whether a rewrite is
-  // internal by comparing its origin to the request's; when they match it
-  // emits a relative `x-middleware-rewrite: /` and renders in place, carrying
-  // `requestHeaders` - which is how generateMetadata learns the language.
+  // Behind nginx this app is reached at https://v-ent.co and listens on
+  // 127.0.0.1:3000. Next builds `nextUrl` from its own listen address but
+  // takes the scheme from X-Forwarded-Proto, so the origin it hands you is one
+  // that exists nowhere: `https://localhost:3000`. Next emits the rewrite as
+  // that absolute URL and then proxies to it - writing TLS at a plain HTTP
+  // port. EPROTO, and a 500 on every locale URL while the unprefixed routes
+  // were fine, because only the prefixed ones rewrite.
   //
-  // When they differ, Next proxies instead. Two ways to get that wrong, both
-  // of which reached production:
+  // Two things that do not fix it, both tried in production: cloning `nextUrl`
+  // (the bad origin is what gets cloned) and setting `x-middleware-rewrite` by
+  // hand on a `next()` response (Next does not honour it, 500 everywhere).
   //
-  //   `new URL(path, req.nextUrl.origin)` behind nginx builds an origin from
-  //   Next's listen address with the scheme from X-Forwarded-Proto, giving
-  //   `https://localhost:3000` - a place that does not exist, so the proxy
-  //   wrote TLS at a plain HTTP port and every locale URL 500'd;
-  //
-  //   forcing the scheme back to `http:` "fixed" the 500 by making the proxy
-  //   reachable, but a proxied request is a fresh one: the locale header was
-  //   gone, so /fr rendered with an English title and an English canonical -
-  //   which tells a search engine the French page is a duplicate, the exact
-  //   thing the prefixes exist to avoid. Up, and quietly wrong.
-  //
-  // A clone cannot differ from what it was cloned from, so the rewrite stays
-  // internal whatever the proxy in front is doing.
+  // What fixes it is forcing the internal hop back to http when the host is
+  // loopback. The scheme the visitor used is nginx's business and is already
+  // carried on X-Forwarded-Proto; this hop never speaks TLS.
   let res;
   if (hasPrefix) {
     const target = req.nextUrl.clone();
     target.pathname = req.nextUrl.pathname.replace(`/${locale}`, '') || '/';
+    if (/^(localhost|127\.0\.0\.1|\[::1\])(:|$)/.test(target.host)) {
+      target.protocol = 'http:';
+    }
     res = NextResponse.rewrite(target, { request: { headers: requestHeaders } });
   } else {
     res = NextResponse.next({ request: { headers: requestHeaders } });
