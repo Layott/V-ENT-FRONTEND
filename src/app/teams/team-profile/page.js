@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter} from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Sidebar from '@/components/sidebar/Sidebar'
 import Header from '@/components/header/Header'
@@ -27,6 +27,7 @@ const ALL_TABS = [
 
 export const TeamProfileContent = ({ slug }) => {
   const searchParams = useSearchParams()
+  const router = useRouter()
   // `/teams/lagos-rangers` passes the slug; `?id=` still resolves.
   const teamId = slug || searchParams.get('id') || ''
   const { data: session } = useSession()
@@ -55,6 +56,12 @@ export const TeamProfileContent = ({ slug }) => {
       )
       if (!res.ok) throw new Error(`Failed to load team (${res.status})`)
       const data = await res.json()
+      // Renamed since this link was shared: send the browser to the address it
+      // lives at now rather than reporting it missing.
+      if (data?.status === 'moved' && data?.data?.url) {
+        router.replace(data.data.url)
+        return
+      }
       const t = data?.data?.team ?? data?.data ?? null
       if (!t) throw new Error('Team not found')
       setTeam(t)
@@ -63,7 +70,7 @@ export const TeamProfileContent = ({ slug }) => {
     } finally {
       setLoading(false)
     }
-  }, [teamId, session])
+  }, [teamId, session, router])
 
   useEffect(() => { fetchTeam() }, [fetchTeam])
 

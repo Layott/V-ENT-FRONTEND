@@ -17,6 +17,9 @@ export const LANGUAGES = [
 
 export const dictionaries = {
   en: {
+    'settings.walkthroughTitle': 'Getting started',
+    'settings.walkthroughBlurb': 'Replay the guided walkthrough of the platform at any time. It takes about six minutes.',
+    'settings.walkthroughReplay': 'Replay the walkthrough',
     'nav.home': 'Home',
     'nav.profile': 'Profile',
     'nav.tournaments': 'Tournaments',
@@ -118,6 +121,9 @@ export const dictionaries = {
   },
 
   fr: {
+    'settings.walkthroughTitle': 'Premiers pas',
+    'settings.walkthroughBlurb': 'Revoyez la visite guidee de la plateforme quand vous voulez. Elle dure environ six minutes.',
+    'settings.walkthroughReplay': 'Revoir la visite guidee',
     'nav.home': 'Accueil',
     'nav.profile': 'Profil',
     'nav.tournaments': 'Tournois',
@@ -219,6 +225,9 @@ export const dictionaries = {
   },
 
   pt: {
+    'settings.walkthroughTitle': 'Primeiros passos',
+    'settings.walkthroughBlurb': 'Reveja a visita guiada da plataforma quando quiser. Demora cerca de seis minutos.',
+    'settings.walkthroughReplay': 'Rever a visita guiada',
     'nav.home': 'Início',
     'nav.profile': 'Perfil',
     'nav.tournaments': 'Torneios',

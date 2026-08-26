@@ -52,6 +52,17 @@ const nextConfig = {
   // Optional: Add this to help with image loading issues
   experimental: {
     externalDir: true,
+    // Build in this process rather than forking jest-worker children.
+    //
+    // On the main dev machine files keep disappearing out of node_modules and
+    // out of the pnpm store itself - `next/dist/compiled/jest-worker/
+    // processChild.js` most often - so every build died before compiling
+    // anything, and `pnpm install --force` reproduced the gap because it copies
+    // from the same damaged store. Single-process builds do not need that file.
+    // Slower on a many-core machine, and the only setting here that makes the
+    // build finish reliably.
+    workerThreads: false,
+    cpus: 1,
   }
 };
 

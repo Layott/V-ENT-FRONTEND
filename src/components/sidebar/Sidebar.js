@@ -59,7 +59,7 @@ const Sidebar = ({ customClass }) => {
     }
 
   return (
-    <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`}>
+    <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`} data-tour="sidebar">
         <div className={styles.logoContainer}>
             <Link className={styles.logoLink} href={logoHref}>
                 <div className={styles.innerLogoContainer}>
@@ -82,19 +82,19 @@ const Sidebar = ({ customClass }) => {
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
-                    <Link href={'/user-profile'} className={styles.iconTextLink}>
+                    <Link href={'/user-profile'} className={styles.iconTextLink} data-tour="nav-profile">
                         <PiUserCircle className={styles.sidebarIcon} /> {t('nav.profile')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
-                    <Link href={'/tournaments'} className={styles.iconTextLink}>
+                    <Link href={'/tournaments'} className={styles.iconTextLink} data-tour="nav-tournaments">
                         <LuGamepad2 className={styles.sidebarIcon} /> {t('nav.tournaments')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
-                    <Link href={'/events'} className={styles.iconTextLink}>
+                    <Link href={'/events'} className={styles.iconTextLink} data-tour="nav-events">
                         <MdOutlineEvent className={styles.sidebarIcon} /> {t('nav.events')}
                     </Link>
                 </li>
@@ -110,7 +110,7 @@ const Sidebar = ({ customClass }) => {
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
-                    <Link href={'/teams'} className={styles.iconTextLink}>
+                    <Link href={'/teams'} className={styles.iconTextLink} data-tour="nav-teams">
                         <FaUsers className={styles.sidebarIcon} /> {t('nav.teams')}
                     </Link>
                 </li>
@@ -122,7 +122,7 @@ const Sidebar = ({ customClass }) => {
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
-                    <Link href={'/wallets'} className={styles.iconTextLink}>
+                    <Link href={'/wallets'} className={styles.iconTextLink} data-tour="nav-wallets">
                         <IoWalletOutline className={styles.sidebarIcon} /> {t('nav.wallets')}
                     </Link>
                 </li>
@@ -141,7 +141,7 @@ const Sidebar = ({ customClass }) => {
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
-                    <Link href={'/community'} className={styles.iconTextLink}>
+                    <Link href={'/community'} className={styles.iconTextLink} data-tour="nav-community">
                         <FaUserFriends className={styles.sidebarIcon} /> Community
                     </Link>
                 </li>
@@ -165,7 +165,7 @@ const Sidebar = ({ customClass }) => {
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
-                    <Link href={'/settings'} className={styles.iconTextLink}>
+                    <Link href={'/settings'} className={styles.iconTextLink} data-tour="nav-settings">
                         <MdOutlineSettings className={styles.sidebarIcon} /> {t('nav.settings')}
                     </Link>
                 </li>

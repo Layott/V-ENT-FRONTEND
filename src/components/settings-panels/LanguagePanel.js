@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import shared from './settingsShared.module.css';
 import { useLanguage } from '@/i18n/LanguageProvider';
+import { useWalkthrough } from '@/components/walkthrough/WalkthroughProvider';
 
 // Three languages, and every one of them actually translates the interface.
 // Yoruba, Igbo, Hausa and Nigerian Pidgin were in this list with nothing behind
@@ -42,6 +43,7 @@ const LanguagePanel = ({ language, timezone, onSave }) => {
   // away and writes the choice to the account, so there is no save button to
   // press and no reload to wait for.
   const { language: current, setLanguage, languages, t } = useLanguage();
+  const { start: startWalkthrough } = useWalkthrough();
   const [lang, setLang] = useState(current || language || 'en');
   const [curr, setCurr] = useState('VC');
   const [tz, setTz] = useState(timezone || 'Africa/Lagos');
@@ -81,6 +83,20 @@ const LanguagePanel = ({ language, timezone, onSave }) => {
               </option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className={shared.card}>
+        <h3 className={shared.cardTitle}>{t('settings.walkthroughTitle')}</h3>
+        <p className={shared.cardSub}>{t('settings.walkthroughBlurb')}</p>
+        <div className={shared.formFooter}>
+          <button
+            type="button"
+            className={`${shared.btn} ${shared.ghostBTN}`}
+            onClick={() => startWalkthrough()}
+          >
+            {t('settings.walkthroughReplay')}
+          </button>
         </div>
       </div>
 

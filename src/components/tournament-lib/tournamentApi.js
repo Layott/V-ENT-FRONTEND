@@ -160,6 +160,16 @@ async function ventFetchUncached(path, {
 
   // Standard envelope.
   if (json && typeof json === 'object' && 'status' in json) {
+    // The thing was renamed and lives at a new address. Thrown rather than
+    // returned so a caller that has not been taught about moves fails loudly
+    // instead of rendering {slug, url} as if it were a tournament.
+    if (json.status === 'moved') {
+      throw new ApiError(json.message || 'This has been renamed.', {
+        code: 'SLUG_CHANGED',
+        status: res.status,
+        data: json.data || {},
+      });
+    }
     if (json.status === 'error') {
       throw new ApiError(json.message || 'Request failed.', {
         code: json.code || 'ERROR',
@@ -172,6 +182,17 @@ async function ventFetchUncached(path, {
 
   // Non-enveloped 2xx - hand back whatever we got.
   return json ?? {};
+}
+
+// A renamed thing moved to a new address. Every page that loads one by slug
+// calls this in its catch: it swaps the URL for the current one without adding
+// a history entry, so Back still goes where the person came from rather than
+// bouncing them through the dead address again.
+export function followRename(error, router) {
+  const url = error?.code === 'SLUG_CHANGED' ? error?.data?.url : null;
+  if (!url || !router) return false;
+  router.replace(url);
+  return true;
 }
 
 // Convenience: pull the Bearer token out of a next-auth session object.

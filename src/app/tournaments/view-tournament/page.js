@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
   LuTrophy, LuCalendar, LuUsers, LuMapPin, LuShare2,
@@ -15,7 +15,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
-import { ventFetch, API, tokenFrom, toTournament, entryFeeVc } from '@/components/tournament-lib/tournamentApi';
+import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } from '@/components/tournament-lib/tournamentApi';
 import styles from './view-tournament.module.css';
 import { shareLink, linkTo } from '@/lib/share';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
@@ -143,6 +143,7 @@ const SkeletonShell = () => (
 
 export const ViewTournamentContent = ({ slug }) => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { data: session } = useSession();
   const token = tokenFrom(session);
 
@@ -180,6 +181,9 @@ export const ViewTournamentContent = ({ slug }) => {
         setTournament(toTournament(data));
       } catch (err) {
         if (cancelled) return;
+        // Renamed since this link was shared: swap the address for the current
+        // one and stay loading, because the page is about to load again.
+        if (followRename(err, router)) return;
         setError(err);
         setTournament(null);
       } finally {

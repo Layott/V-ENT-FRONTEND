@@ -222,7 +222,7 @@ const Header = ({ className = '' }) => {
           className={`${styles.searchBar} ${isSearchBarVisible ? styles.showSearchBar : ''}`}
           onSubmit={handleSearchFormSubmit}
           role="search"
-        >
+         data-tour="search">
           <CiSearch className={styles.searchIcon} onClick={handleSearch}/>
           <input
             type="search"

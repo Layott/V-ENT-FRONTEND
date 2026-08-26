@@ -240,6 +240,12 @@ export const ViewEventContent = ({ slug }) => {
           );
           if (res.ok) {
             const data = await res.json();
+            // Renamed since this link was shared. Swap the address for the
+            // current one; the page reloads against it.
+            if (data.status === 'moved' && data.data?.url) {
+              router.replace(data.data.url);
+              return;
+            }
             if (data.status === 'success') {
               found = normalizeEvent(data.data.event || data.data);
             }

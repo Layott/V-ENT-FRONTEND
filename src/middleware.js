@@ -2,19 +2,34 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+// Matched with startsWith, so a bare "/events" here would also gate
+// "/events/lagos-anime-con". That is what it used to do, and it meant every
+// event and team page - the pages carrying the structured data, the ones the
+// sitemap advertises - answered a crawler with a redirect to /login. Public
+// content nobody outside can read is content that never ranks.
+//
+// So browsing is public, in line with tournaments, which were already public.
+// Doing anything is not: creating, registering, editing and anything with money
+// or personal data on it stays listed below.
 const protectedRoutes = [
   "/home",
-  "/events",
   "/anime",
   "/user-profile",
   "/edit-user-profile",
   "/onboarding",
-  "/teams",
   "/edit-team-profile",
+  "/teams/create-team",
+  "/events/create-event",
+  "/events/my-tickets",
+  "/events/attendees",
+  "/events/register-event",
+  "/events/vendor-shop/vendor",
   "/tournaments/create-tournament",
   "/tournaments/drafts",
   "/tournaments/register-tournament",
   "/tournaments/my-tournaments",
+  "/tournaments/manage",
+  "/community/dm",
   "/wallets",
   "/production",
   "/settings",

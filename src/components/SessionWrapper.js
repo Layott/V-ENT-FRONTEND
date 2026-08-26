@@ -21,6 +21,12 @@ const SessionWrapper = ({ children }) => {
             <SessionExpiryGuard />
             {/* Inside the session provider, because the chosen language lives on
                 the account and follows the person to another device. */}
+            {/* This component's children is the <html> element itself, so
+                nothing may be rendered beside them here: the document root
+                allows exactly one element, and a second slot makes React throw
+                HierarchyRequestError during hydration. Anything that draws UI -
+                the walkthrough overlay - is mounted inside <body> in
+                app/layout.js instead. */}
             <LanguageProvider>{children}</LanguageProvider>
         </SessionProvider>
     );
