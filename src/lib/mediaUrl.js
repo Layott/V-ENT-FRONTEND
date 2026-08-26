@@ -63,6 +63,43 @@ export const pickMedia = (record, ...names) => {
   return null;
 };
 
+/** A media value that may arrive as a bare filename, resolved inside `folder`.
+ *
+ *  Seventeen components carried their own version of this, and most of them
+ *  wrote `${API_BASE}${path}` with no separator, which is the missing-slash bug
+ *  mediaUrl exists to fix - it produced `https://apiteams_logos/x.png` whenever
+ *  a serializer returned a path without a leading slash.
+ *
+ *  The bare-filename branch is kept because some older rows really do store
+ *  just `banner.png`, and those files live in a known folder. A value that
+ *  already looks like a path or a URL is left for mediaUrl to resolve.
+ */
+export const mediaIn = (value, folder) => {
+  if (typeof value !== 'string') return mediaUrl(value);
+  const path = value.trim();
+  if (!path) return null;
+  const looksResolved = path.startsWith('/')
+    || /^(https?:)?\/\//i.test(path)
+    || /^(data:|blob:)/i.test(path);
+  return looksResolved ? mediaUrl(path) : mediaUrl(`${folder.replace(/\/$/, '')}/${path}`);
+};
+
+/** The grey box shown while there is no image to show.
+ *
+ *  This was pasted into eight components as a literal data URI, seven of them
+ *  filling `#f3f4f6` - a near-white rectangle on a dark page, which reads as a
+ *  broken image rather than a placeholder. AllEvents had already been corrected
+ *  to the surface colour; the rest had not, so the same list showed light boxes
+ *  on one tab and dark on another.
+ */
+export const imagePlaceholder = (label, width = 300, height = 180) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">`
+    + `<rect width="100%" height="100%" fill="#212225"/>`
+    + `<text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#797B86"`
+    + ` font-family="sans-serif" font-size="16">${label}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+};
+
 /** The crest for a team, whichever alias this endpoint used. */
 export const teamLogo = (team) => pickMedia(team, 'logo', 'logo_url', 'team_logo', 'image');
 

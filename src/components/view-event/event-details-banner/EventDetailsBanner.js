@@ -1,4 +1,4 @@
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaIn, mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,30 +23,8 @@ const EventDetailsBanner = ({
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Function to get the correct image URL - same pattern as tournament
-  const getImageUrl = imagePath => {
-    if (!imagePath) {
-      console.log('No image path provided, using default banner');
-      return tournamentDetailsBanner;
-    }
-
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) {
-      console.log('Using full URL:', imagePath);
-      return imagePath;
-    }
-
-    // If it starts with /media, prepend your backend URL
-    if (imagePath.startsWith('/media')) {
-      const fullUrl = `${baseUrl}${imagePath}`;
-      console.log('Constructed URL from /media path:', fullUrl);
-      return fullUrl;
-    }
-
-    // If it's just a filename, construct the full path
-    const fullUrl = `${baseUrl}/media/event_banners/${imagePath}`;
-    console.log('Constructed URL from filename:', fullUrl);
-    return fullUrl;
-  };
+  const getImageUrl = (imagePath) =>
+    mediaIn(imagePath, '/media/event_banners') || tournamentDetailsBanner;
 
   // Set banner URL when event changes
   useEffect(() => {

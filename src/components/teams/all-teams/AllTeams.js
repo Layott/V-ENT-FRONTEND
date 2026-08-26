@@ -144,11 +144,7 @@ const AllTeams = () => {
       showToast(tt("msg.networkError", "Network error"));
     }
   };
-  const getImageUrl = path => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
-  };
+  const getImageUrl = (path) => mediaUrl(path);
   const isOwner = team => team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username;
   // Real win rate only. This used to add a flat +30 and clamp to 8-95, so a
   // team that had never played a match still advertised "30%".

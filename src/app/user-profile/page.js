@@ -40,11 +40,6 @@ const TABS = [{
 
 // ── helpers ───────────────────────────────────────────────────────────────
 
-const buildAbsolute = (apiBase, url) => {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
-};
 
 // Normalise a favorite-games value (string or object) into { name, cover } for
 // the Favorite Games panel + Overview strip.
@@ -154,8 +149,8 @@ const UserProfileContent = ({
         });
         const raw = data.data || data;
         if (raw) {
-          raw.profile_picture = buildAbsolute(apiBase, raw.profile_picture || raw.profile_pic);
-          raw.banner = buildAbsolute(apiBase, raw.banner || raw.banner_picture);
+          raw.profile_picture = mediaUrl(raw.profile_picture || raw.profile_pic);
+          raw.banner = mediaUrl(raw.banner || raw.banner_picture);
           if (typeof raw.interests === 'string') {
             try {
               raw.interests = JSON.parse(raw.interests);

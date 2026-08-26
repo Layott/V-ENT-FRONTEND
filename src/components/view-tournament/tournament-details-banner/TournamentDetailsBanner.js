@@ -1,5 +1,5 @@
 // Updated TournamentDetailsBanner.js
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaIn, mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,12 +33,8 @@ const TournamentDetailsBanner = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Function to get the correct image URL
-  const getImageUrl = imagePath => {
-    if (!imagePath) return tournamentDetailsBanner;
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/media')) return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
-    return `${process.env.NEXT_PUBLIC_API_URL}/media/tournament_banners/${imagePath}`;
-  };
+  const getImageUrl = (imagePath) =>
+    mediaIn(imagePath, '/media/tournament_banners') || tournamentDetailsBanner;
 
   // Helper function to calculate time remaining
   const calculateTimeRemaining = startDate => {
