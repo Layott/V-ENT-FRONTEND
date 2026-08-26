@@ -20,10 +20,10 @@ const TABS = [
   { id: 'membership', label: 'Membership Settings' },
 ]
 
-const EditTeamProfileContent = () => {
+const EditTeamProfileContent = ({ slug: slugFromPath }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const teamId = searchParams.get('id') || ''
+  const teamId = slugFromPath || searchParams.get('id') || ''
   const { data: session } = useSession()
 
   const [activeTab, setActiveTab] = useState('profile-info')
@@ -193,3 +193,6 @@ const EditTeamProfile = () => (
 )
 
 export default EditTeamProfile
+
+// Exported so the slug route can render it.
+export { EditTeamProfileContent };

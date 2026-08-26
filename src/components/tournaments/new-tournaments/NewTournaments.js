@@ -132,7 +132,7 @@ const NewTournaments = ({ data = [] }) => {
                             <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={styles.viewDetailsBTN}>
                               View Details
                             </Link>
-                            <Link href={`/tournaments/register-tournament?id=${tournament.tournament_id}`} className={styles.registerBTN}>
+                            <Link href={`/tournaments/${tournament.tournament_id}/register`} className={styles.registerBTN}>
                               Register
                             </Link>
                         </div>

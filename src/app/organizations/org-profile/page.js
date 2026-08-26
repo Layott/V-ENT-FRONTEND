@@ -58,11 +58,11 @@ const socialIconFor = (titleOrKey = '') => {
   return FaGlobe;
 };
 
-const OrgProfileContent = () => {
+const OrgProfileContent = ({ slug: slugFromPath }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   // No invented default: without ?id= there is no organization to show.
-  const orgId = searchParams.get('id');
+  const orgId = slugFromPath || searchParams.get('id');
   const { data: session } = useSession();
   const tabsRef = useRef({});
 
@@ -358,7 +358,7 @@ const OrgProfileContent = () => {
               <div className={styles.heroActions}>
                 {isOwner ? (
                   <Link
-                    href={`/organizations/manage?id=${orgId}`}
+                    href={`/organizations/${orgId}/manage`}
                     className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}
                   >
                     <FiEdit3 /> Manage
@@ -821,3 +821,7 @@ const OrgProfile = () => (
 );
 
 export default OrgProfile;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { OrgProfileContent };

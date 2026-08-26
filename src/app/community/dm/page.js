@@ -29,10 +29,10 @@ const dayLabel = (iso) => {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-const DmInner = () => {
+const DmInner = ({ slug: slugFromPath }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const id = slugFromPath || searchParams.get('id');
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
   const { data: session } = useSession();
@@ -247,3 +247,7 @@ const DmPage = () => (
 );
 
 export default DmPage;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { DmInner };

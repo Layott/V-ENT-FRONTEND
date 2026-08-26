@@ -1144,7 +1144,7 @@ const TeamCard = ({ t }) => (
 );
 
 const UserCard = ({ u }) => (
-  <Link href={`/user-profile?id=${u.id}`} className={styles.userCard}>
+  <Link href={`/u/${u.username || u.id}`} className={styles.userCard}>
     <div className={styles.userAvatar}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={u.avatar} alt={u.full_name} />
@@ -1168,6 +1168,11 @@ const UserCard = ({ u }) => (
   </Link>
 );
 
+// The four cards below still address by id, and are the only links on the site
+// that do. Marketplace, Shop and Anime are behind ComingSoon - there is no page
+// to land on and no model to carry a slug - so they are exempt under the slug
+// rule until they are built, and then they are built to it. Grepping for
+// "?id=" in src should return these four and nothing else.
 const ListingCard = ({ l }) => (
   <Link href={`/marketplace/listing?id=${l.id}`} className={styles.listingCard}>
     <div className={styles.listingImageWrap}>
@@ -1220,7 +1225,7 @@ const ProductCard = ({ p }) => (
 );
 
 const ThreadCard = ({ t }) => (
-  <Link href={`/community/thread?id=${t.id}`} className={styles.threadCard}>
+  <Link href={`/community/thread/${t.slug || t.id}`} className={styles.threadCard}>
     <div className={styles.threadHead}>
       <span className={styles.threadCategory}>{t.category}</span>
       <span className={styles.threadReplies}>{t.reply_count} replies</span>
@@ -1289,7 +1294,7 @@ const AmvCard = ({ a }) => (
 );
 
 const OrgCard = ({ o }) => (
-  <Link href={`/organizations/org-profile?id=${o.id}`} className={styles.orgCard}>
+  <Link href={`/organizations/${o.slug || o.id}`} className={styles.orgCard}>
     <div className={styles.orgBanner} style={{ backgroundImage: `url(${o.banner})` }}>
       <div className={styles.orgLogoWrap}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

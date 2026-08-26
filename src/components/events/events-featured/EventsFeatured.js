@@ -108,7 +108,7 @@ const EventsFeatured = ({ featuredEvents = [] }) => {
                       
                   <div>
                     <Link 
-                      href={`/events/view-event?id=${encodeURIComponent(eventId)}`} 
+                      href={`/events/${encodeURIComponent(eventId)}`} 
                       className={menuContentStyles.viewDetailsLink}
                       onClick={() => {
                         console.log('🔗 Navigating to event with ID:', eventId);

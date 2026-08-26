@@ -1,4 +1,10 @@
+import { headers } from 'next/headers';
+
 // Everything the site says about itself to a crawler or a link preview.
+//
+// Server-only. Every consumer is a layout, a [slug] route, sitemap.js or
+// robots.js - all server components - which is what makes the `next/headers`
+// import above legal.
 //
 // The problem this exists to fix: almost every page here is `'use client'` and
 // loads its content in an effect. That means the HTML the server sends is an
@@ -33,7 +39,34 @@ export const LOCALES = [
   { code: 'pt', hreflang: 'pt', ogLocale: 'pt_PT' },
 ];
 
+/**
+ * Which language this request is being served in.
+ *
+ * Set by middleware on a header, because a server component has no other way to
+ * know: the prefix has already been rewritten away by the time the route runs.
+ */
+export function currentLocale() {
+  try {
+    const value = headers().get(LOCALE_HEADER);
+    return LOCALE_CODES.includes(value) ? value : 'en';
+  } catch {
+    // headers() throws when called outside a request - during a static build,
+    // for instance. English is the right answer there.
+    return 'en';
+  }
+}
+
 const API = process.env.NEXT_PUBLIC_API_URL || '';
+
+const LOCALE_HEADER = 'x-vent-locale';
+const LOCALE_CODES = LOCALES.map((l) => l.code);
+
+/** `/tournaments/x` in `fr` is `/fr/tournaments/x`. English stays bare. */
+const withLocale = (path, locale) => {
+  const clean = path?.startsWith('/') ? path : `/${path || ''}`;
+  if (!locale || locale === 'en') return clean;
+  return clean === '/' ? `/${locale}` : `/${locale}${clean}`;
+};
 
 /** Absolute URL for a site-relative path. Crawlers need absolute. */
 export const absolute = (path = '/') =>
@@ -42,16 +75,29 @@ export const absolute = (path = '/') =>
 /**
  * Language alternates for one path.
  *
- * The same URL serves all three languages - the choice lives on the account and
- * in localStorage, not in the address - so every hreflang points at the same
- * place and `x-default` points there too. That is the honest declaration for
- * this setup. Claiming `/fr/...` exists when it does not is worse than not
- * declaring alternates at all.
+ * `/tournaments`, `/fr/tournaments` and `/pt/tournaments` are three real
+ * addresses serving the same page in three languages, so each hreflang names
+ * its own, and `x-default` names the English one.
  */
-export const languageAlternates = (path = '/') => {
-  const url = absolute(path);
-  const languages = Object.fromEntries(LOCALES.map((l) => [l.hreflang, url]));
-  return { canonical: url, languages: { ...languages, 'x-default': url } };
+export const languageAlternates = (path = '/', locale = 'en') => {
+  // Each hreflang points at that language's own address. Three alternates all
+  // pointing at one URL - which is what this did before locale prefixes existed
+  // - tells a search engine nothing, and the French and Portuguese pages would
+  // never rank as French or Portuguese pages.
+  const languages = Object.fromEntries(
+    LOCALES.map((l) => [l.hreflang, absolute(withLocale(path, l.code))]),
+  );
+  return {
+    // The canonical of a French page is the French URL, not the English one.
+    // Pointing it at English would tell Google the French page is a duplicate
+    // and should not be indexed at all.
+    canonical: absolute(withLocale(path, locale)),
+    languages: {
+      ...languages,
+      // English is what somebody gets when no language matches.
+      'x-default': absolute(path),
+    },
+  };
 };
 
 /** Trim a description to something a search result will actually show. */
@@ -82,8 +128,10 @@ export function buildMetadata({
   noindex = false,
   publishedTime,
   keywords,
+  locale,
 }) {
-  const url = absolute(path);
+  const lang = locale || currentLocale();
+  const url = absolute(withLocale(path, lang));
   const desc = clamp(description || SITE.description);
   const images = image
     ? [{ url: image.startsWith('http') ? image : absolute(image), alt: title }]
@@ -93,7 +141,7 @@ export function buildMetadata({
     title,
     description: desc,
     keywords,
-    alternates: languageAlternates(path),
+    alternates: languageAlternates(path, lang),
     robots: noindex
       ? { index: false, follow: false }
       : { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
@@ -103,8 +151,8 @@ export function buildMetadata({
       url,
       siteName: SITE.name,
       type,
-      locale: SITE.locale,
-      alternateLocale: LOCALES.filter((l) => l.ogLocale !== SITE.locale).map((l) => l.ogLocale),
+      locale: (LOCALES.find((l) => l.code === lang) || LOCALES[0]).ogLocale,
+      alternateLocale: LOCALES.filter((l) => l.code !== lang).map((l) => l.ogLocale),
       images,
       ...(publishedTime ? { publishedTime } : {}),
     },

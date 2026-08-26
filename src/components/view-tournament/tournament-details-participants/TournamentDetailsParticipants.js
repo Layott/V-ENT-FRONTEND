@@ -141,7 +141,7 @@ const TournamentDetailsParticipants = ({ tournament }) => {
 
         <div className={`${item()} ${tableStyles.viewProfileBTNContainer}`}>
           <Link
-            href={participant.profileId ? `/user-profile?id=${participant.profileId}` : '/user-profile'}
+            href={participant.profileId ? `/u/${participant.profileId}` : '/user-profile'}
             className={`${tableStyles.viewProfileBTN} ${profileStyles.topMostLayerColor}`}
           >
             View Profile

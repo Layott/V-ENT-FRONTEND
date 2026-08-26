@@ -55,7 +55,7 @@ const normaliseGalleryImage = (img, idx) => {
 
 // ── component ─────────────────────────────────────────────────────────────
 
-const UserProfileContent = () => {
+const UserProfileContent = ({ slug: slugFromPath }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -73,7 +73,7 @@ const UserProfileContent = () => {
   const moreMenuRef = useRef(null);
 
   const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-  const profileId = searchParams.get('id');
+  const profileId = slugFromPath || searchParams.get('id');
   const sessionUserId = session?.user?.id || null;
   const isOwner = !profileId || profileId === sessionUserId;
 
@@ -346,7 +346,7 @@ const UserProfileContent = () => {
   const handleShare = async () => {
     const id = profileId || sessionUserId || profileData.user_id;
     const link = id
-      ? `${window.location.origin}/user-profile?id=${id}`
+      ? `${window.location.origin}/u/${id}`
       : window.location.href;
     try {
       await navigator.clipboard.writeText(link);
@@ -534,3 +534,6 @@ const UserProfile = () => (
 );
 
 export default UserProfile;
+
+// Exported so the slug route can render it.
+export { UserProfileContent };

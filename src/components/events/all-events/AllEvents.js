@@ -90,10 +90,10 @@ const GameSection = ({ game, events }) => {
                 </div>
 
                 <div className={`${newTournamentStyles.buttonContainer} ${styles.buttonContainer}`}>
-                  <Link href={`/events/view-event?id=${eventId}`} className={newTournamentStyles.viewDetailsBTN}>
+                  <Link href={`/events/${eventId}`} className={newTournamentStyles.viewDetailsBTN}>
                     View Details
                   </Link>
-                  <Link href={`/events/register-event?id=${eventId}`} className={newTournamentStyles.registerBTN}>
+                  <Link href={`/events/${eventId}?tab=tickets`} className={newTournamentStyles.registerBTN}>
                     Register
                   </Link>
                 </div>

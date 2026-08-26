@@ -98,7 +98,7 @@ const PaymentModal = ({
   // refresh doesn't re-trigger verification. Keeps `?id=` intact.
   const stripReferenceFromUrl = () => {
     if (!tournament?.id) return;
-    try { router.replace(`${pathname}?id=${tournament.id}`); } catch { /* ignore */ }
+    try { router.replace(`${pathname}`); } catch { /* ignore */ }
   };
 
   const doRegister = async (pinValue) => {

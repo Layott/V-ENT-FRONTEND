@@ -191,11 +191,11 @@ const RankingsView = () => {
   const navigateToProfile = (entry) => {
     if (!entry) return
     if (tab === 'players') {
-      router.push(`/user-profile?id=${encodeURIComponent(entry.id)}`)
+      router.push(`/u/${encodeURIComponent(entry.id)}`)
     } else if (tab === 'teams') {
-      router.push(`/teams/team-profile?id=${encodeURIComponent(entry.id)}`)
+      router.push(`/teams/${encodeURIComponent(entry.id)}`)
     } else if (tab === 'organizations') {
-      router.push(`/organizations/org-profile?id=${encodeURIComponent(entry.id)}`)
+      router.push(`/organizations/${encodeURIComponent(entry.id)}`)
     }
   }
 

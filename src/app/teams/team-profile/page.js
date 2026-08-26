@@ -94,7 +94,7 @@ export const TeamProfileContent = ({ slug }) => {
   // Share used to be a Link back to the page you were already on. It copies a
   // link to this team, and says what the link is if the clipboard is refused.
   const handleShare = async () => {
-    const link = `${window.location.origin}/teams/team-profile?id=${team?.id ?? teamId}`
+    const link = `${window.location.origin}/teams/${team?.id ?? teamId}`
     try {
       await navigator.clipboard.writeText(link)
       showToast?.('Team link copied')

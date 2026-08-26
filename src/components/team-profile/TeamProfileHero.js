@@ -58,7 +58,7 @@ const TeamProfileHero = ({ team, isOwner, requestState, onRequestJoin, onLeave, 
               once. */}
           {isOwner ? (
             <>
-              <Link href={`/edit-team-profile?id=${team.id}`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
+              <Link href={`/edit-team-profile/${team.id}`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
                 <FiEdit3 className={styles.heroBtnIcon} /> Manage
               </Link>
               <button type="button" className={`${styles.heroBtn} ${styles.heroBtnGhost}`} onClick={onShare}>

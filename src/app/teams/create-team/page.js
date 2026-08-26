@@ -77,7 +77,7 @@ const CreateTeam = () => {
         setSuccess(true)
         const newId = data?.data?.id || data?.data?.team?.id
         window.setTimeout(() => {
-          if (newId) router.push(`/teams/team-profile?id=${newId}`)
+          if (newId) router.push(`/teams/${newId}`)
           else router.push('/teams')
         }, 1100)
       } else {

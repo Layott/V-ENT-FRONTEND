@@ -1,4 +1,4 @@
-import { SITE, absolute } from '@/lib/seo';
+import { LOCALES, absolute } from '@/lib/seo';
 
 // The sitemap is generated from what is actually live, not hand-maintained.
 //
@@ -41,12 +41,30 @@ async function readList(path) {
   }
 }
 
-const entry = (path, { changeFrequency = 'weekly', priority = 0.5, lastModified } = {}) => ({
-  url: absolute(path),
-  lastModified: lastModified ? new Date(lastModified) : new Date(),
-  changeFrequency,
-  priority,
-});
+// One row per language.
+//
+// A page that exists in three languages is three addresses, and a sitemap that
+// names only the English one leaves the other two to be found by luck. Each row
+// also carries the full alternates set, which is what tells a search engine the
+// three are the same page rather than three thin duplicates.
+const entry = (path, { changeFrequency = 'weekly', priority = 0.5, lastModified } = {}) => {
+  const withLocale = (p, code) => (code === 'en'
+    ? p
+    : (p === '/' ? `/${code}` : `/${code}${p}`));
+  const alternates = {
+    languages: Object.fromEntries(
+      LOCALES.map((l) => [l.hreflang, absolute(withLocale(path, l.code))]),
+    ),
+  };
+  return LOCALES.map((l) => ({
+    url: absolute(withLocale(path, l.code)),
+    lastModified: lastModified ? new Date(lastModified) : new Date(),
+    changeFrequency,
+    // The English page is the one to rank first when everything else is equal.
+    priority: l.code === 'en' ? priority : Math.max(0.1, priority - 0.1),
+    alternates,
+  }));
+};
 
 export default async function sitemap() {
   // Pages that exist regardless of content.
@@ -89,5 +107,6 @@ export default async function sitemap() {
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
 
-  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages];
+  // entry() returns one row per language, so the lists arrive nested.
+  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages].flat();
 }

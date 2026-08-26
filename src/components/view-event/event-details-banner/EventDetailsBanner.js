@@ -185,7 +185,7 @@ const EventDetailsBanner = ({ event, onBookNow }) => {
             </button>
           )}
           <Link
-            href={`/events/register-event?id=${event.event_id || event.id}`}
+            href={`/events/${event.event_id || event.id}?tab=tickets`}
             className={bannerDetailsStyles.joinTournamentBTN}
           >
             Register for Event

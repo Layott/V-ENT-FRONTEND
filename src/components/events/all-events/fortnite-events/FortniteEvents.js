@@ -146,7 +146,7 @@ const FortniteEvents = () => {
                         
                             <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
                                 <Link href={`/events/view-event/${event.event_id}`} className={newTournamentStyles.viewDetailsBTN}>View Details</Link>
-                                <Link href={`/events/register-event/${event.event_id}`} className={newTournamentStyles.registerBTN}>Register</Link>
+                                <Link href={`/events/${event.event_id}?tab=tickets`} className={newTournamentStyles.registerBTN}>Register</Link>
                             </div>
                         </div>
                     </div>

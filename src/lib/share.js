@@ -55,5 +55,7 @@ export const linkTo = {
   tournament: (t) => `/tournaments/${t?.slug || t?.tournament_id || t?.id || ''}`,
   event: (e) => `/events/${e?.slug || e?.event_id || e?.id || ''}`,
   team: (t) => `/teams/${t?.slug || t?.team_id || t?.id || ''}`,
-  profile: (u) => `/user-profile?id=${u?.user_id || u?.id || ''}`,
+  // A username, not a number. This is the link people paste into a group
+  // chat, so it has to say who it is.
+  profile: (u) => `/u/${u?.username || u?.user_id || u?.id || ''}`,
 };

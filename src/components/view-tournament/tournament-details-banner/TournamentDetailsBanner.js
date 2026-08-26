@@ -86,7 +86,7 @@ const TournamentDetailsBanner = ({ tournament }) => {
     
     // Example:
     if (tournament) {
-      window.location.href = `/tournaments/register-tournament?id=${tournament.tournament_id}&type=${selectedOption}`;
+      window.location.href = `/tournaments/${tournament.tournament_id}/register?type=${selectedOption}`;
     } else {
       window.location.href = `/tournaments/register-tournament?type=${selectedOption}`;
     }

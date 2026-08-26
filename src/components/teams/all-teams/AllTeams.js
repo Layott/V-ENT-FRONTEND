@@ -319,7 +319,7 @@ const AllTeams = () => {
                       </button>
                     ) : (
                       <Link
-                        href={`/teams/team-profile?id=${teamId}`}
+                        href={`/teams/${teamId}`}
                         className={`${styles.actionBtn} ${styles.actionSecondary}`}
                       >
                         View
@@ -327,7 +327,7 @@ const AllTeams = () => {
                     )}
 
                     <Link
-                      href={`/teams/team-profile?id=${teamId}`}
+                      href={`/teams/${teamId}`}
                       className={`${styles.actionBtn} ${styles.actionGhost}`}
                     >
                       Profile

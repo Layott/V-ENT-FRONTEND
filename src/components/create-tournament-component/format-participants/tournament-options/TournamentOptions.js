@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import InfoTip from '@/components/info-tip/InfoTip';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './tournament-options.module.css';
 
@@ -50,7 +51,7 @@ export const DEFAULT_OPTIONS = {
   dispute_window_minutes: 30,
 };
 
-const Toggle = ({ id, label, hint, checked, onChange }) => (
+const Toggle = ({ id, label, hint, checked, onChange, tip }) => (
   <button
     type="button"
     id={id}
@@ -60,7 +61,10 @@ const Toggle = ({ id, label, hint, checked, onChange }) => (
     onClick={() => onChange(!checked)}
   >
     <span className={styles.toggleText}>
-      <span className={styles.toggleLabel}>{label}</span>
+      <span className={styles.toggleLabel}>
+        {label}
+        {tip ? <InfoTip id={tip} /> : null}
+      </span>
       {hint ? <span className={styles.toggleHint}>{hint}</span> : null}
     </span>
     <span className={`${styles.toggleTrack} ${checked ? styles.toggleTrackOn : ''}`}>
@@ -98,7 +102,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
         {/* ---------------------------------------------------- check-in */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Check-in</h4>
+          <h4 className={styles.groupTitle}>Check-in<InfoTip id="checkInWindow" /></h4>
           <p className={styles.groupHint}>
             Entrants confirm they are actually there before the bracket is built. Without it,
             round one is full of people who signed up weeks ago and forgot.
@@ -122,6 +126,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
           {options.check_in_minutes > 0 && (
             <Toggle
               id="forfeit_without_check_in"
+            tip="forfeitNoCheckIn"
               label="Forfeit anyone who does not check in"
               hint="You press the button. Nothing is removed automatically."
               checked={options.forfeit_without_check_in}
@@ -132,7 +137,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
         {/* ----------------------------------------------------- seeding */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Seeding</h4>
+          <h4 className={styles.groupTitle}>Seeding<InfoTip id="seedingMethod" /></h4>
           <div className={styles.seedGrid}>
             {SEEDING_CHOICES.map((choice) => (
               <button
@@ -151,6 +156,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
           <Toggle
             id="third_place_match"
+            tip="thirdPlaceMatch"
             label="Play a third-place match"
             hint="The two semi-final losers play for third. Needed if your prize table pays a third place."
             checked={options.third_place_match}
@@ -160,7 +166,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
         {/* ----------------------------------------------------- matches */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Matches</h4>
+          <h4 className={styles.groupTitle}>Matches<InfoTip id="bestOfMode" /></h4>
 
           <div className={styles.choiceRow}>
             <button
@@ -213,7 +219,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
             )}
 
             <label className={styles.field} htmlFor="match_interval_minutes">
-              <span className={styles.fieldLabel}>Minutes between rounds</span>
+              <span className={styles.fieldLabel}>Minutes between rounds<InfoTip id="matchInterval" /></span>
               <input
                 id="match_interval_minutes"
                 type="number"
@@ -228,6 +234,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
           <Toggle
             id="require_screenshot"
+            tip="requireScreenshot"
             label="Require a screenshot with every result"
             hint="Disputes are far easier to settle when there is a picture attached."
             checked={options.require_screenshot}
@@ -237,11 +244,11 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
         {/* ------------------------------------------------------ rosters */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Rosters</h4>
+          <h4 className={styles.groupTitle}>Rosters<InfoTip id="rosterLock" /></h4>
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="roster_lock">
-              <span className={styles.fieldLabel}>Teams can change their line-up until</span>
+              <span className={styles.fieldLabel}>Teams can change their line-up until<InfoTip id="rosterLock" /></span>
               <select
                 id="roster_lock"
                 className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`}
@@ -255,7 +262,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
             </label>
 
             <label className={styles.field} htmlFor="max_substitutes">
-              <span className={styles.fieldLabel}>Substitutes allowed</span>
+              <span className={styles.fieldLabel}>Substitutes allowed<InfoTip id="maxSubstitutes" /></span>
               <input
                 id="max_substitutes"
                 type="number"
@@ -271,7 +278,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
         {/* --------------------------------------------------- who enters */}
         <div className={styles.group}>
-          <h4 className={styles.groupTitle}>Who can enter</h4>
+          <h4 className={styles.groupTitle}>Who can enter<InfoTip id="restrictCountry" /></h4>
           <p className={styles.groupHint}>
             Anyone who does not meet these is turned away at registration, before they pay
             an entry fee.
@@ -279,7 +286,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="restrict_country">
-              <span className={styles.fieldLabel}>Country</span>
+              <span className={styles.fieldLabel}>Country<InfoTip id="restrictCountry" /></span>
               <input
                 id="restrict_country"
                 type="text"
@@ -291,7 +298,7 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
             </label>
 
             <label className={styles.field} htmlFor="min_age">
-              <span className={styles.fieldLabel}>Minimum age</span>
+              <span className={styles.fieldLabel}>Minimum age<InfoTip id="minAge" /></span>
               <input
                 id="min_age"
                 type="number"
@@ -306,12 +313,14 @@ const TournamentOptions = ({ formData = {}, updateFormData }) => {
 
           <Toggle
             id="require_verified_email"
+            tip="requireVerifiedEmail"
             label="Verified email address required"
             checked={options.require_verified_email}
             onChange={(v) => set('require_verified_email', v)}
           />
           <Toggle
             id="require_kyc"
+            tip="requireKyc"
             label="Verified identity required"
             hint="Already required automatically on any tournament that charges entry or pays a prize."
             checked={options.require_kyc}

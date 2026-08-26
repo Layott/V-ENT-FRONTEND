@@ -33,11 +33,11 @@ const formatDate = (iso) => {
   }
 };
 
-const ManageOrgContent = () => {
+const ManageOrgContent = ({ slug: slugFromPath }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   // No invented default: without ?id= there is no organization to manage.
-  const orgId = searchParams.get('id');
+  const orgId = slugFromPath || searchParams.get('id');
   const { data: session } = useSession();
 
   const [org, setOrg] = useState(null);
@@ -343,7 +343,7 @@ const ManageOrgContent = () => {
               <FaShieldAlt className={styles.lockedIcon} />
               <h2 className={styles.lockedTitle}>Owner-only area</h2>
               <p className={styles.lockedSub}>You do not have permission to manage this organization.</p>
-              <Link href={`/organizations/org-profile?id=${orgId}`} className={styles.lockedBtn}>
+              <Link href={`/organizations/${orgId}`} className={styles.lockedBtn}>
                 <LuArrowLeft /> Back to profile
               </Link>
             </div>
@@ -390,7 +390,7 @@ const ManageOrgContent = () => {
           <div className={styles.headerRow}>
             <div className={styles.headerLeft}>
               <Link
-                href={`/organizations/org-profile?id=${orgId}`}
+                href={`/organizations/${orgId}`}
                 className={styles.backChip}
               >
                 <LuArrowLeft /> Back to profile
@@ -766,3 +766,7 @@ const ManageOrg = () => (
 );
 
 export default ManageOrg;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { ManageOrgContent };

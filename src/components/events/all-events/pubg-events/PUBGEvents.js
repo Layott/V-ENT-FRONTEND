@@ -151,13 +151,13 @@ const PUBGEvents = () => {
                                 <div className={`${newTournamentStyles.buttonContainer} ${allEventsStyles.buttonContainer}`}>
                                     {/* Fixed: Using query parameter approach like tournaments */}
                                     <Link 
-                                        href={`/events/view-event?id=${eventId}`} 
+                                        href={`/events/${eventId}`} 
                                         className={newTournamentStyles.viewDetailsBTN}
                                     >
                                         View Details
                                     </Link>
                                     <Link 
-                                        href={`/events/register-event?id=${eventId}`} 
+                                        href={`/events/${eventId}?tab=tickets`} 
                                         className={newTournamentStyles.registerBTN}
                                     >
                                         Register

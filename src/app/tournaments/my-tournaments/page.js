@@ -241,7 +241,7 @@ const MyTournaments = () => {
                         <button className={styles.actionBtn}>View</button>
                       </Link>
                       {status !== 'completed' && (
-                        <Link href={`/tournaments/my-tournaments/manage?id=${t?.id ?? ''}`}>
+                        <Link href={`/tournaments/${t?.id ?? ''}/manage`}>
                           <button className={`${styles.actionBtn} ${styles.manageBtn}`}><LuSettings /> Manage</button>
                         </Link>
                       )}

@@ -14,11 +14,11 @@ import styles from './attendees.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-const AttendeesContent = () => {
+const AttendeesContent = ({ slug: slugFromPath }) => {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const token = session?.user?.sessionToken;
-  const eventId = searchParams.get('id');
+  const eventId = slugFromPath || searchParams.get('id');
 
   const [rows, setRows] = useState([]);
   const [counts, setCounts] = useState({ count: 0, checked_in: 0 });
@@ -212,7 +212,7 @@ const AttendeesContent = () => {
         <Sidebar />
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
-            <Link href={`/events/view-event?id=${eventId || ''}`} className={styles.backLink}>← Back to event</Link>
+            <Link href={`/events/${eventId || ''}`} className={styles.backLink}>← Back to event</Link>
             <h1 className={styles.pageTitle}>Door list</h1>
             <p className={styles.pageSubtitle}>Everyone holding a ticket, and who has arrived.</p>
           </div>
@@ -231,3 +231,7 @@ const Attendees = () => (
 );
 
 export default Attendees;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { AttendeesContent };

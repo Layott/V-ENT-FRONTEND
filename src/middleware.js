@@ -1,6 +1,10 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import {
+  DEFAULT_LOCALE, LOCALES as LOCALE_CODES, LOCALE_COOKIE, LOCALE_HEADER, PREFIXED,
+  localeForCountry, localePath, preferredLocale, splitLocale,
+} from "@/lib/locale";
 
 // Matched with startsWith, so a bare "/events" here would also gate
 // "/events/lagos-anime-con". That is what it used to do, and it meant every
@@ -54,7 +58,50 @@ function redirectTo(path, req) {
 }
 
 export default async function middleware(req) {
-  const path = req.nextUrl.pathname;
+  // ── Language prefix ─────────────────────────────────────────────
+  //
+  // `/fr/tournaments` is the French address for `/tournaments`. The prefix is
+  // stripped here and the locale carried on a header, so the 81 routes
+  // underneath never learn that prefixes exist and nothing had to move.
+  //
+  // Stripped BEFORE the auth checks below, deliberately: those match on
+  // `path.startsWith('/settings')`, so a prefixed `/fr/settings` would sail
+  // straight past every one of them.
+  const { locale, path: unprefixed } = splitLocale(req.nextUrl.pathname);
+  const hasPrefix = locale !== DEFAULT_LOCALE;
+  const path = unprefixed;
+
+  // Keep somebody in their language, whichever link they followed.
+  //
+  // Two jobs in one place. On a first visit with no stated preference, a French
+  // or Portuguese browser is sent to its own address. After that the cookie
+  // carries the choice, so a plain <Link href="/tournaments"> inside the app -
+  // and there are hundreds of them - lands on /fr/tournaments rather than
+  // quietly dropping the person back into English. Doing it here rather than
+  // rewriting every Link means no link can be forgotten.
+  //
+  // A crawler is never redirected: it sends no cookie and no Accept-Language,
+  // so it stays on the English URL and indexes it. Auto-redirecting crawlers is
+  // how a site ends up with one language indexed and the others invisible.
+  const cookieLocale = cookies().get(LOCALE_COOKIE)?.value;
+  if (!hasPrefix && req.method === 'GET' && !path.startsWith('/api')) {
+    const wanted = LOCALE_CODES.includes(cookieLocale)
+      ? cookieLocale
+      : (preferredLocale(req.headers.get('accept-language'))
+        || localeForCountry(req.headers.get('x-vercel-ip-country')
+          || req.headers.get('cf-ipcountry')));
+
+    if (wanted && PREFIXED.includes(wanted)) {
+      const res = redirectTo(
+        localePath(path, wanted) + (req.nextUrl.search || ''), req,
+      );
+      // Written on the way past so this happens once, not on every request.
+      res.cookies.set(LOCALE_COOKIE, wanted, {
+        path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax',
+      });
+      return res;
+    }
+  }
 
   // ── Admin route protection ──────────────────────────────────────
   const isAdminRoute = path.startsWith('/admin');
@@ -62,7 +109,7 @@ export default async function middleware(req) {
   if (isAdminRoute && !isAdminLoginRoute) {
     const adminToken = cookies().get('adminToken')?.value;
     if (!adminToken) {
-      return redirectTo('/admin/login', req);
+      return redirectTo('/admin/login', req);   // admin is English only
     }
   }
 
@@ -75,13 +122,15 @@ export default async function middleware(req) {
   const isLoggedOutCookie = cookies().get("isLoggedOut")?.value === "true";
   
   if (isLoggedOutCookie) {
-    const response = redirectTo('/login', req);
+    const response = redirectTo(localePath('/login', locale), req);
     response.cookies.delete("isLoggedOut");
     return response;
   }
 
   if (isProtectedRoute && !nextAuthToken && !sessionCookie) {
-    return redirectTo('/login', req);
+    // Localised, so somebody reading in French is not dropped onto an English
+    // sign-in page halfway through what they were doing.
+    return redirectTo(localePath('/login', locale), req);
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {
@@ -91,10 +140,49 @@ export default async function middleware(req) {
     if (path === "/forgot-password" && fromEditProfile) {
       return NextResponse.next();
     }
-    return redirectTo('/home', req);
+    return redirectTo(localePath('/home', locale), req);
   }
 
-  return NextResponse.next();
+  return withLocale(req, locale, hasPrefix);
+}
+
+/**
+ * Serve the unprefixed route, and tell it which language it is being read in.
+ *
+ * A rewrite rather than a redirect: the address the person sees stays
+ * `/fr/tournaments` - which is the entire point of having the prefix - while
+ * the route that renders is the one that already exists.
+ */
+function withLocale(req, locale, hasPrefix) {
+  // On the REQUEST, not the response.
+  //
+  // generateMetadata reads request headers. Setting this on the response only
+  // meant currentLocale() saw nothing and every locale page canonicalised to
+  // the English URL - which tells a search engine the French page is a
+  // duplicate and should not be indexed at all, the exact opposite of why the
+  // prefixes exist.
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(LOCALE_HEADER, locale);
+
+  const res = hasPrefix
+    ? NextResponse.rewrite(
+      new URL(
+        (req.nextUrl.pathname.replace(`/${locale}`, '') || '/')
+        + (req.nextUrl.search || ''),
+        req.nextUrl.origin,
+      ),
+      { request: { headers: requestHeaders } },
+    )
+    : NextResponse.next({ request: { headers: requestHeaders } });
+
+  // Also on the response, so a client that wants to know can read it.
+  res.headers.set(LOCALE_HEADER, locale);
+  if (hasPrefix) {
+    res.cookies.set(LOCALE_COOKIE, locale, {
+      path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax',
+    });
+  }
+  return res;
 }
 
 export const config = {

@@ -100,11 +100,11 @@ const renderInline = (text) => {
   return parts;
 };
 
-const ThreadInner = () => {
+const ThreadInner = ({ slug: slugFromPath }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const id = searchParams.get('id');
+  const id = slugFromPath || searchParams.get('id');
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
   const authHeaders = useMemo(
@@ -476,3 +476,7 @@ const ThreadPage = () => (
 );
 
 export default ThreadPage;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { ThreadInner };

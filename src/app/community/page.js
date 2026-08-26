@@ -659,12 +659,12 @@ const CommunityInner = () => {
                       <span className={styles.postTime}>{relativeTime(post.created_at)}</span>
                     </div>
 
-                    <Link href={`/community/post?id=${post.id}`} className={styles.postBodyLink}>
+                    <Link href={`/community/post/${post.slug || post.id}`} className={styles.postBodyLink}>
                       <p className={styles.postBody}>{post.content}</p>
                     </Link>
 
                     {post.images && post.images.length > 0 && (
-                      <Link href={`/community/post?id=${post.id}`} className={styles.postBodyLink}>
+                      <Link href={`/community/post/${post.slug || post.id}`} className={styles.postBodyLink}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={post.images[0]} alt="post attachment" className={styles.postImage} />
                       </Link>
@@ -700,7 +700,7 @@ const CommunityInner = () => {
                         {post.is_liked ? <FaHeart className={styles.reactIcon} /> : <FaRegHeart className={styles.reactIcon} />}
                         <span>{post.likes_count}</span>
                       </button>
-                      <Link href={`/community/post?id=${post.id}`} className={styles.reactBtn} aria-label="comment">
+                      <Link href={`/community/post/${post.slug || post.id}`} className={styles.reactBtn} aria-label="comment">
                         <FaRegComment className={styles.reactIcon} />
                         <span>{post.comments_count}</span>
                       </Link>
@@ -797,7 +797,7 @@ const CommunityInner = () => {
                     filteredThreads.map((thread) => (
                       <Link
                         key={thread.id}
-                        href={`/community/thread?id=${thread.id}`}
+                        href={`/community/thread/${thread.slug || thread.id}`}
                         className={styles.threadRow}
                       >
                         <div className={styles.threadAvatar}>
@@ -848,7 +848,7 @@ const CommunityInner = () => {
                 ) : (
                   filteredClubs.map((club) => (
                     <div key={club.id} className={styles.clubCard}>
-                      <Link href={`/community/club?id=${club.id}`} className={styles.clubLink}>
+                      <Link href={`/community/club/${club.slug || club.id}`} className={styles.clubLink}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         {club.banner ? (
                           <img src={club.banner} alt={`${club.name} banner`} className={styles.clubBanner} />
@@ -999,7 +999,7 @@ const CommunityInner = () => {
                         <span className={styles.dmThreadHandle}>@{otherOf(activeDm)?.username || ''}</span>
                       </div>
                       <Link
-                        href={`/community/dm?id=${activeDm.id}`}
+                        href={`/community/dm/${activeDm.slug || activeDm.id}`}
                         className={styles.dmFullScreenLink}
                       >
                         Full screen

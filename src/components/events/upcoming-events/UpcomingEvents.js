@@ -116,7 +116,7 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
                   
                   <div className={newTournamentStyles.buttonContainer}>
                     <Link 
-                      href={`/events/view-event?id=${encodeURIComponent(eventId)}`} 
+                      href={`/events/${encodeURIComponent(eventId)}`} 
                       className={newTournamentStyles.viewDetailsBTN}
                       onClick={() => {
                         console.log('🔗 Navigating to event with ID:', eventId);
@@ -131,7 +131,7 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
                     >
                       View Details
                     </Link>
-                    <Link href={`/events/register-event/${eventId}`} className={newTournamentStyles.registerBTN}>Register</Link>
+                    <Link href={`/events/${eventId}?tab=tickets`} className={newTournamentStyles.registerBTN}>Register</Link>
                   </div>
                 </div>
               </div>

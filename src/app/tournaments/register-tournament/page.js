@@ -15,10 +15,10 @@ import styles from './register-tournament.module.css';
 // and mounts the shared TournamentRegister modal flow (Mode → Team → Roster →
 // Review → Payment → Success). All registration + payment logic lives in
 // that modal tree - this page only owns the shell + data fetch.
-const RegisterTournamentContent = () => {
+const RegisterTournamentContent = ({ slug: slugFromPath }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const id = slugFromPath || searchParams.get('id');
   // Present when the browser returns here after a Paystack wallet top-up
   // redirect (see payment/Payment.js `handleTopUp`). Passed straight through
   // to the modal so it can verify + auto-resume the paid registration.
@@ -63,7 +63,7 @@ const RegisterTournamentContent = () => {
   }, [id, token, sessionStatus]);
 
   const goToTournament = () => {
-    router.push(id ? `/tournaments/view-tournament?id=${id}` : '/tournaments');
+    router.push(id ? `/tournaments/${id}` : '/tournaments');
   };
 
   return (
@@ -103,3 +103,6 @@ const RegisterTournament = () => (
 );
 
 export default RegisterTournament;
+
+// Exported so the slug route can render it.
+export { RegisterTournamentContent };

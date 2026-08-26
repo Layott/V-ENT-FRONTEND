@@ -38,9 +38,9 @@ const participantSeed = (p, i) => p?.seed ?? i + 1;
 const participantStatus = (p) => (p?.status ? String(p.status).toLowerCase() : null);
 const participantWhen = (p) => p?.registered_at || p?.created_at || p?.joined_at || null;
 
-const ManageContent = () => {
+const ManageContent = ({ slug: slugFromPath }) => {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const id = slugFromPath || searchParams.get('id');
   const { data: session } = useSession();
   const token = tokenFrom(session);
 
@@ -348,3 +348,6 @@ const Manage = () => (
 );
 
 export default Manage;
+
+// Exported so the slug route can render it.
+export { ManageContent };

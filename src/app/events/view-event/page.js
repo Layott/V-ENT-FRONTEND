@@ -455,7 +455,7 @@ export const ViewEventContent = ({ slug }) => {
     if (activeTab && activeTab !== 'overview') params.set('tab', activeTab);
     else params.delete('tab');
     const qs = params.toString();
-    router.replace(qs ? `/events/view-event?${qs}` : `/events/view-event?id=${id}`, { scroll: false });
+    router.replace(qs ? `/events/view-event?${qs}` : `/events/${id}`, { scroll: false });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -718,7 +718,7 @@ export const ViewEventContent = ({ slug }) => {
                 <aside className={styles.sideCard}>
                   <p className={styles.sideLabel}>Organizer</p>
                   {isOrganizer && (
-                    <Link href={`/events/attendees?id=${id}`} className={styles.doorListLink}>
+                    <Link href={`/events/${id}/attendees`} className={styles.doorListLink}>
                       Door list &amp; check-in →
                     </Link>
                   )}
@@ -885,7 +885,7 @@ export const ViewEventContent = ({ slug }) => {
                     </p>
                   </div>
                   <Link
-                    href={`/events/vendor-shop?id=${event.id}`}
+                    href={`/events/${event.slug || event.id}/vendor-shop`}
                     className={styles.viewAllLink}
                   >
                     View vendor shop <FiExternalLink />

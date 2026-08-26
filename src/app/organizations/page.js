@@ -358,14 +358,14 @@ const OrganizationsContent = () => {
 
                       <div className={styles.cardActions}>
                         <Link
-                          href={`/organizations/org-profile?id=${orgId}`}
+                          href={`/organizations/${orgId}`}
                           className={`${styles.actionBtn} ${styles.actionSecondary}`}
                         >
                           View
                         </Link>
                         {owned ? (
                           <Link
-                            href={`/organizations/manage?id=${orgId}`}
+                            href={`/organizations/${orgId}/manage`}
                             className={`${styles.actionBtn} ${styles.actionPrimary}`}
                           >
                             Manage

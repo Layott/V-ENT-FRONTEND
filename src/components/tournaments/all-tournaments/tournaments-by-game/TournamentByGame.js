@@ -194,7 +194,7 @@ const TournamentsByGame = ({ data }) => {
                       <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={newTournamentsStyles.viewDetailsBTN}>
                         View Details
                       </Link>
-                      <Link href={`/tournaments/register-tournament?id=${tournament.tournament_id}`} className={newTournamentsStyles.registerBTN}>
+                      <Link href={`/tournaments/${tournament.tournament_id}/register`} className={newTournamentsStyles.registerBTN}>
                         Register
                       </Link>
                     </div>

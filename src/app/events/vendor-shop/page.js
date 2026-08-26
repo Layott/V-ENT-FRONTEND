@@ -21,12 +21,12 @@ import styles from './vendor-shop.module.css';
 
 const CART_STORAGE_KEY = (eventId) => `vendor_cart_${eventId || 'unknown'}`;
 
-const VendorShopContent = () => {
+const VendorShopContent = ({ slug: slugFromPath }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
 
-  const initialEventId = searchParams.get('id') || '';
+  const initialEventId = slugFromPath || searchParams.get('id') || '';
 
   const [events, setEvents] = useState([]);
   const [eventId, setEventId] = useState(initialEventId);
@@ -597,3 +597,7 @@ const VendorShop = () => (
 );
 
 export default VendorShop;
+
+// Exported so the slug route can render it. Everything a person
+// clicks still lives here; the route file only supplies the address.
+export { VendorShopContent };

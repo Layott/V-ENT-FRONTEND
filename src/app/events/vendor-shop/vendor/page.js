@@ -202,7 +202,7 @@ const VendorStallContent = () => {
         <h3 className={styles.errorTitle}>Couldn&apos;t load vendor</h3>
         <p className={styles.errorSub}>{error || 'Vendor not found.'}</p>
         <Link
-          href={`/events/vendor-shop?id=${eventId}`}
+          href={`/events/${eventId}/vendor-shop`}
           className={`${styles.errorBtn} goldBTN`}
         >
           Back to vendor shop
@@ -221,13 +221,13 @@ const VendorStallContent = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.topRow}>
             <Link
-              href={`/events/vendor-shop?id=${eventId}`}
+              href={`/events/${eventId}/vendor-shop`}
               className={styles.backLink}
             >
               <IoArrowBack /> Back to vendors
             </Link>
             <Link
-              href={`/events/vendor-shop?id=${eventId}`}
+              href={`/events/${eventId}/vendor-shop`}
               className={styles.cartChip}
             >
               <FaShoppingCart /> {cartCount} in cart
@@ -301,7 +301,7 @@ const VendorStallContent = () => {
                 <IoChatbubblesOutline /> Contact
               </button>
               <Link
-                href={`/events/view-event?id=${eventId}&tab=map`}
+                href={`/events/${eventId}?tab=map`}
                 className={`${styles.mapBtn} goldBTN`}
               >
                 <FaMapPin /> Visit booth at venue

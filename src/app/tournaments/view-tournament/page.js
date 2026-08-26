@@ -269,7 +269,7 @@ export const ViewTournamentContent = ({ slug }) => {
                   </button>
                   {shareNotice && <span className={styles.shareNotice}>{shareNotice}</span>}
                   {isOrganizer ? (
-                    <Link href={`/tournaments/my-tournaments/manage?id=${id}`}>
+                    <Link href={`/tournaments/${id}/manage`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>Manage</button>
                     </Link>
                   ) : tournament.is_registered ? (
@@ -285,7 +285,7 @@ export const ViewTournamentContent = ({ slug }) => {
                       {tournament.status === 'completed' ? 'Tournament over' : 'Registration closed'}
                     </button>
                   ) : (
-                    <Link href={`/tournaments/register-tournament?id=${id}`}>
+                    <Link href={`/tournaments/${id}/register`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>Register</button>
                     </Link>
                   )}
