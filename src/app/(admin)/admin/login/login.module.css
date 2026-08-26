@@ -268,3 +268,15 @@
   color: rgba(255, 255, 255, 0.45);
   margin: 0.5rem 0 0;
 }
+
+.enrolQr {
+  display: block;
+  margin: 0.75rem auto;
+  border-radius: 8px;
+  /* The quiet zone has to stay white or a scanner cannot find the finder
+     patterns against the dark panel. */
+  background: #ffffff;
+  padding: 8px;
+  width: 190px;
+  height: 190px;
+}

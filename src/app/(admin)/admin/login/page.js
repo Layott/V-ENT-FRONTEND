@@ -1,7 +1,8 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logoRed from '@/images/logo_mark_red.svg';
@@ -22,13 +23,81 @@ export default function AdminLoginPage() {
   const [shake, setShake] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [pendingToken, setPendingToken] = useState('');
-  const [enrollment, setEnrollment] = useState(null); // { secret, provisioning_uri }
+  const [enrollment, setEnrollment] = useState(null); // { secret, uri }
+  const [qr, setQr] = useState('');
+  const { data: session, status: sessionStatus } = useSession();
+  const siteToken = session?.user?.sessionToken;
+  const steppedUp = useRef(false);
+
+  // Draw the enrolment QR. `qrcode` was already a dependency and the URI was
+  // already in the response; only this was missing.
+  useEffect(() => {
+    const uri = enrollment?.uri;
+    if (!uri) { setQr(''); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const QRCode = (await import('qrcode')).default;
+        const url = await QRCode.toDataURL(uri, {
+          width: 190,
+          margin: 1,
+          color: { dark: '#000000', light: '#ffffff' },
+          errorCorrectionLevel: 'M',
+        });
+        if (!cancelled) setQr(url);
+      } catch {
+        // The secret is always shown as text beneath, so this stays usable.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [enrollment?.uri]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const token = localStorage.getItem('adminToken');
     if (token) router.replace('/admin');
   }, [router]);
+
+  // Already signed in as this person? Then the password half is answered, and
+  // asking again proves nothing the session does not already prove. Trade the
+  // session for the same pending token the password path issues and open on the
+  // code field.
+  //
+  // The second factor is untouched. This never yields a session token for the
+  // console - only /auth/admin/2fa/verify/ does that, after a real TOTP code.
+  useEffect(() => {
+    if (sessionStatus !== 'authenticated' || !siteToken) return;
+    if (localStorage.getItem('adminToken')) return;   // the effect above is taking it
+    if (steppedUp.current) return;                    // once per mount
+    steppedUp.current = true;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/step-up/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${siteToken}` },
+        });
+        const data = await res.json();
+        if (cancelled || data.status !== 'success') return;   // not an admin: the form stands
+
+        setPendingToken(data.data.pending_token);
+        setShow2fa(true);
+        if (data.data.enrollment_required) {
+          setEnrollment({ secret: data.data.secret, uri: data.data.provisioning_uri });
+          setSuccessMsg(tt('msg.setUpTwoFactorToFinish',
+            'Set up two-factor authentication to finish signing in.'));
+        } else {
+          setSuccessMsg(tt('msg.signedInEnterYourCode',
+            'Signed in already. Enter your authenticator code.'));
+        }
+      } catch {
+        // Leave the credentials form standing; it still works.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionStatus, siteToken, tt]);
   function triggerShake() {
     setShake(true);
     setTimeout(() => setShake(false), 500);
@@ -67,7 +136,7 @@ export default function AdminLoginPage() {
         localStorage.setItem('adminToken', token);
         localStorage.setItem('adminUser', JSON.stringify(data.data.admin));
         document.cookie = `adminToken=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-        setSuccessMsg('Authenticated. Redirecting…');
+        setSuccessMsg(tt('msg.authenticatedRedirecting', 'Authenticated. Redirecting...'));
         setTimeout(() => router.replace('/admin'), 400);
       } catch {
         setError(tt("msg.connectionErrorPleaseTryAgain", "Connection error. Please try again."));
@@ -113,9 +182,9 @@ export default function AdminLoginPage() {
           secret: data.data.secret,
           uri: data.data.provisioning_uri
         });
-        setSuccessMsg('Set up two-factor authentication to finish signing in.');
+        setSuccessMsg(tt('msg.setUpTwoFactorToFinish', 'Set up two-factor authentication to finish signing in.'));
       } else {
-        setSuccessMsg('Credentials accepted. Enter your authenticator code.');
+        setSuccessMsg(tt('msg.credentialsAcceptedEnterCode', 'Credentials accepted. Enter your authenticator code.'));
       }
     } catch {
       setError(tt("msg.connectionErrorPleaseTryAgain", "Connection error. Please try again."));
@@ -166,7 +235,13 @@ export default function AdminLoginPage() {
           {show2fa && enrollment && <div className={styles.enrolBox}>
               <p className={styles.enrolTitle}>{tt("ui.add.v.ent.admin.5df0", "Add V-ENT Admin to your authenticator")}</p>
               <p className={styles.enrolBody}>
-                {tt("ui.open.google.authenticator.authy.3215", "Open Google Authenticator, Authy or 1Password, add an account manually and\n                paste this key. Then enter the 6-digit code it shows.")}
+                {tt("ui.scan.this.with.authenticator", "Scan this with Google Authenticator, Authy or 1Password. Then enter the 6-digit code it shows.")}
+              </p>
+              {qr
+                ? <img src={qr} alt={tt("ui.enrolment.qr.alt", "QR code that adds V-ENT Admin to your authenticator app")} className={styles.enrolQr} width={190} height={190} />
+                : null}
+              <p className={styles.enrolBody}>
+                {tt("ui.cannot.scan.paste.key", "Cannot scan it? Add an account manually and paste this key instead.")}
               </p>
               <code className={styles.enrolSecret}>{enrollment.secret}</code>
               <p className={styles.enrolHint}>

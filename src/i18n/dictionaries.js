@@ -3404,6 +3404,13 @@ export const dictionaries = {
     'api.USERNAME_RESERVED': 'That username is reserved by a V-ENT waitlist member. Please choose another.',
     'api.WALLET_NOT_FOUND': 'Wallet not found',
     'api.WRONG_PIN': 'Invalid PIN',
+    'msg.authenticatedRedirecting': 'Authenticated. Redirecting...',
+    'msg.credentialsAcceptedEnterCode': 'Credentials accepted. Enter your authenticator code.',
+    'msg.setUpTwoFactorToFinish': 'Set up two-factor authentication to finish signing in.',
+    'msg.signedInEnterYourCode': 'Signed in already. Enter your authenticator code.',
+    'ui.cannot.scan.paste.key': 'Cannot scan it? Add an account manually and paste this key instead.',
+    'ui.enrolment.qr.alt': 'QR code that adds V-ENT Admin to your authenticator app',
+    'ui.scan.this.with.authenticator': 'Scan this with Google Authenticator, Authy or 1Password. Then enter the 6-digit code it shows.',
   },
 
   fr: {
@@ -6794,6 +6801,13 @@ export const dictionaries = {
     'api.USERNAME_RESERVED': 'Ce pseudo est réservé par un membre de la liste d\'attente V-ENT. Choisissez-en un autre.',
     'api.WALLET_NOT_FOUND': 'Portefeuille introuvable.',
     'api.WRONG_PIN': 'Code PIN incorrect.',
+    'msg.authenticatedRedirecting': 'Authentification réussie. Redirection...',
+    'msg.credentialsAcceptedEnterCode': 'Identifiants acceptés. Saisissez le code de votre application.',
+    'msg.setUpTwoFactorToFinish': 'Configurez la double authentification pour terminer la connexion.',
+    'msg.signedInEnterYourCode': 'Vous êtes déjà connecté. Saisissez le code de votre application.',
+    'ui.cannot.scan.paste.key': 'Impossible de le scanner ? Ajoutez un compte manuellement et collez cette clé.',
+    'ui.enrolment.qr.alt': 'Code QR qui ajoute V-ENT Admin à votre application d\'authentification',
+    'ui.scan.this.with.authenticator': 'Scannez ce code avec Google Authenticator, Authy ou 1Password, puis saisissez le code à 6 chiffres affiché.',
   },
 
   pt: {
@@ -10184,5 +10198,12 @@ export const dictionaries = {
     'api.USERNAME_RESERVED': 'Esse nome de utilizador está reservado por um membro da lista de espera V-ENT. Escolha outro.',
     'api.WALLET_NOT_FOUND': 'Carteira não encontrada.',
     'api.WRONG_PIN': 'PIN incorreto.',
+    'msg.authenticatedRedirecting': 'Autenticado. A redirecionar...',
+    'msg.credentialsAcceptedEnterCode': 'Credenciais aceites. Introduza o código da sua aplicação.',
+    'msg.setUpTwoFactorToFinish': 'Configure a autenticação de dois fatores para concluir o início de sessão.',
+    'msg.signedInEnterYourCode': 'Já tem sessão iniciada. Introduza o código da sua aplicação.',
+    'ui.cannot.scan.paste.key': 'Não consegue ler o código? Adicione uma conta manualmente e cole esta chave.',
+    'ui.enrolment.qr.alt': 'Código QR que adiciona o V-ENT Admin à sua aplicação de autenticação',
+    'ui.scan.this.with.authenticator': 'Leia este código com o Google Authenticator, Authy ou 1Password e depois introduza o código de 6 dígitos apresentado.',
   },
 };

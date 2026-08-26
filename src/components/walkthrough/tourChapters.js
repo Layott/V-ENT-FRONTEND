@@ -13,6 +13,12 @@
 //   not in this tour, because a walkthrough of features nobody can use is how a
 //   product loses trust in its first five minutes.
 //
+// `route` is the page a chapter is about. The tour walks to it before showing
+// the chapter's first step, because a chapter explaining tournament entry fees
+// while the reader is still looking at the landing page teaches nothing - the
+// card it keeps describing is not on the screen. Chapters sharing the page the
+// reader is already on do not move them.
+//
 // `anchor` is a `data-tour` value on a real element. When the element is not on
 // the page - the sidebar collapses on mobile, some chapters cover pages the
 // person is not on - the step falls back to a centred card, which is why every
@@ -24,6 +30,7 @@ export const CHAPTERS = [
   // ---------------------------------------------------------------- welcome
   {
     id: 'welcome',
+    route: '/home',
     title: 'Welcome to V-ENT',
     minutes: 1,
     steps: [
@@ -61,6 +68,7 @@ export const CHAPTERS = [
   // ------------------------------------------------------------ tournaments
   {
     id: 'tournaments',
+    route: '/tournaments',
     title: 'Tournaments',
     minutes: 2,
     steps: [
@@ -131,6 +139,7 @@ export const CHAPTERS = [
   // ----------------------------------------------------------------- wallet
   {
     id: 'wallet',
+    route: '/wallets',
     title: 'VENT COINS and your wallet',
     minutes: 1,
     steps: [
@@ -172,6 +181,7 @@ export const CHAPTERS = [
   // ------------------------------------------------------------------ teams
   {
     id: 'teams',
+    route: '/teams',
     title: 'Teams',
     minutes: 1,
     steps: [
@@ -204,6 +214,7 @@ export const CHAPTERS = [
   // ----------------------------------------------------------------- events
   {
     id: 'events',
+    route: '/events',
     title: 'Events and tickets',
     minutes: 1,
     steps: [
@@ -238,6 +249,7 @@ export const CHAPTERS = [
   // -------------------------------------------------------------- community
   {
     id: 'community',
+    route: '/community',
     title: 'Community',
     minutes: 1,
     steps: [
@@ -270,6 +282,7 @@ export const CHAPTERS = [
   // ---------------------------------------------------------------- profile
   {
     id: 'profile',
+    route: '/user-profile',
     title: 'Your profile and settings',
     minutes: 1,
     steps: [
@@ -310,6 +323,7 @@ export const CHAPTERS = [
   // ------------------------------------------------------------------ close
   {
     id: 'done',
+    route: '/home',
     title: 'That is the tour',
     minutes: 0,
     steps: [
@@ -338,6 +352,7 @@ export const flattenSteps = (chapters = CHAPTERS) =>
       ...step,
       chapterId: chapter.id,
       chapterTitle: chapter.title,
+      chapterRoute: chapter.route || null,
       chapterIndex: ci,
       stepIndex: si,
       stepsInChapter: chapter.steps.length,

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { teamLogo } from '@/lib/mediaUrl';
+import { bannerOf, teamLogo } from '@/lib/mediaUrl';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -111,8 +111,23 @@ const extractTransactions = data => {
   if (Array.isArray(data.transactions)) return data.transactions;
   return [];
 };
+// These three rebuild the API row into exactly what a card draws, and each of
+// them used to drop two things the card then went looking for: the artwork and
+// the slug.
+//
+// The team card had already been fixed to render the crest with the initial as
+// its fallback, and still showed a red circle for a team with a logo uploaded,
+// because `logo` never survived this function. The tournament and event cards
+// ask for `banner` and simply never had one, so every card on the home page was
+// blank art with a chip on it.
+//
+// The slug matters for the same reason in the other direction: without it the
+// links here fall back to `t.id`, which puts a numeric id in an address a person
+// can see and read.
 const mapTournamentCard = t => ({
   id: t.id,
+  slug: t.slug,
+  banner: bannerOf(t),
   game: typeof t.game === 'string' ? t.game : t.game_name || t.tournament_game_name || t.tournament_game || 'Esports',
   name: t.name || t.title || t.tournament_title || 'Tournament',
   start_date: t.start_date || t.start_date_and_time || t.start || null,
@@ -120,6 +135,8 @@ const mapTournamentCard = t => ({
 });
 const mapEventCard = e => ({
   id: e.id,
+  slug: e.slug,
+  banner: bannerOf(e),
   name: e.name || e.title || e.event_title || 'Event',
   event_type: e.event_type || e.type || '',
   location: e.location || e.venue || 'TBA',
@@ -127,6 +144,8 @@ const mapEventCard = e => ({
 });
 const mapTeamCard = t => ({
   id: t.id,
+  slug: t.slug,
+  logo: teamLogo(t),
   name: t.name || t.team_name || 'Team',
   tag: t.tag || t.team_tag || (t.name || t.team_name || 'T').slice(0, 3).toUpperCase(),
   member_count: Number(t.member_count ?? (Array.isArray(t.members) ? t.members.length : 0)) || 0

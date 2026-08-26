@@ -105,7 +105,8 @@ export const teamLogo = (team) => pickMedia(team, 'logo', 'logo_url', 'team_logo
 
 /** The wide image behind a team, an event or an organisation. */
 export const bannerOf = (record) =>
-  pickMedia(record, 'banner', 'banner_image', 'banner_url', 'cover', 'cover_image');
+  pickMedia(record, 'banner', 'banner_image', 'banner_url', 'cover', 'cover_image',
+            'tournament_banner', 'event_banner', 'team_banner');
 
 /** Somebody's picture, under any of the names the API uses for it. */
 export const avatarOf = (user) =>

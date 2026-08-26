@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS, TOTAL_MINUTES, TOUR_VERSION, flattenSteps } from './tourChapters';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './walkthrough.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 
@@ -110,6 +111,8 @@ const Walkthrough = ({
 }) => {
   const tx = useTx();
   const tt = useT();
+  const router = useRouter();
+  const pathname = usePathname();
   const steps = useMemo(() => flattenSteps(CHAPTERS), []);
   const firstIndex = useMemo(() => {
     if (!startAtChapter) return 0;
@@ -123,6 +126,26 @@ const Walkthrough = ({
   const panelRef = useRef(null);
   const step = steps[index];
   const isLast = index === steps.length - 1;
+
+  // Walk to the page the chapter is about.
+  //
+  // Without this the tour explained tournament entry fees, wallet top-ups and
+  // team roles while the reader sat on whatever page they happened to open it
+  // from, describing cards that were not on the screen. Every step then fell
+  // back to a centred card, which is the documented behaviour for a missing
+  // anchor and reads as the tour being broken.
+  //
+  // Only on a chapter boundary, never per step: re-pushing the same route on
+  // every Next would fight the reader if they scrolled, and a chapter's steps
+  // all live on one page by construction.
+  const wantedRoute = step?.chapterRoute || null;
+  useEffect(() => {
+    if (!wantedRoute) return;
+    // The locale prefix is the router's business, so compare what is left.
+    const here = pathname.replace(/^\/(fr|pt)(?=\/|$)/, '') || '/';
+    if (here === wantedRoute) return;
+    router.push(wantedRoute);
+  }, [wantedRoute, pathname, router]);
 
   // Re-measure on step change, and whenever the page moves under us.
   useEffect(() => {
@@ -139,7 +162,10 @@ const Walkthrough = ({
       window.removeEventListener('resize', update);
       window.removeEventListener('scroll', update, true);
     };
-  }, [step?.anchor, index]);
+    // `pathname` is in here because the anchor for a step usually lives on the
+    // page the tour just walked to, and it does not exist at the moment the
+    // step advances - only after that page has rendered.
+  }, [step?.anchor, index, pathname]);
   const finish = useCallback(() => onFinish?.(), [onFinish]);
   const skip = useCallback(() => onSkip?.(), [onSkip]);
   const next = useCallback(() => {
