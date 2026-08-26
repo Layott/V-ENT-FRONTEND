@@ -167,16 +167,24 @@ function withLocale(req, locale, hasPrefix) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
 
-  const res = hasPrefix
-    ? NextResponse.rewrite(
-      new URL(
-        (req.nextUrl.pathname.replace(`/${locale}`, '') || '/')
-        + (req.nextUrl.search || ''),
-        req.nextUrl.origin,
-      ),
-      { request: { headers: requestHeaders } },
-    )
-    : NextResponse.next({ request: { headers: requestHeaders } });
+  // `req.nextUrl.clone()` rather than `new URL(path, req.nextUrl.origin)`.
+  //
+  // Behind nginx, that origin is Next's own listen address, so the rewrite
+  // went out as `x-middleware-rewrite: https://localhost:3000/` and Next tried
+  // to proxy to it - writing TLS at a plain HTTP port, which is EPROTO, which
+  // is a 500 on every locale URL while `/tournaments` was fine. It worked in
+  // development only because there the origin happens to be the real one.
+  //
+  // This is the same trap `redirectTo()` below already documents. A cloned
+  // nextUrl carries the request's real origin, so the rewrite stays internal.
+  let res;
+  if (hasPrefix) {
+    const target = req.nextUrl.clone();
+    target.pathname = req.nextUrl.pathname.replace(`/${locale}`, '') || '/';
+    res = NextResponse.rewrite(target, { request: { headers: requestHeaders } });
+  } else {
+    res = NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   // Also on the response, so a client that wants to know can read it.
   res.headers.set(LOCALE_HEADER, locale);
