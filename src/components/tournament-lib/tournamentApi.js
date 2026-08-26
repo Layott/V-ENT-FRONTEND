@@ -35,6 +35,11 @@ export const API = {
     CONFIRM_SCORE: (matchId) => `/tournament/match/${matchId}/confirm-score/`,
     // Primary path is /raise-dispute/ ( /dispute/ is a server-side alias ).
     MATCH_DISPUTE: (matchId) => `/tournament/match/${matchId}/raise-dispute/`,
+    // Check-in: the window that turns "registered" into "here right now".
+    CHECK_IN: (id) => `/tournament/${id}/check-in/`,
+    CHECK_IN_STATUS: (id) => `/tournament/${id}/check-in/status/`,
+    CLOSE_CHECK_IN: (id) => `/tournament/${id}/close-check-in/`,
+    EXTEND_CHECK_IN: (id) => `/tournament/${id}/extend-check-in/`,
   },
   TEAM: {
     MY_TEAMS: '/team/my-teams/',

@@ -144,6 +144,11 @@ const CreateTournamentComponent = () => {
       formDataToSend.append('bracket_type', formData.bracket_type || '');
       formDataToSend.append('tournament_rules', formData.tournament_rules || '');
 
+      // The organiser settings from step 2. Sent as one JSON object because
+      // the backend validates them as a set (a group stage that advances more
+      // than it holds is only wrong when both numbers are read together).
+      formDataToSend.append('options', JSON.stringify(formData.options || {}));
+
       formDataToSend.append('prize_type', formData.prize_distribution_type || 'distributed');
 
       let prizeData = [];
