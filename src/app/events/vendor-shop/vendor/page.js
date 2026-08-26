@@ -418,7 +418,7 @@ const VendorStallContent = () => {
                 </div>
 
                 {cartTotalVc > 0 && <div className={styles.pinBlock}>
-                    <label className={styles.pinLabel} htmlFor="vendor-pin">{tt("ui.wallet.pin.2cdf", "Wallet PIN")}<InfoTip id="walletPin" /></label>
+                    <label className={styles.pinLabel} htmlFor="vendor-pin"><span className="fieldLabelRow">{tt("ui.wallet.pin.2cdf", "Wallet PIN")} <InfoTip id="walletPin" /></span></label>
                     <input id="vendor-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
                   </div>}
 

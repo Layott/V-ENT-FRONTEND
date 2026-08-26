@@ -221,7 +221,7 @@ const SendPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>{tt("ui.recipient.username.email.9e0a", "Recipient (username or email)")}<InfoTip id="sendRecipient" /></label>
+                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.recipient.username.email.9e0a", "Recipient (username or email)")} <InfoTip id="sendRecipient" /></span></label>
                   <input type="text" className={styles.formInput} placeholder={tt("ui.username.user.email.com.26ca", "@username or user@email.com")} value={query} onChange={e => setQuery(e.target.value)} autoFocus />
                 </div>
 
@@ -271,7 +271,7 @@ const SendPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")}<InfoTip id="ventCoins" /></label>
+                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")} <InfoTip id="ventCoins" /></span></label>
                   <div className={styles.inputPrefixWrap}>
                     <span className={styles.prefixTag}>VC</span>
                     <input type="number" placeholder="e.g. 50" min="1" max={balance ?? undefined} value={amount} onChange={e => {
@@ -289,7 +289,7 @@ const SendPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>{tt("ui.memo.optional.40c6", "Memo (optional)")}<InfoTip id="sendMemo" /></label>
+                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.memo.optional.40c6", "Memo (optional)")} <InfoTip id="sendMemo" /></span></label>
                   <input type="text" className={styles.formInput} placeholder={tt("ui.e.g.team.contribution.6070", "e.g. team contribution")} value={memo} onChange={e => setMemo(e.target.value)} maxLength={120} />
                 </div>
 

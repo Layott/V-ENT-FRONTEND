@@ -319,21 +319,21 @@ function OverrideScoreModal({
           {tt("ui.tournament.9c45", "For tournament “")}{tournament.name}&rdquo;.
         </p>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>{tt("ui.match.id.ffcf", "Match ID")}<InfoTip id="adminMatchId" /></label>
+          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.match.id.ffcf", "Match ID")} <InfoTip id="adminMatchId" /></span></label>
           <input className={styles.formInput} value={matchId} onChange={e => setMatchId(e.target.value)} placeholder={tt("ui.numeric.match.id.08ad", "Numeric match id")} />
         </div>
         <div className={styles.formRow2}>
           <div>
-            <label className={styles.formLabel}>{tt("ui.score.p.af0f", "Score P1")}<InfoTip id="adminScore" /></label>
+            <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.score.p.af0f", "Score P1")} <InfoTip id="adminScore" /></span></label>
             <input type="number" className={styles.formInput} value={scoreP1} onChange={e => setScoreP1(parseInt(e.target.value || '0', 10))} />
           </div>
           <div>
-            <label className={styles.formLabel}>{tt("ui.score.p.f3ba", "Score P2")}<InfoTip id="adminScore" /></label>
+            <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.score.p.f3ba", "Score P2")} <InfoTip id="adminScore" /></span></label>
             <input type="number" className={styles.formInput} value={scoreP2} onChange={e => setScoreP2(parseInt(e.target.value || '0', 10))} />
           </div>
         </div>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>{tt("ui.winner.registration.id.e256", "Winner registration ID")}<InfoTip id="adminWinnerRegId" /></label>
+          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.winner.registration.id.e256", "Winner registration ID")} <InfoTip id="adminWinnerRegId" /></span></label>
           <input className={styles.formInput} value={winnerRegId} onChange={e => setWinnerRegId(e.target.value)} placeholder={tt("ui.registration.id.winning.side.2c12", "Registration id of the winning side")} />
         </div>
         <div className={styles.formRow}>
@@ -372,7 +372,7 @@ function DisqualifyModal({
           {tt("ui.from.tournament.bd57", "From tournament “")}{tournament.name}&rdquo;.
         </p>
         <div className={styles.formRow}>
-          <label className={styles.formLabel}>{tt("ui.team.name.5d4f", "Team Name")}<InfoTip id="adminDqTeam" /></label>
+          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.team.name.5d4f", "Team Name")} <InfoTip id="adminDqTeam" /></span></label>
           <input className={styles.formInput} value={team} onChange={e => setTeam(e.target.value)} placeholder={tt("ui.e.g.crimson.wolves.98c1", "e.g. Crimson Wolves")} />
         </div>
         <div className={styles.formRow}>

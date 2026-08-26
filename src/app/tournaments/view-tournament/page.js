@@ -1070,8 +1070,8 @@ const BracketPanel = ({
                         <input type="number" min="0" className={styles.scoreInput} value={reportScoreB} onChange={e => setReportScoreB(parseInt(e.target.value, 10) || 0)} />
                       </div>
                       <label className={styles.reportUrlLabel} htmlFor="bracket-report-screenshot">
-                        {tt("ui.screenshot.url.a819", "Screenshot URL")} {scoreMode === 'screenshot_required' ? '(required)' : '(optional)'}
-                      <InfoTip id="screenshotUrl" /></label>
+                        <span className="fieldLabelRow">{tt("ui.screenshot.url.a819", "Screenshot URL")} {scoreMode === 'screenshot_required' ? '(required)' : '(optional)'} <InfoTip id="screenshotUrl" /></span>
+                      </label>
                       <input id="bracket-report-screenshot" type="url" className={styles.reportUrlInput} placeholder={tt("ui.https.9820", "https://...")} value={reportScreenshotUrl} onChange={e => setReportScreenshotUrl(e.target.value)} />
                       <button className={`${styles.primaryBtn} goldBTN`} style={{
                   width: '100%',

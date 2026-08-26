@@ -288,11 +288,11 @@ const PaymentsPanel = ({
 
             <form onSubmit={submitPin}>
               <div className={shared.formGroup}>
-                <label className={shared.formLabel} htmlFor="pin">{tt("ui.new.pin.bd54", "New PIN")}<InfoTip id="walletPin" /></label>
+                <label className={shared.formLabel} htmlFor="pin"><span className="fieldLabelRow">{tt("ui.new.pin.bd54", "New PIN")} <InfoTip id="walletPin" /></span></label>
                 <input id="pin" type="password" inputMode="numeric" maxLength={4} className={shared.formInput} value={pinValue} onChange={e => setPinValue(e.target.value.replace(/\D/g, ''))} placeholder="••••" />
               </div>
               <div className={shared.formGroup}>
-                <label className={shared.formLabel} htmlFor="cpin">{tt("ui.confirm.pin.96b3", "Confirm PIN")}<InfoTip id="confirmPin" /></label>
+                <label className={shared.formLabel} htmlFor="cpin"><span className="fieldLabelRow">{tt("ui.confirm.pin.96b3", "Confirm PIN")} <InfoTip id="confirmPin" /></span></label>
                 <input id="cpin" type="password" inputMode="numeric" maxLength={4} className={shared.formInput} value={confirmPin} onChange={e => setConfirmPin(e.target.value.replace(/\D/g, ''))} placeholder="••••" />
               </div>
 

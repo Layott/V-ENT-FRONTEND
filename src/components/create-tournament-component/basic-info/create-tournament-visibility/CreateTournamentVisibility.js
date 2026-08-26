@@ -93,11 +93,11 @@ const CreateTournamentVisibility = ({
 
           <div className={createTournamentStyles.twoInputContainer}>
             <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.entry.type.fb68", "Entry Type")}
+                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.entry.type.fb68", "Entry Type")}
                     <span className={createTournamentStyles.asteriskSpan}>
                         <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                    </span>
-                <InfoTip id="entryType" /></label>
+                    </span> <InfoTip id="entryType" /></span>
+                </label>
                 
                 <select value={entryType} onChange={handleEntryTypeChange} className={createTournamentStyles.inputWithDropdown}>
                     <option value="">{tt("ui.select.8598", "Select")}</option>
@@ -111,7 +111,7 @@ const CreateTournamentVisibility = ({
                 number that is then ignored. The field appears when Paid is
                 chosen, and choosing Free clears whatever was typed. */}
             {entryType === 'Paid' && <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="entry-fee">{tt("ui.entry.fee.vent.coins.31c3", "Entry Fee (VENT COINS)")}<InfoTip id="entryFeePrice" /></label>
+                <label htmlFor="entry-fee"><span className="fieldLabelRow">{tt("ui.entry.fee.vent.coins.31c3", "Entry Fee (VENT COINS)")} <InfoTip id="entryFeePrice" /></span></label>
                 <input id="entry-fee" type="number" min="0" placeholder={tt("ui.enter.amount.01f2", "Enter amount")} value={entryFee} className={createTournamentStyles.inputText} onChange={handleEntryFeeChange} />
               </div>}
 

@@ -70,17 +70,17 @@ const Sponsors = ({
             <div className={`${createTournamentStyles.twoBoxesInRowContainer} ${styles.twoBoxesInRowContainer}`}>
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor={`sponsorName-${index}`} className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.sponsor.name.32b9", "Sponsor Name")}
+                  <span className="fieldLabelRow">{tt("ui.sponsor.name.32b9", "Sponsor Name")}
                   <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                  </span>
-                <InfoTip id="sponsorName" /></label>
+                  </span> <InfoTip id="sponsorName" /></span>
+                </label>
                 <input id={`sponsorName-${index}`} type="text" placeholder={tt("ui.enter.sponsor.name.2574", "Enter sponsor name")} className={createTournamentStyles.inputText} value={field.name} onChange={e => handleFieldChange(index, 'name', e.target.value)} />
               </div>
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor={`sponsorUsername-${index}`} className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.username.84c2", "Username")}
-                <InfoTip id="sponsorUsername" /></label>
+                  <span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="sponsorUsername" /></span>
+                </label>
                 <input id={`sponsorUsername-${index}`} type="text" placeholder={tt("ui.enter.sponsor.username.ad02", "Enter sponsor username")} className={createTournamentStyles.inputText} value={field.username} onChange={e => handleFieldChange(index, 'username', e.target.value)} />
               </div>
             </div>

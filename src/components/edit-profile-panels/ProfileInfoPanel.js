@@ -125,17 +125,17 @@ const ProfileInfoPanel = ({
         <h3 className={shared.cardTitle}>{tt("ui.profile.details.5ea7", "Profile Details")}</h3>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="username">{tt("ui.username.84c2", "Username")}<InfoTip id="username" /></label>
+          <label className={shared.formLabel} htmlFor="username"><span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="username" /></span></label>
           <input className={shared.formInput} id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder={tt("ui.username.4237", "@username")} />
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="profile-name">{tt("ui.profile.name.fb32", "Profile Name")}<InfoTip id="profileName" /></label>
+          <label className={shared.formLabel} htmlFor="profile-name"><span className="fieldLabelRow">{tt("ui.profile.name.fb32", "Profile Name")} <InfoTip id="profileName" /></span></label>
           <input className={shared.formInput} id="profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={tt("ui.display.name.33a6", "Your display name")} />
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="bio">{tt("ui.bio.b31f", "Bio")}<InfoTip id="profileBio" /></label>
+          <label className={shared.formLabel} htmlFor="bio"><span className="fieldLabelRow">{tt("ui.bio.b31f", "Bio")} <InfoTip id="profileBio" /></span></label>
           <textarea className={shared.formTextarea} id="bio" maxLength={bioMax} value={bio} onChange={e => setBio(e.target.value)} placeholder={tt("ui.tell.others.about.yourself.514c", "Tell others about yourself…")} />
           <span className={shared.fieldHelper}>
             {bio.length === 0 ? `Maximum of ${bioMax} characters` : `${bioRemaining} characters remaining`}

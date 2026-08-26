@@ -162,7 +162,7 @@ const PinPage = () => {
         </div>
 
         {changing && <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="currentPin">{tt("ui.current.pin.91fe", "Current PIN")}<InfoTip id="currentPin" /></label>
+            <label className={styles.formLabel} htmlFor="currentPin"><span className="fieldLabelRow">{tt("ui.current.pin.91fe", "Current PIN")} <InfoTip id="currentPin" /></span></label>
             <input id="currentPin" className={`${styles.formInput} ${pinStyles.pinField}`} type={inputType} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" value={currentPin} onChange={e => {
           setCurrentPin(clean4(e.target.value));
           setError('');
@@ -171,7 +171,7 @@ const PinPage = () => {
           </div>}
 
         <div className={styles.formGroup}>
-          <label className={styles.formLabel} htmlFor="newPin">{tt("ui.new.pin.bd54", "New PIN")}<InfoTip id="walletPin" /></label>
+          <label className={styles.formLabel} htmlFor="newPin"><span className="fieldLabelRow">{tt("ui.new.pin.bd54", "New PIN")} <InfoTip id="walletPin" /></span></label>
           <input id="newPin" className={`${styles.formInput} ${pinStyles.pinField}`} type={inputType} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" value={newPin} onChange={e => {
           setNewPin(clean4(e.target.value));
           setError('');
@@ -183,7 +183,7 @@ const PinPage = () => {
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.formLabel} htmlFor="confirmPin">{tt("ui.confirm.pin.96b3", "Confirm PIN")}<InfoTip id="confirmPin" /></label>
+          <label className={styles.formLabel} htmlFor="confirmPin"><span className="fieldLabelRow">{tt("ui.confirm.pin.96b3", "Confirm PIN")} <InfoTip id="confirmPin" /></span></label>
           <input id="confirmPin" className={`${styles.formInput} ${pinStyles.pinField}`} type={inputType} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" value={confirmPin} onChange={e => {
           setConfirmPin(clean4(e.target.value));
           setError('');

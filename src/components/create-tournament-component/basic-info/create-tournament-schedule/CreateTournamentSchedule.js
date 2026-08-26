@@ -184,11 +184,11 @@ const CreateTournamentSchedule = ({
 
         <div className={styles.tournamentStartEndDateContainer}>
           <div className={createTournamentStyles.inputGroup}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.tournament.start.date.time.10a1", "Tournament Start Date & Time")}
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.tournament.start.date.time.10a1", "Tournament Start Date & Time")}
                 <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-            <InfoTip id="startDateTime" /></label>
+                </span> <InfoTip id="startDateTime" /></span>
+            </label>
 
             
             <input id='start_date_and_time' type="datetime-local" className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('start_date_and_time', e.target.value)} />
@@ -196,11 +196,11 @@ const CreateTournamentSchedule = ({
           </div>
 
           <div className={createTournamentStyles.inputGroup}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.tournament.end.date.time.932c", "Tournament End Date & Time")} 
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.tournament.end.date.time.932c", "Tournament End Date & Time")} 
                 <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-            <InfoTip id="endDateTime" /></label>
+                </span> <InfoTip id="endDateTime" /></span>
+            </label>
 
             <input id='end_date_and_time' type="datetime-local" className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('end_date_and_time', e.target.value)} />
           </div>
@@ -213,11 +213,11 @@ const CreateTournamentSchedule = ({
         
         <div className={styles.tournamentStartEndDateContainer}>
           <div className={createTournamentStyles.inputGroup}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.registration.start.date.time.0e5b", "Registration Start Date & Time")} 
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.registration.start.date.time.0e5b", "Registration Start Date & Time")} 
                 <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-            <InfoTip id="regStartDate" /></label>
+                </span> <InfoTip id="regStartDate" /></span>
+            </label>
 
             <input id='reg_start_date_and_time' type="datetime-local" className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} style={{
             color: selectedOption ? "white" : ""
@@ -226,11 +226,11 @@ const CreateTournamentSchedule = ({
           </div>
 
           <div className={createTournamentStyles.inputGroup}>
-            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.registration.end.date.time.3522", "Registration End Date  & Time")} 
+            <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.registration.end.date.time.3522", "Registration End Date  & Time")} 
                 <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-            <InfoTip id="regEndDate" /></label>
+                </span> <InfoTip id="regEndDate" /></span>
+            </label>
             <input id='reg_end_date_and_time' type="datetime-local" className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('reg_end_date_and_time', e.target.value)} />
             
           </div>
@@ -308,11 +308,11 @@ const CreateTournamentSchedule = ({
               </div>}
 
             {showMaxCyclesInput && <div className={styles.maxNumberCycleContainer}>
-                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}>{tt("ui.max.number.cycles.8fc0", "Max Number of Cycles")} 
+                <label htmlFor="" className={createTournamentStyles.labelWithAsterisk}><span className="fieldLabelRow">{tt("ui.max.number.cycles.8fc0", "Max Number of Cycles")} 
                   <span className={createTournamentStyles.asteriskSpan}>
                       <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                  </span>
-                <InfoTip id="maxCycles" /></label>
+                  </span> <InfoTip id="maxCycles" /></span>
+                </label>
                 
                 <input type="number" className={styles.maxNumberCycleInput} value={formData?.number_cycle || ""} onChange={e => handleInputChange('number_cycle', e.target.value)} />
               </div>}

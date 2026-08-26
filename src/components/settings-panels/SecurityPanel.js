@@ -170,13 +170,13 @@ const SecurityPanel = ({
 
         <form onSubmit={handlePasswordSubmit}>
           <div className={shared.formGroup}>
-            <label className={shared.formLabel} htmlFor="cur-pw">{tt("ui.current.password.19df", "Current password")}<InfoTip id="currentPassword" /></label>
+            <label className={shared.formLabel} htmlFor="cur-pw"><span className="fieldLabelRow">{tt("ui.current.password.19df", "Current password")} <InfoTip id="currentPassword" /></span></label>
             <input id="cur-pw" type="password" className={shared.formInput} value={currentPw} onChange={e => setCurrentPw(e.target.value)} autoComplete="current-password" />
           </div>
 
           <div className={shared.formRow}>
             <div className={shared.formGroup}>
-              <label className={shared.formLabel} htmlFor="new-pw">{tt("ui.new.password.d850", "New password")}<InfoTip id="newPassword" /></label>
+              <label className={shared.formLabel} htmlFor="new-pw"><span className="fieldLabelRow">{tt("ui.new.password.d850", "New password")} <InfoTip id="newPassword" /></span></label>
               <input id="new-pw" type="password" className={shared.formInput} value={newPw} onChange={e => setNewPw(e.target.value)} autoComplete="new-password" />
               <div className={styles.meterWrap}>
                 <div className={styles.meterTrack}>
@@ -190,7 +190,7 @@ const SecurityPanel = ({
               </div>
             </div>
             <div className={shared.formGroup}>
-              <label className={shared.formLabel} htmlFor="conf-pw">{tt("ui.confirm.new.password.f850", "Confirm new password")}<InfoTip id="confirmPassword" /></label>
+              <label className={shared.formLabel} htmlFor="conf-pw"><span className="fieldLabelRow">{tt("ui.confirm.new.password.f850", "Confirm new password")} <InfoTip id="confirmPassword" /></span></label>
               <input id="conf-pw" type="password" className={shared.formInput} value={confirmPw} onChange={e => setConfirmPw(e.target.value)} autoComplete="new-password" />
               {confirmPw && newPw !== confirmPw && <span className={styles.mismatch}>{tt("ui.passwords.do.not.match.f7c3", "Passwords do not match.")}</span>}
             </div>
@@ -326,7 +326,7 @@ const SecurityPanel = ({
             </div>
 
             <div className={shared.formGroup}>
-              <label className={shared.formLabel} htmlFor="totp">{tt("ui.verification.code.80f2", "Verification code")}<InfoTip id="totpCode" /></label>
+              <label className={shared.formLabel} htmlFor="totp"><span className="fieldLabelRow">{tt("ui.verification.code.80f2", "Verification code")} <InfoTip id="totpCode" /></span></label>
               <input id="totp" type="text" inputMode="numeric" maxLength={6} placeholder="123456" className={shared.formInput} />
             </div>
 

@@ -158,30 +158,30 @@ const CreateTeam = () => {
               <h2 className={styles.cardTitle}>{tt("ui.basic.info.3ecb", "Basic info")}</h2>
 
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.team.name.3274", "Team name *")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.team.name.3274", "Team name *")}</span> <InfoTip id="teamName" /></span>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder={tt("ui.e.g.crimson.wolves.98c1", "e.g. Crimson Wolves")} className={styles.input} maxLength={32} />
-              <InfoTip id="teamName" /></label>
+              </label>
 
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.core.game.754b", "Core game *")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.core.game.754b", "Core game *")}</span> <InfoTip id="teamGame" /></span>
                 <select value={coreGame} onChange={e => setCoreGame(e.target.value)} className={styles.input}>
                   <option value="">{tt("ui.select.game.a65d", "Select a game…")}</option>
                   {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
-              <InfoTip id="teamGame" /></label>
+              </label>
 
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.bio.b31f", "Bio")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.bio.b31f", "Bio")}</span> <InfoTip id="teamDescription" /></span>
                 <textarea rows={4} value={bio} onChange={e => setBio(e.target.value)} placeholder={tt("ui.what.team.about.achievements.6986", "What is your team about? Achievements? Playstyle?")} className={styles.textarea} maxLength={300} />
                 <span className={styles.charCount}>{bio.length} / 300</span>
-              <InfoTip id="teamDescription" /></label>
+              </label>
 
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.region.0f21", "Region")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.region.0f21", "Region")}</span> <InfoTip id="teamRegion" /></span>
                 <select value={region} onChange={e => setRegion(e.target.value)} className={styles.input}>
                   {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
-              <InfoTip id="teamRegion" /></label>
+              </label>
             </section>
 
             {/* Membership settings */}
@@ -198,13 +198,13 @@ const CreateTeam = () => {
 
               <label className={styles.toggleField}>
                 <div>
-                  <span className={styles.fieldLabel}>{tt("ui.open.join.f8e3", "Open to join")}</span>
+                  <span className={`${styles.fieldLabel} fieldLabelRow`}>{tt("ui.open.join.f8e3", "Open to join")} <InfoTip id="allowMembershipRequests" /></span>
                   <span className={styles.fieldHint}>{tt("ui.anyone.can.request.join.5886", "Anyone can request to join. Captains approve.")}</span>
                 </div>
                 <button type="button" className={`${styles.toggle} ${openToJoin ? styles.toggleOn : ''}`} onClick={() => setOpenToJoin(v => !v)}>
                   <span className={styles.toggleKnob} />
                 </button>
-              <InfoTip id="allowMembershipRequests" /></label>
+              </label>
             </section>
 
             {/* Social links */}
@@ -212,21 +212,21 @@ const CreateTeam = () => {
               <h2 className={styles.cardTitle}>{tt("ui.social.links.52e0", "Social links")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span></h2>
 
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.twitter.x.a0b4", "Twitter / X")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.twitter.x.a0b4", "Twitter / X")}</span> <InfoTip id="teamSocial" /></span>
                 <input type="url" value={twitter} onChange={e => setTwitter(e.target.value)} placeholder={tt("ui.https.twitter.com.team.108c", "https://twitter.com/team")} className={styles.input} />
-              <InfoTip id="teamSocial" /></label>
+              </label>
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.instagram.5721", "Instagram")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.instagram.5721", "Instagram")}</span> <InfoTip id="teamSocial" /></span>
                 <input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder={tt("ui.https.instagram.com.team.dd94", "https://instagram.com/team")} className={styles.input} />
-              <InfoTip id="teamSocial" /></label>
+              </label>
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.discord.bccc", "Discord")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.discord.bccc", "Discord")}</span> <InfoTip id="teamSocial" /></span>
                 <input type="url" value={discord} onChange={e => setDiscord(e.target.value)} placeholder={tt("ui.https.discord.gg.invite.b705", "https://discord.gg/invite")} className={styles.input} />
-              <InfoTip id="teamSocial" /></label>
+              </label>
               <label className={styles.field}>
-                <span className={styles.fieldLabel}>{tt("ui.twitch.e8ea", "Twitch")}</span>
+                <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.twitch.e8ea", "Twitch")}</span> <InfoTip id="teamSocial" /></span>
                 <input type="url" value={twitch} onChange={e => setTwitch(e.target.value)} placeholder={tt("ui.https.twitch.tv.team.5181", "https://twitch.tv/team")} className={styles.input} />
-              <InfoTip id="teamSocial" /></label>
+              </label>
             </section>
 
             {/* Submit */}

@@ -204,8 +204,8 @@ const PrizeDistributionInside = ({
             <div className={styles.currencyRow}>
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="prizeCurrency" className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.currency.e070", "Currency")}
-                <InfoTip id="prizeCurrency" /></label>
+                  <span className="fieldLabelRow">{tt("ui.currency.e070", "Currency")} <InfoTip id="prizeCurrency" /></span>
+                </label>
                 <select id="prizeCurrency" className={createTournamentStyles.inputText} value={currency} onChange={e => setCurrency(e.target.value)}>
                   <option value="VC">{tt("ui.vent.coins.536d", "VENT COINS")}</option>
                   <option value="NGN">{tt("ui.nigerian.naira.3a42", "Nigerian Naira")}</option>
@@ -215,8 +215,8 @@ const PrizeDistributionInside = ({
 
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="prizePoolTotal" className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.total.prize.pool.2276", "Total prize pool")}
-                <InfoTip id="prizePoolTotal" /></label>
+                  <span className="fieldLabelRow">{tt("ui.total.prize.pool.2276", "Total prize pool")} <InfoTip id="prizePoolTotal" /></span>
+                </label>
                 <input id="prizePoolTotal" type="number" min="0" placeholder={`Total in ${currency}`} className={createTournamentStyles.inputNumber} value={poolTotal} onChange={e => setPoolTotal(e.target.value)} />
                 <span className={styles.conversionHint}>{showCoins(poolTotal)}</span>
               </div>
@@ -233,11 +233,11 @@ const PrizeDistributionInside = ({
             {positions.map(position => <div key={position} className={`${createTournamentStyles.twoInputContainer} ${styles.twoInputContainer}`}>
                 <div className={createTournamentStyles.inputGroup}>
                   <label htmlFor={`prizePosition${position}`} className={createTournamentStyles.labelWithAsterisk}>
-                    {position} {tt("ui.place.c32a", "Place")} {position === 1 && "(Winner)"}
+                    <span className="fieldLabelRow">{position} {tt("ui.place.c32a", "Place")} {position === 1 && "(Winner)"}
                     <span className={createTournamentStyles.asteriskSpan}>
                       <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                    </span>
-                  <InfoTip id="prizePlace" /></label>
+                    </span> <InfoTip id="prizePlace" /></span>
+                  </label>
                   <input id={`prizePosition${position}`} type="number" placeholder={`Prize for ${position} place in ${currency}`} className={createTournamentStyles.inputNumber} value={prizes[`prizePosition${position}`] || ""} onChange={e => handlePrizeChange(position, e.target.value)} />
                   <span className={styles.conversionHint}>
                     {showCoins(prizes[`prizePosition${position}`])}
@@ -246,11 +246,11 @@ const PrizeDistributionInside = ({
 
                 <div className={createTournamentStyles.inputGroup}>
                   <label htmlFor={`extraBonus${position}`} className={createTournamentStyles.labelWithAsterisk}>
-                    {tt("ui.extras.e.g.bonuses.5e9f", "Extras (e.g., Bonuses)")}
+                    <span className="fieldLabelRow">{tt("ui.extras.e.g.bonuses.5e9f", "Extras (e.g., Bonuses)")}
                     <span className={createTournamentStyles.asteriskSpan}>
                       <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                    </span>
-                  <InfoTip id="prizeExtras" /></label>
+                    </span> <InfoTip id="prizeExtras" /></span>
+                  </label>
                   <input id={`extraBonus${position}`} type="text" placeholder={tt("ui.what.bonus.e.g.c411", "What the bonus is, e.g. a gaming chair")} className={`${createTournamentStyles.inputText} ${styles.inputText}`} value={extraBonuses[`extraBonus${position}`] || ""} onChange={e => handleBonusChange(position, e.target.value)} />
                   {/* A bonus can be a thing ("gaming chair") and a value. The
                       value converts exactly like a prize does. */}

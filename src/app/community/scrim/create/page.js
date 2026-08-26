@@ -188,7 +188,7 @@ const ScrimCreateInner = () => {
           <form className={styles.formCard} onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <div className={styles.field}>
-                <label className={styles.label}>{tt("ui.team.e672", "Your team *")}<InfoTip id="scrimTeam" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.team.e672", "Your team *")} <InfoTip id="scrimTeam" /></span></label>
                 <select className={`${styles.input} ${errors.team ? styles.inputError : ''}`} value={form.team} onChange={e => updateField('team', e.target.value)} disabled={teamsLoading}>
                   <option value="">{teamsLoading ? tx("Loading teams...") : tx("Pick your team")}</option>
                   {teams.map(t => <option key={t.id} value={t.id}>{t.name}{t.tag ? ` [${t.tag}]` : ''}</option>)}
@@ -197,7 +197,7 @@ const ScrimCreateInner = () => {
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>{tt("ui.game.d199", "Game *")}<InfoTip id="teamGame" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.game.d199", "Game *")} <InfoTip id="teamGame" /></span></label>
                 <select className={`${styles.input} ${errors.game ? styles.inputError : ''}`} value={form.game} onChange={e => updateField('game', e.target.value)}>
                   <option value="">{tt("ui.choose.game.6fa9", "Choose a game")}</option>
                   {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
@@ -206,7 +206,7 @@ const ScrimCreateInner = () => {
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>{tt("ui.format.0c6a", "Format *")}<InfoTip id="scrimFormat" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.format.0c6a", "Format *")} <InfoTip id="scrimFormat" /></span></label>
                 <div className={styles.formatRow}>
                   {FORMATS.map(f => <button key={f} type="button" className={`${styles.formatBtn} ${form.format === f ? styles.formatBtnActive : ''}`} onClick={() => updateField('format', f)}>
                       {f}
@@ -216,7 +216,7 @@ const ScrimCreateInner = () => {
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>{tt("ui.region.7061", "Region *")}<InfoTip id="scrimRegion" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.region.7061", "Region *")} <InfoTip id="scrimRegion" /></span></label>
                 <select className={`${styles.input} ${errors.region ? styles.inputError : ''}`} value={form.region} onChange={e => updateField('region', e.target.value)}>
                   {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
@@ -224,19 +224,19 @@ const ScrimCreateInner = () => {
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>{tt("ui.scheduled.7ccb", "Scheduled at *")}<InfoTip id="scrimSchedule" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.scheduled.7ccb", "Scheduled at *")} <InfoTip id="scrimSchedule" /></span></label>
                 <input type="datetime-local" className={`${styles.input} ${errors.scheduled_at ? styles.inputError : ''}`} value={form.scheduled_at} onChange={e => updateField('scheduled_at', e.target.value)} />
                 {errors.scheduled_at && <span className={styles.errorText}>{errors.scheduled_at}</span>}
               </div>
 
               <div className={`${styles.field} ${styles.fieldFull}`}>
-                <label className={styles.label}>{tt("ui.opponent.optional.6967", "Opponent (optional)")}<InfoTip id="scrimOpponent" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.opponent.optional.6967", "Opponent (optional)")} <InfoTip id="scrimOpponent" /></span></label>
                 <input type="text" placeholder={tt("ui.leave.empty.open.scrim.1023", "Leave empty for an open scrim, anyone can accept")} className={styles.input} value={form.opponent} onChange={e => updateField('opponent', e.target.value)} maxLength={60} />
                 <span className={styles.hint}>{tt("ui.type.team.name.challenge.359a", "Type a team name to challenge directly. Leave empty to keep it open.")}</span>
               </div>
 
               <div className={`${styles.field} ${styles.fieldFull}`}>
-                <label className={styles.label}>{tt("ui.notes.7044", "Notes")}<InfoTip id="scrimNotes" /></label>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("ui.notes.7044", "Notes")} <InfoTip id="scrimNotes" /></span></label>
                 <textarea className={`${styles.input} ${styles.textarea}`} placeholder={tt("ui.map.pool.server.rules.6c7b", "Map pool, server, rules, anything else...")} value={form.notes} onChange={e => updateField('notes', e.target.value)} maxLength={500} />
               </div>
             </div>

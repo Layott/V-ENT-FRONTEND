@@ -72,11 +72,11 @@ const Participants = ({
         {['teams', 'both'].includes(selectedOption) && <div className={styles.howManyTeamsContainer}>
             <div className={styles.tournamentTitleContainer}>
               <label htmlFor="numberOfTeams" className={createTournamentStyles.labelWithAsterisk}>
-                {tt("ui.how.many.teams.required.d02a", "How many teams are required?")}
+                <span className="fieldLabelRow">{tt("ui.how.many.teams.required.d02a", "How many teams are required?")}
                 <span className={createTournamentStyles.asteriskSpan}>
                   <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              <InfoTip id="numberOfTeams" /></label>
+                </span> <InfoTip id="numberOfTeams" /></span>
+              </label>
               <input id="numberOfTeams" type="text" className={createTournamentStyles.inputText} placeholder={tt("ui.enter.number.teams.3cb8", "Enter number of teams")} onChange={e => {
             const value = e.target.value;
             if (value === '' || /^[0-9]+$/.test(value)) {
@@ -102,11 +102,11 @@ const Participants = ({
 
             <div className={`${createTournamentStyles.inputGroup} ${styles.inputGroup}`}>
               <label htmlFor="teamSizeOption" className={createTournamentStyles.labelWithAsterisk}>
-                {tt("ui.how.many.players.team.fb4e", "How many players in a team are required?")}
+                <span className="fieldLabelRow">{tt("ui.how.many.players.team.fb4e", "How many players in a team are required?")}
                 <span className={createTournamentStyles.asteriskSpan}>
                   <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                </span>
-              <InfoTip id="teamSize" /></label>
+                </span> <InfoTip id="teamSize" /></span>
+              </label>
               <select id="teamSizeOption" value={teamSizeOption} onChange={handleTeamSizeChange} className={createTournamentStyles.inputWithDropdown}>
                 <option value="">{tt("ui.select.number.players.7801", "Select Number of Players")}</option>
                 <option value="duo">{tt("ui.duo.players.15f8", "Duo (2 players)")}</option>
@@ -123,21 +123,21 @@ const Participants = ({
             <div className={createTournamentStyles.twoInputContainer}>
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="minNumber" className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.min.number.individuals.d770", "Min Number of Individuals")}
+                  <span className="fieldLabelRow">{tt("ui.min.number.individuals.d770", "Min Number of Individuals")}
                   <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                  </span>
-                <InfoTip id="minParticipants" /></label>
+                  </span> <InfoTip id="minParticipants" /></span>
+                </label>
                 <input id="minNumber" type="number" placeholder={tt("ui.enter.minimum.number.06ca", "Enter minimum number")} className={createTournamentStyles.inputNumber} value={minIndividuals} onChange={handleMinIndividualsChange} />
               </div>
 
               <div className={createTournamentStyles.inputGroup}>
                 <label htmlFor="maxNumber" className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.max.number.individuals.e3ae", "Max Number of Individuals")}
+                  <span className="fieldLabelRow">{tt("ui.max.number.individuals.e3ae", "Max Number of Individuals")}
                   <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                  </span>
-                <InfoTip id="maxParticipants" /></label>
+                  </span> <InfoTip id="maxParticipants" /></span>
+                </label>
                 <input id="maxNumber" type="number" placeholder={tt("ui.enter.maximum.number.961a", "Enter maximum number")} className={createTournamentStyles.inputNumber} value={maxIndividuals} onChange={handleMaxIndividualsChange} />
                 <p className={styles.infoParagraph}>
                   <span className={styles.infoSpan}>

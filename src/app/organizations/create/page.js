@@ -269,12 +269,12 @@ const CreateOrganizationContent = () => {
                 <p className={styles.sectionSub}>{tt("ui.start.with.org's.name.e7bb", "Start with your org's name and a short tag.")}</p>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.organization.name.9eab", "Organization name")}<InfoTip id="orgName" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.organization.name.9eab", "Organization name")} <InfoTip id="orgName" /></span></label>
                   <input type="text" value={formData.name} onChange={e => update('name', e.target.value)} placeholder={tt("ui.vermillion.esports.718b", "Vermillion Esports")} className={styles.input} />
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.tag.9829", "Tag")}<InfoTip id="orgTag" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.tag.9829", "Tag")} <InfoTip id="orgTag" /></span></label>
                   <input type="text" value={formData.tag} onChange={e => update('tag', e.target.value.toUpperCase())} placeholder={tt("ui.vmn.8b68", "VMN")} maxLength={5} className={styles.input} />
                   <span className={styles.helpText}>{tt("ui.character.shorthand.shown.across.fb9f", "2-5 character shorthand shown across the platform.")}</span>
                 </div>
@@ -285,7 +285,7 @@ const CreateOrganizationContent = () => {
                 <p className={styles.sectionSub}>{tt("ui.drop.logo.banner.can.ac3c", "Drop your logo and banner. You can update them anytime.")}</p>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.logo.83fc", "Logo")}<InfoTip id="orgLogo" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.logo.83fc", "Logo")} <InfoTip id="orgLogo" /></span></label>
                   <div className={styles.uploadRow}>
                     <div className={styles.logoPreview}>
                       {logoPreview ? <Image src={logoPreview} alt={tt("ui.logo.preview.1c71", "Logo preview")} width={80} height={80} /> : <span className={styles.logoPlaceholder}>{tt("ui.logo.83fc", "Logo")}</span>}
@@ -305,7 +305,7 @@ const CreateOrganizationContent = () => {
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.banner.c8af", "Banner")}<InfoTip id="orgBanner" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.banner.c8af", "Banner")} <InfoTip id="orgBanner" /></span></label>
                   <div className={styles.bannerPreview}>
                     {bannerPreview ? <Image src={bannerPreview} alt={tt("ui.banner.preview.abf9", "Banner preview")} fill sizes="100vw" style={{
                   objectFit: 'cover'
@@ -330,12 +330,12 @@ const CreateOrganizationContent = () => {
                 <p className={styles.sectionSub}>{tt("ui.tell.people.what.org.01f9", "Tell people what your org does.")}</p>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.bio.b31f", "Bio")}<InfoTip id="orgBio" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.bio.b31f", "Bio")} <InfoTip id="orgBio" /></span></label>
                   <textarea value={formData.bio} onChange={e => update('bio', e.target.value)} placeholder={tt("ui.what.does.org.do.b02b", "What does your org do, who is it for, and what's your edge?")} className={styles.textarea} rows={4} />
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.region.0f21", "Region")}<InfoTip id="orgRegion" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.region.0f21", "Region")} <InfoTip id="orgRegion" /></span></label>
                   <div className={styles.chipRow}>
                     {REGION_CHOICES.map(r => <button key={r} type="button" className={`${styles.chip} ${formData.region === r ? styles.chipActive : ''}`} onClick={() => update('region', r)}>
                         {r}
@@ -358,12 +358,12 @@ const CreateOrganizationContent = () => {
                 <p className={styles.sectionSub}>{tt("ui.where.can.people.reach.00ea", "Where can people reach you?")}</p>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.contact.email.726a", "Contact email")}<InfoTip id="orgContactEmail" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.contact.email.726a", "Contact email")} <InfoTip id="orgContactEmail" /></span></label>
                   <input type="email" value={formData.contact_email} onChange={e => update('contact_email', e.target.value)} placeholder={tt("ui.hello.org.com.2e3a", "hello@your-org.com")} className={styles.input} />
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>{tt("ui.location.d219", "Location")}<InfoTip id="orgLocation" /></label>
+                  <label className={styles.fieldLabel}><span className="fieldLabelRow">{tt("ui.location.d219", "Location")} <InfoTip id="orgLocation" /></span></label>
                   <input type="text" value={formData.location} onChange={e => update('location', e.target.value)} placeholder={tt("ui.lagos.nigeria.d50d", "Lagos, Nigeria")} className={styles.input} />
                 </div>
 

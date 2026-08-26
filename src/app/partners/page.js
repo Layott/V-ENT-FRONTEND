@@ -258,42 +258,42 @@ const PartnersPage = () => {
 
               <div className={styles.formGrid}>
                 <label className={styles.field}>
-                  <span>{tt("ui.partner.name.9cbe", "Partner name")}</span>
+                  <span className="fieldLabelRow"><span>{tt("ui.partner.name.9cbe", "Partner name")}</span> <InfoTip id="partnerName" /></span>
                   <input className={styles.input} value={form.name} onChange={e => setForm({
                 ...form,
                 name: e.target.value
               })} required />
-                <InfoTip id="partnerName" /></label>
+                </label>
                 <label className={styles.field}>
-                  <span>{tt("ui.contact.email.726a", "Contact email")}</span>
+                  <span className="fieldLabelRow"><span>{tt("ui.contact.email.726a", "Contact email")}</span> <InfoTip id="partnerEmail" /></span>
                   <input type="email" className={styles.input} value={form.contact_email} onChange={e => setForm({
                 ...form,
                 contact_email: e.target.value
               })} required />
-                <InfoTip id="partnerEmail" /></label>
+                </label>
                 <label className={styles.field}>
-                  <span>{tt("ui.website.2e8a", "Website")}</span>
+                  <span className="fieldLabelRow"><span>{tt("ui.website.2e8a", "Website")}</span> <InfoTip id="partnerWebsite" /></span>
                   <input className={styles.input} value={form.website} onChange={e => setForm({
                 ...form,
                 website: e.target.value
               })} placeholder={tt("ui.https.a9a1", "https://")} />
-                <InfoTip id="partnerWebsite" /></label>
+                </label>
                 <label className={styles.field}>
-                  <span>{tt("ui.who.61f8", "Who you are")}</span>
+                  <span className="fieldLabelRow"><span>{tt("ui.who.61f8", "Who you are")}</span> <InfoTip id="partnerWhoYouAre" /></span>
                   <input className={styles.input} value={form.contact_name} onChange={e => setForm({
                 ...form,
                 contact_name: e.target.value
               })} />
-                <InfoTip id="partnerWhoYouAre" /></label>
+                </label>
               </div>
 
               <label className={styles.field}>
-                <span>{tt("ui.what.want.build.3c41", "What you want to build with it")}</span>
+                <span className="fieldLabelRow"><span>{tt("ui.what.want.build.3c41", "What you want to build with it")}</span> <InfoTip id="partnerWhatYouBuild" /></span>
                 <textarea className={styles.textarea} rows={3} value={form.intended_use} onChange={e => setForm({
               ...form,
               intended_use: e.target.value
             })} />
-              <InfoTip id="partnerWhatYouBuild" /></label>
+              </label>
 
               <h3 className={styles.subTitle}>{tt("ui.what.should.key.able.85af", "What should the key be able to read?")}</h3>
               <p className={styles.muted}>
@@ -324,41 +324,41 @@ const PartnersPage = () => {
                   </p>
                   <div className={styles.formGrid}>
                     <label className={styles.field}>
-                      <span>{tt("ui.registered.legal.name.03cb", "Registered legal name")}</span>
+                      <span className="fieldLabelRow"><span>{tt("ui.registered.legal.name.03cb", "Registered legal name")}</span> <InfoTip id="partnerLegalName" /></span>
                       <input className={styles.input} value={form.legal_name} onChange={e => setForm({
                   ...form,
                   legal_name: e.target.value
                 })} />
-                    <InfoTip id="partnerLegalName" /></label>
+                    </label>
                     <label className={styles.field}>
-                      <span>{tt("ui.company.registration.number.cd7a", "Company or registration number")}</span>
+                      <span className="fieldLabelRow"><span>{tt("ui.company.registration.number.cd7a", "Company or registration number")}</span> <InfoTip id="partnerRegNumber" /></span>
                       <input className={styles.input} value={form.registration_number} onChange={e => setForm({
                   ...form,
                   registration_number: e.target.value
                 })} />
-                    <InfoTip id="partnerRegNumber" /></label>
+                    </label>
                     <label className={styles.field}>
-                      <span>{tt("ui.privacy.policy.url.52c7", "Privacy policy URL")}</span>
+                      <span className="fieldLabelRow"><span>{tt("ui.privacy.policy.url.52c7", "Privacy policy URL")}</span> <InfoTip id="partnerPrivacyUrl" /></span>
                       <input className={styles.input} value={form.privacy_policy_url} onChange={e => setForm({
                   ...form,
                   privacy_policy_url: e.target.value
                 })} />
-                    <InfoTip id="partnerPrivacyUrl" /></label>
+                    </label>
                     <label className={styles.field}>
-                      <span>{tt("ui.data.protection.contact.0c1d", "Data protection contact")}</span>
+                      <span className="fieldLabelRow"><span>{tt("ui.data.protection.contact.0c1d", "Data protection contact")}</span> <InfoTip id="partnerDataContact" /></span>
                       <input className={styles.input} value={form.data_protection_contact} onChange={e => setForm({
                   ...form,
                   data_protection_contact: e.target.value
                 })} />
-                    <InfoTip id="partnerDataContact" /></label>
+                    </label>
                   </div>
                   <label className={styles.field}>
-                    <span>{tt("ui.redirect.addresses.one.per.fade", "Redirect addresses, one per line (https, or localhost while building)")}</span>
+                    <span className="fieldLabelRow"><span>{tt("ui.redirect.addresses.one.per.fade", "Redirect addresses, one per line (https, or localhost while building)")}</span> <InfoTip id="ssoRedirect" /></span>
                     <textarea className={styles.textarea} rows={3} value={form.redirect_uris} onChange={e => setForm({
                 ...form,
                 redirect_uris: e.target.value
               })} placeholder={tt("ui.https.site.com.auth.d2f3", "https://your-site.com/auth/v-ent/callback")} />
-                  <InfoTip id="ssoRedirect" /></label>
+                  </label>
                 </div>}
 
               <button type="submit" className={styles.primaryBtn} disabled={saving}>

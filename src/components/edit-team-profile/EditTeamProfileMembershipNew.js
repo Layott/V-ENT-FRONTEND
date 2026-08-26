@@ -92,9 +92,9 @@ const EditTeamProfileMembershipNew = ({
       </div>
 
       {passwordProtected && <label className={styles.field}>
-          <span className={styles.fieldLabel}>{tt("ui.team.password.babb", "Team password")}</span>
+          <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.team.password.babb", "Team password")}</span> <InfoTip id="teamPassword" /></span>
           <input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder={tt("ui.set.password.join.requests.a0f5", "Set a password for join requests")} className={styles.input} />
-        <InfoTip id="teamPassword" /></label>}
+        </label>}
 
       {error && <p className={styles.errorText}>{error}</p>}
       <div className={styles.actions}>

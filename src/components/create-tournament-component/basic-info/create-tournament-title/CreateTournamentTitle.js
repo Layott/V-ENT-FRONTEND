@@ -58,11 +58,11 @@ const CreateTournamentTitle = ({
   return <div className={`${createTournamentStyles.createSubSectionContainer} ${styles.createSubSectionContainer}`}>
         <div className={styles.tournamentTitleContainer}>
           <label htmlFor="title" className={createTournamentStyles.labelWithAsterisk}>
-            {tt("ui.tournament.title.9bc3", "Tournament Title")}
+            <span className="fieldLabelRow">{tt("ui.tournament.title.9bc3", "Tournament Title")}
             <span className={createTournamentStyles.asteriskSpan}>
               <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-            </span>
-          <InfoTip id="tournamentTitle" /></label>
+            </span> <InfoTip id="tournamentTitle" /></span>
+          </label>
           <input type="text" className={createTournamentStyles.inputText} placeholder={tt("ui.enter.title.0f84", "Enter title")} value={formData.tournament_title || ''} onChange={e => updateFormData('tournament_title', e.target.value)} // Correct key
       />
         </div>
@@ -71,11 +71,11 @@ const CreateTournamentTitle = ({
         <div className={createTournamentStyles.twoInputContainer}>
           <div className={createTournamentStyles.inputGroup}>
             <label htmlFor="game" className={createTournamentStyles.labelWithAsterisk}>
-              {tt("ui.game.e3e8", "Game")}
+              <span className="fieldLabelRow">{tt("ui.game.e3e8", "Game")}
               <span className={createTournamentStyles.asteriskSpan}>
                 <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-              </span>
-            <InfoTip id="tournamentGame" /></label>
+              </span> <InfoTip id="tournamentGame" /></span>
+            </label>
             <select id="game" value={selectedGame} onChange={handleGameChange} className={createTournamentStyles.inputWithDropdown} disabled={gamesLoading}>
               <option value="">{gamesLoading ? tx("Loading games…") : tx("Select Game")}</option>
               {games.map(game => <option key={game.id ?? game.name} value={game.name}>
@@ -86,11 +86,11 @@ const CreateTournamentTitle = ({
 
           <div className={createTournamentStyles.inputGroup}>
             <label htmlFor="gameMode" className={createTournamentStyles.labelWithAsterisk}>
-              {tt("ui.game.mode.9424", "Game Mode")}
+              <span className="fieldLabelRow">{tt("ui.game.mode.9424", "Game Mode")}
               <span className={createTournamentStyles.asteriskSpan}>
                 <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-              </span>
-            <InfoTip id="gameMode" /></label>
+              </span> <InfoTip id="gameMode" /></span>
+            </label>
             <select id="gameMode" value={selectedGameMode} onChange={handleGameModeChange} className={createTournamentStyles.inputWithDropdown} disabled={!selectedGame}>
               <option value="">{tt("ui.select.game.mode.8e83", "Select Game Mode")}</option>
               {availableModes.map(mode => <option key={mode} value={mode}>
@@ -103,11 +103,11 @@ const CreateTournamentTitle = ({
         {/* Description */}
         <div className={styles.tournamentDescriptionContainer}>
           <label htmlFor="description" className={createTournamentStyles.labelWithAsterisk}>
-            {tt("ui.tournament.description.8d7d", "Tournament Description")}
+            <span className="fieldLabelRow">{tt("ui.tournament.description.8d7d", "Tournament Description")}
             <span className={createTournamentStyles.asteriskSpan}>
               <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-            </span>
-          <InfoTip id="tournamentDescription" /></label>
+            </span> <InfoTip id="tournamentDescription" /></span>
+          </label>
           <textarea id="description" value={description} onChange={handleDescriptionChange} className={createTournamentStyles.inputText} placeholder={tt("ui.enter.tournament.description.4a26", "Enter tournament description")} maxLength={1000}></textarea>
           <p className={styles.infoParagraph}>
             <span className={styles.infoSpan}>
