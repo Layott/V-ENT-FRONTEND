@@ -289,7 +289,7 @@ const AllTeams = () => {
 
                   <div className={styles.cardActions}>
                     {owned || reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
-                        {owned ? 'Manage' : tx("Pending request")}
+                        {owned ? tx("Manage") : tx("Pending request")}
                       </button> : open ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
                         {reqState === 'loading' ? tx("Requesting…") : tx("Request to join")}
                       </button> : <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
