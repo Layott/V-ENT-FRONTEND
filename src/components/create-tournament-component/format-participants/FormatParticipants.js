@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import TournamentFormat from "./tournament-format/TournamentFormat";
 import Participants from "./participants/Participants";
+import TournamentOptions from "./tournament-options/TournamentOptions";
 import TournamentRules from "./tournament-rules/TournamentRules";
 import { validateFormatParticipants } from "../tournamentWizardValidation";
 import ValidationSummary from "../validation-summary/ValidationSummary";
@@ -47,6 +48,11 @@ const FormatParticipants = ({ setSelectedTab, formData = {}, updateLocalStorage,
       />
 
       <Participants
+        formData={formData}
+        updateFormData={updateLocalStorage}
+      />
+
+      <TournamentOptions
         formData={formData}
         updateFormData={updateLocalStorage}
       />

@@ -1,0 +1,129 @@
+/* Check-in strip. Same shape as the parent-event strip it sits beside:
+   a filled surface a step off the page, no stroke, no glow. */
+
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background-color: #26272b;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.headline,
+.headlineDone,
+.headlineClosed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.headline { color: var(--primary-bg); }
+.headlineDone { color: var(--v-ent-success); }
+.headlineClosed { color: rgba(255, 255, 255, 0.55); }
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.noticeOk,
+.noticeError {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.8rem;
+}
+
+.noticeOk { color: var(--v-ent-success); }
+.noticeError { color: var(--v-ent-light-red); }
+
+.closeSummary {
+  margin-top: 0.4rem;
+  background-color: #303136;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.closeSummaryLine {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--primary-bg);
+}
+
+.closeSummaryNames {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.primaryBtn,
+.ghostBtn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.primaryBtn {
+  background-color: var(--v-ent-red);
+  color: #fff;
+}
+
+.primaryBtn:hover:not(:disabled) { background-color: var(--v-ent-light-red); }
+
+.ghostBtn {
+  background-color: #393a40;
+  color: #ddd;
+}
+
+.ghostBtn:hover:not(:disabled) { background-color: #45464d; }
+
+.primaryBtn:disabled,
+.ghostBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryBtn,
+  .ghostBtn { transition: none; }
+}
+
+@media (max-width: 40rem) {
+  .strip { flex-direction: column; align-items: stretch; }
+  .actions { width: 100%; }
+  .primaryBtn, .ghostBtn { flex: 1 1 auto; min-height: 44px; }
+}

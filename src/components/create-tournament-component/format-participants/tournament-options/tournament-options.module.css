@@ -1,0 +1,222 @@
+/* Tournament settings.
+   Structure comes from filled surfaces stepping off the section background
+   (#212225 section, #28292D group, #393A40 control), never from strokes.
+   The one outline here is :focus-visible, which is required. */
+
+.sectionIntro {
+  color: #B2B3BD;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: -0.25rem 0 0.25rem 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: #28292D;
+  border-radius: 0.6rem;
+  padding: 1rem;
+}
+
+.groupTitle {
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  margin: 0;
+}
+
+.groupHint {
+  color: #B2B3BD;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: -0.4rem 0 0 0;
+}
+
+/* ------------------------------------------------------------------ chips */
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  background-color: #393A40;
+  color: #DDD;
+  border: none;
+  border-radius: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.chip:hover {
+  background-color: #45464D;
+}
+
+.chipOn,
+.chipOn:hover {
+  background-color: var(--v-ent-red);
+  color: #FFF;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* ---------------------------------------------------------------- seeding */
+
+.seedGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.seedCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: left;
+  background-color: #393A40;
+  border: none;
+  border-radius: 0.55rem;
+  padding: 0.75rem 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.seedCard:hover {
+  background-color: #45464D;
+}
+
+.seedCardOn,
+.seedCardOn:hover {
+  background-color: rgba(237, 28, 36, 0.22);
+}
+
+.seedLabel {
+  color: #FFF;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.seedCardOn .seedLabel {
+  color: var(--v-ent-light-red);
+}
+
+.seedHint {
+  color: #B2B3BD;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* ----------------------------------------------------------------- fields */
+
+.fieldRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.fieldLabel {
+  color: #B2B3BD;
+  font-size: 0.85rem;
+}
+
+.select {
+  width: 100%;
+  border-radius: 0.45rem;
+  color: #FFF;
+}
+
+/* ---------------------------------------------------------------- toggles */
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  background-color: #393A40;
+  border: none;
+  border-radius: 0.55rem;
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.toggleRow:hover {
+  background-color: #45464D;
+}
+
+.toggleRowOn,
+.toggleRowOn:hover {
+  background-color: rgba(237, 28, 36, 0.16);
+}
+
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.toggleLabel {
+  color: #FFF;
+  font-size: 0.95rem;
+}
+
+.toggleHint {
+  color: #B2B3BD;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.toggleTrack {
+  flex: 0 0 auto;
+  width: 2.4rem;
+  height: 1.35rem;
+  border-radius: 0.7rem;
+  background-color: #55565E;
+  display: flex;
+  align-items: center;
+  padding: 0.15rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.toggleTrackOn {
+  background-color: var(--v-ent-red);
+  justify-content: flex-end;
+}
+
+.toggleKnob {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  background-color: #FFF;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .seedCard,
+  .toggleRow,
+  .toggleTrack {
+    transition: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .seedGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

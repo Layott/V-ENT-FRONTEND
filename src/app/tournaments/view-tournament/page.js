@@ -18,6 +18,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ventFetch, API, tokenFrom, toTournament, entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 import styles from './view-tournament.module.css';
 import { shareLink, linkTo } from '@/lib/share';
+import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -288,6 +289,14 @@ export const ViewTournamentContent = ({ slug }) => {
               </div>
             </div>
           </div>
+
+          {/* Check-in. Renders only when this tournament uses one and the
+              viewer is either an entrant or the organiser. */}
+          <CheckInStrip
+            tournamentId={tournament.tournament_id || tournament.id || id}
+            session={session}
+            isOrganizer={isOrganizer}
+          />
 
           {/* Parent event. Only rendered when this tournament runs inside one. */}
           {tournament.event && (
