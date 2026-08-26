@@ -12,6 +12,7 @@ const buildInitialPrizeState = (formData) => {
   const saved = Array.isArray(formData?.prize_distribution) ? formData.prize_distribution : [];
   const prizes = {};
   const extraBonuses = {};
+  const bonusAmounts = {};
   const savedPositions = [];
 
   saved.forEach((entry) => {
@@ -24,13 +25,16 @@ const buildInitialPrizeState = (formData) => {
     if (entry.extras !== null && entry.extras !== undefined && entry.extras !== '') {
       extraBonuses[`extraBonus${position}`] = entry.extras;
     }
+    if (entry.extras_amount) {
+      bonusAmounts[`bonusAmount${position}`] = entry.extras_amount;
+    }
   });
 
   const positions = savedPositions.length > 0
     ? Array.from(new Set([1, 2, 3, ...savedPositions])).sort((a, b) => a - b)
     : [1, 2, 3];
 
-  return { positions, prizes, extraBonuses };
+  return { positions, prizes, extraBonuses, bonusAmounts };
 };
 
 const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
@@ -41,19 +45,69 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
   const [extraBonuses, setExtraBonuses] = useState(initial.extraBonuses);
   const [winnerPrize, setWinnerPrize] = useState(formData?.winner_prize ?? '');
 
+  // Currency, the announced pool, and the bonus amounts. An organiser thinks in
+  // naira or dollars; the platform pays in coins. Both are kept, and the
+  // conversion shown here is a preview - the server does the arithmetic that
+  // counts, from the currency and the amount, so a figure edited in the browser
+  // cannot become a prize.
+  const [currency, setCurrency] = useState(formData?.prize_currency || 'VC');
+  const [poolTotal, setPoolTotal] = useState(formData?.prize_pool_total ?? '');
+  const [bonusAmounts, setBonusAmounts] = useState(initial.bonusAmounts || {});
+  const [rates, setRates] = useState({ ngn_per_coin: 1000, ngn_per_usd: 1500 });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/prize-rates/`);
+        if (!res.ok) return;
+        const body = await res.json();
+        if (!cancelled && body?.data) setRates(body.data);
+      } catch {
+        /* the defaults match the published rate */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Same rule as the server: coins are whole, and a half rounds up so a pool
+  // never quietly pays less than what was announced.
+  const toCoins = (amount) => {
+    const value = parseFloat(amount);
+    if (!value || value <= 0) return 0;
+    if (currency === 'VC') return Math.round(value);
+    if (currency === 'NGN') return Math.round(value / rates.ngn_per_coin);
+    if (currency === 'USD') return Math.round((value * rates.ngn_per_usd) / rates.ngn_per_coin);
+    return 0;
+  };
+
+  const symbol = { VC: 'VC', NGN: '\u20a6', USD: '$' }[currency] || '';
+  const showCoins = (amount) => {
+    const coins = toCoins(amount);
+    return coins ? `${coins.toLocaleString()} VC` : '0 VC';
+  };
+
   useEffect(() => {
     const formattedPrizeDistribution = positions.map((position) => ({
       position,
+      // `amount` is what was typed, in `currency`. `prize` stays for older
+      // drafts; the server ignores it and converts `amount` itself.
+      amount: prizes[`prizePosition${position}`] || null,
+      currency,
       prize: prizes[`prizePosition${position}`] || null,
       extras: extraBonuses[`extraBonus${position}`] || null,
-    })).filter(entry => entry.prize !== null || entry.extras !== null);
+      extras_amount: bonusAmounts[`bonusAmount${position}`] || null,
+    })).filter((entry) => entry.amount !== null || entry.extras !== null || entry.extras_amount !== null);
 
     updateFormData('prize_distribution_type', selectedOption);
     updateFormData('prize_distribution', formattedPrizeDistribution);
+    updateFormData('prize_currency', currency);
+    updateFormData('prize_pool_total', poolTotal);
     if (selectedOption === 'winner-takes-all') {
       updateFormData('winner_prize', winnerPrize);
     }
-  }, [selectedOption, prizes, extraBonuses, positions, winnerPrize, updateFormData]);
+  }, [selectedOption, prizes, extraBonuses, bonusAmounts, positions, winnerPrize,
+      currency, poolTotal, updateFormData]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -80,6 +134,10 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
       const newExtras = { ...extraBonuses };
       delete newExtras[`extraBonus${position}`];
       setExtraBonuses(newExtras);
+
+      const newBonusAmounts = { ...bonusAmounts };
+      delete newBonusAmounts[`bonusAmount${position}`];
+      setBonusAmounts(newBonusAmounts);
     }
   };
 
@@ -88,6 +146,10 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
       ...prevPrizes,
       [`prizePosition${position}`]: value,
     }));
+  };
+
+  const handleBonusAmountChange = (position, value) => {
+    setBonusAmounts((prev) => ({ ...prev, [`bonusAmount${position}`]: value }));
   };
 
   const handleBonusChange = (position, value) => {
@@ -128,11 +190,47 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
 
         {selectedOption === "distributed" && (
           <div className={styles.distributedContainer}>
+            <div className={styles.currencyRow}>
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="prizeCurrency" className={createTournamentStyles.labelWithAsterisk}>
+                  Currency
+                </label>
+                <select
+                  id="prizeCurrency"
+                  className={createTournamentStyles.inputText}
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                >
+                  <option value="VC">VENT COINS</option>
+                  <option value="NGN">Nigerian Naira</option>
+                  <option value="USD">US Dollar</option>
+                </select>
+              </div>
+
+              <div className={createTournamentStyles.inputGroup}>
+                <label htmlFor="prizePoolTotal" className={createTournamentStyles.labelWithAsterisk}>
+                  Total prize pool
+                </label>
+                <input
+                  id="prizePoolTotal"
+                  type="number"
+                  min="0"
+                  placeholder={`Total in ${currency}`}
+                  className={createTournamentStyles.inputNumber}
+                  value={poolTotal}
+                  onChange={(e) => setPoolTotal(e.target.value)}
+                />
+                <span className={styles.conversionHint}>{showCoins(poolTotal)}</span>
+              </div>
+            </div>
+
             <p className={createTournamentStyles.infoParagraph}>
               <span className={styles.infoSpan}>
                 <FiInfo className={styles.infoIcon} />
               </span>
-              Any position left empty will be omitted. All amounts are in v-ent coins.
+              Enter each amount in {currency}. Prizes pay out in VENT COINS at
+              {' '}{rates.ngn_per_coin.toLocaleString()} NGN to 1 VC, and the converted figure is
+              shown under every field. A position left empty is omitted.
             </p>
 
             {positions.map((position) => (
@@ -147,11 +245,14 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
                   <input
                     id={`prizePosition${position}`}
                     type="number"
-                    placeholder={`Enter Prize for ${position} Place (Number)`}
+                    placeholder={`Prize for ${position} place in ${currency}`}
                     className={createTournamentStyles.inputNumber}
                     value={prizes[`prizePosition${position}`] || ""}
                     onChange={(e) => handlePrizeChange(position, e.target.value)}
                   />
+                  <span className={styles.conversionHint}>
+                    {showCoins(prizes[`prizePosition${position}`])}
+                  </span>
                 </div>
 
                 <div className={createTournamentStyles.inputGroup}>
@@ -164,11 +265,25 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
                   <input
                     id={`extraBonus${position}`}
                     type="text"
-                    placeholder="Enter Extra Bonus (Text)"
+                    placeholder="What the bonus is, e.g. a gaming chair"
                     className={`${createTournamentStyles.inputText} ${styles.inputText}`}
                     value={extraBonuses[`extraBonus${position}`] || ""}
                     onChange={(e) => handleBonusChange(position, e.target.value)}
                   />
+                  {/* A bonus can be a thing ("gaming chair") and a value. The
+                      value converts exactly like a prize does. */}
+                  <input
+                    id={`bonusAmount${position}`}
+                    type="number"
+                    min="0"
+                    placeholder={`Bonus value in ${currency} (optional)`}
+                    className={createTournamentStyles.inputNumber}
+                    value={bonusAmounts[`bonusAmount${position}`] || ""}
+                    onChange={(e) => handleBonusAmountChange(position, e.target.value)}
+                  />
+                  <span className={styles.conversionHint}>
+                    {showCoins(bonusAmounts[`bonusAmount${position}`])}
+                  </span>
                 </div>
 
                 {position > 3 && (
@@ -228,8 +343,26 @@ const PrizeDistributionInside = ({ formData = {}, updateFormData }) => {
         {selectedOption === "distributed" && totalPrize > 0 && (
           <div className={styles.totalPrizeContainer}>
             <p className={styles.totalPrizeText}>
-              Total Prize: <span className={styles.totalPrizeAmount}>{formatNumber(totalPrize)} v-ent coins</span>
+              Positions add up to{' '}
+              <span className={styles.totalPrizeAmount}>
+                {symbol}{formatNumber(totalPrize)}
+              </span>
+              {' '}({showCoins(totalPrize)})
             </p>
+            {/* If they announced a pool, say whether the positions match it.
+                Saying it here is cheaper than an organiser finding out at
+                payout that the prizes do not add up to what was advertised. */}
+            {parseFloat(poolTotal) > 0 && (
+              <p className={styles.totalPrizeText}>
+                {(() => {
+                  const diff = parseFloat(poolTotal) - totalPrize;
+                  if (Math.abs(diff) < 0.005) return 'That matches the pool you announced.';
+                  return diff > 0
+                    ? `${symbol}${formatNumber(diff)} of the announced pool is still unassigned.`
+                    : `That is ${symbol}${formatNumber(Math.abs(diff))} more than the pool you announced.`;
+                })()}
+              </p>
+            )}
           </div>
         )}
       </div>
