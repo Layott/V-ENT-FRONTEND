@@ -320,8 +320,8 @@ const PaymentModal = ({
     review: 'Confirm Payment',
     pin: 'Enter Wallet PIN',
     blocked: 'Registration Unavailable',
-    error: 'Something Went Wrong',,
-  conflict: 'Two at the same time',
+    error: 'Something Went Wrong',
+    conflict: 'Two at the same time',
 };
 
   const backDisabled = phase === 'loading' || phase === 'verifying-topup';
