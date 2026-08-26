@@ -1,0 +1,92 @@
+.wrap {
+  min-height: 100vh;
+  background: #131316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  background: #1a1b1f;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 460px;
+  width: 100%;
+  color: #fff;
+}
+
+.title {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 1.4rem;
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+
+.body {
+  color: #9A9AA3;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.listLabel {
+  margin: 18px 0 8px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8A8A93;
+}
+
+/* A filled surface rather than a bulleted list in a box - no strokes anywhere. */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  background: #202126;
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 8px;
+  font-size: 0.93rem;
+  color: #C9C9CF;
+}
+
+.fineprint {
+  color: #8A8A93;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin: 16px 0 0;
+}
+
+.fineprint a { color: #d4af37; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.primary {
+  background: #d4af37;
+  color: #131316;
+  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.ghost {
+  background: #303136;
+  color: #C9C9CF;
+  padding: 11px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.primary:disabled, .ghost:disabled { opacity: 0.5; cursor: default; }

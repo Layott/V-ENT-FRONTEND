@@ -1,0 +1,42 @@
+.wrap {
+  min-height: 100vh;
+  background: #131316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  background: #1a1b1f;
+  border-radius: 16px;
+  padding: 40px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0 0 10px;
+}
+
+.body {
+  color: #9A9AA3;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.action {
+  display: inline-block;
+  margin-top: 20px;
+  background: #d4af37;
+  color: #131316;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+}
