@@ -123,3 +123,18 @@
     top: 2.35rem;
   }
 }
+/* The converted figure under a money field. Quiet, but always there, so nobody
+   has to work out what a naira prize is worth in coins. */
+.conversionHint {
+  display: block;
+  margin-top: 6px;
+  color: #d4af37;
+  font-size: 0.78rem;
+}
+
+.currencyRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
