@@ -17,9 +17,11 @@ import logoRed from "@/images/logo_mark_red.svg"
 import styles from './sidebar.module.css'
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 import { PiUserCircle } from "react-icons/pi";
+import { useT } from '@/i18n/LanguageProvider';
 
 
 const Sidebar = ({ customClass }) => {
+    const t = useT();
     const pathname = usePathname()      // Gets the current pathname
     const { status } = useSession();
     const logoHref = status === 'authenticated' ? '/home' : '/';
@@ -81,19 +83,19 @@ const Sidebar = ({ customClass }) => {
 
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        <PiUserCircle className={styles.sidebarIcon} /> Profile
+                        <PiUserCircle className={styles.sidebarIcon} /> {t('nav.profile')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        <LuGamepad2 className={styles.sidebarIcon} /> Tournaments
+                        <LuGamepad2 className={styles.sidebarIcon} /> {t('nav.tournaments')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
-                        <MdOutlineEvent className={styles.sidebarIcon} /> Events
+                        <MdOutlineEvent className={styles.sidebarIcon} /> {t('nav.events')}
                     </Link>
                 </li>
 
@@ -102,26 +104,26 @@ const Sidebar = ({ customClass }) => {
                     navigates is just a slower disappointment. */}
                 <li className={`${styles.sidebarItem} ${styles.unavailableItem}`} aria-disabled="true">
                     <span className={styles.iconTextLink} title="Production is not available yet">
-                        <BsBroadcast className={styles.sidebarIcon} /> Production
+                        <BsBroadcast className={styles.sidebarIcon} /> {t('nav.production')}
                         <span className={styles.unavailableTag}>Unavailable</span>
                     </span>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
-                        <FaUsers className={styles.sidebarIcon} /> Teams
+                        <FaUsers className={styles.sidebarIcon} /> {t('nav.teams')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
-                        <PiRankingBold className={styles.sidebarIcon} /> Rankings
+                        <PiRankingBold className={styles.sidebarIcon} /> {t('nav.rankings')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
-                        <IoWalletOutline className={styles.sidebarIcon} /> Wallets
+                        <IoWalletOutline className={styles.sidebarIcon} /> {t('nav.wallets')}
                     </Link>
                 </li>
 
@@ -134,7 +136,7 @@ const Sidebar = ({ customClass }) => {
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
-                        <FaTv className={styles.sidebarIcon} /> Anime
+                        <FaTv className={styles.sidebarIcon} /> {t('nav.anime')}
                     </Link>
                 </li>
 
@@ -164,7 +166,7 @@ const Sidebar = ({ customClass }) => {
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        <MdOutlineSettings className={styles.sidebarIcon} /> Settings
+                        <MdOutlineSettings className={styles.sidebarIcon} /> {t('nav.settings')}
                     </Link>
                 </li>
 

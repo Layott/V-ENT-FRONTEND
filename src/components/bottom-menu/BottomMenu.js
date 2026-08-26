@@ -10,8 +10,10 @@ import { FaUsers } from 'react-icons/fa';
 import { IoWalletOutline, IoGameControllerOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp"
 import styles from './bottom-menu.module.css'
+import { useT } from '@/i18n/LanguageProvider';
 
 const BottomMenu = ({ customClass }) => {
+  const t = useT();
   const pathname = usePathname()
   const { data: session } = useSession(); // Add session hook
   const [menuOpen , setMenuOpen] = useState(false);
@@ -133,31 +135,31 @@ const BottomMenu = ({ customClass }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
                     <Link href={'/home'} className={styles.iconTextLink}>
-                        <BiHomeCircle className={`${styles.sidebarIcon} ${isActive('/home') ? styles.activeSidebarIcon : ''}`} /> Home
+                        <BiHomeCircle className={`${styles.sidebarIcon} ${isActive('/home') ? styles.activeSidebarIcon : ''}`} /> {t('nav.home')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        <IoGameControllerOutline className={`${styles.sidebarIcon} ${isActive('/tournaments') ? styles.activeSidebarIcon : ''}`} /> Tournaments
+                        <IoGameControllerOutline className={`${styles.sidebarIcon} ${isActive('/tournaments') ? styles.activeSidebarIcon : ''}`} /> {t('nav.tournaments')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
-                        <MdOutlineEvent className={`${styles.sidebarIcon} ${isActive('/events') ? styles.activeSidebarIcon : ''}`} /> Events
+                        <MdOutlineEvent className={`${styles.sidebarIcon} ${isActive('/events') ? styles.activeSidebarIcon : ''}`} /> {t('nav.events')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
-                        <FaUsers className={`${styles.sidebarIcon} ${isActive('/teams') ? styles.activeSidebarIcon : ''}`} /> Teams
+                        <FaUsers className={`${styles.sidebarIcon} ${isActive('/teams') ? styles.activeSidebarIcon : ''}`} /> {t('nav.teams')}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
-                        <IoWalletOutline className={`${styles.sidebarIcon} ${isActive('/wallets') ? styles.activeSidebarIcon : ''}`} /> Wallets
+                        <IoWalletOutline className={`${styles.sidebarIcon} ${isActive('/wallets') ? styles.activeSidebarIcon : ''}`} /> {t('nav.wallets')}
                     </Link>
                 </li>
             </ul>

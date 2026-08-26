@@ -2,6 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import React from "react";
 import SessionExpiryGuard from "./SessionExpiryGuard";
+import LanguageProvider from "@/i18n/LanguageProvider";
 
 // The app talks to the real backend only. The mock fetch interceptor, the
 // seeded mock session and the auto-login shim that used to live here have been
@@ -18,7 +19,9 @@ const SessionWrapper = ({ children }) => {
         // when a real 401 comes back, which is when it actually matters.
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
             <SessionExpiryGuard />
-            {children}
+            {/* Inside the session provider, because the chosen language lives on
+                the account and follows the person to another device. */}
+            <LanguageProvider>{children}</LanguageProvider>
         </SessionProvider>
     );
 };

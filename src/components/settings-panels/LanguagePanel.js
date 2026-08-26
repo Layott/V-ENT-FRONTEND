@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import shared from './settingsShared.module.css';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
-const LANGUAGES = [
-  { v: 'en', label: 'English' },
-  { v: 'fr', label: 'French' },
-  { v: 'yo', label: 'Yoruba' },
-  { v: 'ig', label: 'Igbo' },
-  { v: 'ha', label: 'Hausa' },
-  { v: 'pcm', label: 'Nigerian Pidgin' },
-];
+// Three languages, and every one of them actually translates the interface.
+// Yoruba, Igbo, Hausa and Nigerian Pidgin were in this list with nothing behind
+// them: choosing one changed a stored string and not a single word on screen,
+// which is worse than not offering them. They come back when there are
+// translations to serve.
 
 const CURRENCIES = [
   { v: 'NGN', label: 'NGN - Nigerian Naira' },
@@ -40,15 +38,19 @@ const DATE_FORMATS = [
 ];
 
 const LanguagePanel = ({ language, timezone, onSave }) => {
-  const [lang, setLang] = useState(language || 'en');
+  // The provider owns the language: setting it re-renders the app straight
+  // away and writes the choice to the account, so there is no save button to
+  // press and no reload to wait for.
+  const { language: current, setLanguage, languages, t } = useLanguage();
+  const [lang, setLang] = useState(current || language || 'en');
   const [curr, setCurr] = useState('VC');
   const [tz, setTz] = useState(timezone || 'Africa/Lagos');
   const [df, setDf] = useState('DMY');
 
   useEffect(() => {
-    setLang(language || 'en');
+    setLang(current || language || 'en');
     setTz(timezone || 'Africa/Lagos');
-  }, [language, timezone]);
+  }, [current, language, timezone]);
 
   const persist = async (next) => {
     await onSave?.(next);
@@ -57,11 +59,11 @@ const LanguagePanel = ({ language, timezone, onSave }) => {
   return (
     <div className={shared.formStack}>
       <div className={shared.card}>
-        <h3 className={shared.cardTitle}>Language</h3>
-        <p className={shared.cardSub}>The language used across V-ENT for menus, emails, and notifications.</p>
+        <h3 className={shared.cardTitle}>{t('settings.language')}</h3>
+        <p className={shared.cardSub}>{t('settings.languageBlurb')}</p>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="lang">Display language</label>
+          <label className={shared.formLabel} htmlFor="lang">{t('settings.displayLanguage')}</label>
           <select
             id="lang"
             className={shared.formSelect}
@@ -69,19 +71,22 @@ const LanguagePanel = ({ language, timezone, onSave }) => {
             onChange={(e) => {
               const v = e.target.value;
               setLang(v);
-              persist({ language: v });
+              setLanguage(v);          // the interface changes on this line
+              persist({ language: v }); // and the panel's own save keeps its contract
             }}
           >
-            {LANGUAGES.map((l) => (
-              <option key={l.v} value={l.v}>{l.label}</option>
+            {languages.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.native === l.label ? l.label : `${l.label} - ${l.native}`}
+              </option>
             ))}
           </select>
         </div>
       </div>
 
       <div className={shared.card}>
-        <h3 className={shared.cardTitle}>Currency &amp; region</h3>
-        <p className={shared.cardSub}>Affects how prices and times display across the platform.</p>
+        <h3 className={shared.cardTitle}>{t('settings.currencyRegion')}</h3>
+        <p className={shared.cardSub}>{t('settings.currencyBlurb')}</p>
 
         <div className={shared.formRow}>
           <div className={shared.formGroup}>

@@ -13,9 +13,11 @@ import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react";  // Import signOut function from next-auth
 import styles from './mobile-sidebar.module.css'
 import { PiUserCircle } from "react-icons/pi";
+import { useT } from '@/i18n/LanguageProvider';
 
 
 const MobileSidebar = ({ isOpen }) => {
+    const t = useT();
     const pathname = usePathname()      // Gets the current pathname
 
     // Function to Check if the Route is Active
@@ -57,77 +59,77 @@ const MobileSidebar = ({ isOpen }) => {
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        Profile <PiUserCircle className={styles.sidebarIcon} />
+                        {t('nav.profile')} <PiUserCircle className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        Tournaments <LuGamepad2 className={styles.sidebarIcon} />
+                        {t('nav.tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
-                        Events <MdOutlineEvent className={styles.sidebarIcon} />
+                        {t('nav.events')} <MdOutlineEvent className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
-                        Teams <FaUsers className={styles.sidebarIcon} />
+                        {t('nav.teams')} <FaUsers className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
-                        Rankings <PiRankingBold className={styles.sidebarIcon} />
+                        {t('nav.rankings')} <PiRankingBold className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
-                        Wallets <IoWalletOutline className={styles.sidebarIcon} />
+                        {t('nav.wallets')} <IoWalletOutline className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
-                        Anime <FaTv className={styles.sidebarIcon} />
+                        {t('nav.anime')} <FaTv className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
                     <Link href={'/community'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Community <FaUserFriends className={styles.sidebarIcon} /></span>
+                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        <span className={styles.iconMarketplaceSpan}>{t('nav.community')} <FaUserFriends className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/organizations') ? styles.activeLink : ''}`}>
                     <Link href={'/organizations'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Organizations <MdBusiness className={styles.sidebarIcon} /></span>
+                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        <span className={styles.iconMarketplaceSpan}>{t('nav.organizations')} <MdBusiness className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/marketplace') ? styles.activeLink : ''}`}>
                     <Link href={'/marketplace'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconMarketplaceSpan}>Marketplace <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
+                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        <span className={styles.iconMarketplaceSpan}>{t('nav.marketplace')} <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/shop') ? styles.activeLink : ''}`}>
                     <Link href={'/shop'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>Coming Soon</span>
-                        <span className={styles.iconShopSpan}>Shop <FiShoppingBag className={styles.sidebarIcon} /></span>
+                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        <span className={styles.iconShopSpan}>{t('nav.shop')} <FiShoppingBag className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        Settings <MdOutlineSettings className={styles.sidebarIcon} />
+                        {t('nav.settings')} <MdOutlineSettings className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
