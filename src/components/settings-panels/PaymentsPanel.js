@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import shared from './settingsShared.module.css';
 import styles from './PaymentsPanel.module.css';
 
@@ -19,6 +21,8 @@ const BRAND_COLORS = {
 };
 
 const PaymentsPanel = ({ payments = {}, user = {}, onSave, showToast }) => {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [defaultMethod, setDefaultMethod] = useState(payments.default_method || 'wallet');
   const [savedCards, setSavedCards] = useState(payments.saved_cards || []);
   const [savedBanks, setSavedBanks] = useState(payments.saved_banks || []);
@@ -52,29 +56,45 @@ const PaymentsPanel = ({ payments = {}, user = {}, onSave, showToast }) => {
   };
 
   const removeCard = async (id) => {
-    const next = savedCards.filter((c) => c.id !== id);
-    setSavedCards(next);
-    await persist({ ...payments, saved_cards: next });
-    showToast?.('Card removed');
+    const { res, body } = await cardAction(`/auth/wallet/cards/${id}/remove/`);
+    showToast?.(body.message || (res.ok ? 'Card removed' : 'Could not remove it'));
+    if (res.ok) await loadCards();
   };
 
-  const addCardStub = async (e) => {
-    e.preventDefault();
-    const last4 = String(e.target.elements.cardNum.value || '').slice(-4) || '0000';
-    const exp = String(e.target.elements.exp.value || '12/27').split('/');
-    const newCard = {
-      id: `card_${Date.now()}`,
-      last4,
-      brand: e.target.elements.brand.value || 'Visa',
-      exp_month: parseInt(exp[0], 10) || 12,
-      exp_year: 2000 + (parseInt(exp[1], 10) || 27),
-      is_default: savedCards.length === 0,
-    };
-    const next = [...savedCards, newCard];
-    setSavedCards(next);
-    await persist({ ...payments, saved_cards: next });
-    setShowAddCard(false);
-    showToast?.('Card added');
+  // Cards are read from the server, not from a settings blob, because a saved
+  // card is an authorization Paystack holds rather than a preference.
+  const loadCards = useCallback(async () => {
+    const token = session?.user?.sessionToken;
+    if (!token) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/cards/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const body = await res.json();
+      setSavedCards(body?.data?.cards || []);
+    } catch {
+      /* the panel still renders what it was handed */
+    }
+  }, [session]);
+
+  useEffect(() => { loadCards(); }, [loadCards]);
+
+  const cardAction = async (path, body) => {
+    const token = session?.user?.sessionToken;
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+    });
+    return { res, body: await res.json() };
+  };
+
+  // Saving a card happens by using it: a top-up carries "save this card", and
+  // Paystack hands back an authorization plus the brand and last four. There is
+  // no form here that could ask for a card number, which is the point.
+  const startCardTopUp = () => {
+    router.push('/wallets/topup?save_card=1');
   };
 
   const submitPin = async (e) => {
@@ -262,54 +282,32 @@ const PaymentsPanel = ({ payments = {}, user = {}, onSave, showToast }) => {
       {showAddCard && (
         <div className={shared.modalBackdrop} onClick={() => setShowAddCard(false)}>
           <div className={shared.modal} onClick={(e) => e.stopPropagation()}>
-            <h3 className={shared.modalTitle}>Add a payment card</h3>
+            <h3 className={shared.modalTitle}>Add a card</h3>
             <p className={shared.modalSub}>
-              Card details are tokenised by Paystack and never stored on V-ENT servers.
+              V-ENT never sees your card number. You add a card by using it once: make a top-up,
+              tick &quot;save this card&quot;, and Paystack hands back a token we can charge again.
+              The brand, the last four digits and the expiry come from them, so they are right.
             </p>
-
-            <form onSubmit={addCardStub}>
-              <div className={shared.formGroup}>
-                <label className={shared.formLabel} htmlFor="cardNum">Card number</label>
-                <input id="cardNum" name="cardNum" type="text" inputMode="numeric" maxLength={19} placeholder="4242 4242 4242 4242" className={shared.formInput} />
-              </div>
-              <div className={shared.formRow}>
-                <div className={shared.formGroup}>
-                  <label className={shared.formLabel} htmlFor="exp">Expiry (MM/YY)</label>
-                  <input id="exp" name="exp" type="text" placeholder="12/27" className={shared.formInput} />
-                </div>
-                <div className={shared.formGroup}>
-                  <label className={shared.formLabel} htmlFor="cvv">CVV</label>
-                  <input id="cvv" name="cvv" type="text" inputMode="numeric" maxLength={4} placeholder="123" className={shared.formInput} />
-                </div>
-              </div>
-              <div className={shared.formGroup}>
-                <label className={shared.formLabel} htmlFor="brand">Brand</label>
-                <select id="brand" name="brand" className={shared.formSelect} defaultValue="Visa">
-                  <option>Visa</option>
-                  <option>Mastercard</option>
-                  <option>Verve</option>
-                  <option>Amex</option>
-                </select>
-              </div>
-
-              <div className={shared.modalActions}>
-                <button
-                  type="button"
-                  className={`${shared.btn} ${shared.ghostBTN}`}
-                  onClick={() => setShowAddCard(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className={`${shared.btn} ${shared.goldBTN}`}>
-                  Add card
-                </button>
-              </div>
-            </form>
+            <div className={shared.modalActions}>
+              <button
+                type="button"
+                className={`${shared.btn} ${shared.ghostBTN}`}
+                onClick={() => setShowAddCard(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={`${shared.btn} ${shared.goldBTN}`}
+                onClick={startCardTopUp}
+              >
+                Top up and save the card
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* PIN modal */}
       {showPinModal && (
         <div className={shared.modalBackdrop} onClick={() => setShowPinModal(false)}>
           <div className={shared.modal} onClick={(e) => e.stopPropagation()}>
