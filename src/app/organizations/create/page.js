@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
@@ -221,7 +222,7 @@ const CreateOrganizationContent = () => {
       clearDraft();
       router.push('/organizations?created=true');
     } catch (err) {
-      setErrorMsg(err.message || tt("api.failedToCreateOrg", "Failed to create org."));
+      setErrorMsg(apiMessage(tt, err, "api.failedToCreateOrg", "Failed to create org."));
     } finally {
       setSubmitting(false);
     }

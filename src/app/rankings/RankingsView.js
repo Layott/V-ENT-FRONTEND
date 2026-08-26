@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -142,7 +143,7 @@ const RankingsView = () => {
       setTeams(payload.teams || []);
       setOrganizations(payload.organizations || []);
     } catch (err) {
-      setError(err.message || tt("api.failedToLoadRankings", "Failed to load rankings"));
+      setError(apiMessage(tt, err, "api.failedToLoadRankings", "Failed to load rankings"));
       setPlayers([]);
       setTeams([]);
       setOrganizations([]);

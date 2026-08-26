@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl, teamLogo } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -133,7 +134,7 @@ const AllTeams = () => {
           ...s,
           [teamId]: null
         }));
-        showToast(data?.message || tt("api.requestFailed", "Request failed"));
+        showToast(apiMessage(tt, data, "api.requestFailed", "Request failed"));
       }
     } catch {
       setPendingRequests(s => ({

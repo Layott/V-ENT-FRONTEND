@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -301,7 +302,7 @@ const CreateEventPage = () => {
         setTimeout(() => router.push('/events'), 2000);
       } else {
         setErrors({
-          submit: data.message || tt("api.failedToPublishEvent", "Failed to publish event.")
+          submit: apiMessage(tt, data, "api.failedToPublishEvent", "Failed to publish event.")
         });
       }
     } catch (err) {

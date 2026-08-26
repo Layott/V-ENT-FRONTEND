@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import { HiPlus } from "react-icons/hi";
 import { useSession } from 'next-auth/react';
@@ -219,10 +220,10 @@ const EditUserProfileLinks = () => {
           link: ''
         }]);
         router.push('/user-profile');
-        setSnackbarMessage(data.message || tt("api.linksUpdatedSuccessfully", "Links updated successfully!"));
+        setSnackbarMessage(apiMessage(tt, data, "api.linksUpdatedSuccessfully", "Links updated successfully!"));
         setSnackbarType('success');
       } else {
-        setSnackbarMessage(data.message || tt("api.failedToUpdateLinks", "Failed to update links."));
+        setSnackbarMessage(apiMessage(tt, data, "api.failedToUpdateLinks", "Failed to update links."));
         setSnackbarType('error');
       }
       setOpen(true);

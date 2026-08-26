@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from 'next/navigation';
@@ -380,7 +381,7 @@ const EditUserProfileInfo = () => {
           }
           if (!imageResponse.ok) {
             const imageError = await imageResponse.json();
-            throw new Error(imageError.message || tt("api.failedToUploadImages", "Failed to upload images"));
+            throw new Error(apiMessage(tt, imageError, "api.failedToUploadImages", "Failed to upload images"));
           }
         }
 
@@ -430,11 +431,11 @@ const EditUserProfileInfo = () => {
             console.error("Error updating localStorage:", error);
           }
           router.push('/user-profile');
-          setSnackbarMessage(data.message || tt("api.profileUpdatedSuccessfully", "Profile updated successfully!"));
+          setSnackbarMessage(apiMessage(tt, data, "api.profileUpdatedSuccessfully", "Profile updated successfully!"));
           setSnackbarType('success');
         } else {
           console.error('Backend returned error:', data);
-          setSnackbarMessage(data.message || tt("api.failedToUpdateProfile", "Failed to update profile."));
+          setSnackbarMessage(apiMessage(tt, data, "api.failedToUpdateProfile", "Failed to update profile."));
           setSnackbarType('error');
         }
         setOpen(true);

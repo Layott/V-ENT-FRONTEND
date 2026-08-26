@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -189,7 +190,7 @@ const SettingsContent = () => {
       }));
       showToast(tt("msg.notificationPreferencesUpdated", "Notification preferences updated"));
     } else {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
   };
   const handleSavePrivacy = async next => {
@@ -201,7 +202,7 @@ const SettingsContent = () => {
       }));
       showToast(tt("msg.privacyPreferencesSaved", "Privacy preferences saved"));
     } else {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
   };
   const handleSaveSecurity = async next => {
@@ -213,7 +214,7 @@ const SettingsContent = () => {
       }));
       showToast(tt("msg.securitySettingsSaved", "Security settings saved"));
     } else {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
   };
   const handleSavePayments = async next => {
@@ -225,7 +226,7 @@ const SettingsContent = () => {
       }));
       showToast(tt("msg.paymentPreferencesSaved", "Payment preferences saved"));
     } else {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
   };
   const handleSaveLanguage = async next => {
@@ -237,7 +238,7 @@ const SettingsContent = () => {
       }));
       showToast(tt("msg.languageAmpRegionSaved", "Language &amp; region saved"));
     } else {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
   };
   const handleSaveAccount = async payload => {
@@ -257,7 +258,7 @@ const SettingsContent = () => {
       window.dispatchEvent(new Event('vent:profile-updated'));
     } catch {}
     if (out?.status === 'error') {
-      showToast(out?.message || tt("api.saveFailed", "Save failed"), 'error');
+      showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     } else {
       showToast(tt("msg.accountInfoSaved", "Account info saved"));
     }
@@ -268,7 +269,7 @@ const SettingsContent = () => {
       setDevices(out.data?.devices || []);
       showToast(tt("msg.sessionSignedOut", "Session signed out"));
     } else {
-      showToast(out?.message || tt("api.couldNotSignOutDevice", "Could not sign out device"), 'error');
+      showToast(apiMessage(tt, out, "api.couldNotSignOutDevice", "Could not sign out device"), 'error');
     }
   };
   const handleRevokeAllOthers = async () => {

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -57,7 +58,7 @@ export default function AdminLoginPage() {
         });
         const data = await res.json();
         if (data.status !== 'success') {
-          setError(data.message || tt("api.thatCodeIsNotValid", "That code is not valid."));
+          setError(apiMessage(tt, data, "api.thatCodeIsNotValid", "That code is not valid."));
           triggerShake();
           setLoading(false);
           return;
@@ -96,7 +97,7 @@ export default function AdminLoginPage() {
       });
       const data = await res.json();
       if (data.status !== 'success') {
-        setError(data.message || tt("api.invalidCredentials", "Invalid credentials."));
+        setError(apiMessage(tt, data, "api.invalidCredentials", "Invalid credentials."));
         triggerShake();
         setLoading(false);
         return;

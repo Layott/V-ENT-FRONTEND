@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -52,7 +53,7 @@ function WalletTopupCallbackInner() {
         }, 2000);
       } else {
         setVerifyStatus('error');
-        setMessage(data.message || tt("api.paymentVerificationFailedPleaseContact", "Payment verification failed. Please contact support."));
+        setMessage(apiMessage(tt, data, "api.paymentVerificationFailedPleaseContact", "Payment verification failed. Please contact support."));
       }
     } catch (err) {
       console.error('Topup verify error:', err);

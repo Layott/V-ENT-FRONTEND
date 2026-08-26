@@ -1,5 +1,6 @@
 "use client";
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -194,7 +195,7 @@ const Signup = () => {
         // Flag first-run so the first login routes through /onboarding.
         localStorage.setItem("needsOnboarding", "true");
         router.push("/verify-email");
-        setSnackbarMessage(data.message || tt("api.accountCreatedSuccessfully", "Account created successfully!"));
+        setSnackbarMessage(apiMessage(tt, data, "api.accountCreatedSuccessfully", "Account created successfully!"));
         setSnackbarType("success");
         setOpen(true);
       } else {

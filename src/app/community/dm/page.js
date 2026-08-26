@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -80,7 +81,7 @@ const DmInner = ({
           });
         } else {
           setThread(null);
-          setError(data?.message || tt("api.conversationNotFound", "Conversation not found."));
+          setError(apiMessage(tt, data, "api.conversationNotFound", "Conversation not found."));
         }
       } catch (err) {
         console.error('DM fetch error:', err);
@@ -126,7 +127,7 @@ const DmInner = ({
       });
       const data = await res.json();
       const serverMsg = data.status === 'success' ? data.data?.message : null;
-      if (!serverMsg) setError(data.message || tt("api.messageNotSent", "Message not sent."));
+      if (!serverMsg) setError(apiMessage(tt, data, "api.messageNotSent", "Message not sent."));
       setThread(prev => ({
         ...prev,
         messages: serverMsg ? prev.messages.map(m => m.id === localId ? serverMsg : m) : prev.messages.filter(m => m.id !== localId),

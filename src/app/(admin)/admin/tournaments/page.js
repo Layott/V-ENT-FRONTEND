@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
@@ -63,7 +64,7 @@ function TournamentsInner() {
         setTournaments(data.data?.results || []);
         setTotal(data.data?.count ?? (data.data?.results || []).length);
       } else {
-        setError(data.message || tt("api.failedToLoadTournaments", "Failed to load tournaments."));
+        setError(apiMessage(tt, data, "api.failedToLoadTournaments", "Failed to load tournaments."));
       }
     } catch {
       setError(tt("msg.connectionError", "Connection error."));
@@ -95,7 +96,7 @@ function TournamentsInner() {
         toast.push(tt("msg.tournamentCancelled", "Tournament cancelled."), 'success');
         setCancelTarget(null);
         fetchTournaments();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }
@@ -129,7 +130,7 @@ function TournamentsInner() {
       if (data.status === 'success') {
         toast.push(`Score overridden for Match ${payload.match_id}.`, 'success');
         setOverrideTarget(null);
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }
@@ -159,7 +160,7 @@ function TournamentsInner() {
       if (data.status === 'success') {
         toast.push(`${teamName} disqualified.`, 'success');
         setDisqTarget(null);
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

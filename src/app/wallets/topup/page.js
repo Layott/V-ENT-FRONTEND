@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -102,7 +103,7 @@ const TopupPage = () => {
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(data?.message || tt("api.couldNotStartTheTop", "Could not start the top-up."));
+        setError(apiMessage(tt, data, "api.couldNotStartTheTop", "Could not start the top-up."));
         setSubmitting(false);
         return;
       }
@@ -124,7 +125,7 @@ const TopupPage = () => {
             setNewBalance(verifyData.data?.balance ?? null);
             setStep(3);
           } else {
-            setError(verifyData?.message || tt("api.paymentVerificationFailed", "Payment verification failed."));
+            setError(apiMessage(tt, verifyData, "api.paymentVerificationFailed", "Payment verification failed."));
           }
         } catch (err) {
           setError(tt("msg.networkErrorDuringVerification", "Network error during verification."));

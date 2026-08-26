@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -65,7 +66,7 @@ const Drafts = () => {
         setDrafts(Array.isArray(list) ? list : []);
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof ApiError ? err : new ApiError(err?.message || tt("api.failedToLoadDrafts", "Failed to load drafts.")));
+        setError(err instanceof ApiError ? err : new ApiError(apiMessage(tt, err, "api.failedToLoadDrafts", "Failed to load drafts.")));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -94,7 +95,7 @@ const Drafts = () => {
       setDrafts(d => d.filter(x => x.id !== draft.id));
       showToast(`"${draftTitle(draft)}" published`);
     } catch (err) {
-      showToast(err?.message || tt("api.couldNotPublishThisDraft", "Could not publish this draft."));
+      showToast(apiMessage(tt, err, "api.couldNotPublishThisDraft", "Could not publish this draft."));
     } finally {
       setBusyId(null);
     }
@@ -111,7 +112,7 @@ const Drafts = () => {
       setDrafts(d => d.filter(x => x.id !== draft.id));
       showToast(tt("msg.draftDeleted", "Draft deleted"));
     } catch (err) {
-      showToast(err?.message || tt("api.couldNotDeleteThisDraft", "Could not delete this draft."));
+      showToast(apiMessage(tt, err, "api.couldNotDeleteThisDraft", "Could not delete this draft."));
     } finally {
       setBusyId(null);
     }

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
@@ -87,7 +88,7 @@ function UsersInner() {
         setUsers(list);
         setTotal(data.data?.count ?? list.length);
       } else {
-        setError(data.message || tt("api.failedToLoadUsers", "Failed to load users."));
+        setError(apiMessage(tt, data, "api.failedToLoadUsers", "Failed to load users."));
       }
     } catch {
       setError(tt("msg.connectionError", "Connection error."));
@@ -120,7 +121,7 @@ function UsersInner() {
         toast.push(`User ${action}ned successfully.`, 'success');
         fetchUsers();
       } else {
-        toast.push(data.message || tt("api.actionFailed", "Action failed."), 'error');
+        toast.push(apiMessage(tt, data, "api.actionFailed", "Action failed."), 'error');
       }
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
@@ -151,7 +152,7 @@ function UsersInner() {
         setSelected(new Set());
         fetchUsers();
       } else {
-        toast.push(data.message || tt("api.bulkActionFailed", "Bulk action failed."), 'error');
+        toast.push(apiMessage(tt, data, "api.bulkActionFailed", "Bulk action failed."), 'error');
       }
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');

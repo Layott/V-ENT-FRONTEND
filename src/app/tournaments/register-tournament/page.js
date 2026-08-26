@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -59,7 +60,7 @@ const RegisterTournamentContent = ({
         if (t) setTournament(t);else setLoadError('Tournament not found.');
       } catch (err) {
         if (cancelled) return;
-        setLoadError(err?.message || tt("api.failedToLoadTournament", "Failed to load tournament."));
+        setLoadError(apiMessage(tt, err, "api.failedToLoadTournament", "Failed to load tournament."));
       } finally {
         if (!cancelled) setLoading(false);
       }

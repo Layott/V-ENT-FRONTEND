@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -89,7 +90,7 @@ const CreateTeam = () => {
           if (newId) router.push(`/teams/${newId}`);else router.push('/teams');
         }, 1100);
       } else {
-        setError(data?.message || tt("api.failedToCreateTeam", "Failed to create team."));
+        setError(apiMessage(tt, data, "api.failedToCreateTeam", "Failed to create team."));
       }
     } catch (err) {
       setError(tt("msg.networkErrorTryAgain", "Network error. Try again."));

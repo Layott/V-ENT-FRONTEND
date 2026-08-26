@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -74,7 +75,7 @@ const Disputes = () => {
         const data = await myDisputes(token);
         if (!cancelled) setDisputes(data?.disputes || []);
       } catch (err) {
-        if (!cancelled) setError(err?.message || tt("api.couldNotLoadYourDisputes", "Could not load your disputes."));
+        if (!cancelled) setError(apiMessage(tt, err, "api.couldNotLoadYourDisputes", "Could not load your disputes."));
       } finally {
         if (!cancelled) setLoading(false);
       }

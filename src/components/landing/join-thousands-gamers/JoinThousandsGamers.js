@@ -1,5 +1,6 @@
 "use client";
 
+import { apiMessage } from '@/lib/apiMessage';
 import joinThousandsGamers from '@/images/join_thousands.jpeg';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import landingStyles from '@/styles/landing/landing.module.css';
@@ -35,11 +36,11 @@ const JoinThousandsGamers = () => {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/add-email-to-waitlist/`, {
         email
       });
-      setSnackbarMessage(response.data.message || tt("api.successfullyJoinedTheWaitlist", "Successfully joined the waitlist!"));
+      setSnackbarMessage(apiMessage(tt, response.data, "api.successfullyJoinedTheWaitlist", "Successfully joined the waitlist!"));
       setSnackbarType('success');
       setEmail('');
     } catch (error) {
-      setSnackbarMessage(error.response?.data.message || tt("api.somethingWentWrong", "Something went wrong"));
+      setSnackbarMessage(apiMessage(tt, error.response.data, "api.somethingWentWrong", "Something went wrong"));
       setSnackbarType('error');
       setEmail('');
     } finally {

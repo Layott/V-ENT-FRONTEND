@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -80,7 +81,7 @@ const TeamProfileRequests = ({
       setRequests(prev => prev.filter(r => r.id !== req.id));
       onToast?.(`Approved ${req.applicant?.username || 'applicant'}`);
     } else {
-      onToast?.(data?.message || tt("api.failed", "Failed"));
+      onToast?.(apiMessage(tt, data, "api.failed", "Failed"));
     }
   };
   const reject = async req => {
@@ -89,7 +90,7 @@ const TeamProfileRequests = ({
       setRequests(prev => prev.filter(r => r.id !== req.id));
       onToast?.(`Rejected ${req.applicant?.username || 'applicant'}`);
     } else {
-      onToast?.(data?.message || tt("api.failed", "Failed"));
+      onToast?.(apiMessage(tt, data, "api.failed", "Failed"));
     }
   };
   if (loading) {

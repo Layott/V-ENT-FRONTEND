@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -83,7 +84,7 @@ function DisputesInner() {
         // The default view is `open`, so its total is the badge count.
         if (statusFilter === 'open') setOpenCount(count);
       } else {
-        setError(data.message || tt("api.failedToLoadDisputes", "Failed to load disputes."));
+        setError(apiMessage(tt, data, "api.failedToLoadDisputes", "Failed to load disputes."));
       }
     } catch {
       if (requestRef.current === ticket) setError(tt("msg.connectionError", "Connection error."));
@@ -121,7 +122,7 @@ function DisputesInner() {
         toast.push(`Dispute ${resolution === 'dismissed' ? 'dismissed' : 'resolved'}.`, 'success');
         setResolvePopover(null);
         fetchDisputes();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

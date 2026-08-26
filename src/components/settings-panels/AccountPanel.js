@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -78,7 +79,7 @@ const AccountPanel = ({
         show
       });
       const data = await res.json();
-      showToast?.(data.message || tt("api.saved", "Saved"));
+      showToast?.(apiMessage(tt, data, "api.saved", "Saved"));
       if (res.ok) await loadAccount();
     } catch {
       showToast?.('Could not change the badge');

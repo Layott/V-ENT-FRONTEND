@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
@@ -70,7 +71,7 @@ const TournamentDetailsParticipants = ({
         const raw = Array.isArray(data.data) ? data.data : data.data?.participants || data.data?.results || [];
         setParticipants(raw.map(normalize));
       } else {
-        setError(data.message || tt("api.failedToLoadParticipants", "Failed to load participants."));
+        setError(apiMessage(tt, data, "api.failedToLoadParticipants", "Failed to load participants."));
       }
     } catch (err) {
       console.error('Participants fetch error:', err);

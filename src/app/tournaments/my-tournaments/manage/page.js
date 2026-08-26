@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -100,7 +101,7 @@ const ManageContent = ({
         });
         if (!cancelled) setTournament(toTournament(data));
       } catch (err) {
-        if (!cancelled) setError(err instanceof ApiError ? err : new ApiError(err?.message || tt("api.failedToLoadThisTournament", "Failed to load this tournament.")));
+        if (!cancelled) setError(err instanceof ApiError ? err : new ApiError(apiMessage(tt, err, "api.failedToLoadThisTournament", "Failed to load this tournament.")));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -156,7 +157,7 @@ const ManageContent = ({
         setPendingBackend(s => new Set(s).add('bracket'));
         showToast(tt("msg.bracketGenerationIsQueuedFor", "Bracket generation is queued for the next backend deploy."));
       } else {
-        showToast(err?.message || tt("api.couldNotGenerateTheBracket", "Could not generate the bracket."));
+        showToast(apiMessage(tt, err, "api.couldNotGenerateTheBracket", "Could not generate the bracket."));
       }
     } finally {
       setBusyAction(null);
@@ -191,7 +192,7 @@ const ManageContent = ({
         setCancelOpen(false);
         showToast(tt("msg.cancellationIsQueuedForThe", "Cancellation is queued for the next backend deploy."));
       } else {
-        showToast(err?.message || tt("api.couldNotCancelThisTournament", "Could not cancel this tournament."));
+        showToast(apiMessage(tt, err, "api.couldNotCancelThisTournament", "Could not cancel this tournament."));
       }
     } finally {
       setBusyAction(null);
@@ -219,9 +220,9 @@ const ManageContent = ({
       } else if (err?.code === 'ALREADY_DISTRIBUTED') {
         showToast(tt("msg.prizesHaveAlreadyBeenDistributed", "Prizes have already been distributed for this tournament."));
       } else if (err?.code === 'STATE_CONFLICT') {
-        showToast(err?.message || tt("api.prizesCanOnlyBeDistributed", "Prizes can only be distributed once the tournament is completed."));
+        showToast(apiMessage(tt, err, "api.prizesCanOnlyBeDistributed", "Prizes can only be distributed once the tournament is completed."));
       } else {
-        showToast(err?.message || tt("api.couldNotDistributePrizes", "Could not distribute prizes."));
+        showToast(apiMessage(tt, err, "api.couldNotDistributePrizes", "Could not distribute prizes."));
       }
     } finally {
       setBusyAction(null);

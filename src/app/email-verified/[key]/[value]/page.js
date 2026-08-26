@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import styles from './email-verified.module.css';
@@ -50,7 +51,7 @@ const EmailVerified = () => {
         setVerificationStatus('success');
       } else {
         setVerificationStatus('error');
-        setSnackbarMessage(data.message || tt("api.verificationFailed", "Verification failed."));
+        setSnackbarMessage(apiMessage(tt, data, "api.verificationFailed", "Verification failed."));
         setSnackbarType('error');
         setOpen(true);
       }
@@ -96,7 +97,7 @@ const EmailVerified = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setSnackbarMessage(data.message || tt("api.verificationEmailSent", "Verification email sent!"));
+        setSnackbarMessage(apiMessage(tt, data, "api.verificationEmailSent", "Verification email sent!"));
         setSnackbarType('success');
       } else {
         setSnackbarMessage(data.error || tt("msg.failedToResendVerification", "Failed to resend verification email."));

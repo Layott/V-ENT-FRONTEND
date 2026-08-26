@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -48,7 +49,7 @@ const AttendeesContent = ({
       });
       const body = await res.json();
       if (!res.ok || body.status !== 'success') {
-        setError(body.message || tt("api.couldNotLoadTheAttendee", "Could not load the attendee list."));
+        setError(apiMessage(tt, body, "api.couldNotLoadTheAttendee", "Could not load the attendee list."));
         setRows([]);
         return;
       }

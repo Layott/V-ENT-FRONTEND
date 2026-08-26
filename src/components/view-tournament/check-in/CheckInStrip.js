@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuAlarmClock, LuCircleCheck, LuUsers } from 'react-icons/lu';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
@@ -103,7 +104,7 @@ const CheckInStrip = ({
     } catch (error) {
       setNotice({
         type: 'error',
-        text: error?.message || tt('checkin.errCheckIn', 'Could not check you in.')
+        text: apiMessage(tt, error, 'checkin.errCheckIn', 'Could not check you in.')
       });
     } finally {
       setBusy(false);
@@ -123,7 +124,7 @@ const CheckInStrip = ({
     } catch (error) {
       setNotice({
         type: 'error',
-        text: error?.message || tt('checkin.errClose', 'Could not close check-in.')
+        text: apiMessage(tt, error, 'checkin.errClose', 'Could not close check-in.')
       });
     } finally {
       setBusy(false);
@@ -149,7 +150,7 @@ const CheckInStrip = ({
     } catch (error) {
       setNotice({
         type: 'error',
-        text: error?.message || tt('checkin.errExtend', 'Could not extend check-in.')
+        text: apiMessage(tt, error, 'checkin.errExtend', 'Could not extend check-in.')
       });
     } finally {
       setBusy(false);

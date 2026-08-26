@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -54,7 +55,7 @@ const PinPage = () => {
         if (!cancelled && data?.status === 'success') {
           setHasPin(Boolean(data.data?.has_pin));
         } else if (!cancelled) {
-          setError(data?.message || tt("api.couldNotLoadYourWallet", "Could not load your wallet."));
+          setError(apiMessage(tt, data, "api.couldNotLoadYourWallet", "Could not load your wallet."));
         }
       } catch (err) {
         console.error('Balance fetch error:', err);
@@ -106,7 +107,7 @@ const PinPage = () => {
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(data?.message || tt("api.couldNotUpdateYourWallet", "Could not update your wallet PIN."));
+        setError(apiMessage(tt, data, "api.couldNotUpdateYourWallet", "Could not update your wallet PIN."));
         setSubmitting(false);
         return;
       }

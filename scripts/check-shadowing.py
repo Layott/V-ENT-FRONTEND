@@ -36,7 +36,12 @@ def shadows(src, name):
     hits = []
     patterns = (
         (r'\b%s\s*=>' % re.escape(name), 'arrow parameter'),
-        (r'\(\s*%s\s*[,)]' % re.escape(name), 'function parameter'),
+        # A parameter list, not a call. `apiMessage(tt, data, ...)` passes the
+        # translator as an argument, which is the opposite of shadowing it, and
+        # matching that produced 184 false positives the moment apiMessage was
+        # wired up. A call has an identifier immediately before the paren; a
+        # parameter list does not.
+        (r'(?<![\w$])\(\s*%s\s*[,)]' % re.escape(name), 'function parameter'),
         (r'\bfor\s*\(\s*(?:const|let|var)\s+%s\b' % re.escape(name), 'loop variable'),
         (r'\b(?:const|let|var)\s+%s\s*=(?!\s*use(?:T|Tx)\(\))' % re.escape(name), 'redeclared'),
     )

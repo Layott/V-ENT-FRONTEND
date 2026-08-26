@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -117,7 +118,7 @@ function KycInner() {
           list = list.filter(k => (k.username || '').toLowerCase().includes(q) || (k.email || '').toLowerCase().includes(q));
         }
         setSubmissions(list);
-      } else setError(data.message || tt("api.failedToLoad", "Failed to load."));
+      } else setError(apiMessage(tt, data, "api.failedToLoad", "Failed to load."));
     } catch {
       if (requestRef.current === ticket) setError(tt("msg.connectionError", "Connection error."));
     }
@@ -144,7 +145,7 @@ function KycInner() {
         toast.push(tt("msg.kycApproved", "KYC approved."), 'success');
         setPreviewModal(null);
         fetchKyc();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }
@@ -177,7 +178,7 @@ function KycInner() {
         setPreviewModal(null);
         setRejectNotes('');
         fetchKyc();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

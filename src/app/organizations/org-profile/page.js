@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -205,7 +206,7 @@ const OrgProfileContent = ({
         } : o);
         showToast(data.data.is_following ? tt("msg.nowFollowing", "Following. You will get updates.") : tt("msg.unfollowed", "Unfollowed."));
       } else {
-        showToast(data?.message || tt("api.couldNotUpdateFollow", "Could not update follow."));
+        showToast(apiMessage(tt, data, "api.couldNotUpdateFollow", "Could not update follow."));
       }
     } catch {
       showToast(tt("msg.couldNotReachTheServer", "Could not reach the server."));
@@ -230,7 +231,7 @@ const OrgProfileContent = ({
         showToast(tt("msg.applicationSubmittedAwaitingApproval", "Application submitted - awaiting approval."));
       } else {
         setApplyState(null);
-        showToast(data?.message || tt("api.applicationFailed", "Application failed."));
+        showToast(apiMessage(tt, data, "api.applicationFailed", "Application failed."));
       }
     } catch {
       setApplyState(null);
@@ -261,7 +262,7 @@ const OrgProfileContent = ({
         } : x));
         showToast(`${m.user?.full_name || m.user?.username} → ${role}`);
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));
@@ -287,7 +288,7 @@ const OrgProfileContent = ({
         setMembers(prev => prev.filter(x => x.user?.id !== m.user?.id));
         showToast(`${m.user?.full_name || m.user?.username} removed.`);
       } else {
-        showToast(data?.message || tt("api.failed", "Failed."));
+        showToast(apiMessage(tt, data, "api.failed", "Failed."));
       }
     } catch {
       showToast(tt("msg.networkError", "Network error"));

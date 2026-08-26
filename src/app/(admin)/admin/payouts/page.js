@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -71,7 +72,7 @@ function PayoutsInner() {
         setPayouts(data.data?.results || []);
         setTotal(data.data?.count ?? (data.data?.results || []).length);
       } else {
-        setError(data.message || tt("api.failedToLoadPayouts", "Failed to load payouts."));
+        setError(apiMessage(tt, data, "api.failedToLoadPayouts", "Failed to load payouts."));
       }
     } catch {
       if (requestRef.current === ticket) setError(tt("msg.connectionError", "Connection error."));
@@ -103,7 +104,7 @@ function PayoutsInner() {
       if (data.status === 'success') {
         toast.push(tt("msg.payoutApproved", "Payout approved."), 'success');
         fetchPayouts();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }
@@ -134,7 +135,7 @@ function PayoutsInner() {
         toast.push(`Payout rejected - ${reason}.`, 'success');
         setRejectPopover(null);
         fetchPayouts();
-      } else toast.push(data.message || tt("api.failed", "Failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }
@@ -170,7 +171,7 @@ function PayoutsInner() {
         toast.push(`Bulk approved ${data.data.count} payouts.`, 'success');
         setSelected(new Set());
         fetchPayouts();
-      } else toast.push(data.message || tt("api.bulkApproveFailed", "Bulk approve failed."), 'error');
+      } else toast.push(apiMessage(tt, data, "api.bulkApproveFailed", "Bulk approve failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
     }

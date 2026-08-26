@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -41,7 +42,7 @@ const AuthorizeContent = () => {
       const res = await fetch(`${apiBase}/partners/sso/authorize-info/?${query}`);
       const body = await res.json();
       if (!res.ok) {
-        setError(body.message || tt("api.thatSignInRequestIs", "That sign-in request is not valid."));
+        setError(apiMessage(tt, body, "api.thatSignInRequestIs", "That sign-in request is not valid."));
         return;
       }
       setInfo(body.data);
@@ -75,7 +76,7 @@ const AuthorizeContent = () => {
         window.location.href = body.data.redirect_to;
         return;
       }
-      setError(body.message || tt("api.thatCouldNotBeApproved", "That could not be approved."));
+      setError(apiMessage(tt, body, "api.thatCouldNotBeApproved", "That could not be approved."));
     } catch {
       setError(tt("msg.thatCouldNotBeApproved", "That could not be approved."));
     } finally {

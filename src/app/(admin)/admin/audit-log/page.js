@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -121,7 +122,7 @@ function AuditLogInner() {
       if (data.status === 'success') {
         setLogs(data.data?.results || []);
         setTotal(data.data?.count ?? (data.data?.results || []).length);
-      } else setError(data.message || tt("api.failedToLoadAuditLog", "Failed to load audit log."));
+      } else setError(apiMessage(tt, data, "api.failedToLoadAuditLog", "Failed to load audit log."));
     } catch {
       if (requestRef.current === ticket) setError(tt("msg.connectionError", "Connection error."));
     }
