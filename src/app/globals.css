@@ -236,4 +236,11 @@ html,
 body {
   overflow-x: hidden;
   max-width: 100%;
+  /* The dark surface belongs on the document itself, not only on each page's
+     own container. Without it the browser paints its default white for the
+     moment before the app's CSS and JS arrive - which is the white flash people
+     were seeing on every navigation, and the whole screen on any route that
+     rendered nothing. */
+  background-color: #131316;
+  color: #ffffff;
 }
