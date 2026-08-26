@@ -18,20 +18,25 @@ import LinkedAccountsPanel from '@/components/settings-panels/LinkedAccountsPane
 import DangerZonePanel from '@/components/settings-panels/DangerZonePanel';
 import shared from '@/components/settings-panels/settingsShared.module.css';
 import styles from './settings.module.css';
+import { useT } from '@/i18n/LanguageProvider';
 
-const PANELS = [
-  { id: 'account', label: 'Account' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'privacy', label: 'Privacy' },
-  { id: 'security', label: 'Security' },
-  { id: 'payments', label: 'Payments' },
-  { id: 'language', label: 'Language' },
-  { id: 'devices', label: 'Devices' },
-  { id: 'linked', label: 'Linked Accounts' },
-  { id: 'danger', label: 'Danger Zone', danger: true },
+// Ids are fixed; labels come from the translator, so switching language
+// renames the navigation without touching which panel is open.
+const PANEL_IDS = [
+  { id: 'account', key: 'settings.account' },
+  { id: 'notifications', key: 'settings.notifications' },
+  { id: 'privacy', key: 'settings.privacy' },
+  { id: 'security', key: 'settings.security' },
+  { id: 'payments', key: 'settings.payments' },
+  { id: 'language', key: 'settings.language' },
+  { id: 'devices', key: 'settings.devices' },
+  { id: 'linked', key: 'settings.linkedAccounts' },
+  { id: 'danger', key: 'settings.dangerZone', danger: true },
 ];
 
 const SettingsContent = () => {
+  const t = useT();
+  const PANELS = PANEL_IDS.map((p) => ({ ...p, label: t(p.key) }));
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,7 +51,7 @@ const SettingsContent = () => {
 
   const activePanel = (() => {
     const p = searchParams.get('panel');
-    return PANELS.some((pp) => pp.id === p) ? p : 'account';
+    return PANEL_IDS.some((pp) => pp.id === p) ? p : 'account';
   })();
 
   const setPanel = (id) => {
