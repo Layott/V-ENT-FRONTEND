@@ -66,6 +66,9 @@ const PaymentModal = ({
   const [pinError, setPinError] = useState('');
   const [pinVerifying, setPinVerifying] = useState(false);
   const [registering, setRegistering] = useState(false);
+  // A tournament running at the same time as one they are already in.
+  const [conflict, setConflict] = useState(null);
+  const [overlapAcknowledged, setOverlapAcknowledged] = useState(false);
   const [toppingUp, setToppingUp] = useState(false);
   const [topUpError, setTopUpError] = useState('');
   const [blockedMessage, setBlockedMessage] = useState('');
@@ -104,6 +107,9 @@ const PaymentModal = ({
     try {
       const body = { tournament_id: tournament?.id, mode };
       if (pinValue) body.pin = pinValue;
+      // Set once the person has seen which tournament this clashes with and
+      // said to go ahead anyway.
+      if (overlapAcknowledged) body.acknowledge_overlap = true;
       if (mode === 'team') {
         body.team_id = team?.id ?? null;
         body.roster = roster;
@@ -121,7 +127,13 @@ const PaymentModal = ({
         });
       }
     } catch (err) {
-      if (err?.code === 'INSUFFICIENT_BALANCE') {
+      if (err?.code === 'SCHEDULE_CONFLICT') {
+        // Not a refusal - a warning. Show what it collides with and let them
+        // decide, because plenty of people genuinely intend to play two things
+        // in one evening.
+        setConflict(err?.data?.conflict || err?.conflict || null);
+        setPhase('conflict');
+      } else if (err?.code === 'INSUFFICIENT_BALANCE') {
         setPhase('insufficient');
       } else if (err?.code === 'KYC_REQUIRED') {
         setPhase('kyc');
@@ -308,8 +320,9 @@ const PaymentModal = ({
     review: 'Confirm Payment',
     pin: 'Enter Wallet PIN',
     blocked: 'Registration Unavailable',
-    error: 'Something Went Wrong',
-  };
+    error: 'Something Went Wrong',,
+  conflict: 'Two at the same time',
+};
 
   const backDisabled = phase === 'loading' || phase === 'verifying-topup';
 
@@ -461,6 +474,35 @@ const PaymentModal = ({
     body = (
       <div className={styles.kycBox}>
         <div className={styles.paymentError} style={{ marginBottom: 0 }}>{blockedMessage}</div>
+      </div>
+    );
+  } else if (phase === 'conflict') {
+    footerPrimary = (
+      <button
+        className={`${styles.confirmButton} goldBTN`}
+        onClick={() => {
+          setOverlapAcknowledged(true);
+          setPhase(fee === 0 ? 'review' : 'pin');
+        }}
+      >
+        Register anyway
+      </button>
+    );
+    // The clash, named, with both options. Plenty of people intend to play two
+    // things in one evening; the point is that nobody does it by accident.
+    body = (
+      <div className={styles.kycBox}>
+        <p className={styles.subtitle} style={{ marginBottom: 12 }}>
+          This runs at the same time as{' '}
+          <strong>{conflict?.title || 'another tournament'}</strong>
+          {conflict?.starts_at
+            ? `, which starts ${new Date(conflict.starts_at).toLocaleString()}`
+            : ''}
+          , and you are already registered for it.
+        </p>
+        <p className={styles.subtitle} style={{ marginBottom: 0 }}>
+          You can register for both, but you will have to choose between them on the day.
+        </p>
       </div>
     );
   }
