@@ -7,6 +7,8 @@ import TournamentRules from "./tournament-rules/TournamentRules";
 import { validateFormatParticipants } from "../tournamentWizardValidation";
 import ValidationSummary from "../validation-summary/ValidationSummary";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 // formData/updateLocalStorage come straight from the parent
 // CreateTournamentComponent's centralized state - this step deliberately
@@ -16,81 +18,63 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 // children's effects, so leaf components (e.g. TournamentRules) would push
 // blank values up before the "real" data ever finished loading, clobbering
 // whatever was already saved.
-const FormatParticipants = ({ setSelectedTab, formData = {}, updateLocalStorage, handleSubmit, isSavingDraft }) => {
+const FormatParticipants = ({
+  setSelectedTab,
+  formData = {},
+  updateLocalStorage,
+  handleSubmit,
+  isSavingDraft
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const [errors, setErrors] = useState({});
-
   const handleProceed = () => {
-    const { isValid, errors: fieldErrors } = validateFormatParticipants(formData);
+    const {
+      isValid,
+      errors: fieldErrors
+    } = validateFormatParticipants(formData);
     setErrors(fieldErrors);
     if (!isValid) return;
-    setSelectedTab((prevTab) => prevTab + 1);
+    setSelectedTab(prevTab => prevTab + 1);
   };
-
   const handleBack = () => {
-    setSelectedTab((prevTab) => prevTab - 1);
+    setSelectedTab(prevTab => prevTab - 1);
   };
-
   const handleSaveDraft = () => {
     if (handleSubmit) handleSubmit(true);
   };
-
-  return (
-    <div>
+  return <div>
       <div>
-        <h2>Format & Participants</h2>
+        <h2>{tt("ui.format.participants.9427", "Format & Participants")}</h2>
       </div>
 
       <ValidationSummary errors={errors} />
 
-      <TournamentFormat
-        formData={formData}
-        updateFormData={updateLocalStorage}
-      />
+      <TournamentFormat formData={formData} updateFormData={updateLocalStorage} />
 
-      <Participants
-        formData={formData}
-        updateFormData={updateLocalStorage}
-      />
+      <Participants formData={formData} updateFormData={updateLocalStorage} />
 
-      <TournamentOptions
-        formData={formData}
-        updateFormData={updateLocalStorage}
-      />
+      <TournamentOptions formData={formData} updateFormData={updateLocalStorage} />
 
-      <TournamentRules
-        formData={formData}
-        updateFormData={updateLocalStorage}
-      />
+      <TournamentRules formData={formData} updateFormData={updateLocalStorage} />
 
       <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={handleSaveDraft}
-          disabled={isSavingDraft}
-        >
-          {isSavingDraft ? 'Saving...' : 'Save Draft'}
+        <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={handleSaveDraft} disabled={isSavingDraft}>
+          {isSavingDraft ? tx("Saving...") : tx("Save Draft")}
         </button>
 
         <div className={createTournamentStyles.backAndProceedContainer}>
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-            onClick={handleBack}
-          >
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`} onClick={handleBack}>
             <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
+            {tt("ui.back.b52b", "Back")}
           </button>
 
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
-            onClick={handleProceed}
-          >
-            Proceed
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`} onClick={handleProceed}>
+            {tt("ui.proceed.02ed", "Proceed")}
             <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default FormatParticipants;

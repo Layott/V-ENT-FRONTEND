@@ -10,9 +10,21 @@ import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo'
 import { validateBasicInfo } from '../tournamentWizardValidation';
 import ValidationSummary from '../validation-summary/ValidationSummary';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
-
-const BasicInfo = ({ setSelectedTab, formData = {}, updateFormData, updateFileData, handleSubmit, isSavingDraft }) => {
-  const { data: session } = useSession();
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const BasicInfo = ({
+  setSelectedTab,
+  formData = {},
+  updateFormData,
+  updateFileData,
+  handleSubmit,
+  isSavingDraft
+}) => {
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const [games, setGames] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(true);
   const [errors, setErrors] = useState({});
@@ -26,83 +38,57 @@ const BasicInfo = ({ setSelectedTab, formData = {}, updateFormData, updateFileDa
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/games/`);
       if (!res.ok) throw new Error(String(res.status));
       const body = await res.json();
-      setGames((body?.data?.games || []).map((g) => ({ id: g.id, name: g.name })));
+      setGames((body?.data?.games || []).map(g => ({
+        id: g.id,
+        name: g.name
+      })));
     } catch {
       setGames([]);
     } finally {
       setGamesLoading(false);
     }
   }, []);
-
   useEffect(() => {
     loadGames();
   }, [loadGames]);
-
   const handleProceed = () => {
-    const { isValid, errors: fieldErrors } = validateBasicInfo(formData);
+    const {
+      isValid,
+      errors: fieldErrors
+    } = validateBasicInfo(formData);
     setErrors(fieldErrors);
     if (!isValid) return;
-    setSelectedTab((prevTab) => prevTab + 1);
+    setSelectedTab(prevTab => prevTab + 1);
   };
-
   const handleSaveDraft = () => {
     if (handleSubmit) handleSubmit(true);
   };
-
-  return (
-    <div>
+  return <div>
       {/* Basic Info Header */}
       <div>
-        <h2>Basic Info</h2>
+        <h2>{tt("ui.basic.info.09a7", "Basic Info")}</h2>
       </div>
 
       <ValidationSummary errors={errors} />
 
       {/* Form Components */}
-      <CreateTournamentTitle
-        formData={formData}
-        updateFormData={updateFormData}
-        games={games}
-        gamesLoading={gamesLoading}
-      />
-      <CreateTournamentType
-        formData={formData}
-        updateFormData={updateFormData}
-      />
-      <CreateTournamentSchedule
-        formData={formData}
-        updateFormData={updateFormData}
-      />
-      <CreateTournamentVisibility
-        formData={formData}
-        updateFormData={updateFormData}
-      />
-      <CreateTournamentLogo
-        formData={formData}
-        updateFormData={updateFormData}
-        updateFileData={updateFileData}
-      />
+      <CreateTournamentTitle formData={formData} updateFormData={updateFormData} games={games} gamesLoading={gamesLoading} />
+      <CreateTournamentType formData={formData} updateFormData={updateFormData} />
+      <CreateTournamentSchedule formData={formData} updateFormData={updateFormData} />
+      <CreateTournamentVisibility formData={formData} updateFormData={updateFormData} />
+      <CreateTournamentLogo formData={formData} updateFormData={updateFormData} updateFileData={updateFileData} />
 
       {/* Action Buttons */}
       <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={handleSaveDraft}
-          disabled={isSavingDraft}
-        >
-          {isSavingDraft ? 'Saving...' : 'Save Draft'}
+        <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={handleSaveDraft} disabled={isSavingDraft}>
+          {isSavingDraft ? tx("Saving...") : tx("Save Draft")}
         </button>
 
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
-          onClick={handleProceed}
-        >
-          Proceed
+        <button className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`} onClick={handleProceed}>
+          {tt("ui.proceed.02ed", "Proceed")}
           <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />
         </button>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default BasicInfo;

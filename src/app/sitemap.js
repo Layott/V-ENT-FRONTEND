@@ -76,6 +76,7 @@ export default async function sitemap() {
     entry('/organizations', { changeFrequency: 'daily', priority: 0.7 }),
     entry('/community', { changeFrequency: 'hourly', priority: 0.7 }),
     entry('/rankings', { changeFrequency: 'daily', priority: 0.6 }),
+    entry('/partners', { changeFrequency: 'monthly', priority: 0.4 }),
     entry('/login', { changeFrequency: 'yearly', priority: 0.3 }),
     entry('/signup', { changeFrequency: 'yearly', priority: 0.4 }),
     entry('/privacy-policy', { changeFrequency: 'yearly', priority: 0.2 }),

@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import Link from "next/link";
 import Image from "next/image";
 import logoRed from "@/images/logo_mark_red.svg"
@@ -7,6 +10,7 @@ import { socialLinks } from "./SocialList";
 import styles from './footer-landing.module.css'
 
 const FooterLanding = () => {
+  const tt = useT();
   return (
     <div className={styles.footerContainer}>
 
@@ -17,11 +21,11 @@ const FooterLanding = () => {
                         <div className={styles.innerLogoContainer}>
                             <Image
                                 src={logoRed}
-                                alt='Logo'
+                                alt="V-ENT"
                                 className={styles.logo}
                             />
                         </div>
-                        <h1>v-ent</h1>
+                        <span className={styles.wordmark}>v-ent</span>
                     </Link>
                 </div>
 
@@ -34,7 +38,7 @@ const FooterLanding = () => {
 
             <div className={styles.contactFollowUsContainer}>
                 <div className={styles.contactContainer}>
-                    <h3>Contact</h3>
+                    <h3>{tt('landing.contact', 'Contact')}</h3>
                     <div className={styles.innerContactContainer}>
                         <p className={styles.emailParagraph}>
                             <span className={styles.envelopeSpan}><BsEnvelope /></span>
@@ -48,7 +52,7 @@ const FooterLanding = () => {
                 </div>
 
                 <div className={styles.socialsContainer}>
-                    <h3>Follow Us</h3>
+                    <h3>{tt('landing.followUs', 'Follow us')}</h3>
                     <div className={styles.innerSocialsContainer}>
                     {socialLinks.map((socialLink, index) => (
                         <a key={index} href={socialLink.href} target="_blank" rel="noopener noreferrer" className={styles.socialParagraph}>
@@ -66,7 +70,7 @@ const FooterLanding = () => {
                 &copy; 2026 Vermillion Enterprise (V-ENT)
             </p>
             <p>
-                All rights reserved
+                {tt("landing.rightsReserved", "All rights reserved")}
             </p>
         </div>
 

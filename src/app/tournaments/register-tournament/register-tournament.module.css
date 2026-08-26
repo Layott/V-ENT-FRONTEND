@@ -599,3 +599,15 @@
   .rosterRow > select.rosterInput { grid-column: span 1; }
   .rosterRow .removeBtn { grid-column: span 2; width: 100%; }
 }
+
+/* Named for readers that work from structure; the modal is what is painted. */
+.srOnlyTitle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

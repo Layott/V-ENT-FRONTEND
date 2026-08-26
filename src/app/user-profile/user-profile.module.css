@@ -475,3 +475,12 @@
   .changeBannerBtn { padding: 0.4rem 0.65rem; font-size: 0.7rem; }
   .changeBannerBtn span { display: none; }
 }
+
+/* The person's name, marked up as what it is: the name of the page. Every
+   visual property comes from .identityNameRow around it, so this rule only
+   undoes the browser's h1 defaults and nothing moves. */
+.identityName {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}

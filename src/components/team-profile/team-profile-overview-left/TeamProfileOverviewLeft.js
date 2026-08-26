@@ -1,79 +1,89 @@
 import { useState } from 'react';
-import Link from 'next/link'
+import Link from 'next/link';
 import Image from 'next/image';
-import counterStriker from '@/images/counter_striker.png'
-import avatarBlackShirt from "@/images/avatar_black_shirt.webp"
-import avatarBlackHair from "@/images/avatar_black_hair.webp"
-import avatarGreenEye from '@/images/avatar_green_eye.webp'
-import avatarYellowRobot from '@/images/avatar_yellow_robot.webp'
-import avatarAnkara from '@/images/avatar_ankara.jpg'
-import avatarColor from '@/images/avatar_color.webp'
-import avatarPaint from '@/images/avatar_paint.webp'
-import teamAvatar4 from '@/images/team_avatar_4.jpg'
-import teamAvatar3 from '@/images/team_avatar_3.jpg'
-import teamAvatar1 from '@/images/team_avatar_1.jpg'
-import teamAvatar5 from '@/images/team_avatar_5.jpg'
-import avatarRobotPC from '@/images/avatar_robot_pc.jpg'
+import counterStriker from '@/images/counter_striker.png';
+import avatarBlackShirt from "@/images/avatar_black_shirt.webp";
+import avatarBlackHair from "@/images/avatar_black_hair.webp";
+import avatarGreenEye from '@/images/avatar_green_eye.webp';
+import avatarYellowRobot from '@/images/avatar_yellow_robot.webp';
+import avatarAnkara from '@/images/avatar_ankara.jpg';
+import avatarColor from '@/images/avatar_color.webp';
+import avatarPaint from '@/images/avatar_paint.webp';
+import teamAvatar4 from '@/images/team_avatar_4.jpg';
+import teamAvatar3 from '@/images/team_avatar_3.jpg';
+import teamAvatar1 from '@/images/team_avatar_1.jpg';
+import teamAvatar5 from '@/images/team_avatar_5.jpg';
+import avatarRobotPC from '@/images/avatar_robot_pc.jpg';
 import { FaFacebook, FaInstagram, FaYoutube, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import profileStyles from "@/styles/profile/profile-page.module.css"
-
+import profileStyles from "@/styles/profile/profile-page.module.css";
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const TeamProfileOverviewLeft = () => {
-    const [showMoreInterests, setShowMoreInterests] = useState(false)
-    const [showAll, setShowAll] = useState(false);
-    const [visibleGames, setVisibleGames] = useState(6)
-
-    const interestsData = [
-        'Multiplayer', 'Counter Striker', 'Shooting', 'Battle Royale', 'Elden Ring', 
-        'Mortal Kombat', 'God of War', 'Manga', 'Black Myth Wukong', 'Cyberpunk 2077',
-        'League of Legends', 'The Legend of Zelda', 'Call of Duty'
-    ]
-
-    const toggleShowMoreInterests = () => {
-        setShowMoreInterests((prev) => !prev);
-    }
-    
-    const membersList = [
-        { name: "Lillie Smith", src: avatarBlackShirt },
-        { name: "Jane Doe", src: avatarBlackHair },
-        { name: "Alice Green", src: avatarGreenEye },
-        { name: "Robo Yellow", src: avatarYellowRobot },
-        { name: "Ankara Blue", src: avatarAnkara },
-        { name: "Color Blaze", src: avatarColor },
-        { name: "Paint Splash", src: avatarPaint },
-        { name: "Alpha Team", src: teamAvatar4 },
-        { name: "Beta Squad", src: teamAvatar3 },
-        { name: "Gamma Crew", src: teamAvatar1 },
-        { name: "Omega Unit", src: teamAvatar5 },
-        { name: "Robo PC", src: avatarRobotPC }
-    ];    
-      
-    const handleSeeMoreAndLess = () => {
-        setShowAll(prevState => !prevState);
-        setVisibleGames(prevState => (prevState === membersList.length ? 6 : membersList.length)) 
-    }
-    
-  return (
-    <div className={`${profileStyles.overviewLeft} ${profileStyles.overviewLeftTeamProfile}`}>
+  const tx = useTx();
+  const tt = useT();
+  const [showMoreInterests, setShowMoreInterests] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [visibleGames, setVisibleGames] = useState(6);
+  const interestsData = ['Multiplayer', 'Counter Striker', 'Shooting', 'Battle Royale', 'Elden Ring', 'Mortal Kombat', 'God of War', 'Manga', 'Black Myth Wukong', 'Cyberpunk 2077', 'League of Legends', 'The Legend of Zelda', 'Call of Duty'];
+  const toggleShowMoreInterests = () => {
+    setShowMoreInterests(prev => !prev);
+  };
+  const membersList = [{
+    name: "Lillie Smith",
+    src: avatarBlackShirt
+  }, {
+    name: "Jane Doe",
+    src: avatarBlackHair
+  }, {
+    name: "Alice Green",
+    src: avatarGreenEye
+  }, {
+    name: "Robo Yellow",
+    src: avatarYellowRobot
+  }, {
+    name: "Ankara Blue",
+    src: avatarAnkara
+  }, {
+    name: "Color Blaze",
+    src: avatarColor
+  }, {
+    name: "Paint Splash",
+    src: avatarPaint
+  }, {
+    name: "Alpha Team",
+    src: teamAvatar4
+  }, {
+    name: "Beta Squad",
+    src: teamAvatar3
+  }, {
+    name: "Gamma Crew",
+    src: teamAvatar1
+  }, {
+    name: "Omega Unit",
+    src: teamAvatar5
+  }, {
+    name: "Robo PC",
+    src: avatarRobotPC
+  }];
+  const handleSeeMoreAndLess = () => {
+    setShowAll(prevState => !prevState);
+    setVisibleGames(prevState => prevState === membersList.length ? 6 : membersList.length);
+  };
+  return <div className={`${profileStyles.overviewLeft} ${profileStyles.overviewLeftTeamProfile}`}>
         <div className={`${profileStyles.innerOverviewLeft} ${profileStyles.middleLayerColor}`}>
             <div className={profileStyles.sectionContainer}>
-                <h4 className={profileStyles.profileH4Header}>Focus Game</h4>
+                <h4 className={profileStyles.profileH4Header}>{tt("ui.focus.game.a7a5", "Focus Game")}</h4>
                 <div className={profileStyles.innerFocusGameContainer}>
 
                     <div className={profileStyles.focusGameImageContainer}>
-                        <Image
-                            src={counterStriker}
-                            alt="Counter Strike"
-                            width={55}
-                            height={55}
-                            className={profileStyles.focusGameImage}
-                        />
+                        <Image src={counterStriker} alt={tt("ui.counter.strike.d76b", "Counter Strike")} width={55} height={55} className={profileStyles.focusGameImage} />
                     </div>
 
                     <div className={profileStyles.focusGameDetailsContainer}>
-                        <h5 className={profileStyles.focusGameTitle}>Counter Strike</h5>
+                        <h5 className={profileStyles.focusGameTitle}>{tt("ui.counter.strike.d76b", "Counter Strike")}</h5>
                         <p className={profileStyles.focusGameDescription}>
-                            Multiplayer First Person Shooter
+                            {tt("ui.multiplayer.first.person.shooter.6d88", "Multiplayer First Person Shooter")}
                         </p>
                     </div>
 
@@ -84,76 +94,60 @@ const TeamProfileOverviewLeft = () => {
         <div className={`${profileStyles.innerOverviewLeft} ${profileStyles.middleLayerColor}`}>
             <div className={profileStyles.membersHeader}>
                 <h4 className={profileStyles.profileH4Header}>
-                    Members ({membersList.length})
+                    {tt("ui.members.e513", "Members (")}{membersList.length})
                 </h4>
-                <button
-                    className={profileStyles.seeMoreBTN}
-                    onClick={handleSeeMoreAndLess}
-                >
-                    {showAll ? 'See less' : 'See more'}
-                    {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} /> }
+                <button className={profileStyles.seeMoreBTN} onClick={handleSeeMoreAndLess}>
+                    {showAll ? tx("See less") : tx("See more")}
+                    {showAll ? <FaArrowLeft className={profileStyles.rightArrowIcon} /> : <FaArrowRight className={profileStyles.rightArrowIcon} />}
                 </button>
             </div>
 
             <div className={profileStyles.membersContainer}>
-                {membersList.slice(0, visibleGames).map((member, index) => (
-                <div key={index} className={`${profileStyles.memberCard} ${profileStyles.topMostLayerColor}`}>
+                {membersList.slice(0, visibleGames).map((member, index) => <div key={index} className={`${profileStyles.memberCard} ${profileStyles.topMostLayerColor}`}>
                     <div className={`${profileStyles.memberImageContainer}`}>
-                        <Image
-                            src={member.src}
-                            alt={member.name}
-                            // className={`${profileStyles.gameOrAchievementImage} ${profileStyles.achievementImage}`}
-                        />
+                        <Image src={member.src} alt={member.name}
+            // className={`${profileStyles.gameOrAchievementImage} ${profileStyles.achievementImage}`}
+            />
                     </div>
                     <p className={profileStyles.memberName}>{member.name}</p>
-                </div>
-                ))}        
+                </div>)}        
             </div>
         </div>
 
 
         <div className={`${profileStyles.innerOverviewLeft} ${profileStyles.middleLayerColor}`}>
             <div className={profileStyles.sectionContainer}>
-                <h4 className={profileStyles.profileH4Header}>Interests</h4>
+                <h4 className={profileStyles.profileH4Header}>{tt("ui.interests.3fc5", "Interests")}</h4>
                 <div className={profileStyles.interestsListContainer}>
-                    {interestsData.slice(0, showMoreInterests ? interestsData.length: 7).map((interest, index) => (
-                        <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
+                    {interestsData.slice(0, showMoreInterests ? interestsData.length : 7).map((interest, index) => <span key={index} className={`${profileStyles.interest} ${profileStyles.topMostLayerColor}`}>
                             {interest}
-                        </span>    
-                    ))}
+                        </span>)}
 
-                    {interestsData.length > 7 && (
-                        <button
-                            onClick={toggleShowMoreInterests}
-                            className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}
-                        >
-                            {showMoreInterests ? 'See less' : `See more + ${interestsData.length - 7}`}
-                        </button>
-                    )}
+                    {interestsData.length > 7 && <button onClick={toggleShowMoreInterests} className={`${profileStyles.topMostLayerColor} ${profileStyles.showMoreBTN}`}>
+                            {showMoreInterests ? tx("See less") : `See more + ${interestsData.length - 7}`}
+                        </button>}
                 </div>
             </div>
 
 <div className={profileStyles.sectionContainer}>
-                <h4 className={profileStyles.sectionHeader}>Social Links</h4>
+                <h4 className={profileStyles.sectionHeader}>{tt("ui.social.links.339c", "Social Links")}</h4>
                 <div className={profileStyles.socialLinksListContainer}>
                     <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                        <FaFacebook className={profileStyles.socialIcon} /> Facebook
+                        <FaFacebook className={profileStyles.socialIcon} /> {tt("ui.facebook.82da", "Facebook")}
                     </Link>
                     <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                        <FaInstagram className={profileStyles.socialIcon} /> Instagram
+                        <FaInstagram className={profileStyles.socialIcon} /> {tt("ui.instagram.5721", "Instagram")}
                     </Link>
                     <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                        <FaXTwitter className={profileStyles.socialIcon} /> X (Twitter)
+                        <FaXTwitter className={profileStyles.socialIcon} /> {tt("ui.x.twitter.9ae4", "X (Twitter)")}
                     </Link>
                     <Link href={'./'} className={`${profileStyles.socialLink} ${profileStyles.topMostLayerColor}`}>
-                        <FaYoutube  className={profileStyles.socialIcon} /> YouTube
+                        <FaYoutube className={profileStyles.socialIcon} /> {tt("ui.youtube.5588", "YouTube")}
                     </Link>
                 </div>
             </div>
 
         </div>
-    </div>
-  )
-}
-
-export default TeamProfileOverviewLeft
+    </div>;
+};
+export default TeamProfileOverviewLeft;

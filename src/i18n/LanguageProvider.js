@@ -22,6 +22,7 @@ const LanguageContext = createContext({
   language: 'en',
   setLanguage: () => {},
   t: (key, fallback) => fallback ?? key,
+  tx: (text) => text,
   languages: LANGUAGES,
 });
 
@@ -129,14 +130,41 @@ export const LanguageProvider = ({ children }) => {
     if (typeof document !== 'undefined') document.documentElement.lang = language;
   }, [language]);
 
+  // Translate by the English text rather than by a key.
+  //
+  // Config arrays - the tab strips, the settings rows, the filter menus - are
+  // built at module scope, where a hook cannot run, so their labels cannot be
+  // written as t('some.key'). They stay in English in the source and are
+  // translated here at the point they are rendered, by looking the English up
+  // in a reverse index of the English dictionary.
+  //
+  // The index is built once and memoised. A string that is not in the
+  // dictionary comes back unchanged, which is the correct answer for a game
+  // title or somebody's username.
+  const byText = useMemo(() => {
+    const index = new Map();
+    for (const [key, value] of Object.entries(dictionaries.en)) {
+      if (!index.has(value)) index.set(value, key);
+    }
+    return index;
+  }, []);
+
+  const tx = useCallback((text) => {
+    if (typeof text !== 'string' || !text) return text;
+    const key = byText.get(text);
+    if (!key) return text;
+    const table = dictionaries[language] || dictionaries.en;
+    return table[key] ?? text;
+  }, [byText, language]);
+
   const t = useCallback((key, fallback) => {
     const table = dictionaries[language] || dictionaries.en;
     return table[key] ?? dictionaries.en[key] ?? fallback ?? key;
   }, [language]);
 
   const value = useMemo(
-    () => ({ language, setLanguage, t, languages: LANGUAGES }),
-    [language, setLanguage, t],
+    () => ({ language, setLanguage, t, tx, languages: LANGUAGES }),
+    [language, setLanguage, t, tx],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
@@ -146,5 +174,9 @@ export const useLanguage = () => useContext(LanguageContext);
 
 /** Shorthand for components that only need the translator. */
 export const useT = () => useContext(LanguageContext).t;
+
+/** Translate a string by its English text. For labels that come from config
+ *  arrays built at module scope, where a key cannot be used. */
+export const useTx = () => useContext(LanguageContext).tx;
 
 export default LanguageProvider;

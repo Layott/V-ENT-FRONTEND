@@ -1,0 +1,157 @@
+/* The people picker in the direct-message composer.
+   Filled surfaces and spacing rather than strokes, matching every other
+   surface on the platform. */
+
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  color: var(--primary-bg);
+  font-size: var(--fs-p-size-desktop);
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.picked {
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.pickedHandle {
+  color: var(--v-ent-red);
+}
+
+/* The results. Elevated because it genuinely floats over the form beneath it,
+   which is the one case a shadow is for. */
+.list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  max-height: 19rem;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  background-color: #303136;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.note {
+  padding: 0.75rem 0.65rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.5rem 0.6rem;
+  border-radius: 9px;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.row:hover,
+.rowOn {
+  background-color: #3a3b41;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: -2px;
+}
+
+/* Somebody who does not accept messages. Shown rather than hidden, so you
+   learn why you cannot reach them instead of wondering where they went. */
+.rowOff {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.rowOff:hover {
+  background: none;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--v-ent-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+  text-transform: uppercase;
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  color: var(--primary-bg);
+  font-size: var(--fs-p-size-desktop);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.handle {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.closed {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.42);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .input,
+  .name {
+    font-size: var(--fs-p-size-mobile);
+  }
+  .list {
+    max-height: 14rem;
+  }
+}

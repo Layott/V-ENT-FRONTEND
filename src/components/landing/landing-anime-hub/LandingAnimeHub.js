@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import Image from 'next/image'
 import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
@@ -11,6 +14,7 @@ import observerStyle from '@/styles/intersection/intersection.module.css'
 import styles from './landing-anime-hub.module.css'
 
 const LandingAnimeHub = ({ scrollToForm }) => {
+  const tt = useT();
     const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
     const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
 
@@ -23,14 +27,14 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                     <div className={`${styles.topLeftImageContainer}`}>
                         <Image
                             src={topLeftAnimeHub}
-                            alt="Top Left Anime Hub"
+                            alt={tt("landing.alt.animeSunset", "Two anime students on a hillside at sunset, drawn in colour")}
                         />
                     </div>
 
                     <div className={`${styles.topRightImageContainer}`}>
                         <Image
                             src={topRightAnimeHub}
-                            alt="Top Right Anime Hub"
+                            alt={tt("landing.alt.animeFight", "Two anime fighters clashing over a city at night")}
                         />
                     </div>
                 </div>
@@ -39,14 +43,14 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                     <div className={`${styles.bottomLeftImageContainer}`}>
                         <Image
                             src={bottomLeftAnimeHub}
-                            alt="Bottom Left Anime Hub"
+                            alt={tt("landing.alt.animeLeap", "An anime fighter in an orange gi, mid-leap")}
                         />
                     </div>
 
                     <div className={`${styles.bottomRightImageContainer}`}>
                         <Image
                             src={bottomRightAnimeHub}
-                            alt="bottom Right Anime Hub"
+                            alt={tt("landing.alt.bottomRight", "Three anime characters in school uniforms, drawn in colour")}
                         />
                     </div>
                 </div>
@@ -57,12 +61,12 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                 className={`${styles.landingAnimeHubRightContainer} ${observerStyle.landingAnimeHubRightContainer} ${isTextVisible ? observerStyle.fadeInDissolve : ''}`}
             >
                 <div className={`${landingStyles.headingContainer} ${styles.headingContainer}`}>
-                    <h4 className={`${landingStyles.subHeadingText} ${styles.subHeadingText}`}>
-                        Anime Hub
-                    </h4>
-                    <h1 className={`${landingStyles.headingText} ${styles.headingText}`}>
-                        Immerse Yourself in the World of Anime
-                    </h1>
+                    <p className={`${landingStyles.subHeadingText} ${styles.subHeadingText}`}>
+                        {tt("landing.anime.eyebrow", "Anime Hub")}
+                    </p>
+                    <h2 className={`${landingStyles.headingText} ${styles.headingText}`}>
+                        {tt("landing.anime.heading", "Immerse Yourself in the World of Anime")}
+                    </h2>
                 </div>
 
                 <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
@@ -74,7 +78,7 @@ const LandingAnimeHub = ({ scrollToForm }) => {
                         href={'/signup'}
                         className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                         >
-                        Signup
+                        {tt("landing.signup", "Signup")}
                     </Link>
                 </div>
 

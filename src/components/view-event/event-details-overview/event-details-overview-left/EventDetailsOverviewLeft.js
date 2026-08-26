@@ -1,3 +1,4 @@
+import { mediaUrl } from '@/lib/mediaUrl';
 import Image from "next/image";
 import organizer from "@/images/signed_in_user_small.webp"
 import ventLogo from '@/images/logo_mark_red.png';
@@ -105,7 +106,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
             <div key={index}>
               <div className={styles.sponsorContainer}>
                 <div className={styles.logoImageContainer}>
-                  <Image src={sponsor.logo} alt={`${sponsor.name} Logo`} />
+                  <Image src={mediaUrl(sponsor.logo)} alt={`${sponsor.name} Logo`} />
                 </div>
                 <p className={styles.username}>{sponsor.username}</p>
               </div>
@@ -119,7 +120,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
         <div className={overviewLtStyles.organizerDetails}>
           <div className={overviewLtStyles.imageContainer}>
             <Image
-              src={event?.organizer?.profile_image || organizer}
+              src={mediaUrl(event?.organizer?.profile_image || organizer)}
               alt="Organizer Logo"
             />
           </div>

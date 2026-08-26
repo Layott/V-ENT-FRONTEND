@@ -1,19 +1,15 @@
-import { buildMetadata } from '@/lib/seo';
+import { buildMetadata, currentLocale } from '@/lib/seo';
+import { sectionCopy } from '@/lib/seoCopy';
 
-// Metadata for this section. It lives in a layout because the page itself is a
-// client component, and a client component cannot export `metadata`.
-// generateMetadata, not a static `metadata` const.
-//
-// A const is evaluated once, at build time, where there is no request and so no
-// language - every locale page canonicalised to the English URL, which tells a
-// search engine the translated page is a duplicate not worth indexing. This
-// runs per request, so buildMetadata() can read the locale middleware set.
+// Metadata for this section, in whichever language the request is being served.
+// It lives in a layout because the page is a client component and a client
+// component cannot export `metadata`; it is a function rather than a const
+// because a const is evaluated once at build time, where there is no request
+// and therefore no language.
 export async function generateMetadata() {
-  return buildMetadata({
-  title: 'Gaming and anime events, with tickets',
-  description: 'Find gaming conventions, anime meetups, LAN parties and watch parties across Africa. Buy tickets, get a QR code, and show it at the door.',
-  path: '/events',
-  });
+  const locale = currentLocale();
+  const copy = sectionCopy('events', locale);
+  return buildMetadata({ ...copy, path: '/events', locale });
 }
 
 export default function Layout({ children }) {

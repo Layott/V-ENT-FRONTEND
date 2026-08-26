@@ -3,7 +3,8 @@ import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
 import JsonLd from "@/components/seo/JsonLd";
 import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
-import { SITE, buildMetadata, organizationLd, websiteLd } from "@/lib/seo";
+import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
+import { sectionCopy } from "@/lib/seoCopy";
 
 // Metadata is declared, not hand-written into <head>.
 //
@@ -32,17 +33,22 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
 });
 
-export const metadata = {
+// A function rather than a const, for the same reason every section layout
+// uses one: a const is evaluated once at build time, where there is no request
+// and therefore no language, so /fr and /pt both shipped the English title and
+// the English description. That is the one line of a search result anybody
+// reads, and the only reason locale URLs exist at all.
+export async function generateMetadata() {
+  const locale = currentLocale();
+  const copy = sectionCopy('root', locale);
+
+  return {
   metadataBase: new URL(SITE.url),
-  ...buildMetadata({
-    title: `${SITE.name} — ${SITE.tagline}`,
-    description: SITE.description,
-    path: '/',
-  }),
+  ...buildMetadata({ ...copy, path: '/', locale }),
   // A per-page title becomes "Naija Free Fire Weekly | V-ENT" without every
   // page having to remember to append the brand.
   title: {
-    default: `${SITE.name} — ${SITE.tagline}`,
+    default: copy.title,
     template: `%s | ${SITE.name}`,
   },
   applicationName: SITE.name,
@@ -55,7 +61,8 @@ export const metadata = {
     icon: '/favicon.ico',
     apple: '/images/apple-touch-icon.png',
   },
-};
+  };
+}
 
 export const viewport = {
   width: "device-width",

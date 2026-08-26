@@ -10,14 +10,9 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import TransactionTable from '@/components/wallet/TransactionTable';
-import {
-  formatNumber,
-  ngnFromVc,
-  isCreditType,
-  normalizeType,
-  normalizeStatus,
-} from '@/components/wallet/walletHelpers';
+import { formatNumber, ngnFromVc, isCreditType, normalizeType, normalizeStatus } from '@/components/wallet/walletHelpers';
 import styles from './wallets.module.css';
+import { useT } from '@/i18n/LanguageProvider';
 
 // ── Stat helpers ────────────────────────────────────────────────────────────
 
@@ -25,14 +20,12 @@ const startOfMonth = () => {
   const d = new Date();
   return new Date(d.getFullYear(), d.getMonth(), 1);
 };
-
 const computeStats = (transactions, withdrawals) => {
   const monthStart = startOfMonth();
   let earned = 0;
   let spent = 0;
   let lifetimeEarned = 0;
-
-  (transactions || []).forEach((tx) => {
+  (transactions || []).forEach(tx => {
     const status = normalizeStatus(tx.status);
     if (status === 'failed' || status === 'cancelled') return;
     const credit = isCreditType(tx.type || tx.transaction_type);
@@ -40,25 +33,27 @@ const computeStats = (transactions, withdrawals) => {
     const date = new Date(tx.created_at || tx.date || 0);
     if (credit) lifetimeEarned += amt;
     if (!Number.isNaN(date.getTime()) && date >= monthStart) {
-      if (credit) earned += amt;
-      else spent += amt;
+      if (credit) earned += amt;else spent += amt;
     }
   });
-
-  const pending = (withdrawals || [])
-    .filter((w) => normalizeStatus(w.status) === 'pending')
-    .reduce((sum, w) => sum + Math.abs(Number(w.amount_vc || w.amount || 0)), 0);
-
-  return { earned, spent, pending, lifetimeEarned };
+  const pending = (withdrawals || []).filter(w => normalizeStatus(w.status) === 'pending').reduce((sum, w) => sum + Math.abs(Number(w.amount_vc || w.amount || 0)), 0);
+  return {
+    earned,
+    spent,
+    pending,
+    lifetimeEarned
+  };
 };
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
 const WalletsContent = () => {
-  const { data: session } = useSession();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [balance, setBalance] = useState(null);
   const [kycVerified, setKycVerified] = useState(true);
   const [hasPin, setHasPin] = useState(null);
@@ -67,12 +62,11 @@ const WalletsContent = () => {
   const [balanceLoading, setBalanceLoading] = useState(true);
   const [txLoading, setTxLoading] = useState(true);
   const [kycDismissed, setKycDismissed] = useState(false);
-
   const authHeaders = () => ({
     'Content-Type': 'application/json',
-    ...(session?.user?.sessionToken
-      ? { Authorization: `Bearer ${session.user.sessionToken}` }
-      : {}),
+    ...(session?.user?.sessionToken ? {
+      Authorization: `Bearer ${session.user.sessionToken}`
+    } : {})
   });
 
   // ── Paystack callback support ────────────────────────────────
@@ -86,13 +80,17 @@ const WalletsContent = () => {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/topup/verify/`, {
           method: 'POST',
           headers: authHeaders(),
-          body: JSON.stringify({ reference: ref }),
+          body: JSON.stringify({
+            reference: ref
+          })
         });
       } catch (err) {
         console.error('Topup verify error:', err);
       } finally {
         // Strip query params + refresh data.
-        router.replace('/wallets', { scroll: false });
+        router.replace('/wallets', {
+          scroll: false
+        });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,12 +102,11 @@ const WalletsContent = () => {
     // firing without a Bearer header returns 400s (tokenless race).
     if (!session?.user?.sessionToken) return;
     let cancelled = false;
-
     const loadBalance = async () => {
       setBalanceLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
-          headers: authHeaders(),
+          headers: authHeaders()
         });
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
@@ -123,12 +120,11 @@ const WalletsContent = () => {
         if (!cancelled) setBalanceLoading(false);
       }
     };
-
     const loadTx = async () => {
       setTxLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/transactions/`, {
-          headers: authHeaders(),
+          headers: authHeaders()
         });
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
@@ -140,35 +136,31 @@ const WalletsContent = () => {
         if (!cancelled) setTxLoading(false);
       }
     };
-
     const loadWd = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/withdraw/status/`, {
-          headers: authHeaders(),
+          headers: authHeaders()
         });
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
           // withdraw/status returns data as a list; tolerate {withdrawals:[…]} too.
-          const wd = Array.isArray(data.data) ? data.data : (data.data?.withdrawals || []);
+          const wd = Array.isArray(data.data) ? data.data : data.data?.withdrawals || [];
           setWithdrawals(wd);
         }
       } catch (err) {
         console.error('Withdrawals fetch error:', err);
       }
     };
-
     loadBalance();
     loadTx();
     loadWd();
-
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [session?.user?.sessionToken]);
-
   const stats = computeStats(transactions, withdrawals);
   const ngnBalance = ngnFromVc(balance ?? 0);
-
-  return (
-    <div className={styles.pageContainer}>
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -178,8 +170,7 @@ const WalletsContent = () => {
         <div className={styles.rightPaneContainer}>
 
           {/* KYC banner if not verified */}
-          {kycVerified === false && !kycDismissed && (
-            <div className={styles.kycBanner}>
+          {kycVerified === false && !kycDismissed && <div className={styles.kycBanner}>
               <div className={styles.kycLeft}>
                 <div className={styles.kycIconWrap}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(251,198,75,0.9)" strokeWidth="2">
@@ -189,80 +180,72 @@ const WalletsContent = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className={styles.kycTitle}>Identity Verification Required</p>
-                  <p className={styles.kycSub}>Complete KYC to unlock withdrawals and higher transaction limits.</p>
+                  <p className={styles.kycTitle}>{tt("ui.identity.verification.required.3935", "Identity Verification Required")}</p>
+                  <p className={styles.kycSub}>{tt("ui.complete.kyc.unlock.withdrawals.af4f", "Complete KYC to unlock withdrawals and higher transaction limits.")}</p>
                 </div>
               </div>
               <div className={styles.kycRight}>
-                <Link href="/wallets/verify" className={styles.kycVerifyBtn}>Verify Now</Link>
-                <button
-                  type="button"
-                  className={styles.kycDismissBtn}
-                  onClick={() => setKycDismissed(true)}
-                  aria-label="Dismiss KYC banner"
-                >
+                <Link href="/wallets/verify" className={styles.kycVerifyBtn}>{tt("ui.verify.now.b8b4", "Verify Now")}</Link>
+                <button type="button" className={styles.kycDismissBtn} onClick={() => setKycDismissed(true)} aria-label={tt("ui.dismiss.kyc.banner.834b", "Dismiss KYC banner")}>
                   ×
                 </button>
               </div>
-            </div>
-          )}
+            </div>}
+
+          <h1 className={styles.pageTitle}>{tt("wallet.title", "Your wallet")}</h1>
 
           {/* Hero balance + Quick actions */}
           <div className={styles.topRow}>
             <div className={styles.balanceCard}>
-              <p className={styles.balanceLabel}>Available Balance</p>
+              <p className={styles.balanceLabel}>{tt("ui.available.balance.396a", "Available Balance")}</p>
               <div className={styles.balanceAmountRow}>
                 <span className={styles.balanceNumber}>
                   {balanceLoading ? '-' : formatNumber(balance ?? 0)}
                 </span>
-                <span className={styles.balanceUnit}>VENT COINS</span>
+                <span className={styles.balanceUnit}>{tt("ui.vent.coins.536d", "VENT COINS")}</span>
               </div>
               <p className={styles.balanceNaira}>
                 ≈ <span>₦{formatNumber(ngnBalance)}</span>
               </p>
-              <p className={styles.balanceRate}>Exchange rate: ₦1,000 = 1 VENT COIN</p>
+              <p className={styles.balanceRate}>{tt("ui.exchange.rate.vent.coin.d09e", "Exchange rate: ₦1,000 = 1 VENT COIN")}</p>
 
               <div className={styles.balanceBadges}>
-                {kycVerified && (
-                  <span className={styles.kycBadge}>
+                {kycVerified && <span className={styles.kycBadge}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    KYC Verified
-                  </span>
-                )}
-                {hasPin === false && (
-                  <Link href="/wallets/pin" className={styles.pendingBadge} style={{ textDecoration: 'none' }}>
+                    {tt("ui.kyc.verified.f096", "KYC Verified")}
+                  </span>}
+                {hasPin === false && <Link href="/wallets/pin" className={styles.pendingBadge} style={{
+                textDecoration: 'none'
+              }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="3" y="11" width="18" height="11" rx="2" />
                       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
-                    Set a wallet PIN
-                  </Link>
-                )}
-                {hasPin === true && (
-                  <Link href="/wallets/pin" className={styles.kycBadge} style={{ textDecoration: 'none' }}>
+                    {tt("ui.set.wallet.pin.2f6c", "Set a wallet PIN")}
+                  </Link>}
+                {hasPin === true && <Link href="/wallets/pin" className={styles.kycBadge} style={{
+                textDecoration: 'none'
+              }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="3" y="11" width="18" height="11" rx="2" />
                       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
-                    PIN set · Manage
-                  </Link>
-                )}
-                {stats.pending > 0 && (
-                  <span className={styles.pendingBadge}>
+                    {tt("ui.pin.set.manage.6df7", "PIN set · Manage")}
+                  </Link>}
+                {stats.pending > 0 && <span className={styles.pendingBadge}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
-                    {formatNumber(stats.pending)} VC pending
-                  </span>
-                )}
+                    {formatNumber(stats.pending)} {tt("ui.vc.pending.5ff6", "VC pending")}
+                  </span>}
               </div>
             </div>
 
             <div className={styles.actionsPanel}>
-              <p className={styles.actionsLabel}>Quick Actions</p>
+              <p className={styles.actionsLabel}>{tt("ui.quick.actions.c408", "Quick Actions")}</p>
               <div className={styles.actionsRow}>
                 <Link href="/wallets/topup" className={`${styles.actionBtn} ${styles.actionPrimary}`}>
                   <span className={`${styles.actionIcon} ${styles.actionIconTopup}`}>
@@ -270,7 +253,7 @@ const WalletsContent = () => {
                       <path d="M12 2v20M17 7l-5-5-5 5" />
                     </svg>
                   </span>
-                  <span className={styles.actionLabel}>Top Up</span>
+                  <span className={styles.actionLabel}>{tt("ui.top.up.f321", "Top Up")}</span>
                 </Link>
                 <Link href="/wallets/send" className={styles.actionBtn}>
                   <span className={`${styles.actionIcon} ${styles.actionIconSend}`}>
@@ -278,7 +261,7 @@ const WalletsContent = () => {
                       <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                     </svg>
                   </span>
-                  <span className={styles.actionLabel}>Send</span>
+                  <span className={styles.actionLabel}>{tt("ui.send.9bc2", "Send")}</span>
                 </Link>
                 <Link href="/wallets/withdraw" className={styles.actionBtn}>
                   <span className={`${styles.actionIcon} ${styles.actionIconWithdraw}`}>
@@ -287,9 +270,9 @@ const WalletsContent = () => {
                       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
                   </span>
-                  <span className={styles.actionLabel}>Withdraw</span>
+                  <span className={styles.actionLabel}>{tt("ui.withdraw.47e5", "Withdraw")}</span>
                 </Link>
-                <button type="button" className={styles.actionBtn} disabled aria-label="Convert (coming soon)">
+                <button type="button" className={styles.actionBtn} disabled aria-label={tt("ui.convert.coming.soon.11d9", "Convert (coming soon)")}>
                   <span className={`${styles.actionIcon} ${styles.actionIconConvert}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="17 1 21 5 17 9" />
@@ -298,7 +281,7 @@ const WalletsContent = () => {
                       <path d="M21 13v2a4 4 0 0 1-4 4H3" />
                     </svg>
                   </span>
-                  <span className={styles.actionLabel}>Convert</span>
+                  <span className={styles.actionLabel}>{tt("ui.convert.3f15", "Convert")}</span>
                 </button>
               </div>
             </div>
@@ -307,74 +290,72 @@ const WalletsContent = () => {
           {/* Stat tiles */}
           <div className={styles.statRow}>
             <div className={styles.statTile}>
-              <p className={styles.statLabel}>This month earned</p>
+              <p className={styles.statLabel}>{tt("ui.month.earned.560d", "This month earned")}</p>
               <p className={`${styles.statValue} ${styles.statGrn}`}>+{formatNumber(stats.earned)} VC</p>
               <p className={styles.statSub}>≈ ₦{formatNumber(ngnFromVc(stats.earned))}</p>
             </div>
             <div className={styles.statTile}>
-              <p className={styles.statLabel}>This month spent</p>
+              <p className={styles.statLabel}>{tt("ui.month.spent.1087", "This month spent")}</p>
               <p className={`${styles.statValue} ${styles.statRed}`}>
                 {stats.spent > 0 ? `-${formatNumber(stats.spent)}` : '0'} VC
               </p>
               <p className={styles.statSub}>≈ ₦{formatNumber(ngnFromVc(stats.spent))}</p>
             </div>
             <div className={styles.statTile}>
-              <p className={styles.statLabel}>Pending payouts</p>
+              <p className={styles.statLabel}>{tt("ui.pending.payouts.e831", "Pending payouts")}</p>
               <p className={`${styles.statValue} ${styles.statWarn}`}>{formatNumber(stats.pending)} VC</p>
-              <p className={styles.statSub}>{withdrawals.filter((w) => normalizeStatus(w.status) === 'pending').length} request(s)</p>
+              <p className={styles.statSub}>{withdrawals.filter(w => normalizeStatus(w.status) === 'pending').length} {tt("ui.request.s.1808", "request(s)")}</p>
             </div>
             <div className={styles.statTile}>
-              <p className={styles.statLabel}>Lifetime VC earned</p>
+              <p className={styles.statLabel}>{tt("ui.lifetime.vc.earned.40e8", "Lifetime VC earned")}</p>
               <p className={styles.statValue}>{formatNumber(stats.lifetimeEarned)} VC</p>
-              <p className={styles.statSub}>Top-ups + prizes + receives</p>
+              <p className={styles.statSub}>{tt("ui.top.ups.prizes.receives.ba1d", "Top-ups + prizes + receives")}</p>
             </div>
           </div>
 
           {/* Transaction history preview */}
           <div className={styles.sectionRow}>
-            <h2 className={styles.sectionTitle}>Transaction History</h2>
+            <h2 className={styles.sectionTitle}>{tt("ui.transaction.history.4ed3", "Transaction History")}</h2>
             <Link href="/wallets/history" className={styles.sectionLink}>
-              View all <LuArrowRight />
+              {tt("ui.view.all.931e", "View all")} <LuArrowRight />
             </Link>
           </div>
 
-          <TransactionTable
-            transactions={transactions}
-            loading={txLoading}
-            showFilters
-            showAdvancedFilters={false}
-            rowsPerPage={5}
-            initial={{
-              type: searchParams?.get('type') || '',
-              status: searchParams?.get('status') || '',
-              search: searchParams?.get('q') || '',
-            }}
-            onFiltersChange={(f) => {
-              const params = new URLSearchParams();
-              if (f.type) params.set('type', f.type);
-              if (f.status) params.set('status', f.status);
-              if (f.search) params.set('q', f.search);
-              const qs = params.toString();
-              router.replace(`/wallets${qs ? `?${qs}` : ''}`, { scroll: false });
-            }}
-            emptyText="No transactions yet - top up your wallet to get started."
-          />
+          <TransactionTable transactions={transactions} loading={txLoading} showFilters showAdvancedFilters={false} rowsPerPage={5} initial={{
+          type: searchParams?.get('type') || '',
+          status: searchParams?.get('status') || '',
+          search: searchParams?.get('q') || ''
+        }} onFiltersChange={f => {
+          const params = new URLSearchParams();
+          if (f.type) params.set('type', f.type);
+          if (f.status) params.set('status', f.status);
+          if (f.search) params.set('q', f.search);
+          const qs = params.toString();
+          router.replace(`/wallets${qs ? `?${qs}` : ''}`, {
+            scroll: false
+          });
+        }} emptyText={tt("wallet.noTransactions", "No transactions yet. Top up your wallet to get started.")} />
         </div>
       </main>
 
       <BottomMenu />
-    </div>
-  );
+    </div>;
 };
-
-const Wallets = () => (
-  <Suspense fallback={
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#131316' }}>
-      <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'sans-serif' }}>Loading…</p>
-    </div>
-  }>
+const Wallets = () => {
+  const tt = useT();
+  return <Suspense fallback={<div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#131316'
+  }}>
+      <p style={{
+      color: 'rgba(255,255,255,0.4)',
+      fontFamily: 'sans-serif'
+    }}>{tt("ui.loading.33ce", "Loading…")}</p>
+    </div>}>
     <WalletsContent />
-  </Suspense>
-);
-
+  </Suspense>;
+};
 export default Wallets;

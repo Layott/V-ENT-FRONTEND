@@ -15,10 +15,14 @@ import {
 // So browsing is public, in line with tournaments, which were already public.
 // Doing anything is not: creating, registering, editing and anything with money
 // or personal data on it stays listed below.
+//
+// The test for this list is "does visiting it do something, or show somebody
+// else's private data". A profile, a team, a storefront, a thread and a
+// placeholder page all fail that test and are public - they are also the pages
+// worth being found in a search, which is the other half of the same decision.
+// A wallet, an inbox, a draft and every create form pass it and stay here.
 const protectedRoutes = [
   "/home",
-  "/anime",
-  "/user-profile",
   "/edit-user-profile",
   "/onboarding",
   "/edit-team-profile",
@@ -27,15 +31,14 @@ const protectedRoutes = [
   "/events/my-tickets",
   "/events/attendees",
   "/events/register-event",
-  "/events/vendor-shop/vendor",
   "/tournaments/create-tournament",
   "/tournaments/drafts",
   "/tournaments/register-tournament",
   "/tournaments/my-tournaments",
   "/tournaments/manage",
   "/community/dm",
+  "/community/scrim/create",
   "/wallets",
-  "/production",
   "/settings",
   "/notifications",
   "/disputes",

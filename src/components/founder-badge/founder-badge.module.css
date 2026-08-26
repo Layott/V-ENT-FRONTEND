@@ -1,8 +1,14 @@
 /* The founder mark.
  *
- * Filled surface, gold on a dark chip, no ring and no bloom. The only motion is
- * the chevron drawing itself once on mount - a stroke-dashoffset sweep that
- * ends and stays ended. No pulse, no glow, no loop.
+ * Filled surface, gold on a dark chip, no ring and no bloom.
+ *
+ * The chevron draws itself, and it repeats - asked for directly by the CEO on
+ * 2026-08-26, which overrides the house rule against looping motion for this
+ * one mark. It is written to be a re-draw rather than a throb: the stroke
+ * sweeps for 700ms and then rests, visible and still, for most of the cycle.
+ * Nothing scales, nothing fades, nothing glows, and the mark is never absent -
+ * it is complete for the whole of the pause, so a glance at any moment sees a
+ * finished chevron rather than half of one.
  */
 
 .badge {
@@ -31,11 +37,20 @@
      the offset back to zero draws it from one end to the other. */
   stroke-dasharray: 34;
   stroke-dashoffset: 34;
-  animation: draw 700ms ease-out forwards;
+  animation: draw 5.5s ease-out infinite;
 }
 
+/* 700ms of drawing, then it stays drawn until the cycle comes round again.
+   The keyframe percentages are what keep it a re-draw and not a flicker:
+   complete by 13% and held at complete until the very end. */
 @keyframes draw {
-  to {
+  0% {
+    stroke-dashoffset: 34;
+  }
+  13% {
+    stroke-dashoffset: 0;
+  }
+  100% {
     stroke-dashoffset: 0;
   }
 }

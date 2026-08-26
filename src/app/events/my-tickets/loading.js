@@ -1,3 +1,4 @@
+import { getT } from '@/i18n/server';
 const LoadingStyles = {
   container: {
     minHeight: '100vh',
@@ -24,12 +25,13 @@ const LoadingStyles = {
 };
 
 export default function MyTicketsLoading() {
+  const t = getT();
   return (
     <>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <div style={LoadingStyles.container}>
         <div style={LoadingStyles.spinner} />
-        <p style={LoadingStyles.text}>Loading your tickets...</p>
+        <p style={LoadingStyles.text}>{t('loading.myTickets', 'Loading your tickets...')}</p>
       </div>
     </>
   );

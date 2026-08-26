@@ -8,9 +8,9 @@ const AuthHeader = () => {
     <div className={styles.headerLogoContainer}>
         <Link className={styles.logoLink} href={'/'}>
             <div className={styles.innerLogoContainer}>
-                <Image src={logoRed} alt="Logo" width={24} height={25} className={styles.vEntLogo} />
+                <Image src={logoRed} alt="V-ENT" width={24} height={25} className={styles.vEntLogo} />
             </div>
-            <h1>v-ent</h1>
+            <span className={styles.wordmark}>v-ent</span>
         </Link>
     </div>
   )

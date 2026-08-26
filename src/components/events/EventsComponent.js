@@ -15,8 +15,9 @@ import AllEvents from "./all-events/AllEvents";
 import createTournamentStyles from "@/styles/create-tournament/create-tournament.module.css";
 import tournamentStyles from "./../tournaments/tournaments.module.css";
 import styles from "./events.module.css";
-
+import { useT } from '@/i18n/LanguageProvider';
 const EventsComponent = () => {
+  const tt = useT();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const [selectedTournamentType, setSelectedTournamentType] = useState("");
@@ -24,10 +25,10 @@ const EventsComponent = () => {
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [byGameEvents, setByGameEvents] = useState({});
-
-  const { data: session, status } = useSession();
-
-
+  const {
+    data: session,
+    status
+  } = useSession();
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Memoize the helper functions with useCallback
@@ -38,47 +39,36 @@ const EventsComponent = () => {
       }
       return `${process.env.NEXT_PUBLIC_API_URL}/media/default-profile.jpg`;
     }
-    
     if (url.startsWith("http")) {
       return url;
     }
-    
     return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
   }, [baseUrl]);
-
-  const processEventImages = useCallback((events) => {
-    return events.map((event) => ({
+  const processEventImages = useCallback(events => {
+    return events.map(event => ({
       ...event,
       // Map the correct field names from API response
       banner_image: getAbsoluteUrl(event.banner),
-      organizer_logo: getAbsoluteUrl(event.logo),
+      organizer_logo: getAbsoluteUrl(event.logo)
     }));
   }, [getAbsoluteUrl]);
-
   const fetchEvents = useCallback(async () => {
     if (!session || !session.user?.sessionToken) {
       // First render lands here before NextAuth hydrates. Effect re-fires when
       // session arrives - no need to treat this as an error.
       return;
     }
-
     const sessionToken = session.user.sessionToken;
-
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+          "Content-Type": "application/json"
         }
-      );
-
+      });
       const featured = processEventImages(response.data.data.featured || []);
       const upcoming = processEventImages(response.data.data.upcoming || []);
       const byGame = response.data.data.by_game || {};
-
       setFeaturedEvents(featured);
       setUpcomingEvents(upcoming);
       setByGameEvents(byGame);
@@ -86,89 +76,51 @@ const EventsComponent = () => {
       console.error("Failed to fetch events:", error);
     }
   }, [session, processEventImages]);
-
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
-
   const toggleSearchBar = () => {
-    setIsSearchBarVisible((prev) => !prev);
+    setIsSearchBarVisible(prev => !prev);
   };
-
   const handleSearch = () => {
     if (searchQuery.trim() !== "") {
       console.log(`Searching for: ${searchQuery}`);
     }
   };
-
-  const handleFilterChange = (event) => {
+  const handleFilterChange = event => {
     setSelectedTournamentType(event.target.value);
   };
-
   const toggleDropdown = () => {
-    setIsDropdownVisible((prev) => !prev);
+    setIsDropdownVisible(prev => !prev);
   };
-
-  return (
-    <div className={styles.eventsComponentContainer}>
+  return <div className={styles.eventsComponentContainer}>
       <div className={tournamentStyles.searchFilterCreateTournamentContainer}>
         {/* Search Bar */}
         <div className={tournamentStyles.searchContainer}>
-          {!isSearchBarVisible && (
-            <FiSearch
-              className={tournamentStyles.searchIconTrigger}
-              onClick={toggleSearchBar}
-            />
-          )}
+          {!isSearchBarVisible && <FiSearch className={tournamentStyles.searchIconTrigger} onClick={toggleSearchBar} />}
 
-          {isSearchBarVisible && (
-            <div className={tournamentStyles.searchBar}>
-              <MdOutlineClose
-                className={tournamentStyles.closeIcon}
-                onClick={toggleSearchBar}
-              />
-              <input
-                type="text"
-                placeholder="Search tournaments, events, users..."
-                className={tournamentStyles.searchInput}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <CiSearch
-                className={tournamentStyles.searchIconInside}
-                onClick={handleSearch}
-              />
-            </div>
-          )}
+          {isSearchBarVisible && <div className={tournamentStyles.searchBar}>
+              <MdOutlineClose className={tournamentStyles.closeIcon} onClick={toggleSearchBar} />
+              <input type="text" placeholder={tt("ui.search.tournaments.events.users.47ad", "Search tournaments, events, users...")} className={tournamentStyles.searchInput} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              <CiSearch className={tournamentStyles.searchIconInside} onClick={handleSearch} />
+            </div>}
         </div>
 
         {/* Filter Dropdown */}
         <div className={tournamentStyles.filterContainer}>
-          <BiFilter
-            className={tournamentStyles.filterIcon}
-            onClick={toggleDropdown}
-          />
-          {isDropdownVisible && (
-            <select
-              value={selectedTournamentType}
-              onChange={handleFilterChange}
-              className={`${createTournamentStyles.inputWithDropdown} ${tournamentStyles.inputWithDropdown}`}
-            >
-              <option value="">Filter</option>
-              <option value="battle-royale">Battle Royale</option>
-              <option value="sports">Sports</option>
-              <option value="strategy">Strategy</option>
-            </select>
-          )}
+          <BiFilter className={tournamentStyles.filterIcon} onClick={toggleDropdown} />
+          {isDropdownVisible && <select value={selectedTournamentType} onChange={handleFilterChange} className={`${createTournamentStyles.inputWithDropdown} ${tournamentStyles.inputWithDropdown}`}>
+              <option value="">{tt("ui.filter.d7de", "Filter")}</option>
+              <option value="battle-royale">{tt("ui.battle.royale.853c", "Battle Royale")}</option>
+              <option value="sports">{tt("ui.sports.2fec", "Sports")}</option>
+              <option value="strategy">{tt("ui.strategy.69fb", "Strategy")}</option>
+            </select>}
         </div>
 
         {/* Create Tournament Button */}
-        <Link
-          href={"./events/create-event"}
-          className={`${tournamentStyles.createTournamentBTN} redBTN`}
-        >
+        <Link href={"./events/create-event"} className={`${tournamentStyles.createTournamentBTN} redBTN`}>
           <HiPlus className={tournamentStyles.plusIcon} />
-          Create Event
+          {tt("ui.create.event.53a9", "Create Event")}
         </Link>
       </div>
 
@@ -176,8 +128,6 @@ const EventsComponent = () => {
       <UpcomingEvents upcomingEvents={upcomingEvents} />
 
       <AllEvents data={byGameEvents} />
-    </div>
-  );
+    </div>;
 };
-
 export default EventsComponent;

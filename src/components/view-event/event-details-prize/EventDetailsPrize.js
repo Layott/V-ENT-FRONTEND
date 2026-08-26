@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { GoDotFill } from "react-icons/go";
-import styles from './event-details-prize.module.css'
+import styles from './event-details-prize.module.css';
+import { useT } from '@/i18n/LanguageProvider';
 
 // Helper function for ordinal suffixes
-const getOrdinalSuffix = (num) => {
+const getOrdinalSuffix = num => {
   const j = num % 10,
-        k = num % 100;
+    k = num % 100;
   if (j == 1 && k != 11) {
     return num + "st";
   }
@@ -20,17 +21,16 @@ const getOrdinalSuffix = (num) => {
 };
 
 // Helper function to extract prize information from event object
-const extractPrizeFromEvent = (eventData) => {
+const extractPrizeFromEvent = eventData => {
   const prizes = [];
-  
+
   // Check various possible prize fields in event data
   if (eventData.prize_pool || eventData.prizePool) {
     const totalPrize = eventData.prize_pool || eventData.prizePool;
-    
+
     // If there's prize distribution data
     if (eventData.prize_distribution || eventData.prizeDistribution) {
       const distribution = eventData.prize_distribution || eventData.prizeDistribution;
-      
       if (Array.isArray(distribution)) {
         return distribution.map((prize, index) => ({
           position: prize.position || `${index + 1}${getOrdinalSuffix(index + 1)}`,
@@ -39,7 +39,7 @@ const extractPrizeFromEvent = (eventData) => {
         }));
       }
     }
-    
+
     // Default prize structure if no specific distribution
     prizes.push({
       position: '1st',
@@ -47,7 +47,7 @@ const extractPrizeFromEvent = (eventData) => {
       bonus: eventData.bonus || 'None'
     });
   }
-  
+
   // Check if event has individual prize fields
   if (eventData.first_prize || eventData.second_prize || eventData.third_prize) {
     if (eventData.first_prize) {
@@ -72,26 +72,26 @@ const extractPrizeFromEvent = (eventData) => {
       });
     }
   }
-  
   return prizes;
 };
-
-const EventDetailsPrize = ({ event }) => {
+const EventDetailsPrize = ({
+  event
+}) => {
+  const tt = useT();
   const [prizeData, setPrizeData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { data: session } = useSession();
-
+  const {
+    data: session
+  } = useSession();
   useEffect(() => {
     const fetchPrizeData = async () => {
       if (!event?.event_id && !event?.id) {
-        setError('Event ID not found');
+        setError(tt("msg.eventIdNotFound", "Event ID not found"));
         setLoading(false);
         return;
       }
-
       const eventId = event.event_id || event.id;
-
       try {
         // Try to fetch prize data from the backend
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/prizes/${eventId}`, {
@@ -103,10 +103,9 @@ const EventDetailsPrize = ({ event }) => {
             })
           }
         });
-
         if (response.ok) {
           const data = await response.json();
-          
+
           // Handle different response structures
           if (data.status === 'success' && data.data) {
             setPrizeData(Array.isArray(data.data) ? data.data : []);
@@ -133,14 +132,12 @@ const EventDetailsPrize = ({ event }) => {
         setLoading(false);
       }
     };
-
     fetchPrizeData();
   }, [event, session]);
 
   // Format date helper
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     if (!dateString) return 'N/A';
-    
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-GB', {
@@ -152,84 +149,69 @@ const EventDetailsPrize = ({ event }) => {
       return dateString;
     }
   };
-
   if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <p>Loading prize information...</p>
-      </div>
-    );
+    return <div className={styles.loadingContainer}>
+        <p>{tt("ui.loading.prize.information.78d6", "Loading prize information...")}</p>
+      </div>;
   }
-
-  return (
-    <div>
+  return <div>
       <div>
-        <h3>Price Distribution</h3>
+        <h3>{tt("ui.price.distribution.9a13", "Price Distribution")}</h3>
         
-        {prizeData.length > 0 ? (
-          <>
+        {prizeData.length > 0 ? <>
             {/* Desktop Table */}
             <div className={styles.desktopTable}>
               <table>
                 <thead>
                   <tr>
-                    <th>Position</th>
-                    <th>Prize</th>
-                    <th>Bonuses</th>
+                    <th>{tt("ui.position.cf1c", "Position")}</th>
+                    <th>{tt("ui.prize.d597", "Prize")}</th>
+                    <th>{tt("ui.bonuses.e144", "Bonuses")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {prizeData.map((prizeItem, index) => (
-                    <tr key={index}>
+                  {prizeData.map((prizeItem, index) => <tr key={index}>
                       <td>{prizeItem.position}</td>
                       <td>{prizeItem.prize}</td>
                       <td>{prizeItem.bonus}</td>
-                    </tr>
-                  ))}
+                    </tr>)}
                 </tbody>
               </table>
             </div>
 
             {/* Mobile Cards */}
             <div className={styles.mobileCards}>
-              {prizeData.map((prizeItem, index) => (
-                <div key={index} className={styles.mobileCard}>
+              {prizeData.map((prizeItem, index) => <div key={index} className={styles.mobileCard}>
                   <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>Position</div>
+                    <div className={styles.cardLabel}>{tt("ui.position.cf1c", "Position")}</div>
                     <div className={styles.cardValue}>{prizeItem.position}</div>
                   </div>
                   <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>Prize</div>
+                    <div className={styles.cardLabel}>{tt("ui.prize.d597", "Prize")}</div>
                     <div className={styles.cardValue}>{prizeItem.prize}</div>
                   </div>
                   <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>Bonuses</div>
+                    <div className={styles.cardLabel}>{tt("ui.bonuses.e144", "Bonuses")}</div>
                     <div className={styles.cardValue}>{prizeItem.bonus}</div>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
-          </>
-        ) : (
-          <div className={styles.noPrizeData}>
-            <p>No prize information available for this event.</p>
-          </div>
-        )}
+          </> : <div className={styles.noPrizeData}>
+            <p>{tt("ui.no.prize.information.available.a782", "No prize information available for this event.")}</p>
+          </div>}
 
         {/* Event Metadata */}
         <div className={styles.eventMetadata}>
           <div className={styles.metadataItem}>
             <GoDotFill />
-            <span>Created: {formatDate(event.created_at || event.createdAt)}</span>
+            <span>{tt("ui.created.0c78", "Created:")} {formatDate(event.created_at || event.createdAt)}</span>
           </div>
           <div className={styles.metadataItem}>
             <GoDotFill />
-            <span>Last Updated: {formatDate(event.updated_at || event.updatedAt)}</span>
+            <span>{tt("ui.last.updated.c26d", "Last Updated:")} {formatDate(event.updated_at || event.updatedAt)}</span>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default EventDetailsPrize;

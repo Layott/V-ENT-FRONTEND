@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import Image from 'next/image'
 import Link from 'next/link'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
@@ -10,6 +13,7 @@ import styles from './../automated-tournaments/automated-tournaments.module.css'
 
 
 const LandingMarketplace = ({ scrollToForm }) => {
+  const tt = useT();
     const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
     const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
 
@@ -22,24 +26,24 @@ const LandingMarketplace = ({ scrollToForm }) => {
                     className={`${styles.innerLeftAutomatedTournaments} ${observerStyle.innerLeftAutomatedTournaments} ${isTextVisible ? observerStyle.fadeInDissolve : ''}`}
                 >
                     <div className={`${landingStyles.headingContainer} ${styles.headingContainer}`}>
-                        <h4 className={landingStyles.subHeadingText}>
-                            Marketplace
-                        </h4>
-                        <h1 className={landingStyles.headingText}>
-                            Buy, Sell, and Trade Virtual Goods
-                        </h1>
+                        <p className={landingStyles.subHeadingText}>
+                            {tt("landing.marketplace.eyebrow", "Marketplace")}
+                        </p>
+                        <h2 className={landingStyles.headingText}>
+                            {tt("landing.marketplace.heading", "Buy, Sell, and Trade Virtual Goods")}
+                        </h2>
                     </div>
                     
                     <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
                         <p className={landingStyles.descriptionParagraph}>
-                            Explore Vermillion City, our exclusive marketplace for buying, selling, or trading game accounts, virtual items, and anime merchandise. Whether it’s rare in-game gear or collectibles, you’ll find it here.
+                            {tt("landing.marketplace.body", "Explore Vermillion City, our exclusive marketplace for buying, selling, or trading game accounts, virtual items, and anime merchandise. Whether it’s rare in-game gear or collectibles, you’ll find it here.")}
                         </p>
 
                         <Link
                             href={'/signup'}
                             className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                             >
-                            Signup
+                            {tt("landing.signup", "Signup")}
                         </Link>
                     </div>
                 </div>

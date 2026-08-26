@@ -1,13 +1,12 @@
-'use client'
+'use client';
 
+import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  FaCheckCircle, FaShieldAlt, FaInfoCircle,
-} from 'react-icons/fa';
+import { FaCheckCircle, FaShieldAlt, FaInfoCircle } from 'react-icons/fa';
 import { LuUserPlus, LuArrowLeft } from 'react-icons/lu';
 import { FiCheck, FiX, FiPlus, FiSearch } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
@@ -16,30 +15,43 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './manage-organization.module.css';
-
-const TABS = [
-  { id: 'members', label: 'Members' },
-  { id: 'teams', label: 'Teams' },
-  { id: 'verification', label: 'Verification' },
-];
-
-const formatDate = (iso) => {
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const TABS = [{
+  id: 'members',
+  label: 'Members'
+}, {
+  id: 'teams',
+  label: 'Teams'
+}, {
+  id: 'verification',
+  label: 'Verification'
+}];
+const formatDate = iso => {
   if (!iso) return '-';
   try {
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   } catch {
     return '-';
   }
 };
-
-const ManageOrgContent = ({ slug: slugFromPath }) => {
+const ManageOrgContent = ({
+  slug: slugFromPath
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const searchParams = useSearchParams();
   const router = useRouter();
   // No invented default: without ?id= there is no organization to manage.
   const orgId = slugFromPath || searchParams.get('id');
-  const { data: session } = useSession();
-
+  const {
+    data: session
+  } = useSession();
   const [org, setOrg] = useState(null);
   const [members, setMembers] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -54,8 +66,7 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
   const [verificationSubmitted, setVerificationSubmitted] = useState(false);
   const [kycVerified, setKycVerified] = useState(false);
   const [toast, setToast] = useState('');
-
-  const showToast = (msg) => {
+  const showToast = msg => {
     setToast(msg);
     window.setTimeout(() => setToast(''), 2400);
   };
@@ -64,44 +75,46 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
   // mock user id, so the real owner was locked out of their own org.
   const isOwner = org?.my_role === 'owner';
   const canManage = ['owner', 'admin', 'manager'].includes(org?.my_role);
-
   const loadAll = useCallback(async () => {
     // Nothing to load without an organization, and the authed calls 400 before
     // the NextAuth token resolves.
-    if (!orgId || !session?.user?.sessionToken) { setLoading(false); return; }
+    if (!orgId || !session?.user?.sessionToken) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const headers = { 'Content-Type': 'application/json' };
+      const headers = {
+        'Content-Type': 'application/json'
+      };
       if (session?.user?.sessionToken) {
         headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
       }
       const API = process.env.NEXT_PUBLIC_API_URL;
-
-      const [orgRes, memRes, reqRes, teamsRes, allTeamsRes, walletRes] = await Promise.all([
-        fetch(`${API}/organization/${orgId}/`, { headers }),
-        fetch(`${API}/organization/${orgId}/members/`, { headers }),
-        fetch(`${API}/organization/${orgId}/requests/`, { headers }),
-        fetch(`${API}/organization/${orgId}/teams/`, { headers }),
-        fetch(`${API}/organization/linkable-teams/`, { headers }),
-        fetch(`${API}/auth/wallet/balance/`, { headers }),
-      ]);
-
+      const [orgRes, memRes, reqRes, teamsRes, allTeamsRes, walletRes] = await Promise.all([fetch(`${API}/organization/${orgId}/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/members/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/requests/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/teams/`, {
+        headers
+      }), fetch(`${API}/organization/linkable-teams/`, {
+        headers
+      }), fetch(`${API}/auth/wallet/balance/`, {
+        headers
+      })]);
       const orgData = await orgRes.json();
       setOrg(orgData?.data?.organization || null);
-
       const memData = await memRes.json();
       setMembers(memData?.data?.members || []);
-
       const reqData = await reqRes.json();
       setRequests(reqData?.data?.requests || []);
-
       const teamsData = await teamsRes.json();
       setTeams(teamsData?.data?.teams || []);
-
       const allTeamsData = await allTeamsRes.json();
       setAllTeams(allTeamsData?.data?.teams || []);
-
       const walletData = await walletRes.json();
       setKycVerified(!!walletData?.data?.kyc_verified);
     } catch (err) {
@@ -110,14 +123,17 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
       setLoading(false);
     }
   }, [orgId, session]);
-
-  useEffect(() => { loadAll(); }, [loadAll]);
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
   // Sync tab to URL
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', activeTab);
-    router.replace(`/organizations/manage?${params.toString()}`, { scroll: false });
+    router.replace(`/organizations/manage?${params.toString()}`, {
+      scroll: false
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -129,151 +145,172 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ user_id: m.user?.id, role }),
+        body: JSON.stringify({
+          user_id: m.user?.id,
+          role
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setMembers((prev) => prev.map((x) => x.user?.id === m.user?.id ? { ...x, role } : x));
+        setMembers(prev => prev.map(x => x.user?.id === m.user?.id ? {
+          ...x,
+          role
+        } : x));
         showToast(`${m.user?.full_name || m.user?.username} → ${role}`);
       } else {
-        showToast(data?.message || 'Failed.');
+        showToast(data?.message || tt("api.failed", "Failed."));
       }
     } catch {
-      showToast('Network error');
+      showToast(tt("msg.networkError", "Network error"));
     }
   };
-
-  const kickMember = async (m) => {
+  const kickMember = async m => {
     setOpenMenu(null);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/kick/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ user_id: m.user?.id }),
+        body: JSON.stringify({
+          user_id: m.user?.id
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setMembers((prev) => prev.filter((x) => x.user?.id !== m.user?.id));
+        setMembers(prev => prev.filter(x => x.user?.id !== m.user?.id));
         showToast(`${m.user?.full_name || m.user?.username} removed.`);
       } else {
-        showToast(data?.message || 'Failed.');
+        showToast(data?.message || tt("api.failed", "Failed."));
       }
     } catch {
-      showToast('Network error');
+      showToast(tt("msg.networkError", "Network error"));
     }
   };
-
-  const approveRequest = async (r) => {
+  const approveRequest = async r => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/approve-request/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ request_id: r.id, role: r.role || 'Member' }),
+        body: JSON.stringify({
+          request_id: r.id,
+          role: r.role || 'Member'
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setRequests((prev) => prev.filter((x) => x.id !== r.id));
-        setMembers((prev) => [
-          ...prev,
-          {
-            id: `m_${r.id}`,
-            org_id: orgId,
-            user: r.user,
-            role: r.role || 'Member',
-            status: 'active',
-            joined_at: new Date().toISOString(),
-          },
-        ]);
+        setRequests(prev => prev.filter(x => x.id !== r.id));
+        setMembers(prev => [...prev, {
+          id: `m_${r.id}`,
+          org_id: orgId,
+          user: r.user,
+          role: r.role || 'Member',
+          status: 'active',
+          joined_at: new Date().toISOString()
+        }]);
         showToast(`${r.user?.full_name || r.user?.username} approved.`);
       } else {
-        showToast(data?.message || 'Failed.');
+        showToast(data?.message || tt("api.failed", "Failed."));
       }
     } catch {
-      showToast('Network error');
+      showToast(tt("msg.networkError", "Network error"));
     }
   };
-
-  const rejectRequest = async (r) => {
+  const rejectRequest = async r => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/reject-request/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ request_id: r.id }),
+        body: JSON.stringify({
+          request_id: r.id
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setRequests((prev) => prev.filter((x) => x.id !== r.id));
-        showToast('Request rejected.');
+        setRequests(prev => prev.filter(x => x.id !== r.id));
+        showToast(tt("msg.requestRejected", "Request rejected."));
       } else {
-        showToast(data?.message || 'Failed.');
+        showToast(data?.message || tt("api.failed", "Failed."));
       }
     } catch {
-      showToast('Network error');
+      showToast(tt("msg.networkError", "Network error"));
     }
   };
 
   // Linking writes to the server: a team belongs to one org at a time, and
   // only its owner may attach it.
-  const linkTeam = async (team) => {
+  const linkTeam = async team => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/link-team/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ team_id: team.id ?? team.team_id }),
+        body: JSON.stringify({
+          team_id: team.id ?? team.team_id
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setTeams((prev) => (prev.find((t) => t.id === team.id) ? prev : [...prev, team]));
-        setAllTeams((prev) => prev.filter((t) => (t.id ?? t.team_id) !== (team.id ?? team.team_id)));
+        setTeams(prev => prev.find(t => t.id === team.id) ? prev : [...prev, team]);
+        setAllTeams(prev => prev.filter(t => (t.id ?? t.team_id) !== (team.id ?? team.team_id)));
         showToast(data.message || `${team.name} linked.`);
       } else {
-        showToast(data?.message || 'Could not link that team.');
+        showToast(data?.message || tt("api.couldNotLinkThatTeam", "Could not link that team."));
       }
     } catch {
-      showToast('Could not reach the server.');
+      showToast(tt("msg.couldNotReachTheServer", "Could not reach the server."));
     }
   };
-
-  const unlinkTeam = async (team) => {
+  const unlinkTeam = async team => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/unlink-team/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
         },
-        body: JSON.stringify({ team_id: team.id ?? team.team_id }),
+        body: JSON.stringify({
+          team_id: team.id ?? team.team_id
+        })
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setTeams((prev) => prev.filter((t) => t.id !== team.id));
-        setAllTeams((prev) => (prev.find((t) => (t.id ?? t.team_id) === (team.id ?? team.team_id)) ? prev : [...prev, team]));
+        setTeams(prev => prev.filter(t => t.id !== team.id));
+        setAllTeams(prev => prev.find(t => (t.id ?? t.team_id) === (team.id ?? team.team_id)) ? prev : [...prev, team]);
         showToast(data.message || `${team.name} unlinked.`);
       } else {
-        showToast(data?.message || 'Could not unlink that team.');
+        showToast(data?.message || tt("api.couldNotUnlinkThatTeam", "Could not unlink that team."));
       }
     } catch {
-      showToast('Could not reach the server.');
+      showToast(tt("msg.couldNotReachTheServer", "Could not reach the server."));
     }
   };
-
   const submitVerification = async () => {
     if (!kycVerified) {
-      showToast('Complete KYC first to request verification.');
+      showToast(tt("msg.completeKycFirstToRequest", "Complete KYC first to request verification."));
       return;
     }
     try {
@@ -281,59 +318,53 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.user?.sessionToken && { Authorization: `Bearer ${session.user.sessionToken}` }),
-        },
+          ...(session?.user?.sessionToken && {
+            Authorization: `Bearer ${session.user.sessionToken}`
+          })
+        }
       });
       const data = await res.json();
       if (data?.status === 'success') {
         setVerificationSubmitted(true);
-        showToast('Verification request submitted.');
+        showToast(tt("msg.verificationRequestSubmitted", "Verification request submitted."));
       } else {
-        showToast(data?.message || 'Failed.');
+        showToast(data?.message || tt("api.failed", "Failed."));
       }
     } catch {
-      showToast('Network error');
+      showToast(tt("msg.networkError", "Network error"));
     }
   };
-
   if (loading) {
-    return (
-      <div className={styles.pageContainer}>
+    return <div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <p className={styles.statusText}>Loading…</p>
+            <p className={styles.statusText}>{tt("ui.loading.33ce", "Loading…")}</p>
           </div>
         </main>
         <BottomMenu />
-      </div>
-    );
+      </div>;
   }
-
   if (!org) {
-    return (
-      <div className={styles.pageContainer}>
+    return <div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
             <p className={styles.statusText}>
-              {error || 'Organization not found.'}{' '}
-              <Link href="/organizations" className={styles.backLink}>Back to list</Link>
+              {error || tx("Organization not found.")}{' '}
+              <Link href="/organizations" className={styles.backLink}>{tt("ui.back.list.747f", "Back to list")}</Link>
             </p>
           </div>
         </main>
         <BottomMenu />
-      </div>
-    );
+      </div>;
   }
-
   if (!canManage) {
-    return (
-      <div className={styles.pageContainer}>
+    return <div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
@@ -341,44 +372,31 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
           <div className={styles.rightPaneContainer}>
             <div className={styles.lockedCard}>
               <FaShieldAlt className={styles.lockedIcon} />
-              <h2 className={styles.lockedTitle}>Owner-only area</h2>
-              <p className={styles.lockedSub}>You do not have permission to manage this organization.</p>
+              <h1 className={styles.lockedTitle}>{tt("ui.owner.only.area.0227", "Owner-only area")}</h1>
+              <p className={styles.lockedSub}>{tt("ui.do.not.have.permission.4f06", "You do not have permission to manage this organization.")}</p>
               <Link href={`/organizations/${orgId}`} className={styles.lockedBtn}>
-                <LuArrowLeft /> Back to profile
+                <LuArrowLeft /> {tt("ui.back.profile.ca6e", "Back to profile")}
               </Link>
             </div>
           </div>
         </main>
         <BottomMenu />
-      </div>
-    );
+      </div>;
   }
 
   // Filter helpers
-  const filteredMembers = members.filter((m) => {
+  const filteredMembers = members.filter(m => {
     const q = memberSearch.trim().toLowerCase();
     if (!q) return true;
-    return (
-      (m.user?.full_name || '').toLowerCase().includes(q) ||
-      (m.user?.username || '').toLowerCase().includes(q) ||
-      (m.role || '').toLowerCase().includes(q)
-    );
+    return (m.user?.full_name || '').toLowerCase().includes(q) || (m.user?.username || '').toLowerCase().includes(q) || (m.role || '').toLowerCase().includes(q);
   });
-
-  const linkedTeamIds = new Set(teams.map((t) => t.id));
-  const availableTeams = allTeams
-    .filter((t) => !linkedTeamIds.has(t.id))
-    .filter((t) => {
-      const q = teamSearch.trim().toLowerCase();
-      if (!q) return true;
-      return (
-        (t.name || '').toLowerCase().includes(q) ||
-        (t.tag || '').toLowerCase().includes(q)
-      );
-    });
-
-  return (
-    <div className={styles.pageContainer}>
+  const linkedTeamIds = new Set(teams.map(t => t.id));
+  const availableTeams = allTeams.filter(t => !linkedTeamIds.has(t.id)).filter(t => {
+    const q = teamSearch.trim().toLowerCase();
+    if (!q) return true;
+    return (t.name || '').toLowerCase().includes(q) || (t.tag || '').toLowerCase().includes(q);
+  });
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -389,16 +407,13 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
           {/* ── Header row ── */}
           <div className={styles.headerRow}>
             <div className={styles.headerLeft}>
-              <Link
-                href={`/organizations/${orgId}`}
-                className={styles.backChip}
-              >
-                <LuArrowLeft /> Back to profile
+              <Link href={`/organizations/${orgId}`} className={styles.backChip}>
+                <LuArrowLeft /> {tt("ui.back.profile.ca6e", "Back to profile")}
               </Link>
               <div>
-                <h1 className={styles.pageTitle}>Manage {org.name}</h1>
+                <h1 className={styles.pageTitle}>{tt("ui.manage.bf58", "Manage")} {org.name}</h1>
                 <p className={styles.pageSubtitle}>
-                  Owner-only controls - invite members, link teams, request verification.
+                  {tt("ui.owner.only.controls.invite.65de", "Owner-only controls - invite members, link teams, request verification.")}
                 </p>
               </div>
             </div>
@@ -406,39 +421,25 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
 
           {/* ── Tabs ── */}
           <div className={styles.tabsRow}>
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`}
-                onClick={() => setActiveTab(t.id)}
-              >
-                {t.label}
-                {t.id === 'members' && requests.length > 0 && (
-                  <span className={styles.tabBadge}>{requests.length}</span>
-                )}
-              </button>
-            ))}
+            {TABS.map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
+                {tx(t.label)}
+                {t.id === 'members' && requests.length > 0 && <span className={styles.tabBadge}>{requests.length}</span>}
+              </button>)}
           </div>
 
           {/* ── Tab content ── */}
           <div className={styles.tabPanel}>
-            {activeTab === 'members' && (
-              <div className={styles.membersWrap}>
-                {requests.length > 0 && (
-                  <section className={styles.panel}>
-                    <h3 className={styles.panelTitle}>
-                      Pending requests <span className={styles.countPill}>{requests.length}</span>
-                    </h3>
+            {activeTab === 'members' && <div className={styles.membersWrap}>
+                {requests.length > 0 && <section className={styles.panel}>
+                    <h2 className={styles.panelTitle}>
+                      {tt("ui.pending.requests.d1ae", "Pending requests")} <span className={styles.countPill}>{requests.length}</span>
+                    </h2>
                     <ul className={styles.requestList}>
-                      {requests.map((r) => (
-                        <li key={r.id} className={styles.requestCard}>
+                      {requests.map(r => <li key={r.id} className={styles.requestCard}>
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                {r.user?.avatar && (
-                                  <Image src={r.user.avatar} alt={r.user.full_name} width={36} height={36} />
-                                )}
+                                {r.user?.avatar && <Image src={mediaUrl(r.user.avatar)} alt={r.user.full_name} width={36} height={36} />}
                               </div>
                               <div>
                                 <p className={styles.memberName}>{r.user?.full_name}</p>
@@ -447,53 +448,31 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                             </div>
                             <span className={styles.requestTime}>{formatDate(r.requested_at)}</span>
                           </div>
-                          {r.message && (
-                            <p className={styles.requestMessage}>&ldquo;{r.message}&rdquo;</p>
-                          )}
+                          {r.message && <p className={styles.requestMessage}>&ldquo;{r.message}&rdquo;</p>}
                           <div className={styles.requestActions}>
-                            <button
-                              type="button"
-                              className={`${styles.miniBtn} ${styles.miniBtnSuccess}`}
-                              onClick={() => approveRequest(r)}
-                            >
-                              <FiCheck /> Approve
+                            <button type="button" className={`${styles.miniBtn} ${styles.miniBtnSuccess}`} onClick={() => approveRequest(r)}>
+                              <FiCheck /> {tt("ui.approve.7b2c", "Approve")}
                             </button>
-                            <button
-                              type="button"
-                              className={`${styles.miniBtn} ${styles.miniBtnDanger}`}
-                              onClick={() => rejectRequest(r)}
-                            >
-                              <FiX /> Reject
+                            <button type="button" className={`${styles.miniBtn} ${styles.miniBtnDanger}`} onClick={() => rejectRequest(r)}>
+                              <FiX /> {tt("ui.reject.2b03", "Reject")}
                             </button>
                           </div>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
-                  </section>
-                )}
+                  </section>}
 
                 <section className={styles.panel}>
                   <div className={styles.panelHeader}>
-                    <h3 className={styles.panelTitle}>
-                      Members <span className={styles.countPill}>{members.length}</span>
-                    </h3>
+                    <h2 className={styles.panelTitle}>
+                      {tt("ui.members.1cb4", "Members")} <span className={styles.countPill}>{members.length}</span>
+                    </h2>
                     <div className={styles.panelHeaderActions}>
                       <div className={styles.searchBar}>
                         <FiSearch className={styles.searchIcon} />
-                        <input
-                          type="text"
-                          placeholder="Search members…"
-                          value={memberSearch}
-                          onChange={(e) => setMemberSearch(e.target.value)}
-                          className={styles.searchInput}
-                        />
+                        <input type="text" placeholder={tt("ui.search.members.bdad", "Search members…")} value={memberSearch} onChange={e => setMemberSearch(e.target.value)} className={styles.searchInput} />
                       </div>
-                      <button
-                        type="button"
-                        className={styles.primaryBtn}
-                        onClick={() => showToast('Invite flow coming soon.')}
-                      >
-                        <LuUserPlus /> Invite
+                      <button type="button" className={styles.primaryBtn} onClick={() => showToast(tt("msg.inviteFlowComingSoon", "Invite flow coming soon."))}>
+                        <LuUserPlus /> {tt("ui.invite.b136", "Invite")}
                       </button>
                     </div>
                   </div>
@@ -502,29 +481,21 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                     <table className={styles.table}>
                       <thead>
                         <tr>
-                          <th>Member</th>
-                          <th>Role</th>
-                          <th>Joined</th>
-                          <th className={styles.alignRight}>Actions</th>
+                          <th>{tt("ui.member.6853", "Member")}</th>
+                          <th>{tt("ui.role.c3f1", "Role")}</th>
+                          <th>{tt("ui.joined.43a1", "Joined")}</th>
+                          <th className={styles.alignRight}>{tt("ui.actions.c3cd", "Actions")}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredMembers.map((m) => {
-                          const role = (m.role || '').toLowerCase();
-                          const isMemberOwner = role === 'owner';
-                          return (
-                            <tr key={m.id}>
+                        {filteredMembers.map(m => {
+                      const role = (m.role || '').toLowerCase();
+                      const isMemberOwner = role === 'owner';
+                      return <tr key={m.id}>
                               <td>
                                 <div className={styles.memberCell}>
                                   <div className={styles.memberAvatar}>
-                                    {m.user?.avatar && (
-                                      <Image
-                                        src={m.user.avatar}
-                                        alt={m.user.full_name}
-                                        width={32}
-                                        height={32}
-                                      />
-                                    )}
+                                    {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
                                   </div>
                                   <div className={styles.memberText}>
                                     <span className={styles.memberName}>{m.user?.full_name}</span>
@@ -539,143 +510,89 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                               </td>
                               <td>{formatDate(m.joined_at)}</td>
                               <td className={styles.alignRight}>
-                                {isMemberOwner ? (
-                                  <span className={styles.cellMuted}>-</span>
-                                ) : (
-                                  <div className={styles.menuWrap}>
-                                    <button
-                                      type="button"
-                                      className={styles.menuBtn}
-                                      onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}
-                                    >
+                                {isMemberOwner ? <span className={styles.cellMuted}>-</span> : <div className={styles.menuWrap}>
+                                    <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}>
                                       <BsThreeDots />
                                     </button>
-                                    {openMenu === m.id && (
-                                      <div className={styles.menuDropdown}>
-                                        {role !== 'admin' && (
-                                          <button type="button" onClick={() => promoteMember(m, 'Admin')}>
-                                            Promote to Admin
-                                          </button>
-                                        )}
-                                        {role !== 'manager' && (
-                                          <button type="button" onClick={() => promoteMember(m, 'Manager')}>
-                                            Promote to Manager
-                                          </button>
-                                        )}
-                                        {role !== 'member' && (
-                                          <button type="button" onClick={() => promoteMember(m, 'Member')}>
-                                            Set to Member
-                                          </button>
-                                        )}
+                                    {openMenu === m.id && <div className={styles.menuDropdown}>
+                                        {role !== 'admin' && <button type="button" onClick={() => promoteMember(m, 'Admin')}>
+                                            {tt("ui.promote.admin.7e73", "Promote to Admin")}
+                                          </button>}
+                                        {role !== 'manager' && <button type="button" onClick={() => promoteMember(m, 'Manager')}>
+                                            {tt("ui.promote.manager.310c", "Promote to Manager")}
+                                          </button>}
+                                        {role !== 'member' && <button type="button" onClick={() => promoteMember(m, 'Member')}>
+                                            {tt("ui.set.member.8fda", "Set to Member")}
+                                          </button>}
                                         <button type="button" className={styles.menuDanger} onClick={() => kickMember(m)}>
-                                          Kick
+                                          {tt("ui.kick.8c5e", "Kick")}
                                         </button>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      </div>}
+                                  </div>}
                               </td>
-                            </tr>
-                          );
-                        })}
+                            </tr>;
+                    })}
                       </tbody>
                     </table>
-                    {filteredMembers.length === 0 && (
-                      <div className={styles.sectionEmpty}>No members match.</div>
-                    )}
+                    {filteredMembers.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.members.match.a5a5", "No members match.")}</div>}
                   </div>
                 </section>
-              </div>
-            )}
+              </div>}
 
-            {activeTab === 'teams' && (
-              <div className={styles.teamsWrap}>
+            {activeTab === 'teams' && <div className={styles.teamsWrap}>
                 <section className={styles.panel}>
-                  <h3 className={styles.panelTitle}>
-                    Linked teams <span className={styles.countPill}>{teams.length}</span>
-                  </h3>
-                  {teams.length === 0 ? (
-                    <p className={styles.bioText}>No teams linked yet. Link an existing team below.</p>
-                  ) : (
-                    <ul className={styles.teamList}>
-                      {teams.map((t) => (
-                        <li key={t.id} className={styles.teamRow}>
+                  <h2 className={styles.panelTitle}>
+                    {tt("ui.linked.teams.0864", "Linked teams")} <span className={styles.countPill}>{teams.length}</span>
+                  </h2>
+                  {teams.length === 0 ? <p className={styles.bioText}>{tt("ui.no.teams.linked.yet.d22b", "No teams linked yet. Link an existing team below.")}</p> : <ul className={styles.teamList}>
+                      {teams.map(t => <li key={t.id} className={styles.teamRow}>
                           <div className={styles.teamLogo}>
-                            {t.logo && (
-                              <Image src={t.logo} alt={t.name} width={36} height={36} />
-                            )}
+                            {t.logo && <Image src={mediaUrl(t.logo)} alt={t.name} width={36} height={36} />}
                           </div>
                           <div className={styles.teamMeta}>
                             <span className={styles.teamName}>{t.name}</span>
                             <span className={styles.teamSub}>{t.game} · {t.members ?? t.member_count ?? 0}{(t.members ?? t.member_count ?? 0) === 1 ? ' member' : ' members'}</span>
                           </div>
-                          <button
-                            type="button"
-                            className={`${styles.miniBtn} ${styles.miniBtnDanger}`}
-                            onClick={() => unlinkTeam(t)}
-                          >
-                            <FiX /> Unlink
+                          <button type="button" className={`${styles.miniBtn} ${styles.miniBtnDanger}`} onClick={() => unlinkTeam(t)}>
+                            <FiX /> {tt("ui.unlink.0dc2", "Unlink")}
                           </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                        </li>)}
+                    </ul>}
                 </section>
 
                 <section className={styles.panel}>
                   <div className={styles.panelHeader}>
-                    <h3 className={styles.panelTitle}>Available teams</h3>
+                    <h2 className={styles.panelTitle}>{tt("ui.available.teams.50cd", "Available teams")}</h2>
                     <div className={styles.searchBar}>
                       <FiSearch className={styles.searchIcon} />
-                      <input
-                        type="text"
-                        placeholder="Search teams…"
-                        value={teamSearch}
-                        onChange={(e) => setTeamSearch(e.target.value)}
-                        className={styles.searchInput}
-                      />
+                      <input type="text" placeholder={tt("ui.search.teams.07a1", "Search teams…")} value={teamSearch} onChange={e => setTeamSearch(e.target.value)} className={styles.searchInput} />
                     </div>
                   </div>
-                  {availableTeams.length === 0 ? (
-                    <p className={styles.bioText}>No teams available.</p>
-                  ) : (
-                    <ul className={styles.teamList}>
-                      {availableTeams.map((t) => (
-                        <li key={t.id} className={styles.teamRow}>
+                  {availableTeams.length === 0 ? <p className={styles.bioText}>{tt("ui.no.teams.available.414a", "No teams available.")}</p> : <ul className={styles.teamList}>
+                      {availableTeams.map(t => <li key={t.id} className={styles.teamRow}>
                           <div className={styles.teamLogo}>
-                            {t.logo && (
-                              <Image src={t.logo} alt={t.name} width={36} height={36} />
-                            )}
+                            {t.logo && <Image src={mediaUrl(t.logo)} alt={t.name} width={36} height={36} />}
                           </div>
                           <div className={styles.teamMeta}>
                             <span className={styles.teamName}>{t.name}</span>
                             <span className={styles.teamSub}>{t.game} · {t.members ?? t.member_count ?? 0}{(t.members ?? t.member_count ?? 0) === 1 ? ' member' : ' members'}</span>
                           </div>
-                          <button
-                            type="button"
-                            className={`${styles.miniBtn} ${styles.miniBtnSuccess}`}
-                            onClick={() => linkTeam(t)}
-                          >
-                            <FiPlus /> Link
+                          <button type="button" className={`${styles.miniBtn} ${styles.miniBtnSuccess}`} onClick={() => linkTeam(t)}>
+                            <FiPlus /> {tt("ui.link.d051", "Link")}
                           </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                        </li>)}
+                    </ul>}
                 </section>
-              </div>
-            )}
+              </div>}
 
-            {activeTab === 'verification' && (
-              <div className={styles.verifyWrap}>
+            {activeTab === 'verification' && <div className={styles.verifyWrap}>
                 <section className={styles.panel}>
                   <div className={styles.verifyHead}>
                     <FaCheckCircle className={styles.verifyIcon} />
                     <div>
-                      <h3 className={styles.panelTitle}>Verified status</h3>
+                      <h2 className={styles.panelTitle}>{tt("ui.verified.status.eb87", "Verified status")}</h2>
                       <p className={styles.bioText}>
-                        Verified orgs get a blue tick across the platform - required for hosting paid tournaments,
-                        receiving sponsor payouts, and running events with V-ENT branding.
+                        {tt("ui.verified.orgs.get.blue.a944", "Verified orgs get a blue tick across the platform - required for hosting paid tournaments,\n                        receiving sponsor payouts, and running events with V-ENT branding.")}
                       </p>
                     </div>
                   </div>
@@ -686,18 +603,14 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                         {kycVerified ? <FiCheck /> : <FaInfoCircle />}
                       </span>
                       <div>
-                        <p className={styles.verifyItemTitle}>Owner KYC</p>
+                        <p className={styles.verifyItemTitle}>{tt("ui.owner.kyc.66d4", "Owner KYC")}</p>
                         <p className={styles.verifyItemSub}>
-                          {kycVerified
-                            ? 'Owner identity verified on V-ENT.'
-                            : 'You must complete KYC on your wallet before requesting verification.'}
+                          {kycVerified ? tx("Owner identity verified on V-ENT.") : tx("You must complete KYC on your wallet before requesting verification.")}
                         </p>
                       </div>
-                      {!kycVerified && (
-                        <Link href="/wallets" className={styles.verifyAction}>
-                          Go to KYC
-                        </Link>
-                      )}
+                      {!kycVerified && <Link href="/wallets" className={styles.verifyAction}>
+                          {tt("ui.go.kyc.0dff", "Go to KYC")}
+                        </Link>}
                     </div>
 
                     <div className={`${styles.verifyItem} ${(org.member_count ?? 0) >= 5 ? styles.verifyItemDone : ''}`}>
@@ -705,9 +618,9 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                         {(org.member_count ?? 0) >= 5 ? <FiCheck /> : <FaInfoCircle />}
                       </span>
                       <div>
-                        <p className={styles.verifyItemTitle}>5+ members</p>
+                        <p className={styles.verifyItemTitle}>{tt("ui.members.e611", "5+ members")}</p>
                         <p className={styles.verifyItemSub}>
-                          You have {org.member_count} member{org.member_count === 1 ? '' : 's'}. Verified orgs need at least 5.
+                          {tt("ui.have.799c", "You have")} {org.member_count} {tt("ui.member.6467", "member")}{org.member_count === 1 ? '' : 's'}{tt("ui.verified.orgs.need.at.40b3", ". Verified orgs need at least 5.")}
                         </p>
                       </div>
                     </div>
@@ -717,37 +630,25 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
                         {(org.tournaments_hosted ?? 0) >= 1 ? <FiCheck /> : <FaInfoCircle />}
                       </span>
                       <div>
-                        <p className={styles.verifyItemTitle}>Hosted at least 1 tournament</p>
+                        <p className={styles.verifyItemTitle}>{tt("ui.hosted.least.tournament.3383", "Hosted at least 1 tournament")}</p>
                         <p className={styles.verifyItemSub}>
-                          You have hosted {org.tournaments_hosted || 0} tournament{org.tournaments_hosted === 1 ? '' : 's'}.
+                          {tt("ui.have.hosted.73bd", "You have hosted")} {org.tournaments_hosted || 0} {tt("ui.tournament.cb9d", "tournament")}{org.tournaments_hosted === 1 ? '' : 's'}.
                         </p>
                       </div>
                     </div>
                   </div>
 
                   <div className={styles.verifyCta}>
-                    {org.verified ? (
-                      <div className={styles.verifyAlreadyDone}>
-                        <FaCheckCircle /> This organization is already verified.
-                      </div>
-                    ) : verificationSubmitted ? (
-                      <div className={styles.verifyAlreadyDone}>
-                        <FaCheckCircle /> Verification request submitted - review takes 3-5 business days.
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        className={styles.primaryBtn}
-                        onClick={submitVerification}
-                        disabled={!kycVerified}
-                      >
-                        Request verification
-                      </button>
-                    )}
+                    {org.verified ? <div className={styles.verifyAlreadyDone}>
+                        <FaCheckCircle /> {tt("ui.organization.already.verified.806f", "This organization is already verified.")}
+                      </div> : verificationSubmitted ? <div className={styles.verifyAlreadyDone}>
+                        <FaCheckCircle /> {tt("ui.verification.request.submitted.review.10de", "Verification request submitted - review takes 3-5 business days.")}
+                      </div> : <button type="button" className={styles.primaryBtn} onClick={submitVerification} disabled={!kycVerified}>
+                        {tt("ui.request.verification.1766", "Request verification")}
+                      </button>}
                   </div>
                 </section>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </main>
@@ -755,16 +656,17 @@ const ManageOrgContent = ({ slug: slugFromPath }) => {
       <BottomMenu />
 
       {toast && <div className={styles.toast}>{toast}</div>}
-    </div>
-  );
+    </div>;
 };
-
-const ManageOrg = () => (
-  <Suspense fallback={<p style={{ padding: '2rem', color: '#fff' }}>Loading…</p>}>
+const ManageOrg = () => {
+  const tt = useT();
+  return <Suspense fallback={<p style={{
+    padding: '2rem',
+    color: '#fff'
+  }}>{tt("ui.loading.33ce", "Loading…")}</p>}>
     <ManageOrgContent />
-  </Suspense>
-);
-
+  </Suspense>;
+};
 export default ManageOrg;
 
 // Exported so the slug route can render it. Everything a person

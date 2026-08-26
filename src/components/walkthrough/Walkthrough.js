@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS, TOTAL_MINUTES, TOUR_VERSION, flattenSteps } from './tourChapters';
 import styles from './walkthrough.module.css';
+import { useT, useTx } from '@/i18n/LanguageProvider';
 
 // The first-run walkthrough.
 //
@@ -25,9 +26,8 @@ import styles from './walkthrough.module.css';
 // glow, nothing looping - and `prefers-reduced-motion` turns even the movement
 // into a plain cut.
 
-const PANEL_GAP = 16;      // px between the highlighted element and the panel
+const PANEL_GAP = 16; // px between the highlighted element and the panel
 const PANEL_W = 380;
-
 const useReducedMotion = () => {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -41,7 +41,7 @@ const useReducedMotion = () => {
 };
 
 /** Where the highlighted element is, in viewport coordinates. */
-const measure = (anchor) => {
+const measure = anchor => {
   if (!anchor || typeof document === 'undefined') return null;
   const el = document.querySelector(`[data-tour="${anchor}"]`);
   if (!el) return null;
@@ -50,35 +50,44 @@ const measure = (anchor) => {
   // anchor - better a centred card than a spotlight on the corner of the page.
   if (r.width < 4 || r.height < 4) return null;
   if (r.bottom < 0 || r.top > window.innerHeight) {
-    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.scrollIntoView({
+      block: 'center',
+      behavior: 'smooth'
+    });
     return null;
   }
-  return { top: r.top, left: r.left, width: r.width, height: r.height };
+  return {
+    top: r.top,
+    left: r.left,
+    width: r.width,
+    height: r.height
+  };
 };
 
 /** Put the panel beside the spotlight, or centre it when there is none. */
-const placePanel = (box) => {
-  if (typeof window === 'undefined') return { centred: true };
+const placePanel = box => {
+  if (typeof window === 'undefined') return {
+    centred: true
+  };
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-
-  if (!box || vw < 760) return { centred: true };
-
+  if (!box || vw < 760) return {
+    centred: true
+  };
   const rightRoom = vw - (box.left + box.width) - PANEL_GAP;
   const leftRoom = box.left - PANEL_GAP;
-
   if (rightRoom >= PANEL_W) {
     return {
       centred: false,
       left: box.left + box.width + PANEL_GAP,
-      top: Math.min(Math.max(16, box.top), vh - 260),
+      top: Math.min(Math.max(16, box.top), vh - 260)
     };
   }
   if (leftRoom >= PANEL_W) {
     return {
       centred: false,
       left: box.left - PANEL_W - PANEL_GAP,
-      top: Math.min(Math.max(16, box.top), vh - 260),
+      top: Math.min(Math.max(16, box.top), vh - 260)
     };
   }
   // Nothing fits beside it: sit under it if there is room, otherwise centre.
@@ -87,26 +96,31 @@ const placePanel = (box) => {
     return {
       centred: false,
       left: Math.min(Math.max(16, box.left), vw - PANEL_W - 16),
-      top: box.top + box.height + PANEL_GAP,
+      top: box.top + box.height + PANEL_GAP
     };
   }
-  return { centred: true };
+  return {
+    centred: true
+  };
 };
-
-const Walkthrough = ({ onFinish, onSkip, startAtChapter = null }) => {
+const Walkthrough = ({
+  onFinish,
+  onSkip,
+  startAtChapter = null
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const steps = useMemo(() => flattenSteps(CHAPTERS), []);
   const firstIndex = useMemo(() => {
     if (!startAtChapter) return 0;
-    const i = steps.findIndex((s) => s.chapterId === startAtChapter);
+    const i = steps.findIndex(s => s.chapterId === startAtChapter);
     return i === -1 ? 0 : i;
   }, [steps, startAtChapter]);
-
   const [index, setIndex] = useState(firstIndex);
   const [box, setBox] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const reduced = useReducedMotion();
   const panelRef = useRef(null);
-
   const step = steps[index];
   const isLast = index === steps.length - 1;
 
@@ -126,24 +140,27 @@ const Walkthrough = ({ onFinish, onSkip, startAtChapter = null }) => {
       window.removeEventListener('scroll', update, true);
     };
   }, [step?.anchor, index]);
-
   const finish = useCallback(() => onFinish?.(), [onFinish]);
   const skip = useCallback(() => onSkip?.(), [onSkip]);
-
   const next = useCallback(() => {
-    if (isLast) finish();
-    else setIndex((i) => i + 1);
+    if (isLast) finish();else setIndex(i => i + 1);
   }, [isLast, finish]);
-
-  const back = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
+  const back = useCallback(() => setIndex(i => Math.max(0, i - 1)), []);
 
   // Keyboard: arrows move, Escape leaves. A modal that traps somebody is worse
   // than no modal.
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') { e.preventDefault(); skip(); }
-      else if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); next(); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); back(); }
+    const onKey = e => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        skip();
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        back();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -151,95 +168,107 @@ const Walkthrough = ({ onFinish, onSkip, startAtChapter = null }) => {
 
   // Move focus to the panel on each step so a screen reader announces it and
   // the arrow keys work without clicking first.
-  useEffect(() => { panelRef.current?.focus({ preventScroll: true }); }, [index]);
+  useEffect(() => {
+    panelRef.current?.focus({
+      preventScroll: true
+    });
+  }, [index]);
 
   // The page behind must not scroll while this is open.
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, []);
-
   const panelPos = placePanel(box);
-  const progress = Math.round(((index + 1) / steps.length) * 100);
-
-  return (
-    <div
-      className={`${styles.root} ${reduced ? styles.noMotion : ''}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Getting started walkthrough"
-    >
+  const progress = Math.round((index + 1) / steps.length * 100);
+  return <div className={`${styles.root} ${reduced ? styles.noMotion : ''}`} role="dialog" aria-modal="true" aria-label={tt("ui.getting.started.walkthrough.9f73", "Getting started walkthrough")}>
       {/* The dim. Four panels around the highlighted element rather than one
           box-shadow, so the element itself is genuinely uncovered and stays
           clickable, and so there is no glow around it. */}
-      {box ? (
-        <>
-          <div className={styles.shade} style={{ top: 0, left: 0, right: 0, height: box.top }} />
-          <div className={styles.shade} style={{ top: box.top + box.height, left: 0, right: 0, bottom: 0 }} />
-          <div className={styles.shade} style={{ top: box.top, left: 0, width: box.left, height: box.height }} />
-          <div className={styles.shade} style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
-          <div
-            className={styles.spotlight}
-            style={{ top: box.top, left: box.left, width: box.width, height: box.height }}
-          />
-        </>
-      ) : (
-        <div className={`${styles.shade} ${styles.shadeFull}`} />
-      )}
+      {box ? <>
+          <div className={styles.shade} style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        height: box.top
+      }} />
+          <div className={styles.shade} style={{
+        top: box.top + box.height,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }} />
+          <div className={styles.shade} style={{
+        top: box.top,
+        left: 0,
+        width: box.left,
+        height: box.height
+      }} />
+          <div className={styles.shade} style={{
+        top: box.top,
+        left: box.left + box.width,
+        right: 0,
+        height: box.height
+      }} />
+          <div className={styles.spotlight} style={{
+        top: box.top,
+        left: box.left,
+        width: box.width,
+        height: box.height
+      }} />
+        </> : <div className={`${styles.shade} ${styles.shadeFull}`} />}
 
-      <div
-        ref={panelRef}
-        tabIndex={-1}
-        className={`${styles.panel} ${panelPos.centred ? styles.panelCentred : ''}`}
-        style={panelPos.centred ? undefined : { top: panelPos.top, left: panelPos.left }}
-      >
+      <div ref={panelRef} tabIndex={-1} className={`${styles.panel} ${panelPos.centred ? styles.panelCentred : ''}`} style={panelPos.centred ? undefined : {
+      top: panelPos.top,
+      left: panelPos.left
+    }}>
         <div className={styles.panelHead}>
-          <button
-            type="button"
-            className={styles.chapterBtn}
-            onClick={() => setShowMenu((v) => !v)}
-            aria-expanded={showMenu}
-          >
-            {step.chapterTitle}
+          <button type="button" className={styles.chapterBtn} onClick={() => setShowMenu(v => !v)} aria-expanded={showMenu}>
+            {tx(step.chapterTitle)}
             <span className={styles.chapterCount}>
-              {step.stepIndex + 1} of {step.stepsInChapter}
+              {tt('walk.stepOf', '{n} of {total}')
+                .replace('{n}', step.stepIndex + 1)
+                .replace('{total}', step.stepsInChapter)}
             </span>
           </button>
           <button type="button" className={styles.skipBtn} onClick={skip}>
-            Skip
+            {tt("ui.skip.3da4", "Skip")}
           </button>
         </div>
 
-        {showMenu && (
-          <ul className={styles.chapterMenu}>
-            {CHAPTERS.map((c) => {
-              const target = steps.findIndex((s) => s.chapterId === c.id);
-              const done = target < index;
-              return (
-                <li key={c.id}>
-                  <button
-                    type="button"
-                    className={`${styles.chapterMenuItem} ${c.id === step.chapterId ? styles.chapterMenuItemOn : ''}`}
-                    onClick={() => { setIndex(target); setShowMenu(false); }}
-                  >
-                    <span>{c.title}</span>
+        {showMenu && <ul className={styles.chapterMenu}>
+            {CHAPTERS.map(c => {
+          const target = steps.findIndex(s => s.chapterId === c.id);
+          const done = target < index;
+          return <li key={c.id}>
+                  <button type="button" className={`${styles.chapterMenuItem} ${c.id === step.chapterId ? styles.chapterMenuItemOn : ''}`} onClick={() => {
+              setIndex(target);
+              setShowMenu(false);
+            }}>
+                    <span>{tx(c.title)}</span>
                     <span className={styles.chapterMenuMeta}>
-                      {done ? 'seen' : c.minutes ? `${c.minutes} min` : ''}
+                      {done
+                        ? tt('walk.seen', 'seen')
+                        : c.minutes
+                          ? tt('walk.minutes', '{n} min').replace('{n}', c.minutes)
+                          : ''}
                     </span>
                   </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+                </li>;
+        })}
+          </ul>}
 
-        <h2 className={styles.heading}>{step.heading}</h2>
-        <p className={styles.body}>{step.body}</p>
-        {step.aside && <p className={styles.aside}>{step.aside}</p>}
+        <h2 className={styles.heading}>{tx(step.heading)}</h2>
+        <p className={styles.body}>{tx(step.body)}</p>
+        {step.aside && <p className={styles.aside}>{tx(step.aside)}</p>}
 
         <div className={styles.progressTrack} aria-hidden="true">
-          <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          <div className={styles.progressFill} style={{
+          width: `${progress}%`
+        }} />
         </div>
 
         <div className={styles.actions}>
@@ -247,20 +276,16 @@ const Walkthrough = ({ onFinish, onSkip, startAtChapter = null }) => {
             {index + 1} / {steps.length}
           </span>
           <div className={styles.actionBtns}>
-            {index > 0 && (
-              <button type="button" className={styles.ghostBtn} onClick={back}>
-                Back
-              </button>
-            )}
+            {index > 0 && <button type="button" className={styles.ghostBtn} onClick={back}>
+                {tt("ui.back.b52b", "Back")}
+              </button>}
             <button type="button" className={styles.primaryBtn} onClick={next}>
-              {isLast ? 'Finish' : 'Next'}
+              {isLast ? tt('walk.finish', 'Finish') : tt('walk.next', 'Next')}
             </button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export { TOUR_VERSION, TOTAL_MINUTES };
 export default Walkthrough;

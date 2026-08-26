@@ -1,41 +1,39 @@
+'use client';
+
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { formatRows } from '../reviewFields';
 import styles from '../review-basic-info/review-basic-info.module.css';
 
-const ReviewFormatParticipants = () => {
-  const infoSections = [
-    { title: "Tournament Format", content: "Single Elimination" },
-    { title: "Tournament Access", content: "Teams and Individual" },
-    { title: "Player size", content: "Squad" },
-    { title: "Min number of participants", content: 48 },
-    { title: "Max number of participants", content: 48 },
-  ];
+// Format and participants, as entered. Previously a fixed "Single Elimination,
+// 48 players, Counter-Strike" no matter what the organiser had chosen.
+
+const ReviewFormatParticipants = ({ formData = {} }) => {
+  const { t } = useLanguage();
+  const rules = String(formData.tournament_rules || '').trim();
 
   return (
     <>
-      {infoSections.map((section, index) => (
-        <div key={index} className={styles.infoContainer}>
+      {formatRows(t, formData).map(([label, value]) => (
+        <div key={label} className={styles.infoContainer}>
           <div className={styles.leftSideContainer}>
-            <h3>{section.title}</h3>
+            <h3>{label}</h3>
           </div>
           <div className={styles.rightSideContainer}>
-            <p>{section.content}</p>
+            <p>{value}</p>
           </div>
         </div>
       ))}
 
       <div className={`${styles.infoContainer} ${styles.descriptionInfoContainer}`}>
         <div className={`${styles.leftSideContainer} ${styles.leftSideDescriptionContainer}`}>
-          <h3>Tournament Rules</h3>
+          <h3>{t('review.row.rules', 'Rules')}</h3>
         </div>
         <div className={styles.rightSideContainer}>
-          <p>Join Us for Counter-Strike Action on Vent!</p>
-          <p>
-            Are you ready to show off your skills and dominate the battlefield? Join us for an
-            adrenaline-pumping Counter-Strike tournament that promises intense action, strategic
-            gameplay, and unforgettable moments!
-          </p>
+          {rules
+            ? <div dangerouslySetInnerHTML={{ __html: rules }} />
+            : <p>{t('review.noRules', 'No rules written yet')}</p>}
         </div>
       </div>
-
     </>
   );
 };

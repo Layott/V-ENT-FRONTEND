@@ -1,5 +1,7 @@
-'use client'
+'use client';
 
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const ErrorStyles = {
   container: {
     minHeight: '100vh',
@@ -10,24 +12,24 @@ const ErrorStyles = {
     flexDirection: 'column',
     gap: '1.5rem',
     padding: '2rem',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   heading: {
     color: '#FFFFFF',
     fontSize: '1.75rem',
-    fontWeight: '700',
+    fontWeight: '700'
   },
   message: {
     color: '#FFFFFF',
     fontSize: '1rem',
     maxWidth: '480px',
-    opacity: 0.7,
+    opacity: 0.7
   },
   actions: {
     display: 'flex',
     gap: '0.75rem',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   button: {
     padding: '0.625rem 1.5rem',
@@ -37,7 +39,7 @@ const ErrorStyles = {
     borderRadius: '6px',
     fontSize: '1rem',
     fontWeight: '600',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   outlineButton: {
     padding: '0.625rem 1.5rem',
@@ -48,19 +50,21 @@ const ErrorStyles = {
     fontWeight: '600',
     cursor: 'pointer',
     textDecoration: 'none',
-    display: 'inline-block',
-  },
+    display: 'inline-block'
+  }
 };
-
-export default function ViewTournamentError({ error, reset }) {
-  return (
-    <div style={ErrorStyles.container}>
-      <h2 style={ErrorStyles.heading}>Something went wrong</h2>
-      <p style={ErrorStyles.message}>{error?.message || 'An unexpected error occurred while loading this tournament.'}</p>
+export default function ViewTournamentError({
+  error,
+  reset
+}) {
+  const tx = useTx();
+  const tt = useT();
+  return <div style={ErrorStyles.container}>
+      <h2 style={ErrorStyles.heading}>{tt("ui.something.went.wrong.8d88", "Something went wrong")}</h2>
+      <p style={ErrorStyles.message}>{error?.message || tx("An unexpected error occurred while loading this tournament.")}</p>
       <div style={ErrorStyles.actions}>
-        <button style={ErrorStyles.button} onClick={reset}>Try again</button>
-        <a href="/" style={ErrorStyles.outlineButton}>Go home</a>
+        <button style={ErrorStyles.button} onClick={reset}>{tt("ui.try.again.042c", "Try again")}</button>
+        <a href="/" style={ErrorStyles.outlineButton}>{tt("ui.go.home.8007", "Go home")}</a>
       </div>
-    </div>
-  );
+    </div>;
 }

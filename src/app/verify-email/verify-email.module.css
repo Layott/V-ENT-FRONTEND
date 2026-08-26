@@ -18,7 +18,7 @@
   justify-content: center;
 }
 
-.pageHeader h1 {
+.pageHeader .wordmark {
   color: var(--v-ent-red);
 }
 
@@ -34,7 +34,7 @@
   gap: 1.5rem;
 }
 
-.mainContainer h3 {
+.mainContainer h1 {
   text-align: center;
 }
 

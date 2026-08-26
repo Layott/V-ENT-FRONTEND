@@ -45,7 +45,7 @@
   justify-content: flex-start;
 }
 
-.headerLogoContainer h1 {
+.headerLogoContainer .wordmark {
   font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
@@ -127,7 +127,7 @@
   line-height: 1.25;
 }
 
-.gamingAnimeTribeContainer h1 {
+.gamingAnimeTribeContainer .headlineWord {
   font-size: 3rem;
   font-family: "ClashGrotesk-Semi-Bold", sans-serif;
 }
@@ -257,7 +257,7 @@
     min-height: 1000px;
     max-height: 1000px;
   }
-  .gamingAnimeTribeContainer h1 {
+  .gamingAnimeTribeContainer .headlineWord {
     font-size: 4rem;
   }
   .h1Anime {
@@ -288,7 +288,7 @@
     height: 35px;
     width: 34px;
   }
-  .headerLogoContainer h1 {
+  .headerLogoContainer .wordmark {
     font-size: 2.5rem;
   }
   .waitlistBTN {
@@ -303,7 +303,7 @@
     width: 90px;
     max-width: 90px;
   }
-  .gamingAnimeTribeContainer h1 {
+  .gamingAnimeTribeContainer .headlineWord {
     font-size: 4.5rem;
   }
   .h1Anime {
@@ -334,7 +334,7 @@
     flex-direction: row;
     width: 90%;
   }
-  .gamingAnimeTribeContainer h1 {
+  .gamingAnimeTribeContainer .headlineWord {
     font-size: 4rem;
   }
 }
@@ -373,7 +373,7 @@
   .topLeftImageContainer {
     height: 210px;
   }
-  .gamingAnimeTribeContainer h1 {
+  .gamingAnimeTribeContainer .headlineWord {
     font-size: 5rem;
     line-height: 1.125;
   }
@@ -390,7 +390,7 @@
   }
 }
 @media only screen and (min-width: 1400px) {
-  .gamingAnimeTribeContainer h1 {
+  .gamingAnimeTribeContainer .headlineWord {
     font-size: 7rem;
     line-height: 1;
   }
@@ -411,4 +411,18 @@
   .topLeftImageContainer {
     height: 270px;
   }
+}
+
+/* One heading set on three lines. The words were three h1 elements, which told
+   a screen reader the page had three titles; they are one title now, and the
+   line breaks are typography. Block, because that is what the h1 elements were
+   under the global margin reset - the layout is unchanged. */
+.heroHeadline {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.headlineWord {
+  display: block;
 }

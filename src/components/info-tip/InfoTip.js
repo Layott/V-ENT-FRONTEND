@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { useT } from '@/i18n/LanguageProvider';
+import { useT, useTx } from '@/i18n/LanguageProvider';
 import { TIPS } from './tips';
 import styles from './info-tip.module.css';
 
@@ -28,6 +28,7 @@ import styles from './info-tip.module.css';
 
 const InfoTip = ({ id, text, label, className = '' }) => {
   const t = useT();
+  const tx = useTx();
   const [open, setOpen] = useState(false);
   const [above, setAbove] = useState(false);
   const wrapRef = useRef(null);
@@ -35,7 +36,10 @@ const InfoTip = ({ id, text, label, className = '' }) => {
 
   // A key wins over inline text, so a caller can pass either and the registry
   // stays the single source for anything reused.
-  const body = id ? t(`tip.${id}`, TIPS[id] || '') : text;
+  // `tip.<id>` first, for anything given a hand-written key; otherwise the
+  // English text is itself the lookup, which is how the 130 entries in tips.js
+  // reach French and Portuguese without being rewritten.
+  const body = id ? t(`tip.${id}`, tx(TIPS[id] || '')) : tx(text);
 
   const close = useCallback(() => setOpen(false), []);
 

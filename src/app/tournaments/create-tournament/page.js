@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -10,25 +10,20 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import CreateTournamentComponent from '@/components/create-tournament-component/CreateTournamentComponent';
 import { ventFetch, API, tokenFrom, toTournament } from '@/components/tournament-lib/tournamentApi';
 import styles from './create-tournament.module.css';
-
-const SOCIAL_LINK_KEYS = [
-  'facebook_link', 'twitter_link', 'instagram_link', 'youtube_link',
-  'twitch_link', 'kick_link', 'tiktok_link', 'bigolive_link',
-];
+import { useT } from '@/i18n/LanguageProvider';
+const SOCIAL_LINK_KEYS = ['facebook_link', 'twitter_link', 'instagram_link', 'youtube_link', 'twitch_link', 'kick_link', 'tiktok_link', 'bigolive_link'];
 
 // Maps a fetched tournament/draft payload back into the flat shape the
 // wizard persists under localStorage's 'createTournamentData' key, so
 // re-opening a draft (?draft_id=…) pre-fills every step. Field names mirror
 // what CreateTournamentComponent's submit already sends - see
 // tournamentWizardValidation.js for the same field-naming contract.
-const mapTournamentToFormData = (t) => {
+const mapTournamentToFormData = t => {
   if (!t) return {};
-
   const webSocialLinks = {};
-  SOCIAL_LINK_KEYS.forEach((key) => {
+  SOCIAL_LINK_KEYS.forEach(key => {
     if (t[key]) webSocialLinks[key] = t[key];
   });
-
   return {
     tournament_title: t.tournament_title ?? t.title ?? t.name ?? '',
     game: t.game ?? t.game_name ?? '',
@@ -57,28 +52,31 @@ const mapTournamentToFormData = (t) => {
     winner_prize: t.winner_prize ?? '',
     sponsors: Array.isArray(t.sponsors) ? t.sponsors : [],
     webSocialLinks,
-    ...webSocialLinks,
+    ...webSocialLinks
   };
 };
-
 function CreateTournamentPageInner() {
+  const tt = useT();
   const searchParams = useSearchParams();
   const draftId = searchParams.get('draft_id');
-  const { data: session, status } = useSession();
+  const {
+    data: session,
+    status
+  } = useSession();
   const [ready, setReady] = useState(!draftId);
-
   useEffect(() => {
     if (!draftId) {
       setReady(true);
       return undefined;
     }
     if (status === 'loading') return undefined;
-
     let cancelled = false;
     (async () => {
       try {
         const token = tokenFrom(session);
-        const data = await ventFetch(API.TOURNAMENT.VIEW(draftId), { token });
+        const data = await ventFetch(API.TOURNAMENT.VIEW(draftId), {
+          token
+        });
         const tournament = toTournament(data);
         if (tournament && !cancelled) {
           localStorage.setItem('createTournamentData', JSON.stringify(mapTournamentToFormData(tournament)));
@@ -90,36 +88,29 @@ function CreateTournamentPageInner() {
         if (!cancelled) setReady(true);
       }
     })();
-
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [draftId, session, status]);
-
-  return (
-    <div className={styles.pageContainer}>
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
       <main className={styles.mainContainer}>
         <Sidebar />
-        {ready ? (
-          <CreateTournamentComponent />
-        ) : (
-          <div className={styles.loadingState}>
+        <h1 className={styles.srOnlyTitle}>
+          {tt("createTournament.title", "Create a tournament")}
+        </h1>
+        {ready ? <CreateTournamentComponent /> : <div className={styles.loadingState}>
             <div className={styles.loadingCard}>
               <div className={styles.spinner} />
-              <span>Loading your draft…</span>
+              <span>{tt("ui.loading.draft.b83b", "Loading your draft…")}</span>
             </div>
-          </div>
-        )}
+          </div>}
       </main>
       <BottomMenu />
-    </div>
-  );
+    </div>;
 }
-
-const CreateTournament = () => (
-  <Suspense fallback={<div className={styles.pageContainer} />}>
+const CreateTournament = () => <Suspense fallback={<div className={styles.pageContainer} />}>
     <CreateTournamentPageInner />
-  </Suspense>
-);
-
+  </Suspense>;
 export default CreateTournament;

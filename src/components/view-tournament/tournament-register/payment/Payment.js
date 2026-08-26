@@ -9,7 +9,7 @@
 //   4. Insufficient balance → "Top up & pay" → Paystack → back here → verify
 //      → resume at the PIN step.
 //   5. Sufficient balance → inline 4-digit PIN → verify → register.
-'use client'
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -17,17 +17,16 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import styles from './payment.module.css';
 import { API, entryFeeVc, tokenFrom, ventFetch } from '@/components/tournament-lib/tournamentApi';
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 const EMPTY_PIN = ['', '', '', ''];
-
-const CoinIcon = ({ size = 16 }) => (
-  <svg className={styles.coinIcon} width={size} height={size} viewBox="0 0 24 24" fill="none">
+const CoinIcon = ({
+  size = 16
+}) => <svg className={styles.coinIcon} width={size} height={size} viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="10" stroke="#D4AF37" strokeWidth="2" fill="#D4AF37" />
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2" fill="none" />
     <line x1="12" y1="16" x2="12" y2="17.5" stroke="white" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
+  </svg>;
 const PaymentModal = ({
   isOpen,
   onClose,
@@ -37,9 +36,13 @@ const PaymentModal = ({
   selectedTeam,
   teamMembers,
   registrationData,
-  resumeReference,
+  resumeReference
 }) => {
-  const { data: session } = useSession();
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const token = tokenFrom(session);
   const router = useRouter();
   const pathname = usePathname();
@@ -73,39 +76,45 @@ const PaymentModal = ({
   const [topUpError, setTopUpError] = useState('');
   const [blockedMessage, setBlockedMessage] = useState('');
   const [resumeNotice, setResumeNotice] = useState('');
-
   const pinRefs = useRef([]);
   const autoRegisteredRef = useRef(false);
-
   const draftKey = tournament?.id ? `ventRegDraft:${tournament.id}` : null;
-
   const saveDraft = () => {
     if (!draftKey || typeof window === 'undefined') return;
     try {
-      window.sessionStorage.setItem(draftKey, JSON.stringify({ type: mode, team, members: roster }));
+      window.sessionStorage.setItem(draftKey, JSON.stringify({
+        type: mode,
+        team,
+        members: roster
+      }));
     } catch {
       // Storage unavailable (private mode / quota) - non-fatal, worst case
       // the resumed flow falls back to an individual registration.
     }
   };
-
   const clearDraft = () => {
     if (!draftKey || typeof window === 'undefined') return;
-    try { window.sessionStorage.removeItem(draftKey); } catch { /* ignore */ }
+    try {
+      window.sessionStorage.removeItem(draftKey);
+    } catch {/* ignore */}
   };
 
   // Drop the one-time `?reference=` param once we've consumed it, so a page
   // refresh doesn't re-trigger verification. Keeps `?id=` intact.
   const stripReferenceFromUrl = () => {
     if (!tournament?.id) return;
-    try { router.replace(`${pathname}`); } catch { /* ignore */ }
+    try {
+      router.replace(`${pathname}`);
+    } catch {/* ignore */}
   };
-
-  const doRegister = async (pinValue) => {
+  const doRegister = async pinValue => {
     setRegistering(true);
     setBlockedMessage('');
     try {
-      const body = { tournament_id: tournament?.id, mode };
+      const body = {
+        tournament_id: tournament?.id,
+        mode
+      };
       if (pinValue) body.pin = pinValue;
       // Set once the person has seen which tournament this clashes with and
       // said to go ahead anyway.
@@ -114,7 +123,11 @@ const PaymentModal = ({
         body.team_id = team?.id ?? null;
         body.roster = roster;
       }
-      const data = await ventFetch(API.TOURNAMENT.REGISTER, { method: 'POST', token, body });
+      const data = await ventFetch(API.TOURNAMENT.REGISTER, {
+        method: 'POST',
+        token,
+        body
+      });
       clearDraft();
       if (onComplete) {
         onComplete({
@@ -123,7 +136,7 @@ const PaymentModal = ({
           coveredByTicket,
           eventName: tournament?.event?.name || null,
           registrationId: data?.id,
-          mode,
+          mode
         });
       }
     } catch (err) {
@@ -138,14 +151,14 @@ const PaymentModal = ({
       } else if (err?.code === 'KYC_REQUIRED') {
         setPhase('kyc');
       } else if (err?.code === 'ALREADY_REGISTERED' || err?.code === 'DEADLINE_PASSED') {
-        setBlockedMessage(err?.message || 'This registration can no longer be completed.');
+        setBlockedMessage(err?.message || tt("api.thisRegistrationCanNoLonger", "This registration can no longer be completed."));
         setPhase('blocked');
       } else {
-        setBlockedMessage(err?.message || 'Registration failed. Please try again.');
+        setBlockedMessage(err?.message || tt("api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
         if (fee === 0) {
           setPhase('blocked');
         } else {
-          setPinError(err?.message || 'Registration failed. Please try again.');
+          setPinError(err?.message || tt("api.registrationFailedPleaseTryAgain", "Registration failed. Please try again."));
           setPin(EMPTY_PIN);
           setPhase('pin');
           pinRefs.current[0]?.focus();
@@ -155,8 +168,9 @@ const PaymentModal = ({
       setRegistering(false);
     }
   };
-
-  const gateAndProceed = async (w, { afterTopup = false } = {}) => {
+  const gateAndProceed = async (w, {
+    afterTopup = false
+  } = {}) => {
     if (prizePool > 0 && w.kyc_verified === false) {
       setPhase('kyc');
       return;
@@ -164,11 +178,7 @@ const PaymentModal = ({
     if (fee === 0) {
       if (autoRegisteredRef.current) return;
       autoRegisteredRef.current = true;
-      setLoadingLabel(
-        coveredByTicket
-          ? `Your ${tournament?.event?.name || 'event'} ticket covers entry. Registering you for ${tournamentName}…`
-          : `Registering you for ${tournamentName}…`
-      );
+      setLoadingLabel(coveredByTicket ? `Your ${tournament?.event?.name || 'event'} ticket covers entry. Registering you for ${tournamentName}…` : `Registering you for ${tournamentName}…`);
       setPhase('loading');
       await doRegister(null);
       return;
@@ -179,21 +189,26 @@ const PaymentModal = ({
     }
     setPhase(afterTopup ? 'pin' : 'review');
   };
-
-  const loadWallet = async ({ afterTopup = false } = {}) => {
+  const loadWallet = async ({
+    afterTopup = false
+  } = {}) => {
     setLoadError('');
     setPhase('loading');
     setLoadingLabel('Loading payment details…');
     try {
-      const data = await ventFetch(API.WALLET.BALANCE, { token });
+      const data = await ventFetch(API.WALLET.BALANCE, {
+        token
+      });
       const w = {
         balance: Number(data?.balance ?? 0) || 0,
-        kyc_verified: data?.kyc_verified !== false,
+        kyc_verified: data?.kyc_verified !== false
       };
       setWallet(w);
-      await gateAndProceed(w, { afterTopup });
+      await gateAndProceed(w, {
+        afterTopup
+      });
     } catch (err) {
-      setLoadError(err?.message || 'Could not load wallet balance.');
+      setLoadError(err?.message || tt("api.couldNotLoadWalletBalance", "Could not load wallet balance."));
       setPhase('error');
     }
   };
@@ -209,22 +224,28 @@ const PaymentModal = ({
       autoRegisteredRef.current = false;
       return undefined;
     }
-
     let cancelled = false;
-
     (async () => {
       if (resumeReference) {
         setPhase('verifying-topup');
         setLoadError('');
         try {
-          await ventFetch(API.WALLET.TOPUP_VERIFY, { method: 'POST', token, body: { reference: resumeReference } });
+          await ventFetch(API.WALLET.TOPUP_VERIFY, {
+            method: 'POST',
+            token,
+            body: {
+              reference: resumeReference
+            }
+          });
           if (cancelled) return;
           setResumeNotice('Top-up verified - continue to pay.');
           stripReferenceFromUrl();
-          await loadWallet({ afterTopup: true });
+          await loadWallet({
+            afterTopup: true
+          });
         } catch (err) {
           if (cancelled) return;
-          setTopUpError(err?.message || 'Could not verify your top-up. Please try again.');
+          setTopUpError(err?.message || tt("api.couldNotVerifyYourTop", "Could not verify your top-up. Please try again."));
           stripReferenceFromUrl();
           setPhase('insufficient');
         }
@@ -232,14 +253,14 @@ const PaymentModal = ({
       }
       await loadWallet({});
     })();
-
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, token]);
-
   const handlePinDigit = (idx, raw) => {
     const digit = raw.replace(/[^0-9]/g, '').slice(-1);
-    setPin((prev) => {
+    setPin(prev => {
       const next = [...prev];
       next[idx] = digit;
       return next;
@@ -247,27 +268,33 @@ const PaymentModal = ({
     setPinError('');
     if (digit && idx < 3) pinRefs.current[idx + 1]?.focus();
   };
-
   const handlePinKeyDown = (idx, e) => {
     if (e.key === 'Backspace' && !pin[idx] && idx > 0) {
       pinRefs.current[idx - 1]?.focus();
     }
   };
-
   const handlePinConfirm = async () => {
     const code = pin.join('');
-    if (code.length !== 4) { setPinError('Enter all 4 digits.'); return; }
-
+    if (code.length !== 4) {
+      setPinError('Enter all 4 digits.');
+      return;
+    }
     setPinVerifying(true);
     setPinError('');
     try {
-      await ventFetch(API.WALLET.PIN_VERIFY, { method: 'POST', token, body: { pin: code } });
+      await ventFetch(API.WALLET.PIN_VERIFY, {
+        method: 'POST',
+        token,
+        body: {
+          pin: code
+        }
+      });
       await doRegister(code);
     } catch (err) {
       if (err?.code === 'WRONG_PIN' || err?.status === 403) {
         setPinError('Incorrect PIN');
       } else {
-        setPinError(err?.message || 'Could not verify PIN. Please try again.');
+        setPinError(err?.message || tt("api.couldNotVerifyPinPlease", "Could not verify PIN. Please try again."));
       }
       setPin(EMPTY_PIN);
       pinRefs.current[0]?.focus();
@@ -275,7 +302,6 @@ const PaymentModal = ({
       setPinVerifying(false);
     }
   };
-
   const handleTopUp = async () => {
     setToppingUp(true);
     setTopUpError('');
@@ -283,7 +309,13 @@ const PaymentModal = ({
       const shortfall = Math.max(fee - (wallet?.balance || 0), 0);
       const amountNgn = Math.max(1000, Math.ceil(shortfall) * 1000);
       saveDraft();
-      const data = await ventFetch(API.WALLET.TOPUP_INITIATE, { method: 'POST', token, body: { amount_ngn: amountNgn } });
+      const data = await ventFetch(API.WALLET.TOPUP_INITIATE, {
+        method: 'POST',
+        token,
+        body: {
+          amount_ngn: amountNgn
+        }
+      });
       if (data?.authorization_url) {
         window.location.href = data.authorization_url;
         return;
@@ -291,11 +323,10 @@ const PaymentModal = ({
       setTopUpError('Could not start top-up. Please try again.');
       setToppingUp(false);
     } catch (err) {
-      setTopUpError(err?.message || 'Could not start top-up. Please try again.');
+      setTopUpError(err?.message || tt("api.couldNotStartTopUp", "Could not start top-up. Please try again."));
       setToppingUp(false);
     }
   };
-
   const handleBack = () => {
     if (phase === 'pin') {
       setPinError('');
@@ -305,13 +336,10 @@ const PaymentModal = ({
     }
     if (onBack) onBack();
   };
-
   const handleClose = () => {
     if (onClose) onClose();
   };
-
   if (!isOpen) return null;
-
   const TITLES = {
     loading: 'Payment',
     'verifying-topup': 'Verifying Top-Up',
@@ -321,195 +349,149 @@ const PaymentModal = ({
     pin: 'Enter Wallet PIN',
     blocked: 'Registration Unavailable',
     error: 'Something Went Wrong',
-    conflict: 'Two at the same time',
-};
-
+    conflict: 'Two at the same time'
+  };
   const backDisabled = phase === 'loading' || phase === 'verifying-topup';
-
-  const renderEntryFeeSection = () => (
-    <div className={styles.entryFeeSection}>
+  const renderEntryFeeSection = () => <div className={styles.entryFeeSection}>
       <div className={styles.entryFeeHeader}>
         <svg className={styles.entryFeeIcon} width="20" height="20" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="6" width="20" height="12" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
           <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" strokeWidth="2" />
         </svg>
-        <span className={styles.entryFeeLabel}>Entry Fee</span>
+        <span className={styles.entryFeeLabel}>{tt("ui.entry.fee.a428", "Entry Fee")}</span>
       </div>
       <div className={styles.entryFeeDetails}>
         <span className={styles.entryFeeAmount}>
-          {fee > 0 ? (
-            <>
+          {fee > 0 ? <>
               <CoinIcon />
-              <span style={{ color: 'var(--v-ent-gold)' }}>{fee.toLocaleString()} VC</span>
-            </>
-          ) : 'FREE'}
+              <span style={{
+            color: 'var(--v-ent-gold)'
+          }}>{fee.toLocaleString()} VC</span>
+            </> : 'FREE'}
         </span>
       </div>
-    </div>
-  );
-
+    </div>;
   let body = null;
   let footerPrimary = null;
-
   if (phase === 'loading' || phase === 'verifying-topup') {
-    body = (
-      <div className={styles.loadingState}>
+    body = <div className={styles.loadingState}>
         <div className={styles.spinner} />
-        <p className={styles.subtitle} style={{ margin: 0 }}>
-          {phase === 'verifying-topup' ? 'Verifying your top-up…' : loadingLabel}
+        <p className={styles.subtitle} style={{
+        margin: 0
+      }}>
+          {phase === 'verifying-topup' ? tx("Verifying your top-up…") : loadingLabel}
         </p>
-      </div>
-    );
+      </div>;
   } else if (phase === 'error') {
-    body = (
-      <div className={styles.loadingState}>
+    body = <div className={styles.loadingState}>
         <div className={styles.paymentError}>{loadError}</div>
-      </div>
-    );
-    footerPrimary = (
-      <button className={styles.payButton} onClick={() => loadWallet({})}>Retry</button>
-    );
+      </div>;
+    footerPrimary = <button className={styles.payButton} onClick={() => loadWallet({})}>{tt("ui.retry.9f5c", "Retry")}</button>;
   } else if (phase === 'kyc') {
-    body = (
-      <div className={styles.kycBox}>
+    body = <div className={styles.kycBox}>
         <svg className={styles.kycIcon} width="40" height="40" viewBox="0 0 24 24" fill="none">
           <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" stroke="currentColor" strokeWidth="2" />
           <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <h3 className={styles.kycTitle}>Complete KYC to register for paid tournaments</h3>
+        <h3 className={styles.kycTitle}>{tt("ui.complete.kyc.register.paid.4b12", "Complete KYC to register for paid tournaments")}</h3>
         <p className={styles.kycText}>
-          {tournamentName} has a prize pool, so we need to verify your identity before you can pay the entry fee and register.
+          {tournamentName} {tt("ui.has.prize.pool.so.ee8c", "has a prize pool, so we need to verify your identity before you can pay the entry fee and register.")}
         </p>
-      </div>
-    );
-    footerPrimary = (
-      <Link href="/wallets?panel=kyc" className={styles.payButton}>Complete KYC →</Link>
-    );
+      </div>;
+    footerPrimary = <Link href="/wallets?panel=kyc" className={styles.payButton}>{tt("ui.complete.kyc.4487", "Complete KYC →")}</Link>;
   } else if (phase === 'insufficient') {
-    body = (
-      <>
+    body = <>
         {renderEntryFeeSection()}
         <div className={`${styles.walletSummaryCard} ${styles.insufficient}`}>
           <div className={styles.walletSummaryLeft}>
-            <span className={styles.paymentMethodTitle}>Wallet Balance</span>
+            <span className={styles.paymentMethodTitle}>{tt("ui.wallet.balance.3b5c", "Wallet Balance")}</span>
             <div className={styles.walletBalance}>
               <CoinIcon />
-              <span style={{ color: 'var(--v-ent-gold)' }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
+              <span style={{
+              color: 'var(--v-ent-gold)'
+            }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
             </div>
             <div className={styles.insufficientFunds}>
-              Insufficient funds - you need {Math.max(fee - (wallet?.balance || 0), 0).toLocaleString()} more VC
+              {tt("ui.insufficient.funds.need.8556", "Insufficient funds - you need")} {Math.max(fee - (wallet?.balance || 0), 0).toLocaleString()} {tt("ui.more.vc.78f5", "more VC")}
             </div>
           </div>
         </div>
         {topUpError && <div className={styles.paymentError}>{topUpError}</div>}
-      </>
-    );
-    footerPrimary = (
-      <button className={styles.payButton} onClick={handleTopUp} disabled={toppingUp}>
-        {toppingUp ? 'Redirecting…' : `Top up & pay ${fee.toLocaleString()} VC`}
-      </button>
-    );
+      </>;
+    footerPrimary = <button className={styles.payButton} onClick={handleTopUp} disabled={toppingUp}>
+        {toppingUp ? tx("Redirecting…") : `Top up & pay ${fee.toLocaleString()} VC`}
+      </button>;
   } else if (phase === 'review') {
-    body = (
-      <>
+    body = <>
         {renderEntryFeeSection()}
         <div className={styles.walletSummaryCard}>
           <div className={styles.walletSummaryLeft}>
-            <span className={styles.paymentMethodTitle}>Wallet Balance</span>
+            <span className={styles.paymentMethodTitle}>{tt("ui.wallet.balance.3b5c", "Wallet Balance")}</span>
             <div className={styles.walletBalance}>
               <CoinIcon />
-              <span style={{ color: 'var(--v-ent-gold)' }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
+              <span style={{
+              color: 'var(--v-ent-gold)'
+            }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
             </div>
           </div>
         </div>
-      </>
-    );
-    footerPrimary = (
-      <button className={styles.payButton} onClick={() => setPhase('pin')}>
+      </>;
+    footerPrimary = <button className={styles.payButton} onClick={() => setPhase('pin')}>
         {`Pay ${fee.toLocaleString()} VC`}
-      </button>
-    );
+      </button>;
   } else if (phase === 'pin') {
     const code = pin.join('');
     const confirmDisabled = code.length !== 4 || pinVerifying || registering;
-    body = (
-      <>
+    body = <>
         {resumeNotice && <div className={styles.resumeBanner}>{resumeNotice}</div>}
         <p className={styles.subtitle}>
-          Enter your 4-digit wallet PIN to authorize {fee.toLocaleString()} VC for {tournamentName}.
+          {tt("ui.enter.digit.wallet.pin.2ead", "Enter your 4-digit wallet PIN to authorize")} {fee.toLocaleString()} {tt("ui.vc.4ea1", "VC for")} {tournamentName}.
         </p>
         <div className={styles.pinRow}>
-          {pin.map((digit, idx) => (
-            <input
-              // eslint-disable-next-line react/no-array-index-key
-              key={idx}
-              ref={(el) => { pinRefs.current[idx] = el; }}
-              type="password"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              autoComplete="off"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handlePinDigit(idx, e.target.value)}
-              onKeyDown={(e) => handlePinKeyDown(idx, e)}
-              className={`${styles.pinDigit} ${pinError ? styles.pinDigitError : ''}`}
-              aria-label={`PIN digit ${idx + 1}`}
-              disabled={pinVerifying || registering}
-            />
-          ))}
+          {pin.map((digit, idx) => <input
+        // eslint-disable-next-line react/no-array-index-key
+        key={idx} ref={el => {
+          pinRefs.current[idx] = el;
+        }} type="password" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={1} value={digit} onChange={e => handlePinDigit(idx, e.target.value)} onKeyDown={e => handlePinKeyDown(idx, e)} className={`${styles.pinDigit} ${pinError ? styles.pinDigitError : ''}`} aria-label={`PIN digit ${idx + 1}`} disabled={pinVerifying || registering} />)}
         </div>
         {pinError && <div className={styles.paymentError}>{pinError}</div>}
-      </>
-    );
-    footerPrimary = (
-      <button
-        className={`${styles.payButton} ${confirmDisabled ? styles.disabled : ''}`}
-        onClick={handlePinConfirm}
-        disabled={confirmDisabled}
-      >
-        {pinVerifying ? 'Verifying PIN…' : registering ? 'Registering…' : 'Confirm & Register'}
-      </button>
-    );
+      </>;
+    footerPrimary = <button className={`${styles.payButton} ${confirmDisabled ? styles.disabled : ''}`} onClick={handlePinConfirm} disabled={confirmDisabled}>
+        {pinVerifying ? tx("Verifying PIN…") : registering ? tx("Registering…") : tx("Confirm & Register")}
+      </button>;
   } else if (phase === 'blocked') {
-    body = (
-      <div className={styles.kycBox}>
-        <div className={styles.paymentError} style={{ marginBottom: 0 }}>{blockedMessage}</div>
-      </div>
-    );
+    body = <div className={styles.kycBox}>
+        <div className={styles.paymentError} style={{
+        marginBottom: 0
+      }}>{blockedMessage}</div>
+      </div>;
   } else if (phase === 'conflict') {
-    footerPrimary = (
-      <button
-        className={`${styles.confirmButton} goldBTN`}
-        onClick={() => {
-          setOverlapAcknowledged(true);
-          setPhase(fee === 0 ? 'review' : 'pin');
-        }}
-      >
-        Register anyway
-      </button>
-    );
+    footerPrimary = <button className={`${styles.confirmButton} goldBTN`} onClick={() => {
+      setOverlapAcknowledged(true);
+      setPhase(fee === 0 ? 'review' : 'pin');
+    }}>
+        {tt("ui.register.anyway.748d", "Register anyway")}
+      </button>;
     // The clash, named, with both options. Plenty of people intend to play two
     // things in one evening; the point is that nobody does it by accident.
-    body = (
-      <div className={styles.kycBox}>
-        <p className={styles.subtitle} style={{ marginBottom: 12 }}>
-          This runs at the same time as{' '}
-          <strong>{conflict?.title || 'another tournament'}</strong>
-          {conflict?.starts_at
-            ? `, which starts ${new Date(conflict.starts_at).toLocaleString()}`
-            : ''}
-          , and you are already registered for it.
+    body = <div className={styles.kycBox}>
+        <p className={styles.subtitle} style={{
+        marginBottom: 12
+      }}>
+          {tt("ui.this.runs.at.same.4af5", "This runs at the same time as")}{' '}
+          <strong>{conflict?.title || tx("another tournament")}</strong>
+          {conflict?.starts_at ? `, which starts ${new Date(conflict.starts_at).toLocaleString()}` : ''}
+          {tt("ui.are.already.registered.it.03e6", ", and you are already registered for it.")}
         </p>
-        <p className={styles.subtitle} style={{ marginBottom: 0 }}>
-          You can register for both, but you will have to choose between them on the day.
+        <p className={styles.subtitle} style={{
+        marginBottom: 0
+      }}>
+          {tt("ui.can.register.both.but.2cfc", "You can register for both, but you will have to choose between them on the day.")}
         </p>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className={styles.modalOverlay} onClick={handleClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+  return <div className={styles.modalOverlay} onClick={handleClose}>
+      <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>
             <button className={styles.backButton} onClick={handleBack} disabled={backDisabled}>
@@ -523,9 +505,7 @@ const PaymentModal = ({
         </div>
 
         <div className={styles.modalBody}>
-          {(phase === 'review' || phase === 'insufficient') && (
-            <p className={styles.subtitle}>Entry fee is paid from your V-ENT wallet (VENT COINS).</p>
-          )}
+          {(phase === 'review' || phase === 'insufficient') && <p className={styles.subtitle}>{tt("ui.entry.fee.paid.from.e3c6", "Entry fee is paid from your V-ENT wallet (VENT COINS).")}</p>}
           {body}
         </div>
 
@@ -536,8 +516,6 @@ const PaymentModal = ({
           {footerPrimary}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PaymentModal;

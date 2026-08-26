@@ -1,10 +1,16 @@
-import { privateMetadata } from '@/lib/seo';
+import { buildMetadata, currentLocale } from '@/lib/seo';
+import { privateTitle } from '@/lib/seoCopy';
 
 // Personal, or behind a login. Titled so the browser tab is not blank, and
-// noindex because it is no use in a search result.
-// Per request rather than a static const, so the locale is known.
+// noindex because it is of no use in a search result.
 export async function generateMetadata() {
-  return privateMetadata('Disputes');
+  const locale = currentLocale();
+  return buildMetadata({
+    title: privateTitle('disputes', locale),
+    noindex: true,
+    path: '/disputes',
+    locale,
+  });
 }
 
 export default function Layout({ children }) {

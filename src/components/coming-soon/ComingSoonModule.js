@@ -1,8 +1,10 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
 import { FaBell, FaCheckCircle } from 'react-icons/fa';
 import styles from './coming-soon.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 /**
  * ComingSoonModule
@@ -26,118 +28,100 @@ const ComingSoonModule = ({
   features = [],
   ctaText = 'Notify me',
   phaseLabel,
-  accentColor = 'red',
+  accentColor = 'red'
 }) => {
+  const tx = useTx();
+  const tt = useT();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const trimmed = email.trim();
     if (!trimmed) {
-      setError('Please enter your email.');
+      setError(tt("msg.pleaseEnterYourEmail", "Please enter your email."));
       return;
     }
     // Lightweight email sanity check (UI-only, no API)
     const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
     if (!valid) {
-      setError('Please enter a valid email address.');
+      setError(tt("msg.pleaseEnterAValidEmail", "Please enter a valid email address."));
       return;
     }
     setError('');
     setSubmitted(true);
     setEmail('');
   };
-
   const ctaClass = accentColor === 'grn' ? 'goldBTN' : 'redBTN';
   const accentVar = accentColor === 'grn' ? 'var(--v-ent-gold)' : 'var(--v-ent-red)';
-
-  return (
-    <div className={styles.wrapper}>
+  return <div className={styles.wrapper}>
       {/* ── Hero ── */}
       <section className={styles.hero}>
-        {badge && (
-          <span className={styles.badge}>{badge}</span>
-        )}
+        {badge && <span className={styles.badge}>{badge}</span>}
         <h1 className={styles.title}>
           {title}
-          <span className={styles.titleAccent} style={{ background: accentVar }} aria-hidden="true" />
+          <span className={styles.titleAccent} style={{
+          background: accentVar
+        }} aria-hidden="true" />
         </h1>
         <p className={styles.tagline}>{tagline}</p>
-        {description && (
-          <p className={styles.description}>{description}</p>
-        )}
+        {description && <p className={styles.description}>{description}</p>}
       </section>
 
       {/* ── Feature grid ── */}
-      {features.length > 0 && (
-        <section className={styles.featuresSection}>
-          <h2 className={styles.sectionHeading}>What to expect</h2>
+      {features.length > 0 && <section className={styles.featuresSection}>
+          <h2 className={styles.sectionHeading}>{tt("ui.what.expect.ed98", "What to expect")}</h2>
           <div className={styles.featureGrid}>
-            {features.map((f, i) => (
-              <div key={i} className={styles.featureCard}>
-                <div className={styles.featureIconWrap} style={{ color: accentVar }}>
+            {features.map((f, i) => <div key={i} className={styles.featureCard}>
+                <div className={styles.featureIconWrap} style={{
+            color: accentVar
+          }}>
                   {f.icon}
                 </div>
-                <h3 className={styles.featureTitle}>{f.title}</h3>
-                <p className={styles.featureDesc}>{f.desc}</p>
-              </div>
-            ))}
+                <h3 className={styles.featureTitle}>{tx(f.title)}</h3>
+                <p className={styles.featureDesc}>{tx(f.desc)}</p>
+              </div>)}
           </div>
-        </section>
-      )}
+        </section>}
 
       {/* ── Email capture ── */}
       <section className={styles.captureSection}>
         <div className={styles.captureInner}>
           <div className={styles.captureHead}>
-            <div className={styles.captureIconWrap} style={{ color: accentVar }}>
+            <div className={styles.captureIconWrap} style={{
+            color: accentVar
+          }}>
               <FaBell />
             </div>
             <div>
-              <h2 className={styles.captureTitle}>Be first to know</h2>
+              <h2 className={styles.captureTitle}>{tt("ui.first.know.be67", "Be first to know")}</h2>
               <p className={styles.captureSub}>
-                Drop your email and we&apos;ll notify you the moment this goes live.
+                {tt("ui.drop.email.we'll.notify.9bd6", "Drop your email and we'll notify you the moment this goes live.")}
               </p>
             </div>
           </div>
 
-          {submitted ? (
-            <div className={styles.successBox}>
+          {submitted ? <div className={styles.successBox}>
               <FaCheckCircle className={styles.successIcon} />
               <p className={styles.successText}>
-                We&apos;ll email you when it launches. Welcome to the early-access list.
+                {tt("ui.we'll.email.when.it.29b7", "We'll email you when it launches. Welcome to the early-access list.")}
               </p>
-            </div>
-          ) : (
-            <form className={styles.captureForm} onSubmit={handleSubmit} noValidate>
-              <input
-                type="email"
-                className={styles.captureInput}
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
-                aria-label="Email address"
-              />
+            </div> : <form className={styles.captureForm} onSubmit={handleSubmit} noValidate>
+              <input type="email" className={styles.captureInput} placeholder={tt("ui.example.com.50e2", "you@example.com")} value={email} onChange={e => {
+            setEmail(e.target.value);
+            if (error) setError('');
+          }} aria-label={tt("ui.email.address.c94d", "Email address")} />
               <button type="submit" className={`${styles.captureBtn} btn ${ctaClass}`}>
                 {ctaText}
               </button>
-            </form>
-          )}
+            </form>}
 
-          {!submitted && error && (
-            <p className={styles.errorText}>{error}</p>
-          )}
+          {!submitted && error && <p className={styles.errorText}>{error}</p>}
         </div>
       </section>
 
       {/* ── Phase footer ── */}
-      {phaseLabel && (
-        <p className={styles.phaseFooter}>{phaseLabel}</p>
-      )}
-    </div>
-  );
+      {phaseLabel && <p className={styles.phaseFooter}>{phaseLabel}</p>}
+    </div>;
 };
-
 export default ComingSoonModule;

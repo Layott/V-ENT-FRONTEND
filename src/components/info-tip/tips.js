@@ -280,6 +280,339 @@ export const TIPS = {
   rateLimit:
     'How many requests a minute this key may make. Past it, requests are refused until '
     + 'the next minute.',
+
+  // ---------------------------------------------------------------------
+  // Added when the tips were placed on every control rather than only on
+  // the tournament options panel, which was the one place they had reached.
+  // ---------------------------------------------------------------------
+  venue:
+    'The address people turn up to. Only asked for when the tournament is in '
+    + 'person or hybrid, and it is what somebody puts into a map.',
+  virtualLink:
+    'The lobby, server or voice channel players join. Share it here rather than '
+    + 'chasing forty people with it on the day.',
+  selectEvent:
+    'Attach this tournament to one of your events. When the event has shared '
+    + 'ticketing on, a ticket covers the entry fee too, so nobody pays twice for '
+    + 'the same afternoon.',
+  regStartDate:
+    'When people can start signing up. Leave it now if you want registration '
+    + 'open the moment you publish.',
+  regEndDate:
+    'When registration closes. It has to be on or before the start, because a '
+    + 'bracket cannot be drawn while people are still joining.',
+  recurring:
+    'Repeat this tournament on a schedule instead of creating it again each '
+    + 'week. Each run gets its own bracket and its own entrants.',
+  maxCycles:
+    'How many times it repeats before it stops on its own. Leave it indefinite '
+    + 'and it keeps running until you end it.',
+  numberOfTeams:
+    'How many team slots there are. Once they are full nobody else can enter, '
+    + 'and they are told so rather than being let in and cut later.',
+  prizeExtras:
+    'Anything that is not coins: hardware, a trophy, a slot in a bigger event. '
+    + 'Write what the winner actually receives.',
+  prizePlace:
+    'Which finishing position this amount is paid for. First place is required; '
+    + 'the rest are yours to decide.',
+  teamRegion:
+    'Where your team plays from. It decides which scrims and regional '
+    + 'tournaments you are shown.',
+  teamSocial:
+    'Where people can find your team. Shown on your team page, and it is what '
+    + 'organisers check before inviting you to anything.',
+  teamLogo:
+    'Your crest, shown beside the team name everywhere it appears. A square '
+    + 'image works best because that is the shape it is drawn in.',
+  teamBanner:
+    'The wide image across the top of your team page.',
+  topUpAmount:
+    'How many VENT COINS to buy. One VENT COIN is 1,000 naira, and the naira '
+    + 'total is shown before you pay.',
+  withdrawAmount:
+    'How many VENT COINS to turn back into naira. Your identity has to be '
+    + 'verified first, because paying out real money legally requires it.',
+  bankName:
+    'The bank the money goes to. It has to be a Nigerian bank account in your '
+    + 'own name; a payout to somebody else is refused.',
+  accountNumber:
+    'Your ten-digit account number. It is checked with the bank and the name '
+    + 'that comes back is shown to you before anything is sent.',
+  accountName:
+    'The name the bank has on the account. This is read back from the bank '
+    + 'rather than typed, so if it looks wrong the account number is wrong.',
+  saveBank:
+    'Keeps this account for next time so you do not retype it. You can remove '
+    + 'it in Settings, Payments.',
+  sendRecipient:
+    'Who receives the coins: their username or the email they signed up with. '
+    + 'Their name is shown back to you before you confirm.',
+  sendMemo:
+    'A short note the person sees beside the transfer. Useful when it is a '
+    + 'prize, a split, or a repayment.',
+  currentPin:
+    'The PIN you use now. Asked for so that somebody who picks up your unlocked '
+    + 'phone cannot simply set a new one.',
+  confirmPin:
+    'Type the new PIN again. A PIN with a typo in it locks you out of your own '
+    + 'money until support resets it.',
+  showPin:
+    'Shows the digits while you type them. Useful on a phone, and worth turning '
+    + 'off if somebody is beside you.',
+  currentPassword:
+    'Your password now. Asked for so a password change needs more than an open '
+    + 'browser tab.',
+  newPassword:
+    'What you want it to be. Longer beats complicated: a phrase you can '
+    + 'remember is stronger than a short word with symbols in it.',
+  confirmPassword:
+    'Type the new password again, so a typo does not lock you out.',
+  totpCode:
+    'The six-digit code from your authenticator app. It changes every thirty '
+    + 'seconds, so if it is refused, wait for the next one.',
+  profileFields:
+    'Which parts of your profile other people can see. Everything here is off '
+    + 'unless you turn it on.',
+  discovery:
+    'Whether search engines may list your profile. Turning it off keeps you out '
+    + 'of Google as well as out of the site search.',
+  notificationPrefs:
+    'Which things reach you, and by which route. Security alerts cannot be '
+    + 'switched off, because they are how you find out about somebody else '
+    + 'signing in.',
+  currencyDisplay:
+    'The currency amounts are shown in. It changes only what you read; '
+    + 'everything is still held and paid in VENT COINS.',
+  dateFormat:
+    'How dates are written on the site. Day first, or month first.',
+  defaultPayment:
+    'Which method is used first when you top up. You can still pick another one '
+    + 'at the time.',
+  savedCards:
+    'Cards kept for faster top-ups. V-ENT stores a token from Paystack, never '
+    + 'your card number, and you can remove one at any time.',
+  savedBanks:
+    'Accounts kept for faster withdrawals. Removing one here does not affect a '
+    + 'payout already on its way.',
+  accountEmail:
+    'Where every notification, receipt and reset link goes. Changing it needs '
+    + 'the new address confirmed before it takes effect.',
+  fullName:
+    'Your real name. Kept private, and used to check against your ID when you '
+    + 'verify, so it has to match the document.',
+  username:
+    'How you appear everywhere on the site, and part of your profile address. '
+    + 'Change it and the old address keeps working.',
+  profileCompletion:
+    'How much of your profile is filled in. Organisers and teams read these '
+    + 'fields, so an empty profile gets fewer invitations.',
+  founderBadge:
+    'The mark shown on accounts that joined before launch. You can wear it or '
+    + 'switch it off.',
+  scrimTeam:
+    'Which of your teams is playing. You can only offer a scrim for a team you '
+    + 'own or captain.',
+  scrimFormat:
+    'The shape of the practice match: 5v5, best of three, whatever you want to '
+    + 'run. The other team accepts this as written.',
+  scrimRegion:
+    'Where you want opponents from. Ping is a real part of practice, so a '
+    + 'closer region usually plays better.',
+  scrimSchedule:
+    'When you want to play. Shown in the other team\'s own timezone, so nobody '
+    + 'has to work it out.',
+  scrimOpponent:
+    'Name a team to offer it to only them. Leave it empty and any team can '
+    + 'accept.',
+  scrimNotes:
+    'Anything the other team should know first: maps, rules, whether you are '
+    + 'recording.',
+  orgName:
+    'The name of your organisation, shown on its page and in any link you '
+    + 'share.',
+  orgTag:
+    'A short code for your organisation, the way a team has a tag. Three or '
+    + 'four characters is usual.',
+  orgLogo:
+    'Shown beside the organisation name everywhere it appears.',
+  orgBanner:
+    'The wide image across the top of the organisation page.',
+  orgBio:
+    'What your organisation does and what it is looking for. Teams read this '
+    + 'before asking to join.',
+  orgRegion:
+    'Where the organisation is based. It decides which regional listings it '
+    + 'appears in.',
+  partnerName:
+    'The name shown to your users on the V-ENT sign-in screen, so use the name '
+    + 'they know you by.',
+  partnerEmail:
+    'Where we write about your application, your keys, and anything that '
+    + 'changes about the API.',
+  partnerWebsite:
+    'Where your product lives. It is the first thing checked when your '
+    + 'application is reviewed.',
+  partnerWhoYouAre:
+    'Who is behind this. A real description gets reviewed faster than a blank '
+    + 'one.',
+  partnerWhatYouBuild:
+    'What you want to do with the data. Ask for what you need: an application '
+    + 'that asks for everything gets read more slowly.',
+  partnerLegalName:
+    'Your registered company name, as it appears on your incorporation '
+    + 'documents.',
+  partnerRegNumber:
+    'Your company or registration number. Needed before any key that reads '
+    + 'personal data is issued.',
+  partnerPrivacyUrl:
+    'Your own privacy policy. Required because your users\' data reaches you '
+    + 'through this key, and they are entitled to know what happens to it.',
+  partnerDataContact:
+    'The person to write to about a data question or a deletion request. A '
+    + 'named human, not a shared inbox that nobody reads.',
+  adminTournamentFee:
+    'The share V-ENT takes from each tournament entry fee, as a percentage. '
+    + 'Applied at registration, not at payout.',
+  adminWithdrawalFee:
+    'The share taken when somebody withdraws to a bank, as a percentage. Shown '
+    + 'to them before they confirm.',
+  adminListingFee:
+    'The share taken on a marketplace sale, as a percentage.',
+  adminMinPayout:
+    'The smallest withdrawal allowed, in VENT COINS. Set to cover the bank '
+    + 'transfer cost, otherwise small payouts cost more than they move.',
+  adminDailyCap:
+    'The most one account may top up in a day, in naira. A fraud limit rather '
+    + 'than a business one.',
+  adminBanner:
+    'A message shown across the top of the site to everybody. Use it for '
+    + 'planned downtime and real incidents only.',
+  adminMaintenance:
+    'What people are told while the site is closed for maintenance. Write when '
+    + 'it will be back, because that is the only question anybody has.',
+
+  // The event wizard and the edit panels.
+  eventName:
+    'The name people see in the list and on the ticket. Something they will '
+    + 'recognise on the door works better than something clever.',
+  eventDescription:
+    'What happens, who it is for, and what to bring. This is what somebody '
+    + 'reads before deciding to buy a ticket.',
+  eventGame:
+    'The game this event is about, if it is about one. Leave it empty for a '
+    + 'convention or a meet-up covering several.',
+  eventBanner:
+    'The wide image at the top of the event page, and the picture that shows '
+    + 'when the link is shared.',
+  eventCategory:
+    'What kind of event this is: a convention, a meet-up, a LAN, a watch party. '
+    + 'It decides which filter finds it.',
+  eventStart:
+    'When it begins. Shown to everybody in their own timezone, so a Lagos '
+    + 'evening reads correctly in Luanda.',
+  eventEnd:
+    'When you expect it to be over. It is what tells somebody whether this '
+    + 'clashes with something else they signed up for.',
+  eventVenue:
+    'The address people travel to. Only asked for when the event is in person '
+    + 'or hybrid.',
+  eventVirtualLink:
+    'Where an online audience joins. Sent with the ticket rather than shown on '
+    + 'the public page.',
+  eventCapacity:
+    'The most people who can attend. Once tickets reach it the event shows as '
+    + 'full, rather than overselling the room.',
+  tierName:
+    'What this ticket is called: general entry, VIP, whatever you need. It is '
+    + 'what the buyer sees on the door.',
+  tierPrice:
+    'What this ticket costs, in naira. A free event is priced at zero.',
+  tierQuantity:
+    'How many of this ticket exist. When they run out the tier shows as sold '
+    + 'out rather than overselling the venue.',
+  tierPerks:
+    'What this ticket includes beyond entry: seating, merchandise, early '
+    + 'access. Write what the buyer actually receives.',
+  profileName:
+    'The name shown on your profile, above your username. It can be your real '
+    + 'name or the name you play under.',
+  profileBio:
+    'A few lines about you. Teams looking for players read this, so say what '
+    + 'you play and what you are looking for.',
+  profilePicture:
+    'Your picture and the wide image behind it. Both are shown wherever your '
+    + 'profile appears, including beside your name in a bracket.',
+  interests:
+    'What you are into beyond the games you play. It is what the platform uses '
+    + 'to suggest events and clubs.',
+  sponsorName:
+    'The sponsor as they want to be named. It appears on your tournament page '
+    + 'and in the review step before you publish.',
+  sponsorUsername:
+    'Their handle, so people can find them. Optional, and left blank when the '
+    + 'sponsor is not on social media.',
+  socialLinks:
+    'Where people can find you. Shown on your profile, and it is what an '
+    + 'organiser checks before inviting you to something.',
+
+  // Score overrides, disputes, site-wide switches.
+  adminMatchId:
+    'The match being overridden. Find it on the bracket; changing the wrong one '
+    + 'alters a result somebody already accepted.',
+  adminScore:
+    'The corrected score. It replaces what the players reported, and the change '
+    + 'is written to the audit log with your name on it.',
+  adminWinnerRegId:
+    'Which registration advances. Needed because a corrected score does not by '
+    + 'itself say who goes through when a match was forfeited.',
+  adminReason:
+    'Why you are doing this. Both players see it, and it is the record when '
+    + 'somebody asks six weeks later.',
+  adminDqTeam:
+    'The team being removed from the tournament. They are told, and their '
+    + 'remaining matches are forfeited.',
+  adminFeatureFlags:
+    'Turns a module on or off for everybody at once. A flag switched off hides '
+    + 'the module rather than deleting anything in it.',
+  adminBannerEnabled:
+    'Shows the banner to every visitor, signed in or not. Off is the normal '
+    + 'state.',
+  adminBannerTitle:
+    'The line people read first. Keep it to the fact: what is happening, not '
+    + 'how sorry anybody is.',
+  adminBannerType:
+    'How the banner is coloured, which is how urgent it looks. Use the '
+    + 'strongest one for something actually broken.',
+  adminMaintenanceEnabled:
+    'Closes the site to everybody except administrators. Use it for a '
+    + 'migration, not for a slow afternoon.',
+  screenshotUrl:
+    'A link to the final scoreboard. It is what turns a disagreement into a '
+    + 'two-minute decision, so attach it every time.',
+  reportScoreInput:
+    'The score as it finished. Your opponent is asked to confirm it, and it '
+    + 'counts once they do.',
+  disputeReason:
+    'What actually happened, in your words. The organiser reads this beside '
+    + 'whatever screenshot you attach.',
+  recurrence:
+    'How often this repeats: weekly, monthly, yearly. Each run gets its own '
+    + 'bracket and its own entrants.',
+  endCriteria:
+    'When the repeating stops. Either after a set number of runs, or not until '
+    + 'you end it yourself.',
+  orgContactEmail:
+    'Where teams and organisers write to reach you. Shown on your public '
+    + 'organisation page.',
+  orgLocation:
+    'Where the organisation is based, as people would say it. Shown on the page '
+    + 'and used in regional listings.',
+  orgSocial:
+    'Where people can find your organisation. Shown on its page.',
+  uploadImage:
+    'Choose a picture from this device. Square works for a logo and wide works '
+    + 'for a banner, because those are the shapes they are drawn in.',
 };
 
 export default TIPS;

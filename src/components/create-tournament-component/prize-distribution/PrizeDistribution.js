@@ -4,32 +4,40 @@ import PrizeDistributionInside from "./prize-distribution-inside/PrizeDistributi
 import { validatePrizeDistribution } from "../tournamentWizardValidation";
 import ValidationSummary from "../validation-summary/ValidationSummary";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 // Uses the parent's live formData/updateLocalStorage directly (see the note
 // in FormatParticipants.js for why this step no longer keeps its own
 // localStorage-loaded copy).
-const PrizeDistribution = ({ setSelectedTab, formData = {}, updateLocalStorage, handleSubmit, isSavingDraft }) => {
+const PrizeDistribution = ({
+  setSelectedTab,
+  formData = {},
+  updateLocalStorage,
+  handleSubmit,
+  isSavingDraft
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const [errors, setErrors] = useState({});
-
   const handleProceed = () => {
-    const { isValid, errors: fieldErrors } = validatePrizeDistribution(formData);
+    const {
+      isValid,
+      errors: fieldErrors
+    } = validatePrizeDistribution(formData);
     setErrors(fieldErrors);
     if (!isValid) return;
-    setSelectedTab((prevTab) => prevTab + 1);
+    setSelectedTab(prevTab => prevTab + 1);
   };
-
   const handleBack = () => {
-    setSelectedTab((prevTab) => prevTab - 1);
+    setSelectedTab(prevTab => prevTab - 1);
   };
-
   const handleSaveDraft = () => {
     if (handleSubmit) handleSubmit(true);
   };
-
-  return (
-    <div className={createTournamentStyles.generalTabContainer}>
+  return <div className={createTournamentStyles.generalTabContainer}>
       <header className={createTournamentStyles.createTournamentHeader}>
-        <h1>Prize Distribution</h1>
+        <h2>{tt("ui.prize.distribution.700b", "Prize Distribution")}</h2>
       </header>
 
       <ValidationSummary errors={errors} />
@@ -37,34 +45,22 @@ const PrizeDistribution = ({ setSelectedTab, formData = {}, updateLocalStorage, 
       <PrizeDistributionInside formData={formData} updateFormData={updateLocalStorage} />
 
       <div className={createTournamentStyles.buttonContainer}>
-        <button
-          className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`}
-          onClick={handleSaveDraft}
-          disabled={isSavingDraft}
-        >
-          {isSavingDraft ? 'Saving...' : 'Save Draft'}
+        <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={handleSaveDraft} disabled={isSavingDraft}>
+          {isSavingDraft ? tx("Saving...") : tx("Save Draft")}
         </button>
 
         <div className={createTournamentStyles.backAndProceedContainer}>
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`}
-            onClick={handleBack}
-          >
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.backBTN}`} onClick={handleBack}>
             <IoMdArrowBack className={createTournamentStyles.backArrowIcon} />
-            Back
+            {tt("ui.back.b52b", "Back")}
           </button>
 
-          <button
-            className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`}
-            onClick={handleProceed}
-          >
-            Proceed
+          <button className={`${createTournamentStyles.btn} ${createTournamentStyles.proceedBTN}`} onClick={handleProceed}>
+            {tt("ui.proceed.02ed", "Proceed")}
             <IoMdArrowForward className={createTournamentStyles.forwardArrowIcon} />
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PrizeDistribution;

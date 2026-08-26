@@ -249,3 +249,15 @@
     width: 90%;
   }
 }
+/* The wordmark beside the footer logo. It was an h2, which gave a screen
+   reader a heading called "v-ent" at the bottom of every landing page and gave
+   the element the browser's h2 size plus the global heading font. It is a link
+   home now, so the type it had is restated here rather than inherited. */
+.wordmark {
+  font-family: var(--font-fraunces), "Fraunces", "ClashGrotesk-Variable", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--primary-bg);
+}

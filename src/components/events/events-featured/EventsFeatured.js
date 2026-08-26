@@ -1,3 +1,4 @@
+import { mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image'
 import Link from 'next/link'
 import { FiCalendar } from "react-icons/fi";
@@ -62,7 +63,7 @@ const EventsFeatured = ({ featuredEvents = [] }) => {
               <div key={eventId} className={menuContentStyles.sliderContainer}>
                 <div className={`${menuContentStyles.imageContainer} ${menuContentStyles['eventFeatureContainerDisplay']}`}>
                   <Image
-                    src={getEventImage(event)}
+                    src={mediaUrl(getEventImage(event))}
                     alt={event.name || "Featured Event"}
                     fill
                     style={{ objectFit: 'cover' }}

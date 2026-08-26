@@ -1,37 +1,32 @@
-'use client'
+'use client';
 
+import { mediaUrl } from '@/lib/mediaUrl';
+import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import {
-  FaStore,
-  FaCheckCircle,
-  FaShoppingCart,
-  FaStar,
-  FaMapPin,
-} from 'react-icons/fa';
-import {
-  IoArrowBack,
-  IoLocationOutline,
-  IoChatbubblesOutline,
-} from 'react-icons/io5';
+import { FaStore, FaCheckCircle, FaShoppingCart, FaStar, FaMapPin } from 'react-icons/fa';
+import { IoArrowBack, IoLocationOutline, IoChatbubblesOutline } from 'react-icons/io5';
 import { MdOutlineClose } from 'react-icons/md';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './vendor.module.css';
-
-const CART_STORAGE_KEY = (eventId) => `vendor_cart_${eventId || 'unknown'}`;
-
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 const VendorStallContent = () => {
-  const { data: session } = useSession();
+  const tx = useTx();
+  const tt = useT();
+  const {
+    data: session
+  } = useSession();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('event') || 'evt_2000';
   const vendorId = searchParams.get('vendor') || searchParams.get('id') || '';
-
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,16 +40,15 @@ const VendorStallContent = () => {
   const [placing, setPlacing] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [placedOrder, setPlacedOrder] = useState(null);
-
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   }), [session?.user?.sessionToken]);
 
   // Fetch vendor
   useEffect(() => {
     if (!vendorId) {
-      setError('Vendor ID missing');
+      setError(tt("msg.vendorIdMissing", "Vendor ID missing"));
       setLoading(false);
       return;
     }
@@ -62,19 +56,18 @@ const VendorStallContent = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendor/${vendorId}/`,
-          { headers: authHeaders() }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendor/${vendorId}/`, {
+          headers: authHeaders()
+        });
         const data = await res.json();
         if (data.status === 'success') {
           setVendor(data.data.vendor);
         } else {
-          setError(data.message || 'Vendor not found.');
+          setError(data.message || tt("api.vendorNotFound", "Vendor not found."));
         }
       } catch (err) {
         console.error('Vendor fetch error:', err);
-        setError('Network error');
+        setError(tt("msg.networkError", "Network error"));
       } finally {
         setLoading(false);
       }
@@ -101,36 +94,33 @@ const VendorStallContent = () => {
     if (!eventId || typeof window === 'undefined' || !cartHydrated.current) return;
     localStorage.setItem(CART_STORAGE_KEY(eventId), JSON.stringify(cart));
   }, [cart, eventId]);
-
-  const addToCart = (p) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.id === p.id);
+  const addToCart = p => {
+    setCart(prev => {
+      const existing = prev.find(i => i.id === p.id);
       if (existing) {
-        return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
+        return prev.map(i => i.id === p.id ? {
+          ...i,
+          qty: i.qty + 1
+        } : i);
       }
-      return [
-        ...prev,
-        {
-          ...p,
-          qty: 1,
-          vendor_id: vendor?.id,
-          vendor_name: vendor?.name,
-          price_ngn: p.price_ngn ?? 0,
-        },
-      ];
+      return [...prev, {
+        ...p,
+        qty: 1,
+        vendor_id: vendor?.id,
+        vendor_name: vendor?.name,
+        price_ngn: p.price_ngn ?? 0
+      }];
     });
     setActiveProduct(null);
   };
-
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartTotalVc = cart.reduce((s, i) => s + Number(i.price || 0) * i.qty, 0);
-
   const changeQty = (id, delta) => {
-    setCart((prev) => prev
-      .map((i) => (i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i))
-      .filter((i) => i.qty > 0));
+    setCart(prev => prev.map(i => i.id === id ? {
+      ...i,
+      qty: Math.max(0, i.qty + delta)
+    } : i).filter(i => i.qty > 0));
   };
-
   const placeOrder = async () => {
     if (!cart.length) return;
     if (cartTotalVc > 0 && pin.length < 4) {
@@ -144,46 +134,48 @@ const VendorStallContent = () => {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
-          items: cart.map((i) => ({ product_id: i.id, quantity: i.qty })),
-          pin,
-        }),
+          items: cart.map(i => ({
+            product_id: i.id,
+            quantity: i.qty
+          })),
+          pin
+        })
       });
       const data = await res.json();
       if (data.status !== 'success') {
-        setOrderError(data.message || 'Could not place the order.');
+        setOrderError(data.message || tt("api.couldNotPlaceTheOrder", "Could not place the order."));
         return;
       }
       setPlacedOrder(data.data.order);
       setCart([]);
       setPin('');
-      try { localStorage.removeItem(CART_STORAGE_KEY(eventId)); } catch {}
+      try {
+        localStorage.removeItem(CART_STORAGE_KEY(eventId));
+      } catch {}
     } catch {
       setOrderError('Connection error. Please try again.');
     } finally {
       setPlacing(false);
     }
   };
-
   const submitContact = () => {
     if (!contactMsg.trim()) return;
     setContactSent(true);
     setContactMsg('');
   };
-
   const closeContact = () => {
     setContactOpen(false);
     setContactSent(false);
     setContactMsg('');
   };
-
   const productInCartQty = useMemo(() => {
     const map = {};
-    cart.forEach((i) => { map[i.id] = i.qty; });
+    cart.forEach(i => {
+      map[i.id] = i.qty;
+    });
     return map;
   }, [cart]);
-
-  const renderShell = (content) => (
-    <div className={styles.pageContainer}>
+  const renderShell = content => <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
       <main className={styles.mainContainer}>
@@ -191,27 +183,16 @@ const VendorStallContent = () => {
         <div className={styles.rightPaneContainer}>{content}</div>
       </main>
       <BottomMenu />
-    </div>
-  );
-
-  if (loading) return renderShell(<p className={styles.stateText}>Loading vendor stall…</p>);
-
-  if (error || !vendor)
-    return renderShell(
-      <div className={styles.errorState}>
-        <h3 className={styles.errorTitle}>Couldn&apos;t load vendor</h3>
-        <p className={styles.errorSub}>{error || 'Vendor not found.'}</p>
-        <Link
-          href={`/events/${eventId}/vendor-shop`}
-          className={`${styles.errorBtn} goldBTN`}
-        >
-          Back to vendor shop
+    </div>;
+  if (loading) return renderShell(<p className={styles.stateText}>{tt("ui.loading.vendor.stall.0650", "Loading vendor stall…")}</p>);
+  if (error || !vendor) return renderShell(<div className={styles.errorState}>
+        <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h2>
+        <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
+        <Link href={`/events/${eventId}/vendor-shop`} className={`${styles.errorBtn} goldBTN`}>
+          {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
         </Link>
-      </div>
-    );
-
-  return (
-    <div className={styles.pageContainer}>
+      </div>);
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -220,35 +201,19 @@ const VendorStallContent = () => {
 
         <div className={styles.rightPaneContainer}>
           <div className={styles.topRow}>
-            <Link
-              href={`/events/${eventId}/vendor-shop`}
-              className={styles.backLink}
-            >
-              <IoArrowBack /> Back to vendors
+            <Link href={`/events/${eventId}/vendor-shop`} className={styles.backLink}>
+              <IoArrowBack /> {tt("ui.back.vendors.5aba", "Back to vendors")}
             </Link>
-            <Link
-              href={`/events/${eventId}/vendor-shop`}
-              className={styles.cartChip}
-            >
-              <FaShoppingCart /> {cartCount} in cart
+            <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
+              <FaShoppingCart /> {cartCount} {tt("ui.cart.91c0", "in cart")}
             </Link>
           </div>
 
           {/* Banner */}
           <div className={styles.bannerWrap}>
-            {vendor.banner ? (
-              <Image
-                src={vendor.banner}
-                alt={`${vendor.name} banner`}
-                fill
-                sizes="(min-width: 1024px) 70vw, 100vw"
-                style={{ objectFit: 'cover' }}
-                unoptimized
-                priority
-              />
-            ) : (
-              <div className={styles.bannerFallback}><FaStore /></div>
-            )}
+            {vendor.banner ? <Image src={mediaUrl(vendor.banner)} alt={`${vendor.name} banner`} fill sizes="(min-width: 1024px) 70vw, 100vw" style={{
+            objectFit: 'cover'
+          }} unoptimized priority /> : <div className={styles.bannerFallback}><FaStore /></div>}
             <div className={styles.bannerOverlay} />
           </div>
 
@@ -256,366 +221,230 @@ const VendorStallContent = () => {
           <div className={styles.headerBlock}>
             <div className={styles.headerLeft}>
               <div className={styles.logoWrap}>
-                {vendor.logo ? (
-                  <Image
-                    src={vendor.logo}
-                    alt={vendor.name}
-                    width={84}
-                    height={84}
-                    className={styles.vendorLogo}
-                    unoptimized
-                  />
-                ) : (
-                  <div className={styles.vendorLogoPlaceholder}><FaStore /></div>
-                )}
+                {vendor.logo ? <Image src={mediaUrl(vendor.logo)} alt={vendor.name} width={84} height={84} className={styles.vendorLogo} unoptimized /> : <div className={styles.vendorLogoPlaceholder}><FaStore /></div>}
               </div>
               <div>
                 <div className={styles.titleRow}>
-                  <h2 className={styles.vendorName}>{vendor.name}</h2>
+                  <h1 className={styles.vendorName}>{vendor.name}</h1>
                   <span className={`${styles.statusPill} ${styles['status_' + vendor.status]}`}>
                     {vendor.status}
                   </span>
                 </div>
                 <div className={styles.metaRow}>
                   <span className={styles.metaItem}>
-                    <IoLocationOutline /> Booth {vendor.booth_number || vendor.booth}
+                    <IoLocationOutline /> {tt("ui.booth.8ca3", "Booth")} {vendor.booth_number || vendor.booth}
                   </span>
-                  {vendor.category && (
-                    <span className={styles.category}>{vendor.category}</span>
-                  )}
-                  {typeof vendor.rating === 'number' && (
-                    <span className={styles.metaItem}>
+                  {vendor.category && <span className={styles.category}>{vendor.category}</span>}
+                  {typeof vendor.rating === 'number' && <span className={styles.metaItem}>
                       <FaStar className={styles.starIcon} /> {vendor.rating.toFixed(1)}
-                    </span>
-                  )}
+                    </span>}
                 </div>
               </div>
             </div>
 
             <div className={styles.headerActions}>
-              <button
-                className={styles.contactBtn}
-                onClick={() => setContactOpen(true)}
-                type="button"
-              >
-                <IoChatbubblesOutline /> Contact
+              <button className={styles.contactBtn} onClick={() => setContactOpen(true)} type="button">
+                <IoChatbubblesOutline /> {tt("ui.contact.b374", "Contact")}
               </button>
-              <Link
-                href={`/events/${eventId}?tab=map`}
-                className={`${styles.mapBtn} goldBTN`}
-              >
-                <FaMapPin /> Visit booth at venue
+              <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} goldBTN`}>
+                <FaMapPin /> {tt("ui.visit.booth.venue.68db", "Visit booth at venue")}
               </Link>
             </div>
           </div>
 
-          {vendor.description && (
-            <p className={styles.description}>{vendor.description}</p>
-          )}
+          {vendor.description && <p className={styles.description}>{tx(vendor.description)}</p>}
 
-          <h3 className={styles.sectionTitle}>Products</h3>
+          <h2 className={styles.sectionTitle}>{tt("ui.products.fe0a", "Products")}</h2>
 
-          {(!vendor.products || vendor.products.length === 0) ? (
-            <p className={styles.stateText}>No products available yet.</p>
-          ) : (
-            <div className={styles.productGrid}>
-              {vendor.products.map((p) => (
-                <button
-                  key={p.id}
-                  className={styles.productCard}
-                  onClick={() => setActiveProduct(p)}
-                  type="button"
-                >
+          {!vendor.products || vendor.products.length === 0 ? <p className={styles.stateText}>{tt("ui.no.products.available.yet.33c5", "No products available yet.")}</p> : <div className={styles.productGrid}>
+              {vendor.products.map(p => <button key={p.id} className={styles.productCard} onClick={() => setActiveProduct(p)} type="button">
                   <div className={styles.productImgWrap}>
-                    {p.image ? (
-                      <Image
-                        src={p.image}
-                        alt={p.name}
-                        fill
-                        sizes="(min-width: 1024px) 25vw, 50vw"
-                        style={{ objectFit: 'cover' }}
-                        unoptimized
-                      />
-                    ) : (
-                      <div className={styles.productImgFallback}><FaStore /></div>
-                    )}
-                    {!p.in_stock && <span className={styles.oosBadge}>Sold out</span>}
-                    {productInCartQty[p.id] > 0 && (
-                      <span className={styles.inCartBadge}>
-                        <FaCheckCircle /> {productInCartQty[p.id]} in cart
-                      </span>
-                    )}
+                    {p.image ? <Image src={mediaUrl(p.image)} alt={p.name} fill sizes="(min-width: 1024px) 25vw, 50vw" style={{
+                objectFit: 'cover'
+              }} unoptimized /> : <div className={styles.productImgFallback}><FaStore /></div>}
+                    {!p.in_stock && <span className={styles.oosBadge}>{tt("ui.sold.out.02ff", "Sold out")}</span>}
+                    {productInCartQty[p.id] > 0 && <span className={styles.inCartBadge}>
+                        <FaCheckCircle /> {productInCartQty[p.id]} {tt("ui.cart.91c0", "in cart")}
+                      </span>}
                   </div>
                   <div className={styles.productBody}>
                     <p className={styles.productName}>{p.name}</p>
                     <p className={styles.productPrice}>
                       {Number(p.price || 0).toLocaleString()} VC
                     </p>
-                    <span
-                      className={styles.addBtn}
-                    >
-                      {p.in_stock ? 'Add to cart' : 'Unavailable'}
+                    <span className={styles.addBtn}>
+                      {p.in_stock ? tx("Add to cart") : 'Unavailable'}
                     </span>
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
+                </button>)}
+            </div>}
         </div>
       </main>
 
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && (
-        <div
-          className={styles.modalOverlay}
-          onClick={(e) => { if (e.target === e.currentTarget) setActiveProduct(null); }}
-        >
+      {activeProduct && <div className={styles.modalOverlay} onClick={e => {
+      if (e.target === e.currentTarget) setActiveProduct(null);
+    }}>
           <div className={styles.productModal}>
-            <button
-              className={styles.modalCloseAbs}
-              onClick={() => setActiveProduct(null)}
-              type="button"
-              aria-label="Close"
-            >
+            <button className={styles.modalCloseAbs} onClick={() => setActiveProduct(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
               <MdOutlineClose />
             </button>
             <div className={styles.productModalImgWrap}>
-              {activeProduct.image ? (
-                <Image
-                  src={activeProduct.image}
-                  alt={activeProduct.name}
-                  fill
-                  sizes="500px"
-                  style={{ objectFit: 'cover' }}
-                  unoptimized
-                />
-              ) : (
-                <div className={styles.productImgFallback}><FaStore /></div>
-              )}
+              {activeProduct.image ? <Image src={mediaUrl(activeProduct.image)} alt={activeProduct.name} fill sizes="500px" style={{
+            objectFit: 'cover'
+          }} unoptimized /> : <div className={styles.productImgFallback}><FaStore /></div>}
             </div>
             <div className={styles.productModalBody}>
               <p className={styles.productModalVendor}>{vendor.name}</p>
-              <h3 className={styles.productModalName}>{activeProduct.name}</h3>
+              <h2 className={styles.productModalName}>{activeProduct.name}</h2>
               <p className={styles.productModalPrice}>
                 {Number(activeProduct.price || 0).toLocaleString()} VC
               </p>
               <p className={styles.productModalDesc}>
-                {activeProduct.description || 'Vendor-exclusive item, on-site pickup only.'}
+                {activeProduct.description || tx("Vendor-exclusive item, on-site pickup only.")}
               </p>
               <p className={styles.stockHint}>
-                {activeProduct.in_stock
-                  ? `${activeProduct.stock || 'Limited'} available • Booth ${vendor.booth_number || vendor.booth}`
-                  : 'Currently sold out - check back later.'}
+                {activeProduct.in_stock ? `${activeProduct.stock || 'Limited'} available • Booth ${vendor.booth_number || vendor.booth}` : tx("Currently sold out - check back later.")}
               </p>
-              <button
-                className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`}
-                onClick={() => addToCart(activeProduct)}
-                disabled={!activeProduct.in_stock}
-                type="button"
-              >
-                {activeProduct.in_stock ? 'Add to cart' : 'Sold out'}
+              <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct)} disabled={!activeProduct.in_stock} type="button">
+                {activeProduct.in_stock ? tx("Add to cart") : tx("Sold out")}
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Contact modal */}
-      {contactOpen && (
-        <div
-          className={styles.modalOverlay}
-          onClick={(e) => { if (e.target === e.currentTarget) closeContact(); }}
-        >
+      {contactOpen && <div className={styles.modalOverlay} onClick={e => {
+      if (e.target === e.currentTarget) closeContact();
+    }}>
           <div className={styles.contactModal}>
             <div className={styles.contactHeader}>
-              <h3 className={styles.contactTitle}>Contact {vendor.name}</h3>
-              <button
-                className={styles.modalCloseAbs}
-                style={{ position: 'static' }}
-                onClick={closeContact}
-                type="button"
-                aria-label="Close"
-              >
+              <h2 className={styles.contactTitle}>{tt("ui.contact.b374", "Contact")} {vendor.name}</h2>
+              <button className={styles.modalCloseAbs} style={{
+            position: 'static'
+          }} onClick={closeContact} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
                 <MdOutlineClose />
               </button>
             </div>
             <div className={styles.contactBody}>
-              {!contactSent ? (
-                <>
+              {!contactSent ? <>
                   <p className={styles.contactSub}>
-                    Send a quick message. The vendor will reply via your V-ENT inbox.
+                    {tt("ui.send.quick.message.vendor.e254", "Send a quick message. The vendor will reply via your V-ENT inbox.")}
                   </p>
-                  <textarea
-                    className={styles.contactInput}
-                    rows={4}
-                    placeholder="e.g. Do you have the Limited Tee in size XL?"
-                    value={contactMsg}
-                    onChange={(e) => setContactMsg(e.target.value)}
-                  />
-                  <button
-                    className={`${styles.contactSendBtn} redBTN`}
-                    onClick={submitContact}
-                    disabled={!contactMsg.trim()}
-                    type="button"
-                  >
-                    Send message
+                  <textarea className={styles.contactInput} rows={4} placeholder={tt("ui.e.g.do.have.c6e0", "e.g. Do you have the Limited Tee in size XL?")} value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
+                  <button className={`${styles.contactSendBtn} redBTN`} onClick={submitContact} disabled={!contactMsg.trim()} type="button">
+                    {tt("ui.send.message.c70a", "Send message")}
                   </button>
-                </>
-              ) : (
-                <div className={styles.contactSuccess}>
+                </> : <div className={styles.contactSuccess}>
                   <FaCheckCircle className={styles.successIcon} />
-                  <p className={styles.successTitle}>Message sent</p>
+                  <p className={styles.successTitle}>{tt("ui.message.sent.9cf1", "Message sent")}</p>
                   <p className={styles.successSub}>
-                    {vendor.name} will reply via your V-ENT inbox.
+                    {vendor.name} {tt("ui.will.reply.via.v.41f4", "will reply via your V-ENT inbox.")}
                   </p>
-                  <button
-                    className={`${styles.contactSendBtn} goldBTN`}
-                    onClick={closeContact}
-                    type="button"
-                  >
-                    Done
+                  <button className={`${styles.contactSendBtn} goldBTN`} onClick={closeContact} type="button">
+                    {tt("ui.done.e9b4", "Done")}
                   </button>
-                </div>
-              )}
+                </div>}
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Sticky checkout bar: the cart chip only links back to the shop index,
           so ordering needs its own control. */}
-      {cart.length > 0 && !cartOpen && (
-        <div className={styles.checkoutBar}>
+      {cart.length > 0 && !cartOpen && <div className={styles.checkoutBar}>
           <div className={styles.checkoutBarInfo}>
-            <span className={styles.checkoutBarCount}>{cartCount} item{cartCount === 1 ? '' : 's'}</span>
+            <span className={styles.checkoutBarCount}>{cartCount} {tt("ui.item.3a7d", "item")}{cartCount === 1 ? '' : 's'}</span>
             <span className={styles.checkoutBarTotal}>{cartTotalVc.toLocaleString()} VC</span>
           </div>
-          <button
-            type="button"
-            className={`${styles.checkoutBarBtn} goldBTN`}
-            onClick={() => { setCartOpen(true); setPlacedOrder(null); setOrderError(''); }}
-          >
-            Review order
+          <button type="button" className={`${styles.checkoutBarBtn} goldBTN`} onClick={() => {
+        setCartOpen(true);
+        setPlacedOrder(null);
+        setOrderError('');
+      }}>
+            {tt("ui.review.order.cd4d", "Review order")}
           </button>
-        </div>
-      )}
+        </div>}
 
       {/* ── Cart / checkout ── */}
-      {cartOpen && (
-        <div
-          className={styles.modalOverlay}
-          onClick={(e) => { if (e.target === e.currentTarget) setCartOpen(false); }}
-        >
+      {cartOpen && <div className={styles.modalOverlay} onClick={e => {
+      if (e.target === e.currentTarget) setCartOpen(false);
+    }}>
           <div className={styles.cartPanel}>
             <div className={styles.cartHeader}>
-              <h3 className={styles.cartTitle}>
-                {placedOrder ? 'Order placed' : `Your order · ${vendor?.name || ''}`}
-              </h3>
-              <button className={styles.cartClose} onClick={() => setCartOpen(false)} aria-label="Close">
+              <h2 className={styles.cartTitle}>
+                {placedOrder ? tx("Order placed") : `Your order · ${vendor?.name || ''}`}
+              </h2>
+              <button className={styles.cartClose} onClick={() => setCartOpen(false)} aria-label={tt("ui.close.bbfa", "Close")}>
                 <MdOutlineClose />
               </button>
             </div>
 
-            {placedOrder ? (
-              <div className={styles.cartBody}>
+            {placedOrder ? <div className={styles.cartBody}>
                 <p className={styles.orderCode}>{placedOrder.code}</p>
                 <p className={styles.orderHint}>
-                  Show this code at booth {vendor?.booth || vendor?.booth_number || '-'} to collect.
+                  {tt("ui.show.this.code.at.f5ec", "Show this code at booth")} {vendor?.booth || vendor?.booth_number || '-'} {tt("ui.collect.af4d", "to collect.")}
                 </p>
                 <ul className={styles.orderLines}>
-                  {placedOrder.items.map((i) => (
-                    <li key={i.product_id} className={styles.orderLine}>
+                  {placedOrder.items.map(i => <li key={i.product_id} className={styles.orderLine}>
                       <span>{i.quantity} × {i.name}</span>
                       <span>{i.line_vc.toLocaleString()} VC</span>
-                    </li>
-                  ))}
+                    </li>)}
                 </ul>
                 <div className={styles.cartTotalRow}>
-                  <span>Paid</span>
+                  <span>{tt("ui.paid.dc9d", "Paid")}</span>
                   <span className={styles.cartTotalVal}>{placedOrder.total_vc.toLocaleString()} VC</span>
                 </div>
-              </div>
-            ) : cart.length === 0 ? (
-              <div className={styles.cartBody}>
-                <p className={styles.stateText}>Your order is empty. Add something from the stall.</p>
-              </div>
-            ) : (
-              <div className={styles.cartBody}>
+              </div> : cart.length === 0 ? <div className={styles.cartBody}>
+                <p className={styles.stateText}>{tt("ui.order.empty.add.something.1970", "Your order is empty. Add something from the stall.")}</p>
+              </div> : <div className={styles.cartBody}>
                 <ul className={styles.orderLines}>
-                  {cart.map((i) => (
-                    <li key={i.id} className={styles.orderLine}>
+                  {cart.map(i => <li key={i.id} className={styles.orderLine}>
                       <span className={styles.cartItemName}>{i.name}</span>
                       <span className={styles.qtyControls}>
-                        <button type="button" onClick={() => changeQty(i.id, -1)} aria-label="Remove one">−</button>
+                        <button type="button" onClick={() => changeQty(i.id, -1)} aria-label={tt("ui.remove.one.afbc", "Remove one")}>−</button>
                         <span>{i.qty}</span>
-                        <button type="button" onClick={() => changeQty(i.id, 1)} aria-label="Add one">+</button>
+                        <button type="button" onClick={() => changeQty(i.id, 1)} aria-label={tt("ui.add.one.bb49", "Add one")}>+</button>
                       </span>
                       <span>{(Number(i.price || 0) * i.qty).toLocaleString()} VC</span>
-                    </li>
-                  ))}
+                    </li>)}
                 </ul>
 
                 <div className={styles.cartTotalRow}>
-                  <span>Total</span>
+                  <span>{tt("ui.total.b259", "Total")}</span>
                   <span className={styles.cartTotalVal}>{cartTotalVc.toLocaleString()} VC</span>
                 </div>
 
-                {cartTotalVc > 0 && (
-                  <div className={styles.pinBlock}>
-                    <label className={styles.pinLabel} htmlFor="vendor-pin">Wallet PIN</label>
-                    <input
-                      id="vendor-pin"
-                      type="password"
-                      inputMode="numeric"
-                      maxLength={6}
-                      className={styles.pinInput}
-                      placeholder="••••"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      autoComplete="off"
-                    />
-                  </div>
-                )}
+                {cartTotalVc > 0 && <div className={styles.pinBlock}>
+                    <label className={styles.pinLabel} htmlFor="vendor-pin">{tt("ui.wallet.pin.2cdf", "Wallet PIN")}<InfoTip id="walletPin" /></label>
+                    <input id="vendor-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
+                  </div>}
 
                 {orderError && <p className={styles.orderError}>{orderError}</p>}
 
-                <button
-                  className={`${styles.checkoutBtn} goldBTN`}
-                  onClick={placeOrder}
-                  disabled={placing}
-                  type="button"
-                >
-                  {placing ? 'Placing order…' : `Pay ${cartTotalVc.toLocaleString()} VC`}
+                <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
+                  {placing ? tx("Placing order…") : `Pay ${cartTotalVc.toLocaleString()} VC`}
                 </button>
-              </div>
-            )}
+              </div>}
           </div>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
-const VendorStall = () => (
-  <Suspense
-    fallback={
-      <div className={styles.pageContainer}>
+const VendorStall = () => {
+  const tt = useT();
+  return <Suspense fallback={<div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <p className={styles.stateText}>Loading…</p>
+            <p className={styles.stateText}>{tt("ui.loading.33ce", "Loading…")}</p>
           </div>
         </main>
         <BottomMenu />
-      </div>
-    }
-  >
+      </div>}>
     <VendorStallContent />
-  </Suspense>
-);
-
+  </Suspense>;
+};
 export default VendorStall;

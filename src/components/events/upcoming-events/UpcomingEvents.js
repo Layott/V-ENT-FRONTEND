@@ -1,3 +1,4 @@
+import { mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image'
 import Link from 'next/link';
 import { FiCalendar } from "react-icons/fi";
@@ -64,7 +65,7 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
               <div key={eventId} className={newTournamentStyles.cardContainer}>
                 <div className={`${newTournamentStyles.imageContainer} ${newTournamentStyles['newTournamentsContainer-display']}`}>
                   <Image
-                    src={getEventImage(event)}
+                    src={mediaUrl(getEventImage(event))}
                     alt={event.name || "Event"}
                     fill
                     style={{ objectFit: 'cover' }}

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
@@ -10,12 +10,18 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import TournamentRegistrationModal from '@/components/view-tournament/tournament-register/TournamentRegister';
 import { API, tokenFrom, toTournament, ventFetch } from '@/components/tournament-lib/tournamentApi';
 import styles from './register-tournament.module.css';
+import { useT } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 
 // Thin wrapper: loads the real tournament (real entry_fee_price + prize_pool)
 // and mounts the shared TournamentRegister modal flow (Mode → Team → Roster →
 // Review → Payment → Success). All registration + payment logic lives in
 // that modal tree - this page only owns the shell + data fetch.
-const RegisterTournamentContent = ({ slug: slugFromPath }) => {
+const RegisterTournamentContent = ({
+  slug: slugFromPath
+}) => {
+  const tx = useTx();
+  const tt = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = slugFromPath || searchParams.get('id');
@@ -23,14 +29,14 @@ const RegisterTournamentContent = ({ slug: slugFromPath }) => {
   // redirect (see payment/Payment.js `handleTopUp`). Passed straight through
   // to the modal so it can verify + auto-resume the paid registration.
   const reference = searchParams.get('reference');
-
-  const { data: session, status: sessionStatus } = useSession();
+  const {
+    data: session,
+    status: sessionStatus
+  } = useSession();
   const token = tokenFrom(session);
-
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-
   useEffect(() => {
     if (!id) {
       setLoading(false);
@@ -40,34 +46,32 @@ const RegisterTournamentContent = ({ slug: slugFromPath }) => {
     // Wait for the session to resolve so the view request carries a token
     // when one is available (some tournaments may require auth to view).
     if (sessionStatus === 'loading') return undefined;
-
     let cancelled = false;
     (async () => {
       setLoading(true);
       setLoadError('');
       try {
-        const data = await ventFetch(API.TOURNAMENT.VIEW(id), { token });
+        const data = await ventFetch(API.TOURNAMENT.VIEW(id), {
+          token
+        });
         if (cancelled) return;
         const t = toTournament(data);
-        if (t) setTournament(t);
-        else setLoadError('Tournament not found.');
+        if (t) setTournament(t);else setLoadError('Tournament not found.');
       } catch (err) {
         if (cancelled) return;
-        setLoadError(err?.message || 'Failed to load tournament.');
+        setLoadError(err?.message || tt("api.failedToLoadTournament", "Failed to load tournament."));
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
-
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id, token, sessionStatus]);
-
   const goToTournament = () => {
     router.push(id ? `/tournaments/${id}` : '/tournaments');
   };
-
-  return (
-    <div className={styles.pageContainer}>
+  return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
 
@@ -75,33 +79,25 @@ const RegisterTournamentContent = ({ slug: slugFromPath }) => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          {loading ? (
-            <p className={styles.errText}>Loading tournament…</p>
-          ) : !tournament ? (
-            <p className={styles.errText}>{loadError || 'Tournament not found.'}</p>
-          ) : (
-            <TournamentRegistrationModal
-              isOpen
-              onClose={goToTournament}
-              onNext={goToTournament}
-              tournament={tournament}
-              resumeReference={reference}
-            />
-          )}
+          <h1 className={styles.srOnlyTitle}>
+            {tournament?.tournament_title
+              ? tt("registerTournament.titleNamed", "Register for {name}")
+                  .replace("{name}", tournament.tournament_title)
+              : tt("registerTournament.title", "Tournament registration")}
+          </h1>
+          {loading ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : !tournament ? <p className={styles.errText}>{loadError || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} />}
         </div>
       </main>
 
       <BottomMenu />
-    </div>
-  );
+    </div>;
 };
-
-const RegisterTournament = () => (
-  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+const RegisterTournament = () => <Suspense fallback={<div style={{
+  minHeight: '100vh',
+  backgroundColor: '#131316'
+}} />}>
     <RegisterTournamentContent />
-  </Suspense>
-);
-
+  </Suspense>;
 export default RegisterTournament;
 
 // Exported so the slug route can render it.
