@@ -20,6 +20,35 @@ const nextConfig = {
   // systemd unit on the VPS runs. Without it the box needs the whole node_modules
   // tree and `next start`.
   output: 'standalone',
+
+  // The locale prefix, resolved by the router rather than by middleware.
+  //
+  // `/fr/tournaments` renders `/tournaments` while the address bar keeps the
+  // prefix, which is the entire point of having one. Middleware used to do
+  // this with `NextResponse.rewrite()`, and behind nginx that meant building a
+  // URL out of an origin Next gets wrong: it takes the host from its own
+  // listen address and the scheme from X-Forwarded-Proto, producing
+  // `https://localhost:3000` - a place that does not exist. Next then proxied
+  // to it, wrote TLS at a plain HTTP port, and every locale URL answered 500.
+  //
+  // Two attempts to fix that in middleware both reached production and both
+  // were wrong: cloning the URL kept the bad origin, and forcing the scheme
+  // back to http made the proxy reachable but lost the locale header, so the
+  // pages came up rendering English titles and English canonicals.
+  //
+  // Here there is no URL to get wrong. The router matches the prefix and maps
+  // it, and middleware is left doing the one thing it is good at: setting a
+  // header. `afterFiles` so a real file or route wins over the mapping.
+  async rewrites() {
+    const prefixes = ['fr', 'pt'];
+    return {
+      afterFiles: prefixes.flatMap((code) => [
+        { source: `/${code}`, destination: '/' },
+        { source: `/${code}/:path*`, destination: '/:path*' },
+      ]),
+    };
+  },
+
   images: {
     remotePatterns: [
       ...(mediaHost
