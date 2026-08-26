@@ -167,20 +167,30 @@ function withLocale(req, locale, hasPrefix) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
 
-  // `req.nextUrl.clone()` rather than `new URL(path, req.nextUrl.origin)`.
+  // The rewrite target has to be an origin that actually answers.
   //
-  // Behind nginx, that origin is Next's own listen address, so the rewrite
-  // went out as `x-middleware-rewrite: https://localhost:3000/` and Next tried
-  // to proxy to it - writing TLS at a plain HTTP port, which is EPROTO, which
-  // is a 500 on every locale URL while `/tournaments` was fine. It worked in
-  // development only because there the origin happens to be the real one.
+  // Behind nginx this app is reached at https://v-ent.co and listens on
+  // 127.0.0.1:3000. Next builds `nextUrl` from its own listen address but
+  // takes the scheme from X-Forwarded-Proto, so the origin it hands you is one
+  // that exists nowhere: `https://localhost:3000`. Next emits the rewrite as
+  // that absolute URL and then proxies to it - writing TLS at a plain HTTP
+  // port. EPROTO, and a 500 on every locale URL while the unprefixed routes
+  // were fine, because only the prefixed ones rewrite.
   //
-  // This is the same trap `redirectTo()` below already documents. A cloned
-  // nextUrl carries the request's real origin, so the rewrite stays internal.
+  // Two things that do not fix it, both tried in production: cloning `nextUrl`
+  // (the bad origin is what gets cloned) and setting `x-middleware-rewrite` by
+  // hand on a `next()` response (Next does not honour it, 500 everywhere).
+  //
+  // What fixes it is forcing the internal hop back to http when the host is
+  // loopback. The scheme the visitor used is nginx's business and is already
+  // carried on X-Forwarded-Proto; this hop never speaks TLS.
   let res;
   if (hasPrefix) {
     const target = req.nextUrl.clone();
     target.pathname = req.nextUrl.pathname.replace(`/${locale}`, '') || '/';
+    if (/^(localhost|127\.0\.0\.1|\[::1\])(:|$)/.test(target.host)) {
+      target.protocol = 'http:';
+    }
     res = NextResponse.rewrite(target, { request: { headers: requestHeaders } });
   } else {
     res = NextResponse.next({ request: { headers: requestHeaders } });
