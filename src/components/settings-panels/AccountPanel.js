@@ -4,6 +4,7 @@ import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import shared from './settingsShared.module.css';
 import styles from './AccountPanel.module.css';
+import FounderBadge from '@/components/founder-badge/FounderBadge';
 
 const formatDate = (iso) => {
   if (!iso) return '-';
@@ -64,6 +65,20 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+
+  const toggleFounderBadge = async (show) => {
+    setSavingField('founder');
+    try {
+      const res = await authed('/setting/founder-badge/', { show });
+      const data = await res.json();
+      showToast?.(data.message || 'Saved');
+      if (res.ok) await loadAccount();
+    } catch {
+      showToast?.('Could not change the badge');
+    } finally {
+      setSavingField(null);
+    }
+  };
 
   const saveUsername = async (value) => {
     setSavingField('username');
@@ -160,6 +175,31 @@ const AccountPanel = ({ user = {}, onSave, showToast }) => {
           <span className={styles.barPct}>{completion}%</span>
         </div>
       </div>
+
+      {/* Founder badge. Only a founder sees this at all - for anybody else it
+          is not a setting, and a control that cannot do anything is noise. */}
+      {account?.is_founder && (
+        <div className={shared.card}>
+          <h3 className={shared.cardTitle}>Founder badge</h3>
+          <p className={shared.cardSub}>
+            You founded V-ENT. The badge shows beside your name across the platform, and you can
+            take it off whenever you like.
+          </p>
+          <div className={styles.founderRow}>
+            <FounderBadge size="lg" />
+            <button
+              type="button"
+              className={`${shared.btn} ${shared.btnSm} ${account.founder_badge ? shared.ghostBTN : shared.goldBTN}`}
+              onClick={() => toggleFounderBadge(!account.founder_badge)}
+              disabled={savingField === 'founder'}
+            >
+              {savingField === 'founder'
+                ? 'Saving...'
+                : account.founder_badge ? 'Hide my badge' : 'Show my badge'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Account fields */}
       <div className={shared.card}>
