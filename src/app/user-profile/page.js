@@ -17,6 +17,7 @@ import FavoriteGamesPanel from '@/components/profile-panels/FavoriteGamesPanel';
 import EmptyStatePanel from '@/components/profile-panels/EmptyStatePanel';
 import { jsonHeaders } from '@/lib/authHeader';
 import styles from './user-profile.module.css';
+import FounderBadge from '@/components/founder-badge/FounderBadge';
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -397,6 +398,10 @@ const UserProfileContent = () => {
                 <div className={styles.identityInfo}>
                   <div className={styles.identityNameRow}>
                     <span>{fullName}</span>
+                    {/* Only when the person is actually wearing it - the server
+                        reports founder_badge as false for a founder who
+                        switched it off. */}
+                    {profileData.founder_badge && <FounderBadge size="lg" />}
                     {verified && (
                       <span className={styles.verifiedBadge} title="Verified">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>

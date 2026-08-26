@@ -1,0 +1,62 @@
+/* The founder mark.
+ *
+ * Filled surface, gold on a dark chip, no ring and no bloom. The only motion is
+ * the chevron drawing itself once on mount - a stroke-dashoffset sweep that
+ * ends and stays ended. No pulse, no glow, no loop.
+ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2a2416;
+  color: #d4af37;
+  border-radius: 999px;
+  padding: 3px 10px 3px 7px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.mark {
+  display: block;
+  flex: none;
+}
+
+.stroke {
+  stroke: #d4af37;
+  /* The path is about 32 units long; dashing it by its own length and pulling
+     the offset back to zero draws it from one end to the other. */
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+  animation: draw 700ms ease-out forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Somebody who has asked for less motion gets the finished mark, immediately. */
+@media (prefers-reduced-motion: reduce) {
+  .stroke {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+.sm { font-size: 0.66rem; padding: 2px 8px 2px 6px; gap: 4px; }
+.sm .mark { width: 11px; height: 11px; }
+
+.md { font-size: 0.72rem; }
+.md .mark { width: 13px; height: 13px; }
+
+.lg { font-size: 0.82rem; padding: 4px 12px 4px 9px; }
+.lg .mark { width: 16px; height: 16px; }
+
+.text {
+  line-height: 1;
+}
