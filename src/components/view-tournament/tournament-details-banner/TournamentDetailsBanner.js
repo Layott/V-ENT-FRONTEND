@@ -9,8 +9,23 @@ import { RiShare2Fill } from "react-icons/ri";
 import { RiCopperCoinFill } from "react-icons/ri";
 import bannerDetailsStyles from '@/view-/details-banner/tournament-details-banner.module.css'
 import TournamentRegistrationModal from '../tournament-register/TournamentRegister';
+import { shareLink, linkTo } from '@/lib/share';
 
 const TournamentDetailsBanner = ({ tournament }) => {
+  const [shareLabel, setShareLabel] = useState('Share');
+
+  const handleShare = async () => {
+    await shareLink({
+      path: linkTo.tournament(tournament),
+      title: tournament?.tournament_title || tournament?.name,
+      text: 'Tournament on V-ENT',
+      notify: (message) => {
+        setShareLabel(message);
+        window.setTimeout(() => setShareLabel('Share'), 3000);
+      },
+    });
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Function to get the correct image URL
@@ -99,7 +114,16 @@ const TournamentDetailsBanner = ({ tournament }) => {
                     </div>
                 </div>
                 <div className={bannerDetailsStyles.headerRight}>
-                    <button className={bannerDetailsStyles.shareBTN}><RiShare2Fill className={bannerDetailsStyles.shareIcon} /> Share</button>
+                    {/* This button did nothing at all: no handler, no link,
+                        nothing. It shares the tournament by its readable
+                        address now, and says so. */}
+                    <button
+                      type="button"
+                      className={bannerDetailsStyles.shareBTN}
+                      onClick={handleShare}
+                    >
+                      <RiShare2Fill className={bannerDetailsStyles.shareIcon} /> {shareLabel}
+                    </button>
                     <button 
                       onClick={handleJoinTournament}
                       className={bannerDetailsStyles.joinTournamentBTN}

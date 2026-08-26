@@ -14,6 +14,7 @@ import profileStyles from "@/styles/profile/profile-page.module.css";
 import tournamentStyles from '@/styles/tournament/tournament.module.css'
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 import overviewRtStyles from '@/view-/overview-right/overview-rt.module.css'
+import { shareLink, linkTo } from '@/lib/share';
 
 const EventDetailsOverviewRight = ({ event, socialLinks = [] }) => {
     const [showMoreSocials, setShowMoreSocials] = useState(false);
@@ -89,6 +90,22 @@ const EventDetailsOverviewRight = ({ event, socialLinks = [] }) => {
       setOpen(false);
     }
 
+    // Sharing goes through the shared helper: native sheet on a phone, then
+    // clipboard, then showing the link if both are refused. The link carries
+    // the event's name rather than its id.
+    const shareEvent = async () => {
+      await shareLink({
+        path: linkTo.event(event),
+        title: event?.name,
+        text: 'Event on V-ENT',
+        notify: (message) => {
+          setMessage(message);
+          setSeverity('success');
+          setOpen(true);
+        },
+      });
+    };
+
     const copyToClipboard = (text) => {
       const isClipboardAvailable = typeof window !== "undefined" && navigator.clipboard;
 
@@ -118,7 +135,9 @@ const EventDetailsOverviewRight = ({ event, socialLinks = [] }) => {
     };
     
     // Use event link or default WhatsApp link
-    const linkText = event?.event_link || event?.whatsapp_link || "https://chat.whatsapp.com/BX6jTRvEvrBGNHgNwqWJsbbdjndndkjdnjdFW";
+    // No fallback. This defaulted to an invented WhatsApp group link, which
+    // every event without one of its own then advertised.
+    const linkText = event?.event_link || event?.whatsapp_link || '';
     const address = event?.location || event?.address || "Event location not specified";
     
     // Determine platform from link
@@ -192,20 +211,35 @@ const EventDetailsOverviewRight = ({ event, socialLinks = [] }) => {
         <div className={overviewRtStyles.paragraphDiv}>
           <p className={overviewRtStyles.paragraphTitle}>Platform </p>
           <p className={`${overviewRtStyles.paragraphValue} ${overviewRtStyles.paragraphValueFloatRight}`}>
-            {getPlatform(linkText)}
+            {linkText ? getPlatform(linkText) : 'Not set'}
           </p>
         </div>
 
-        <div className={overviewRtStyles.linkDiv}>
-          <p className={overviewRtStyles.linkToBeCopied}>
-            {linkText}
+        {linkText ? (
+          <div className={overviewRtStyles.linkDiv}>
+            <p className={overviewRtStyles.linkToBeCopied}>{linkText}</p>
+            <button
+              type="button"
+              className={overviewRtStyles.copyBTN}
+              onClick={() => copyToClipboard(linkText)}
+            >
+              <FiCopy className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} />
+              <span className={overviewRtStyles.copySpan}>Copy</span>
+            </button>
+          </div>
+        ) : (
+          <p className={overviewRtStyles.paragraphValue}>
+            The organiser has not added a link for this event yet.
           </p>
-          <button 
-            className={overviewRtStyles.copyBTN}
-            onClick={() => copyToClipboard(linkText)}
-          >
+        )}
+
+        {/* Sharing the event itself, by its readable address, is a different
+            thing from copying the organiser's own link. */}
+        <div className={overviewRtStyles.linkDiv}>
+          <p className={overviewRtStyles.linkToBeCopied}>Share this event</p>
+          <button type="button" className={overviewRtStyles.copyBTN} onClick={shareEvent}>
             <FiCopy className={`${overviewRtStyles.icons} ${overviewRtStyles.strokeIcons}`} />
-            <span className={overviewRtStyles.copySpan}>Copy</span>
+            <span className={overviewRtStyles.copySpan}>Share</span>
           </button>
         </div>
       </div>
