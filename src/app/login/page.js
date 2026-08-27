@@ -22,6 +22,11 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [username_or_email, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  // The second half of the sign-in, for anybody who has a second factor and for
+  // every admin whether they set one up or not. `challenge` is null until the
+  // password is accepted and the server asks for a code.
+  const [challenge, setChallenge] = useState(null);
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -118,6 +123,75 @@ const Login = () => {
       [name]: undefined
     }));
   };
+
+  // Spends a backend session token for a NextAuth session. Both halves of the
+  // sign-in end here, so a session established with a code and one established
+  // without are the same thing afterwards.
+  const finishSignIn = async (payload, body) => {
+    if (!payload?.session_token) {
+      return { error: apiMessage(tt, body, "api.loginFailed", "Login failed.") };
+    }
+    return signIn("external-token", {
+      redirect: false,
+      token: payload.session_token,
+      callbackUrl: `${window.location.origin}/home`
+    });
+  };
+
+  const submitCode = async e => {
+    e.preventDefault();
+    if (!code.trim()) return;
+    setLoading(true);
+
+    let res;
+    try {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/2fa/verify/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pending_token: challenge.pending_token, code: code.trim() })
+      });
+    } catch {
+      setSnackbarMessage(tt("api.NETWORK_UNREACHABLE", "Could not reach the server. Check the connection and try again."));
+      setSnackbarType("error");
+      setOpen(true);
+      setLoading(false);
+      return;
+    }
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      setSnackbarMessage(apiMessage(tt, body, "api.badCode", "That code is not right, or it has already been used."));
+      setSnackbarType("error");
+      setOpen(true);
+      setCode("");
+      setLoading(false);
+      return;
+    }
+
+    const result = await finishSignIn(body, body);
+    if (result?.error) {
+      setSnackbarMessage(tt("msg.loginFailedPleaseCheckYour", "Login failed. Please check your credentials."));
+      setSnackbarType("error");
+      setOpen(true);
+      setLoading(false);
+      return;
+    }
+    await afterSignIn();
+  };
+
+  // Where somebody lands once they are in. Shared, so the code path and the
+  // straight-in path cannot send people to different places.
+  const afterSignIn = async () => {
+    setSnackbarMessage(tt("msg.loginSuccessful", "Login successful!"));
+    setSnackbarType("success");
+    setOpen(true);
+    const needsOnboarding = typeof window !== "undefined" && localStorage.getItem("needsOnboarding") === "true";
+    const next = new URLSearchParams(window.location.search).get("next");
+    const session = await getSession();
+    const home = session?.user?.isStaff ? "/admin" : "/home";
+    window.location.href = next || (needsOnboarding ? "/onboarding" : home);
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     const validationErrors = validate();
@@ -128,36 +202,40 @@ const Login = () => {
     setErrors({});
     setLoading(true);
 
-    // Call NextAuth's signIn method with the credentials provider
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: username_or_email,
-      password,
-      callbackUrl: `${window.location.origin}/home` // Redirect to user profile after login,
-    });
+    // The password goes to the backend directly rather than through NextAuth,
+    // because the answer can be "now the code" rather than a session, and a
+    // provider's authorize() has nowhere to put a half-finished sign-in.
+    // NextAuth still holds the session: the token is spent against it below.
+    let res;
+    try {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username_or_email, password })
+      });
+    } catch {
+      setSnackbarMessage(tt("api.NETWORK_UNREACHABLE", "Could not reach the server. Check the connection and try again."));
+      setSnackbarType("error");
+      setOpen(true);
+      setLoading(false);
+      return;
+    }
+    const body = await res.json().catch(() => ({}));
+
+    if (res.ok && body?.data?.requires_2fa) {
+      setChallenge(body.data);
+      setLoading(false);
+      return;
+    }
+
+    const result = await finishSignIn(res.ok ? body : null, body);
     if (result?.error) {
       setSnackbarMessage(tt("msg.loginFailedPleaseCheckYour", "Login failed. Please check your credentials."));
       setSnackbarType("error");
       setOpen(true);
       setLoading(false);
     } else {
-      setSnackbarMessage(tt("msg.loginSuccessful", "Login successful!"));
-      setSnackbarType("success");
-      setOpen(true);
-      // First-run users (just signed up on this device) go through onboarding.
-      const needsOnboarding = typeof window !== "undefined" && localStorage.getItem("needsOnboarding") === "true";
-
-      // A staff account goes to the admin console rather than the player
-      // dashboard. It still signs in to the console separately - that has its
-      // own token and its own 2FA, and this grants neither - but an admin no
-      // longer has to know the address and type it.
-      //
-      // `next` wins over both: somebody sent to sign in from a page they were
-      // reading goes back to that page.
-      const next = new URLSearchParams(window.location.search).get("next");
-      const session = await getSession();
-      const home = session?.user?.isStaff ? "/admin" : "/home";
-      window.location.href = next || (needsOnboarding ? "/onboarding" : home);
+      await afterSignIn();
     }
     setLoading(false);
   };
@@ -199,6 +277,59 @@ const Login = () => {
             <p>{tt("ui.please.sign.into.account.51de", "Please sign into your account")}</p>
           </section>
 
+          {challenge && <section className={styles.codeStep}>
+              <h2 className={styles.codeHeading}>
+                {challenge.enrollment_required
+                  ? tt("ui.2fa.setUpHeading", "Set up your authenticator")
+                  : tt("ui.2fa.codeHeading", "Enter your code")}
+              </h2>
+
+              {challenge.enrollment_required
+                ? <p className={styles.codeIntro}>
+                    {challenge.enrollment_reason === "admin"
+                      ? tt("ui.2fa.adminMustEnrol", "Admin accounts need an authenticator app. Add the key below to Google Authenticator, Authy or 1Password, then type the six digits it shows. You cannot sign in until this is done.")
+                      : tt("ui.2fa.memberMustEnrol", "Add the key below to your authenticator app, then type the six digits it shows.")}
+                  </p>
+                : <p className={styles.codeIntro}>
+                    {tt("ui.2fa.openYourApp", "Open your authenticator app and type the six digits it shows for V-ENT.")}
+                  </p>}
+
+              {challenge.secret && <div className={styles.secretBox}>
+                  <span className={styles.secretLabel}>{tt("ui.2fa.setupKey", "Setup key")}</span>
+                  <code className={styles.secret}>{challenge.secret}</code>
+                </div>}
+
+              <form onSubmit={submitCode} className={styles.codeForm}>
+                <label htmlFor="totp" className={styles.codeLabel}>
+                  {tt("ui.2fa.sixDigits", "Six-digit code")}
+                </label>
+                <input
+                  id="totp"
+                  name="totp"
+                  className={styles.codeInput}
+                  value={code}
+                  onChange={e => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  placeholder="000000"
+                  aria-describedby="totp-help"
+                />
+                <p id="totp-help" className={styles.codeHelp}>
+                  {tt("ui.2fa.codeChanges", "The code changes every 30 seconds.")}
+                </p>
+                <button type="submit" className={`btn grnBTN ${styles.codeSubmit}`} disabled={loading || code.length < 6}>
+                  {loading ? <CircularProgress size={18} color="inherit" /> : tt("ui.2fa.confirm", "Confirm")}
+                </button>
+                <button type="button" className={styles.codeBack} onClick={() => {
+                  setChallenge(null);
+                  setCode("");
+                }}>
+                  {tt("ui.2fa.startOver", "Start again")}
+                </button>
+              </form>
+            </section>}
+
           {expired && <div role="status" style={{
           margin: "0 0 1rem",
           padding: "0.65rem 0.85rem",
@@ -216,7 +347,7 @@ const Login = () => {
                 typed into the URL. On these pages that means a password in the
                 address bar, in history, and in any referrer. */}
 
-          <form method="post" className={`${generalStyles.generalForm} ${styles.loginForm}`} onSubmit={handleSubmit}>
+          {!challenge && <form method="post" className={`${generalStyles.generalForm} ${styles.loginForm}`} onSubmit={handleSubmit}>
             <div className={generalStyles.inputGroup}>
               <label>{tt("ui.email.username.c4b8", "Email or Username:")}</label>
               <input type="text" name="username_or_email" placeholder={tt("ui.enter.email.address.username.1978", "Enter your email address or username")} value={username_or_email} onChange={handleInputChange} required />
@@ -240,9 +371,11 @@ const Login = () => {
               color: "white"
             }} /> : "Login"}
             </button>
-          </form>
+          </form>}
 
-          <div className={generalStyles.alternativeAuthContainer}>
+          {/* Not offered mid-challenge. Somebody halfway through proving who
+              they are should not be shown another way in beside it. */}
+          {!challenge && <div className={generalStyles.alternativeAuthContainer}>
             <p>{tt("ui.sign.96ec", "Or sign in with")}</p>
             <div className={generalStyles.logoContainer}>
               <button type="button" className={generalStyles.oauthButton} onClick={() => handleOAuthSignIn("google")} aria-label={tt("ui.sign.google.4a0b", "Sign in with Google")} disabled={loading}>
@@ -254,7 +387,7 @@ const Login = () => {
                     {tt("ui.continue.with.6433", "Continue with")} {tx(meta.label)}
                   </button>)}
             </div>
-          </div>
+          </div>}
 
           <div className={generalStyles.formHelperContainer}>
             <p>{tt("ui.don't.have.account.f838", "Don't have an account?")} </p>

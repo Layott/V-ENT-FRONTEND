@@ -58,17 +58,17 @@ export default function SessionExpiryGuard() {
           // token fell through to the branch below and signed the admin out of
           // the entire site - the opposite of what the next comment promises.
           const path = window.location.pathname.replace(/^\/(fr|pt)(?=\/|$)/, '') || '/';
-          // The admin portal has its own identity (adminToken) and its own
-          // login screen. A dead admin token must not sign the user out of the
-          // main app or dump them on the player login page.
+          // The console used to have an identity of its own and a login screen
+          // of its own, and a dead token there had to be kept away from the
+          // main app. It reads the site session now, so an expired token in the
+          // console is the same expired token everywhere: it goes to the one
+          // sign-in, and comes back to the console afterwards.
           if (path.startsWith('/admin')) {
-            if (path !== '/admin/login') {
-              try {
-                localStorage.removeItem('adminUser');
-                document.cookie = 'adminToken=; Max-Age=0; path=/';
-              } catch {}
-              window.location.replace('/admin/login?expired=1');
-            }
+            try {
+              localStorage.removeItem('adminUser');
+              localStorage.removeItem('adminToken');
+            } catch {}
+            window.location.replace('/login?next=/admin&expired=1');
           } else if (!AUTH_PATH.test(path)) {
             signingOut = true;
             // Drop the stale identity cache so the next login paints fresh.

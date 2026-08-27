@@ -107,12 +107,17 @@ export default async function middleware(req) {
   }
 
   // ── Admin route protection ──────────────────────────────────────
+  //
+  // The console had a sign-in of its own and a cookie of its own. It has
+  // neither now: an admin proves the second factor at the ordinary sign-in, and
+  // the console reads that session. So the only thing to check here is that
+  // somebody is signed in at all - whether they are an admin, and whether their
+  // session carried the code, is the server's answer and not a cookie's.
   const isAdminRoute = path.startsWith('/admin');
-  const isAdminLoginRoute = path === '/admin/login';
-  if (isAdminRoute && !isAdminLoginRoute) {
-    const adminToken = cookies().get('adminToken')?.value;
-    if (!adminToken) {
-      return redirectTo('/admin/login', req);   // admin is English only
+  if (isAdminRoute) {
+    const signedIn = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!signedIn) {
+      return redirectTo('/login?next=/admin', req);   // admin is English only
     }
   }
 
