@@ -18,6 +18,7 @@ import styles from './tournament.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -335,9 +336,9 @@ const TournamentsContent = () => {
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.dateRange}>
-              <input type="date" className={styles.dateInput} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+              <DateField value={dateFrom} onChange={e => setDateFrom(e.target.value)} className={styles.dateInput} />
               <span className={styles.dateSep}>-</span>
-              <input type="date" className={styles.dateInput} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+              <DateField value={dateTo} onChange={e => setDateTo(e.target.value)} className={styles.dateInput} />
             </div>
             <div className={styles.prizeRange}>
               <input type="number" placeholder={tt("ui.min.vc.cd35", "Min VC")} className={styles.prizeInput} value={prizeMin} onChange={e => setPrizeMin(e.target.value)} />

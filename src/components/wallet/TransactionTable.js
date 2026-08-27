@@ -7,6 +7,7 @@ import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { TYPE_LABEL, TYPE_BADGE_CLASS, STATUS_LABEL, normalizeType, normalizeStatus, formatDate, formatDateTime, formatNumber, isCreditType } from './walletHelpers';
 import styles from '@/app/wallets/wallets.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const TYPE_FILTERS = [{
   id: '',
   label: 'All'
@@ -179,8 +180,8 @@ const TransactionTable = ({
                 <input type="text" className={styles.ctrlSearchInput} placeholder={tt("ui.search.description.reference.5a31", "Search description or reference…")} value={search} onChange={e => handleSearch(e.target.value)} />
               </div>
               {showAdvancedFilters && <>
-                  <input type="date" className={styles.ctrlDateInput} value={dateFrom} onChange={e => handleFrom(e.target.value)} aria-label={tt("ui.from.date.3b5d", "From date")} />
-                  <input type="date" className={styles.ctrlDateInput} value={dateTo} onChange={e => handleTo(e.target.value)} aria-label={tt("ui.date.af24", "To date")} />
+                  <DateField value={dateFrom} onChange={e => handleFrom(e.target.value)} ariaLabel={tt("ui.from.date.3b5d", "From date")} className={styles.ctrlDateInput} />
+                  <DateField value={dateTo} onChange={e => handleTo(e.target.value)} ariaLabel={tt("ui.date.af24", "To date")} className={styles.ctrlDateInput} />
                 </>}
               <div className={styles.ctrlSelectWrap}>
                 <select className={styles.ctrlSelect} value={statusFilter} onChange={e => handleStatus(e.target.value)} aria-label={tt("ui.status.filter.4cef", "Status filter")}>

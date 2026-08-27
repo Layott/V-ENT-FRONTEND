@@ -1,0 +1,300 @@
+/* Filled surfaces, no strokes. The calendar floats, so it carries a neutral
+   downward shadow and nothing else: no ring around it, no coloured bloom. */
+
+.wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Only when the caller brought no class of its own. Everywhere else the site's
+   existing field styling lands on this button, exactly where it landed on the
+   input it replaced. */
+.fieldDefault {
+  width: 100%;
+  min-height: 38px;
+  background-color: var(--overlay-gray);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--fs-p-size-mobile);
+}
+
+.fieldDefault:hover:not(:disabled) {
+  background-color: #2b2c30;
+}
+
+.fieldOpen {
+  background-color: #2b2c30;
+}
+
+.field:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Required by the accessibility rule and the only ring in the file. */
+.field:focus-visible,
+.grid:focus-visible,
+.day:focus-visible,
+.nav:focus-visible,
+.footBtn:focus-visible,
+.clear:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.fieldIcon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.95rem;
+}
+
+.value {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder {
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clear {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.clear:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* The calendar */
+
+.pop {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 268px;
+  max-width: calc(100vw - 32px);
+  background-color: #26272b;
+  border-radius: 12px;
+  padding: 0.7rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.popAbove {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.popHead {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+}
+
+.monthTitle {
+  flex: 1;
+  text-align: center;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-transform: capitalize;
+}
+
+.nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  outline: none;
+}
+
+.nav:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.weekdays,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.weekdays {
+  margin-bottom: 3px;
+}
+
+.weekday {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.grid {
+  outline: none;
+}
+
+.day {
+  height: 32px;
+  background-color: transparent;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.day:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.otherMonth {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Today is a fill one step up, never a ring. */
+.today {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.selected,
+.selected:hover {
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font-weight: 600;
+}
+
+.day:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* The time row, when the field carries one */
+
+.time {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.timeLabel {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+}
+
+.timeSelect {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  padding: 4px 5px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.timeSelect option {
+  background-color: #303136;
+}
+
+.timeSep {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+}
+
+.popFoot {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.footBtn {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.footBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+/* On a phone the calendar is wider than the field it hangs from, so anchoring
+   it to either edge of that field pushes it off the screen: pinned left it ran
+   to -122px on a 390px viewport. It becomes a sheet at the bottom of the window
+   instead, which is always fully on screen whatever the field is doing and
+   whereabouts on the page it sits. */
+@media (max-width: 560px) {
+  .pop {
+    position: fixed;
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+
+  .popAbove {
+    top: auto;
+    bottom: 12px;
+  }
+
+  .day {
+    height: 36px;
+  }
+}

@@ -21,6 +21,7 @@ import { extractEventList } from '@/components/events/normalizeEvents';
 import styles from './events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -380,12 +381,12 @@ const EventsListingContent = () => {
 
               <div className={styles.filterField}>
                 <label className={styles.filterLabel}>{tt("ui.from.3f66", "From")}</label>
-                <input type="date" className={styles.filterInput} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+                <DateField value={dateFrom} onChange={e => setDateFrom(e.target.value)} className={styles.filterInput} />
               </div>
 
               <div className={styles.filterField}>
                 <label className={styles.filterLabel}>{tt("ui.text.ae79", "To")}</label>
-                <input type="date" className={styles.filterInput} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+                <DateField value={dateTo} onChange={e => setDateTo(e.target.value)} className={styles.filterInput} />
               </div>
             </div>}
 

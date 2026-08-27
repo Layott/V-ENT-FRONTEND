@@ -15,6 +15,7 @@ import styles from './scrim-create.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const FORMATS = ['Bo1', 'Bo3', 'Bo5'];
 const REGIONS = ['NG-West', 'NG-East', 'ZA', 'KE', 'EU-West', 'NA-East', 'SA', 'AS-East'];
 const ScrimCreateInner = () => {
@@ -225,7 +226,7 @@ const ScrimCreateInner = () => {
 
               <div className={styles.field}>
                 <label className={styles.label}><span className="fieldLabelRow">{tt("ui.scheduled.7ccb", "Scheduled at *")} <InfoTip id="scrimSchedule" /></span></label>
-                <input type="datetime-local" className={`${styles.input} ${errors.scheduled_at ? styles.inputError : ''}`} value={form.scheduled_at} onChange={e => updateField('scheduled_at', e.target.value)} />
+                <DateField value={form.scheduled_at} onChange={e => updateField('scheduled_at', e.target.value)} className={`${styles.input} ${errors.scheduled_at ? styles.inputError : ''}`} withTime />
                 {errors.scheduled_at && <span className={styles.errorText}>{errors.scheduled_at}</span>}
               </div>
 

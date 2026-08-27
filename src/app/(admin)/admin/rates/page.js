@@ -41,7 +41,9 @@ function RatesInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const call = useCallback(async (path, options = {}) => {
     const token = localStorage.getItem('adminToken');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin${path}`, {
+    let res;
+    try {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin${path}`, {
       ...options,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -50,7 +52,16 @@ function RatesInner() {
         } : {}),
         ...(options.headers || {})
       }
-    });
+      });
+    } catch {
+      // A request that never arrives has to end somewhere, or the page sits on
+      // "Loading..." for ever and reads as a slow server rather than a broken
+      // connection.
+      return {
+        ok: false,
+        body: { status: 'error', code: 'NETWORK_UNREACHABLE', message: 'Could not reach the server.' },
+      };
+    }
     let body = {};
     try {
       body = await res.json();

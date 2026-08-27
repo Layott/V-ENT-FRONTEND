@@ -11,6 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './users.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const PAGE_SIZE = 20;
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
 const STATUSES = [{
@@ -204,8 +205,8 @@ function UsersInner() {
                 <option value="">{tt("ui.all.countries.0b31", "All Countries")}</option>
                 {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <input type="date" className={shared.filterSelect} value={dateFrom} onChange={e => setDateFrom(e.target.value)} title={tt("ui.joined.from.d813", "Joined from")} />
-              <input type="date" className={shared.filterSelect} value={dateTo} onChange={e => setDateTo(e.target.value)} title={tt("ui.joined.0aeb", "Joined to")} />
+              <DateField value={dateFrom} onChange={e => setDateFrom(e.target.value)} ariaLabel={tt("ui.joined.from.d813", "Joined from")} className={shared.filterSelect} />
+              <DateField value={dateTo} onChange={e => setDateTo(e.target.value)} ariaLabel={tt("ui.joined.0aeb", "Joined to")} className={shared.filterSelect} />
               <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="-date_joined">{tt("ui.newest.first.a40b", "Newest First")}</option>
                 <option value="date_joined">{tt("ui.oldest.first.06dc", "Oldest First")}</option>

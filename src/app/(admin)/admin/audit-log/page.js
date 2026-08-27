@@ -10,6 +10,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './audit-log.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const PAGE_SIZE = 50;
 const ACTION_BADGE = {
   user_banned: {
@@ -196,8 +197,8 @@ function AuditLogInner() {
                 <option value="mod_chidi">{tt("ui.mod.chidi.28da", "mod_chidi")}</option>
                 <option value="finance_tunde">{tt("ui.finance.tunde.4f56", "finance_tunde")}</option>
               </select>
-              <input type="date" className={shared.filterSelect} value={dateFrom} onChange={e => setDateFrom(e.target.value)} title={tt("ui.from.3f66", "From")} />
-              <input type="date" className={shared.filterSelect} value={dateTo} onChange={e => setDateTo(e.target.value)} title={tt("ui.text.ae79", "To")} />
+              <DateField value={dateFrom} onChange={e => setDateFrom(e.target.value)} ariaLabel={tt("ui.from.3f66", "From")} className={shared.filterSelect} />
+              <DateField value={dateTo} onChange={e => setDateTo(e.target.value)} ariaLabel={tt("ui.text.ae79", "To")} className={shared.filterSelect} />
               <span className={shared.resultsCount}>{total.toLocaleString()} {tt("ui.entries.c2e3", "entries")}</span>
             </div>
 
