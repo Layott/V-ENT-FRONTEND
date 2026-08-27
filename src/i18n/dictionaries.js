@@ -3748,6 +3748,13 @@ export const dictionaries = {
     'ui.2fa.setupKey': 'Setup key',
     'ui.2fa.sixDigits': 'Six-digit code',
     'ui.2fa.startOver': 'Start again',
+    'ui.remove.a54e': 'Remove',
+    'msg.atLeastN': 'Enter at least {n}.',
+    'ui.count.any': 'Two or more.',
+    'ui.count.battleRoyale': 'Everyone plays at once, so any number from two upwards works.',
+    'ui.count.knockout': 'An even number, so nobody is left without an opponent in the first round.',
+    'ui.count.roundRobin': 'Everyone plays everyone, so any number from three upwards works.',
+    'ui.count.swiss': 'Four or more. With an odd number, one player gets a bye each round.',
   },
 
   fr: {
@@ -7482,6 +7489,13 @@ export const dictionaries = {
     'ui.2fa.setupKey': 'Clé de configuration',
     'ui.2fa.sixDigits': 'Code à six chiffres',
     'ui.2fa.startOver': 'Recommencer',
+    'ui.remove.a54e': 'Retirer',
+    'msg.atLeastN': 'Saisissez au moins {n}.',
+    'ui.count.any': 'Deux ou plus.',
+    'ui.count.battleRoyale': 'Tout le monde joue en même temps : tout nombre à partir de deux convient.',
+    'ui.count.knockout': 'Un nombre pair, pour que personne ne se retrouve sans adversaire au premier tour.',
+    'ui.count.roundRobin': 'Tout le monde affronte tout le monde : tout nombre à partir de trois convient.',
+    'ui.count.swiss': 'Quatre ou plus. Avec un nombre impair, un joueur est exempté à chaque tour.',
   },
 
   pt: {
@@ -11216,5 +11230,12 @@ export const dictionaries = {
     'ui.2fa.setupKey': 'Chave de configuração',
     'ui.2fa.sixDigits': 'Código de seis dígitos',
     'ui.2fa.startOver': 'Recomeçar',
+    'ui.remove.a54e': 'Remover',
+    'msg.atLeastN': 'Introduza pelo menos {n}.',
+    'ui.count.any': 'Dois ou mais.',
+    'ui.count.battleRoyale': 'Todos jogam ao mesmo tempo, por isso qualquer número a partir de dois serve.',
+    'ui.count.knockout': 'Um número par, para que ninguém fique sem adversário na primeira ronda.',
+    'ui.count.roundRobin': 'Todos jogam contra todos, por isso qualquer número a partir de três serve.',
+    'ui.count.swiss': 'Quatro ou mais. Com um número ímpar, um jogador fica isento em cada ronda.',
   },
 };

@@ -15,16 +15,70 @@ const Participants = ({
   const [minIndividuals, setMinIndividuals] = useState(formData?.min_number_of_participants || '');
   const [maxIndividuals, setMaxIndividuals] = useState(formData?.max_number_of_participants || '');
   const [error, setError] = useState('');
-  const validateEvenNumber = (value, fieldName, updateFormData) => {
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue) || parsedValue % 2 !== 0) {
-      setError(tt("msg.pleaseEnterAnEvenNumber", "Please enter an even number."));
-      updateFormData(fieldName, ''); // Reset invalid input
+
+  // What each format actually needs, rather than one parity rule applied to all
+  // of them and described as if it were single elimination's.
+  //
+  // Single elimination pairs everybody off, so an odd count leaves somebody
+  // without an opponent in round one. Round robin plays everybody against
+  // everybody and does not care. Swiss pairs by record and gives the odd one
+  // out a bye. Battle royale puts them all in at once.
+  const format = String(formData?.bracket_type || '').toLowerCase().replace(/[\s-]+/g, '_');
+  const countRule = (() => {
+    if (format === 'single_elimination' || format === 'double_elimination') {
+      return {
+        min: 2,
+        evenOnly: true,
+        note: tt('ui.count.knockout', 'An even number, so nobody is left without an opponent in the first round.'),
+      };
+    }
+    if (format === 'round_robin') {
+      return {
+        min: 3,
+        evenOnly: false,
+        note: tt('ui.count.roundRobin', 'Everyone plays everyone, so any number from three upwards works.'),
+      };
+    }
+    if (format === 'swiss') {
+      return {
+        min: 4,
+        evenOnly: false,
+        note: tt('ui.count.swiss', 'Four or more. With an odd number, one player gets a bye each round.'),
+      };
+    }
+    if (format === 'battle_royale') {
+      return {
+        min: 2,
+        evenOnly: false,
+        note: tt('ui.count.battleRoyale', 'Everyone plays at once, so any number from two upwards works.'),
+      };
+    }
+    return { min: 2, evenOnly: false, note: tt('ui.count.any', 'Two or more.') };
+  })();
+
+  const validateCount = (value, fieldName) => {
+    const n = parseInt(value, 10);
+    if (Number.isNaN(n)) {
+      setError('');
+      return false;
+    }
+    if (n < countRule.min) {
+      setError(tt('msg.atLeastN', 'Enter at least {n}.').replace('{n}', countRule.min));
+      return false;
+    }
+    if (countRule.evenOnly && n % 2 !== 0) {
+      setError(tt('msg.pleaseEnterAnEvenNumber', 'Please enter an even number.'));
       return false;
     }
     setError('');
     return true;
   };
+
+  // Kept for the call sites that have not been renamed. It no longer wipes what
+  // somebody typed: clearing the field on a wrong number meant retyping the
+  // whole thing to fix one digit, and it is why an odd count looked like the
+  // form was broken rather than like a rule.
+  const validateEvenNumber = (value, fieldName) => validateCount(value, fieldName);
   const handleOptionClick = option => {
     setSelectedOption(option);
     updateFormData('tournament_access', option);
@@ -80,7 +134,7 @@ const Participants = ({
               updateFormData('number_of_teams', value); // Update value
             }
           }} onBlur={e => {
-            validateEvenNumber(e.target.value, 'number_of_teams', updateFormData);
+            validateEvenNumber(e.target.value, 'number_of_teams');
           }} />
               {error && <p className={styles.errorText}>{error}</p>} 
 
@@ -88,7 +142,7 @@ const Participants = ({
                 <span className={styles.infoSpan}>
                   <FiInfo className={styles.infoIcon} />
                 </span>
-                {tt("ui.must.even.number.single.5842", "This must be an even number for single elimination tournaments.")}
+                {countRule.note}
               </p>
             </div>
 
@@ -143,7 +197,7 @@ const Participants = ({
               <span className={styles.infoSpan}>
                 <FiInfo className={styles.infoIcon} />
               </span>
-              {tt("ui.minimum.maximum.must.even.087d", "Minimum and maximum must be even numbers for single elimination tournaments.")}
+              {countRule.note}
             </p>
           </div>}
       </div>

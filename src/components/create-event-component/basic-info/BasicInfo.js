@@ -8,6 +8,8 @@ import CreateTournamentLogo from './create-tournament-logo/CreateTournamentLogo'
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 const BasicInfo = ({
+  logoFile,
+  bannerFile,
   formData,
   setFormData,
   setSelectedTab,
@@ -43,7 +45,7 @@ const BasicInfo = ({
       <CreateTournamentType updateFormData={updateFormData} formData={formData} />
       <CreateTournamentSchedule updateFormData={updateFormData} formData={formData} />
       <CreateTournamentVisibility updateFormData={updateFormData} formData={formData} />
-      <CreateTournamentLogo updateFormData={updateFormData} formData={formData} updateFileData={updateFileData} />
+      <CreateTournamentLogo updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={() => alert('Draft saved')}>
