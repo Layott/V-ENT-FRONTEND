@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadHint } from '@/lib/uploadSpecs';
 import InfoTip from '@/components/info-tip/InfoTip';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -64,7 +65,7 @@ const CreateTournamentLogo = ({
               <InfoTip id="teamLogo" />
               <input type="file" accept="image/*" onChange={handleLogoUploader} id="logoUpload" className={styles.uploadInput} />
             </div>
-            <p>{tt("ui.recommend.image.x.px.db2a", "We recommend an image that is 256 x 256 px")}</p>
+            <p>{uploadHint(tt, 'logo')}</p>
           </div>
         </div>
 

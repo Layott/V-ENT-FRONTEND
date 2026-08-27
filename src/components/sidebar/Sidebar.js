@@ -78,29 +78,29 @@ const Sidebar = ({
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
                     <Link href={'/home'} className={styles.iconTextLink}>
-                        {isComingSoon('/home') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <BiHomeCircle className={styles.sidebarIcon} /> {tt("ui.home.70f8", "Home")}
+                        {isComingSoon('/home') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink} data-tour="nav-profile">
-                        {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <PiUserCircle className={styles.sidebarIcon} /> {t('nav.profile')}
+                        {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink} data-tour="nav-tournaments">
-                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <LuGamepad2 className={styles.sidebarIcon} /> {t('nav.tournaments')}
+                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink} data-tour="nav-events">
-                        {isComingSoon('/events') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <MdOutlineEvent className={styles.sidebarIcon} /> {t('nav.events')}
+                        {isComingSoon('/events') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
@@ -116,72 +116,72 @@ const Sidebar = ({
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink} data-tour="nav-teams">
-                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <FaUsers className={styles.sidebarIcon} /> {t('nav.teams')}
+                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
-                        {isComingSoon('/rankings') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <PiRankingBold className={styles.sidebarIcon} /> {t('nav.rankings')}
+                        {isComingSoon('/rankings') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink} data-tour="nav-wallets">
-                        {isComingSoon('/wallets') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <IoWalletOutline className={styles.sidebarIcon} /> {t('nav.wallets')}
+                        {isComingSoon('/wallets') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wager') ? styles.activeLink : ''}`}>
                     <Link href={'/wager'} className={styles.iconTextLink}>
-                        {isComingSoon('/wager') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <span className={styles.iconMarketplaceSpan}><FaDice className={styles.sidebarIcon} /> {tt("ui.wager.aee1", "Wager")}</span>
                         <span className={styles.betaPill}>{tt("ui.beta.f03b", "Beta")}</span>
+                        {isComingSoon('/wager') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
-                        {isComingSoon('/anime') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <FaTv className={styles.sidebarIcon} /> {t('nav.anime')}
+                        {isComingSoon('/anime') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
                     <Link href={'/community'} className={styles.iconTextLink} data-tour="nav-community">
-                        {isComingSoon('/community') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <FaUserFriends className={styles.sidebarIcon} /> {tt("ui.community.bfd5", "Community")}
+                        {isComingSoon('/community') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/organizations') ? styles.activeLink : ''}`}>
                     <Link href={'/organizations'} className={styles.iconTextLink}>
-                        {isComingSoon('/organizations') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <MdBusiness className={styles.sidebarIcon} /> {tt("ui.organizations.0760", "Organizations")}
+                        {isComingSoon('/organizations') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/marketplace') ? styles.activeLink : ''}`}>
                     <Link href={'/marketplace'} className={styles.iconTextLink}>
-                        {isComingSoon('/marketplace') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <RiShoppingCart2Line className={styles.sidebarIcon} /> {tt("ui.marketplace.9830", "Marketplace")}
+                        {isComingSoon('/marketplace') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/shop') ? styles.activeLink : ''}`}>
                     <Link href={'/shop'} className={styles.iconTextLink}>
-                        {isComingSoon('/shop') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <FiShoppingBag className={styles.sidebarIcon} /> {tt("ui.shop.55de", "Shop")}
+                        {isComingSoon('/shop') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink} data-tour="nav-settings">
-                        {isComingSoon('/settings') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <MdOutlineSettings className={styles.sidebarIcon} /> {t('nav.settings')}
+                        {isComingSoon('/settings') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>
 
@@ -191,8 +191,8 @@ const Sidebar = ({
                     the address, which is how they had to get there before. */}
                 {session?.user?.isStaff && <li className={`${styles.sidebarItem} ${isActive('/admin') ? styles.activeLink : ''}`}>
                     <Link href={'/admin'} className={styles.iconTextLink}>
-                        {isComingSoon('/admin') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                         <MdShield className={styles.sidebarIcon} /> {tt("nav.adminConsole", "Admin console")}
+                        {isComingSoon('/admin') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
                 </li>}
 

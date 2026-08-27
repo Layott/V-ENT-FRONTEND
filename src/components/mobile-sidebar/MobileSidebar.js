@@ -61,85 +61,85 @@ const MobileSidebar = ({
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
-                        {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.profile')} <PiUserCircle className={styles.sidebarIcon} />
+                        {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
+                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
-                        {isComingSoon('/events') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.events')} <MdOutlineEvent className={styles.sidebarIcon} />
+                        {isComingSoon('/events') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
-                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.teams')} <FaUsers className={styles.sidebarIcon} />
+                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
-                        {isComingSoon('/rankings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.rankings')} <PiRankingBold className={styles.sidebarIcon} />
+                        {isComingSoon('/rankings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
-                        {isComingSoon('/wallets') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.wallets')} <IoWalletOutline className={styles.sidebarIcon} />
+                        {isComingSoon('/wallets') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
-                        {isComingSoon('/anime') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.anime')} <FaTv className={styles.sidebarIcon} />
+                        {isComingSoon('/anime') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
                     <Link href={'/community'} className={styles.iconTextLink}>
-                        {isComingSoon('/community') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.community')} <FaUserFriends className={styles.sidebarIcon} /></span>
+                        {isComingSoon('/community') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/organizations') ? styles.activeLink : ''}`}>
                     <Link href={'/organizations'} className={styles.iconTextLink}>
-                        {isComingSoon('/organizations') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.organizations')} <MdBusiness className={styles.sidebarIcon} /></span>
+                        {isComingSoon('/organizations') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/marketplace') ? styles.activeLink : ''}`}>
                     <Link href={'/marketplace'} className={styles.iconTextLink}>
-                        {isComingSoon('/marketplace') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.marketplace')} <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
+                        {isComingSoon('/marketplace') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/shop') ? styles.activeLink : ''}`}>
                     <Link href={'/shop'} className={styles.iconTextLink}>
-                        {isComingSoon('/shop') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconShopSpan}>{t('nav.shop')} <FiShoppingBag className={styles.sidebarIcon} /></span>
+                        {isComingSoon('/shop') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
-                        {isComingSoon('/settings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.settings')} <MdOutlineSettings className={styles.sidebarIcon} />
+                        {isComingSoon('/settings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
 

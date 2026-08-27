@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadHint } from '@/lib/uploadSpecs';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useRef } from 'react';
@@ -101,6 +102,7 @@ const Sponsors = ({
                       </span>
                     </div>}
                   <input id={`logoUpload-${index}`} type="file" accept="image/*" onChange={e => handleLogoUpload(index, e)} className={styles.hiddenInput} />
+                  <p className={styles.uploadHintLine}>{uploadHint(tt, 'sponsorLogo')}</p>
                 </div>
               </div>
               <button className={styles.deleteFieldBTN} onClick={() => handleDeleteField(index)}>

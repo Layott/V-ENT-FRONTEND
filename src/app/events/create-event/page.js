@@ -2,6 +2,7 @@
 
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
+import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -14,7 +15,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './create-event.module.css';
 import useGames from '@/hooks/useGames';
-import { useT } from '@/i18n/LanguageProvider';
+import { useT, useLanguage } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const STEPS = [{
   id: 1,
@@ -58,6 +59,7 @@ const emptyForm = {
   }],
   // Step 4 - Sponsors & vendors
   sponsors: [],
+  partners: [],
   vendor_invites: [],
   social_links: {
     twitter: '',
@@ -79,6 +81,11 @@ const formatDateInput = iso => {
 const CreateEventPage = () => {
   const tx = useTx();
   const tt = useT();
+  // The page's language, not the browser's: a French page was listing
+  // "Fri, Sep 4" because toLocaleDateString was given undefined.
+  const {
+    language
+  } = useLanguage();
   // The games list is whatever rows the platform actually has.
   const {
     gameTitles: games
@@ -89,6 +96,15 @@ const CreateEventPage = () => {
   } = useSession();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(emptyForm);
+  // Files live outside formData: they cannot be JSON-serialised into the draft
+  // that formData is saved to, and a half-restored File is worse than none.
+  const [bannerFile, setBannerFile] = useState(null);
+  // Free entry with no tickets at all. Kept out of formData.ticket_types so
+  // turning it off again gives back whatever tiers were already typed.
+  const [freeEntry, setFreeEntry] = useState(false);
+  // Keyed by position in the combined sponsors+partners list, which is how
+  // the backend names the uploaded files.
+  const [supporterLogos, setSupporterLogos] = useState({});
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -101,7 +117,14 @@ const CreateEventPage = () => {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        setFormData(parsed.formData || emptyForm);
+        // Merged over emptyForm, never used raw. A draft saved before a field
+        // existed has no key for it, and the form then reads `undefined.length`
+        // and takes the whole page down with it. Adding a field to this wizard
+        // must not break every draft already sitting in somebody's browser.
+        setFormData({
+          ...emptyForm,
+          ...(parsed.formData || {})
+        });
         setStep(parsed.step || 1);
       }
     } catch (err) {
@@ -173,23 +196,36 @@ const CreateEventPage = () => {
       ticket_types: p.ticket_types.filter((_, i) => i !== idx)
     }));
   };
-  const addSponsor = () => setFormData(p => ({
+  // Sponsors and partners are the same list with a different name, so one set
+  // of helpers drives both rather than two that can drift apart.
+  const addSupporter = key => setFormData(p => ({
     ...p,
-    sponsors: [...p.sponsors, {
+    [key]: [...p[key], {
       name: '',
-      logo_url: ''
+      website: '',
+      links: {}
     }]
   }));
-  const updateSponsor = (idx, key, value) => setFormData(p => ({
+  const updateSupporter = (key, idx, field, value) => setFormData(p => ({
     ...p,
-    sponsors: p.sponsors.map((s, i) => i === idx ? {
-      ...s,
-      [key]: value
-    } : s)
+    [key]: p[key].map((row, i) => i === idx ? {
+      ...row,
+      [field]: value
+    } : row)
   }));
-  const removeSponsor = idx => setFormData(p => ({
+  const updateSupporterLink = (key, idx, platform, value) => setFormData(p => ({
     ...p,
-    sponsors: p.sponsors.filter((_, i) => i !== idx)
+    [key]: p[key].map((row, i) => i === idx ? {
+      ...row,
+      links: {
+        ...row.links,
+        [platform]: value
+      }
+    } : row)
+  }));
+  const removeSupporter = (key, idx) => setFormData(p => ({
+    ...p,
+    [key]: p[key].filter((_, i) => i !== idx)
   }));
   const addVendor = () => setFormData(p => ({
     ...p,
@@ -210,6 +246,34 @@ const CreateEventPage = () => {
     ...p,
     vendor_invites: p.vendor_invites.filter((_, i) => i !== idx)
   }));
+  // The days the event actually runs, from its own dates. One entry per day,
+  // so a tier can be pinned to a date rather than to a name like "Day 2" that
+  // means nothing to the system.
+  const eventDays = (() => {
+    const from = formData.start_date ? new Date(formData.start_date) : null;
+    const to = formData.end_date ? new Date(formData.end_date) : null;
+    if (!from || !to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return [];
+    const days = [];
+    const cursor = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    const last = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+    let n = 1;
+    while (cursor <= last && days.length < 60) {
+      const iso = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`;
+      days.push({
+        iso,
+        n,
+        label: cursor.toLocaleDateString(language || undefined, {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short'
+        })
+      });
+      cursor.setDate(cursor.getDate() + 1);
+      n += 1;
+    }
+    return days;
+  })();
+
   const validateStep = s => {
     const e = {};
     if (s === 1) {
@@ -236,12 +300,12 @@ const CreateEventPage = () => {
         e.capacity = 'Capacity must be at least 1.';
       }
     }
-    if (s === 3) {
+    if (s === 3 && !freeEntry) {
       if (formData.ticket_types.length === 0) {
-        e.ticket_types = 'Add at least one ticket tier.';
+        e.ticket_types = tt('createEvent.needATier', 'Add a ticket tier, or mark the event free entry.');
       } else {
         const bad = formData.ticket_types.find(t => !t.name || t.price < 0 || t.quantity < 1);
-        if (bad) e.ticket_types = 'Each tier needs a name, valid price, and quantity ≥ 1.';
+        if (bad) e.ticket_types = tt('createEvent.tierIncomplete', 'Every tier needs a name, a price of zero or more, and at least one place.');
       }
     }
     setErrors(e);
@@ -287,13 +351,41 @@ const CreateEventPage = () => {
       // vendor_invites, social_links, plus optional game_title. Legacy date/time
       // and registration-window fields are auto-derived server-side from
       // start_date / end_date, so the wizard does not send them.
+      // Multipart whenever a file is attached. The backend reads nested fields
+      // with json.loads when they arrive as strings, so sponsors and tiers
+      // survive the trip intact.
+      // A free event sends no tiers, whatever was typed before the box was
+      // ticked. Sending a stray half-filled tier would create a ticket type
+      // nobody meant to sell.
+      const payload = freeEntry ? {
+        ...formData,
+        ticket_types: []
+      } : formData;
+
+      const files = [['banner', bannerFile]].filter(([, f]) => f);
+      const sponsorFiles = Object.entries(supporterLogos).filter(([, f]) => f);
+      let body;
+      const headers = {
+        Authorization: `Bearer ${session?.user?.sessionToken || ''}`
+      };
+      if (files.length || sponsorFiles.length) {
+        body = new FormData();
+        Object.entries(payload).forEach(([k, v]) => {
+          if (v === null || v === undefined) return;
+          body.append(k, typeof v === 'object' ? JSON.stringify(v) : v);
+        });
+        files.forEach(([name, f]) => body.append(name, f));
+        sponsorFiles.forEach(([i, f]) => body.append(`sponsor_logo_${i}`, f));
+        // No Content-Type: the browser has to set the multipart boundary.
+      } else {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify(payload);
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/create-event/`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        headers,
+        body
       });
       const data = await res.json();
       if (data.status === 'success') {
@@ -406,10 +498,10 @@ const CreateEventPage = () => {
                 </label>
 
                 <div className={styles.formRow}>
-                  <label className={styles.label}>
-                    <span className="fieldLabelRow">{tt("ui.banner.image.url.594c", "Banner image URL")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
-                    <input type="url" className={styles.input} value={formData.banner_url} onChange={e => update('banner_url', e.target.value)} placeholder={tt("ui.https.1a66", "https://…")} />
-                  </label>
+                  <div className={styles.label}>
+                    <span className="fieldLabelRow">{tt("createEvent.bannerLabel", "Event banner")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
+                    <ImageUpload kind="banner" value={bannerFile} onChange={setBannerFile} />
+                  </div>
 
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.category.a3c6", "Category")} <InfoTip id="eventCategory" /></span>
@@ -492,11 +584,24 @@ const CreateEventPage = () => {
                   {tt("ui.define.what.attendees.can.114a", "Define what attendees can buy. Add as many tiers as you need.")}
                 </p>
 
+                {/* A free event has nothing to sell. Without this the organiser
+                    was stuck being told a tier needed a quantity of at least
+                    one, with nothing sensible to put in it. */}
+                <label className={styles.freeEntryRow}>
+                  <input type="checkbox" checked={freeEntry} onChange={e => setFreeEntry(e.target.checked)} />
+                  <span>
+                    <strong>{tt("createEvent.freeEntry", "Free entry, no tickets")}</strong>
+                    <span className={styles.freeEntryHint}>
+                      {tt("createEvent.freeEntryHint", "Anybody can turn up. Use the tiers below instead if entry is free but places are limited.")}
+                    </span>
+                  </span>
+                </label>
+
                 {errors.ticket_types && <div className={styles.errorMsg}>
                     <FaExclamationCircle /> {errors.ticket_types}
                   </div>}
 
-                <div className={styles.tierList}>
+                <div className={styles.tierList} hidden={freeEntry}>
                   {formData.ticket_types.map((t, i) => <div key={t.id} className={styles.tierRow}>
                       <div className={styles.tierGrid}>
                         <label className={styles.label}>
@@ -512,6 +617,21 @@ const CreateEventPage = () => {
                           <input type="number" className={styles.input} value={t.quantity} onChange={e => updateTicket(i, 'quantity', Number(e.target.value))} min={1} />
                         </label>
                       </div>
+                      {eventDays.length > 1 && <label className={styles.label}>
+                          <span className="fieldLabelRow">{tt("createEvent.tierDay", "Which day")} <span className={styles.optional}>{tt("createEvent.tierDayHint", "(leave on all days for a full pass)")}</span></span>
+                          <select className={styles.input} value={t.day || ''} onChange={e => {
+                    const iso = e.target.value;
+                    const chosen = eventDays.find(d => d.iso === iso);
+                    updateTicket(i, 'day', iso);
+                    updateTicket(i, 'day_label', chosen ? tt("createEvent.dayN", "Day {n}").replace('{n}', chosen.n) : '');
+                  }}>
+                            <option value="">{tt("createEvent.allDays", "All days (full pass)")}</option>
+                            {eventDays.map(d => <option key={d.iso} value={d.iso}>
+                                {tt("createEvent.dayN", "Day {n}").replace('{n}', d.n)} · {d.label}
+                              </option>)}
+                          </select>
+                        </label>}
+
                       <label className={styles.label}>
                         <span className="fieldLabelRow">{tt("ui.perks.f6d5", "Perks")} <span className={styles.optional}>{tt("ui.comma.separated.96a0", "(comma or • separated)")}</span> <InfoTip id="tierPerks" /></span>
                         <input type="text" className={styles.input} value={t.perks} onChange={e => updateTicket(i, 'perks', e.target.value)} placeholder={tt("ui.front.row.seating.welcome.4c12", "Front-row seating • Welcome drink")} />
@@ -529,24 +649,56 @@ const CreateEventPage = () => {
 
             {/* STEP 4 */}
             {step === 4 && <div className={styles.formStep}>
-                <h2 className={styles.stepTitle}>{tt("ui.sponsors.vendors.6747", "Sponsors & vendors")}<InfoTip id="sponsorName" /></h2>
+                <h2 className={styles.stepTitle}>{tt("createEvent.supportersTitle", "Sponsors, partners & vendors")}<InfoTip id="sponsorName" /></h2>
                 <p className={styles.stepSub}>
-                  {tt("ui.add.sponsor.logos.invite.b5a3", "Add sponsor logos and invite vendors to the on-site marketplace.")}
+                  {tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.")}
                 </p>
 
-                <div className={styles.subsection}>
-                  <h3 className={styles.subTitle}>{tt("ui.sponsors.82ce", "Sponsors")}</h3>
-                  {formData.sponsors.length === 0 ? <p className={styles.muted}>{tt("ui.no.sponsors.added.yet.f7ad", "No sponsors added yet.")}</p> : <div className={styles.itemList}>
-                      {formData.sponsors.map((s, i) => <div key={i} className={styles.itemRow}>
-                          <input type="text" className={styles.input} value={s.name} onChange={e => updateSponsor(i, 'name', e.target.value)} placeholder={tt("ui.sponsor.name.b3cf", "Sponsor name")} />
-                          <input type="url" className={styles.input} value={s.logo_url} onChange={e => updateSponsor(i, 'logo_url', e.target.value)} placeholder={tt("ui.logo.url.optional.eb8d", "Logo URL (optional)")} />
-                          <button className={styles.iconRemove} onClick={() => removeSponsor(i)} type="button" aria-label={tt("ui.remove.sponsor.c5c0", "Remove sponsor")}><FaTrash /></button>
-                        </div>)}
-                    </div>}
-                  <button className={styles.addRowBtn} onClick={addSponsor} type="button">
-                    <FaPlus /> {tt("ui.add.sponsor.581e", "Add sponsor")}
-                  </button>
-                </div>
+                {[{
+              key: 'sponsors',
+              title: tt("ui.sponsors.82ce", "Sponsors"),
+              empty: tt("ui.no.sponsors.added.yet.f7ad", "No sponsors added yet."),
+              add: tt("ui.add.sponsor.581e", "Add sponsor"),
+              namePlaceholder: tt("ui.sponsor.name.b3cf", "Sponsor name"),
+              logoLabel: tt("createEvent.sponsorLogoLabel", "Sponsor logo")
+            }, {
+              key: 'partners',
+              title: tt("createEvent.partners", "Partners"),
+              empty: tt("createEvent.noPartners", "No partners added yet."),
+              add: tt("createEvent.addPartner", "Add partner"),
+              namePlaceholder: tt("createEvent.partnerName", "Partner name"),
+              logoLabel: tt("createEvent.partnerLogoLabel", "Partner logo")
+            }].map(group => <div className={styles.subsection} key={group.key}>
+                    <h3 className={styles.subTitle}>{group.title}</h3>
+                    {formData[group.key].length === 0 ? <p className={styles.muted}>{group.empty}</p> : <div className={styles.itemList}>
+                        {formData[group.key].map((row, i) => {
+                    // The backend reads sponsor_logo_<n> off one combined
+                    // list, sponsors first. Partners are therefore offset by
+                    // however many sponsors there are.
+                    const fileIndex = group.key === 'sponsors' ? i : formData.sponsors.length + i;
+                    return <div key={i} className={styles.supporterRow}>
+                            <div className={styles.supporterMain}>
+                              <input type="text" className={styles.input} value={row.name} onChange={e => updateSupporter(group.key, i, 'name', e.target.value)} placeholder={group.namePlaceholder} />
+                              <input type="url" className={styles.input} value={row.website || ''} onChange={e => updateSupporter(group.key, i, 'website', e.target.value)} placeholder={tt("createEvent.supporterWebsite", "Website (optional)")} />
+                            </div>
+
+                            <ImageUpload kind="sponsorLogo" compact value={supporterLogos[fileIndex] || null} onChange={f => setSupporterLogos(prev => ({
+                        ...prev,
+                        [fileIndex]: f
+                      }))} label={group.logoLabel} />
+
+                            <div className={styles.supporterSocials}>
+                              {['twitter', 'instagram', 'facebook', 'youtube', 'tiktok'].map(platform => <input key={platform} type="url" className={styles.input} value={row.links?.[platform] || ''} onChange={e => updateSupporterLink(group.key, i, platform, e.target.value)} placeholder={tt("createEvent.socialPlaceholder", "{platform} link").replace('{platform}', platform)} />)}
+                            </div>
+
+                            <button className={styles.iconRemove} onClick={() => removeSupporter(group.key, i)} type="button" aria-label={tt("createEvent.removeSupporter", "Remove")}><FaTrash /></button>
+                          </div>;
+                  })}
+                      </div>}
+                    <button className={styles.addRowBtn} onClick={() => addSupporter(group.key)} type="button">
+                      <FaPlus /> {group.add}
+                    </button>
+                  </div>)}
 
                 <div className={styles.subsection}>
                   <h3 className={styles.subTitle}>{tt("ui.vendor.invites.8649", "Vendor invites")}</h3>
@@ -656,6 +808,13 @@ const CreateEventPage = () => {
                       </p>
                     </div>}
 
+                  {formData.partners.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
+                      <p className={styles.reviewLabel}>{tt("createEvent.partners", "Partners")}</p>
+                      <p className={styles.reviewValue}>
+                        {formData.partners.map(s => s.name).filter(Boolean).join(' • ')}
+                      </p>
+                    </div>}
+
                   {formData.vendor_invites.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
                       <p className={styles.reviewLabel}>{tt("ui.vendor.invites.8649", "Vendor invites")}</p>
                       <ul className={styles.reviewList}>
@@ -678,7 +837,7 @@ const CreateEventPage = () => {
                 {tt("ui.back.b52b", "Back")}
               </button>
               <span className={styles.stepCounter}>
-                {tt("ui.step.dc41", "Step")} {step} of {STEPS.length}
+                {tt("ui.stepXofY", "Step {n} of {total}").replace('{n}', step).replace('{total}', STEPS.length)}
               </span>
               {step < 5 ? <button className={`${styles.primaryBtn} redBTN`} onClick={goNext} type="button">
                   {tt("ui.next.2f04", "Next →")}

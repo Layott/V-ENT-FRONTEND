@@ -394,3 +394,12 @@
     font-size: var(--fs-p-size-sm-desktop);
   }
 }
+
+/* One line of guidance under an upload control: what size, what format, what
+   limit. Muted, because it is help rather than a message. */
+.uploadHintLine {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.4rem;
+}

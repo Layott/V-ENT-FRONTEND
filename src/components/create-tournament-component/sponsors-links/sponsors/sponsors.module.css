@@ -137,3 +137,12 @@
 .addButton:hover {
   background-color: var(--v-ent-light-gold);
 }
+
+/* One line of guidance under an upload control. Muted: it is help, not a
+   message. */
+.uploadHintLine {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.4rem;
+}

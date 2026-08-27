@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadHint } from '@/lib/uploadSpecs';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useRef, useState } from 'react';
 import shared from './editProfileShared.module.css';
@@ -105,7 +106,7 @@ const ProfileInfoPanel = ({
               </button>
               <input ref={avatarInputRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFilePick(e.target.files?.[0], setAvatarPreview, setAvatarFile)} />
             </div>
-            <span className={styles.helperText}>{tt("ui.recommend.image.x.px.db2a", "We recommend an image that is 256 x 256 px")}</span>
+            <span className={styles.helperText}>{uploadHint(tt, 'avatar')}</span>
           </div>
         </div>
 
@@ -117,7 +118,7 @@ const ProfileInfoPanel = ({
           </div>
           <input ref={bannerInputRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFilePick(e.target.files?.[0], setBannerPreview, setBannerFile)} />
         </div>
-        <div className={`${styles.helperText} ${styles.bannerHelper}`}>{tt("ui.recommend.image.x.px.08b1", "We recommend an image that is 1258 x 256 px")}</div>
+        <div className={`${styles.helperText} ${styles.bannerHelper}`}>{uploadHint(tt, 'banner')}</div>
       </div>
 
       {/* Profile Details */}

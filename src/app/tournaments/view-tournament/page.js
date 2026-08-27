@@ -19,6 +19,7 @@ import { shareLink, linkTo } from '@/lib/share';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
+import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useTx } from '@/i18n/LanguageProvider';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
@@ -739,6 +740,7 @@ const BracketPanel = ({
   const [reportScoreA, setReportScoreA] = useState(0);
   const [reportScoreB, setReportScoreB] = useState(0);
   const [reportScreenshotUrl, setReportScreenshotUrl] = useState('');
+  const [reportScreenshotFile, setReportScreenshotFile] = useState(null);
   const [reportSubmitting, setReportSubmitting] = useState(false);
 
   // Opponent confirm/dispute flow (CONFIRM_SCORE).
@@ -907,23 +909,38 @@ const BracketPanel = ({
   const reportScore = async () => {
     if (!openMatch) return;
     const url = reportScreenshotUrl.trim();
-    if (scoreMode === 'screenshot_required' && !url) {
-      showToast(tt("msg.aScreenshotUrlIsRequired", "A screenshot URL is required to report this score."));
+    if (scoreMode === 'screenshot_required' && !url && !reportScreenshotFile) {
+      showToast(tt("msg.aScreenshotIsRequired", "A screenshot is required to report this score."));
       return;
     }
     setReportSubmitting(true);
     try {
-      await ventFetch(API.TOURNAMENT.REPORT_SCORE(openMatch.match.id), {
-        method: 'POST',
-        token,
-        body: {
-          score_p1: reportScoreA,
-          score_p2: reportScoreB,
-          ...(url ? {
-            screenshot_url: url
-          } : {})
-        }
-      });
+      // Multipart when a file is attached, so the picture travels with the
+      // score rather than as a link the player had to host themselves.
+      if (reportScreenshotFile) {
+        const form = new FormData();
+        form.append('score_p1', String(reportScoreA));
+        form.append('score_p2', String(reportScoreB));
+        form.append('screenshot', reportScreenshotFile);
+        await ventFetch(API.TOURNAMENT.REPORT_SCORE(openMatch.match.id), {
+          method: 'POST',
+          token,
+          isFormData: true,
+          body: form
+        });
+      } else {
+        await ventFetch(API.TOURNAMENT.REPORT_SCORE(openMatch.match.id), {
+          method: 'POST',
+          token,
+          body: {
+            score_p1: reportScoreA,
+            score_p2: reportScoreB,
+            ...(url ? {
+              screenshot_url: url
+            } : {})
+          }
+        });
+      }
       showToast(tt("msg.scoreReportedAwaitingOpponentConfirmation", "Score reported \u00b7 awaiting opponent confirmation"));
       closeModal();
       await loadBrackets();
@@ -1115,14 +1132,14 @@ const BracketPanel = ({
                         <span className={styles.vsLabel}>-</span>
                         <input type="number" min="0" className={styles.scoreInput} value={reportScoreB} onChange={e => setReportScoreB(parseInt(e.target.value, 10) || 0)} />
                       </div>
-                      <label className={styles.reportUrlLabel} htmlFor="bracket-report-screenshot">
-                        <span className="fieldLabelRow">{tt("ui.screenshot.url.a819", "Screenshot URL")} {scoreMode === 'screenshot_required' ? '(required)' : '(optional)'} <InfoTip id="screenshotUrl" /></span>
-                      </label>
-                      <input id="bracket-report-screenshot" type="url" className={styles.reportUrlInput} placeholder={tt("ui.https.9820", "https://...")} value={reportScreenshotUrl} onChange={e => setReportScreenshotUrl(e.target.value)} />
+                      <div className={styles.reportUrlLabel}>
+                        <span className="fieldLabelRow">{tt("ui.screenshot.a81a", "Screenshot")} {scoreMode === 'screenshot_required' ? tt("ui.requiredParen", "(required)") : tt("ui.optional.b16c", "(optional)")} <InfoTip id="screenshotUrl" /></span>
+                      </div>
+                      <ImageUpload kind="document" compact value={reportScreenshotFile} onChange={setReportScreenshotFile} />
                       <button className={`${styles.primaryBtn} goldBTN`} style={{
                   width: '100%',
                   marginTop: '0.75rem'
-                }} onClick={reportScore} disabled={reportSubmitting || scoreMode === 'screenshot_required' && !reportScreenshotUrl.trim()}>
+                }} onClick={reportScore} disabled={reportSubmitting || scoreMode === 'screenshot_required' && !reportScreenshotUrl.trim() && !reportScreenshotFile}>
                         {reportSubmitting ? tx("Submitting…") : tx("Report Score")}
                       </button>
                     </div>;

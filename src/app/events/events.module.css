@@ -655,3 +655,27 @@
     padding: 2.5rem;
   }
 }
+
+/* Supporter logos: a filled tile, the logo contained inside it so a wide
+   wordmark and a square crest both sit right. No stroke, no glow. */
+.sponsorLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  min-height: 46px;
+  text-decoration: none;
+}
+
+.sponsorLink:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+}
+
+.sponsorLogo {
+  max-height: 30px;
+  max-width: 120px;
+  object-fit: contain;
+  display: block;
+}

@@ -296,6 +296,9 @@ export const ViewEventContent = ({
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyResult, setBuyResult] = useState(null);
   const eventSponsors = Array.isArray(event?.sponsors) ? event.sponsors : [];
+  // The API separates them, because the page shows two headings and should not
+  // have to filter a mixed list itself.
+  const eventPartners = Array.isArray(event?.partners) ? event.partners : [];
   const eventSocials = Object.entries(event?.social_links || {}).filter(([platform, url]) => url && SOCIAL_ICONS[String(platform).toLowerCase()]).map(([platform, url]) => ({
     platform,
     url,
@@ -804,18 +807,36 @@ export const ViewEventContent = ({
                     </div>
                   </div>
 
-                  {eventSponsors.length > 0 && <>
+                  {[{
+                key: 'sponsors',
+                rows: eventSponsors,
+                heading: tt("ui.sponsors.82ce", "Sponsors")
+              }, {
+                key: 'partners',
+                rows: eventPartners,
+                heading: tt("event.partnersHeading", "Partners")
+              }].filter(group => group.rows.length > 0).map(group => <div key={group.key}>
                       <p className={styles.sideLabel} style={{
                   marginTop: '1.25rem'
                 }}>
-                        {tt("ui.sponsors.82ce", "Sponsors")}
+                        {group.heading}
                       </p>
                       <div className={styles.sponsorRow}>
-                        {eventSponsors.map(sponsor => <span key={sponsor.sponsor_id || sponsor.name} className={styles.sponsorChip}>
-                            <FaStar className={styles.sponsorStar} /> {sponsor.name}
-                          </span>)}
+                        {group.rows.map(sponsor => {
+                    // Website first, then whatever social they gave. A logo
+                    // that goes nowhere is a picture of a name.
+                    const href = sponsor.website || sponsor.links?.[0]?.url || null;
+                    const inner = sponsor.logo ? <img src={sponsor.logo} alt={sponsor.name} className={styles.sponsorLogo} /> : <span className={styles.sponsorChip}>
+                              <FaStar className={styles.sponsorStar} /> {sponsor.name}
+                            </span>;
+                    return href ? <a key={sponsor.id || sponsor.name} href={href} target="_blank" rel="noopener noreferrer nofollow" className={styles.sponsorLink} title={sponsor.name}>
+                              {inner}
+                            </a> : <span key={sponsor.id || sponsor.name} className={styles.sponsorLink} title={sponsor.name}>
+                              {inner}
+                            </span>;
+                  })}
                       </div>
-                    </>}
+                    </div>)}
 
                   <p className={styles.sideLabel} style={{
                 marginTop: '1.25rem'
