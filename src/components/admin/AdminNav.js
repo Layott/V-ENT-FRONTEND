@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
-import { LuCalendar, LuUsers, LuShield, LuFileText } from 'react-icons/lu';
+import { LuCalendar, LuGamepad2, LuUsers, LuShield, LuFileText } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
@@ -46,6 +46,12 @@ const NAV = [{
     icon: LuCalendar,
     roles: ['super', 'moderator'],
     perms: ['manage_events']
+  }, {
+    label: 'Games',
+    href: '/admin/games',
+    icon: LuGamepad2,
+    roles: ['super', 'moderator'],
+    perms: ['cancel_tournament']
   }, {
     label: 'Tournaments',
     href: '/admin/tournaments',
