@@ -1,5 +1,7 @@
 'use client';
 
+import { withLocalDatesAsISO } from '@/lib/datetime';
+import { useCurrency } from '@/lib/money';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import ImageUpload from '@/components/image-upload/ImageUpload';
@@ -59,6 +61,7 @@ const emptyForm = {
   }],
   // Step 4 - Sponsors & vendors
   series_id: '',
+  currency: 'NGN',
   sponsors: [],
   partners: [],
   vendor_invites: [],
@@ -87,6 +90,9 @@ const CreateEventPage = () => {
   const {
     language
   } = useLanguage();
+  const {
+    rates
+  } = useCurrency();
   // The games list is whatever rows the platform actually has.
   const {
     games: gameRows,
@@ -363,10 +369,10 @@ const CreateEventPage = () => {
       // A free event sends no tiers, whatever was typed before the box was
       // ticked. Sending a stray half-filled tier would create a ticket type
       // nobody meant to sell.
-      const payload = freeEntry ? {
+      const payload = withLocalDatesAsISO(freeEntry ? {
         ...formData,
         ticket_types: []
-      } : formData;
+      } : formData, ['start_date', 'end_date']);
 
       const files = [['banner', bannerFile]].filter(([, f]) => f);
       const sponsorFiles = Object.entries(supporterLogos).filter(([, f]) => f);
@@ -572,6 +578,7 @@ const CreateEventPage = () => {
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.start.date.time.8f8b", "Start date & time")} <InfoTip id="eventStart" /></span>
                     <input type="datetime-local" className={styles.input} value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} />
+                    <span className={styles.tzNote}>{tt("createEvent.timesInYourZone", "Enter times in your own timezone. Everybody else sees the same moment in theirs.")}</span>
                     {errors.start_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.start_date}</span>}
                   </label>
                   <label className={styles.label}>
@@ -624,6 +631,18 @@ const CreateEventPage = () => {
                     <FaExclamationCircle /> {errors.ticket_types}
                   </div>}
 
+                {!freeEntry && rates && rates.length > 0 && <label className={styles.label} style={{
+              marginBottom: '1.1rem'
+            }}>
+                    <span className="fieldLabelRow">{tt("createEvent.currency", "Currency")}</span>
+                    <select className={styles.input} value={formData.currency || 'NGN'} onChange={e => update('currency', e.target.value)}>
+                      {rates.map(c => <option key={c.code} value={c.code}>{c.code} · {c.name}</option>)}
+                    </select>
+                    <span className={styles.tzNote}>
+                      {tt("createEvent.currencyNote", "Prices are settled in naira. Another currency is shown to buyers as a guide, at the rate the platform holds.")}
+                    </span>
+                  </label>}
+
                 <div className={styles.tierList} hidden={freeEntry}>
                   {formData.ticket_types.map((t, i) => <div key={t.id} className={styles.tierRow}>
                       <div className={styles.tierGrid}>
@@ -632,7 +651,7 @@ const CreateEventPage = () => {
                           <input type="text" className={styles.input} value={t.name} onChange={e => updateTicket(i, 'name', e.target.value)} placeholder={tt("ui.e.g.vip.9f28", "e.g. VIP")} />
                         </label>
                         <label className={styles.label}>
-                          <span className="fieldLabelRow">{tt("ui.price.ngn.e24c", "Price (NGN)")} <InfoTip id="tierPrice" /></span>
+                          <span className="fieldLabelRow">{tt("createEvent.priceIn", "Price ({code})").replace('{code}', formData.currency || 'NGN')} <InfoTip id="tierPrice" /></span>
                           <input type="number" className={styles.input} value={t.price} onChange={e => updateTicket(i, 'price', Number(e.target.value))} min={0} />
                         </label>
                         <label className={styles.label}>

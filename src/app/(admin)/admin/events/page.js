@@ -10,6 +10,7 @@
 // same pagination, same table, same edit modal. An admin who has learned one
 // has learned the other, and a change to how listing works is one change.
 
+import { withLocalDatesAsISO } from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
@@ -114,7 +115,7 @@ function EventsInner() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(withLocalDatesAsISO(payload, ['start_date', 'end_date']))
       });
       const data = await res.json();
       if (data.status === 'success') {

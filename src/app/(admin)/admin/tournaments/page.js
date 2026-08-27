@@ -1,5 +1,6 @@
 'use client';
 
+import { withLocalDatesAsISO } from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
@@ -123,7 +124,7 @@ function TournamentsInner() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(withLocalDatesAsISO(payload, ['start_date_and_time', 'end_date_and_time']))
       });
       const data = await res.json();
       if (data.status === 'success') {

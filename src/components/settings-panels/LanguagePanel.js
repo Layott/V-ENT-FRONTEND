@@ -1,5 +1,6 @@
 'use client';
 
+import { useCurrency } from '@/lib/money';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import shared from './settingsShared.module.css';
@@ -65,6 +66,11 @@ const LanguagePanel = ({
     setLang(current || language || 'en');
     setTz(timezone || 'Africa/Lagos');
   }, [current, language, timezone]);
+  const {
+    rates,
+    preferred,
+    choose
+  } = useCurrency();
   const persist = async next => {
     await onSave?.(next);
   };
@@ -89,6 +95,21 @@ const LanguagePanel = ({
           </select>
         </div>
       </div>
+
+      {/* Which money prices are read in. A preference only: everything is
+          still settled in naira, and the page says so rather than implying a
+          converted figure is what gets charged. */}
+      {rates && rates.length > 0 && <div className={shared.card}>
+          <h3 className={shared.cardTitle}>{t('settings.currency')}</h3>
+          <p className={shared.cardSub}>{t('settings.currencyBlurb')}</p>
+          <div className={shared.formGroup}>
+            <label className={shared.formLabel} htmlFor="currency">{t('settings.showPricesIn')}</label>
+            <select id="currency" className={shared.formSelect} value={preferred || ''} onChange={e => choose(e.target.value || null)}>
+              <option value="">{t('settings.currencyAsListed')}</option>
+              {rates.map(c => <option key={c.code} value={c.code}>{c.code} - {c.name}</option>)}
+            </select>
+          </div>
+        </div>}
 
       <div className={shared.card}>
         <h3 className={shared.cardTitle}>{t('settings.walkthroughTitle')}</h3>

@@ -32,6 +32,9 @@ const CreateTournamentTitle = ({
   const [selectedGame, setSelectedGame] = useState(formData.game || '');
   const [selectedGameMode, setSelectedGameMode] = useState(formData.game_mode || '');
   const [description, setDescription] = useState(formData.tournament_description || '');
+  // The editions of the chosen game. Most titles have none, and then the second
+  // select never appears.
+  const chosenSeries = (games.find(g => g.name === selectedGame)?.series) || [];
   const handleGameChange = event => {
     const value = event.target.value;
     setSelectedGame(value);
@@ -40,6 +43,9 @@ const CreateTournamentTitle = ({
     updateFormData('game_id', match?.id ?? null);
     setSelectedGameMode('');
     updateFormData('game_mode', '');
+    // The edition belongs to the game that was chosen before, so it cannot
+    // survive the game changing underneath it.
+    updateFormData('series_id', '');
   };
   const handleGameModeChange = event => {
     const value = event.target.value;
@@ -83,6 +89,21 @@ const CreateTournamentTitle = ({
                 </option>)}
             </select>
           </div>
+
+          {/* Only annual titles have editions, so this appears only when the
+              chosen game has some. A bracket is played on one edition, and
+              results from two of them are not comparable. */}
+          {chosenSeries.length > 0 && <div className={createTournamentStyles.inputGroup}>
+              <label htmlFor="gameSeries" className={createTournamentStyles.labelWithAsterisk}>
+                <span className="fieldLabelRow">{tt("createEvent.edition", "Edition")} <InfoTip id="tournamentGame" /></span>
+              </label>
+              <select id="gameSeries" value={formData.series_id || ''} onChange={e => updateFormData('series_id', e.target.value)} className={createTournamentStyles.inputWithDropdown}>
+                <option value="">{tt("createEvent.anyEdition", "Any edition")}</option>
+                {chosenSeries.map(sr => <option key={sr.id} value={sr.id}>
+                    {sr.name}{sr.release_year ? ` (${sr.release_year})` : ''}
+                  </option>)}
+              </select>
+            </div>}
 
           <div className={createTournamentStyles.inputGroup}>
             <label htmlFor="gameMode" className={createTournamentStyles.labelWithAsterisk}>

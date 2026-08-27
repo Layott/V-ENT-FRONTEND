@@ -1,5 +1,8 @@
 'use client';
 
+import { withLocalDatesAsISO } from '@/lib/datetime';
+import { usePrice } from '@/lib/money';
+import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
@@ -56,7 +59,7 @@ const TABS = [{
 ];
 const formatDateTime = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleString('en-GB', {
+  return new Date(iso).toLocaleString(undefined, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -66,7 +69,7 @@ const formatDateTime = iso => {
 };
 const formatDate = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(undefined, {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -259,6 +262,10 @@ export const ViewEventContent = ({
 }) => {
   const tx = useTx();
   const tt = useT();
+  const price = usePrice();
+  const {
+    language
+  } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   // `/events/anime-night-lagos` passes the slug; `?id=` still resolves.
@@ -686,6 +693,7 @@ export const ViewEventContent = ({
             end_date: at(event.end_date)
           };
         }} save={async payload => {
+          payload = withLocalDatesAsISO(payload, ['start_date', 'end_date']);
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/edit-event/${event.id}/`, {
             method: 'PUT',
             headers: {
@@ -903,6 +911,18 @@ export const ViewEventContent = ({
                       <p className={styles.tierPrice}>
                         {t.price.toLocaleString()} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>
+                        {/* What that is worth in the reader's own money. Shown as
+                            an approximation on purpose: the charge is settled in
+                            VENT COINS, and presenting this as the billed amount
+                            would be a lie about somebody's money. */}
+                        {(() => {
+                    const {
+                      converted
+                    } = price(t.price_ngn, 'NGN', language);
+                    return converted ? <span className={styles.tierApprox}>
+                              {tt("money.approx", "about {amount}").replace('{amount}', converted)}
+                            </span> : null;
+                  })()}
                       </p>
                       <ul className={styles.perkList}>
                         {t.perks.map(p => <li key={p}>
@@ -931,7 +951,7 @@ export const ViewEventContent = ({
                         {day.sessions.map(s => <div key={s.id} className={styles.timelineRow}>
                             <div className={styles.timelineTime}>
                               <IoTimeOutline />
-                              {new Date(s.time).toLocaleTimeString('en-GB', {
+                              {new Date(s.time).toLocaleTimeString(undefined, {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
