@@ -58,6 +58,7 @@ const emptyForm = {
     perks: 'All-day entry • Standing area'
   }],
   // Step 4 - Sponsors & vendors
+  series_id: '',
   sponsors: [],
   partners: [],
   vendor_invites: [],
@@ -88,6 +89,7 @@ const CreateEventPage = () => {
   } = useLanguage();
   // The games list is whatever rows the platform actually has.
   const {
+    games: gameRows,
     gameTitles: games
   } = useGames();
   const router = useRouter();
@@ -98,6 +100,10 @@ const CreateEventPage = () => {
   const [formData, setFormData] = useState(emptyForm);
   // Files live outside formData: they cannot be JSON-serialised into the draft
   // that formData is saved to, and a half-restored File is worse than none.
+  // The editions of whichever game is chosen. Most titles have none, and then
+  // the second select never appears.
+  const chosenGame = gameRows.find(g => (g.game_title || g.name) === formData.game_title);
+  const gameSeries = chosenGame?.series || [];
   const [bannerFile, setBannerFile] = useState(null);
   // Free entry with no tickets at all. Kept out of formData.ticket_types so
   // turning it off again gives back whatever tiers were already typed.
@@ -491,11 +497,28 @@ const CreateEventPage = () => {
 
                 <label className={styles.label}>
                   <span className="fieldLabelRow">{tt("ui.game.e3e8", "Game")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventGame" /></span>
-                  {games.length > 0 ? <select className={styles.input} value={formData.game_title} onChange={e => update('game_title', e.target.value)}>
+                  {games.length > 0 ? <select className={styles.input} value={formData.game_title} onChange={e => {
+                  update('game_title', e.target.value);
+                  // The edition belongs to the old game, so it cannot survive
+                  // the game changing underneath it.
+                  update('series_id', '');
+                }}>
                       <option value="">{tt("ui.select.game.a65d", "Select a game…")}</option>
                       {games.map(g => <option key={g} value={g}>{g}</option>)}
                     </select> : <input type="text" className={styles.input} value={formData.game_title} onChange={e => update('game_title', e.target.value)} placeholder={tt("createEvent.gamePlaceholder", "e.g. EA FC 25")} />}
                 </label>
+
+                {/* Only annual titles have editions, so this appears only when
+                    the chosen game actually has some. */}
+                {gameSeries.length > 0 && <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt("createEvent.edition", "Edition")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span></span>
+                    <select className={styles.input} value={formData.series_id || ''} onChange={e => update('series_id', e.target.value)}>
+                      <option value="">{tt("createEvent.anyEdition", "Any edition")}</option>
+                      {gameSeries.map(sr => <option key={sr.id} value={sr.id}>
+                          {sr.name}{sr.release_year ? ` (${sr.release_year})` : ''}
+                        </option>)}
+                    </select>
+                  </label>}
 
                 <div className={styles.formRow}>
                   <div className={styles.label}>

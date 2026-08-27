@@ -1,0 +1,162 @@
+/* Surfaces and space. A game is a filled card, its editions a step darker
+   inside it, so the nesting reads without a single stroke. */
+
+.hint {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1.25rem;
+  max-width: 78ch;
+}
+
+.gameList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.gameCard {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.retired {
+  opacity: 0.55;
+}
+
+.gameHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+}
+
+.gameName {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.count,
+.used {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.retiredBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.seriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+}
+
+.seriesRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+}
+
+.seriesName {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.87rem;
+}
+
+.year {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.addSeriesRow,
+.addGameRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  margin-top: 0.9rem;
+}
+
+.addGameRow {
+  margin-top: 0;
+}
+
+.input,
+.inputSmall {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.inputSmall {
+  flex: 0 0 100px;
+}
+
+.input:focus,
+.inputSmall:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.addBtn {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  background-color: #f0c65f;
+}
+
+.ghostBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.75rem;
+  padding: 6px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.ghostBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.addBtn:disabled,
+.ghostBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .ghostBtn {
+    margin-left: 0;
+  }
+}
