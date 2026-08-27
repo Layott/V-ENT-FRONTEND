@@ -3792,6 +3792,9 @@ export const dictionaries = {
     'admin.partners.scopesSaved': 'Scopes updated.',
     'admin.partners.scopesShort': 'scopes',
     'admin.partners.suspendedNote': 'Suspended. Every key was revoked when this happened, so reinstating does not bring them back - the partner issues a new one, or you rotate one for them.',
+    'docs.brand': 'Showing that the data came from V-ENT',
+    'docs.brandBody': 'GET /api/v1/ carries a brand block with the marks and the one line of guidance, so you do not have to go and take a logo off the website at whatever size you find it. No key is needed to read it, because somebody deciding whether to integrate has not got one yet.',
+    'docs.brandUse': 'Use the mark to say where the data came from, at its own proportions and no smaller than 24px tall. Do not recolour it, stretch it, or use it in a way that suggests V-ENT endorses your product. Prefer the SVG; it stays sharp at every size, which the PNG will not.',
   },
 
   fr: {
@@ -7570,6 +7573,9 @@ export const dictionaries = {
     'admin.partners.scopesSaved': 'Portées mises à jour.',
     'admin.partners.scopesShort': 'portées',
     'admin.partners.suspendedNote': 'Suspendu. Toutes les clés ont été révoquées à ce moment-là ; le rétablissement ne les restaure pas - le partenaire en émet une nouvelle, ou vous en faites tourner une pour lui.',
+    'docs.brand': 'Indiquer que les données viennent de V-ENT',
+    'docs.brandBody': 'GET /api/v1/ contient un bloc brand avec les logos et la seule consigne à suivre : vous n\'avez pas à aller chercher un logo sur le site à la taille où vous le trouvez. Aucune clé n\'est nécessaire pour le lire, car qui évalue une intégration n\'en a pas encore.',
+    'docs.brandUse': 'Utilisez le logo pour indiquer la provenance des données, à ses propres proportions et pas en dessous de 24 px de haut. Ne le recolorez pas, ne l\'étirez pas et ne l\'employez pas d\'une façon qui laisse croire que V-ENT recommande votre produit. Préférez le SVG : il reste net à toutes les tailles, ce que le PNG ne fera pas.',
   },
 
   pt: {
@@ -11348,5 +11354,8 @@ export const dictionaries = {
     'admin.partners.scopesSaved': 'Âmbitos atualizados.',
     'admin.partners.scopesShort': 'âmbitos',
     'admin.partners.suspendedNote': 'Suspenso. Todas as chaves foram revogadas nesse momento, por isso reativar não as devolve - o parceiro emite uma nova, ou roda-se uma por ele.',
+    'docs.brand': 'Indicar que os dados vêm da V-ENT',
+    'docs.brandBody': 'GET /api/v1/ traz um bloco brand com as marcas e a única indicação a seguir, para não ter de ir buscar um logótipo ao site no tamanho em que o encontrar. Não é precisa chave para o ler, porque quem está a decidir se integra ainda não tem uma.',
+    'docs.brandUse': 'Use a marca para indicar de onde vieram os dados, nas suas próprias proporções e nunca com menos de 24 px de altura. Não a recolora, não a estique e não a utilize de forma a sugerir que a V-ENT recomenda o seu produto. Prefira o SVG: mantém-se nítido em qualquer tamanho, o que o PNG não faz.',
   },
 };
