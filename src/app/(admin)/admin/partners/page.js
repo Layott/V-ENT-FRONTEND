@@ -16,6 +16,21 @@ import { useTx } from '@/i18n/LanguageProvider';
 // signing V-ENT members in on their own site is handling identities rather than
 // reading a fixture list.
 
+// The API's status values are its own vocabulary, not something to print.
+// Everything that shows a partner status goes through here, so there is one
+// place to add a status and one place that decides how it reads.
+const statusLabel = (tt, value) => {
+  const key = String(value || '').toLowerCase();
+  const labels = {
+    pending: tt('admin.partnerPending', 'Awaiting review'),
+    approved: tt('admin.partnerApproved', 'Approved'),
+    rejected: tt('admin.partnerRejected', 'Rejected'),
+    suspended: tt('admin.partnerSuspended', 'Suspended'),
+    none: tt('admin.partnerNotRequested', 'Not requested')
+  };
+  return labels[key] || value || '-';
+};
+
 function statusBadgeClass(s) {
   if (s === 'pending') return shared.sPending;
   if (s === 'approved') return shared.sApproved;
@@ -146,7 +161,7 @@ function PartnersInner() {
   };
   if (authLoading) return <div className={shared.loadingScreen}>{tt("ui.loading.b04b", "Loading...")}</div>;
   return <div className={shared.adminShell}>
-      <AdminNav />
+      <AdminNav admin={admin} onLogout={logout} />
       <div className={shared.adminMain}>
         <AdminHeader title={tt("ui.partners.aa16", "Partners")} admin={admin} onLogout={logout} />
 
@@ -176,7 +191,7 @@ function PartnersInner() {
 
           <div className={styles.filterRow}>
             {['', 'pending', 'approved', 'rejected', 'suspended'].map(s => <button key={s || 'all'} type="button" className={`${styles.filterChip} ${statusFilter === s ? styles.filterChipOn : ''}`} onClick={() => setStatusFilter(s)}>
-                {s === '' ? tt('admin.allStatuses', 'All') : s}
+                {s === '' ? tt('admin.allStatuses', 'All') : statusLabel(tt, s)}
               </button>)}
           </div>
 
@@ -204,9 +219,9 @@ function PartnersInner() {
                         {p.website && <span className={styles.muted}> {p.website}</span>}
                       </td>
                       <td>{p.owner}</td>
-                      <td><span className={statusBadgeClass(p.status)}>{p.status}</span></td>
-                      <td>{p.sso_status}</td>
-                      <td>{p.approved_scopes?.length || 0} of {p.requested_scopes?.length || 0}</td>
+                      <td><span className={statusBadgeClass(p.status)}>{statusLabel(tt, p.status)}</span></td>
+                      <td>{statusLabel(tt, p.sso_status)}</td>
+                      <td>{tt('admin.scopesGranted', '{granted} of {asked}').replace('{granted}', p.approved_scopes?.length || 0).replace('{asked}', p.requested_scopes?.length || 0)}</td>
                       <td>{(p.keys || []).filter(k => !k.revoked_at).length}</td>
                       <td>
                         <button type="button" className={styles.reviewBtn} onClick={() => openPartner(p)}>
@@ -265,7 +280,7 @@ function PartnersInner() {
             <div className={styles.ssoBlock}>
               <p className={styles.sectionLabel}>{tt("ui.sign.v.ent.fc3b", "Sign in with V-ENT")}</p>
               <p className={styles.muted}>
-                {tt("ui.status.11dc", "Status:")} {open.sso_status}.{' '}
+                {tt("ui.status.11dc", "Status:")} {statusLabel(tt, open.sso_status)}.{' '}
                 {open.sso_status === 'requested' ? tx("This partner wants to sign V-ENT members in on their own site.") : tx("A partner must request this before it can be approved.")}
               </p>
               <dl className={styles.metaGrid}>
