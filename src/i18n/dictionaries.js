@@ -3414,6 +3414,7 @@ export const dictionaries = {
     'ui.already.signed.in.confirm': 'You are signed in already. Enter the 6-digit code from your authenticator app to open the console.',
     'ui.confirm.its.you': 'Confirm it\'s you',
     'ui.leave.admin': 'Back to the site',
+    'profile.founderBadgeLabel': 'Founding member of V-ENT',
   },
 
   fr: {
@@ -6814,6 +6815,7 @@ export const dictionaries = {
     'ui.already.signed.in.confirm': 'Vous êtes déjà connecté. Saisissez le code à 6 chiffres de votre application d\'authentification pour ouvrir la console.',
     'ui.confirm.its.you': 'Confirmez que c\'est bien vous',
     'ui.leave.admin': 'Retour au site',
+    'profile.founderBadgeLabel': 'Membre fondateur de V-ENT',
   },
 
   pt: {
@@ -10214,5 +10216,6 @@ export const dictionaries = {
     'ui.already.signed.in.confirm': 'Já tem sessão iniciada. Introduza o código de 6 dígitos da sua aplicação de autenticação para abrir a consola.',
     'ui.confirm.its.you': 'Confirme que é você',
     'ui.leave.admin': 'Voltar ao site',
+    'profile.founderBadgeLabel': 'Membro fundador da V-ENT',
   },
 };

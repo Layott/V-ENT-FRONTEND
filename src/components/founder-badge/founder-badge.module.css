@@ -1,77 +1,123 @@
-/* The founder mark.
+/* The founder mark: the V-ENT logo beside a name, in brand red.
  *
- * Filled surface, gold on a dark chip, no ring and no bloom.
+ * ─────────────────────────────────────────────────────────────────────────
+ * DELIBERATE EXCEPTION to the house rule against glow and looping motion.
  *
- * The chevron draws itself, and it repeats - asked for directly by the CEO on
- * 2026-08-26, which overrides the house rule against looping motion for this
- * one mark. It is written to be a re-draw rather than a throb: the stroke
- * sweeps for 700ms and then rests, visible and still, for most of the cycle.
- * Nothing scales, nothing fades, nothing glows, and the mark is never absent -
- * it is complete for the whole of the pause, so a glance at any moment sees a
- * finished chevron rather than half of one.
+ * Asked for directly by the CEO on 2026-08-27: "I want something that glows
+ * and shine, it can be the vent logo itself beside our names or something
+ * similar but red", then "the glow and shine must be continuously animated
+ * with a short loop". An explicit instruction outranks the standing design
+ * rule, so the glow, the breathing and the sweep are all correct here and must
+ * not be stripped out in a later tidy-up. This is the only place in the
+ * product where any of them are allowed.
+ * ─────────────────────────────────────────────────────────────────────────
+ *
+ * Two loops on the same 2.4s clock, so they read as one effect rather than two
+ * things happening near each other:
+ *
+ *   the glow   breathes between a low and a high bloom, continuously.
+ *   the shine  a band of light crosses the mark once per cycle, clipped to the
+ *              logo so it is a highlight ON the shape rather than a streak
+ *              floating over the name beside it.
+ *
+ * The sweep is placed in the second half of the cycle, arriving as the glow
+ * reaches its brightest, which is what makes the mark look like it catches the
+ * light rather than like two timers running.
  */
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: #2a2416;
-  color: #d4af37;
-  border-radius: 999px;
-  padding: 3px 10px 3px 7px;
-  font-family: 'ClashGrotesk-Variable', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.02em;
   vertical-align: middle;
-  white-space: nowrap;
+  /* It sits immediately after a name, so it carries its own breathing room and
+     the call sites do not each have to remember to add a space. */
+  margin-left: 0.4em;
+  flex: none;
+  line-height: 1;
 }
 
 .mark {
   display: block;
-  flex: none;
+  overflow: visible;
+  animation: founderGlow 2.4s ease-in-out infinite;
 }
 
-.stroke {
-  stroke: #d4af37;
-  /* The path is about 32 units long; dashing it by its own length and pulling
-     the offset back to zero draws it from one end to the other. */
-  stroke-dasharray: 34;
-  stroke-dashoffset: 34;
-  animation: draw 5.5s ease-out infinite;
-}
-
-/* 700ms of drawing, then it stays drawn until the cycle comes round again.
-   The keyframe percentages are what keep it a re-draw and not a flicker:
-   complete by 13% and held at complete until the very end. */
-@keyframes draw {
-  0% {
-    stroke-dashoffset: 34;
+/* Two shadows at each end of the breath: a tight core that keeps the mark
+   legible at 12px, and a wider bloom that carries the colour. The mark itself
+   never moves, scales or fades - only the light does. */
+@keyframes founderGlow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 1.5px rgba(255, 60, 66, 0.9))
+      drop-shadow(0 0 3px rgba(227, 6, 19, 0.65))
+      drop-shadow(0 0 7px rgba(227, 6, 19, 0.4));
   }
-  13% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: 0;
+  50% {
+    filter:
+      drop-shadow(0 0 2px rgba(255, 90, 96, 1))
+      drop-shadow(0 0 6px rgba(227, 6, 19, 0.95))
+      drop-shadow(0 0 13px rgba(227, 6, 19, 0.7));
   }
 }
 
-/* Somebody who has asked for less motion gets the finished mark, immediately. */
+.body {
+  transform-origin: center;
+}
+
+.shine {
+  animation: founderShine 2.4s ease-in-out infinite;
+}
+
+@keyframes founderShine {
+  /* Waits off the left edge through the first half, crosses during the second,
+     and is gone before the cycle restarts - so there is never a visible jump
+     back to the start position. */
+  0%, 45% {
+    transform: translateX(0);
+  }
+  85%, 100% {
+    transform: translateX(150px);
+  }
+}
+
+/* Somebody who has asked for less motion keeps the mark and a steady glow, and
+   loses both loops. The badge still says what it says. */
 @media (prefers-reduced-motion: reduce) {
-  .stroke {
+  .mark {
     animation: none;
-    stroke-dashoffset: 0;
+    filter:
+      drop-shadow(0 0 1.5px rgba(255, 60, 66, 0.9))
+      drop-shadow(0 0 5px rgba(227, 6, 19, 0.7));
+  }
+  .shine {
+    animation: none;
+    opacity: 0;
   }
 }
 
-.sm { font-size: 0.66rem; padding: 2px 8px 2px 6px; gap: 4px; }
-.sm .mark { width: 11px; height: 11px; }
+/* Sized to sit beside text rather than to a fixed pixel grid, so the mark
+   tracks the name it belongs to. The logo is very slightly taller than wide. */
+.sm .mark { width: 12px; height: 12.5px; }
+.md .mark { width: 14px; height: 14.5px; }
+.lg .mark { width: 20px; height: 20.8px; }
 
-.md { font-size: 0.72rem; }
-.md .mark { width: 13px; height: 13px; }
+/* At the largest size the mark is a statement on a profile header, so its
+   breath carries further. */
+.lg .mark {
+  animation-name: founderGlowLarge;
+}
 
-.lg { font-size: 0.82rem; padding: 4px 12px 4px 9px; }
-.lg .mark { width: 16px; height: 16px; }
-
-.text {
-  line-height: 1;
+@keyframes founderGlowLarge {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 2px rgba(255, 60, 66, 0.9))
+      drop-shadow(0 0 5px rgba(227, 6, 19, 0.7))
+      drop-shadow(0 0 10px rgba(227, 6, 19, 0.45));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 3px rgba(255, 90, 96, 1))
+      drop-shadow(0 0 9px rgba(227, 6, 19, 1))
+      drop-shadow(0 0 20px rgba(227, 6, 19, 0.75));
+  }
 }
