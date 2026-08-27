@@ -277,6 +277,9 @@ const EventsListingContent = () => {
               <Link href="/events/my-tickets" className={styles.ticketsBtn}>
                 <IoTicketOutline /> {tt("ui.my.tickets.5394", "My tickets")}
               </Link>
+              <Link href="/events/my-events" className={styles.ticketsBtn}>
+                {tt("myEvents.title", "My events")}
+              </Link>
               <Link href="/events/create-event" className={`${styles.createBtn} redBTN`}>
                 <HiPlus /> {tt("ui.create.event.b8d8", "Create event")}
               </Link>

@@ -1,0 +1,196 @@
+/* Same shell as the attendees and manage pages: the sidebar is fixed, so the
+   pane is offset by its width from 1024px up. Surfaces and space, no strokes. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  display: flex;
+  width: 100%;
+}
+
+.rightPane {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPane {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 3rem;
+    max-width: 1150px;
+  }
+}
+
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+
+.pageSub {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 60ch;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #1b1c1f;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+
+.retired {
+  opacity: 0.6;
+}
+
+.cardMain {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+.name {
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.name:hover {
+  color: #E5B94E;
+}
+
+.badge,
+.org {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.org {
+  color: #E5B94E;
+  background-color: rgba(229, 185, 78, 0.14);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ghostBtn,
+.primaryBtn,
+.createBtn {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ghostBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.ghostBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.primaryBtn,
+.createBtn {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.primaryBtn:hover,
+.createBtn:hover {
+  background-color: #f0c65f;
+}
+
+.emptyState {
+  background-color: #1b1c1f;
+  border-radius: 14px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.emptyTitle {
+  color: #fff;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.muted {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1.25rem;
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  color: #ff8b90;
+  margin-bottom: 1rem;
+}

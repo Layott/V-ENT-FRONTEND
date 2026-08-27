@@ -33,6 +33,7 @@ export default function robots() {
           '/wallet-topup-callback',
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
+          '/events/my-events',     // a personal list, including unlisted events
           '/events/*/manage',      // promo codes and who may run the event
           '/events/*/attendees',   // the door list is attendee data
         ],

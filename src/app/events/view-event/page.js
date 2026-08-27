@@ -530,8 +530,13 @@ export const ViewEventContent = ({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (activeTab && activeTab !== 'overview') params.set('tab', activeTab);else params.delete('tab');
+    // Keep whatever address the page was opened on. Rewriting to
+    // /events/view-event?tab=... threw the event away when the page had been
+    // reached by name, because the slug lives in the path there and not in the
+    // query - so every tab on /events/<name> landed on "Event ID missing".
+    params.delete('id');
     const qs = params.toString();
-    router.replace(qs ? `/events/view-event?${qs}` : `/events/${id}`, {
+    router.replace(qs ? `/events/${id}?${qs}` : `/events/${id}`, {
       scroll: false
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
