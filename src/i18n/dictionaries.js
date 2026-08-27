@@ -3795,6 +3795,9 @@ export const dictionaries = {
     'docs.brand': 'Showing that the data came from V-ENT',
     'docs.brandBody': 'GET /api/v1/ carries a brand block with the marks and the one line of guidance, so you do not have to go and take a logo off the website at whatever size you find it. No key is needed to read it, because somebody deciding whether to integrate has not got one yet.',
     'docs.brandUse': 'Use the mark to say where the data came from, at its own proportions and no smaller than 24px tall. Do not recolour it, stretch it, or use it in a way that suggests V-ENT endorses your product. Prefer the SVG; it stays sharp at every size, which the PNG will not.',
+    'admin.partners.issueKey': 'Issue a key',
+    'admin.partners.keyIssued': 'Key issued.',
+    'admin.partners.revokeWarning': 'Suspending or rejecting revokes every live key immediately, and reinstating does not bring them back. This partner has a key in use.',
   },
 
   fr: {
@@ -7576,6 +7579,9 @@ export const dictionaries = {
     'docs.brand': 'Indiquer que les données viennent de V-ENT',
     'docs.brandBody': 'GET /api/v1/ contient un bloc brand avec les logos et la seule consigne à suivre : vous n\'avez pas à aller chercher un logo sur le site à la taille où vous le trouvez. Aucune clé n\'est nécessaire pour le lire, car qui évalue une intégration n\'en a pas encore.',
     'docs.brandUse': 'Utilisez le logo pour indiquer la provenance des données, à ses propres proportions et pas en dessous de 24 px de haut. Ne le recolorez pas, ne l\'étirez pas et ne l\'employez pas d\'une façon qui laisse croire que V-ENT recommande votre produit. Préférez le SVG : il reste net à toutes les tailles, ce que le PNG ne fera pas.',
+    'admin.partners.issueKey': 'Émettre une clé',
+    'admin.partners.keyIssued': 'Clé émise.',
+    'admin.partners.revokeWarning': 'Suspendre ou refuser révoque immédiatement toutes les clés actives, et le rétablissement ne les restaure pas. Ce partenaire a une clé en service.',
   },
 
   pt: {
@@ -11357,5 +11363,8 @@ export const dictionaries = {
     'docs.brand': 'Indicar que os dados vêm da V-ENT',
     'docs.brandBody': 'GET /api/v1/ traz um bloco brand com as marcas e a única indicação a seguir, para não ter de ir buscar um logótipo ao site no tamanho em que o encontrar. Não é precisa chave para o ler, porque quem está a decidir se integra ainda não tem uma.',
     'docs.brandUse': 'Use a marca para indicar de onde vieram os dados, nas suas próprias proporções e nunca com menos de 24 px de altura. Não a recolora, não a estique e não a utilize de forma a sugerir que a V-ENT recomenda o seu produto. Prefira o SVG: mantém-se nítido em qualquer tamanho, o que o PNG não faz.',
+    'admin.partners.issueKey': 'Emitir uma chave',
+    'admin.partners.keyIssued': 'Chave emitida.',
+    'admin.partners.revokeWarning': 'Suspender ou recusar revoga imediatamente todas as chaves ativas, e reativar não as devolve. Este parceiro tem uma chave em uso.',
   },
 };

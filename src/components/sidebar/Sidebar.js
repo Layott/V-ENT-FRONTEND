@@ -12,7 +12,7 @@ import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { LuGamepad2 } from "react-icons/lu";
-import { MdOutlineSettings, MdBusiness, MdShield } from "react-icons/md";
+import { MdOutlineSettings, MdBusiness, MdShield, MdCode } from "react-icons/md";
 import { MdLogout } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg";
 import styles from './sidebar.module.css';
@@ -185,10 +185,20 @@ const Sidebar = ({
                     </Link>
                 </li>
 
+                {/* Building on V-ENT was reachable only from the landing
+                    footer, which a signed-in person never sees - so anybody
+                    already using the platform had no route to it at all, and
+                    GET /api/v1/ has been pointing integrators at a page they
+                    could not find from inside the product. */}
+                <li className={`${styles.sidebarItem} ${isActive('/partners') ? styles.activeLink : ''}`}>
+                    <Link href={'/partners'} className={styles.iconTextLink}>
+                        <MdCode className={styles.sidebarIcon} /> {tt("nav.partners", "Build on V-ENT")}
+                    </Link>
+                </li>
+
                 {/* Only staff see this, and seeing it grants nothing: the
-                    console keeps its own token and its own 2FA. It is here so
-                    an admin can reach it from the interface instead of typing
-                    the address, which is how they had to get there before. */}
+                    console reads the site session and opens only when that
+                    session passed the authenticator challenge. */}
                 {session?.user?.isStaff && <li className={`${styles.sidebarItem} ${isActive('/admin') ? styles.activeLink : ''}`}>
                     <Link href={'/admin'} className={styles.iconTextLink}>
                         <MdShield className={styles.sidebarIcon} /> {tt("nav.adminConsole", "Admin console")}

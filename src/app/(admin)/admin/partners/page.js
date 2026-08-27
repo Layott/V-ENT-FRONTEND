@@ -152,6 +152,30 @@ function PartnersInner() {
     }
   };
 
+  // Rotation could only replace a key that already existed, and the live partner
+  // had none, so the panel said "No live keys" and offered no way to get one.
+  const issueKey = async () => {
+    setBusy(true);
+    setRotated(null);
+    try {
+      const { res, body } = await post(`/partners/admin/${open.id}/keys/`, {
+        name: 'Issued by an admin',
+        reason: note,
+      });
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.keyIssued', 'Key issued.')
+          : apiMessage(tt, body, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) {
+        setRotated(body.data);
+        await fetchPartners();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const rotateKey = async key => {
     setBusy(true);
     setRotated(null);
@@ -346,6 +370,15 @@ function PartnersInner() {
                 </button>}
             </div>
 
+            {/* AFC went offline this way: a key was issued and revoked ten
+                seconds later, because Suspend and Reject take every live key
+                with them and reinstating does not bring them back. Two clicks,
+                no warning, and a partner reading the API stops reading it. */}
+            {open.status === 'approved' && (open.keys || []).some(k => !k.revoked_at) && <p className={styles.warn}>
+                {tt('admin.partners.revokeWarning',
+                  'Suspending or rejecting revokes every live key immediately, and reinstating does not bring them back. This partner has a key in use.')}
+              </p>}
+
             {open.status === 'suspended' && <p className={styles.muted}>
                 {tt('admin.partners.suspendedNote',
                   'Suspended. Every key was revoked when this happened, so reinstating does not bring them back - the partner issues a new one, or you rotate one for them.')}
@@ -355,7 +388,12 @@ function PartnersInner() {
             <div className={styles.keysBlock}>
               <p className={styles.sectionLabel}>{tt('admin.partners.keys', 'API keys')}</p>
               {(open.keys || []).filter(k => !k.revoked_at).length === 0
-                ? <p className={styles.muted}>{tt('admin.partners.noKeys', 'No live keys.')}</p>
+                ? <div className={styles.keyRow}>
+                    <span className={styles.muted}>{tt('admin.partners.noKeys', 'No live keys.')}</span>
+                    <button type="button" className={styles.ghost} onClick={issueKey} disabled={busy || open.status !== 'approved'}>
+                      {tt('admin.partners.issueKey', 'Issue a key')}
+                    </button>
+                  </div>
                 : (open.keys || []).filter(k => !k.revoked_at).map(k => <div key={k.id} className={styles.keyRow}>
                       <span className={styles.keyName}>{k.name}</span>
                       <code className={styles.keyId}>{k.key_id}</code>
