@@ -20,6 +20,7 @@ import styles from './create-event.module.css';
 import useGames from '@/hooks/useGames';
 import { useT, useLanguage } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const STEPS = [{
   id: 1,
   label: 'Basic info'
@@ -578,13 +579,13 @@ const CreateEventPage = () => {
                 <div className={styles.formRow}>
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.start.date.time.8f8b", "Start date & time")} <InfoTip id="eventStart" /></span>
-                    <input type="datetime-local" className={styles.input} value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} />
+                    <DateField value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} className={styles.input} withTime />
                     <span className={styles.tzNote}>{tt("createEvent.timesInYourZone", "Enter times in your own timezone. Everybody else sees the same moment in theirs.")}</span>
                     {errors.start_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.start_date}</span>}
                   </label>
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.end.date.time.2116", "End date & time")} <InfoTip id="eventEnd" /></span>
-                    <input type="datetime-local" className={styles.input} value={formatDateInput(formData.end_date)} onChange={e => update('end_date', e.target.value)} />
+                    <DateField value={formatDateInput(formData.end_date)} onChange={e => update('end_date', e.target.value)} className={styles.input} withTime />
                     {errors.end_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.end_date}</span>}
                   </label>
                 </div>

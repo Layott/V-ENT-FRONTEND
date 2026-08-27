@@ -160,3 +160,52 @@
     margin-left: 0;
   }
 }
+
+/* A game reads as its artwork before it reads as its name, so the logo sits
+   first on the row. A game without one shows its initial on a filled tile
+   rather than a gap, because a hole in a list looks like a fault. */
+.gameLogo {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  object-fit: contain;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.gameLogoBlank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.logoRow {
+  margin-top: 0.6rem;
+  max-width: 280px;
+}
+
+.addGameBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  max-width: 420px;
+}
+
+.failed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+}

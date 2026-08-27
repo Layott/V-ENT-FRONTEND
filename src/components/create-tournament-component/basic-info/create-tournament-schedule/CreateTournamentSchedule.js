@@ -8,6 +8,7 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import styles from './create-tournament-schedule.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const RECURRENCE_OPTIONS = [{
   value: 'daily',
   label: 'Daily'
@@ -192,7 +193,7 @@ const CreateTournamentSchedule = ({
             </label>
 
             
-            <input id='start_date_and_time' type="datetime-local" className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('start_date_and_time', e.target.value)} />
+            <DateField id='start_date_and_time' value={formData?.start_date_and_time || ''} onChange={e => handleInputChange('start_date_and_time', e.target.value)} className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} withTime />
             
           </div>
 
@@ -203,7 +204,7 @@ const CreateTournamentSchedule = ({
                 </span> <InfoTip id="endDateTime" /></span>
             </label>
 
-            <input id='end_date_and_time' type="datetime-local" className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('end_date_and_time', e.target.value)} />
+            <DateField id='end_date_and_time' value={formData?.end_date_and_time || ''} onChange={e => handleInputChange('end_date_and_time', e.target.value)} className={`${styles.dateInput} ${dateError ? styles.errorInput : ''}`} withTime />
           </div>
 
         </div>
@@ -220,9 +221,7 @@ const CreateTournamentSchedule = ({
                 </span> <InfoTip id="regStartDate" /></span>
             </label>
 
-            <input id='reg_start_date_and_time' type="datetime-local" className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} style={{
-            color: selectedOption ? "white" : ""
-          }} onChange={e => handleInputChange('reg_start_date_and_time', e.target.value)} />
+            <DateField id='reg_start_date_and_time' value={formData?.reg_start_date_and_time || ''} onChange={e => handleInputChange('reg_start_date_and_time', e.target.value)} className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} withTime />
             
           </div>
 
@@ -232,7 +231,7 @@ const CreateTournamentSchedule = ({
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span> <InfoTip id="regEndDate" /></span>
             </label>
-            <input id='reg_end_date_and_time' type="datetime-local" className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} onChange={e => handleInputChange('reg_end_date_and_time', e.target.value)} />
+            <DateField id='reg_end_date_and_time' value={formData?.reg_end_date_and_time || ''} onChange={e => handleInputChange('reg_end_date_and_time', e.target.value)} className={`${styles.dateInput} ${regDateError ? styles.errorInput : ''}`} withTime />
             
           </div>
 

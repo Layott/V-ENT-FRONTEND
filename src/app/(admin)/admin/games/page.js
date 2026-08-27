@@ -20,6 +20,7 @@ import { useAdminAuth } from '@/components/admin/useAdminAuth';
 import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast';
 import shared from '@/components/admin/admin.module.css';
 import styles from './games.module.css';
+import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useT } from '@/i18n/LanguageProvider';
 function GamesInner() {
   const tt = useT();
@@ -39,19 +40,41 @@ function GamesInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [newGame, setNewGame] = useState('');
+  const [newLogo, setNewLogo] = useState(null);
+  const [logoOpen, setLogoOpen] = useState(null);
   const [newSeries, setNewSeries] = useState({});
+  // A request that never arrives has to end somewhere. Without the catch, a
+  // dropped connection or a refused preflight rejects here, `load` unwinds
+  // before it can clear its own flag, and the page sits on "Loading..." for
+  // ever - which is what an admin reported seeing and is indistinguishable
+  // from a slow server.
   const call = useCallback(async (path, options = {}) => {
     const token = localStorage.getItem('adminToken');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin${path}`, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...(options.body ? {
-          'Content-Type': 'application/json'
-        } : {}),
-        ...(options.headers || {})
-      }
-    });
+    const isForm = options.body instanceof FormData;
+    let res;
+    try {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin${path}`, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // FormData sets its own content type, boundary and all. Setting it by
+          // hand here produces a body the server cannot split apart.
+          ...(options.body && !isForm ? {
+            'Content-Type': 'application/json'
+          } : {}),
+          ...(options.headers || {})
+        }
+      });
+    } catch {
+      return {
+        ok: false,
+        body: {
+          status: 'error',
+          code: 'NETWORK_UNREACHABLE',
+          message: 'Could not reach the server.'
+        }
+      };
+    }
     let body = {};
     try {
       body = await res.json();
@@ -91,14 +114,31 @@ function GamesInner() {
     toast.push(apiMessage(tt, body, 'api.failed', 'Failed.'), 'error');
     return false;
   };
+  // Sent as a form rather than as JSON, because the logo travels with it. A
+  // game added without one shows its initial instead, so the picker never has a
+  // blank row in it.
   const addGame = async () => {
+    const form = new FormData();
+    form.append('name', newGame.trim());
+    if (newLogo) form.append('logo', newLogo);
     const done = await run(() => call('/games/', {
       method: 'POST',
-      body: JSON.stringify({
-        name: newGame.trim()
-      })
+      body: form
     }), tt('admin.gameAdded', 'Game added.'));
-    if (done) setNewGame('');
+    if (done) {
+      setNewGame('');
+      setNewLogo(null);
+    }
+  };
+
+  const setLogo = (game, file) => {
+    if (!file) return;
+    const form = new FormData();
+    form.append('logo', file);
+    return run(() => call(`/games/${game.id}/`, {
+      method: 'PATCH',
+      body: form
+    }), tt('admin.gameLogoUpdated', 'Logo updated.'));
   };
   const patchGame = (game, patch) => run(() => call(`/games/${game.id}/`, {
     method: 'PATCH',
@@ -150,14 +190,23 @@ function GamesInner() {
               {tt('admin.gamesHint', 'An annual title like EA FC is one game with an edition per year, so this year is tied to last year rather than becoming a separate entry. Nothing here deletes: tournaments point at these rows, so retiring takes a game out of the pickers and keeps the history.')}
             </p>
 
-            {dataLoading ? <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p> : games.length === 0 ? <p className={shared.stateText}>{tt('admin.noGames', 'No games yet.')}</p> : <div className={styles.gameList}>
+            {dataLoading ? <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p> : error ? <div className={styles.failed}>
+                  <p className={shared.stateText}>{error}</p>
+                  <button type="button" className={styles.addBtn} onClick={load}>{tt('admin.retry', 'Try again')}</button>
+                </div> : games.length === 0 ? <p className={shared.stateText}>{tt('admin.noGames', 'No games yet.')}</p> : <div className={styles.gameList}>
                   {games.map(game => <div key={game.id} className={`${styles.gameCard} ${game.is_active ? '' : styles.retired}`}>
                       <div className={styles.gameHead}>
+                        {game.logo
+                          ? <img className={styles.gameLogo} src={game.logo} alt={tt('admin.gameLogoAlt', 'The {game} logo').replace('{game}', game.name)} />
+                          : <span className={styles.gameLogoBlank} aria-hidden="true">{game.name.slice(0, 1)}</span>}
                         <strong className={styles.gameName}>{game.name}</strong>
                         {!game.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
                         <span className={styles.count}>
                           {(game.series.length === 1 ? tt('admin.editionCountOne', '{n} edition') : tt('admin.editionCountMany', '{n} editions')).replace('{n}', game.series.length)}
                         </span>
+                        {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setLogoOpen(logoOpen === game.id ? null : game.id)}>
+                            {game.logo ? tt('admin.replaceLogo', 'Replace the logo') : tt('admin.addLogo', 'Add a logo')}
+                          </button>}
                         {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchGame(game, {
                     is_active: !game.is_active
                   })}>
@@ -179,6 +228,13 @@ function GamesInner() {
                                   {s.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
                                 </button>}
                             </div>)}
+                        </div>}
+
+                      {mayEdit && logoOpen === game.id && <div className={styles.logoRow}>
+                          <ImageUpload kind="logo" compact value={null} existing={game.logo} onChange={file => {
+                    setLogo(game, file);
+                    setLogoOpen(null);
+                  }} label={tt('admin.gameLogo', 'Game logo')} />
                         </div>}
 
                       {mayEdit && <div className={styles.addSeriesRow}>
@@ -203,11 +259,14 @@ function GamesInner() {
                     </div>)}
                 </div>}
 
-            {mayEdit && <div className={styles.addGameRow}>
-                <input className={styles.input} placeholder={tt('admin.newGameName', 'New game, e.g. Street Fighter')} value={newGame} onChange={e => setNewGame(e.target.value)} />
-                <button type="button" className={styles.addBtn} disabled={busy || !newGame.trim()} onClick={addGame}>
-                  {tt('admin.addGame', 'Add game')}
-                </button>
+            {mayEdit && <div className={styles.addGameBlock}>
+                <div className={styles.addGameRow}>
+                  <input className={styles.input} placeholder={tt('admin.newGameName', 'New game, e.g. Street Fighter')} value={newGame} onChange={e => setNewGame(e.target.value)} />
+                  <button type="button" className={styles.addBtn} disabled={busy || !newGame.trim()} onClick={addGame}>
+                    {tt('admin.addGame', 'Add game')}
+                  </button>
+                </div>
+                <ImageUpload kind="logo" compact value={newLogo} onChange={setNewLogo} label={tt('admin.gameLogo', 'Game logo')} />
               </div>}
           </div>
         </main>

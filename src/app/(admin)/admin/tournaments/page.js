@@ -12,6 +12,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -440,11 +441,11 @@ function EditTournamentModal({
             <div className={styles.formRow2}>
               <div>
                 <label className={styles.formLabel}>{tt("admin.fieldStart", "Starts")}</label>
-                <input type="datetime-local" className={styles.formInput} value={form.start_date_and_time} onChange={e => set('start_date_and_time', e.target.value)} />
+                <DateField value={form.start_date_and_time} onChange={e => set('start_date_and_time', e.target.value)} className={styles.formInput} withTime />
               </div>
               <div>
                 <label className={styles.formLabel}>{tt("admin.fieldEnd", "Ends")}</label>
-                <input type="datetime-local" className={styles.formInput} value={form.end_date_and_time} onChange={e => set('end_date_and_time', e.target.value)} />
+                <DateField value={form.end_date_and_time} onChange={e => set('end_date_and_time', e.target.value)} className={styles.formInput} withTime />
               </div>
             </div>
             <div className={styles.formRow}>
