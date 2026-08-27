@@ -59,6 +59,7 @@ const emptyForm = {
   }],
   // Step 4 - Sponsors & vendors
   sponsors: [],
+  partners: [],
   vendor_invites: [],
   social_links: {
     twitter: '',
@@ -96,7 +97,9 @@ const CreateEventPage = () => {
   // Free entry with no tickets at all. Kept out of formData.ticket_types so
   // turning it off again gives back whatever tiers were already typed.
   const [freeEntry, setFreeEntry] = useState(false);
-  const [sponsorLogos, setSponsorLogos] = useState({});
+  // Keyed by position in the combined sponsors+partners list, which is how
+  // the backend names the uploaded files.
+  const [supporterLogos, setSupporterLogos] = useState({});
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -109,7 +112,14 @@ const CreateEventPage = () => {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        setFormData(parsed.formData || emptyForm);
+        // Merged over emptyForm, never used raw. A draft saved before a field
+        // existed has no key for it, and the form then reads `undefined.length`
+        // and takes the whole page down with it. Adding a field to this wizard
+        // must not break every draft already sitting in somebody's browser.
+        setFormData({
+          ...emptyForm,
+          ...(parsed.formData || {})
+        });
         setStep(parsed.step || 1);
       }
     } catch (err) {
@@ -181,23 +191,36 @@ const CreateEventPage = () => {
       ticket_types: p.ticket_types.filter((_, i) => i !== idx)
     }));
   };
-  const addSponsor = () => setFormData(p => ({
+  // Sponsors and partners are the same list with a different name, so one set
+  // of helpers drives both rather than two that can drift apart.
+  const addSupporter = key => setFormData(p => ({
     ...p,
-    sponsors: [...p.sponsors, {
+    [key]: [...p[key], {
       name: '',
-      logo_url: ''
+      website: '',
+      links: {}
     }]
   }));
-  const updateSponsor = (idx, key, value) => setFormData(p => ({
+  const updateSupporter = (key, idx, field, value) => setFormData(p => ({
     ...p,
-    sponsors: p.sponsors.map((s, i) => i === idx ? {
-      ...s,
-      [key]: value
-    } : s)
+    [key]: p[key].map((row, i) => i === idx ? {
+      ...row,
+      [field]: value
+    } : row)
   }));
-  const removeSponsor = idx => setFormData(p => ({
+  const updateSupporterLink = (key, idx, platform, value) => setFormData(p => ({
     ...p,
-    sponsors: p.sponsors.filter((_, i) => i !== idx)
+    [key]: p[key].map((row, i) => i === idx ? {
+      ...row,
+      links: {
+        ...row.links,
+        [platform]: value
+      }
+    } : row)
+  }));
+  const removeSupporter = (key, idx) => setFormData(p => ({
+    ...p,
+    [key]: p[key].filter((_, i) => i !== idx)
   }));
   const addVendor = () => setFormData(p => ({
     ...p,
@@ -307,7 +330,7 @@ const CreateEventPage = () => {
       } : formData;
 
       const files = [['banner', bannerFile]].filter(([, f]) => f);
-      const sponsorFiles = Object.entries(sponsorLogos).filter(([, f]) => f);
+      const sponsorFiles = Object.entries(supporterLogos).filter(([, f]) => f);
       let body;
       const headers = {
         Authorization: `Bearer ${session?.user?.sessionToken || ''}`
@@ -578,27 +601,56 @@ const CreateEventPage = () => {
 
             {/* STEP 4 */}
             {step === 4 && <div className={styles.formStep}>
-                <h2 className={styles.stepTitle}>{tt("ui.sponsors.vendors.6747", "Sponsors & vendors")}<InfoTip id="sponsorName" /></h2>
+                <h2 className={styles.stepTitle}>{tt("createEvent.supportersTitle", "Sponsors, partners & vendors")}<InfoTip id="sponsorName" /></h2>
                 <p className={styles.stepSub}>
-                  {tt("ui.add.sponsor.logos.invite.b5a3", "Add sponsor logos and invite vendors to the on-site marketplace.")}
+                  {tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.")}
                 </p>
 
-                <div className={styles.subsection}>
-                  <h3 className={styles.subTitle}>{tt("ui.sponsors.82ce", "Sponsors")}</h3>
-                  {formData.sponsors.length === 0 ? <p className={styles.muted}>{tt("ui.no.sponsors.added.yet.f7ad", "No sponsors added yet.")}</p> : <div className={styles.itemList}>
-                      {formData.sponsors.map((s, i) => <div key={i} className={styles.itemRow}>
-                          <input type="text" className={styles.input} value={s.name} onChange={e => updateSponsor(i, 'name', e.target.value)} placeholder={tt("ui.sponsor.name.b3cf", "Sponsor name")} />
-                          <ImageUpload kind="sponsorLogo" compact value={sponsorLogos[i] || null} onChange={f => setSponsorLogos(prev => ({
-                            ...prev,
-                            [i]: f
-                          }))} label={tt("createEvent.sponsorLogoLabel", "Sponsor logo")} />
-                          <button className={styles.iconRemove} onClick={() => removeSponsor(i)} type="button" aria-label={tt("ui.remove.sponsor.c5c0", "Remove sponsor")}><FaTrash /></button>
-                        </div>)}
-                    </div>}
-                  <button className={styles.addRowBtn} onClick={addSponsor} type="button">
-                    <FaPlus /> {tt("ui.add.sponsor.581e", "Add sponsor")}
-                  </button>
-                </div>
+                {[{
+              key: 'sponsors',
+              title: tt("ui.sponsors.82ce", "Sponsors"),
+              empty: tt("ui.no.sponsors.added.yet.f7ad", "No sponsors added yet."),
+              add: tt("ui.add.sponsor.581e", "Add sponsor"),
+              namePlaceholder: tt("ui.sponsor.name.b3cf", "Sponsor name"),
+              logoLabel: tt("createEvent.sponsorLogoLabel", "Sponsor logo")
+            }, {
+              key: 'partners',
+              title: tt("createEvent.partners", "Partners"),
+              empty: tt("createEvent.noPartners", "No partners added yet."),
+              add: tt("createEvent.addPartner", "Add partner"),
+              namePlaceholder: tt("createEvent.partnerName", "Partner name"),
+              logoLabel: tt("createEvent.partnerLogoLabel", "Partner logo")
+            }].map(group => <div className={styles.subsection} key={group.key}>
+                    <h3 className={styles.subTitle}>{group.title}</h3>
+                    {formData[group.key].length === 0 ? <p className={styles.muted}>{group.empty}</p> : <div className={styles.itemList}>
+                        {formData[group.key].map((row, i) => {
+                    // The backend reads sponsor_logo_<n> off one combined
+                    // list, sponsors first. Partners are therefore offset by
+                    // however many sponsors there are.
+                    const fileIndex = group.key === 'sponsors' ? i : formData.sponsors.length + i;
+                    return <div key={i} className={styles.supporterRow}>
+                            <div className={styles.supporterMain}>
+                              <input type="text" className={styles.input} value={row.name} onChange={e => updateSupporter(group.key, i, 'name', e.target.value)} placeholder={group.namePlaceholder} />
+                              <input type="url" className={styles.input} value={row.website || ''} onChange={e => updateSupporter(group.key, i, 'website', e.target.value)} placeholder={tt("createEvent.supporterWebsite", "Website (optional)")} />
+                            </div>
+
+                            <ImageUpload kind="sponsorLogo" compact value={supporterLogos[fileIndex] || null} onChange={f => setSupporterLogos(prev => ({
+                        ...prev,
+                        [fileIndex]: f
+                      }))} label={group.logoLabel} />
+
+                            <div className={styles.supporterSocials}>
+                              {['twitter', 'instagram', 'facebook', 'youtube', 'tiktok'].map(platform => <input key={platform} type="url" className={styles.input} value={row.links?.[platform] || ''} onChange={e => updateSupporterLink(group.key, i, platform, e.target.value)} placeholder={tt("createEvent.socialPlaceholder", "{platform} link").replace('{platform}', platform)} />)}
+                            </div>
+
+                            <button className={styles.iconRemove} onClick={() => removeSupporter(group.key, i)} type="button" aria-label={tt("createEvent.removeSupporter", "Remove")}><FaTrash /></button>
+                          </div>;
+                  })}
+                      </div>}
+                    <button className={styles.addRowBtn} onClick={() => addSupporter(group.key)} type="button">
+                      <FaPlus /> {group.add}
+                    </button>
+                  </div>)}
 
                 <div className={styles.subsection}>
                   <h3 className={styles.subTitle}>{tt("ui.vendor.invites.8649", "Vendor invites")}</h3>
@@ -705,6 +757,13 @@ const CreateEventPage = () => {
                       <p className={styles.reviewLabel}>{tt("ui.sponsors.82ce", "Sponsors")}</p>
                       <p className={styles.reviewValue}>
                         {formData.sponsors.map(s => s.name).filter(Boolean).join(' • ')}
+                      </p>
+                    </div>}
+
+                  {formData.partners.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
+                      <p className={styles.reviewLabel}>{tt("createEvent.partners", "Partners")}</p>
+                      <p className={styles.reviewValue}>
+                        {formData.partners.map(s => s.name).filter(Boolean).join(' • ')}
                       </p>
                     </div>}
 

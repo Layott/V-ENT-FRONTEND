@@ -642,3 +642,33 @@
   color: rgba(255, 255, 255, 0.45);
   margin-top: 0.2rem;
 }
+
+/* A supporter row: name and site, then the logo, then its socials. Filled
+   surface, no strokes. */
+.supporterRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.supporterMain {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.supporterSocials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+@media (max-width: 640px) {
+  .supporterMain {
+    grid-template-columns: 1fr;
+  }
+}
