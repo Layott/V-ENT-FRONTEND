@@ -15,7 +15,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './create-event.module.css';
 import useGames from '@/hooks/useGames';
-import { useT } from '@/i18n/LanguageProvider';
+import { useT, useLanguage } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const STEPS = [{
   id: 1,
@@ -81,6 +81,11 @@ const formatDateInput = iso => {
 const CreateEventPage = () => {
   const tx = useTx();
   const tt = useT();
+  // The page's language, not the browser's: a French page was listing
+  // "Fri, Sep 4" because toLocaleDateString was given undefined.
+  const {
+    language
+  } = useLanguage();
   // The games list is whatever rows the platform actually has.
   const {
     gameTitles: games
@@ -241,6 +246,34 @@ const CreateEventPage = () => {
     ...p,
     vendor_invites: p.vendor_invites.filter((_, i) => i !== idx)
   }));
+  // The days the event actually runs, from its own dates. One entry per day,
+  // so a tier can be pinned to a date rather than to a name like "Day 2" that
+  // means nothing to the system.
+  const eventDays = (() => {
+    const from = formData.start_date ? new Date(formData.start_date) : null;
+    const to = formData.end_date ? new Date(formData.end_date) : null;
+    if (!from || !to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return [];
+    const days = [];
+    const cursor = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    const last = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+    let n = 1;
+    while (cursor <= last && days.length < 60) {
+      const iso = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`;
+      days.push({
+        iso,
+        n,
+        label: cursor.toLocaleDateString(language || undefined, {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short'
+        })
+      });
+      cursor.setDate(cursor.getDate() + 1);
+      n += 1;
+    }
+    return days;
+  })();
+
   const validateStep = s => {
     const e = {};
     if (s === 1) {
@@ -584,6 +617,21 @@ const CreateEventPage = () => {
                           <input type="number" className={styles.input} value={t.quantity} onChange={e => updateTicket(i, 'quantity', Number(e.target.value))} min={1} />
                         </label>
                       </div>
+                      {eventDays.length > 1 && <label className={styles.label}>
+                          <span className="fieldLabelRow">{tt("createEvent.tierDay", "Which day")} <span className={styles.optional}>{tt("createEvent.tierDayHint", "(leave on all days for a full pass)")}</span></span>
+                          <select className={styles.input} value={t.day || ''} onChange={e => {
+                    const iso = e.target.value;
+                    const chosen = eventDays.find(d => d.iso === iso);
+                    updateTicket(i, 'day', iso);
+                    updateTicket(i, 'day_label', chosen ? tt("createEvent.dayN", "Day {n}").replace('{n}', chosen.n) : '');
+                  }}>
+                            <option value="">{tt("createEvent.allDays", "All days (full pass)")}</option>
+                            {eventDays.map(d => <option key={d.iso} value={d.iso}>
+                                {tt("createEvent.dayN", "Day {n}").replace('{n}', d.n)} · {d.label}
+                              </option>)}
+                          </select>
+                        </label>}
+
                       <label className={styles.label}>
                         <span className="fieldLabelRow">{tt("ui.perks.f6d5", "Perks")} <span className={styles.optional}>{tt("ui.comma.separated.96a0", "(comma or • separated)")}</span> <InfoTip id="tierPerks" /></span>
                         <input type="text" className={styles.input} value={t.perks} onChange={e => updateTicket(i, 'perks', e.target.value)} placeholder={tt("ui.front.row.seating.welcome.4c12", "Front-row seating • Welcome drink")} />

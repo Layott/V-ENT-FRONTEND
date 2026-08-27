@@ -3597,6 +3597,10 @@ export const dictionaries = {
     'createEvent.supportersSub': 'Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.',
     'createEvent.supportersTitle': 'Sponsors, partners & vendors',
     'event.partnersHeading': 'Partners',
+    'createEvent.allDays': 'All days (full pass)',
+    'createEvent.dayN': 'Day {n}',
+    'createEvent.tierDay': 'Which day',
+    'createEvent.tierDayHint': '(leave on all days for a full pass)',
   },
 
   fr: {
@@ -7180,6 +7184,10 @@ export const dictionaries = {
     'createEvent.supportersSub': 'Ajoutez les logos derrière l\'événement, avec des liens pour qu\'on puisse les trouver, et invitez des vendeurs sur le marché de l\'événement.',
     'createEvent.supportersTitle': 'Sponsors, partenaires et vendeurs',
     'event.partnersHeading': 'Partenaires',
+    'createEvent.allDays': 'Tous les jours (pass complet)',
+    'createEvent.dayN': 'Jour {n}',
+    'createEvent.tierDay': 'Quel jour',
+    'createEvent.tierDayHint': '(laissez sur tous les jours pour un pass complet)',
   },
 
   pt: {
@@ -10763,5 +10771,9 @@ export const dictionaries = {
     'createEvent.supportersSub': 'Adicione os logotipos por trás do evento, com ligações para que as pessoas os encontrem, e convide vendedores para o mercado no local.',
     'createEvent.supportersTitle': 'Patrocinadores, parceiros e vendedores',
     'event.partnersHeading': 'Parceiros',
+    'createEvent.allDays': 'Todos os dias (passe completo)',
+    'createEvent.dayN': 'Dia {n}',
+    'createEvent.tierDay': 'Que dia',
+    'createEvent.tierDayHint': '(deixe em todos os dias para um passe completo)',
   },
 };
