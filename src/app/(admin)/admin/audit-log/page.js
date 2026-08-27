@@ -151,7 +151,7 @@ function AuditLogInner() {
     a.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.push(`Exported ${logs.length} entries.`, 'success');
+    toast.push(tt('admin.exported', 'Exported {n} entries.').replace('{n}', logs.length), 'success');
   }
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
   if (authLoading) return null;

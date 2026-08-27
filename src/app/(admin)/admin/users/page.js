@@ -102,6 +102,10 @@ function UsersInner() {
   useEffect(() => {
     setPage(1);
   }, [search, statusFilter, countryFilter, dateFrom, dateTo, sortBy]);
+  // Who is about to be banned, and why. Null when the dialog is closed.
+  const [banTarget, setBanTarget] = useState(null);
+  const [banReason, setBanReason] = useState('');
+
   async function actOnUser(userId, action, reason) {
     const token = localStorage.getItem('adminToken');
     try {
@@ -118,7 +122,9 @@ function UsersInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`User ${action}ned successfully.`, 'success');
+        toast.push(action === 'ban'
+          ? tt('admin.userBanned', 'User banned.')
+          : tt('admin.userUnbanned', 'User unbanned.'), 'success');
         fetchUsers();
       } else {
         toast.push(apiMessage(tt, data, "api.actionFailed", "Action failed."), 'error');
@@ -148,7 +154,7 @@ function UsersInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Bulk ${action}ned ${data.data.count} users.`, 'success');
+        toast.push((action === 'ban' ? tt('admin.bulkBanned', 'Banned {n} users.') : tt('admin.bulkUnbanned', 'Unbanned {n} users.')).replace('{n}', data.data.count), 'success');
         setSelected(new Set());
         fetchUsers();
       } else {
@@ -206,7 +212,7 @@ function UsersInner() {
                 <option value="username">{tt("ui.username.z.fd1c", "Username A-Z")}</option>
                 <option value="-wallet_vc">{tt("ui.wallet.high.low.7287", "Wallet (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{total.toLocaleString()} {total === 1 ? 'user' : 'users'}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countUsersOne', '{n} user') : tt('admin.countUsersMany', '{n} users')).replace('{n}', total.toLocaleString())}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -280,7 +286,7 @@ function UsersInner() {
                             </Link>
                             {u.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => actOnUser(u.id, 'unban')}>
                                 {tt("ui.unban.d267", "Unban")}
-                              </button> : <button className={`${shared.actBtn} ${shared.actBan}`} onClick={() => actOnUser(u.id, 'ban', 'TOS violation')}>
+                              </button> : <button className={`${shared.actBtn} ${shared.actBan}`} onClick={() => setBanTarget(u)}>
                                 {tt("ui.ban.bfa1", "Ban")}
                               </button>}
                           </div>
@@ -309,6 +315,40 @@ function UsersInner() {
           </div>
         </main>
       </div>
+
+      {banTarget && <div className={shared.modalOverlay} onClick={() => setBanTarget(null)}>
+          <div className={shared.modal} onClick={e => e.stopPropagation()}>
+            <p className={shared.modalTitle}>{tt('admin.banTitle', 'Ban this account?')}</p>
+            <p className={shared.modalSub}>
+              {tt('admin.banSub', 'They lose access immediately. The reason is written to the audit log.')}
+            </p>
+            <p className={shared.modalSub}><strong>{banTarget.username}</strong></p>
+            <input
+              type="text"
+              className={shared.modalInput}
+              placeholder={tt('admin.banReasonPlaceholder', 'Why? For example: repeated no-shows')}
+              value={banReason}
+              onChange={e => setBanReason(e.target.value)}
+              maxLength={120}
+            />
+            <div className={shared.modalActions}>
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => { setBanTarget(null); setBanReason(''); }}>
+                {tt('admin.cancel', 'Cancel')}
+              </button>
+              <button
+                className={`${shared.actBtn} ${shared.actBan}`}
+                disabled={!banReason.trim()}
+                onClick={() => {
+                  actOnUser(banTarget.id, 'ban', banReason.trim());
+                  setBanTarget(null);
+                  setBanReason('');
+                }}
+              >
+                {tt('admin.banConfirm', 'Ban account')}
+              </button>
+            </div>
+          </div>
+        </div>}
     </div>;
 }
 export default function AdminUsersPage() {

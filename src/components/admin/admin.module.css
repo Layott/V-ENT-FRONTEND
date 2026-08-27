@@ -289,3 +289,61 @@
   .pageTitle { font-size: var(--mobile-h2-size); }
   .hideMobile { display: none; }
 }
+
+/* ------------------------------------------------------------------ modal
+ *
+ * These lived in three page modules with three near-identical copies. Anything
+ * the console asks somebody to confirm should look the same, so they live here
+ * once. Filled surface, no stroke, per the house rules.
+ */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: #212225;
+  border-radius: 12px;
+  padding: 1.75rem;
+  max-width: 460px;
+  width: 100%;
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+
+.modalSub {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0.9rem;
+}
+
+.modalInput {
+  width: 100%;
+  background: #303136;
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  margin-bottom: 1.25rem;
+}
+
+.modalInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}

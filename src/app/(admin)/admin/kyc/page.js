@@ -255,7 +255,7 @@ function KycInner() {
                           </button>
                           {k.status === 'pending' && <>
                               <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => approveKyc(k.id)} disabled={!!actionLoading[k.id]}>
-                                {actionLoading[k.id] ? '…' : 'Approve'}
+                                {actionLoading[k.id] ? '…' : tt('admin.approve', 'Approve')}
                               </button>
                               <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => {
                         setRejectReason(REJECT_REASONS[0]);
@@ -319,7 +319,7 @@ function KycInner() {
                       {tt("ui.reject.2b03", "Reject")}
                     </button>
                     <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => approveKyc(previewModal.kyc.id)} disabled={!!actionLoading[previewModal.kyc.id]}>
-                      {actionLoading[previewModal.kyc.id] ? '…' : 'Approve'}
+                      {actionLoading[previewModal.kyc.id] ? '…' : tt('admin.approve', 'Approve')}
                     </button>
                   </div>}
                 {previewModal.kyc.status === 'rejected' && previewModal.kyc.rejection_reason && <div className={styles.rejectionInfo}>
@@ -331,7 +331,7 @@ function KycInner() {
                 <div className={styles.formRow}>
                   <label className={styles.formLabel}>{tt("ui.reason.f219", "Reason")}</label>
                   <select className={styles.formInput} value={rejectReason} onChange={e => setRejectReason(e.target.value)}>
-                    {REJECT_REASONS.map(r => <option key={r}>{r}</option>)}
+                    {REJECT_REASONS.map(r => <option key={r} value={r}>{tx(r)}</option>)}
                   </select>
                 </div>
                 <div className={styles.formRow}>
