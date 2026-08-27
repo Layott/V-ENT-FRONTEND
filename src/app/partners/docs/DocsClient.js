@@ -198,6 +198,31 @@ export default function DocsClient({ index, sso }) {
 { "results": [ … ], "page": 2, "page_size": 50, "total": 137, "has_more": true }`}
         </Code>
 
+        <h3 className={styles.h3}>{t('docs.brand', 'Showing that the data came from V-ENT')}</h3>
+        <p className={styles.body}>
+          {t('docs.brandBody',
+            'GET /api/v1/ carries a brand block with the marks and the one line '
+            + 'of guidance, so you do not have to go and take a logo off the '
+            + 'website at whatever size you find it. No key is needed to read it, '
+            + 'because somebody deciding whether to integrate has not got one yet.')}
+        </p>
+        <Code>
+{`"brand": {
+  "name": "V-ENT",
+  "logo": "https://v-ent.co/images/logo_mark_red.png",
+  "logo_svg": "https://v-ent.co/images/logo_mark_red.svg",
+  "colour": "#ED1C24",
+  "attribution": "Data from V-ENT"
+}`}
+        </Code>
+        <p className={styles.body}>
+          {t('docs.brandUse',
+            'Use the mark to say where the data came from, at its own proportions '
+            + 'and no smaller than 24px tall. Do not recolour it, stretch it, or '
+            + 'use it in a way that suggests V-ENT endorses your product. Prefer '
+            + 'the SVG; it stays sharp at every size, which the PNG will not.')}
+        </p>
+
         <h3 className={styles.h3}>{t('docs.limits', 'Rate limit')}</h3>
         <p className={styles.body}>
           {t('docs.limitsBody',

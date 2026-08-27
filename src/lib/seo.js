@@ -212,7 +212,11 @@ export function organizationLd() {
     name: SITE.legalName,
     alternateName: SITE.name,
     url: SITE.url,
-    logo: absolute('/images/vent-logo.png'),
+    // /images/vent-logo.png does not exist and never did, so the Organization
+    // block has been pointing Google at a 404 for as long as it has existed.
+    // A structured-data logo that cannot be fetched is dropped, which is why
+    // no logo has ever shown beside V-ENT in a search result.
+    logo: absolute('/images/logo_mark_red.png'),
     foundingDate: '2023',
     address: { '@type': 'PostalAddress', addressCountry: 'NG' },
     sameAs: [`https://twitter.com/${SITE.twitter.replace('@', '')}`],
