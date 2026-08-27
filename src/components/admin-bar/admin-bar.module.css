@@ -1,0 +1,161 @@
+/* The admin bar sits above the page content it governs.
+   Surface and space, no strokes: the bar is a filled band a step off the page
+   background, which is what separates it from the page below. */
+
+.bar {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.barInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  background-color: #2a2118;
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+}
+
+.badge {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.barText {
+  flex: 1 1 220px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.barActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.barBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.78rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.barBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.barBtnPrimary {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.barBtnPrimary:hover {
+  background-color: #f0c65f;
+}
+
+.barBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ------------------------------------------------------------------ modal */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: #212225;
+  border-radius: 14px;
+  padding: 1.75rem;
+  max-width: 460px;
+  width: 100%;
+  /* A form of six or seven fields runs off the bottom of a phone without this,
+     and the Save button goes with it. */
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+
+.modalSub {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1.25rem;
+}
+
+.formRow {
+  margin-bottom: 1rem;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.4rem;
+}
+
+.formInput {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.formInput:focus {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.note {
+  font-size: 0.8rem;
+  color: #E5B94E;
+  margin-bottom: 0.75rem;
+}
+
+.modalBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .barInner {
+    align-items: flex-start;
+  }
+
+  .barActions {
+    width: 100%;
+  }
+}

@@ -3559,6 +3559,14 @@ export const dictionaries = {
     'landing.apiDocs': 'API documentation',
     'landing.forPartners': 'Partners',
     'landing.privacyPolicy': 'Privacy policy',
+    'admin.adminView': 'Admin',
+    'admin.barCanEdit': 'You can change this record. Every change is recorded in the audit log.',
+    'admin.barLoadFailed': 'This could not be loaded, so the form was left closed rather than risk saving over it.',
+    'admin.barModalSub': 'The organiser is told this changed.',
+    'admin.barReadOnly': 'You are signed in as an admin, but your role cannot change this record.',
+    'admin.nothingChanged': 'Nothing changed.',
+    'admin.openInConsole': 'Open in console',
+    'admin.savedChange': 'Saved.',
   },
 
   fr: {
@@ -7104,6 +7112,14 @@ export const dictionaries = {
     'landing.apiDocs': 'Documentation API',
     'landing.forPartners': 'Partenaires',
     'landing.privacyPolicy': 'Politique de confidentialité',
+    'admin.adminView': 'Admin',
+    'admin.barCanEdit': 'Vous pouvez modifier cet enregistrement. Chaque modification est inscrite au journal d\'audit.',
+    'admin.barLoadFailed': 'Impossible de charger. Le formulaire est resté fermé pour éviter d\'écraser les données.',
+    'admin.barModalSub': 'L\'organisateur est informé du changement.',
+    'admin.barReadOnly': 'Vous êtes connecté comme administrateur, mais votre rôle ne permet pas de modifier cet enregistrement.',
+    'admin.nothingChanged': 'Aucune modification.',
+    'admin.openInConsole': 'Ouvrir dans la console',
+    'admin.savedChange': 'Enregistré.',
   },
 
   pt: {
@@ -10649,5 +10665,13 @@ export const dictionaries = {
     'landing.apiDocs': 'Documentação da API',
     'landing.forPartners': 'Parceiros',
     'landing.privacyPolicy': 'Política de privacidade',
+    'admin.adminView': 'Admin',
+    'admin.barCanEdit': 'Pode alterar este registo. Cada alteração fica no registo de auditoria.',
+    'admin.barLoadFailed': 'Não foi possível carregar. O formulário ficou fechado para não substituir os dados.',
+    'admin.barModalSub': 'O organizador é informado da alteração.',
+    'admin.barReadOnly': 'Tem sessão de administrador, mas o seu perfil não pode alterar este registo.',
+    'admin.nothingChanged': 'Nada foi alterado.',
+    'admin.openInConsole': 'Abrir na consola',
+    'admin.savedChange': 'Guardado.',
   },
 };
