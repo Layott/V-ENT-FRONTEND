@@ -33,6 +33,8 @@ export default function robots() {
           '/wallet-topup-callback',
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
+          '/events/*/manage',      // promo codes and who may run the event
+          '/events/*/attendees',   // the door list is attendee data
         ],
       },
       {
@@ -40,7 +42,8 @@ export default function robots() {
         // deliberately rather than by omission.
         userAgent: ['GPTBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot'],
         allow: '/',
-        disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/'],
+        disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
+                   '/events/*/manage', '/events/*/attendees'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),
