@@ -93,6 +93,9 @@ const CreateEventPage = () => {
   // Files live outside formData: they cannot be JSON-serialised into the draft
   // that formData is saved to, and a half-restored File is worse than none.
   const [bannerFile, setBannerFile] = useState(null);
+  // Free entry with no tickets at all. Kept out of formData.ticket_types so
+  // turning it off again gives back whatever tiers were already typed.
+  const [freeEntry, setFreeEntry] = useState(false);
   const [sponsorLogos, setSponsorLogos] = useState({});
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -241,12 +244,12 @@ const CreateEventPage = () => {
         e.capacity = 'Capacity must be at least 1.';
       }
     }
-    if (s === 3) {
+    if (s === 3 && !freeEntry) {
       if (formData.ticket_types.length === 0) {
-        e.ticket_types = 'Add at least one ticket tier.';
+        e.ticket_types = tt('createEvent.needATier', 'Add a ticket tier, or mark the event free entry.');
       } else {
         const bad = formData.ticket_types.find(t => !t.name || t.price < 0 || t.quantity < 1);
-        if (bad) e.ticket_types = 'Each tier needs a name, valid price, and quantity ≥ 1.';
+        if (bad) e.ticket_types = tt('createEvent.tierIncomplete', 'Every tier needs a name, a price of zero or more, and at least one place.');
       }
     }
     setErrors(e);
@@ -295,6 +298,14 @@ const CreateEventPage = () => {
       // Multipart whenever a file is attached. The backend reads nested fields
       // with json.loads when they arrive as strings, so sponsors and tiers
       // survive the trip intact.
+      // A free event sends no tiers, whatever was typed before the box was
+      // ticked. Sending a stray half-filled tier would create a ticket type
+      // nobody meant to sell.
+      const payload = freeEntry ? {
+        ...formData,
+        ticket_types: []
+      } : formData;
+
       const files = [['banner', bannerFile]].filter(([, f]) => f);
       const sponsorFiles = Object.entries(sponsorLogos).filter(([, f]) => f);
       let body;
@@ -303,7 +314,7 @@ const CreateEventPage = () => {
       };
       if (files.length || sponsorFiles.length) {
         body = new FormData();
-        Object.entries(formData).forEach(([k, v]) => {
+        Object.entries(payload).forEach(([k, v]) => {
           if (v === null || v === undefined) return;
           body.append(k, typeof v === 'object' ? JSON.stringify(v) : v);
         });
@@ -312,7 +323,7 @@ const CreateEventPage = () => {
         // No Content-Type: the browser has to set the multipart boundary.
       } else {
         headers['Content-Type'] = 'application/json';
-        body = JSON.stringify(formData);
+        body = JSON.stringify(payload);
       }
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/create-event/`, {
@@ -517,11 +528,24 @@ const CreateEventPage = () => {
                   {tt("ui.define.what.attendees.can.114a", "Define what attendees can buy. Add as many tiers as you need.")}
                 </p>
 
+                {/* A free event has nothing to sell. Without this the organiser
+                    was stuck being told a tier needed a quantity of at least
+                    one, with nothing sensible to put in it. */}
+                <label className={styles.freeEntryRow}>
+                  <input type="checkbox" checked={freeEntry} onChange={e => setFreeEntry(e.target.checked)} />
+                  <span>
+                    <strong>{tt("createEvent.freeEntry", "Free entry, no tickets")}</strong>
+                    <span className={styles.freeEntryHint}>
+                      {tt("createEvent.freeEntryHint", "Anybody can turn up. Use the tiers below instead if entry is free but places are limited.")}
+                    </span>
+                  </span>
+                </label>
+
                 {errors.ticket_types && <div className={styles.errorMsg}>
                     <FaExclamationCircle /> {errors.ticket_types}
                   </div>}
 
-                <div className={styles.tierList}>
+                <div className={styles.tierList} hidden={freeEntry}>
                   {formData.ticket_types.map((t, i) => <div key={t.id} className={styles.tierRow}>
                       <div className={styles.tierGrid}>
                         <label className={styles.label}>
@@ -706,7 +730,7 @@ const CreateEventPage = () => {
                 {tt("ui.back.b52b", "Back")}
               </button>
               <span className={styles.stepCounter}>
-                {tt("ui.step.dc41", "Step")} {step} of {STEPS.length}
+                {tt("ui.stepXofY", "Step {n} of {total}").replace('{n}', step).replace('{total}', STEPS.length)}
               </span>
               {step < 5 ? <button className={`${styles.primaryBtn} redBTN`} onClick={goNext} type="button">
                   {tt("ui.next.2f04", "Next →")}

@@ -616,3 +616,29 @@
 @media only screen and (min-width: 1920px) {
   .rightPaneContainer { padding: 2.5rem 4rem; }
 }
+
+/* Free entry sits above the tier list, because it decides whether the list is
+   relevant at all. Filled row, no stroke. */
+.freeEntryRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+}
+
+.freeEntryRow strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.freeEntryHint {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.2rem;
+}

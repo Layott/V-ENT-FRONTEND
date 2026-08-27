@@ -3581,6 +3581,11 @@ export const dictionaries = {
     'upload.hintFull': 'PNG, JPG or WebP. {w} by {h} pixels works best, up to {mb} MB.',
     'upload.hintSizeOnly': 'PNG, JPG or WebP, up to {mb} MB.',
     'upload.remove': 'Remove this image',
+    'createEvent.freeEntry': 'Free entry, no tickets',
+    'createEvent.freeEntryHint': 'Anybody can turn up. Use the tiers below instead if entry is free but places are limited.',
+    'createEvent.needATier': 'Add a ticket tier, or mark the event free entry.',
+    'createEvent.tierIncomplete': 'Every tier needs a name, a price of zero or more, and at least one place.',
+    'ui.stepXofY': 'Step {n} of {total}',
   },
 
   fr: {
@@ -7148,6 +7153,11 @@ export const dictionaries = {
     'upload.hintFull': 'PNG, JPG ou WebP. {w} sur {h} pixels donne le meilleur rendu, jusqu\'à {mb} Mo.',
     'upload.hintSizeOnly': 'PNG, JPG ou WebP, jusqu\'à {mb} Mo.',
     'upload.remove': 'Retirer cette image',
+    'createEvent.freeEntry': 'Entrée libre, sans billets',
+    'createEvent.freeEntryHint': 'Tout le monde peut venir. Utilisez plutôt les catégories ci-dessous si l\'entrée est gratuite mais les places sont limitées.',
+    'createEvent.needATier': 'Ajoutez une catégorie de billet, ou indiquez que l\'entrée est libre.',
+    'createEvent.tierIncomplete': 'Chaque catégorie a besoin d\'un nom, d\'un prix de zéro ou plus, et d\'au moins une place.',
+    'ui.stepXofY': 'Étape {n} sur {total}',
   },
 
   pt: {
@@ -10715,5 +10725,10 @@ export const dictionaries = {
     'upload.hintFull': 'PNG, JPG ou WebP. {w} por {h} píxeis fica melhor, até {mb} MB.',
     'upload.hintSizeOnly': 'PNG, JPG ou WebP, até {mb} MB.',
     'upload.remove': 'Remover esta imagem',
+    'createEvent.freeEntry': 'Entrada livre, sem bilhetes',
+    'createEvent.freeEntryHint': 'Qualquer pessoa pode aparecer. Use antes os escalões abaixo se a entrada for gratuita mas os lugares forem limitados.',
+    'createEvent.needATier': 'Adicione um escalão de bilhete, ou marque a entrada como livre.',
+    'createEvent.tierIncomplete': 'Cada escalão precisa de um nome, um preço de zero ou mais, e pelo menos um lugar.',
+    'ui.stepXofY': 'Passo {n} de {total}',
   },
 };
