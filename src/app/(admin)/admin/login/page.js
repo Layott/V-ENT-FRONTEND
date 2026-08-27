@@ -28,6 +28,12 @@ export default function AdminLoginPage() {
   const { data: session, status: sessionStatus } = useSession();
   const siteToken = session?.user?.sessionToken;
   const steppedUp = useRef(false);
+  const [steppedUpFromSession, setSteppedUpFromSession] = useState(false);
+
+  // The cookie is what middleware checks, so it is what decides whether this
+  // person is already through the door. localStorage is only a mirror of it.
+  const adminCookie = () => (typeof document === 'undefined' ? '' :
+    (document.cookie.match(/(?:^|;\s*)adminToken=([^;]*)/) || [, ''])[1]);
 
   // Draw the enrolment QR. `qrcode` was already a dependency and the URI was
   // already in the response; only this was missing.
@@ -54,8 +60,15 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const token = localStorage.getItem('adminToken');
-    if (token) router.replace('/admin');
+    // Already through: the cookie is present, so /admin will let us in.
+    if (adminCookie()) { router.replace('/admin'); return; }
+    // The cookie has lapsed but localStorage kept its copy. Believing that copy
+    // is what produced the redirect loop, so drop it and let the step-up below
+    // ask for a fresh code.
+    if (localStorage.getItem('adminToken')) {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+    }
   }, [router]);
 
   // Already signed in as this person? Then the password half is answered, and
@@ -67,7 +80,7 @@ export default function AdminLoginPage() {
   // console - only /auth/admin/2fa/verify/ does that, after a real TOTP code.
   useEffect(() => {
     if (sessionStatus !== 'authenticated' || !siteToken) return;
-    if (localStorage.getItem('adminToken')) return;   // the effect above is taking it
+    if (adminCookie()) return;                        // the effect above is taking it
     if (steppedUp.current) return;                    // once per mount
     steppedUp.current = true;
 
@@ -84,6 +97,7 @@ export default function AdminLoginPage() {
 
         setPendingToken(data.data.pending_token);
         setShow2fa(true);
+        setSteppedUpFromSession(true);
         if (data.data.enrollment_required) {
           setEnrollment({ secret: data.data.secret, uri: data.data.provisioning_uri });
           setSuccessMsg(tt('msg.setUpTwoFactorToFinish',
@@ -202,9 +216,18 @@ export default function AdminLoginPage() {
         <p className={styles.portalLabel}>{tt("ui.admin.portal.c864", "Admin Portal")}</p>
         <div className={styles.divider} />
 
-        <h1 className={styles.title}>{tt("ui.sign.admin.4bc6", "Sign in to Admin")}</h1>
+        {/* Somebody who is already signed in is confirming, not signing in.
+            Heading the page "Sign in to Admin" made a one-step confirmation
+            read as a second login, which is what was reported. */}
+        <h1 className={styles.title}>
+          {steppedUpFromSession
+            ? tt("ui.confirm.its.you", "Confirm it's you")
+            : tt("ui.sign.admin.4bc6", "Sign in to Admin")}
+        </h1>
         <p className={styles.subtitle}>
-          {show2fa ? tx("Enter the 6-digit code from your authenticator app.") : tx("This portal is restricted to authorised V-ENT administrators.")}
+          {steppedUpFromSession
+            ? tt("ui.already.signed.in.confirm", "You are signed in already. Enter the 6-digit code from your authenticator app to open the console.")
+            : show2fa ? tx("Enter the 6-digit code from your authenticator app.") : tx("This portal is restricted to authorised V-ENT administrators.")}
         </p>
 
         {error && <p className={styles.errorMsg}>{error}</p>}
@@ -252,15 +275,22 @@ export default function AdminLoginPage() {
           {show2fa && <div className={styles.field}>
               <label className={styles.label} htmlFor="code">{tt("ui.authenticator.code.2908", "Authenticator code")}</label>
               <input id="code" type="text" inputMode="numeric" pattern="\d{6}" maxLength={6} className={`${styles.input} ${styles.codeInput}`} placeholder="123456" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="one-time-code" disabled={loading} autoFocus />
-              <button type="button" className={styles.linkBtn} onClick={() => {
-            setShow2fa(false);
-            setCode('');
-            setSuccessMsg('');
-            setPendingToken('');
-            setEnrollment(null);
-          }}>
-                {tt("ui.back.credentials.2ae6", "← Back to credentials")}
-              </button>
+              {/* Nobody who came in through the step-up door typed credentials,
+                  so there is nothing to go back to. Offer the way out that
+                  actually applies: leave the console. */}
+              {steppedUpFromSession
+                ? <button type="button" className={styles.linkBtn} onClick={() => router.push('/home')}>
+                    ← {tt("ui.leave.admin", "Back to the site")}
+                  </button>
+                : <button type="button" className={styles.linkBtn} onClick={() => {
+                    setShow2fa(false);
+                    setCode('');
+                    setSuccessMsg('');
+                    setPendingToken('');
+                    setEnrollment(null);
+                  }}>
+                    {tt("ui.back.credentials.2ae6", "← Back to credentials")}
+                  </button>}
             </div>}
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
