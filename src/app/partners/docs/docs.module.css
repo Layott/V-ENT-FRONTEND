@@ -1,0 +1,246 @@
+/* The API reference.
+ *
+ * A developer reads this with a terminal open beside it, so it is a reading
+ * column rather than a dashboard: one measure, generous line height, and code
+ * that is obviously code. Hierarchy comes from surface and space - no hairlines,
+ * no rings, no glow, per the house rules.
+ */
+
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  padding: 2rem 1.75rem 2.25rem;
+  border-radius: 18px;
+  background: var(--overlay-gray);
+  margin-bottom: 2.5rem;
+}
+
+.kicker {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--v-ent-red);
+  margin-bottom: 0.6rem;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #fff;
+  margin-bottom: 0.85rem;
+}
+
+.lede {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  background: var(--v-ent-red);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.cta:hover { background: var(--v-ent-light-red, #ff2b33); }
+
+/* --------------------------------------------------------------- sections */
+
+.section { margin-bottom: 3rem; }
+
+.h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.85rem;
+}
+
+.h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 1.6rem 0 0.6rem;
+}
+
+.body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 66ch;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 0.9rem;
+}
+
+/* A note is quieter than body text and sits on its own surface, because it is
+   usually the sentence that saves somebody an afternoon. */
+.note {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  max-width: 66ch;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.66);
+  margin-top: 1rem;
+}
+
+.steps {
+  margin: 0 0 0.5rem 1.1rem;
+  padding: 0;
+}
+
+.steps li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 64ch;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 0.55rem;
+}
+
+.bullets {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ------------------------------------------------------------------- code */
+
+.codeWrap {
+  position: relative;
+  margin: 1rem 0 1.25rem;
+}
+
+.codeLabel {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.4rem;
+}
+
+.code {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  background: #14141a;
+  color: #e6e6ea;
+  font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  /* Long curl lines scroll inside the block rather than widening the page. */
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.copyBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.copyBtn:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+
+.inlineCode {
+  padding: 0.12rem 0.42rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  color: #ffd9db;
+}
+
+/* ------------------------------------------------------ definitions/tables */
+
+.defs { margin: 0; }
+
+.defRow {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+}
+
+/* Zebra fill rather than dividing lines. */
+.defRow:nth-child(odd) { background: rgba(255, 255, 255, 0.035); }
+
+.defKey { font-family: inherit; }
+
+.defKey code {
+  font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #ffd9db;
+}
+
+.defVal {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.table td { padding: 0.6rem 0.9rem; color: rgba(255, 255, 255, 0.72); }
+
+.table tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.035); }
+
+.tdName { color: #fff; font-weight: 500; }
+
+/* ----------------------------------------------------------------- footer */
+
+.footer {
+  margin-top: 3.5rem;
+  padding: 1.75rem;
+  border-radius: 16px;
+  background: var(--overlay-gray);
+}
+
+@media (max-width: 640px) {
+  .page { padding: 2rem 1rem 4rem; }
+  .hero { padding: 1.5rem 1.15rem 1.75rem; }
+  .defRow { grid-template-columns: 1fr; gap: 0.3rem; }
+}
