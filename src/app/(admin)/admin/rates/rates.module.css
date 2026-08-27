@@ -1,0 +1,161 @@
+/* Filled rows, no strokes. A stale rate is coloured, not outlined. */
+
+.hint {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.6rem;
+  max-width: 80ch;
+}
+
+.feed {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 1.25rem;
+}
+
+.feed code {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.refreshBtn {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.refreshBtn:hover {
+  background-color: #f0c65f;
+}
+
+.refreshBtn:disabled,
+.ghostBtn:disabled,
+.rateInput:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.1rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.off {
+  opacity: 0.5;
+}
+
+.who {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: 1 1 210px;
+  min-width: 0;
+}
+
+.code {
+  color: #fff;
+  font-size: 0.92rem;
+  letter-spacing: 0.03em;
+}
+
+.name {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.symbol {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.rateBox {
+  flex: 0 0 150px;
+}
+
+.rateInput {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  border-radius: 7px;
+}
+
+.rateInput:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.baseNote {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.age {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.4);
+  flex: 0 0 130px;
+}
+
+/* A rate nobody has refreshed for days is the one thing on this page worth
+   noticing, because a stale rate looks exactly like a good one. */
+.stale {
+  color: #E5B94E;
+}
+
+.example {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.4);
+  flex: 1 1 190px;
+}
+
+.ghostBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  padding: 6px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.ghostBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+@media (max-width: 700px) {
+  .ghostBtn {
+    margin-left: 0;
+  }
+
+  .rateBox,
+  .age {
+    flex: 1 1 130px;
+  }
+}

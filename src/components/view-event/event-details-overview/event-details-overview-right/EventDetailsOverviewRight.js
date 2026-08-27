@@ -17,6 +17,7 @@ import overviewRtStyles from '@/view-/overview-right/overview-rt.module.css';
 import { shareLink, linkTo } from '@/lib/share';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const EventDetailsOverviewRight = ({
   event,
   socialLinks = []
@@ -34,7 +35,7 @@ const EventDetailsOverviewRight = ({
     if (!startDate) return 'Date not set';
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : start;
-    const startFormatted = start.toLocaleDateString('en-US', {
+    const startFormatted = start.toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
@@ -42,7 +43,7 @@ const EventDetailsOverviewRight = ({
     if (startDate === endDate || !endDate) {
       return startFormatted;
     }
-    const endFormatted = end.toLocaleDateString('en-US', {
+    const endFormatted = end.toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
@@ -97,7 +98,7 @@ const TeamProfileMembersTable = ({
   };
   const fmtDate = d => {
     if (!d) return '-';
-    return new Date(d).toLocaleDateString('en-GB', {
+    return new Date(d).toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

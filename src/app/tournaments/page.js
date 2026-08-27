@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
@@ -70,7 +71,7 @@ const TAB_STATUS_HINT = {
   live: 'in_progress',
   completed: 'completed'
 };
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
   year: 'numeric'

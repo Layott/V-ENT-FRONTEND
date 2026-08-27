@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import Link from 'next/link';
@@ -184,7 +185,7 @@ const AttendeesContent = ({
                       </span>
                     </td>
                     <td className={styles.muted}>
-                      {r.checked_in_at ? new Date(r.checked_in_at).toLocaleString('en-GB', {
+                      {r.checked_in_at ? new Date(r.checked_in_at).toLocaleString(appLocale(), {
                   day: 'numeric',
                   month: 'short',
                   hour: '2-digit',

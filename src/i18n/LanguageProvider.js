@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { LANGUAGES, dictionaries } from './dictionaries';
 import { DEFAULT_LOCALE, LOCALE_COOKIE, localePath, splitLocale } from '@/lib/locale';
+import { setAppLocale } from '@/lib/appLocale';
 
 // The language the interface is in.
 //
@@ -57,6 +58,11 @@ export const LanguageProvider = ({ children }) => {
   const urlLocale = splitLocale(pathname).locale;
 
   const [language, setLanguageState] = useState(urlLocale);
+
+  // Publish it for the formatters that cannot call a hook. Set during render
+  // rather than in an effect, because a date formatted on this very render
+  // would otherwise print in the language the page was last in.
+  setAppLocale(language);
 
   // Whatever this device last used, applied before anything is fetched - but
   // never over a language stated in the address.
@@ -161,6 +167,10 @@ export const LanguageProvider = ({ children }) => {
     const table = dictionaries[language] || dictionaries.en;
     return table[key] ?? dictionaries.en[key] ?? fallback ?? key;
   }, [language]);
+
+  // Publish it for the date formatters, which are often plain helpers rather
+  // than components and so cannot call a hook.
+  setAppLocale(language);
 
   const value = useMemo(
     () => ({ language, setLanguage, t, tx, languages: LANGUAGES }),

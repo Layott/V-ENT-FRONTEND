@@ -12,6 +12,7 @@ import { myDisputes } from '@/components/disputes/disputeApi';
 import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ const fmtDate = iso => {
   if (!iso) return '-';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '-';
-  return d.toLocaleDateString(undefined, {
+  return d.toLocaleDateString(appLocale(), {
     year: 'numeric',
     month: 'short',
     day: 'numeric'

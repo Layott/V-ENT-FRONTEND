@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
-import { LuCalendar, LuGamepad2, LuUsers, LuShield, LuFileText } from 'react-icons/lu';
+import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
@@ -69,6 +69,12 @@ const NAV = [{
 }, {
   section: 'Finance',
   items: [{
+    label: 'Rates',
+    href: '/admin/rates',
+    icon: LuCoins,
+    roles: ['super', 'finance'],
+    perms: ['view_transactions']
+  }, {
     label: 'Payouts',
     href: '/admin/payouts',
     icon: IoWalletOutline,

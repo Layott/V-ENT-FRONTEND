@@ -1,12 +1,13 @@
 import { GoDotFill } from "react-icons/go";
 import styles from './tournament-details-prize.module.css'
+import { appLocale } from '@/lib/appLocale';
 
 const TournamentDetailsPrize = ({ tournament }) => {
 
   // Helper function to format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(appLocale(), { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 

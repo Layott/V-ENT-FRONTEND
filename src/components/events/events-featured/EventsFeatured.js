@@ -5,6 +5,7 @@ import { FiCalendar } from "react-icons/fi";
 import { LuBuilding2 } from "react-icons/lu";
 import { FaArrowRight } from "react-icons/fa";
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
+import { appLocale } from '@/lib/appLocale';
 
 const EventsFeatured = ({ featuredEvents = [] }) => {
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
@@ -16,7 +17,7 @@ const EventsFeatured = ({ featuredEvents = [] }) => {
   // Format date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(appLocale(), { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 

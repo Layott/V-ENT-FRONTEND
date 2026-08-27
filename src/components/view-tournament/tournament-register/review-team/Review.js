@@ -1,4 +1,5 @@
 // ./src/components/view-tournament/tournament-register/ReviewModal.js
+import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -60,7 +61,7 @@ const ReviewModal = ({
       month: 'short',
       year: 'numeric'
     };
-    return `${startDate.toLocaleDateString('en-GB', options)} - ${endDate.toLocaleDateString('en-GB', options)}`;
+    return `${startDate.toLocaleDateString(appLocale(), options)} - ${endDate.toLocaleDateString(appLocale(), options)}`;
   };
   if (!isOpen) return null;
   return <div className={styles.modalOverlay} onClick={handleClose}>

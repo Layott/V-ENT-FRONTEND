@@ -22,6 +22,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -49,7 +50,7 @@ const TABS = [{
   id: 'stream',
   label: 'Stream'
 }];
-const formatDate = d => d ? new Date(d).toLocaleDateString(undefined, {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
   year: 'numeric',

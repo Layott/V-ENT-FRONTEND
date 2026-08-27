@@ -14,6 +14,7 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css';
 import newTournamentsStyles from './../../new-tournaments/new-tournaments.module.css';
 import allTournamentsStyles from './../all-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const TournamentsByGame = ({
   data
 }) => {
@@ -65,7 +66,7 @@ const TournamentsByGame = ({
   // Helper function to format date
   const formatDate = dateString => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

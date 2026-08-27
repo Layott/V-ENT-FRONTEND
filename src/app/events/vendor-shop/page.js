@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -221,7 +222,7 @@ const VendorShopContent = ({
 
           {currentEvent && <div className={styles.eventMeta}>
               <IoLocationOutline /> {currentEvent.location} •{' '}
-              {new Date(currentEvent.start_date).toLocaleDateString('en-GB', {
+              {new Date(currentEvent.start_date).toLocaleDateString(appLocale(), {
             day: 'numeric',
             month: 'short',
             year: 'numeric'

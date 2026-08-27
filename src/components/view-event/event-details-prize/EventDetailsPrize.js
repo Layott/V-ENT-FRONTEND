@@ -1,3 +1,4 @@
+import { appLocale } from '@/lib/appLocale';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { GoDotFill } from "react-icons/go";
@@ -140,7 +141,7 @@ const EventDetailsPrize = ({
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB', {
+      return date.toLocaleDateString(appLocale(), {
         day: 'numeric',
         month: 'long',
         year: 'numeric'

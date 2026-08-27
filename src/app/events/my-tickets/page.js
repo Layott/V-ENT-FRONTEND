@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -28,7 +29,7 @@ const STATUS_FILTERS = [{
 }];
 const formatDate = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -36,7 +37,7 @@ const formatDate = iso => {
 };
 const formatDateTime = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleString('en-GB', {
+  return new Date(iso).toLocaleString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

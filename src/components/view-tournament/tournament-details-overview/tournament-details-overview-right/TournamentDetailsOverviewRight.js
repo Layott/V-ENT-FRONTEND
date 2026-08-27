@@ -9,6 +9,7 @@ import { IoMdArrowForward } from "react-icons/io";
 import tournamentStyles from '@/styles/tournament/tournament.module.css'
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 import overviewRtStyles from '@/view-/overview-right/overview-rt.module.css'
+import { appLocale } from '@/lib/appLocale';
 
 const TournamentDetailsOverviewRight = ({ tournament }) => {
   if (!tournament) {
@@ -22,12 +23,12 @@ const TournamentDetailsOverviewRight = ({ tournament }) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     
-    const startFormatted = start.toLocaleDateString('en-US', { 
+    const startFormatted = start.toLocaleDateString(appLocale(), { 
       day: 'numeric', 
       month: 'short', 
       year: 'numeric' 
     });
-    const endFormatted = end.toLocaleDateString('en-US', { 
+    const endFormatted = end.toLocaleDateString(appLocale(), { 
       day: 'numeric', 
       month: 'short', 
       year: 'numeric' 

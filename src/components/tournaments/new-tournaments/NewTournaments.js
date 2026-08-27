@@ -12,6 +12,7 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import menuContentStyles from '@/styles/menu/menu-content.module.css';
 import styles from './new-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const NewTournaments = ({
   data = []
 }) => {
@@ -19,7 +20,7 @@ const NewTournaments = ({
   // Format date for display
   const formatDate = dateString => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(appLocale(), {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

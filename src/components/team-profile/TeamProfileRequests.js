@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
@@ -49,7 +50,7 @@ const TeamProfileRequests = ({
   }, [team.id, session, onToast]);
   const fmtDate = d => {
     if (!d) return '-';
-    return new Date(d).toLocaleDateString('en-GB', {
+    return new Date(d).toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

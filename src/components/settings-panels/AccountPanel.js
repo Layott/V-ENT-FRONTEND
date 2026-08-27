@@ -9,11 +9,12 @@ import styles from './AccountPanel.module.css';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const formatDate = iso => {
   if (!iso) return '-';
   try {
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

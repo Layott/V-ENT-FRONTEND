@@ -11,9 +11,10 @@ import menuContentStyles from '@/styles/menu/menu-content.module.css';
 import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css';
 import styles from './all-events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const formatDate = dateString => {
   if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString(appLocale(), {
     year: 'numeric',
     month: 'short',
     day: 'numeric'

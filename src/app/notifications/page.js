@@ -12,6 +12,7 @@ import { listNotifications, markRead, markAllRead } from '@/components/notificat
 import styles from './notifications.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 
 // ── Category → icon map ──────────────────────────────────────────────────────
 const CATEGORY_ICON = {
@@ -57,7 +58,7 @@ const relativeTime = iso => {
   if (d < 7) return `${d}d ago`;
   const w = Math.floor(d / 7);
   if (w < 5) return `${w}w ago`;
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(appLocale(), {
     month: 'short',
     day: 'numeric',
     year: 'numeric'

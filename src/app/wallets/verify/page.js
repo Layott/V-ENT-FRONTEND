@@ -15,6 +15,7 @@ import styles from '../wallets.module.css';
 import v from './verify.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const DOC_TYPES = [{
   value: 'national_id',
   label: 'National ID',
@@ -32,7 +33,7 @@ const docLabel = val => DOC_TYPES.find(d => d.value === val)?.label || val || '-
 const fmtDate = iso => {
   if (!iso) return '-';
   try {
-    return new Date(iso).toLocaleDateString('en-NG', {
+    return new Date(iso).toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
