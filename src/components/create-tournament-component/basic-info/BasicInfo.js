@@ -38,9 +38,12 @@ const BasicInfo = ({
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/games/`);
       if (!res.ok) throw new Error(String(res.status));
       const body = await res.json();
+      // The editions come with each game. Dropping them here is what left the
+      // wizard unable to ask which one.
       setGames((body?.data?.games || []).map(g => ({
         id: g.id,
-        name: g.name
+        name: g.name,
+        series: g.series || []
       })));
     } catch {
       setGames([]);

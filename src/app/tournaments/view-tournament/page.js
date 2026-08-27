@@ -1,5 +1,6 @@
 'use client';
 
+import { withLocalDatesAsISO } from '@/lib/datetime';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
@@ -48,7 +49,7 @@ const TABS = [{
   id: 'stream',
   label: 'Stream'
 }];
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(undefined, {
   day: 'numeric',
   month: 'short',
   year: 'numeric',
@@ -325,6 +326,7 @@ export const ViewTournamentContent = ({
             end_date_and_time: at(tournament.end_date_and_time)
           };
         }} save={async payload => {
+          payload = withLocalDatesAsISO(payload, ['start_date_and_time', 'end_date_and_time']);
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/edit-tournament/${tournament.id}/`, {
             method: 'PUT',
             headers: {

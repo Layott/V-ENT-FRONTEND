@@ -679,3 +679,13 @@
   object-fit: contain;
   display: block;
 }
+
+/* The same price in the reader's own money. Muted and marked "about", because
+   the charge is settled in VENT COINS and this is a guide, not the bill. */
+.tierApprox {
+  display: block;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.15rem;
+}
