@@ -119,7 +119,9 @@ function DisputesInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Dispute ${resolution === 'dismissed' ? 'dismissed' : 'resolved'}.`, 'success');
+        toast.push(resolution === 'dismissed'
+        ? tt('admin.disputeDismissed', 'Dispute dismissed.')
+        : tt('admin.disputeResolved', 'Dispute resolved.'), 'success');
         setResolvePopover(null);
         fetchDisputes();
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
@@ -163,7 +165,7 @@ function DisputesInner() {
                 <option value="dismissed">{tt("ui.dismissed.e8db", "Dismissed")}</option>
                 <option value="all">{tt("ui.all.statuses.9cb2", "All Statuses")}</option>
               </select>
-              <span className={shared.resultsCount}>{total.toLocaleString()} {total === 1 ? 'dispute' : 'disputes'}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countDisputesOne', '{n} dispute') : tt('admin.countDisputesMany', '{n} disputes')).replace('{n}', total.toLocaleString())}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : visible.length === 0 ? <p className={shared.stateText}>{tt("ui.no.disputes.found.48a5", "No disputes found.")}</p> : <div className={shared.tableWrap}>
@@ -215,14 +217,14 @@ function DisputesInner() {
                           resolution: 'resolved',
                           note: ''
                         })} disabled={!!actionLoading[d.id]}>
-                                  {actionLoading[d.id] === 'resolved' ? '…' : 'Resolve'}
+                                  {actionLoading[d.id] === 'resolved' ? '…' : tt('admin.resolve', 'Resolve')}
                                 </button>
                                 <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setResolvePopover(resolvePopover?.id === d.id && resolvePopover?.resolution === 'dismissed' ? null : {
                           id: d.id,
                           resolution: 'dismissed',
                           note: ''
                         })} disabled={!!actionLoading[d.id]}>
-                                  {actionLoading[d.id] === 'dismissed' ? '…' : 'Dismiss'}
+                                  {actionLoading[d.id] === 'dismissed' ? '…' : tt('admin.dismiss', 'Dismiss')}
                                 </button>
                                 {resolvePopover?.id === d.id && <div className={styles.resolvePop}>
                                     <p className={styles.resolveLabel}>
@@ -237,7 +239,7 @@ function DisputesInner() {
                                         {tt("ui.cancel.77df", "Cancel")}
                                       </button>
                                       <button className={`${shared.actBtn} ${resolvePopover.resolution === 'dismissed' ? shared.actReject : shared.actApprove}`} onClick={() => resolveDispute(d.id, resolvePopover.resolution, resolvePopover.note)} disabled={!!actionLoading[d.id]}>
-                                        {actionLoading[d.id] ? '…' : 'Confirm'}
+                                        {actionLoading[d.id] ? '…' : tt('admin.confirm', 'Confirm')}
                                       </button>
                                     </div>
                                   </div>}

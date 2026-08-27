@@ -132,7 +132,7 @@ function PayoutsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Payout rejected - ${reason}.`, 'success');
+        toast.push(tt('admin.payoutRejected', 'Payout rejected: {reason}').replace('{reason}', reason), 'success');
         setRejectPopover(null);
         fetchPayouts();
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
@@ -168,7 +168,7 @@ function PayoutsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Bulk approved ${data.data.count} payouts.`, 'success');
+        toast.push(tt('admin.bulkApproved', 'Approved {n} payouts.').replace('{n}', data.data.count), 'success');
         setSelected(new Set());
         fetchPayouts();
       } else toast.push(apiMessage(tt, data, "api.bulkApproveFailed", "Bulk approve failed."), 'error');
@@ -222,7 +222,7 @@ function PayoutsInner() {
                 <option value="-amount_vc">{tt("ui.amount.high.low.13a9", "Amount (High-Low)")}</option>
                 <option value="amount_vc">{tt("ui.amount.low.high.56f4", "Amount (Low-High)")}</option>
               </select>
-              <span className={shared.resultsCount}>{total.toLocaleString()} {total === 1 ? 'payout' : 'payouts'}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countPayoutsOne', '{n} payout') : tt('admin.countPayoutsMany', '{n} payouts')).replace('{n}', total.toLocaleString())}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -285,7 +285,7 @@ function PayoutsInner() {
                       position: 'relative'
                     }}>
                               <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => approvePayout(p.id)} disabled={!!actionLoading[p.id]}>
-                                {actionLoading[p.id] === 'approve' ? '…' : 'Approve'}
+                                {actionLoading[p.id] === 'approve' ? '…' : tt('admin.approve', 'Approve')}
                               </button>
                               <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setRejectPopover(rejectPopover?.id === p.id ? null : {
                         id: p.id,
@@ -299,12 +299,12 @@ function PayoutsInner() {
                           ...prev,
                           reason: e.target.value
                         }))}>
-                                    {REJECT_REASONS.map(r => <option key={r}>{r}</option>)}
+                                    {REJECT_REASONS.map(r => <option key={r} value={r}>{tx(r)}</option>)}
                                   </select>
                                   <div className={styles.rejectBtns}>
                                     <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setRejectPopover(null)}>{tt("ui.cancel.77df", "Cancel")}</button>
                                     <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => rejectPayout(p.id, rejectPopover.reason)} disabled={!!actionLoading[p.id]}>
-                                      {actionLoading[p.id] === 'reject' ? '…' : 'Confirm'}
+                                      {actionLoading[p.id] === 'reject' ? '…' : tt('admin.confirm', 'Confirm')}
                                     </button>
                                   </div>
                                 </div>}

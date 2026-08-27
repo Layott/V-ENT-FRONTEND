@@ -128,7 +128,7 @@ function TournamentsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Score overridden for Match ${payload.match_id}.`, 'success');
+        toast.push(tt('admin.scoreOverridden', 'Score corrected for match {n}.').replace('{n}', payload.match_id), 'success');
         setOverrideTarget(null);
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
@@ -158,7 +158,7 @@ function TournamentsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`${teamName} disqualified.`, 'success');
+        toast.push(tt('admin.disqualified', '{name} disqualified.').replace('{name}', teamName), 'success');
         setDisqTarget(null);
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
@@ -203,7 +203,7 @@ function TournamentsInner() {
                 <option value="-prize_pool">{tt("ui.prize.high.low.7215", "Prize (High-Low)")}</option>
                 <option value="-participants_count">{tt("ui.participants.high.low.d433", "Participants (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{total.toLocaleString()} {total === 1 ? 'tournament' : 'tournaments'}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countTournamentsOne', '{n} tournament') : tt('admin.countTournamentsMany', '{n} tournaments')).replace('{n}', total.toLocaleString())}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : tournaments.length === 0 ? <p className={shared.stateText}>{tt("ui.no.tournaments.found.6976", "No tournaments found.")}</p> : <div className={shared.tableWrap}>
@@ -382,7 +382,7 @@ function DisqualifyModal({
         <div className={styles.modalBtns}>
           <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
           <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => team.trim() && onSubmit(team)} disabled={loading || !team.trim()}>
-            {loading ? tx("Submitting…") : 'Disqualify'}
+            {loading ? tx("Submitting…") : tt('admin.disqualify', 'Disqualify')}
           </button>
         </div>
       </div>

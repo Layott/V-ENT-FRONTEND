@@ -253,7 +253,7 @@ export default function AdminLoginPage() {
                 <div className={styles.pwWrap}>
                   <input id="password" type={showPw ? 'text' : 'password'} className={styles.input} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" disabled={loading} />
                   <button type="button" className={styles.pwToggle} onClick={() => setShowPw(v => !v)} tabIndex={-1} aria-label={tt("ui.toggle.password.visibility.d233", "Toggle password visibility")}>
-                    {showPw ? 'Hide' : 'Show'}
+                    {showPw ? tt('admin.hide', 'Hide') : tt('admin.show', 'Show')}
                   </button>
                 </div>
               </div>

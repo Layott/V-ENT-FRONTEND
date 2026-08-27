@@ -122,7 +122,7 @@ function UserDetailInner() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(`Action "${act}" applied.`, 'success');
+        toast.push(tt('admin.actionApplied', 'Done: {action}').replace('{action}', act), 'success');
         fetchDetail();
         return true;
       }
@@ -144,7 +144,7 @@ function UserDetailInner() {
           <div className={shared.pageHeader}>
             <div>
               <Link href="/admin/users" className={styles.backLink}>{tt("ui.all.users.c1b5", "← All Users")}</Link>
-              <h1 className={shared.pageTitle}>{u?.username || 'User'}</h1>
+              <h1 className={shared.pageTitle}>{u?.username || tt('admin.aUser', 'User')}</h1>
               <p className={shared.pageSubtitle}>
                 {u?.full_name && `${u.full_name} · `}{u?.email}
               </p>
@@ -273,7 +273,7 @@ function UserDetailInner() {
                                 </span>
                               </td>
                               <td className={shared.hideMobile}>{t.placement}</td>
-                              <td className={shared.hideMobile}>{t.prize_vc.toLocaleString()}</td>
+                              <td className={shared.hideMobile}>{Number(t.prize_vc || 0).toLocaleString()}</td>
                               <td className={shared.hideMobile}>{new Date(t.joined_at).toLocaleDateString()}</td>
                             </tr>)}
                         </tbody>
@@ -294,7 +294,7 @@ function UserDetailInner() {
                             <td>{new Date(w.created_at).toLocaleDateString()}</td>
                             <td>{w.type.replace('_', ' ')}</td>
                             <td className={w.amount >= 0 ? styles.amtUp : styles.amtDown}>
-                              {w.amount >= 0 ? '+' : ''}{w.amount.toLocaleString()} VC
+                              {Number(w.amount || 0) >= 0 ? '+' : ''}{Number(w.amount || 0).toLocaleString()} VC
                             </td>
                             <td className={shared.hideMobile}>{tx(w.description)}</td>
                           </tr>)}
@@ -383,7 +383,7 @@ function UserDetailInner() {
               toast.push(tt("msg.typeAMessageFirst", "Type a message first."), 'warn');
               return;
             }
-            toast.push(`Notification sent to ${u?.username}.`, 'success');
+            toast.push(tt('admin.notificationSent', 'Notification sent to {name}.').replace('{name}', u?.username || ''), 'success');
             setNotifyMsg('');
             setNotifyModalOpen(false);
           }}>

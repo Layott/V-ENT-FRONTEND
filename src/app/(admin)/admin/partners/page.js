@@ -176,7 +176,7 @@ function PartnersInner() {
 
           <div className={styles.filterRow}>
             {['', 'pending', 'approved', 'rejected', 'suspended'].map(s => <button key={s || 'all'} type="button" className={`${styles.filterChip} ${statusFilter === s ? styles.filterChipOn : ''}`} onClick={() => setStatusFilter(s)}>
-                {s === '' ? 'All' : s}
+                {s === '' ? tt('admin.allStatuses', 'All') : s}
               </button>)}
           </div>
 
@@ -273,7 +273,7 @@ function PartnersInner() {
                 <div><dt>{tt("ui.registration.b233", "Registration")}</dt><dd>{open.registration_number || tx("Not given")}</dd></div>
                 <div><dt>{tt("ui.privacy.policy.7cea", "Privacy policy")}</dt><dd>{open.privacy_policy_url || tx("Not given")}</dd></div>
                 <div><dt>{tt("ui.data.contact.84ae", "Data contact")}</dt><dd>{open.data_protection_contact || tx("Not given")}</dd></div>
-                <div><dt>{tt("ui.redirect.addresses.cc32", "Redirect addresses")}</dt><dd>{(open.redirect_uris || []).join(', ') || 'None'}</dd></div>
+                <div><dt>{tt("ui.redirect.addresses.cc32", "Redirect addresses")}</dt><dd>{(open.redirect_uris || []).join(', ') || tt('admin.none', 'None')}</dd></div>
               </dl>
 
               {issuedSecret && <div className={styles.secretBox}>

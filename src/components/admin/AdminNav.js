@@ -128,7 +128,7 @@ export default function AdminNav({
       {/* Role badge */}
       <div className={styles.roleRow}>
         <span className={`${styles.roleBadge} ${styles[`role_${role}`] || ''}`}>
-          {ROLE_LABELS[role] || 'Admin'}
+          {ROLE_LABELS[role] || tt('admin.roleFallback', 'Admin')}
         </span>
         <span className={styles.roleUsername}>{admin?.username || 'admin'}</span>
       </div>

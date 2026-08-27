@@ -31,10 +31,16 @@ CALL = re.compile(r'\b(?:tx|tt|apiMessage|t)\s*\((?:[^()]|\([^()]*\))*\)')
 LITERAL = re.compile(r"""(?<![\w.])(['"])([A-Za-z][^'"]{1,60})\1""")
 
 hits = []
+# JSX comments - {/* ... */} - are not rendered, so their text is not copy. The
+# scanner was reporting an explanation written above the heading it describes.
+JSX_COMMENT = re.compile(r'\{\s*/\*.*?\*/\s*\}', re.S)
+
+
 for path in sorted(SRC.rglob('*.js')):
     if 'i18n' in path.as_posix():
         continue
     text = path.read_text(encoding='utf-8')
+    text = JSX_COMMENT.sub(lambda m: ' ' * len(m.group(0)), text)
     for c in CONTAINER.finditer(text):
         expr = c.group(1)
         # Blank out translator calls, keeping length so offsets stay usable.
