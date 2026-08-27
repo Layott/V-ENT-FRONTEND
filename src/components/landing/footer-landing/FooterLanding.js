@@ -65,6 +65,18 @@ const FooterLanding = () => {
             </div>
         </div>
 
+        <div className={styles.footerLinks}>
+            <Link href={'/partners'} className={styles.footerLink}>
+                {tt('landing.forPartners', 'Partners')}
+            </Link>
+            <Link href={'/partners/docs'} className={styles.footerLink}>
+                {tt('landing.apiDocs', 'API documentation')}
+            </Link>
+            <Link href={'/privacy-policy'} className={styles.footerLink}>
+                {tt('landing.privacyPolicy', 'Privacy policy')}
+            </Link>
+        </div>
+
         <div className={styles.footerBottom}>
             <p>
                 &copy; 2026 Vermillion Enterprise (V-ENT)

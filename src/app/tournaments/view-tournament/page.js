@@ -18,6 +18,7 @@ import styles from './view-tournament.module.css';
 import { shareLink, linkTo } from '@/lib/share';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import { useT } from '@/i18n/LanguageProvider';
+import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import { useTx } from '@/i18n/LanguageProvider';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
@@ -289,6 +290,51 @@ export const ViewTournamentContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          {/* Renders nothing for an ordinary reader. For an admin it offers the
+              same edit the console offers, through the same endpoint, so the
+              two cannot drift apart. */}
+          {tournament?.id && <AdminBar permission="cancel_tournament" consoleHref="/admin/tournaments" title={tt('admin.editTournamentTitle', 'Edit tournament')} fields={[{
+          key: 'tournament_title',
+          label: tt('admin.fieldTitle', 'Title')
+        }, {
+          key: 'tournament_description',
+          label: tt('admin.fieldDescription', 'Description')
+        }, {
+          key: 'tournament_rules',
+          label: tt('admin.fieldRules', 'Rules')
+        }, {
+          key: 'tournament_location',
+          label: tt('admin.fieldLocation', 'Location')
+        }, {
+          key: 'start_date_and_time',
+          label: tt('admin.fieldStart', 'Starts'),
+          type: 'datetime-local'
+        }, {
+          key: 'end_date_and_time',
+          label: tt('admin.fieldEnd', 'Ends'),
+          type: 'datetime-local'
+        }]} load={async () => {
+          const at = v => v ? String(v).slice(0, 16) : '';
+          return {
+            tournament_title: tournament.tournament_title || tournament.name || '',
+            tournament_description: tournament.tournament_description || '',
+            tournament_rules: tournament.tournament_rules || '',
+            tournament_location: tournament.tournament_location || '',
+            start_date_and_time: at(tournament.start_date_and_time),
+            end_date_and_time: at(tournament.end_date_and_time)
+          };
+        }} save={async payload => {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/edit-tournament/${tournament.id}/`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${session?.user?.sessionToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          return adminSaveResult(tt, await res.json());
+        }} />}
+
           {/* Hero banner */}
           <div className={styles.heroBanner} style={bannerUrl ? {
           backgroundImage: `url(${bannerUrl})`

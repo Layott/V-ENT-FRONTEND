@@ -43,7 +43,8 @@
   border-radius: 999px;
   font-size: 0.85rem;
   cursor: pointer;
-  text-transform: capitalize;
+  /* No capitalize: the chip carries a written label now, and title-casing a
+     French phrase reads as machine output. */
   font-family: 'ClashGrotesk-Variable', sans-serif;
 }
 

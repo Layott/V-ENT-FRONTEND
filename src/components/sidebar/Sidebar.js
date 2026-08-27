@@ -1,4 +1,4 @@
-import { isComingSoon } from '@/lib/features';
+import { useComingSoon } from '@/lib/platformModules';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -22,6 +22,9 @@ import { useT } from '@/i18n/LanguageProvider';
 const Sidebar = ({
   customClass
 }) => {
+  // Reads the console's module switches, falling back to the built-in list
+  // until they arrive.
+  const isComingSoon = useComingSoon();
   const tt = useT();
   const t = useT();
   const pathname = usePathname(); // Gets the current pathname

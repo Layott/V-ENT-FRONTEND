@@ -5,6 +5,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IoCalendarOutline, IoLocationOutline, IoTimeOutline, IoTicketOutline } from 'react-icons/io5';
@@ -640,6 +641,54 @@ export const ViewEventContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          {/* Nothing for an ordinary reader. For an admin, the same edit the
+              console offers, through the same endpoint. */}
+          {event?.id && <AdminBar permission="manage_events" consoleHref="/admin/events" title={tt('admin.editEventTitle', 'Edit event')} fields={[{
+          key: 'name',
+          label: tt('admin.fieldTitle', 'Title')
+        }, {
+          key: 'desc',
+          label: tt('admin.fieldDescription', 'Description')
+        }, {
+          key: 'location',
+          label: tt('admin.fieldLocation', 'Location')
+        }, {
+          key: 'event_link',
+          label: tt('admin.eventLink', 'Online link')
+        }, {
+          key: 'capacity',
+          label: tt('admin.eventCapacity', 'Capacity')
+        }, {
+          key: 'start_date',
+          label: tt('admin.fieldStart', 'Starts'),
+          type: 'datetime-local'
+        }, {
+          key: 'end_date',
+          label: tt('admin.fieldEnd', 'Ends'),
+          type: 'datetime-local'
+        }]} load={async () => {
+          const at = v => v ? String(v).slice(0, 16) : '';
+          return {
+            name: event.name || '',
+            desc: event.desc || event.description || '',
+            location: event.location || '',
+            event_link: event.event_link || '',
+            capacity: event.capacity != null ? String(event.capacity) : '',
+            start_date: at(event.start_date),
+            end_date: at(event.end_date)
+          };
+        }} save={async payload => {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/edit-event/${event.id}/`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${session?.user?.sessionToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          return adminSaveResult(tt, await res.json());
+        }} />}
+
           {/* Hero banner - only render the image when a real banner exists.
               An empty src makes next/image emit a preload warning and bleed the
               alt text over the card; the hero's own dark background fills in. */}

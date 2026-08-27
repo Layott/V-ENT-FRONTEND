@@ -29,6 +29,7 @@ function TournamentsInner() {
     logout
   } = useAdminAuth();
   const toast = useAdminToast();
+  const mayEdit = !!admin?.permissions?.cancel_tournament;
   const [tournaments, setTournaments] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -40,6 +41,7 @@ function TournamentsInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [overrideTarget, setOverrideTarget] = useState(null);
+  const [editTarget, setEditTarget] = useState(null);
   const [disqTarget, setDisqTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
   const fetchTournaments = useCallback(async () => {
@@ -95,6 +97,38 @@ function TournamentsInner() {
       if (data.status === 'success') {
         toast.push(tt("msg.tournamentCancelled", "Tournament cancelled."), 'success');
         setCancelTarget(null);
+        fetchTournaments();
+      } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
+    } catch {
+      toast.push(tt("msg.connectionError", "Connection error."), 'error');
+    }
+    setActionLoading(p => ({
+      ...p,
+      [id]: false
+    }));
+  }
+  async function saveTournament(id, payload) {
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({
+      ...p,
+      [id]: true
+    }));
+    try {
+      // The organiser's own endpoint. An admin who is not the owner is allowed
+      // through by the server's permission check, and the edit is written to
+      // the audit log so the organiser can find out who changed their tournament.
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/edit-tournament/${id}/`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        toast.push(tt("admin.tournamentSaved", "Tournament updated."), 'success');
+        setEditTarget(null);
         fetchTournaments();
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
@@ -242,6 +276,9 @@ function TournamentsInner() {
                         </td>
                         <td>
                           <div className={shared.actGroup}>
+                            {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(t)} disabled={!!actionLoading[t.id]} title={tt("admin.editAsAdmin", "Edit this tournament as an admin. The organiser is told it changed.")}>
+                              {tt("admin.editTournament", "Edit")}
+                            </button>}
                             <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
                               {tt("ui.score.489f", "Score")}
                             </button>
@@ -294,8 +331,137 @@ function TournamentsInner() {
       {/* Override score modal */}
       {overrideTarget && <OverrideScoreModal tournament={overrideTarget} onCancel={() => setOverrideTarget(null)} onSubmit={payload => overrideScore(overrideTarget.id, payload)} loading={!!actionLoading[overrideTarget.id]} />}
 
+      {editTarget && <EditTournamentModal tournament={editTarget} onCancel={() => setEditTarget(null)} onSubmit={payload => saveTournament(editTarget.id, payload)} loading={!!actionLoading[editTarget.id]} />}
+
       {/* Disqualify modal */}
       {disqTarget && <DisqualifyModal tournament={disqTarget} onCancel={() => setDisqTarget(null)} onSubmit={team => disqualifyTeam(disqTarget.id, team)} loading={!!actionLoading[disqTarget.id]} />}
+    </div>;
+}
+/** Correct somebody else's tournament from the console.
+
+ *  Loads the record first and shows what is actually stored, rather than an
+ *  empty form: an admin correcting a start time needs to see the wrong one. If
+ *  the load fails the fields stay disabled, because a blank form submitted over
+ *  a real tournament erases it.
+ */
+function EditTournamentModal({
+  tournament,
+  onCancel,
+  onSubmit,
+  loading
+}) {
+  const tt = useT();
+  const [form, setForm] = useState(null);
+  // What the server gave us, kept so submit can send the difference.
+  const [loaded, setLoaded] = useState(null);
+  const [loadError, setLoadError] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const token = localStorage.getItem('adminToken');
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${tournament.id}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.status !== 'success' || !data.data) {
+          setLoadError(true);
+          return;
+        }
+        const t = data.data.tournament || data.data;
+        const at = v => v ? String(v).slice(0, 16) : '';
+        const initial = {
+          tournament_title: t.tournament_title || t.name || '',
+          tournament_description: t.tournament_description || '',
+          tournament_rules: t.tournament_rules || '',
+          tournament_location: t.tournament_location || '',
+          tournament_visibility: t.tournament_visibility || 'public',
+          start_date_and_time: at(t.start_date_and_time),
+          end_date_and_time: at(t.end_date_and_time)
+        };
+        setForm(initial);
+        setLoaded(initial);
+      } catch {
+        if (!cancelled) setLoadError(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tournament.id]);
+  const set = (k, v) => setForm(f => ({
+    ...f,
+    [k]: v
+  }));
+  const submit = () => {
+    // Only what actually differs from what was loaded. Sending every non-empty
+    // field saved the right values, but the audit entry then listed four fields
+    // for a one-word correction, and an audit log that overstates what an admin
+    // touched cannot answer the question it exists for.
+    const payload = {};
+    Object.keys(form || {}).forEach(k => {
+      const now = form[k];
+      if (now === '' || now == null) return;
+      if (loaded && now === loaded[k]) return;
+      payload[k] = now;
+    });
+    onSubmit(payload);
+  };
+  return <div className={styles.modalOverlay} onClick={onCancel}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <p className={styles.modalTitle}>{tt("admin.editTournamentTitle", "Edit tournament")}</p>
+        <p className={styles.modalSub}>
+          {tt("admin.editTournamentSub", "Organised by {name}. The change is recorded in the audit log.").replace('{name}', tournament.organizer_username || '')}
+        </p>
+
+        {loadError ? <p className={styles.modalSub}>
+            {tt("admin.editLoadFailed", "This tournament could not be loaded, so the form was left closed rather than risk saving over it.")}
+          </p> : !form ? <p className={styles.modalSub}>{tt("ui.loading", "Loading…")}</p> : <>
+            <div className={styles.formRow}>
+              <label className={styles.formLabel}>{tt("admin.fieldTitle", "Title")}</label>
+              <input className={styles.formInput} value={form.tournament_title} onChange={e => set('tournament_title', e.target.value)} />
+            </div>
+            <div className={styles.formRow}>
+              <label className={styles.formLabel}>{tt("admin.fieldDescription", "Description")}</label>
+              <input className={styles.formInput} value={form.tournament_description} onChange={e => set('tournament_description', e.target.value)} />
+            </div>
+            <div className={styles.formRow}>
+              <label className={styles.formLabel}>{tt("admin.fieldRules", "Rules")}</label>
+              <input className={styles.formInput} value={form.tournament_rules} onChange={e => set('tournament_rules', e.target.value)} />
+            </div>
+            <div className={styles.formRow}>
+              <label className={styles.formLabel}>{tt("admin.fieldLocation", "Location")}</label>
+              <input className={styles.formInput} value={form.tournament_location} onChange={e => set('tournament_location', e.target.value)} />
+            </div>
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldStart", "Starts")}</label>
+                <input type="datetime-local" className={styles.formInput} value={form.start_date_and_time} onChange={e => set('start_date_and_time', e.target.value)} />
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldEnd", "Ends")}</label>
+                <input type="datetime-local" className={styles.formInput} value={form.end_date_and_time} onChange={e => set('end_date_and_time', e.target.value)} />
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label className={styles.formLabel}>{tt("admin.fieldVisibility", "Visibility")}</label>
+              <select className={styles.formInput} value={form.tournament_visibility} onChange={e => set('tournament_visibility', e.target.value)}>
+                <option value="public">{tt("admin.visibilityPublic", "Public")}</option>
+                <option value="private">{tt("admin.visibilityPrivate", "Private")}</option>
+              </select>
+            </div>
+          </>}
+
+        <div className={styles.modalBtns}>
+          <button className={`${shared.actBtn}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
+          <button className={`${shared.actBtn} ${shared.actView}`} onClick={submit} disabled={loading || !form || loadError}>
+            {loading ? tt("ui.saving", "Saving…") : tt("ui.save", "Save")}
+          </button>
+        </div>
+      </div>
     </div>;
 }
 function OverrideScoreModal({
