@@ -53,7 +53,11 @@ export default function SessionExpiryGuard() {
           !signingOut &&
           hadBearer(input, init)
         ) {
-          const path = window.location.pathname;
+          // The locale prefix has to come off first. This test read
+          // `/fr/admin` and `startsWith('/admin')` was false, so a dead admin
+          // token fell through to the branch below and signed the admin out of
+          // the entire site - the opposite of what the next comment promises.
+          const path = window.location.pathname.replace(/^\/(fr|pt)(?=\/|$)/, '') || '/';
           // The admin portal has its own identity (adminToken) and its own
           // login screen. A dead admin token must not sign the user out of the
           // main app or dump them on the player login page.
