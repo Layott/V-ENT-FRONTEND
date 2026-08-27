@@ -261,3 +261,26 @@
   line-height: 1.2;
   color: var(--primary-bg);
 }
+
+/* A row of plain text links. No rule above it and no separators between the
+   items: the spacing already reads as a group, and a hairline would be the one
+   thing on this page drawing structure with a line. */
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 1.5rem;
+  width: 100%;
+  margin-bottom: 1.1rem;
+}
+
+.footerLink {
+  font-size: 0.78rem;
+  color: #EEEEF0;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+.footerLink:hover {
+  opacity: 1;
+}

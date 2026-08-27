@@ -3556,6 +3556,9 @@ export const dictionaries = {
     'api.NO_FIELDS_TO_UPDATE': 'Nothing to change.',
     'api.ONLY_EVENT_ORGANIZER_CAN': 'Only the event organiser can edit this event.',
     'api.failedToLoadEvents': 'Failed to load events.',
+    'landing.apiDocs': 'API documentation',
+    'landing.forPartners': 'Partners',
+    'landing.privacyPolicy': 'Privacy policy',
   },
 
   fr: {
@@ -7098,6 +7101,9 @@ export const dictionaries = {
     'api.NO_FIELDS_TO_UPDATE': 'Rien à modifier.',
     'api.ONLY_EVENT_ORGANIZER_CAN': 'Seul l\'organisateur peut modifier cet événement.',
     'api.failedToLoadEvents': 'Échec du chargement des événements.',
+    'landing.apiDocs': 'Documentation API',
+    'landing.forPartners': 'Partenaires',
+    'landing.privacyPolicy': 'Politique de confidentialité',
   },
 
   pt: {
@@ -10640,5 +10646,8 @@ export const dictionaries = {
     'api.NO_FIELDS_TO_UPDATE': 'Nada para alterar.',
     'api.ONLY_EVENT_ORGANIZER_CAN': 'Só o organizador pode editar este evento.',
     'api.failedToLoadEvents': 'Falha ao carregar os eventos.',
+    'landing.apiDocs': 'Documentação da API',
+    'landing.forPartners': 'Parceiros',
+    'landing.privacyPolicy': 'Política de privacidade',
   },
 };

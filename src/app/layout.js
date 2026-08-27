@@ -3,6 +3,7 @@ import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
 import JsonLd from "@/components/seo/JsonLd";
 import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
+import { PlatformModulesProvider } from "@/lib/platformModules";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
 import { sectionCopy } from "@/lib/seoCopy";
 
@@ -89,7 +90,9 @@ export default function RootLayout({ children }) {
               of the page and not of <html>. Inside the session and language
               providers from SessionWrapper, so it knows who is signed in and
               which language to speak. */}
-          <WalkthroughProvider>{children}</WalkthroughProvider>
+          <PlatformModulesProvider>
+            <WalkthroughProvider>{children}</WalkthroughProvider>
+          </PlatformModulesProvider>
         </body>
       </html>
     </SessionWrapper>
