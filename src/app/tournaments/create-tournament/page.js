@@ -64,6 +64,7 @@ function CreateTournamentPageInner() {
     status
   } = useSession();
   const [ready, setReady] = useState(!draftId);
+  const [loadFailed, setLoadFailed] = useState(false);
   useEffect(() => {
     if (!draftId) {
       setReady(true);
@@ -73,6 +74,7 @@ function CreateTournamentPageInner() {
     let cancelled = false;
     (async () => {
       try {
+        localStorage.removeItem('createTournamentData');
         const token = tokenFrom(session);
         const data = await ventFetch(API.TOURNAMENT.VIEW(draftId), {
           token
@@ -82,8 +84,12 @@ function CreateTournamentPageInner() {
           localStorage.setItem('createTournamentData', JSON.stringify(mapTournamentToFormData(tournament)));
         }
       } catch {
-        // Draft couldn't be loaded (bad id, BE gap, network error) - proceed
-        // with an empty wizard rather than blocking the page.
+        // Do NOT fall through to the wizard. It reads its opening values from
+        // localStorage, and that still holds the LAST tournament edited - so a
+        // failed load here does not open an empty form, it opens somebody
+        // else's tournament under this one's id, and Save writes it over the
+        // real record. Stop and offer a retry instead.
+        if (!cancelled) setLoadFailed(true);
       } finally {
         if (!cancelled) setReady(true);
       }
@@ -100,7 +106,14 @@ function CreateTournamentPageInner() {
         <h1 className={styles.srOnlyTitle}>
           {tt("createTournament.title", "Create a tournament")}
         </h1>
-        {ready ? <CreateTournamentComponent /> : <div className={styles.loadingState}>
+        {loadFailed ? <div className={styles.loadingState}>
+            <div className={styles.loadingCard}>
+              <span>{tt("createTournament.loadFailed", "This tournament could not be opened, so the form was left closed rather than risk saving over it.")}</span>
+              <button type="button" className="btn grnBTN" onClick={() => window.location.reload()}>
+                {tt("ui.tryAgain", "Try again")}
+              </button>
+            </div>
+          </div> : ready ? <CreateTournamentComponent /> : <div className={styles.loadingState}>
             <div className={styles.loadingCard}>
               <div className={styles.spinner} />
               <span>{tt("ui.loading.draft.b83b", "Loading your draft…")}</span>

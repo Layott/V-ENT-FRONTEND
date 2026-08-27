@@ -27,6 +27,11 @@
   padding: 1.75rem;
   max-width: 460px;
   width: 100%;
+  /* The edit modal carries seven fields, far more than the score modal this
+     was written for. Without a ceiling it runs off the bottom of a phone and
+     the Save button becomes unreachable. */
+  max-height: 85vh;
+  overflow-y: auto;
 }
 .modalTitle {
   font-weight: 700;
@@ -75,4 +80,10 @@
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+
+@media (max-width: 480px) {
+  .formRow2 {
+    grid-template-columns: 1fr;
+  }
 }
