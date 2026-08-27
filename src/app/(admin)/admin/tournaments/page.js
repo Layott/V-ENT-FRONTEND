@@ -352,6 +352,8 @@ function EditTournamentModal({
 }) {
   const tt = useT();
   const [form, setForm] = useState(null);
+  // What the server gave us, kept so submit can send the difference.
+  const [loaded, setLoaded] = useState(null);
   const [loadError, setLoadError] = useState(false);
   useEffect(() => {
     let cancelled = false;
@@ -371,7 +373,7 @@ function EditTournamentModal({
         }
         const t = data.data.tournament || data.data;
         const at = v => v ? String(v).slice(0, 16) : '';
-        setForm({
+        const initial = {
           tournament_title: t.tournament_title || t.name || '',
           tournament_description: t.tournament_description || '',
           tournament_rules: t.tournament_rules || '',
@@ -379,7 +381,9 @@ function EditTournamentModal({
           tournament_visibility: t.tournament_visibility || 'public',
           start_date_and_time: at(t.start_date_and_time),
           end_date_and_time: at(t.end_date_and_time)
-        });
+        };
+        setForm(initial);
+        setLoaded(initial);
       } catch {
         if (!cancelled) setLoadError(true);
       }
@@ -393,11 +397,16 @@ function EditTournamentModal({
     [k]: v
   }));
   const submit = () => {
-    // Send only what the admin actually changed, so an untouched field is not
-    // rewritten with a value this screen happened to render.
+    // Only what actually differs from what was loaded. Sending every non-empty
+    // field saved the right values, but the audit entry then listed four fields
+    // for a one-word correction, and an audit log that overstates what an admin
+    // touched cannot answer the question it exists for.
     const payload = {};
     Object.keys(form || {}).forEach(k => {
-      if (form[k] !== '' && form[k] != null) payload[k] = form[k];
+      const now = form[k];
+      if (now === '' || now == null) return;
+      if (loaded && now === loaded[k]) return;
+      payload[k] = now;
     });
     onSubmit(payload);
   };
