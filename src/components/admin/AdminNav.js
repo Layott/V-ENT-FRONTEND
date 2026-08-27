@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel } from 'react-icons/md';
+import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
 import { LuUsers, LuShield, LuFileText } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
@@ -53,13 +53,6 @@ const NAV = [{
     roles: ['super', 'moderator'],
     perms: ['resolve_dispute'],
     badge: 'disputes'
-  }, {
-    label: 'KYC Review',
-    href: '/admin/kyc',
-    icon: LuShield,
-    roles: ['super', 'moderator', 'finance', 'support'],
-    perms: ['list_kyc', 'approve_kyc', 'reject_kyc'],
-    badge: 'kyc'
   }]
 }, {
   section: 'Finance',
@@ -186,6 +179,14 @@ export default function AdminNav({
             <MdLogout />
           </button>
         </div>
+
+        {/* The only way out of the console used to be Logout, which signs you
+            out of everything rather than taking you back. An admin is a person
+            using the site as well. */}
+        <Link href="/home" className={styles.backToSite}>
+          <MdArrowBack className={styles.backIcon} />
+          {tt('admin.backToSite', 'Back to the site')}
+        </Link>
       </div>
     </aside>;
 }

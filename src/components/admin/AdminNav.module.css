@@ -180,3 +180,29 @@
     transform: translateX(0);
   }
 }
+
+/* The way back to the site. Filled surface, no stroke - it is a destination,
+   not a divider. */
+.backToSite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.backToSite:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+
+.backIcon {
+  font-size: 1rem;
+  flex: none;
+}

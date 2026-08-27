@@ -172,3 +172,32 @@
   .search { display: none; }
   .adminInfo { display: none; }
 }
+
+/* The pending-work dropdown behind the bell. Reuses .dropdown and
+   .dropdownItem; these are the two parts it needs that did not exist. */
+.dropdownHead {
+  padding: 0.6rem 0.85rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.dropdownEmpty {
+  padding: 0.35rem 0.85rem 0.75rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.dropdownCount {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--v-ent-red);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}

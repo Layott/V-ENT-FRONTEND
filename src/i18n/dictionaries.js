@@ -3415,6 +3415,11 @@ export const dictionaries = {
     'ui.confirm.its.you': 'Confirm it\'s you',
     'ui.leave.admin': 'Back to the site',
     'profile.founderBadgeLabel': 'Founding member of V-ENT',
+    'admin.backToSite': 'Back to the site',
+    'admin.disputesWaiting': 'Disputes to resolve',
+    'admin.nothingWaiting': 'Nothing is waiting for you.',
+    'admin.payoutsWaiting': 'Payouts to approve',
+    'admin.pendingWork': 'Pending work',
   },
 
   fr: {
@@ -6816,6 +6821,11 @@ export const dictionaries = {
     'ui.confirm.its.you': 'Confirmez que c\'est bien vous',
     'ui.leave.admin': 'Retour au site',
     'profile.founderBadgeLabel': 'Membre fondateur de V-ENT',
+    'admin.backToSite': 'Retour au site',
+    'admin.disputesWaiting': 'Litiges à résoudre',
+    'admin.nothingWaiting': 'Rien ne vous attend.',
+    'admin.payoutsWaiting': 'Retraits à approuver',
+    'admin.pendingWork': 'Travail en attente',
   },
 
   pt: {
@@ -10217,5 +10227,10 @@ export const dictionaries = {
     'ui.confirm.its.you': 'Confirme que é você',
     'ui.leave.admin': 'Voltar ao site',
     'profile.founderBadgeLabel': 'Membro fundador da V-ENT',
+    'admin.backToSite': 'Voltar ao site',
+    'admin.disputesWaiting': 'Litígios para resolver',
+    'admin.nothingWaiting': 'Nada à sua espera.',
+    'admin.payoutsWaiting': 'Levantamentos para aprovar',
+    'admin.pendingWork': 'Trabalho pendente',
   },
 };
