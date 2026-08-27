@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadHint } from '@/lib/uploadSpecs';
 import { useState, useRef, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -105,7 +106,7 @@ const OnboardingContent = () => {
                   <button type="button" className={`btn goldBTN ${styles.smallBtn}`} onClick={() => avatarInputRef.current?.click()}>
                     {tt("ui.upload.photo.69ab", "Upload photo")}
                   </button>
-                  <p className={styles.hint}>{tt("ui.jpg.png.square.looks.4bfd", "JPG or PNG · square looks best")}</p>
+                  <p className={styles.hint}>{uploadHint(tt, 'avatar')}</p>
                   <input ref={avatarInputRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleAvatar(e.target.files?.[0])} />
                 </div>
               </div>

@@ -2,6 +2,7 @@
 
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
+import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -89,6 +90,10 @@ const CreateEventPage = () => {
   } = useSession();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(emptyForm);
+  // Files live outside formData: they cannot be JSON-serialised into the draft
+  // that formData is saved to, and a half-restored File is worse than none.
+  const [bannerFile, setBannerFile] = useState(null);
+  const [sponsorLogos, setSponsorLogos] = useState({});
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -287,13 +292,33 @@ const CreateEventPage = () => {
       // vendor_invites, social_links, plus optional game_title. Legacy date/time
       // and registration-window fields are auto-derived server-side from
       // start_date / end_date, so the wizard does not send them.
+      // Multipart whenever a file is attached. The backend reads nested fields
+      // with json.loads when they arrive as strings, so sponsors and tiers
+      // survive the trip intact.
+      const files = [['banner', bannerFile]].filter(([, f]) => f);
+      const sponsorFiles = Object.entries(sponsorLogos).filter(([, f]) => f);
+      let body;
+      const headers = {
+        Authorization: `Bearer ${session?.user?.sessionToken || ''}`
+      };
+      if (files.length || sponsorFiles.length) {
+        body = new FormData();
+        Object.entries(formData).forEach(([k, v]) => {
+          if (v === null || v === undefined) return;
+          body.append(k, typeof v === 'object' ? JSON.stringify(v) : v);
+        });
+        files.forEach(([name, f]) => body.append(name, f));
+        sponsorFiles.forEach(([i, f]) => body.append(`sponsor_logo_${i}`, f));
+        // No Content-Type: the browser has to set the multipart boundary.
+      } else {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify(formData);
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/create-event/`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        headers,
+        body
       });
       const data = await res.json();
       if (data.status === 'success') {
@@ -406,10 +431,10 @@ const CreateEventPage = () => {
                 </label>
 
                 <div className={styles.formRow}>
-                  <label className={styles.label}>
-                    <span className="fieldLabelRow">{tt("ui.banner.image.url.594c", "Banner image URL")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
-                    <input type="url" className={styles.input} value={formData.banner_url} onChange={e => update('banner_url', e.target.value)} placeholder={tt("ui.https.1a66", "https://…")} />
-                  </label>
+                  <div className={styles.label}>
+                    <span className="fieldLabelRow">{tt("createEvent.bannerLabel", "Event banner")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
+                    <ImageUpload kind="banner" value={bannerFile} onChange={setBannerFile} />
+                  </div>
 
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.category.a3c6", "Category")} <InfoTip id="eventCategory" /></span>
@@ -539,7 +564,10 @@ const CreateEventPage = () => {
                   {formData.sponsors.length === 0 ? <p className={styles.muted}>{tt("ui.no.sponsors.added.yet.f7ad", "No sponsors added yet.")}</p> : <div className={styles.itemList}>
                       {formData.sponsors.map((s, i) => <div key={i} className={styles.itemRow}>
                           <input type="text" className={styles.input} value={s.name} onChange={e => updateSponsor(i, 'name', e.target.value)} placeholder={tt("ui.sponsor.name.b3cf", "Sponsor name")} />
-                          <input type="url" className={styles.input} value={s.logo_url} onChange={e => updateSponsor(i, 'logo_url', e.target.value)} placeholder={tt("ui.logo.url.optional.eb8d", "Logo URL (optional)")} />
+                          <ImageUpload kind="sponsorLogo" compact value={sponsorLogos[i] || null} onChange={f => setSponsorLogos(prev => ({
+                            ...prev,
+                            [i]: f
+                          }))} label={tt("createEvent.sponsorLogoLabel", "Sponsor logo")} />
                           <button className={styles.iconRemove} onClick={() => removeSponsor(i)} type="button" aria-label={tt("ui.remove.sponsor.c5c0", "Remove sponsor")}><FaTrash /></button>
                         </div>)}
                     </div>}

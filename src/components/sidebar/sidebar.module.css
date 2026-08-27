@@ -108,9 +108,9 @@
   border-radius: 5px;
 }
 
-.iconTextLink:has(.comingSoon) {
-  justify-content: space-between;
-}
+/* The badge alone is pushed right, via margin-left on .comingSoon.
+   space-between here distributed the icon and the label too, which is
+   what knocked the badged rows out of line with the rest. */
 
 .iconTextLink .iconMarketplaceSpan,
 .iconTextLink .iconShopSpan {
@@ -148,6 +148,7 @@
 }
 
 .comingSoon {
+  margin-left: auto;
   font-size: 0.6rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;

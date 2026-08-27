@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadHint } from '@/lib/uploadSpecs';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useRef } from 'react';
@@ -137,10 +138,11 @@ const CreateTeam = () => {
                 {bannerPreview ? <Image src={bannerPreview} alt={tt("team.alt.bannerPreview", "The banner you chose for this team")} fill style={{
                 objectFit: 'cover'
               }} sizes="100vw" /> : <div className={styles.uploadHint}>
-                    <FiCamera /> <span>{tt("ui.upload.banner.image.0fa4", "Upload banner image (1200×400)")}</span>
+                    <FiCamera /> <span>{tt("ui.upload.banner.image.0fa5", "Upload banner image")}</span>
                   </div>}
                 <input ref={bannerRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFile(e.target.files?.[0], setBannerPreview)} />
               </div>
+                <p className={styles.uploadHintLine}>{uploadHint(tt, 'banner')}</p>
 
               <div className={styles.logoUploadWrap}>
                 <div className={styles.logoUpload} onClick={() => logoRef.current?.click()}>
@@ -150,6 +152,7 @@ const CreateTeam = () => {
                   <input ref={logoRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFile(e.target.files?.[0], setLogoPreview)} />
                 </div>
                 <p className={styles.uploadCaption}><FiUpload /> {tt("ui.upload.logo.a564", "Upload logo")}</p>
+                <p className={styles.uploadHintLine}>{uploadHint(tt, 'logo')}</p>
               </div>
             </section>
 
