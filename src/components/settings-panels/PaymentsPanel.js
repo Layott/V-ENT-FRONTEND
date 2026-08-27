@@ -1,5 +1,6 @@
 'use client';
 
+import { KYC_REQUIRED } from '@/lib/features';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -204,11 +205,11 @@ const PaymentsPanel = ({
         <div className={styles.cardHeaderRow}>
           <div>
             <h3 className={shared.cardTitle}>{tt("ui.saved.bank.accounts.e863", "Saved bank accounts")}<InfoTip id="savedBanks" /></h3>
-            <p className={shared.cardSub}>{tt("ui.used.withdrawals.local.banks.418e", "Used for withdrawals to local banks. Requires KYC verification.")}</p>
+            <p className={shared.cardSub}>{tt("ui.used.withdrawals.local.banks.418e", "Used for withdrawals to local banks.")}</p>
           </div>
         </div>
 
-        {!user?.kyc_verified ? <div className={styles.kycGate}>
+        {KYC_REQUIRED && !user?.kyc_verified ? <div className={styles.kycGate}>
             <div className={styles.kycGateIcon}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" />

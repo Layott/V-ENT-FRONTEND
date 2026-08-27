@@ -1,3 +1,4 @@
+import { isComingSoon } from '@/lib/features';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 // import { BiHomeCircle } from "react-icons/bi";
@@ -57,76 +58,84 @@ const MobileSidebar = ({
             <ul className={styles.sidebarList}>
                 <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
+                        {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.profile')} <PiUserCircle className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
+                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
                     <Link href={'/events'} className={styles.iconTextLink}>
+                        {isComingSoon('/events') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.events')} <MdOutlineEvent className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
                     <Link href={'/teams'} className={styles.iconTextLink}>
+                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.teams')} <FaUsers className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>
+                        {isComingSoon('/rankings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.rankings')} <PiRankingBold className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
+                        {isComingSoon('/wallets') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.wallets')} <IoWalletOutline className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
+                        {isComingSoon('/anime') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.anime')} <FaTv className={styles.sidebarIcon} />
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
                     <Link href={'/community'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        {isComingSoon('/community') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.community')} <FaUserFriends className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/organizations') ? styles.activeLink : ''}`}>
                     <Link href={'/organizations'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        {isComingSoon('/organizations') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.organizations')} <MdBusiness className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/marketplace') ? styles.activeLink : ''}`}>
                     <Link href={'/marketplace'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        {isComingSoon('/marketplace') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconMarketplaceSpan}>{t('nav.marketplace')} <RiShoppingCart2Line className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/shop') ? styles.activeLink : ''}`}>
                     <Link href={'/shop'} className={styles.iconTextLink}>
-                        <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>
+                        {isComingSoon('/shop') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         <span className={styles.iconShopSpan}>{t('nav.shop')} <FiShoppingBag className={styles.sidebarIcon} /></span>
                     </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
+                        {isComingSoon('/settings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                         {t('nav.settings')} <MdOutlineSettings className={styles.sidebarIcon} />
                     </Link>
                 </li>

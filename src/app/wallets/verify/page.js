@@ -1,8 +1,10 @@
 'use client';
 
+import { KYC_REQUIRED } from '@/lib/features';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/header/Header';
@@ -48,6 +50,8 @@ const fmtFileSize = bytes => {
 const VerifyPage = () => {
   const tx = useTx();
   const tt = useT();
+  const router = useRouter();
+
   const {
     data: session
   } = useSession();
@@ -56,6 +60,18 @@ const VerifyPage = () => {
   const [loadError, setLoadError] = useState('');
   const [kycVerified, setKycVerified] = useState(false);
   const [latestSubmission, setLatestSubmission] = useState(null);
+
+  // KYC is switched off. The only link here was inside the wallet banner, which
+  // is gated too, but the address still worked - and a form asking somebody for
+  // a passport photograph, for a requirement that has been dropped, is worse
+  // than a dead link. Send them back to the wallet.
+  //
+  // An early `return null` here would break the rules of hooks: this sits above
+  // the rest of the component's state, so the guard belongs on the render, not
+  // on the function.
+  useEffect(() => {
+    if (!KYC_REQUIRED) router.replace('/wallets');
+  }, [router]);
 
   // Upload form state
   const [docType, setDocType] = useState('');
@@ -155,6 +171,11 @@ const VerifyPage = () => {
   // ── Shell wrapper ──
   // Plain function (not a component) so the tree stays stable across
   // re-renders - avoids remounting the form/file input on every keystroke.
+  // Nothing renders while KYC is off; the effect above is already sending them
+  // to the wallet. Guarding here rather than with an early return keeps the
+  // hook order identical on every render.
+  if (!KYC_REQUIRED) return null;
+
   const wrap = content => <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
