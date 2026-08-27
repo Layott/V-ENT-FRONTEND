@@ -1,3 +1,4 @@
+import { uploadHint } from '@/lib/uploadSpecs';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { FiCamera } from 'react-icons/fi';
@@ -138,7 +139,7 @@ const CreateEventLogo = ({
               </label>
               <input type="file" accept="image/*" onChange={handleLogoUploader} id="logoUpload" className={styles.uploadInput} />
             </div>
-            <p>{tt("ui.recommend.image.x.px.db2a", "We recommend an image that is 256 x 256 px")}</p>
+            <p>{uploadHint(tt, 'logo')}</p>
           </div>
         </div>
 
