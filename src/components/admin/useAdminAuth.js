@@ -69,10 +69,21 @@ export function useAdminAuth() {
           return
         }
 
-        // Not an admin, or no role. Neither is worth a console, and neither is
-        // fixed by signing in again.
         localStorage.removeItem('adminToken')
         localStorage.removeItem('adminUser')
+
+        // The backend session is dead while the NextAuth one is still standing.
+        // That happens after a backend restart, or when the single session this
+        // account is allowed was taken somewhere else. Signing in again fixes
+        // it, and sending them to /home instead leaves them wondering why the
+        // console will not open.
+        if (res.status === 401) {
+          router.replace('/login?next=/admin&expired=1')
+          return
+        }
+
+        // Not an admin, or no role. Neither is worth a console, and neither is
+        // fixed by signing in again.
         router.replace('/home')
       } catch {
         // The server could not be reached. Keep whatever was cached so a blip

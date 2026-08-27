@@ -78,9 +78,14 @@ function PartnersInner() {
       const data = await res.json();
       if (requestRef.current !== ticket) return;
       if (data.status === 'success') {
-        setPartners(data.data?.partners || []);
+        const rows = data.data?.partners || [];
+        setPartners(rows);
         setScopes(data.data?.scopes || {});
         setCounts(data.data?.counts || {});
+        // Keep the open drawer in step with what was just reloaded. Without
+        // this it goes on showing the partner as it was before the action, and
+        // a rotation that genuinely worked looks like it did nothing.
+        setOpen((current) => (current ? rows.find((r) => r.id === current.id) || current : current));
       } else {
         setError(apiMessage(tt, data, "api.couldNotLoadPartners", "Could not load partners."));
       }
@@ -114,6 +119,42 @@ function PartnersInner() {
       body: await res.json()
     };
   };
+  const [rotated, setRotated] = useState(null);
+
+  // Changing the grant on a partner that is already live. Deliberately a
+  // different endpoint from the review, so the approval history is not rewritten
+  // every time somebody unticks a scope.
+  const saveScopes = async () => {
+    setBusy(true);
+    const { ok, body } = await post(`/partners/admin/${open.id}/scopes/`, {
+      scopes: draftScopes,
+      reason: note,
+    });
+    setBusy(false);
+    if (ok) {
+      toast.push(tt('admin.partners.scopesSaved', 'Scopes updated.'), 'success');
+      await load();
+      setOpen(body.data || open);
+      return;
+    }
+    toast.push(apiMessage(tt, body, 'api.failed', 'Failed.'), 'error');
+  };
+
+  const rotateKey = async (key) => {
+    setBusy(true);
+    setRotated(null);
+    const { ok, body } = await post(
+      `/partners/admin/${open.id}/keys/${key.id}/rotate/`, { reason: note });
+    setBusy(false);
+    if (ok) {
+      setRotated(body.data);
+      toast.push(tt('admin.partners.rotated', 'Key rotated.'), 'success');
+      await load();
+      return;
+    }
+    toast.push(apiMessage(tt, body, 'api.failed', 'Failed.'), 'error');
+  };
+
   const decide = async decision => {
     setBusy(true);
     try {
@@ -266,16 +307,61 @@ function PartnersInner() {
             <textarea className={styles.noteInput} rows={2} value={note} onChange={e => setNote(e.target.value)} placeholder={tt("ui.recorded.partner.sent.decision.b4e5", "Recorded on the partner and sent with the decision email.")} />
 
             <div className={styles.drawerActions}>
-              <button type="button" className={styles.approve} onClick={() => decide('approved')} disabled={busy}>
-                {tt("ui.approve.these.scopes.d4e9", "Approve with these scopes")}
-              </button>
-              <button type="button" className={styles.reject} onClick={() => decide('rejected')} disabled={busy}>
-                {tt("ui.reject.2b03", "Reject")}
-              </button>
+              {open.status !== 'approved' && <button type="button" className={styles.approve} onClick={() => decide('approved')} disabled={busy}>
+                  {open.status === 'suspended'
+                    ? tt('admin.partners.reinstate', 'Reinstate')
+                    : tt('ui.approve.these.scopes.d4e9', 'Approve with these scopes')}
+                </button>}
+
+              {/* Changing the grant on a live partner is not a re-approval, and
+                  sending it through the review endpoint would rewrite the note,
+                  the reviewer and the date - the history somebody later reads. */}
+              {open.status === 'approved' && <button type="button" className={styles.approve} onClick={saveScopes} disabled={busy}>
+                  {tt('admin.partners.saveScopes', 'Save these scopes')}
+                </button>}
+
+              {open.status !== 'rejected' && <button type="button" className={styles.reject} onClick={() => decide('rejected')} disabled={busy}>
+                  {tt("ui.reject.2b03", "Reject")}
+                </button>}
+
               {open.status === 'approved' && <button type="button" className={styles.reject} onClick={() => decide('suspended')} disabled={busy}>
                   {tt("ui.suspend.b242", "Suspend")}
                 </button>}
             </div>
+
+            {open.status === 'suspended' && <p className={styles.muted}>
+                {tt('admin.partners.suspendedNote',
+                  'Suspended. Every key was revoked when this happened, so reinstating does not bring them back - the partner issues a new one, or you rotate one for them.')}
+              </p>}
+
+            {/* -------------------------------------------------------- keys */}
+            <div className={styles.keysBlock}>
+              <p className={styles.sectionLabel}>{tt('admin.partners.keys', 'API keys')}</p>
+              {(open.keys || []).filter(k => !k.revoked_at).length === 0
+                ? <p className={styles.muted}>{tt('admin.partners.noKeys', 'No live keys.')}</p>
+                : (open.keys || []).filter(k => !k.revoked_at).map(k => <div key={k.id} className={styles.keyRow}>
+                      <span className={styles.keyName}>{k.name}</span>
+                      <code className={styles.keyId}>{k.key_id}</code>
+                      <span className={styles.muted}>
+                        {(k.scopes || []).length} {tt('admin.partners.scopesShort', 'scopes')}
+                      </span>
+                      <button type="button" className={styles.ghost} onClick={() => rotateKey(k)} disabled={busy}>
+                        {tt('admin.partners.rotate', 'Rotate')}
+                      </button>
+                    </div>)}
+              <p className={styles.muted}>
+                {tt('admin.partners.rotateNote',
+                  'Rotating revokes the old key and issues a replacement in the same breath, so there is never a moment with two live keys or with none. The new secret is shown once.')}
+              </p>
+            </div>
+
+            {rotated && <div className={styles.secretBox}>
+                <p className={styles.secretLabel}>
+                  {tt('admin.partners.rotatedLabel', 'Send this to the partner. The secret is shown once.')}
+                </p>
+                <code className={styles.secret}>{rotated.key.key_id}</code>
+                <code className={styles.secret}>{rotated.secret}</code>
+              </div>}
 
             <div className={styles.ssoBlock}>
               <p className={styles.sectionLabel}>{tt("ui.sign.v.ent.fc3b", "Sign in with V-ENT")}</p>
