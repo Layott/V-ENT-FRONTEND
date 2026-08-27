@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { HiOutlineMenu } from 'react-icons/hi';
@@ -19,6 +20,7 @@ const BREADCRUMBS = {
   '/admin/settings': 'Settings'
 };
 export default function AdminHeader({
+  pending = {},
   admin,
   onLogout,
   onMenuOpen,
@@ -30,12 +32,18 @@ export default function AdminHeader({
   const pathname = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const [pendingOpen, setPendingOpen] = useState(false);
+  const pendingRef = useRef(null);
+  const pendingTotal = (pending.payouts || 0) + (pending.disputes || 0);
 
-  // Close dropdown on outside click
+  // Close either dropdown on an outside click.
   useEffect(() => {
     function handler(e) {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
+      }
+      if (pendingRef.current && !pendingRef.current.contains(e.target)) {
+        setPendingOpen(false);
       }
     }
     document.addEventListener('mousedown', handler);
@@ -67,11 +75,42 @@ export default function AdminHeader({
             <input type="text" placeholder={tt("ui.search.f54f", "Search…")} value={searchValue || ''} onChange={e => onSearch(e.target.value)} className={styles.searchInput} />
           </div>}
 
-        {/* Notification bell */}
-        <button className={styles.iconBtn}>
-          <IoNotificationsOutline className={styles.bellIcon} />
-          <span className={styles.notifDot} />
-        </button>
+        {/* Pending work.
+            This was a button with no handler and a dot that was always painted:
+            an unread indicator over nothing. There is no admin notification
+            feed, and inventing one to justify a bell would be building the
+            wrong thing - so it opens the work that genuinely is waiting, and
+            the dot appears only when there is some. */}
+        <div className={styles.profileWrap} ref={pendingRef}>
+          <button
+            className={styles.iconBtn}
+            onClick={() => setPendingOpen((v) => !v)}
+            aria-expanded={pendingOpen}
+            aria-label={tt('admin.pendingWork', 'Pending work')}
+            title={tt('admin.pendingWork', 'Pending work')}
+          >
+            <IoNotificationsOutline className={styles.bellIcon} />
+            {pendingTotal > 0 && <span className={styles.notifDot} />}
+          </button>
+
+          {pendingOpen && <div className={styles.dropdown}>
+            <p className={styles.dropdownHead}>{tt('admin.pendingWork', 'Pending work')}</p>
+            {pendingTotal === 0
+              ? <p className={styles.dropdownEmpty}>
+                  {tt('admin.nothingWaiting', 'Nothing is waiting for you.')}
+                </p>
+              : <>
+                  {(pending.payouts || 0) > 0 && <Link href="/admin/payouts" className={styles.dropdownItem} onClick={() => setPendingOpen(false)}>
+                    {tt('admin.payoutsWaiting', 'Payouts to approve')}
+                    <span className={styles.dropdownCount}>{pending.payouts}</span>
+                  </Link>}
+                  {(pending.disputes || 0) > 0 && <Link href="/admin/disputes" className={styles.dropdownItem} onClick={() => setPendingOpen(false)}>
+                    {tt('admin.disputesWaiting', 'Disputes to resolve')}
+                    <span className={styles.dropdownCount}>{pending.disputes}</span>
+                  </Link>}
+                </>}
+          </div>}
+        </div>
 
         {/* Profile dropdown */}
         <div className={styles.profileWrap} ref={profileRef}>

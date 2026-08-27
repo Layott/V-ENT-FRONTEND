@@ -149,7 +149,11 @@ export default function AdminLoginPage() {
         const token = data.data.session_token;
         localStorage.setItem('adminToken', token);
         localStorage.setItem('adminUser', JSON.stringify(data.data.admin));
-        document.cookie = `adminToken=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        // The cookie must not outlive the grant behind it. The server publishes
+        // the grant's lifetime for exactly this reason: a 7 day cookie over a
+        // 120 minute grant is what produced "Failed to load dashboard data".
+        const maxAge = Number(data.data.expires_in) || 60 * 60 * 24 * 7;
+        document.cookie = `adminToken=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
         setSuccessMsg(tt('msg.authenticatedRedirecting', 'Authenticated. Redirecting...'));
         setTimeout(() => router.replace('/admin'), 400);
       } catch {

@@ -50,13 +50,9 @@ const KPI_DEFS = [
   color: 'ic-gold',
   Icon: LuCoins,
   fmt: 'num'
-}, {
-  key: 'pending_kyc',
-  label: 'Pending KYC',
-  color: 'ic-red',
-  Icon: LuShield,
-  fmt: 'num',
-  linkTo: '/admin/kyc'
+  // The "Pending KYC" tile used to sit here. KYC is switched off for now (CEO,
+  // 2026-08-27), so it and its link to /admin/kyc are out. The endpoint still
+  // returns the count, so bringing it back is one entry rather than a rebuild.
 }, {
   key: 'open_disputes',
   label: 'Open Disputes',
@@ -128,7 +124,7 @@ function OverviewInner() {
       payouts: kpis.pending_payouts || 0
     }} />
       <div className={shared.mainContainer}>
-        <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
+        <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} pending={{ payouts: kpis.pending_withdrawals || 0, disputes: kpis.open_disputes || 0 }} />
         <main className={shared.contentArea}>
           {/* Page header */}
           <div className={shared.pageHeader}>
