@@ -1,5 +1,6 @@
 'use client';
 
+import { KYC_REQUIRED } from '@/lib/features';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -170,7 +171,7 @@ const WalletsContent = () => {
         <div className={styles.rightPaneContainer}>
 
           {/* KYC banner if not verified */}
-          {kycVerified === false && !kycDismissed && <div className={styles.kycBanner}>
+          {KYC_REQUIRED && kycVerified === false && !kycDismissed && <div className={styles.kycBanner}>
               <div className={styles.kycLeft}>
                 <div className={styles.kycIconWrap}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(251,198,75,0.9)" strokeWidth="2">

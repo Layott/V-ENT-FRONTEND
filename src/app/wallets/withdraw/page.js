@@ -1,5 +1,6 @@
 'use client';
 
+import { KYC_REQUIRED } from '@/lib/features';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
@@ -219,8 +220,10 @@ const WithdrawPage = () => {
     }
   };
 
-  // KYC gate
-  if (kycVerified === false) {
+  // KYC gate. Paired with the server's own check this made withdrawing
+  // impossible rather than merely discouraged, for a requirement that has been
+  // dropped.
+  if (KYC_REQUIRED && kycVerified === false) {
     return <div className={styles.pageContainer}>
         <Header />
         <MobileHeader />
