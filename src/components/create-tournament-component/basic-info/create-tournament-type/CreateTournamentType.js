@@ -156,19 +156,19 @@ const CreateTournamentType = ({
         <div className={styles.outerVenueVirtualLinkContainer}>
           <div className={createTournamentStyles.twoInputContainer}>
             {selectedOption !== 'physical' && <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="virtualLink">{tt("ui.virtual.link.7e09", "Virtual Link")}<InfoTip id="virtualLink" /></label>
+                <label htmlFor="virtualLink"><span className="fieldLabelRow">{tt("ui.virtual.link.7e09", "Virtual Link")} <InfoTip id="virtualLink" /></span></label>
                 <input id="virtualLink" type="text" placeholder={tt("ui.paste.link.here.d7d4", "Paste link here")} className={createTournamentStyles.inputText} onChange={e => updateFormData('virtual_link', e.target.value)} disabled={hideLocation} />
               </div>}
 
             {selectedOption !== 'virtual' && <div className={createTournamentStyles.inputGroup}>
-                <label htmlFor="venue">{tt("ui.venue.67cd", "Venue")}<InfoTip id="venue" /></label>
+                <label htmlFor="venue"><span className="fieldLabelRow">{tt("ui.venue.67cd", "Venue")} <InfoTip id="venue" /></span></label>
                 <input id="venue" type="text" placeholder={tt("ui.enter.physical.location.da63", "Enter physical location")} className={createTournamentStyles.inputText} onChange={e => updateFormData('tournament_location', e.target.value)} disabled={hideLocation} />
               </div>}
           </div>
 
           <div className={styles.hideLocationContainer}>
             <input type="checkbox" className={styles.hideCheckbox} checked={hideLocation} onChange={handleHideLocationChange} />
-            <label>{tt("ui.hide.location.36ab", "Hide location")}<InfoTip id="hideLocation" /></label>
+            <label><span className="fieldLabelRow">{tt("ui.hide.location.36ab", "Hide location")} <InfoTip id="hideLocation" /></span></label>
           </div>
 
           <div className={styles.outerQuestionContainer}>
@@ -185,11 +185,11 @@ const CreateTournamentType = ({
 
             {isLinkedToEvent && <div className={styles.eventContainer}>
                 <label htmlFor="selectEvent" className={createTournamentStyles.labelWithAsterisk}>
-                  {tt("ui.select.event.c20e", "Select Event")}
+                  <span className="fieldLabelRow">{tt("ui.select.event.c20e", "Select Event")}
                   <span className={createTournamentStyles.asteriskSpan}>
                     <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-                  </span>
-                <InfoTip id="selectEvent" /></label>
+                  </span> <InfoTip id="selectEvent" /></span>
+                </label>
                 
                 <div className={styles.eventSearchContainer}>
                   <input id="selectEvent" type="text" placeholder={tt("ui.search.events.7710", "Search for events...")} className={createTournamentStyles.inputText} value={eventSearchTerm} onChange={handleEventSearchChange} />

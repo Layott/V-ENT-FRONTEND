@@ -280,7 +280,7 @@ const WithdrawPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")}<InfoTip id="withdrawAmount" /></label>
+                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")} <InfoTip id="withdrawAmount" /></span></label>
                   <div className={styles.inputPrefixWrap}>
                     <span className={styles.prefixTag}>VC</span>
                     <input type="number" placeholder="e.g. 100" min="1" max={balance ?? undefined} value={vc} onChange={e => {
@@ -335,7 +335,7 @@ const WithdrawPage = () => {
 
                 {tab === 'new' && <>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>{tt("ui.bank.name.3126", "Bank Name")}<InfoTip id="bankName" /></label>
+                      <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.bank.name.3126", "Bank Name")} <InfoTip id="bankName" /></span></label>
                       <select className={styles.formInput} value={bank} onChange={e => setBank(e.target.value)} style={{
                   cursor: 'pointer'
                 }}>
@@ -344,11 +344,11 @@ const WithdrawPage = () => {
                       </select>
                     </div>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>{tt("ui.account.number.0bd6", "Account Number")}<InfoTip id="accountNumber" /></label>
+                      <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.account.number.0bd6", "Account Number")} <InfoTip id="accountNumber" /></span></label>
                       <input type="text" className={styles.formInput} placeholder={tt("ui.digit.account.number.4683", "10-digit account number")} maxLength={10} value={accNum} onChange={e => setAccNum(e.target.value.replace(/\D/g, '').slice(0, 10))} inputMode="numeric" />
                     </div>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>{tt("ui.account.name.db3b", "Account Name")}<InfoTip id="accountName" /></label>
+                      <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.account.name.db3b", "Account Name")} <InfoTip id="accountName" /></span></label>
                       <input type="text" className={styles.formInput} placeholder={tt("ui.exactly.as.bank.has.4cee", "Exactly as your bank has it")} value={accName} onChange={e => setAccName(e.target.value)} maxLength={100} />
                     </div>
                     <label className={styles.checkboxRow}>

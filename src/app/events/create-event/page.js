@@ -386,33 +386,33 @@ const CreateEventPage = () => {
                 </p>
 
                 <label className={styles.label}>
-                  {tt("ui.event.name.8e10", "Event name")}
+                  <span className="fieldLabelRow">{tt("ui.event.name.8e10", "Event name")} <InfoTip id="eventName" /></span>
                   <input type="text" className={styles.input} value={formData.name} onChange={e => update('name', e.target.value)} placeholder={tt("ui.e.g.v.ent.f9c7", "e.g. V-ENT LAN Finals 2026")} maxLength={40} />
                   {errors.name && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.name}</span>}
-                <InfoTip id="eventName" /></label>
+                </label>
 
                 <label className={styles.label}>
-                  {tt("ui.description.55f8", "Description")}
+                  <span className="fieldLabelRow">{tt("ui.description.55f8", "Description")} <InfoTip id="eventDescription" /></span>
                   <textarea className={`${styles.input} ${styles.textarea}`} value={tx(formData.description)} onChange={e => update('description', e.target.value)} placeholder={tt("ui.what.can.attendees.expect.5dad", "What can attendees expect? Highlight tournaments, performances, special guests…")} rows={5} />
                   {errors.description && <span className={styles.errorMsg}><FaExclamationCircle /> {tx(errors.description)}</span>}
-                <InfoTip id="eventDescription" /></label>
+                </label>
 
                 <label className={styles.label}>
-                  {tt("ui.game.e3e8", "Game")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span>
+                  <span className="fieldLabelRow">{tt("ui.game.e3e8", "Game")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventGame" /></span>
                   {games.length > 0 ? <select className={styles.input} value={formData.game_title} onChange={e => update('game_title', e.target.value)}>
                       <option value="">{tt("ui.select.game.a65d", "Select a game…")}</option>
                       {games.map(g => <option key={g} value={g}>{g}</option>)}
                     </select> : <input type="text" className={styles.input} value={formData.game_title} onChange={e => update('game_title', e.target.value)} placeholder={tt("createEvent.gamePlaceholder", "e.g. EA FC 25")} />}
-                <InfoTip id="eventGame" /></label>
+                </label>
 
                 <div className={styles.formRow}>
                   <label className={styles.label}>
-                    {tt("ui.banner.image.url.594c", "Banner image URL")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span>
+                    <span className="fieldLabelRow">{tt("ui.banner.image.url.594c", "Banner image URL")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
                     <input type="url" className={styles.input} value={formData.banner_url} onChange={e => update('banner_url', e.target.value)} placeholder={tt("ui.https.1a66", "https://…")} />
-                  <InfoTip id="eventBanner" /></label>
+                  </label>
 
                   <label className={styles.label}>
-                    {tt("ui.category.a3c6", "Category")}
+                    <span className="fieldLabelRow">{tt("ui.category.a3c6", "Category")} <InfoTip id="eventCategory" /></span>
                     <select className={styles.input} value={formData.category} onChange={e => update('category', e.target.value)}>
                       <option value="esports">{tt("ui.esports.5874", "Esports")}</option>
                       <option value="anime">{tt("ui.anime.f1b3", "Anime")}</option>
@@ -420,7 +420,7 @@ const CreateEventPage = () => {
                       <option value="convention">{tt("ui.convention.fa84", "Convention")}</option>
                       <option value="other">{tt("ui.other.6e6a", "Other")}</option>
                     </select>
-                  <InfoTip id="eventCategory" /></label>
+                  </label>
                 </div>
               </div>}
 
@@ -455,34 +455,34 @@ const CreateEventPage = () => {
 
                 <div className={styles.formRow}>
                   <label className={styles.label}>
-                    {tt("ui.start.date.time.8f8b", "Start date & time")}
+                    <span className="fieldLabelRow">{tt("ui.start.date.time.8f8b", "Start date & time")} <InfoTip id="eventStart" /></span>
                     <input type="datetime-local" className={styles.input} value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} />
                     {errors.start_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.start_date}</span>}
-                  <InfoTip id="eventStart" /></label>
+                  </label>
                   <label className={styles.label}>
-                    {tt("ui.end.date.time.2116", "End date & time")}
+                    <span className="fieldLabelRow">{tt("ui.end.date.time.2116", "End date & time")} <InfoTip id="eventEnd" /></span>
                     <input type="datetime-local" className={styles.input} value={formatDateInput(formData.end_date)} onChange={e => update('end_date', e.target.value)} />
                     {errors.end_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.end_date}</span>}
-                  <InfoTip id="eventEnd" /></label>
+                  </label>
                 </div>
 
                 {formData.event_type !== 'virtual' && <label className={styles.label}>
-                    {tt("ui.venue.location.5ef5", "Venue / location")}
+                    <span className="fieldLabelRow">{tt("ui.venue.location.5ef5", "Venue / location")} <InfoTip id="eventVenue" /></span>
                     <input type="text" className={styles.input} value={formData.location} onChange={e => update('location', e.target.value)} placeholder={tt("ui.e.g.landmark.centre.5124", "e.g. Landmark Centre, Lagos")} />
                     {errors.location && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.location}</span>}
-                  <InfoTip id="eventVenue" /></label>}
+                  </label>}
 
                 {formData.event_type !== 'physical' && <label className={styles.label}>
-                    {tt("ui.virtual.link.7e99", "Virtual link")} {formData.event_type === 'virtual' && '(required)'}
+                    <span className="fieldLabelRow">{tt("ui.virtual.link.7e99", "Virtual link")} {formData.event_type === 'virtual' && '(required)'} <InfoTip id="eventVirtualLink" /></span>
                     <input type="url" className={styles.input} value={formData.virtual_link} onChange={e => update('virtual_link', e.target.value)} placeholder={tt("ui.https.twitch.tv.v.1328", "https://twitch.tv/v-ent")} />
                     {errors.virtual_link && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.virtual_link}</span>}
-                  <InfoTip id="eventVirtualLink" /></label>}
+                  </label>}
 
                 <label className={styles.label}>
-                  {tt("ui.capacity.max.attendees.dd53", "Capacity (max attendees)")}
+                  <span className="fieldLabelRow">{tt("ui.capacity.max.attendees.dd53", "Capacity (max attendees)")} <InfoTip id="eventCapacity" /></span>
                   <input type="number" className={styles.input} value={formData.capacity} onChange={e => update('capacity', Number(e.target.value))} min={1} />
                   {errors.capacity && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.capacity}</span>}
-                <InfoTip id="eventCapacity" /></label>
+                </label>
               </div>}
 
             {/* STEP 3 */}
@@ -500,22 +500,22 @@ const CreateEventPage = () => {
                   {formData.ticket_types.map((t, i) => <div key={t.id} className={styles.tierRow}>
                       <div className={styles.tierGrid}>
                         <label className={styles.label}>
-                          {tt("ui.tier.name.84b5", "Tier name")}
+                          <span className="fieldLabelRow">{tt("ui.tier.name.84b5", "Tier name")} <InfoTip id="tierName" /></span>
                           <input type="text" className={styles.input} value={t.name} onChange={e => updateTicket(i, 'name', e.target.value)} placeholder={tt("ui.e.g.vip.9f28", "e.g. VIP")} />
-                        <InfoTip id="tierName" /></label>
+                        </label>
                         <label className={styles.label}>
-                          {tt("ui.price.ngn.e24c", "Price (NGN)")}
+                          <span className="fieldLabelRow">{tt("ui.price.ngn.e24c", "Price (NGN)")} <InfoTip id="tierPrice" /></span>
                           <input type="number" className={styles.input} value={t.price} onChange={e => updateTicket(i, 'price', Number(e.target.value))} min={0} />
-                        <InfoTip id="tierPrice" /></label>
+                        </label>
                         <label className={styles.label}>
-                          {tt("ui.quantity.44f6", "Quantity")}
+                          <span className="fieldLabelRow">{tt("ui.quantity.44f6", "Quantity")} <InfoTip id="tierQuantity" /></span>
                           <input type="number" className={styles.input} value={t.quantity} onChange={e => updateTicket(i, 'quantity', Number(e.target.value))} min={1} />
-                        <InfoTip id="tierQuantity" /></label>
+                        </label>
                       </div>
                       <label className={styles.label}>
-                        {tt("ui.perks.f6d5", "Perks")} <span className={styles.optional}>{tt("ui.comma.separated.96a0", "(comma or • separated)")}</span>
+                        <span className="fieldLabelRow">{tt("ui.perks.f6d5", "Perks")} <span className={styles.optional}>{tt("ui.comma.separated.96a0", "(comma or • separated)")}</span> <InfoTip id="tierPerks" /></span>
                         <input type="text" className={styles.input} value={t.perks} onChange={e => updateTicket(i, 'perks', e.target.value)} placeholder={tt("ui.front.row.seating.welcome.4c12", "Front-row seating • Welcome drink")} />
-                      <InfoTip id="tierPerks" /></label>
+                      </label>
                       {formData.ticket_types.length > 1 && <button className={styles.removeRowBtn} onClick={() => removeTicket(i)} type="button">
                           <FaTrash /> {tt("ui.remove.tier.df02", "Remove tier")}
                         </button>}
@@ -567,9 +567,9 @@ const CreateEventPage = () => {
                   <h3 className={styles.subTitle}>{tt("ui.social.links.52e0", "Social links")}</h3>
                   <div className={styles.formRow}>
                     <label className={styles.label}>
-                      {tt("ui.twitter.x.a0b4", "Twitter / X")}
+                      <span className="fieldLabelRow">{tt("ui.twitter.x.a0b4", "Twitter / X")} <InfoTip id="socialLinks" /></span>
                       <input type="url" className={styles.input} value={formData.social_links.twitter} onChange={e => updateNested('social_links', 'twitter', e.target.value)} placeholder={tt("ui.https.twitter.com.889c", "https://twitter.com/…")} />
-                    <InfoTip id="socialLinks" /></label>
+                    </label>
                     <label className={styles.label}>
                       {tt("ui.instagram.5721", "Instagram")}
                       <input type="url" className={styles.input} value={formData.social_links.instagram} onChange={e => updateNested('social_links', 'instagram', e.target.value)} placeholder={tt("ui.https.instagram.com.0a19", "https://instagram.com/…")} />

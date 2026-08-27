@@ -162,7 +162,7 @@ const TopupPage = () => {
 
             {step === 1 && <>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")}<InfoTip id="topUpAmount" /></label>
+                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.amount.vent.coins.a1db", "Amount (VENT COINS)")} <InfoTip id="topUpAmount" /></span></label>
                   <div className={styles.inputPrefixWrap}>
                     <span className={styles.prefixTag}>VC</span>
                     <input type="number" placeholder="e.g. 5000" min="1" value={vc} onChange={e => {

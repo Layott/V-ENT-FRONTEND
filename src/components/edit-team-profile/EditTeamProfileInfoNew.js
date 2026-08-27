@@ -103,30 +103,30 @@ const EditTeamProfileInfoNew = ({
       </div>
 
       <label className={styles.field}>
-        <span className={styles.fieldLabel}>{tt("ui.team.name.9b11", "Team name")}</span>
+        <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.team.name.9b11", "Team name")}</span> <InfoTip id="teamName" /></span>
         <input type="text" value={name} onChange={e => setName(e.target.value)} className={styles.input} maxLength={32} />
-      <InfoTip id="teamName" /></label>
+      </label>
 
       <label className={styles.field}>
-        <span className={styles.fieldLabel}>{tt("ui.core.game.e45a", "Core game")}</span>
+        <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.core.game.e45a", "Core game")}</span> <InfoTip id="teamGame" /></span>
         <select value={coreGame} onChange={e => setCoreGame(e.target.value)} className={styles.input}>
           <option value="">{tt("ui.select.349a", "Select…")}</option>
           {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
         </select>
-      <InfoTip id="teamGame" /></label>
+      </label>
 
       <label className={styles.field}>
-        <span className={styles.fieldLabel}>{tt("ui.bio.b31f", "Bio")}</span>
+        <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.bio.b31f", "Bio")}</span> <InfoTip id="teamDescription" /></span>
         <textarea rows={4} value={bio} onChange={e => setBio(e.target.value)} className={styles.textarea} maxLength={300} />
         <span className={styles.charCount}>{bio.length} / 300</span>
-      <InfoTip id="teamDescription" /></label>
+      </label>
 
       <label className={styles.field}>
-        <span className={styles.fieldLabel}>{tt("ui.region.0f21", "Region")}</span>
+        <span className="fieldLabelRow"><span className={styles.fieldLabel}>{tt("ui.region.0f21", "Region")}</span> <InfoTip id="teamRegion" /></span>
         <select value={region} onChange={e => setRegion(e.target.value)} className={styles.input}>
           {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
-      <InfoTip id="teamRegion" /></label>
+      </label>
 
       {error && <p className={styles.errorText}>{error}</p>}
 

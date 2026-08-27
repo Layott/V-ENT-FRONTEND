@@ -141,7 +141,7 @@ const DangerZonePanel = ({
             </div>
 
             <div className={shared.formGroup}>
-              <label className={shared.formLabel} htmlFor="del-pw">{tt("ui.confirm.password.1417", "Confirm with your password")}<InfoTip id="deleteAccount" /></label>
+              <label className={shared.formLabel} htmlFor="del-pw"><span className="fieldLabelRow">{tt("ui.confirm.password.1417", "Confirm with your password")} <InfoTip id="deleteAccount" /></span></label>
               <input id="del-pw" type="password" className={shared.formInput} value={deletePw} onChange={e => setDeletePw(e.target.value)} autoComplete="current-password" placeholder={tt("ui.account.password.cbc7", "Your account password")} />
             </div>
             <div className={shared.formGroup}>

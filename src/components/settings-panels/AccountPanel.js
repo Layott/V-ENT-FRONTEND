@@ -204,7 +204,7 @@ const AccountPanel = ({
 
         <div className={shared.formGroup}>
           <div className={shared.labelRow}>
-            <label className={shared.formLabel} htmlFor="acc-email">{tt("ui.email.address.c94d", "Email address")}<InfoTip id="accountEmail" /></label>
+            <label className={shared.formLabel} htmlFor="acc-email"><span className="fieldLabelRow">{tt("ui.email.address.c94d", "Email address")} <InfoTip id="accountEmail" /></span></label>
             <span className={`${shared.verifyBadge} ${emailVerified ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
               {emailVerified ? 'Verified' : tx("Not verified")}
             </span>
@@ -229,7 +229,7 @@ const AccountPanel = ({
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="acc-fullname">{tt("ui.full.name.eeb6", "Full name")}<InfoTip id="fullName" /></label>
+          <label className={shared.formLabel} htmlFor="acc-fullname"><span className="fieldLabelRow">{tt("ui.full.name.eeb6", "Full name")} <InfoTip id="fullName" /></span></label>
           <div className={shared.inputWithAction}>
             <input id="acc-fullname" type="text" className={shared.formInput} value={fullName} onChange={e => setFullName(e.target.value)} placeholder={tt("ui.full.name.d904", "Your full name")} />
             <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveField('full_name', fullName)} disabled={savingField === 'full_name' || fullName === (user.full_name || user.fullname || '')}>
@@ -239,7 +239,7 @@ const AccountPanel = ({
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="acc-username">{tt("ui.username.84c2", "Username")}<InfoTip id="username" /></label>
+          <label className={shared.formLabel} htmlFor="acc-username"><span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="username" /></span></label>
           <div className={shared.inputWithAction}>
             <input id="acc-username" type="text" className={shared.formInput} value={username} onChange={e => setUsername(e.target.value.replace(/\s+/g, ''))} placeholder={tt("ui.username.249b", "username")} />
             <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveUsername(username)} disabled={savingField === 'username' || !username || username === (user.username || '')}>

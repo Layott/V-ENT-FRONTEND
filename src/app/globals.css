@@ -244,3 +244,22 @@ body {
   background-color: #131316;
   color: #ffffff;
 }
+
+/* The first row of a form field: its label text, any "(optional)" marker, and
+   the info mark that explains it.
+
+   Every .label in this codebase is a flex column, which gives each child its
+   own row. That put the info mark on a bare row underneath the input, below the
+   error message, detached from the thing it explains - and split "Game" from
+   "(optional)" onto two lines for the same reason. One inline container holds
+   the whole run on one row. It wraps rather than overflowing, because a long
+   label on a 390px screen must not push the mark off the edge. */
+.fieldLabelRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  /* The row inherits the label's own type; it is the label, not a box on it. */
+  font: inherit;
+  color: inherit;
+}

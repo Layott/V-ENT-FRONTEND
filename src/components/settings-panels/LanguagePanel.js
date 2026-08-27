@@ -106,7 +106,7 @@ const LanguagePanel = ({
 
         <div className={shared.formRow}>
           <div className={shared.formGroup}>
-            <label className={shared.formLabel} htmlFor="curr">{tt("ui.currency.display.30e8", "Currency display")}<InfoTip id="currencyDisplay" /></label>
+            <label className={shared.formLabel} htmlFor="curr"><span className="fieldLabelRow">{tt("ui.currency.display.30e8", "Currency display")} <InfoTip id="currencyDisplay" /></span></label>
             <select id="curr" className={shared.formSelect} value={curr} onChange={e => {
             const v = e.target.value;
             setCurr(v);
@@ -119,7 +119,7 @@ const LanguagePanel = ({
             <span className={shared.fieldHelper}>{tt("ui.vent.coins.remain.primary.bcfa", "VENT COINS remain the primary platform currency for transactions.")}</span>
           </div>
           <div className={shared.formGroup}>
-            <label className={shared.formLabel} htmlFor="tz">{tt("ui.timezone.d1f7", "Timezone")}<InfoTip id="timezone" /></label>
+            <label className={shared.formLabel} htmlFor="tz"><span className="fieldLabelRow">{tt("ui.timezone.d1f7", "Timezone")} <InfoTip id="timezone" /></span></label>
             <select id="tz" className={shared.formSelect} value={tz} onChange={e => {
             const v = e.target.value;
             setTz(v);
@@ -133,7 +133,7 @@ const LanguagePanel = ({
         </div>
 
         <div className={shared.formGroup}>
-          <label className={shared.formLabel} htmlFor="df">{tt("ui.date.format.94ee", "Date format")}<InfoTip id="dateFormat" /></label>
+          <label className={shared.formLabel} htmlFor="df"><span className="fieldLabelRow">{tt("ui.date.format.94ee", "Date format")} <InfoTip id="dateFormat" /></span></label>
           <select id="df" className={shared.formSelect} value={df} onChange={e => {
           const v = e.target.value;
           setDf(v);

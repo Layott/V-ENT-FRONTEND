@@ -316,7 +316,7 @@ const VerifyPage = () => {
         {!file ? <label htmlFor="kyc-doc-file" className={v.dropzone} style={{
       marginBottom: '1.1rem'
     }}>
-            <span className={v.dropIcon}>
+            <span className="fieldLabelRow"><span className={v.dropIcon}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
@@ -324,8 +324,8 @@ const VerifyPage = () => {
               </svg>
             </span>
             <span className={v.dropTitle}>{tt("ui.tap.upload.photo.f8aa", "Tap to upload a photo")}</span>
-            <span className={v.dropHint}>{tt("ui.png.jpg.selected.document.4a8f", "PNG or JPG of your selected document")}</span>
-          <InfoTip id="kycVerification" /></label> : <div className={v.filePreview} style={{
+            <span className={v.dropHint}>{tt("ui.png.jpg.selected.document.4a8f", "PNG or JPG of your selected document")}</span> <InfoTip id="kycVerification" /></span>
+          </label> : <div className={v.filePreview} style={{
       marginBottom: '1.1rem'
     }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

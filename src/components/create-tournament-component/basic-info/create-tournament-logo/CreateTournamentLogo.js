@@ -60,7 +60,8 @@ const CreateTournamentLogo = ({
             <div className={styles.logoUploader}>
               <label htmlFor="logoUpload" className={styles.logoUploadLabel}>
                 <FiCamera className={styles.uploadIcon} /> {tt("ui.upload.logo.8a04", "Upload Logo")}
-              <InfoTip id="teamLogo" /></label>
+              </label>
+              <InfoTip id="teamLogo" />
               <input type="file" accept="image/*" onChange={handleLogoUploader} id="logoUpload" className={styles.uploadInput} />
             </div>
             <p>{tt("ui.recommend.image.x.px.db2a", "We recommend an image that is 256 x 256 px")}</p>
@@ -71,7 +72,8 @@ const CreateTournamentLogo = ({
           <div className={styles.bannerUploader}>
             <label htmlFor="bannerUpload" className={styles.bannerUploadLabel}>
               <FiCamera className={styles.uploadIcon} /> {tt("ui.upload.banner.aad3", "Upload Banner")}
-            <InfoTip id="teamBanner" /></label>
+            </label>
+            <InfoTip id="teamBanner" />
             <input type="file" accept="image/*" onChange={handleBannerUploader} id="bannerUpload" className={styles.uploadInput} />
           </div>
           {bannerPreview && <Image src={bannerPreview} // Use the data URL directly

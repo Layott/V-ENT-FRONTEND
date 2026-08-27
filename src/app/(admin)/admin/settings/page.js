@@ -131,23 +131,23 @@ function SettingsInner() {
                 <h2 className={styles.sectionTitle}>{tt("ui.platform.fees.8467", "Platform Fees")}</h2>
                 <p className={styles.sectionSub}>{tt("ui.percentage.limits.applied.across.f4e2", "Percentage and limits applied across all transactions.")}</p>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.tournament.fee.b8c9", "Tournament fee (%)")}<InfoTip id="adminTournamentFee" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.tournament.fee.b8c9", "Tournament fee (%)")} <InfoTip id="adminTournamentFee" /></span></label>
                   <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.tournament_fee_pct} onChange={e => patch('platform_fees', 'tournament_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.withdrawal.fee.8715", "Withdrawal fee (%)")}<InfoTip id="adminWithdrawalFee" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.withdrawal.fee.8715", "Withdrawal fee (%)")} <InfoTip id="adminWithdrawalFee" /></span></label>
                   <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.withdrawal_fee_pct} onChange={e => patch('platform_fees', 'withdrawal_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.listing.fee.e232", "Listing fee (%)")}<InfoTip id="adminListingFee" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.listing.fee.e232", "Listing fee (%)")} <InfoTip id="adminListingFee" /></span></label>
                   <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.listing_fee_pct} onChange={e => patch('platform_fees', 'listing_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.min.payout.vc.4d43", "Min payout (VC)")}<InfoTip id="adminMinPayout" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.min.payout.vc.4d43", "Min payout (VC)")} <InfoTip id="adminMinPayout" /></span></label>
                   <input type="number" className={styles.input} value={settings.platform_fees.payout_min_vc} onChange={e => patch('platform_fees', 'payout_min_vc', parseInt(e.target.value || '0', 10))} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.daily.top.up.cap.f3e9", "Daily top-up cap (₦)")}<InfoTip id="adminDailyCap" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.daily.top.up.cap.f3e9", "Daily top-up cap (₦)")} <InfoTip id="adminDailyCap" /></span></label>
                   <input type="number" className={styles.input} value={settings.platform_fees.topup_max_ngn_per_day} onChange={e => patch('platform_fees', 'topup_max_ngn_per_day', parseInt(e.target.value || '0', 10))} />
                 </div>
               </div>
@@ -180,7 +180,7 @@ function SettingsInner() {
                   </label>
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.title.768e", "Title")}<InfoTip id="adminBannerTitle" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.title.768e", "Title")} <InfoTip id="adminBannerTitle" /></span></label>
                   <input type="text" className={styles.input} value={tx(settings.banner.title)} onChange={e => patch('banner', 'title', e.target.value)} />
                 </div>
                 <div className={styles.formGroup}>
@@ -188,7 +188,7 @@ function SettingsInner() {
                   <textarea className={styles.input} rows={3} value={settings.banner.message} onChange={e => patch('banner', 'message', e.target.value)} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.banner.type.1cdd", "Banner type")}<InfoTip id="adminBannerType" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.banner.type.1cdd", "Banner type")} <InfoTip id="adminBannerType" /></span></label>
                   <select className={styles.input} value={settings.banner.type} onChange={e => patch('banner', 'type', e.target.value)}>
                     <option value="info">{tt("ui.info.blue.0445", "Info (blue)")}</option>
                     <option value="warn">{tt("ui.warning.yellow.7d00", "Warning (yellow)")}</option>
@@ -217,7 +217,7 @@ function SettingsInner() {
                   </label>
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>{tt("ui.maintenance.message.ca62", "Maintenance message")}<InfoTip id="adminMaintenance" /></label>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.maintenance.message.ca62", "Maintenance message")} <InfoTip id="adminMaintenance" /></span></label>
                   <textarea className={styles.input} rows={3} value={settings.maintenance.message} onChange={e => patch('maintenance', 'message', e.target.value)} />
                 </div>
               </div>
