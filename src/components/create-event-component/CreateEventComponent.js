@@ -330,7 +330,7 @@ const CreateEventComponent = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 1:
-        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} updateFileData={updateFileData} />;
+        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />;
       case 2:
         return <FormatParticipants formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 3:
@@ -340,7 +340,7 @@ const CreateEventComponent = () => {
       case 5:
         return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} />;
       default:
-        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} updateFileData={updateFileData} />;
+        return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />;
     }
   };
 

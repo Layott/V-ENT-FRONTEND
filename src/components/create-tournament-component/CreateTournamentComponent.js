@@ -232,6 +232,8 @@ const CreateTournamentComponent = () => {
       case 1:
         return (
           <BasicInfo
+            logoFile={logoFile}
+            bannerFile={bannerFile}
             formData={formData}
             setSelectedTab={setSelectedTab}
             updateFormData={updateFormData}
@@ -283,6 +285,8 @@ const CreateTournamentComponent = () => {
       default:
         return (
           <BasicInfo
+            logoFile={logoFile}
+            bannerFile={bannerFile}
             formData={formData}
             setSelectedTab={setSelectedTab}
             updateFormData={updateFormData}

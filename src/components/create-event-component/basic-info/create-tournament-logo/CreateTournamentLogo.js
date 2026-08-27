@@ -1,159 +1,144 @@
-import { uploadHint } from '@/lib/uploadSpecs';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { FiCamera } from 'react-icons/fi';
+'use client';
+
+// The event's logo and banner.
+//
+// Same component and the same two faults as the tournament wizard's; the two
+// were copies of each other and both lost the preview on a step change.
+//
+// Two faults were reported as "logo and banner did not save":
+//
+// 1. The preview lived in this component's own state. This is a wizard step, so
+//    moving to another step unmounts it and coming back showed two empty boxes.
+//    The file was still held by the parent and would still have been submitted,
+//    but nobody believes that when the screen has gone blank - and the natural
+//    response is to give up and publish without them.
+//
+// 2. The file was ALSO read into a base64 data URL and written into the draft,
+//    which goes to localStorage. A 5MB image is about 6.8MB of base64, over the
+//    5MB an origin gets, so setItem threw - and the catch around it swallowed
+//    the error, losing the WHOLE draft rather than just the picture. And on a
+//    reload the File itself was gone, so the submit sent no image at all while
+//    a useless data URL sat in the draft.
+//
+// So the file and its preview both live in the parent now, and nothing about an
+// image is ever written to localStorage. The preview is an object URL, revoked
+// when it changes, because an object URL that is never revoked leaks every time
+// somebody changes their mind.
+
+import { useEffect, useState } from 'react';
+import { FiCamera, FiX } from 'react-icons/fi';
+import { checkImageFile, uploadHint } from '@/lib/uploadSpecs';
+import InfoTip from '@/components/info-tip/InfoTip';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './create-tournament-logo.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-const CreateEventLogo = ({
-  formData = {},
-  setFormData,
-  updateFileData,
-  updateFormData
-}) => {
-  const tt = useT();
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [bannerPreview, setBannerPreview] = useState(null);
 
-  // Load previews from formData on mount
+/** A preview URL for a File, cleaned up after itself. */
+function usePreview(file) {
+  const [url, setUrl] = useState(null);
   useEffect(() => {
-    if (formData?.tournament_logo) {
-      setLogoPreview(formData.tournament_logo);
+    if (!file) {
+      setUrl(null);
+      return undefined;
     }
-    if (formData?.tournament_banner) {
-      setBannerPreview(formData.tournament_banner);
+    const made = URL.createObjectURL(file);
+    setUrl(made);
+    return () => URL.revokeObjectURL(made);
+  }, [file]);
+  return url;
+}
+
+const CreateTournamentLogo = ({ updateFileData, logoFile, bannerFile }) => {
+  const tt = useT();
+  const [logoError, setLogoError] = useState('');
+  const [bannerError, setBannerError] = useState('');
+
+  const logoPreview = usePreview(logoFile);
+  const bannerPreview = usePreview(bannerFile);
+
+  // Refused at the moment it is chosen, not after the whole form is filled in.
+  const pick = (kind, key, setError) => (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    const problem = checkImageFile(tt, kind, file);
+    if (problem) {
+      setError(problem);
+      updateFileData(key, null);
+      return;
     }
-  }, [formData]);
-  const handleLogoUploader = event => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Logo file selected:', file);
-      console.log('Logo file details:', {
-        name: file.name,
-        size: file.size,
-        type: file.type
-      });
-
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Logo must be a valid image file (JPEG, PNG, GIF, WebP)');
-        return;
-      }
-
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Logo file size must be less than 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setLogoPreview(reader.result); // Preview the uploaded logo
-
-        // Save the data URL to formData for preview purposes
-        if (updateFormData && typeof updateFormData === 'function') {
-          updateFormData('tournament_logo', reader.result);
-        } else if (setFormData && typeof setFormData === 'function') {
-          setFormData(prev => ({
-            ...prev,
-            tournament_logo: reader.result
-          }));
-        } else {
-          console.error('No update function provided for form data!');
-        }
-
-        // Save the actual File object for FormData submission
-        if (updateFileData && typeof updateFileData === 'function') {
-          console.log('Calling updateFileData for logo with file:', file);
-          updateFileData('tournament_logo', file);
-        } else {
-          console.error('updateFileData function not provided!');
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+    setError('');
+    updateFileData(key, file);
   };
-  const handleBannerUploader = event => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Banner file selected:', file);
-      console.log('Banner file details:', {
-        name: file.name,
-        size: file.size,
-        type: file.type
-      });
 
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Banner must be a valid image file (JPEG, PNG, GIF, WebP)');
-        return;
-      }
-
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Banner file size must be less than 10MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setBannerPreview(reader.result); // Preview the uploaded banner
-
-        // Save the data URL to formData for preview purposes
-        if (updateFormData && typeof updateFormData === 'function') {
-          updateFormData('tournament_banner', reader.result);
-        } else if (setFormData && typeof setFormData === 'function') {
-          setFormData(prev => ({
-            ...prev,
-            tournament_banner: reader.result
-          }));
-        } else {
-          console.error('No update function provided for form data!');
-        }
-
-        // Save the actual File object for FormData submission
-        if (updateFileData && typeof updateFileData === 'function') {
-          console.log('Calling updateFileData for banner with file:', file);
-          updateFileData('tournament_banner', file);
-        } else {
-          console.error('updateFileData function not provided!');
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+  const clear = (key, setError) => () => {
+    setError('');
+    updateFileData(key, null);
   };
-  return <div className={createTournamentStyles.createSubSectionContainer}>
+
+  return (
+    <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
-        <h3 className={createTournamentStyles.tournamentTypeH3}>{tt("ui.logo.banner.716b", "Logo & Banner")}</h3>
+        <h3 className={createTournamentStyles.tournamentTypeH3}>
+          {tt('ui.logo.banner.716b', 'Logo & Banner')}
+        </h3>
 
         <div className={styles.outerLogoContainer}>
           <div className={styles.logoContainer}>
-            {logoPreview && <Image src={logoPreview} // Use the data URL directly
-          width={100} height={100} alt={tt("ui.logo.preview.c1c1", "Logo Preview")} />}
+            {logoPreview && <img src={logoPreview} className={styles.logoPreviewImg} alt={tt('ui.logo.preview.c1c1', 'Logo Preview')} />}
           </div>
 
           <div className={styles.logoTextAndBTNContainer}>
             <div className={styles.logoUploader}>
               <label htmlFor="logoUpload" className={styles.logoUploadLabel}>
-                <FiCamera className={styles.uploadIcon} /> {tt("ui.upload.logo.8a04", "Upload Logo")}
+                <FiCamera className={styles.uploadIcon} /> {tt('ui.upload.logo.8a04', 'Upload Logo')}
               </label>
-              <input type="file" accept="image/*" onChange={handleLogoUploader} id="logoUpload" className={styles.uploadInput} />
+              <InfoTip id="teamLogo" />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={pick('logo', 'tournament_logo', setLogoError)}
+                id="logoUpload"
+                className={styles.uploadInput}
+              />
+              {logoFile && (
+                <button type="button" className={styles.clearBtn} onClick={clear('tournament_logo', setLogoError)}>
+                  <FiX aria-hidden="true" /> {tt('ui.remove.a54e', 'Remove')}
+                </button>
+              )}
             </div>
             <p>{uploadHint(tt, 'logo')}</p>
+            {logoError && <p className={styles.uploadError}>{logoError}</p>}
+            {logoFile && <p className={styles.chosen}>{logoFile.name}</p>}
           </div>
         </div>
 
         <div className={styles.profileBanner}>
           <div className={styles.bannerUploader}>
             <label htmlFor="bannerUpload" className={styles.bannerUploadLabel}>
-              <FiCamera className={styles.uploadIcon} /> {tt("ui.upload.banner.aad3", "Upload Banner")}
+              <FiCamera className={styles.uploadIcon} /> {tt('ui.upload.banner.aad3', 'Upload Banner')}
             </label>
-            <input type="file" accept="image/*" onChange={handleBannerUploader} id="bannerUpload" className={styles.uploadInput} />
+            <InfoTip id="teamBanner" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={pick('banner', 'tournament_banner', setBannerError)}
+              id="bannerUpload"
+              className={styles.uploadInput}
+            />
+            {bannerFile && (
+              <button type="button" className={styles.clearBtn} onClick={clear('tournament_banner', setBannerError)}>
+                <FiX aria-hidden="true" /> {tt('ui.remove.a54e', 'Remove')}
+              </button>
+            )}
           </div>
-          {bannerPreview && <Image src={bannerPreview} // Use the data URL directly
-        width={500} height={250} alt={tt("ui.banner.preview.ae8f", "Banner Preview")} />}
+          <p className={styles.bannerHint}>{uploadHint(tt, 'banner')}</p>
+          {bannerError && <p className={styles.uploadError}>{bannerError}</p>}
+          {bannerPreview && <img src={bannerPreview} className={styles.bannerPreviewImg} alt={tt('ui.banner.preview.ae8f', 'Banner Preview')} />}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
-export default CreateEventLogo;
+
+export default CreateTournamentLogo;

@@ -13,6 +13,8 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const BasicInfo = ({
+  logoFile,
+  bannerFile,
   setSelectedTab,
   formData = {},
   updateFormData,
@@ -79,7 +81,7 @@ const BasicInfo = ({
       <CreateTournamentType formData={formData} updateFormData={updateFormData} />
       <CreateTournamentSchedule formData={formData} updateFormData={updateFormData} />
       <CreateTournamentVisibility formData={formData} updateFormData={updateFormData} />
-      <CreateTournamentLogo formData={formData} updateFormData={updateFormData} updateFileData={updateFileData} />
+      <CreateTournamentLogo updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />
 
       {/* Action Buttons */}
       <div className={createTournamentStyles.buttonContainer}>
