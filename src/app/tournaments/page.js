@@ -318,19 +318,19 @@ const TournamentsContent = () => {
             </div>
             <div className={styles.filterSelect}>
               <select value={game} onChange={e => setGame(e.target.value)} className={styles.select}>
-                {gameOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                {gameOptions.map(g => <option key={g} value={g}>{g === 'All Games' ? tt('filters.allGames', 'All Games') : g}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.filterSelect}>
               <select value={format} onChange={e => setFormat(e.target.value)} className={styles.select}>
-                {FORMATS.map(f => <option key={f} value={f}>{f === 'All Formats' ? f : formatLabel(f)}</option>)}
+                {FORMATS.map(f => <option key={f} value={f}>{f === 'All Formats' ? tt('filters.allFormats', 'All Formats') : formatLabel(f)}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
             <div className={styles.filterSelect}>
               <select value={entryType} onChange={e => setEntryType(e.target.value)} className={styles.select}>
-                {ENTRY_TYPES.map(e => <option key={e} value={e}>{e === 'All Entries' ? e : e === 'free' ? tx("Free Entry") : tx("Paid Entry")}</option>)}
+                {ENTRY_TYPES.map(e => <option key={e} value={e}>{e === 'All Entries' ? tt('filters.allEntries', 'All Entries') : e === 'free' ? tx("Free Entry") : tx("Paid Entry")}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
@@ -349,7 +349,7 @@ const TournamentsContent = () => {
 
           {/* Result count */}
           <p className={styles.resultCount}>
-            {loading ? tx("Loading tournaments…") : `${filtered.length} tournament${filtered.length !== 1 ? 's' : ''} found`}
+            {loading ? tx("Loading tournaments…") : tt('filters.tournamentsFound', '{n} tournaments found').replace('{n}', filtered.length)}
           </p>
 
           {/* Loading / error / empty / grid */}

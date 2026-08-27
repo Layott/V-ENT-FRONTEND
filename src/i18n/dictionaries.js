@@ -3709,6 +3709,10 @@ export const dictionaries = {
     'api.RATES_FEED_UNAVAILABLE': 'The rates service could not be reached. The rates already here have been left alone.',
     'api.failedToLoadRates': 'Could not load the rates.',
     'api.ratesFeedUnavailable': 'The rates service could not be reached. The rates already here have been left alone.',
+    'filters.allEntries': 'All Entries',
+    'filters.allFormats': 'All Formats',
+    'filters.allGames': 'All Games',
+    'filters.tournamentsFound': '{n} tournaments found',
   },
 
   fr: {
@@ -7404,6 +7408,10 @@ export const dictionaries = {
     'api.RATES_FEED_UNAVAILABLE': 'Le service de taux est injoignable. Les taux déjà enregistrés sont conservés.',
     'api.failedToLoadRates': 'Impossible de charger les taux.',
     'api.ratesFeedUnavailable': 'Le service de taux est injoignable. Les taux déjà enregistrés sont conservés.',
+    'filters.allEntries': 'Toutes les entrées',
+    'filters.allFormats': 'Tous les formats',
+    'filters.allGames': 'Tous les jeux',
+    'filters.tournamentsFound': '{n} tournois trouvés',
   },
 
   pt: {
@@ -11099,5 +11107,9 @@ export const dictionaries = {
     'api.RATES_FEED_UNAVAILABLE': 'O serviço de taxas está inacessível. As taxas já registadas foram mantidas.',
     'api.failedToLoadRates': 'Não foi possível carregar as taxas.',
     'api.ratesFeedUnavailable': 'O serviço de taxas está inacessível. As taxas já registadas foram mantidas.',
+    'filters.allEntries': 'Todas as entradas',
+    'filters.allFormats': 'Todos os formatos',
+    'filters.allGames': 'Todos os jogos',
+    'filters.tournamentsFound': '{n} torneios encontrados',
   },
 };
