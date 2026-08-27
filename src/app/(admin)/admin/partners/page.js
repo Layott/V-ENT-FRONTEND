@@ -124,35 +124,52 @@ function PartnersInner() {
   // Changing the grant on a partner that is already live. Deliberately a
   // different endpoint from the review, so the approval history is not rewritten
   // every time somebody unticks a scope.
+  // Changing the grant on a partner that is already live. Deliberately a
+  // different endpoint from the review, so the approval history is not rewritten
+  // every time somebody unticks a scope.
+  //
+  // Note the shape: this page's `post` returns { res, body } and reports success
+  // as `res.ok`, and its toast is `toast.success` / `toast.error`. The first
+  // version of these two handlers was written against the OTHER admin pages'
+  // helper, which returns `{ ok, body }` and takes `toast.push(msg, kind)`. Every
+  // request went through and every success path was skipped, so the server did
+  // the work and the screen never moved - which is exactly what it looked like.
   const saveScopes = async () => {
     setBusy(true);
-    const { ok, body } = await post(`/partners/admin/${open.id}/scopes/`, {
-      scopes: draftScopes,
-      reason: note,
-    });
-    setBusy(false);
-    if (ok) {
-      toast.push(tt('admin.partners.scopesSaved', 'Scopes updated.'), 'success');
-      await load();
-      setOpen(body.data || open);
-      return;
+    try {
+      const { res, body } = await post(`/partners/admin/${open.id}/scopes/`, {
+        scopes: draftScopes,
+        reason: note,
+      });
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.scopesSaved', 'Scopes updated.')
+          : apiMessage(tt, body, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) await fetchPartners();
+    } finally {
+      setBusy(false);
     }
-    toast.push(apiMessage(tt, body, 'api.failed', 'Failed.'), 'error');
   };
 
-  const rotateKey = async (key) => {
+  const rotateKey = async key => {
     setBusy(true);
     setRotated(null);
-    const { ok, body } = await post(
-      `/partners/admin/${open.id}/keys/${key.id}/rotate/`, { reason: note });
-    setBusy(false);
-    if (ok) {
-      setRotated(body.data);
-      toast.push(tt('admin.partners.rotated', 'Key rotated.'), 'success');
-      await load();
-      return;
+    try {
+      const { res, body } = await post(
+        `/partners/admin/${open.id}/keys/${key.id}/rotate/`, { reason: note });
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.rotated', 'Key rotated.')
+          : apiMessage(tt, body, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) {
+        setRotated(body.data);
+        await fetchPartners();
+      }
+    } finally {
+      setBusy(false);
     }
-    toast.push(apiMessage(tt, body, 'api.failed', 'Failed.'), 'error');
   };
 
   const decide = async decision => {
