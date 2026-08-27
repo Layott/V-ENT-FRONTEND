@@ -51,6 +51,24 @@ ATTR = re.compile(r'\b(%s)\s*=\s*"([^"]{2,})"' % '|'.join(re.escape(a) for a in 
 # landing-page sentences stayed in English through a whole translation pass.
 JSXTEXT = re.compile(r'>([^<>{}]{3,}?)<', re.S)
 
+# Code blocks. Text inside one is something the reader copies and runs - a curl
+# command, a URL, a JSON body - and translating it would break the thing the page
+# exists to hand them. The API reference at /partners/docs is full of them.
+#
+# Narrow on purpose: <pre>, <code>, and the local <Code> wrapper. Skipping
+# anything that merely looks technical would hide real copy.
+CODE_BLOCK = re.compile(
+    r'<(pre|code|Code)\b[^>]*>.*?</\1>', re.S)
+
+
+def code_spans(text):
+    """(start, end) of every code block, so text inside one can be ignored."""
+    return [(m.start(), m.end()) for m in CODE_BLOCK.finditer(text)]
+
+
+def inside_code(spans, pos):
+    return any(a <= pos < b for a, b in spans)
+
 # The third place English hides, and the one that hid longest: a string handed
 # to a function. Error and toast messages are arguments, not markup and not
 # attributes, so a sweep aimed at either reads straight past them.
@@ -213,7 +231,10 @@ def scan(path):
         if interesting(text, 'text'):
             out.append((src[:m.start()].count('\n') + 1, 'message', text))
 
+    spans = code_spans(src)
     for m in JSXTEXT.finditer(src):
+        if inside_code(spans, m.start()):
+            continue          # a curl command is not copy
         text = m.group(1)
         if interesting(text, 'text'):
             out.append((src[:m.start()].count('\n') + 1, 'text', text.strip()))
