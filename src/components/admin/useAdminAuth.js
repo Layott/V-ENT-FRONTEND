@@ -19,7 +19,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 export function useAdminAuth() {
   const router = useRouter()
@@ -65,7 +65,15 @@ export function useAdminAuth() {
         if (body?.code === 'TWO_FACTOR_REQUIRED') {
           localStorage.removeItem('adminToken')
           localStorage.removeItem('adminUser')
-          router.replace('/login?next=/admin&reason=2fa')
+          // Sign out of NextAuth as well, not only out of the console.
+          //
+          // The session is real, it just never met the authenticator - which is
+          // the case for every admin whose session predates this change. Sending
+          // them to /login while that session still stands is how they ended up
+          // bouncing back to /home: the only way to get the mark is to come
+          // through the front door again, so the old session has to go first.
+          await signOut({ redirect: false })
+          window.location.href = '/login?next=/admin&reason=2fa'
           return
         }
 

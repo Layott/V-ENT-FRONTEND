@@ -148,6 +148,22 @@ export default async function middleware(req) {
     if (path === "/forgot-password" && fromEditProfile) {
       return NextResponse.next();
     }
+
+    // Somebody sent here to sign in AGAIN stays here.
+    //
+    // Bouncing every signed-in visitor off the sign-in page is right until
+    // something deliberately sends them to it. The console does: a session that
+    // never passed the authenticator challenge is not an admin session, so it
+    // is sent back to the front door - and this line then sent it straight to
+    // /home, so clicking Admin console just reloaded the homepage, over and
+    // over, with nothing to click that could break the loop.
+    const sentBack = req.nextUrl.searchParams.get('next')
+      || req.nextUrl.searchParams.get('reason')
+      || req.nextUrl.searchParams.get('expired');
+    if (path === '/login' && sentBack) {
+      return NextResponse.next();
+    }
+
     return redirectTo(localePath('/home', locale), req);
   }
 
