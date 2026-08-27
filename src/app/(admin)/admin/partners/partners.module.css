@@ -277,3 +277,15 @@
   opacity: 0.5;
   cursor: default;
 }
+
+/* Said before the click, not after. A filled surface rather than a stroke. */
+.warn {
+  margin-top: 0.7rem;
+  background-color: rgba(229, 185, 78, 0.12);
+  border-radius: 9px;
+  padding: 0.6rem 0.8rem;
+  color: #E5B94E;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}

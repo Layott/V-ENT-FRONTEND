@@ -117,6 +117,18 @@ a {
   transform: scale(1.01);
 }
 
+/* Light text on a dark background is where subpixel antialiasing shows itself:
+   Windows renders each glyph edge across the red, green and blue stripes of the
+   pixel, and against a dark ground those stripes read as coloured fringes on
+   every letter and every button label. Greyscale antialiasing has no colour to
+   fringe with. This is a dark-themed site throughout, so it is set once here
+   rather than chased per component. */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 .btn {
   height: 37px;
   font-weight: 600;
@@ -124,6 +136,27 @@ a {
   outline: none;
   border: none;
   cursor: pointer;
+}
+
+/* Documented in CLAUDE.md as one of the three global button classes, alongside
+   .btn and .redBTN, and never actually written. Three places used it, so three
+   buttons - including Try again on the tournament wizard's error screen - were
+   rendering as an unfilled .btn. */
+.grnBTN {
+  color: #fff;
+  background-color: var(--v-ent-success);
+  padding: 0 18px;
+  transition: background-color ease-in-out 0.2s;
+  cursor: pointer;
+}
+
+.grnBTN:hover {
+  background-color: var(--v-ent-success-light);
+}
+
+.grnBTN:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .redBTN {
