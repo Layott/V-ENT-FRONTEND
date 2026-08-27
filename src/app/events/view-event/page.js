@@ -793,6 +793,11 @@ export const ViewEventContent = ({
                   {isOrganizer && <Link href={`/events/${id}/attendees`} className={styles.doorListLink}>
                       {tt("ui.door.list.check.2f19", "Door list & check-in →")}
                     </Link>}
+                  {/* The commercial side: influencer links, promo codes, and
+                      who else may help run this. */}
+                  {isOrganizer && <Link href={`/events/${id}/manage`} className={styles.doorListLink}>
+                      {tt("manage.runThisEvent", "Influencers, promos & team →")}
+                    </Link>}
                   <div className={styles.organizerRow}>
                     <div className={styles.organizerAvatar}>
                       <FaCrown />

@@ -1,0 +1,291 @@
+/* Surfaces and space, no strokes. Rows are a filled step off the card, the card
+   a step off the page. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  display: flex;
+  width: 100%;
+}
+
+.rightPane {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPane {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 3rem;
+    max-width: 1100px;
+  }
+}
+
+.backLink {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.backLink:hover {
+  color: #fff;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+
+.pageSub {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1.5rem;
+}
+
+/* ------------------------------------------------------------------- tabs */
+
+.tabRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tab {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+}
+
+.tabOn {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.card {
+  background-color: #1b1c1f;
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.cardHint {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1.25rem;
+  max-width: 70ch;
+}
+
+.muted {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1.25rem;
+  max-width: 70ch;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1 1 240px;
+  flex-wrap: wrap;
+}
+
+.rowName {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.code {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.creditedTo {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.offBadge {
+  background-color: rgba(237, 28, 36, 0.18);
+  color: #ff8b90;
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.rowStats {
+  display: flex;
+  gap: 1.1rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rowStats strong {
+  color: #fff;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* ------------------------------------------------------------------ inputs */
+
+.newRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.input,
+.smallInput {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 9px 12px;
+  border-radius: 8px;
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.smallInput {
+  flex: 0 0 90px;
+}
+
+.input:focus,
+.smallInput:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  background-color: #f0c65f;
+}
+
+.addBtn:disabled,
+.ghostBtn:disabled,
+.iconBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ghostBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.iconBtn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ff8b90;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.iconBtn:hover {
+  background-color: rgba(237, 28, 36, 0.2);
+}
+
+/* ---------------------------------------------------------------- messages */
+
+.error {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  color: #ff8b90;
+  margin-bottom: 0.9rem;
+}
+
+.notice {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  color: #E5B94E;
+  margin-bottom: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .rightPane {
+    padding: 1.25rem 1rem 6rem;
+  }
+
+  .rowActions {
+    margin-left: 0;
+    width: 100%;
+  }
+}
