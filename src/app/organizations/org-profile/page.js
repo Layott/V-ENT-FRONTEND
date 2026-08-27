@@ -20,6 +20,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './org-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -52,7 +53,7 @@ const formatDate = iso => {
   if (!iso) return '-';
   try {
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

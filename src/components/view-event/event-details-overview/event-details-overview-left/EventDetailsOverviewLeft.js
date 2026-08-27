@@ -9,6 +9,7 @@ import cadeEsportsLogo from '@/images/cade_esports.png';
 import { GoDotFill } from "react-icons/go";
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 import styles from '../event-details-overview-left/event-details-overview-left.module.css';
+import { appLocale } from '@/lib/appLocale';
 
 const sponsors = [
   {
@@ -48,7 +49,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Date not set';
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(appLocale(), { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 

@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState } from 'react';
 import { FaAsterisk } from "react-icons/fa6";
@@ -133,7 +134,7 @@ const CreateTournamentSchedule = ({
       month: 'long',
       year: 'numeric'
     };
-    return new Date(dateObj).toLocaleDateString('en-GB', options);
+    return new Date(dateObj).toLocaleDateString(appLocale(), options);
   };
   const getNextCycleStartDate = () => {
     if (!formData?.start_date_and_time || !recurrenceFrequency) return null;

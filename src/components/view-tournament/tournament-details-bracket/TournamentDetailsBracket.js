@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import styles from './tournament-details-bracket.module.css';
@@ -91,7 +92,7 @@ function MatchCard({
         {participant?.score ?? '-'}
       </span>;
   }
-  const date = match.scheduled_at ? new Date(match.scheduled_at).toLocaleString('en-GB', {
+  const date = match.scheduled_at ? new Date(match.scheduled_at).toLocaleString(appLocale(), {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

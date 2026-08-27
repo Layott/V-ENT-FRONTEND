@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -17,7 +18,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const formatTime = iso => {
   if (!iso) return '';
-  return new Date(iso).toLocaleTimeString('en-GB', {
+  return new Date(iso).toLocaleTimeString(appLocale(), {
     hour: '2-digit',
     minute: '2-digit'
   });
@@ -30,7 +31,7 @@ const dayLabel = iso => {
   yest.setDate(today.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return 'Today';
   if (d.toDateString() === yest.toDateString()) return 'Yesterday';
-  return d.toLocaleDateString('en-GB', {
+  return d.toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'

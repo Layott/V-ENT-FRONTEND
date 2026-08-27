@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useRef, Suspense, useCallback } from 'react';
@@ -85,7 +86,7 @@ const ALL_PREVIEW_LIMIT = 4;
 const fmtDate = iso => {
   if (!iso) return '';
   try {
-    return new Date(iso).toLocaleDateString('en-GB', {
+    return new Date(iso).toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

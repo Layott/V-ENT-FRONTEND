@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import Image from 'next/image';
 import { bannerOf, teamLogo } from '@/lib/mediaUrl';
 import { useState, useEffect, useRef } from 'react';
@@ -27,7 +28,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 const ngnFormatter = new Intl.NumberFormat('en-NG');
 const formatDate = d => {
   if (!d) return '-';
-  return new Date(d).toLocaleDateString('en-GB', {
+  return new Date(d).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -35,7 +36,7 @@ const formatDate = d => {
 };
 const formatLongDate = d => {
   if (!d) return '';
-  return new Date(d).toLocaleDateString('en-GB', {
+  return new Date(d).toLocaleDateString(appLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',

@@ -7,6 +7,7 @@ import { RiCopperCoinFill } from "react-icons/ri";
 import { GoDotFill } from "react-icons/go";
 import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css'
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
+import { appLocale } from '@/lib/appLocale';
 
 const UpcomingEvents = ({ upcomingEvents = [] }) => {
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
@@ -18,7 +19,7 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
   // Format date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(appLocale(), { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 

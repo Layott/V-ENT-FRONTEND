@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ const TeamProfileEvents = ({
   const events = team.events || [];
   const fmtDate = d => {
     if (!d) return '-';
-    return new Date(d).toLocaleDateString('en-GB', {
+    return new Date(d).toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

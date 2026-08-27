@@ -1,3 +1,4 @@
+import { appLocale } from '@/lib/appLocale';
 // ─────────────────────────────────────────────────────────────────
 // Shared wallet helpers (formatters, classifiers, type metadata).
 // Used across /wallets and /wallets/* sub-routes.
@@ -83,7 +84,7 @@ export const normalizeStatus = (status) => {
 // ── Formatters ──
 export const formatNumber = (n) => {
   if (n == null || Number.isNaN(Number(n))) return '0';
-  return Number(n).toLocaleString('en-NG');
+  return Number(n).toLocaleString(appLocale());
 };
 
 export const formatNgn = (n) => `₦${formatNumber(n)}`;
@@ -94,14 +95,14 @@ export const formatDate = (d) => {
   if (!d) return '-';
   const dt = new Date(d);
   if (Number.isNaN(dt.getTime())) return String(d);
-  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return dt.toLocaleDateString(appLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
 export const formatDateTime = (d) => {
   if (!d) return '-';
   const dt = new Date(d);
   if (Number.isNaN(dt.getTime())) return String(d);
-  return dt.toLocaleString('en-GB', {
+  return dt.toLocaleString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
@@ -27,11 +28,11 @@ const TABS = [{
   id: 'production',
   label: 'Production'
 }];
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short'
 }) : '-';
-const formatTime = d => d ? new Date(d).toLocaleTimeString('en-GB', {
+const formatTime = d => d ? new Date(d).toLocaleTimeString(appLocale(), {
   hour: '2-digit',
   minute: '2-digit'
 }) : '';

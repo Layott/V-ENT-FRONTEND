@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -14,7 +15,7 @@ import { ventFetch, API, tokenFrom, ApiError } from '@/components/tournament-lib
 import styles from './drafts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
   year: 'numeric'

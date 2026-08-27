@@ -5,6 +5,7 @@ import shared from './settingsShared.module.css';
 import styles from './DevicesPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const formatLastActive = iso => {
   if (!iso) return '-';
   try {
@@ -17,7 +18,7 @@ const formatLastActive = iso => {
     if (hrs < 24) return `${hrs} hour${hrs === 1 ? '' : 's'} ago`;
     const days = Math.round(hrs / 24);
     if (days < 14) return `${days} day${days === 1 ? '' : 's'} ago`;
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

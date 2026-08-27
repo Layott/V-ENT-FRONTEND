@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -40,7 +41,7 @@ const relativeTime = iso => {
   if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
   if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
   if (diffSec < 604800) return `${Math.floor(diffSec / 86400)}d ago`;
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -48,7 +49,7 @@ const relativeTime = iso => {
 };
 const formatDateTime = iso => {
   if (!iso) return '';
-  return new Date(iso).toLocaleString('en-GB', {
+  return new Date(iso).toLocaleString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -242,7 +243,7 @@ const ClubInner = ({
                     <div className={styles.aboutStat}>
                       <span className={styles.aboutStatLabel}>{tt("ui.created.accf", "Created")}</span>
                       <span className={styles.aboutStatValue}>
-                        {new Date(club.created_at).toLocaleDateString('en-GB', {
+                        {new Date(club.created_at).toLocaleDateString(appLocale(), {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric'

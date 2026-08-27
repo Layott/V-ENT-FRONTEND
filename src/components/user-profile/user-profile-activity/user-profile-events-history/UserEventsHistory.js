@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { CiSearch } from 'react-icons/ci';
@@ -50,7 +51,7 @@ const UserEventsHistory = () => {
   for (let i = 1; i <= Math.ceil(total / rowsPerPage); i++) pageNumbers.push(i);
   const formatDate = d => {
     if (!d) return '-';
-    return new Date(d).toLocaleDateString('en-GB', {
+    return new Date(d).toLocaleDateString(appLocale(), {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

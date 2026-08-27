@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
@@ -47,7 +48,7 @@ const STATUS_BADGE_CLASS = {
   in_progress: 'status_in_progress',
   completed: 'status_completed'
 };
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
   year: 'numeric'

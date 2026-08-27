@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -81,7 +82,7 @@ const isThisWeekend = iso => {
 };
 const formatDate = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'

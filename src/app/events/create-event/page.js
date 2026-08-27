@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { withLocalDatesAsISO } from '@/lib/datetime';
 import { useCurrency } from '@/lib/money';
 import { apiMessage } from '@/lib/apiMessage';
@@ -808,7 +809,7 @@ const CreateEventPage = () => {
                   <div className={styles.reviewCard}>
                     <p className={styles.reviewLabel}>{tt("ui.when.769b", "When")}</p>
                     <p className={styles.reviewValue}>
-                      {formData.start_date && new Date(formData.start_date).toLocaleString('en-GB', {
+                      {formData.start_date && new Date(formData.start_date).toLocaleString(appLocale(), {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
@@ -817,7 +818,7 @@ const CreateEventPage = () => {
                   })}
                     </p>
                     <p className={styles.reviewSub}>
-                      to {formData.end_date && new Date(formData.end_date).toLocaleString('en-GB', {
+                      to {formData.end_date && new Date(formData.end_date).toLocaleString(appLocale(), {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',

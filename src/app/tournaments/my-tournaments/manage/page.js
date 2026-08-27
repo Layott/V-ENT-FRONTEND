@@ -1,5 +1,6 @@
 'use client';
 
+import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
@@ -14,12 +15,12 @@ import { ventFetch, API, tokenFrom, toTournament, tournamentStatus, ApiError } f
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', {
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
   year: 'numeric'
 }) : '-';
-const formatDateTime = d => d ? new Date(d).toLocaleString('en-GB', {
+const formatDateTime = d => d ? new Date(d).toLocaleString(appLocale(), {
   day: 'numeric',
   month: 'short',
   hour: '2-digit',

@@ -36,6 +36,7 @@ import { normalizeEvent, findEventInList } from '@/components/events/normalizeEv
 import styles from './view-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -59,7 +60,7 @@ const TABS = [{
 ];
 const formatDateTime = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -69,7 +70,7 @@ const formatDateTime = iso => {
 };
 const formatDate = iso => {
   if (!iso) return '-';
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -951,7 +952,7 @@ export const ViewEventContent = ({
                         {day.sessions.map(s => <div key={s.id} className={styles.timelineRow}>
                             <div className={styles.timelineTime}>
                               <IoTimeOutline />
-                              {new Date(s.time).toLocaleTimeString(undefined, {
+                              {new Date(s.time).toLocaleTimeString(appLocale(), {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}

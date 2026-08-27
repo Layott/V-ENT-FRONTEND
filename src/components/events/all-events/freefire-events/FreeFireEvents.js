@@ -15,6 +15,7 @@ import allEventsStyles from './../all-events.module.css';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
 import { useT } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const FreeFireEvents = () => {
   const tt = useT();
   const [showAll, setShowAll] = useState(false);
@@ -65,7 +66,7 @@ const FreeFireEvents = () => {
   // Format date to display in a readable format (same as tournament)
   const formatDate = dateString => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(appLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
