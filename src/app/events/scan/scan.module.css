@@ -1,0 +1,252 @@
+/* A door screen, read at arm's length, often in the dark, often on a cracked
+   phone. So: no sidebar, no header, one thing at a time, and the answer big
+   enough to read without leaning in. */
+
+.page {
+  min-height: 100vh;
+  background-color: #131316;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.sub {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  max-width: 46ch;
+  margin-top: 0.2rem;
+}
+
+.online,
+.offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.76rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.online {
+  background-color: rgba(76, 175, 80, 0.16);
+  color: var(--v-ent-success);
+}
+
+/* Offline is a normal working state here, not a failure. It reads as
+   information rather than as an alarm. */
+.offline {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.counts span {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+}
+
+.pending {
+  color: #E5B94E !important;
+  background-color: rgba(229, 185, 78, 0.14) !important;
+}
+
+/* ------------------------------------------------------------ the answer */
+
+.resultIn,
+.resultDuplicate,
+.resultUnknown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 16px;
+  padding: 1.6rem 1rem;
+  text-align: center;
+}
+
+.resultIn strong,
+.resultDuplicate strong,
+.resultUnknown strong {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.5rem;
+}
+
+.resultIn span,
+.resultDuplicate span,
+.resultUnknown span {
+  font-size: 1rem;
+}
+
+.resultIn svg,
+.resultDuplicate svg,
+.resultUnknown svg {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+/* Flat fills carrying the meaning. No glow: at a door, a colour that reads at
+   a glance beats anything decorative. */
+.resultIn {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #A5D6A7;
+}
+
+.resultDuplicate {
+  background-color: rgba(229, 185, 78, 0.2);
+  color: #E5B94E;
+}
+
+.resultUnknown {
+  background-color: rgba(237, 28, 36, 0.18);
+  color: #FF8A8A;
+}
+
+.resultSub {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem !important;
+}
+
+/* -------------------------------------------------------------- scanning */
+
+.scanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 1rem;
+  min-height: 120px;
+  justify-content: center;
+}
+
+.video {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #000;
+}
+
+.videoOff {
+  display: none;
+}
+
+.typeRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.primary {
+  background-color: var(--v-ent-red);
+  border-radius: 10px;
+  padding: 12px 24px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.primary:hover {
+  background-color: var(--v-ent-light-red);
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 18px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.ghost:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.primary:focus-visible,
+.ghost:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.error {
+  background-color: rgba(237, 28, 36, 0.14);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  color: #FF8A8A;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Tap targets stay large on a phone, which is the only device this runs on. */
+@media (max-width: 560px) {
+  .footer .ghost {
+    flex: 1 1 100%;
+  }
+}
