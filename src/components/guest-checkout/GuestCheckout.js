@@ -177,7 +177,10 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
       <button type="button" className={styles.buy} disabled={busy || !email.trim()}
               onClick={submit}>
         {busy ? tt('ui.saving.8f2a', 'Saving…')
-          : tier?.price_vc > 0
+          /* The card mapper on the event page renames price_vc to price, so
+             reading only one of them told somebody paying 3 VC that they were
+             about to "get the ticket". Whichever the caller passes. */
+          : (tier?.price_vc ?? tier?.price ?? 0) > 0
             ? tt('guest.payNow', 'Pay and get the ticket')
             : tt('guest.getFree', 'Get the ticket')}
       </button>
