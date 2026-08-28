@@ -87,3 +87,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* The rules editor inside the edit modal. A filled step down from the modal
+   surface, so it reads as a section rather than as a second dialog. */
+.rulesBlock {
+  margin-top: 1rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 0.9rem;
+  max-height: 46vh;
+  overflow-y: auto;
+}
