@@ -3968,6 +3968,7 @@ export const dictionaries = {
     'eventEdit.door': 'Door list',
     'api.couldNotLoadEvent': 'Could not load this event.',
     'api.couldNotSaveEvent': 'Could not save the changes.',
+    'req.why.member': '{member}: {what}',
   },
 
   fr: {
@@ -7922,6 +7923,7 @@ export const dictionaries = {
     'eventEdit.door': 'Liste d\'entrée',
     'api.couldNotLoadEvent': 'Impossible de charger cet événement.',
     'api.couldNotSaveEvent': 'Impossible d\'enregistrer les modifications.',
+    'req.why.member': '{member} : {what}',
   },
 
   pt: {
@@ -11876,5 +11878,6 @@ export const dictionaries = {
     'eventEdit.door': 'Lista de entrada',
     'api.couldNotLoadEvent': 'Não foi possível carregar este evento.',
     'api.couldNotSaveEvent': 'Não foi possível guardar as alterações.',
+    'req.why.member': '{member}: {what}',
   },
 };

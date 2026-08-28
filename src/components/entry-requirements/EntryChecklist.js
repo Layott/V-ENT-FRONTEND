@@ -111,8 +111,18 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
         || tt('req.why.refused', 'This was not accepted. Send it again.');
     }
     if (row.code === 'todo' || !row.code) return labelOf(row);
-    const entry = REASONS[row.code];
-    return entry ? fill(tt(entry[0], entry[1]), row.params) : row.reason || labelOf(row);
+
+    // A team entry checks every member, so the code arrives as
+    // `member_game_account` and the sentence has to name whoever it was. A
+    // captain with five players cannot act on "your team is not eligible".
+    const forMember = row.code.startsWith('member_');
+    const entry = REASONS[forMember ? row.code.slice(7) : row.code];
+    if (!entry) return row.reason || labelOf(row);
+    const sentence = fill(tt(entry[0], entry[1]), row.params);
+    return forMember
+      ? fill(tt('req.why.member', '{member}: {what}'),
+        { member: row.params?.member || '', what: sentence })
+      : sentence;
   };
 
   if (loading) return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;
