@@ -98,3 +98,93 @@
   max-height: 46vh;
   overflow-y: auto;
 }
+
+/* The match picker. Filled rows, the chosen one a stronger fill rather than a
+   ring, and every row says who is playing rather than a number to copy. */
+.matchPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 34vh;
+  overflow-y: auto;
+  margin: 0.6rem 0 0.9rem;
+}
+
+.matchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  padding: 0.55rem 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.matchRow:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.matchRowOn {
+  background-color: rgba(237, 28, 36, 0.22);
+  color: #fff;
+}
+
+.matchRound {
+  flex: 0 0 130px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.76rem;
+}
+
+.matchSides {
+  flex: 1;
+  min-width: 0;
+}
+
+.matchVs {
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0 0.3rem;
+}
+
+.matchScore {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+}
+
+.winnerRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.winnerBtn {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+.winnerBtnOn {
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .matchRow {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+  }
+
+  .matchRound {
+    flex: 0 0 100%;
+  }
+}

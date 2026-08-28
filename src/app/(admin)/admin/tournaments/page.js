@@ -3,7 +3,7 @@
 import { withLocalDatesAsISO } from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -488,44 +488,132 @@ function OverrideScoreModal({
 }) {
   const tx = useTx();
   const tt = useT();
-  const [matchId, setMatchId] = useState('');
+
+  // The list of real matches, named. Typing an id read off another tab is how
+  // an override lands on the wrong game, and the wrong game is somebody's
+  // result that they played and won.
+  const [matches, setMatches] = useState(null);
+  const [fixtures, setFixtures] = useState([]);
+  const [loadError, setLoadError] = useState('');
+  const [chosen, setChosen] = useState(null);
+
   const [scoreP1, setScoreP1] = useState(0);
   const [scoreP2, setScoreP2] = useState(0);
   const [winnerRegId, setWinnerRegId] = useState('');
   const [reason, setReason] = useState('');
-  const canSubmit = matchId.trim() && winnerRegId.trim();
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.id}/matches/`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (res.ok && body.status === 'success') {
+          setMatches(body.data.matches || []);
+          setFixtures(body.data.fixtures || []);
+        } else {
+          setMatches([]);
+          setLoadError(apiMessage(tt, body, 'api.matchesLoadFailed',
+            'Could not load the matches for this tournament.'));
+        }
+      } catch {
+        if (!cancelled) {
+          setMatches([]);
+          setLoadError(tt('api.NETWORK_UNREACHABLE',
+            'Could not reach the server. Check the connection and try again.'));
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [tournament.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Choosing a match brings its current score with it, so an override that only
+  // means to correct one number does not silently zero the other.
+  const choose = m => {
+    setChosen(m);
+    setScoreP1(m.score_1 ?? 0);
+    setScoreP2(m.score_2 ?? 0);
+    setWinnerRegId(m.winner_registration_id ? String(m.winner_registration_id) : '');
+  };
+
+  const playable = (matches || []).filter(m => m.side_1 && m.side_2);
+  const canSubmit = Boolean(chosen && winnerRegId);
+
   return <div className={styles.modalOverlay} onClick={onCancel}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <p className={styles.modalTitle}>{tt("ui.override.match.score.4b28", "Override Match Score")}</p>
         <p className={styles.modalSub}>
-          {tt("ui.tournament.9c45", "For tournament “")}{tournament.name}&rdquo;.
+          {tt("admin.overrideSub", "Pick the match, then set the result. The change is recorded in the audit log with your reason.")}
         </p>
-        <div className={styles.formRow}>
-          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.match.id.ffcf", "Match ID")} <InfoTip id="adminMatchId" /></span></label>
-          <input className={styles.formInput} value={matchId} onChange={e => setMatchId(e.target.value)} placeholder={tt("ui.numeric.match.id.08ad", "Numeric match id")} />
-        </div>
-        <div className={styles.formRow2}>
-          <div>
-            <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.score.p.af0f", "Score P1")} <InfoTip id="adminScore" /></span></label>
-            <input type="number" className={styles.formInput} value={scoreP1} onChange={e => setScoreP1(parseInt(e.target.value || '0', 10))} />
-          </div>
-          <div>
-            <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.score.p.f3ba", "Score P2")} <InfoTip id="adminScore" /></span></label>
-            <input type="number" className={styles.formInput} value={scoreP2} onChange={e => setScoreP2(parseInt(e.target.value || '0', 10))} />
-          </div>
-        </div>
-        <div className={styles.formRow}>
-          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.winner.registration.id.e256", "Winner registration ID")} <InfoTip id="adminWinnerRegId" /></span></label>
-          <input className={styles.formInput} value={winnerRegId} onChange={e => setWinnerRegId(e.target.value)} placeholder={tt("ui.registration.id.winning.side.2c12", "Registration id of the winning side")} />
-        </div>
+
+        {matches === null ? <p className={styles.modalSub}>{tt("ui.loading", "Loading…")}</p>
+          : loadError ? <p className={styles.modalSub}>{loadError}</p>
+          : playable.length === 0 ? <p className={styles.modalSub}>
+              {tt("admin.noMatchesYet", "This tournament has no playable matches yet. A bracket has to be generated before a result can be corrected.")}
+            </p>
+          : <>
+            <div className={styles.matchPicker}>
+              {playable.map(m => <button
+                  key={m.id}
+                  type="button"
+                  className={`${styles.matchRow} ${chosen?.id === m.id ? styles.matchRowOn : ''}`}
+                  onClick={() => choose(m)}>
+                  <span className={styles.matchRound}>{m.label}</span>
+                  <span className={styles.matchSides}>
+                    {m.side_1?.name} <span className={styles.matchVs}>{tt("admin.versus", "v")}</span> {m.side_2?.name}
+                  </span>
+                  <span className={styles.matchScore}>
+                    {m.status === 'completed' ? `${m.score_1} - ${m.score_2}` : tt("admin.notPlayed", "not played")}
+                  </span>
+                </button>)}
+            </div>
+
+            {chosen && <>
+              <div className={styles.formRow2}>
+                <div>
+                  <label className={styles.formLabel}>{chosen.side_1?.name}</label>
+                  <input type="number" className={styles.formInput} value={scoreP1}
+                         onChange={e => setScoreP1(parseInt(e.target.value || '0', 10))} />
+                </div>
+                <div>
+                  <label className={styles.formLabel}>{chosen.side_2?.name}</label>
+                  <input type="number" className={styles.formInput} value={scoreP2}
+                         onChange={e => setScoreP2(parseInt(e.target.value || '0', 10))} />
+                </div>
+              </div>
+
+              <div className={styles.formRow}>
+                <label className={styles.formLabel}>{tt("admin.whoWon", "Who won")}</label>
+                <div className={styles.winnerRow}>
+                  {[chosen.side_1, chosen.side_2].filter(Boolean).map(side => <button
+                      key={side.registration_id}
+                      type="button"
+                      className={`${styles.winnerBtn} ${String(winnerRegId) === String(side.registration_id) ? styles.winnerBtnOn : ''}`}
+                      onClick={() => setWinnerRegId(String(side.registration_id))}>
+                      {side.name}
+                    </button>)}
+                </div>
+              </div>
+            </>}
+          </>}
+
+        {fixtures.length > 0 && <p className={styles.modalSub}>
+            {tt("admin.aggregateNote", "This tournament also has {n} aggregate fixtures. Those decide a tie on total goals, so they are corrected from the tie itself rather than here.").replace('{n}', fixtures.length)}
+          </p>}
+
         <div className={styles.formRow}>
           <label className={styles.formLabel}>{tt("ui.reason.f219", "Reason")}</label>
           <textarea className={styles.formInput} rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder={tt("ui.reason.override.logged.audit.eaa9", "Reason for the override (logged in audit)")} />
         </div>
+
         <div className={styles.modalBtns}>
           <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
           <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => onSubmit({
-          match_id: matchId,
+          match_id: chosen?.id,
           score_p1: scoreP1,
           score_p2: scoreP2,
           winner_registration_id: winnerRegId,
