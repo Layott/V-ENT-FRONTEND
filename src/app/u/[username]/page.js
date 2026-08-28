@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
   const country = profile.country ? ` from ${profile.country}` : '';
 
   return buildMetadata({
-    title: `${name} on V-ENT`,
+    title: name,
     description: clamp(
       profile.description
       || `${name}${country} plays on V-ENT. See their teams, the tournaments `

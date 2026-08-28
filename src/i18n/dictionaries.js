@@ -3844,6 +3844,9 @@ export const dictionaries = {
     'admin.versus': 'v',
     'admin.whoWon': 'Who won',
     'api.matchesLoadFailed': 'Could not load the matches for this tournament.',
+    'partners.instant': 'instant',
+    'partners.reviewed': 'reviewed',
+    'partners.scopeIntro': 'Most of this is granted the moment you ask, because it is already readable by anybody with a browser. The rest is about identifiable people, so somebody looks at it.',
   },
 
   fr: {
@@ -7674,6 +7677,9 @@ export const dictionaries = {
     'admin.versus': 'c.',
     'admin.whoWon': 'Qui a gagné',
     'api.matchesLoadFailed': 'Impossible de charger les matchs de ce tournoi.',
+    'partners.instant': 'immédiat',
+    'partners.reviewed': 'examiné',
+    'partners.scopeIntro': 'La plupart est accordée dès la demande, car c\'est déjà lisible par n\'importe qui avec un navigateur. Le reste concerne des personnes identifiables : quelqu\'un l\'examine.',
   },
 
   pt: {
@@ -11504,5 +11510,8 @@ export const dictionaries = {
     'admin.versus': 'v',
     'admin.whoWon': 'Quem ganhou',
     'api.matchesLoadFailed': 'Não foi possível carregar os jogos deste torneio.',
+    'partners.instant': 'imediato',
+    'partners.reviewed': 'analisado',
+    'partners.scopeIntro': 'A maior parte é concedida assim que a pede, porque já é legível por qualquer pessoa com um navegador. O resto diz respeito a pessoas identificáveis, por isso alguém o analisa.',
   },
 };
