@@ -12,6 +12,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import RulesEditor from '@/components/rules-editor/RulesEditor';
+import EntryRequirements from '@/components/entry-requirements/EntryRequirements';
 import { ventFetch, API, tokenFrom, toTournament, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -326,6 +327,17 @@ const ManageContent = ({
                   canEdit={Boolean(token)}
                 />
               </div>
+
+              {/* Who may enter at all. Composed as a list rather than a set of
+                  toggles, because "follow these three accounts and give me your
+                  Riot ID" is not something four booleans can say. */}
+              {tournament?.id && <div className={styles.section}>
+                <EntryRequirements
+                  tournamentId={tournament.id}
+                  token={token}
+                  canEdit={Boolean(token)}
+                />
+              </div>}
 
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>{tt("ui.registrations.5fbc", "Registrations (")}{participants.length})</h2>
