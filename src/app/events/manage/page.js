@@ -112,7 +112,14 @@ export const ManageEventContent = ({
     };
   }, [eventRef, token]);
   const load = useCallback(async () => {
-    if (!token || !eventRef) return;
+    // Returning here without clearing the spinner is how a page hangs on
+    // "Loading..." forever: the flag starts true and nothing ever turns it
+    // off. Somebody who opened this without an event, or before signing in,
+    // is owed a sentence rather than a spinner that never resolves.
+    if (!token || !eventRef) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     const [r, p, m, ti, mo, ho, se, qu, cf] = await Promise.all([
@@ -365,7 +372,22 @@ export const ManageEventContent = ({
 
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
-          {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p> : <>
+          {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
+            : !eventRef ? <p className={styles.muted}>
+                {tt('manage.pickEvent', 'Open this from the event you want to manage.')}
+                {' '}
+                <Link href="/events/my-events" className={styles.link}>
+                  {tt('manage.myEvents', 'My events')}
+                </Link>
+              </p>
+            : !token ? <p className={styles.muted}>
+                {tt('manage.signIn', 'Sign in to manage an event you run.')}
+                {' '}
+                <Link href="/login" className={styles.link}>
+                  {tt('ui.login.7b3c', 'Log in')}
+                </Link>
+              </p>
+            : <>
               {/* ---------------------------------------------------- tickets */}
               {tab === 'tickets' && <section className={styles.card}>
                   <p className={styles.cardHint}>

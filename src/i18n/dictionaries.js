@@ -4192,6 +4192,9 @@ export const dictionaries = {
     'door.asked': 'Answers',
     'door.yes': 'Yes',
     'door.no': 'No',
+    'manage.pickEvent': 'Open this from the event you want to manage.',
+    'manage.myEvents': 'My events',
+    'manage.signIn': 'Sign in to manage an event you run.',
   },
 
   fr: {
@@ -8370,6 +8373,9 @@ export const dictionaries = {
     'door.asked': 'Réponses',
     'door.yes': 'Oui',
     'door.no': 'Non',
+    'manage.pickEvent': 'Ouvrez ceci depuis l’événement que vous voulez gérer.',
+    'manage.myEvents': 'Mes événements',
+    'manage.signIn': 'Connectez-vous pour gérer un événement que vous organisez.',
   },
 
   pt: {
@@ -12548,5 +12554,8 @@ export const dictionaries = {
     'door.asked': 'Respostas',
     'door.yes': 'Sim',
     'door.no': 'Não',
+    'manage.pickEvent': 'Abra isto a partir do evento que quer gerir.',
+    'manage.myEvents': 'Os meus eventos',
+    'manage.signIn': 'Inicie sessão para gerir um evento que organiza.',
   },
 };
