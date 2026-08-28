@@ -376,9 +376,42 @@
 }
 
 .sponsorRow {
+  display: grid;
+  /* A logo per cell rather than a flex row: sponsor artwork arrives at every
+     shape from a 1345x420 wordmark to a 6720x4200 export, and a row lets the
+     wide ones dictate everybody's height. */
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+/* The tile a logo sits in. Filled surface, no stroke. */
+.sponsorLink {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.55rem;
+  min-height: 54px;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+a.sponsorLink:hover { background-color: rgba(255, 255, 255, 0.12); }
+a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Without this the class was simply absent from the stylesheet, so className
+   resolved to undefined and every logo drew at its natural size. One of them
+   is 6720x4200, which is why the Sponsors heading looked empty: the artwork
+   was there, just far larger than the card. */
+.sponsorLogo {
+  display: block;
+  max-width: 100%;
+  max-height: 38px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .sponsorChip {
@@ -1474,3 +1507,42 @@
   padding: 0.9rem;
   margin: 0.35rem 0;
 }
+
+/* The organiser's own routes out of this page. They used to be three
+   inline-block links, which put "Edit this event →Door list & check-in →" on
+   one line with nothing between them. Rows on a filled surface instead:
+   hierarchy from surface and space, never from a stroke. */
+.ownerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.1rem;
+}
+
+.ownerLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  /* 11px vertical clears 44px on a phone, which is where an organiser
+     actually checks their own event. */
+  padding: 11px 0.8rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.ownerLink:hover { background-color: rgba(255, 255, 255, 0.13); }
+.ownerLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ownerArrow {
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
+/* The share control sits above the organiser label and needs to breathe. */
+.sideCard > button:first-child { margin-bottom: 1.1rem; width: 100%; }

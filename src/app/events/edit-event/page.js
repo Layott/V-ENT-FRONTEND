@@ -26,6 +26,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import DateField from '@/components/date-field/DateField';
+import SponsorEditor from '@/components/sponsor-editor/SponsorEditor';
 import styles from './edit-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 
@@ -290,6 +291,13 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                   </span>
                 </span>
               </label>
+
+              {/* Who is behind the event. They could only ever be set in the
+                  creation wizard, so a sponsor who signed on afterwards could
+                  not be added and one who pulled out could not be removed.
+                  Saves on its own, because a logo upload is not part of the
+                  partial field save above. */}
+              {ref && token && <SponsorEditor eventRef={ref} token={token} />}
 
               {error && <p className={styles.error}>{error}</p>}
               {notice && <p className={styles.notice}>{notice}</p>}

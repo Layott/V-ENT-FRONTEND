@@ -1,0 +1,176 @@
+/* Sponsors and partners on the edit form. Filled surfaces and space, no
+   strokes, no glow. Matches the tier editor on the manage page. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+
+.title {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+  color: #fff;
+}
+
+.hint,
+.muted {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.83rem;
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  padding: 0.6rem 0.75rem;
+}
+
+/* The artwork arrives at every shape, from a 1345x420 wordmark to a 6720x4200
+   export. The box is fixed and the logo fits inside it, so one enormous file
+   cannot set the height of the whole list. */
+.logoBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 62px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.logo {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.noLogo {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.63rem;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 2px;
+}
+
+.rowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rowName {
+  color: #fff;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.rowKind {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.rowUrl {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.replaceBtn,
+.removeBtn,
+.fileBtn,
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  color: #fff;
+  transition: background-color 0.12s;
+}
+
+.replaceBtn,
+.fileBtn { background-color: rgba(255, 255, 255, 0.1); }
+.replaceBtn:hover,
+.fileBtn:hover { background-color: rgba(255, 255, 255, 0.18); }
+
+.removeBtn { background-color: rgba(237, 28, 36, 0.18); color: #ff9a9e; }
+.removeBtn:hover { background-color: rgba(237, 28, 36, 0.3); color: #fff; }
+
+.addBtn { background-color: var(--v-ent-red, #ED1C24); }
+.addBtn:hover { background-color: var(--v-ent-light-red, #FF0008); }
+.addBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.replaceBtn:focus-within,
+.fileBtn:focus-within,
+.removeBtn:focus-visible,
+.addBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.newRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.input {
+  flex: 1 1 150px;
+  min-width: 0;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 12px;
+  min-height: 44px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.error { color: #ff9a9e; font-size: 0.85rem; line-height: 1.5; }
+.notice { color: var(--v-ent-success-light, #66bb6a); font-size: 0.85rem; }
+
+@media (max-width: 640px) {
+  .row { flex-wrap: wrap; }
+  .rowActions { width: 100%; justify-content: flex-start; }
+  .input { flex: 1 1 100%; }
+  .fileBtn,
+  .addBtn { flex: 1 1 100%; }
+}
