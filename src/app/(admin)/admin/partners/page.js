@@ -121,6 +121,8 @@ function PartnersInner() {
   };
   const [rotated, setRotated] = useState(null);
   const [newRedirect, setNewRedirect] = useState('');
+  const [verifyUrl, setVerifyUrl] = useState('');
+  const [verifySecret, setVerifySecret] = useState('');
 
   // Changing the grant on a partner that is already live. Deliberately a
   // different endpoint from the review, so the approval history is not rewritten
@@ -220,6 +222,34 @@ function PartnersInner() {
           : apiMessage(tt, body, 'api.failed', 'Failed.'),
       );
       if (res.ok) await fetchPartners();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Where we ask this partner to confirm one of their own usernames, for a
+  // tournament requirement that names them. Empty turns it off, and every such
+  // requirement then falls back to the organiser reading it - which is what it
+  // did before the partner was connected, so nothing breaks.
+  const saveVerification = async () => {
+    setBusy(true);
+    try {
+      const body = { reason: note };
+      if (verifyUrl !== '') body.verification_url = verifyUrl.trim();
+      if (verifySecret !== '') body.verification_secret = verifySecret.trim();
+      const { res, body: out } = await post(
+        `/partners/admin/${open.id}/verification/`, body);
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.verificationSaved', 'Verification endpoint saved.')
+          : apiMessage(tt, out, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) {
+        // The secret is write-only, so it is cleared here rather than left
+        // sitting in an input somebody might read over a shoulder.
+        setVerifySecret('');
+        await fetchPartners();
+      }
     } finally {
       setBusy(false);
     }
@@ -479,6 +509,44 @@ function PartnersInner() {
                 <div><dt>{tt("ui.privacy.policy.7cea", "Privacy policy")}</dt><dd>{open.privacy_policy_url || tx("Not given")}</dd></div>
                 <div><dt>{tt("ui.data.contact.84ae", "Data contact")}</dt><dd>{open.data_protection_contact || tx("Not given")}</dd></div>
               </dl>
+
+              {/* Where we ask this partner to confirm one of their own
+                  usernames. Documented for them as part four of
+                  docs/PARTNER-API.md. */}
+              <div className={styles.redirectBlock}>
+                <p className={styles.redirectTitle}>
+                  {tt('admin.partners.verification', 'Username verification')}
+                </p>
+                <p className={styles.redirectHint}>
+                  {tt('admin.partners.verificationHint', 'An organiser can require that every entrant holds a real account on this partner. If they give us an address, we ask them and the entrant is admitted in under a second. Leave it empty and the organiser reads the usernames themselves, which is what happens today.')}
+                </p>
+                <div className={styles.redirectRow}>
+                  <input
+                    className={styles.redirectInput}
+                    value={verifyUrl}
+                    onChange={e => setVerifyUrl(e.target.value)}
+                    placeholder={open.verification_url || 'https://partner.example/verify/'}
+                    aria-label={tt('admin.partners.verificationUrl', 'Verification address')}
+                  />
+                </div>
+                <div className={styles.redirectRow}>
+                  <input
+                    className={styles.redirectInput}
+                    type="password"
+                    value={verifySecret}
+                    onChange={e => setVerifySecret(e.target.value)}
+                    placeholder={open.has_verification_secret
+                      ? tt('admin.partners.secretHeld', 'A secret is held. Type a new one to replace it.')
+                      : tt('admin.partners.secretNone', 'The secret they gave us')}
+                    aria-label={tt('admin.partners.verificationSecret', 'Verification secret')}
+                  />
+                  <button type="button" className={styles.primary}
+                          disabled={busy || (verifyUrl === '' && verifySecret === '')}
+                          onClick={saveVerification}>
+                    {tt('admin.partners.verificationSave', 'Save')}
+                  </button>
+                </div>
+              </div>
 
               {/* Editable, not a read-only line. This is the field that was
                   blocking AFC, and reading it back was all the console could do
