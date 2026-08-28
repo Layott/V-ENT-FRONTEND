@@ -58,7 +58,7 @@ const MyEventsPage = () => {
   const when = row => {
     if (!row.start_date) return null;
     const from = new Date(row.start_date);
-    return from.toLocaleDateString(language || undefined, {
+    return from.toLocaleDateString(language || 'en', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
@@ -120,10 +120,17 @@ const MyEventsPage = () => {
                         <Link href={`/events/${ref}`} className={styles.ghostBtn}>
                           {tt('myEvents.view', 'View')}
                         </Link>
+                        {/* The one action that was missing entirely. The edit
+                            endpoint has existed for weeks with nothing calling
+                            it, so an organiser who mistyped a venue had nowhere
+                            to go. */}
+                        <Link href={`/events/${ref}/edit`} className={styles.primaryBtn}>
+                          {tt('myEvents.edit', 'Edit')}
+                        </Link>
                         <Link href={`/events/${ref}/attendees`} className={styles.ghostBtn}>
                           {tt('myEvents.doorList', 'Door list')}
                         </Link>
-                        <Link href={`/events/${ref}/manage`} className={styles.primaryBtn}>
+                        <Link href={`/events/${ref}/manage`} className={styles.ghostBtn}>
                           {tt('myEvents.manage', 'Influencers & promos')}
                         </Link>
                       </div>

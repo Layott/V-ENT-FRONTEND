@@ -74,6 +74,10 @@ export const DEFAULT_OPTIONS = {
   require_screenshot: false,
   dispute_window_minutes: 30
 };
+// The whole row used to be one <button> with the InfoTip's own <button> inside
+// it. That is invalid HTML, React logs a hydration error for it on every load,
+// and pressing the tip flipped the switch instead of explaining it. The row is
+// a container now, the switch is the button, and the tip sits beside it.
 const Toggle = ({
   id,
   label,
@@ -81,18 +85,18 @@ const Toggle = ({
   checked,
   onChange,
   tip
-}) => <button type="button" id={id} role="switch" aria-checked={checked} className={`${styles.toggleRow} ${checked ? styles.toggleRowOn : ''}`} onClick={() => onChange(!checked)}>
-    <span className={styles.toggleText}>
-      <span className={styles.toggleLabel}>
-        {label}
-        {tip ? <InfoTip id={tip} /> : null}
+}) => <div className={`${styles.toggleRow} ${checked ? styles.toggleRowOn : ''}`}>
+    <button type="button" id={id} role="switch" aria-checked={checked} className={styles.toggleHit} onClick={() => onChange(!checked)}>
+      <span className={styles.toggleText}>
+        <span className={styles.toggleLabel}>{label}</span>
+        {hint ? <span className={styles.toggleHint}>{hint}</span> : null}
       </span>
-      {hint ? <span className={styles.toggleHint}>{hint}</span> : null}
-    </span>
-    <span className={`${styles.toggleTrack} ${checked ? styles.toggleTrackOn : ''}`}>
-      <span className={styles.toggleKnob} />
-    </span>
-  </button>;
+      <span className={`${styles.toggleTrack} ${checked ? styles.toggleTrackOn : ''}`}>
+        <span className={styles.toggleKnob} />
+      </span>
+    </button>
+    {tip ? <InfoTip id={tip} className={styles.toggleTip} /> : null}
+  </div>;
 const TournamentOptions = ({
   formData = {},
   updateFormData

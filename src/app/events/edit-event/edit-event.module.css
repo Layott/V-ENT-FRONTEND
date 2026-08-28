@@ -1,0 +1,246 @@
+/* Same shell as my-events and the attendees page: fixed sidebar, pane offset
+   by its width from 1024px up. Surfaces and space, no strokes. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  display: flex;
+  width: 100%;
+}
+
+.rightPane {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPane {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 3rem;
+    max-width: 900px;
+  }
+}
+
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.back {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.back:hover {
+  color: #fff;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+
+.pageSub {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 60ch;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #1B1C20;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.row > .field {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.input {
+  width: 100%;
+  background-color: #26272C;
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  resize: vertical;
+}
+
+.input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.file {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+}
+
+.file::file-selector-button {
+  background-color: #33343A;
+  border-radius: 8px;
+  padding: 7px 13px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  margin-right: 0.6rem;
+  cursor: pointer;
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.checkRow input {
+  accent-color: var(--v-ent-red);
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.primaryBtn {
+  background-color: var(--v-ent-red);
+  border-radius: 9px;
+  padding: 11px 22px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background-color: var(--v-ent-light-red);
+}
+
+.primaryBtn:disabled {
+  background-color: #33343A;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: default;
+}
+
+.primaryBtn:focus-visible,
+.ghostBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #26272C;
+  border-radius: 9px;
+  padding: 11px 18px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  background-color: #33343A;
+  color: #fff;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.88rem;
+}
+
+.error {
+  color: var(--v-ent-red);
+  font-size: 0.85rem;
+}
+
+.notice {
+  color: var(--v-ent-success);
+  font-size: 0.85rem;
+}
+
+.errorCard {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #1B1C20;
+  border-radius: 14px;
+  padding: 1.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryBtn,
+  .ghostBtn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}

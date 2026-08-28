@@ -804,6 +804,12 @@ export const ViewEventContent = ({
 
                 <aside className={styles.sideCard}>
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
+                  {/* Editing your own event. The endpoint existed with nothing
+                      calling it, so the only route to a mistyped venue was to
+                      create the event again. */}
+                  {isOrganizer && <Link href={`/events/${id}/edit`} className={styles.doorListLink}>
+                      {tt("manage.editThisEvent", "Edit this event →")}
+                    </Link>}
                   {isOrganizer && <Link href={`/events/${id}/attendees`} className={styles.doorListLink}>
                       {tt("ui.door.list.check.2f19", "Door list & check-in →")}
                     </Link>}

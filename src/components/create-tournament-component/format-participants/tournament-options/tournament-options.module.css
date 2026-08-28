@@ -142,17 +142,38 @@
 .toggleRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
   width: 100%;
-  text-align: left;
   background-color: #393A40;
-  border: none;
   border-radius: 0.55rem;
   padding: 0.7rem 0.9rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* The switch itself. It fills the row so the whole strip stays pressable,
+   except for the tip, which is its own control beside it. */
+.toggleHit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+  background: none;
+  text-align: left;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
+  outline: none;
+}
+
+.toggleHit:focus-visible {
+  outline: 2px solid #FFF;
+  outline-offset: 3px;
+  border-radius: 0.35rem;
+}
+
+.toggleTip {
+  flex: 0 0 auto;
 }
 
 .toggleRow:hover {
