@@ -1,0 +1,116 @@
+/* The programme. Filled surfaces stepped off the page, no strokes, no timeline
+   dots that need a line drawn between them. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.state {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.88rem;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dayHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.dayTitle {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.dayDate {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.84rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.when {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+  min-width: 7.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  padding-top: 2px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.name {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+}
+
+.blurb {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.15rem;
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+}
+
+/* On a phone the time moves above the title rather than squeezing it into a
+   column two words wide. */
+@media (max-width: 560px) {
+  .row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .when {
+    min-width: 0;
+  }
+}

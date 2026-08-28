@@ -9,6 +9,8 @@ import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
+import EventSchedule from '@/components/event-schedule/EventSchedule';
+import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
@@ -43,6 +45,15 @@ const TABS = [{
 }, {
   id: 'tickets',
   label: 'Tickets'
+}, {
+  // Only offered when the organiser has actually published a programme. The
+  // version of this tab that was removed drew an invented two-day schedule on
+  // every event on the platform, which is worse than no tab: no tab says
+  // nothing has been published, an invented one says the organiser published
+  // THIS.
+  id: 'schedule',
+  label: 'Schedule',
+  needsProgramme: true
 }, {
   // The Schedule tab is hidden until it is real.
   //
@@ -229,6 +240,32 @@ export const ViewEventContent = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(tabParam || 'overview');
+  // Whether the organiser has published a programme. The Schedule tab appears
+  // only when they have, so an empty tab never shows.
+  //
+  // Asked on page load rather than by the tab's own component: that component
+  // only mounts once the tab is open, and a tab that has to be opened before it
+  // will appear can never be opened.
+  const [hasProgramme, setHasProgramme] = useState(false);
+
+  useEffect(() => {
+    if (!id) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/sessions/`);
+        const body = await res.json().catch(() => ({}));
+        if (!cancelled && res.ok && body.status === 'success') {
+          setHasProgramme(Boolean(body.data?.published));
+        }
+      } catch {
+        // No programme is the normal case, and a failed probe reads the same
+        // way: the tab simply does not appear.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
   const [walletBalance, setWalletBalance] = useState(null);
 
   // Ticket tiers (real, from the ticketing endpoint)
@@ -710,7 +747,7 @@ export const ViewEventContent = ({
 
           {/* Tabs */}
           <div className={styles.tabRow}>
-            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)} type="button">
+            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)} type="button">
                 {tx(t.label)}
               </button>)}
           </div>
@@ -833,6 +870,12 @@ export const ViewEventContent = ({
                 </aside>
               </div>}
 
+            {/* SCHEDULE - real sessions, or nothing at all */}
+            {activeTab === 'schedule' && <div className={styles.scheduleTab}>
+                <h2 className={styles.sectionTitle}>{tt("ui.event.schedule.1878", "Event schedule")}</h2>
+                <EventSchedule eventRef={id} />
+              </div>}
+
             {/* TICKETS */}
             {activeTab === 'tickets' && <div className={styles.ticketTab}>
                 <div className={styles.ticketHeaderRow}>
@@ -846,6 +889,15 @@ export const ViewEventContent = ({
                       {tt("ui.wallet.9ab9", "Wallet:")} <strong>{walletBalance.toLocaleString()} VC</strong>
                     </div>}
                 </div>
+
+                {/* Sold out is where somebody needs the queue, so it is offered
+                    here rather than on a page they would have to find. It draws
+                    nothing at all while tickets are still on sale. */}
+                <EventWaitlist
+                  eventRef={id}
+                  token={session?.user?.sessionToken}
+                  soldOut={tiers.length > 0 && tiers.every(x => x.sold_out || x.available <= 0)}
+                />
 
                 <div className={styles.tierGrid}>
                   {tickets.map(t => <div key={t.id} className={`${styles.tierCard} ${styles['tierCard_' + t.tier]}`}>
