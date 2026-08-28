@@ -1,11 +1,13 @@
 'use client';
 
+// Nothing imports this file. It is left in place, translated and with its dates
+// reading the site's language rather than the browser's, so that reviving it
+// does not revive those two faults. The tournament page people actually see is
+// app/tournaments/view-tournament/page.js.
+
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import organizer from "@/images/signed_in_user_small.webp"
 import { GoDotFill } from "react-icons/go";
-import EntryChecklist from "@/components/entry-requirements/EntryChecklist";
-import { tokenFrom } from "@/components/tournament-lib/tournamentApi";
 import { appLocale } from "@/lib/appLocale";
 import { useT } from "@/i18n/LanguageProvider";
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
@@ -21,8 +23,6 @@ const shortDate = value => (value
 
 const TournamentDetailsOverviewLeft = ({ tournament }) => {
   const tt = useT();
-  const { data: session } = useSession();
-  const token = tokenFrom(session);
 
   if (!tournament) {
     return <div>{tt("ui.loading.tournament.7024", "Loading tournament…")}</div>;
@@ -42,14 +42,6 @@ const TournamentDetailsOverviewLeft = ({ tournament }) => {
             || tt("ui.noDescription.9c31", "No description available")}
         </p>
       </div>
-
-      {/* What this tournament asks for before somebody can register, shown on
-          the page they are already reading rather than after they have filled
-          in a form and pressed pay. Renders nothing when nothing is required,
-          which is the normal case. */}
-      {tournament.tournament_id && token && (
-        <EntryChecklist tournamentId={tournament.tournament_id} token={token} />
-      )}
 
       <div className={overviewLtStyles.organizerContainer}>
         <h3 className={overviewLtStyles.headerH3}>

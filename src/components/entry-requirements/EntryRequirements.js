@@ -20,6 +20,7 @@ import {
 } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
+import { kindLabel } from './kinds';
 import styles from './entry-requirements.module.css';
 
 const base = () => `${process.env.NEXT_PUBLIC_API_URL}/tournament`;
@@ -218,7 +219,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
 
               <div className={styles.rowBody}>
                 <div className={styles.rowHead}>
-                  <span className={styles.rowLabel}>{row.label || row.kind}</span>
+                  <span className={styles.rowLabel}>{kindLabel(tt, row.kind, row.label)}</span>
                   <span className={styles.by}>
                     {tt(`req.by.${row.checked_by}`, CHECKED_BY_NOTE[row.checked_by] || '')}
                   </span>
@@ -270,7 +271,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
             {unused.map(spec => (
               <button key={spec.kind} type="button" className={styles.pick}
                       onClick={() => add(spec.kind)}>
-                <span className={styles.pickLabel}>{spec.label}</span>
+                <span className={styles.pickLabel}>{kindLabel(tt, spec.kind, spec.label)}</span>
                 <span className={styles.pickBy}>
                   {tt(`req.by.${spec.checked_by}`, CHECKED_BY_NOTE[spec.checked_by] || '')}
                 </span>
@@ -311,7 +312,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
             <div key={item.id} className={styles.submission}>
               <div className={styles.subHead}>
                 <span className={styles.subWho}>{item.user?.username}</span>
-                <span className={styles.subWhat}>{item.requirement?.label}</span>
+                <span className={styles.subWhat}>{kindLabel(tt, item.requirement?.kind, item.requirement?.label)}</span>
               </div>
               <pre className={styles.subValue}>
                 {typeof item.value === 'string' ? item.value : JSON.stringify(item.value, null, 2)}
