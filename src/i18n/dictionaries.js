@@ -3848,6 +3848,13 @@ export const dictionaries = {
     'partners.reviewed': 'reviewed',
     'partners.scopeIntro': 'Most of this is granted the moment you ask, because it is already readable by anybody with a browser. The rest is about identifiable people, so somebody looks at it.',
     'ui.dateNotSet': 'Date not set',
+    'admin.disqualifiedDone': 'Disqualified.',
+    'admin.dqNoMatches': 'no matches to come',
+    'admin.dqNobody': 'Nobody is registered for this tournament yet.',
+    'admin.dqSub': 'Pick who is being disqualified. Matches they have already played stand; matches still to come are forfeited to their opponents.',
+    'admin.dqTitle': 'Disqualify',
+    'admin.dqWillForfeit': '{n} match(es) will be forfeited',
+    'api.participantsLoadFailed': 'Could not load who is registered for this tournament.',
   },
 
   fr: {
@@ -7682,6 +7689,13 @@ export const dictionaries = {
     'partners.reviewed': 'examiné',
     'partners.scopeIntro': 'La plupart est accordée dès la demande, car c\'est déjà lisible par n\'importe qui avec un navigateur. Le reste concerne des personnes identifiables : quelqu\'un l\'examine.',
     'ui.dateNotSet': 'Date non définie',
+    'admin.disqualifiedDone': 'Disqualifié.',
+    'admin.dqNoMatches': 'aucun match à venir',
+    'admin.dqNobody': 'Personne n\'est encore inscrit à ce tournoi.',
+    'admin.dqSub': 'Choisissez qui est disqualifié. Les matchs déjà joués restent acquis ; ceux à venir sont donnés à leurs adversaires.',
+    'admin.dqTitle': 'Disqualifier',
+    'admin.dqWillForfeit': '{n} match(s) seront donnés',
+    'api.participantsLoadFailed': 'Impossible de charger les inscrits de ce tournoi.',
   },
 
   pt: {
@@ -11516,5 +11530,12 @@ export const dictionaries = {
     'partners.reviewed': 'analisado',
     'partners.scopeIntro': 'A maior parte é concedida assim que a pede, porque já é legível por qualquer pessoa com um navegador. O resto diz respeito a pessoas identificáveis, por isso alguém o analisa.',
     'ui.dateNotSet': 'Data por definir',
+    'admin.disqualifiedDone': 'Desqualificado.',
+    'admin.dqNoMatches': 'sem jogos por disputar',
+    'admin.dqNobody': 'Ainda ninguém se inscreveu neste torneio.',
+    'admin.dqSub': 'Escolha quem está a ser desqualificado. Os jogos já disputados mantêm-se; os que faltam são atribuídos aos adversários.',
+    'admin.dqTitle': 'Desqualificar',
+    'admin.dqWillForfeit': '{n} jogo(s) serão atribuídos',
+    'api.participantsLoadFailed': 'Não foi possível carregar os inscritos deste torneio.',
   },
 };

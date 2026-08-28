@@ -176,7 +176,9 @@ function TournamentsInner() {
       [id]: false
     }));
   }
-  async function disqualifyTeam(id, teamName) {
+  // Takes what the picker chose - a registration id and a reason - rather than
+  // a typed team name that may match nothing.
+  async function disqualifyTeam(id, choice) {
     const token = localStorage.getItem('adminToken');
     setActionLoading(p => ({
       ...p,
@@ -189,14 +191,15 @@ function TournamentsInner() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          team_name: teamName
-        })
+        body: JSON.stringify(choice)
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(tt('admin.disqualified', '{name} disqualified.').replace('{name}', teamName), 'success');
+        // The server says how many matches it forfeited, which is the part an
+        // admin needs to know and could not previously find out.
+        toast.push(data.message || tt('admin.disqualifiedDone', 'Disqualified.'), 'success');
         setDisqTarget(null);
+        await fetchTournaments();
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
       toast.push(tt("msg.connectionError", "Connection error."), 'error');
@@ -337,7 +340,7 @@ function TournamentsInner() {
       {editTarget && <EditTournamentModal tournament={editTarget} onCancel={() => setEditTarget(null)} onSubmit={payload => saveTournament(editTarget.id, payload)} loading={!!actionLoading[editTarget.id]} />}
 
       {/* Disqualify modal */}
-      {disqTarget && <DisqualifyModal tournament={disqTarget} onCancel={() => setDisqTarget(null)} onSubmit={team => disqualifyTeam(disqTarget.id, team)} loading={!!actionLoading[disqTarget.id]} />}
+      {disqTarget && <DisqualifyModal tournament={disqTarget} onCancel={() => setDisqTarget(null)} onSubmit={choice => disqualifyTeam(disqTarget.id, choice)} loading={!!actionLoading[disqTarget.id]} />}
     </div>;
 }
 /** Correct somebody else's tournament from the console.
@@ -633,26 +636,86 @@ function DisqualifyModal({
 }) {
   const tx = useTx();
   const tt = useT();
-  const [team, setTeam] = useState('');
+
+  // The registered participants, by name. The old form asked for a team name as
+  // free text with "e.g. Crimson Wolves" as the hint - type it and hope it
+  // matches, and if it does not, nothing happens and nobody is told why.
+  const [participants, setParticipants] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  const [chosen, setChosen] = useState(null);
   const [reason, setReason] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.id}/matches/`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (res.ok && body.status === 'success') {
+          setParticipants(body.data.participants || []);
+        } else {
+          setParticipants([]);
+          setLoadError(apiMessage(tt, body, 'api.participantsLoadFailed',
+            'Could not load who is registered for this tournament.'));
+        }
+      } catch {
+        if (!cancelled) {
+          setParticipants([]);
+          setLoadError(tt('api.NETWORK_UNREACHABLE',
+            'Could not reach the server. Check the connection and try again.'));
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [tournament.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const live = (participants || []).filter(p => p.status !== 'disqualified');
+
   return <div className={styles.modalOverlay} onClick={onCancel}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <p className={styles.modalTitle}>{tt("ui.disqualify.team.9c85", "Disqualify Team")}</p>
+        <p className={styles.modalTitle}>{tt("admin.dqTitle", "Disqualify")}</p>
         <p className={styles.modalSub}>
-          {tt("ui.from.tournament.bd57", "From tournament “")}{tournament.name}&rdquo;.
+          {tt("admin.dqSub", "Pick who is being disqualified. Matches they have already played stand; matches still to come are forfeited to their opponents.")}
         </p>
-        <div className={styles.formRow}>
-          <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.team.name.5d4f", "Team Name")} <InfoTip id="adminDqTeam" /></span></label>
-          <input className={styles.formInput} value={team} onChange={e => setTeam(e.target.value)} placeholder={tt("ui.e.g.crimson.wolves.98c1", "e.g. Crimson Wolves")} />
-        </div>
+
+        {participants === null ? <p className={styles.modalSub}>{tt("ui.loading", "Loading…")}</p>
+          : loadError ? <p className={styles.modalSub}>{loadError}</p>
+          : live.length === 0 ? <p className={styles.modalSub}>
+              {tt("admin.dqNobody", "Nobody is registered for this tournament yet.")}
+            </p>
+          : <div className={styles.matchPicker}>
+              {live.map(p => <button
+                  key={p.registration_id}
+                  type="button"
+                  className={`${styles.matchRow} ${chosen?.registration_id === p.registration_id ? styles.matchRowOn : ''}`}
+                  onClick={() => setChosen(p)}>
+                  <span className={styles.matchSides}>{p.name}</span>
+                  <span className={styles.matchScore}>
+                    {p.live_matches
+                      ? tt("admin.dqWillForfeit", "{n} match(es) will be forfeited").replace('{n}', p.live_matches)
+                      : tt("admin.dqNoMatches", "no matches to come")}
+                  </span>
+                </button>)}
+            </div>}
+
         <div className={styles.formRow}>
           <label className={styles.formLabel}>{tt("ui.reason.f219", "Reason")}</label>
-          <textarea className={styles.formInput} rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder={tt("ui.reason.disqualification.2336", "Reason for disqualification")} />
+          <textarea className={styles.formInput} rows={3} value={reason}
+                    onChange={e => setReason(e.target.value)}
+                    placeholder={tt("ui.reason.disqualification.2336", "Reason for disqualification")} />
         </div>
+
         <div className={styles.modalBtns}>
           <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>
-          <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => team.trim() && onSubmit(team)} disabled={loading || !team.trim()}>
-            {loading ? tx("Submitting…") : tt('admin.disqualify', 'Disqualify')}
+          <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => onSubmit({
+          registration_id: chosen?.registration_id,
+          reason
+        })} disabled={loading || !chosen}>
+            {loading ? tx("Saving…") : tx("Disqualify")}
           </button>
         </div>
       </div>
