@@ -265,3 +265,25 @@
   .pageTitle { font-size: 1.5rem; }
   .keyRow { flex-direction: column; align-items: flex-start; }
 }
+
+/* Which scopes grant themselves, said on the row. Filled pills, no rings. */
+.instantTag,
+.reviewTag {
+  display: inline-block;
+  margin-left: 0.45rem;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.68rem;
+  vertical-align: middle;
+}
+
+.instantTag {
+  background-color: rgba(76, 175, 80, 0.18);
+  color: var(--v-ent-success-light);
+}
+
+.reviewTag {
+  background-color: rgba(229, 185, 78, 0.16);
+  color: #E5B94E;
+}

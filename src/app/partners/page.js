@@ -38,6 +38,9 @@ const PartnersPage = () => {
   const token = session?.user?.sessionToken;
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
   const [scopes, setScopes] = useState({});
+  // Which scopes grant themselves. From the server, so the form and the
+  // thing that decides cannot disagree about what is instant.
+  const [selfServe, setSelfServe] = useState([]);
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
@@ -66,7 +69,11 @@ const PartnersPage = () => {
   const load = useCallback(async () => {
     try {
       const cat = await fetch(`${apiBase}/partners/scopes/`);
-      if (cat.ok) setScopes((await cat.json())?.data?.scopes || {});
+      if (cat.ok) {
+        const body = await cat.json();
+        setScopes(body?.data?.scopes || {});
+        setSelfServe(body?.data?.self_serve || []);
+      }
       if (token) {
         const mine = await fetch(`${apiBase}/partners/mine/`, {
           headers: {
@@ -306,7 +313,15 @@ const PartnersPage = () => {
               label
             }) => <label key={key} className={styles.checkRow}>
                       <input type="checkbox" checked={form.requested_scopes.includes(key)} onChange={() => toggleScope(key)} />
-                      <span><code>{key}</code> {label}</span>
+                      <span>
+                        <code>{key}</code> {label}
+                        {/* Said on the row, so it is answered before it is asked. */}
+                        <span className={selfServe.includes(key) ? styles.instantTag : styles.reviewTag}>
+                          {selfServe.includes(key)
+                            ? tt('partners.instant', 'instant')
+                            : tt('partners.reviewed', 'reviewed')}
+                        </span>
+                      </span>
                     </label>)}
                 </div>)}
 
