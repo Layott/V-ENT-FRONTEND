@@ -79,7 +79,10 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 50%;
-  transform: translateX(-50%);
+  /* Centred on the mark, then slid back by however far it actually sticks out
+     of the window. The component measures that on open and sets --tip-shift. */
+  --tip-shift: 0px;
+  transform: translateX(calc(-50% + var(--tip-shift)));
   z-index: 60;
   width: max-content;
   max-width: min(20rem, calc(100vw - 2rem));
@@ -103,8 +106,8 @@
 }
 
 @keyframes tipIn {
-  from { opacity: 0; transform: translate(-50%, -3px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translate(calc(-50% + var(--tip-shift)), -3px); }
+  to   { opacity: 1; transform: translate(calc(-50% + var(--tip-shift)), 0); }
 }
 
 /* Near the edge of a narrow screen a centred bubble runs off the side, so it
@@ -112,13 +115,13 @@
 @media (max-width: 30rem) {
   .bubble {
     left: 0;
-    transform: none;
+    transform: translateX(var(--tip-shift));
     max-width: calc(100vw - 2.5rem);
   }
 
   @keyframes tipIn {
-    from { opacity: 0; transform: translateY(-3px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate(var(--tip-shift), -3px); }
+    to   { opacity: 1; transform: translate(var(--tip-shift), 0); }
   }
 }
 

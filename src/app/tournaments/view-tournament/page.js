@@ -18,6 +18,7 @@ import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } fro
 import styles from './view-tournament.module.css';
 import { shareLink, linkTo } from '@/lib/share';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
+import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
 import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import ImageUpload from '@/components/image-upload/ImageUpload';
@@ -455,7 +456,7 @@ export const ViewTournamentContent = ({
 
           {/* Panel content */}
           <div className={styles.panel}>
-            {activeTab === 'overview' && <OverviewPanel tournament={tournament} />}
+            {activeTab === 'overview' && <OverviewPanel tournament={tournament} token={token} />}
             {activeTab === 'rules' && <RulesPanel tournament={tournament} />}
             {activeTab === 'bracket' && <BracketPanel tournamentId={id} isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
@@ -471,7 +472,8 @@ export const ViewTournamentContent = ({
 
 /* ──────────────── OVERVIEW ──────────────── */
 const OverviewPanel = ({
-  tournament
+  tournament,
+  token
 }) => {
   const tt = useT();
   const organizer = getOrganizer(tournament);
@@ -491,6 +493,19 @@ const OverviewPanel = ({
   })).filter(channel => channel.url);
   return <div className={styles.overviewGrid}>
       <div className={styles.overviewMain}>
+        {/* What this tournament asks for before somebody can register, read on
+            the page they are already on rather than after they have filled in a
+            form and pressed pay. Draws nothing when nothing is required, and
+            carries its own surface, so there is no section wrapper here to
+            leave an empty box behind when it draws nothing.
+
+            The numeric id, not the route's slug: the requirements endpoint is
+            addressed by id, and a slug reaches it as a 404 that shows up as an
+            empty list rather than an error. */}
+        {tournament?.id && token && (
+          <EntryChecklist tournamentId={tournament.id} token={token} />
+        )}
+
         {about && <section className={styles.section}>
             <h2 className={styles.sectionTitle}>{tt("ui.about.tournament.1008", "About this tournament")}</h2>
             <p className={styles.sectionText}>{about}</p>

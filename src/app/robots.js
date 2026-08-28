@@ -34,6 +34,8 @@ export default function robots() {
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
           '/events/my-events',     // a personal list, including unlisted events
+          '/events/edit-event',    // a form, and only the organiser may submit it
+          '/events/*/edit',
           '/events/*/manage',      // promo codes and who may run the event
           '/events/*/attendees',   // the door list is attendee data
         ],
@@ -44,7 +46,7 @@ export default function robots() {
         userAgent: ['GPTBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot'],
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
-                   '/events/*/manage', '/events/*/attendees'],
+                   '/events/*/edit', '/events/*/manage', '/events/*/attendees'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

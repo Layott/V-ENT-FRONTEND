@@ -58,12 +58,42 @@ const InfoTip = ({ id, text, label, className = '' }) => {
     };
   }, [open, close]);
 
-  // Flip above when the bubble would run off the bottom of the window.
+  // Flip above when the bubble would run off the bottom of the window, and
+  // slide sideways when it would run off either edge.
+  //
+  // The bubble is centred on the mark, so a mark near the right edge pushed
+  // half a bubble off screen. The CSS handled that below 30rem by giving up on
+  // centring altogether, which left the desktop case - a tip at the end of a
+  // row, inside a panel that ends well before the window does - still
+  // overflowing. Measured rather than guessed: the shift is however far it
+  // actually sticks out.
+  const bubbleRef = useRef(null);
+  const [shift, setShift] = useState(0);
+
   useEffect(() => {
     if (!open || !wrapRef.current) return;
     const r = wrapRef.current.getBoundingClientRect();
     setAbove(window.innerHeight - r.bottom < 190);
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !bubbleRef.current) {
+      setShift(0);
+      return;
+    }
+    // Measure with no shift applied, so a second open does not compound the
+    // first one's correction.
+    bubbleRef.current.style.setProperty('--tip-shift', '0px');
+    const box = bubbleRef.current.getBoundingClientRect();
+    const margin = 12;
+    let next = 0;
+    if (box.right > window.innerWidth - margin) {
+      next = -(box.right - (window.innerWidth - margin));
+    } else if (box.left < margin) {
+      next = margin - box.left;
+    }
+    setShift(next);
+  }, [open, body]);
 
   if (!body) return null;
 
@@ -98,7 +128,9 @@ const InfoTip = ({ id, text, label, className = '' }) => {
         <span
           id={bubbleId}
           role="tooltip"
+          ref={bubbleRef}
           className={`${styles.bubble} ${above ? styles.bubbleAbove : ''}`}
+          style={{ '--tip-shift': `${shift}px` }}
         >
           {body}
         </span>

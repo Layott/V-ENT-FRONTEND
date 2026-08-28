@@ -43,6 +43,7 @@ function GamesInner() {
   const [newLogo, setNewLogo] = useState(null);
   const [logoOpen, setLogoOpen] = useState(null);
   const [newSeries, setNewSeries] = useState({});
+  const [newMode, setNewMode] = useState({});
   // A request that never arrives has to end somewhere. Without the catch, a
   // dropped connection or a refused preflight rejects here, `load` unwinds
   // before it can clear its own flag, and the page sits on "Loading..." for
@@ -167,6 +168,29 @@ function GamesInner() {
     method: 'PATCH',
     body: JSON.stringify(patch)
   }), tt('admin.editionUpdated', 'Edition updated.'));
+
+  // The modes were seeded by a migration and nothing could touch them
+  // afterwards, so a game added here arrived with no modes and no way to give
+  // it any - and the wizard then offered its organiser nothing to pick.
+  const addMode = async game => {
+    const name = (newMode[game.id]?.name || '').trim();
+    if (!name) return;
+    const size = newMode[game.id]?.size || '';
+    const done = await run(() => call(`/games/${game.id}/modes/`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        team_size: size || 0,
+        series: newMode[game.id]?.series || null,
+      }),
+    }), tt('admin.modeAdded', 'Mode added.'));
+    if (done) setNewMode(p => ({ ...p, [game.id]: { name: '', size: '', series: '' } }));
+  };
+
+  const patchMode = (mode, patch) => run(() => call(`/modes/${mode.id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(patch),
+  }), tt('admin.modeUpdated', 'Mode updated.'));
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
@@ -228,6 +252,55 @@ function GamesInner() {
                                   {s.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
                                 </button>}
                             </div>)}
+                        </div>}
+
+                      {/* How this game is played. The wizard reads exactly
+                          this list, so a game with none here offers its
+                          organiser nothing to pick. */}
+                      {(game.modes || []).length > 0 && <div className={styles.seriesList}>
+                          {game.modes.map(m => <div key={m.id} className={`${styles.seriesRow} ${m.is_active ? '' : styles.retired}`}>
+                              <span className={styles.seriesName}>{m.name}</span>
+                              {m.series_name && <span className={styles.year}>{m.series_name}</span>}
+                              {m.team_size > 0 && <span className={styles.used}>
+                                {tt('admin.modeTeamSize', '{n} a side').replace('{n}', m.team_size)}
+                              </span>}
+                              {!m.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
+                              {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchMode(m, {
+                      is_active: !m.is_active
+                    })}>
+                                  {m.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
+                                </button>}
+                            </div>)}
+                        </div>}
+
+                      {mayEdit && <div className={styles.addSeriesRow}>
+                          <input className={styles.input} placeholder={tt('admin.modeName', 'Mode name, e.g. Clash Squad')} value={newMode[game.id]?.name || ''} onChange={e => setNewMode(p => ({
+                    ...p,
+                    [game.id]: {
+                      ...(p[game.id] || {}),
+                      name: e.target.value
+                    }
+                  }))} />
+                          <input className={styles.inputSmall} type="number" min="0" max="100" placeholder={tt('admin.modeSize', 'A side')} value={newMode[game.id]?.size || ''} onChange={e => setNewMode(p => ({
+                    ...p,
+                    [game.id]: {
+                      ...(p[game.id] || {}),
+                      size: e.target.value
+                    }
+                  }))} />
+                          {game.series.length > 0 && <select className={styles.inputSmall} value={newMode[game.id]?.series || ''} onChange={e => setNewMode(p => ({
+                    ...p,
+                    [game.id]: {
+                      ...(p[game.id] || {}),
+                      series: e.target.value
+                    }
+                  }))}>
+                              <option value="">{tt('admin.modeEveryEdition', 'Every edition')}</option>
+                              {game.series.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            </select>}
+                          <button type="button" className={styles.addBtn} disabled={busy || !(newMode[game.id]?.name || '').trim()} onClick={() => addMode(game)}>
+                            {tt('admin.addMode', 'Add mode')}
+                          </button>
                         </div>}
 
                       {mayEdit && logoOpen === game.id && <div className={styles.logoRow}>

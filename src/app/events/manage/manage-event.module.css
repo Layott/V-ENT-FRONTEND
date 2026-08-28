@@ -289,3 +289,29 @@
     width: 100%;
   }
 }
+
+/* Changing a price or an allocation in place, rather than in a modal: the
+   organiser is looking at the row they are correcting. */
+.editRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.editRow .input {
+  flex: 0 1 150px;
+}
+
+@media (max-width: 560px) {
+  .editRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editRow .input {
+    flex: 1 1 auto;
+  }
+}

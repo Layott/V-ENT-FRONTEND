@@ -29,6 +29,12 @@ const LOCAL_KEY = 'vent:walkthrough';
 
 // Pages where a modal over the top would be wrong: the person is mid-task, or
 // not signed in, or being asked for money.
+// Where the tour is allowed to start itself. It walks people to the page each
+// chapter is about, so starting it anywhere else moves somebody off the page
+// they asked for.
+const homeRoute = (pathname) =>
+  (pathname || '').replace(/^\/(fr|pt)(?=\/|$)/, '').replace(/\/$/, '') === '/home';
+
 const NEVER_ON = [
   '/login', '/signup', '/forgot-password', '/reset-password', '/reset-email',
   '/verify-email', '/email-verified', '/claim', '/onboarding', '/admin',
@@ -122,15 +128,31 @@ export const WalkthroughProvider = ({ children }) => {
   const seen = Boolean(state && (state.completed_at || state.skipped)
     && (state.version ?? 0) >= TOUR_VERSION);
 
-  // Run it for somebody signed in who has not seen this version, once they are
-  // on a page where a modal is not in the way.
+  // Run it for somebody signed in who has not seen this version - but only
+  // when they are on the home page.
+  //
+  // The tour walks to the page each chapter is about, and its first chapter is
+  // about /home. Auto-starting it anywhere meant it did that to somebody who
+  // had just asked for something else: open a shared tournament link with an
+  // account that has not seen the tour, and you are pushed to /home before the
+  // tournament finishes rendering. That is how it looked to the organiser who
+  // reported that their own manage page "just reloads the homepage" - nothing
+  // to do with permissions, and no error to read.
+  //
+  // /home is where signing in lands you, so the tour still meets almost
+  // everybody on their first visit. Starting it from Settings still works from
+  // anywhere, because that path sets `running` itself rather than going through
+  // this effect - somebody who asked for the tour has consented to being walked
+  // around.
+  const onHome = homeRoute(pathname);
   useEffect(() => {
     if (status !== 'authenticated' || blocked || running) return;
+    if (!onHome) return;
     if (state === null) return;            // still waiting on the account
     if (seen) return;
     setStartChapter(null);
     setRunning(true);
-  }, [status, blocked, running, state, seen]);
+  }, [status, blocked, running, state, seen, onHome]);
 
   const finish = useCallback(() => {
     setRunning(false);

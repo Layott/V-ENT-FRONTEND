@@ -66,6 +66,28 @@ const MobileSidebar = ({
                     </Link>
                 </li>
 
+                {/* The things you run, rather than the things you browse. On a
+                    phone the header dropdown does not exist, so without these
+                    the events you created were reachable only from a small
+                    button on /events. */}
+                <li className={`${styles.sidebarItem} ${isActive('/tournaments/my-tournaments') ? styles.activeLink : ''}`}>
+                    <Link href={'/tournaments/my-tournaments'} className={styles.iconTextLink}>
+                        {t('menu.myTournaments', 'My tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
+                    </Link>
+                </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/events/my-events') ? styles.activeLink : ''}`}>
+                    <Link href={'/events/my-events'} className={styles.iconTextLink}>
+                        {t('menu.myEvents', 'My events')} <MdOutlineEvent className={styles.sidebarIcon} />
+                    </Link>
+                </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/events/my-tickets') ? styles.activeLink : ''}`}>
+                    <Link href={'/events/my-tickets'} className={styles.iconTextLink}>
+                        {t('menu.myTickets', 'My tickets')} <MdOutlineEvent className={styles.sidebarIcon} />
+                    </Link>
+                </li>
+
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
                         {t('nav.tournaments')} <LuGamepad2 className={styles.sidebarIcon} />

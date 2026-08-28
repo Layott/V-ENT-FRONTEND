@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IoCalendarOutline, IoLocationOutline, IoTimeOutline, IoTicketOutline } from 'react-icons/io5';
+import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
 import { FaUsers, FaCheckCircle, FaCrown, FaStar, FaStore, FaTrophy } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
 import { FiExternalLink } from 'react-icons/fi';
@@ -44,9 +44,17 @@ const TABS = [{
   id: 'tickets',
   label: 'Tickets'
 }, {
-  id: 'schedule',
-  label: 'Schedule'
-}, {
+  // The Schedule tab is hidden until it is real.
+  //
+  // It was drawn by SCHEDULE_BLUEPRINT below: a function that invents a two day
+  // programme from the event's start date, so EVERY event on the platform
+  // showed the same "Doors open + Vendor zone activation", "Cosplay parade" and
+  // "After-party + DJ set" whoever ran it and whatever it was about.
+  //
+  // That is worse than no tab. No tab says nothing has been published; an
+  // invented one says the organiser published THIS, and somebody turns up at
+  // 8pm for a DJ set that was never going to happen. The EventSession model
+  // exists now; this comes back when the organiser can fill it in.
   id: 'vendors',
   label: 'Vendors'
 }, {
@@ -94,73 +102,6 @@ const normaliseTier = t => {
     sold_out: !!t.sold_out,
     perks: Array.isArray(t.perks) ? t.perks : []
   };
-};
-const SCHEDULE_BLUEPRINT = event => {
-  // Build a schedule based on event start time. Anchored to Day 1 + Day 2.
-  if (!event?.start_date) return [];
-  const start = new Date(event.start_date);
-  const day1 = new Date(start);
-  const day2 = new Date(start);
-  day2.setDate(day1.getDate() + 1);
-  const at = (d, h, m = 0) => {
-    const o = new Date(d);
-    o.setHours(h, m, 0, 0);
-    return o.toISOString();
-  };
-  return [{
-    day: 'Day 1',
-    date: day1.toISOString(),
-    sessions: [{
-      id: 's1',
-      time: at(day1, 10),
-      title: 'Doors open + Vendor zone activation',
-      stage: 'Main Hall'
-    }, {
-      id: 's2',
-      time: at(day1, 12),
-      title: 'Cosplay parade',
-      stage: 'Centre Stage'
-    }, {
-      id: 's3',
-      time: at(day1, 14),
-      title: 'Group stage - FIFA Pro Cup',
-      stage: 'Esports Arena'
-    }, {
-      id: 's4',
-      time: at(day1, 17),
-      title: 'Live AMV showcase',
-      stage: 'Centre Stage'
-    }, {
-      id: 's5',
-      time: at(day1, 20),
-      title: 'After-party + DJ set',
-      stage: 'Outdoor Yard'
-    }]
-  }, {
-    day: 'Day 2',
-    date: day2.toISOString(),
-    sessions: [{
-      id: 's6',
-      time: at(day2, 11),
-      title: 'Anime industry panel',
-      stage: 'Panel Room A'
-    }, {
-      id: 's7',
-      time: at(day2, 13),
-      title: 'Quarter & Semi finals - PUBG',
-      stage: 'Esports Arena'
-    }, {
-      id: 's8',
-      time: at(day2, 16),
-      title: 'VIP meet & greet',
-      stage: 'VIP Lounge'
-    }, {
-      id: 's9',
-      time: at(day2, 18),
-      title: 'Grand Finals + Awards',
-      stage: 'Main Hall'
-    }]
-  }];
 };
 const VENUE_BOOTHS = [{
   id: 'b1',
@@ -579,7 +520,6 @@ export const ViewEventContent = ({
     })();
     return () => controller.abort();
   }, [id]);
-  const schedule = useMemo(() => event ? SCHEDULE_BLUEPRINT(event) : [], [event]);
   const openBuy = tier => {
     setBuyTier(tier);
     setBuyPin('');
@@ -804,6 +744,12 @@ export const ViewEventContent = ({
 
                 <aside className={styles.sideCard}>
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
+                  {/* Editing your own event. The endpoint existed with nothing
+                      calling it, so the only route to a mistyped venue was to
+                      create the event again. */}
+                  {isOrganizer && <Link href={`/events/${id}/edit`} className={styles.doorListLink}>
+                      {tt("manage.editThisEvent", "Edit this event →")}
+                    </Link>}
                   {isOrganizer && <Link href={`/events/${id}/attendees`} className={styles.doorListLink}>
                       {tt("ui.door.list.check.2f19", "Door list & check-in →")}
                     </Link>}
@@ -938,35 +884,6 @@ export const ViewEventContent = ({
                       </button>
                     </div>)}
                 </div>
-              </div>}
-
-            {/* SCHEDULE */}
-            {activeTab === 'schedule' && <div className={styles.scheduleTab}>
-                <h2 className={styles.sectionTitle}>{tt("ui.event.schedule.1878", "Event schedule")}</h2>
-                {schedule.length === 0 ? <p className={styles.body}>{tt("ui.schedule.will.published.soon.0d3b", "Schedule will be published soon.")}</p> : schedule.map(day => <div key={day.day} className={styles.dayBlock}>
-                      <div className={styles.dayHeader}>
-                        <h2 className={styles.dayTitle}>{day.day}</h2>
-                        <span className={styles.daySub}>{formatDate(day.date)}</span>
-                      </div>
-                      <div className={styles.timeline}>
-                        {day.sessions.map(s => <div key={s.id} className={styles.timelineRow}>
-                            <div className={styles.timelineTime}>
-                              <IoTimeOutline />
-                              {new Date(s.time).toLocaleTimeString(appLocale(), {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                            </div>
-                            <div className={styles.timelineDot} />
-                            <div className={styles.timelineBody}>
-                              <p className={styles.timelineTitle}>{tx(s.title)}</p>
-                              <p className={styles.timelineStage}>
-                                <IoLocationOutline /> {s.stage}
-                              </p>
-                            </div>
-                          </div>)}
-                      </div>
-                    </div>)}
               </div>}
 
             {/* VENDORS */}

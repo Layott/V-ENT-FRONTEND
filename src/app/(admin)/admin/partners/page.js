@@ -120,6 +120,9 @@ function PartnersInner() {
     };
   };
   const [rotated, setRotated] = useState(null);
+  const [newRedirect, setNewRedirect] = useState('');
+  const [verifyUrl, setVerifyUrl] = useState('');
+  const [verifySecret, setVerifySecret] = useState('');
 
   // Changing the grant on a partner that is already live. Deliberately a
   // different endpoint from the review, so the approval history is not rewritten
@@ -169,6 +172,82 @@ function PartnersInner() {
       );
       if (res.ok) {
         setRotated(body.data);
+        await fetchPartners();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Where a partner may be sent back to after signing in.
+  //
+  // Only the partner's own OWNER could edit these, and a partner integrating
+  // against us cannot always reach that account. AFC could not add their
+  // sign-in callback - a different path from the connect one - so BAD_REDIRECT
+  // was the live answer to every attempt to sign in with V-ENT, and the person
+  // reviewing the partner had no control for it.
+  const addRedirect = async () => {
+    const uri = newRedirect.trim();
+    if (!uri) return;
+    setBusy(true);
+    try {
+      const { res, body } = await post(`/partners/admin/${open.id}/redirects/`, {
+        add: uri,
+        reason: note,
+      });
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.redirectAdded', 'Address added.')
+          : apiMessage(tt, body, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) {
+        setNewRedirect('');
+        await fetchPartners();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const removeRedirect = async uri => {
+    setBusy(true);
+    try {
+      const { res, body } = await post(`/partners/admin/${open.id}/redirects/`, {
+        remove: uri,
+        reason: note,
+      });
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.redirectRemoved', 'Address removed.')
+          : apiMessage(tt, body, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) await fetchPartners();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Where we ask this partner to confirm one of their own usernames, for a
+  // tournament requirement that names them. Empty turns it off, and every such
+  // requirement then falls back to the organiser reading it - which is what it
+  // did before the partner was connected, so nothing breaks.
+  const saveVerification = async () => {
+    setBusy(true);
+    try {
+      const body = { reason: note };
+      if (verifyUrl !== '') body.verification_url = verifyUrl.trim();
+      if (verifySecret !== '') body.verification_secret = verifySecret.trim();
+      const { res, body: out } = await post(
+        `/partners/admin/${open.id}/verification/`, body);
+      toast[res.ok ? 'success' : 'error'](
+        res.ok
+          ? tt('admin.partners.verificationSaved', 'Verification endpoint saved.')
+          : apiMessage(tt, out, 'api.failed', 'Failed.'),
+      );
+      if (res.ok) {
+        // The secret is write-only, so it is cleared here rather than left
+        // sitting in an input somebody might read over a shoulder.
+        setVerifySecret('');
         await fetchPartners();
       }
     } finally {
@@ -429,8 +508,85 @@ function PartnersInner() {
                 <div><dt>{tt("ui.registration.b233", "Registration")}</dt><dd>{open.registration_number || tx("Not given")}</dd></div>
                 <div><dt>{tt("ui.privacy.policy.7cea", "Privacy policy")}</dt><dd>{open.privacy_policy_url || tx("Not given")}</dd></div>
                 <div><dt>{tt("ui.data.contact.84ae", "Data contact")}</dt><dd>{open.data_protection_contact || tx("Not given")}</dd></div>
-                <div><dt>{tt("ui.redirect.addresses.cc32", "Redirect addresses")}</dt><dd>{(open.redirect_uris || []).join(', ') || tt('admin.none', 'None')}</dd></div>
               </dl>
+
+              {/* Where we ask this partner to confirm one of their own
+                  usernames. Documented for them as part four of
+                  docs/PARTNER-API.md. */}
+              <div className={styles.redirectBlock}>
+                <p className={styles.redirectTitle}>
+                  {tt('admin.partners.verification', 'Username verification')}
+                </p>
+                <p className={styles.redirectHint}>
+                  {tt('admin.partners.verificationHint', 'An organiser can require that every entrant holds a real account on this partner. If they give us an address, we ask them and the entrant is admitted in under a second. Leave it empty and the organiser reads the usernames themselves, which is what happens today.')}
+                </p>
+                <div className={styles.redirectRow}>
+                  <input
+                    className={styles.redirectInput}
+                    value={verifyUrl}
+                    onChange={e => setVerifyUrl(e.target.value)}
+                    placeholder={open.verification_url || 'https://partner.example/verify/'}
+                    aria-label={tt('admin.partners.verificationUrl', 'Verification address')}
+                  />
+                </div>
+                <div className={styles.redirectRow}>
+                  <input
+                    className={styles.redirectInput}
+                    type="password"
+                    value={verifySecret}
+                    onChange={e => setVerifySecret(e.target.value)}
+                    placeholder={open.has_verification_secret
+                      ? tt('admin.partners.secretHeld', 'A secret is held. Type a new one to replace it.')
+                      : tt('admin.partners.secretNone', 'The secret they gave us')}
+                    aria-label={tt('admin.partners.verificationSecret', 'Verification secret')}
+                  />
+                  <button type="button" className={styles.primary}
+                          disabled={busy || (verifyUrl === '' && verifySecret === '')}
+                          onClick={saveVerification}>
+                    {tt('admin.partners.verificationSave', 'Save')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Editable, not a read-only line. This is the field that was
+                  blocking AFC, and reading it back was all the console could do
+                  with it. */}
+              <div className={styles.redirectBlock}>
+                <p className={styles.redirectTitle}>
+                  {tt("ui.redirect.addresses.cc32", "Redirect addresses")}
+                </p>
+                <p className={styles.redirectHint}>
+                  {tt('admin.partners.redirectHint', 'Where this partner may send somebody after they sign in. The sign-in callback is usually a different path from the connect one, so most partners need both.')}
+                </p>
+
+                {(open.redirect_uris || []).length === 0 ? (
+                  <p className={styles.redirectHint}>
+                    {tt('admin.partners.noRedirects', 'None registered, so signing in with V-ENT is refused for this partner.')}
+                  </p>
+                ) : (open.redirect_uris || []).map(uri => (
+                  <div key={uri} className={styles.redirectRow}>
+                    <code className={styles.redirectUri}>{uri}</code>
+                    <button type="button" className={styles.ghost} disabled={busy}
+                            onClick={() => removeRedirect(uri)}>
+                      {tt('admin.partners.redirectRemove', 'Remove')}
+                    </button>
+                  </div>
+                ))}
+
+                <div className={styles.redirectRow}>
+                  <input
+                    className={styles.redirectInput}
+                    value={newRedirect}
+                    onChange={e => setNewRedirect(e.target.value)}
+                    placeholder="https://partner.example/auth/vent/sso/callback/"
+                    aria-label={tt('admin.partners.redirectAdd', 'Add an address')}
+                  />
+                  <button type="button" className={styles.primary} disabled={busy || !newRedirect.trim()}
+                          onClick={addRedirect}>
+                    {tt('admin.partners.redirectAdd', 'Add an address')}
+                  </button>
+                </div>
+              </div>
 
               {issuedSecret && <div className={styles.secretBox}>
                   <p className={styles.secretLabel}>{tt("ui.send.these.partner.secret.858f", "Send these to the partner. The secret is shown once.")}</p>

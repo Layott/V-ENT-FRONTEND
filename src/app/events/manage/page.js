@@ -26,7 +26,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 const API = process.env.NEXT_PUBLIC_API_URL;
-const TABS = ['influencers', 'promos', 'team'];
+const TABS = ['tickets', 'influencers', 'promos', 'team'];
 export const ManageEventContent = ({
   slug: slugFromPath
 }) => {
@@ -37,7 +37,10 @@ export const ManageEventContent = ({
   } = useSession();
   const token = session?.user?.sessionToken;
   const eventRef = slugFromPath || searchParams.get('id');
-  const [tab, setTab] = useState('influencers');
+  const [tab, setTab] = useState('tickets');
+  const [tiers, setTiers] = useState([]);
+  const [newTier, setNewTier] = useState({ name: '', price: '', quantity: '', perks: '' });
+  const [editing, setEditing] = useState(null);
   const [referrals, setReferrals] = useState([]);
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
@@ -91,12 +94,13 @@ export const ManageEventContent = ({
     if (!token || !eventRef) return;
     setLoading(true);
     setError('');
-    const [r, p, m] = await Promise.all([call('/referrals/'), call('/promos/'), call('/managers/')]);
+    const [r, p, m, ti] = await Promise.all([call('/referrals/'), call('/promos/'), call('/managers/'), call('/ticket-types/')]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
       setLoading(false);
       return;
     }
+    setTiers(ti.body?.data?.tiers || []);
     setReferrals(r.body?.data?.results || []);
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
@@ -189,7 +193,32 @@ export const ManageEventContent = ({
   const removeManager = row => run(() => call(`/managers/${row.id}/`, {
     method: 'DELETE'
   }), 'manage.removed', 'Removed.');
+  // Ticket types on an event that already exists.
+  const addTier = () => {
+    if (!newTier.name.trim()) return;
+    return run(() => call('/tiers/', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: newTier.name.trim(),
+        price: newTier.price || 0,
+        quantity: newTier.quantity || 0,
+        perks: newTier.perks,
+      }),
+    }), 'manage.tierAdded', 'Ticket type added.')
+      .then(() => setNewTier({ name: '', price: '', quantity: '', perks: '' }));
+  };
+
+  const saveTier = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(patch),
+  }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setEditing(null));
+
+  const removeTier = row => run(() => call(`/tiers/${row.id}/delete/`, {
+    method: 'DELETE',
+  }), 'manage.tierRemoved', 'Ticket type removed.');
+
   const tabLabel = key => ({
+    tickets: tt('manage.tabTickets', 'Tickets'),
     influencers: tt('manage.tabInfluencers', 'Influencers'),
     promos: tt('manage.tabPromos', 'Promo codes'),
     team: tt('manage.tabTeam', 'Team')
@@ -205,7 +234,7 @@ export const ManageEventContent = ({
           </Link>
           <h1 className={styles.pageTitle}>{tt('manage.title', 'Run this event')}</h1>
           <p className={styles.pageSub}>
-            {tt('manage.sub', 'The people selling for you, the codes they hand out, and who else can help.')}
+            {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
           </p>
 
           <div className={styles.tabRow}>
@@ -217,6 +246,86 @@ export const ManageEventContent = ({
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
           {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p> : <>
+              {/* ---------------------------------------------------- tickets */}
+              {tab === 'tickets' && <section className={styles.card}>
+                  <p className={styles.cardHint}>
+                    {tt('manage.tierHint', 'What people can buy. Add a type at any time, correct a price, or open more when one sells out. How many are sold is counted from the tickets themselves and cannot be typed.')}
+                  </p>
+
+                  {tiers.length === 0 ? <p className={styles.muted}>
+                      {tt('manage.noTiers', 'No ticket types yet, so nobody can buy anything for this event.')}
+                    </p> : <div className={styles.rows}>
+                      {tiers.map(row => <div key={row.id} className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{row.name}</strong>
+                            <span className={styles.code}>
+                              {row.price_vc > 0
+                                ? `${row.price_vc} VC`
+                                : tt('manage.tierFree', 'Free')}
+                            </span>
+                            <span className={styles.muted}>
+                              {tt('manage.tierSold', '{sold} of {total} sold')
+                                .replace('{sold}', row.sold)
+                                .replace('{total}', row.quantity || '-')}
+                            </span>
+                            {row.sold_out && <span className={styles.offBadge}>
+                              {tt('manage.tierSoldOut', 'Sold out')}
+                            </span>}
+                          </div>
+
+                          {editing === row.id ? <div className={styles.editRow}>
+                              <input className={styles.input} type="number" min="0"
+                                     defaultValue={row.price_ngn}
+                                     placeholder={tt('manage.tierPriceNgn', 'Price in naira')}
+                                     onChange={e => { row._price = e.target.value; }} />
+                              <input className={styles.input} type="number" min={row.sold}
+                                     defaultValue={row.quantity}
+                                     placeholder={tt('manage.tierQuantity', 'How many')}
+                                     onChange={e => { row._quantity = e.target.value; }} />
+                              <button type="button" className={styles.primaryBtn} disabled={busy}
+                                      onClick={() => saveTier(row, {
+                                        ...(row._price !== undefined ? { price: row._price } : {}),
+                                        ...(row._quantity !== undefined ? { quantity: row._quantity } : {}),
+                                      })}>
+                                {tt('manage.save', 'Save')}
+                              </button>
+                              <button type="button" className={styles.ghostBtn}
+                                      onClick={() => setEditing(null)}>
+                                {tt('ui.cancel.77df', 'Cancel')}
+                              </button>
+                            </div> : <div className={styles.rowActions}>
+                              <button type="button" className={styles.ghostBtn} disabled={busy}
+                                      onClick={() => setEditing(row.id)}>
+                                {tt('manage.tierEdit', 'Change price or how many')}
+                              </button>
+                              {row.sold === 0 && <button type="button" className={styles.ghostBtn}
+                                      disabled={busy} onClick={() => removeTier(row)}>
+                                {tt('manage.tierRemove', 'Remove')}
+                              </button>}
+                            </div>}
+                        </div>)}
+                    </div>}
+
+                  <div className={styles.newRow}>
+                    <input className={styles.input} value={newTier.name}
+                           placeholder={tt('manage.tierName', 'Name, e.g. VIP')}
+                           onChange={e => setNewTier(v => ({ ...v, name: e.target.value }))} />
+                    <input className={styles.input} type="number" min="0" value={newTier.price}
+                           placeholder={tt('manage.tierPriceNgn', 'Price in naira')}
+                           onChange={e => setNewTier(v => ({ ...v, price: e.target.value }))} />
+                    <input className={styles.input} type="number" min="0" value={newTier.quantity}
+                           placeholder={tt('manage.tierQuantity', 'How many')}
+                           onChange={e => setNewTier(v => ({ ...v, quantity: e.target.value }))} />
+                    <input className={styles.input} value={newTier.perks}
+                           placeholder={tt('manage.tierPerks', 'What it includes, separated by commas')}
+                           onChange={e => setNewTier(v => ({ ...v, perks: e.target.value }))} />
+                    <button type="button" className={styles.primaryBtn}
+                            disabled={busy || !newTier.name.trim()} onClick={addTier}>
+                      {tt('manage.addTier', 'Add ticket type')}
+                    </button>
+                  </div>
+                </section>}
+
               {/* ------------------------------------------------ influencers */}
               {tab === 'influencers' && <section className={styles.card}>
                   <p className={styles.cardHint}>

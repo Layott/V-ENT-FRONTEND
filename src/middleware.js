@@ -28,6 +28,8 @@ const protectedRoutes = [
   "/edit-team-profile",
   "/teams/create-team",
   "/events/create-event",
+  "/events/edit-event",
+  "/events/my-events",
   "/events/my-tickets",
   "/events/attendees",
   "/events/register-event",
@@ -43,6 +45,14 @@ const protectedRoutes = [
   "/notifications",
   "/disputes",
 ];
+// Routes whose slug sits in the middle, so a prefix match cannot reach them.
+// `/events/lagos-anime-con/edit` performs an action and so is gated; the event
+// page under it is public and stays public.
+const protectedPatterns = [
+  /^\/events\/[^/]+\/(edit|manage|attendees)$/,
+  /^\/tournaments\/[^/]+\/manage$/,
+];
+
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 // Redirect to a path on the host the visitor is actually using.
@@ -121,7 +131,8 @@ export default async function middleware(req) {
     }
   }
 
-  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
+  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
+    || protectedPatterns.some(pattern => pattern.test(path));
   const isPublicRoute = publicRoutes.some(route => path === route);
 
   const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

@@ -236,48 +236,57 @@
 
 .dropdownMenu {
   background-color: #303136;
-  width: 170px;
-  min-height: 40px;
+  width: 200px;
   position: absolute;
   top: 55px;
   right: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.6rem;
+  align-items: stretch;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  z-index: 60;
 }
 
-.logoutBTN,
+/* Rows, not centred labels: this is a list of places you can go, and a row you
+   can press anywhere along is easier to hit on a phone than a centred word. */
+.menuLink,
 .viewProfile {
+  display: block;
   font-size: 0.85rem;
   cursor: pointer;
-  padding: 4px 12px;
-  border-radius: 4px;
-  transition: border 0.5s ease-in-out;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
 }
 
-.viewProfile {
+.menuLink:hover,
+.viewProfile:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFF;
+}
 
-  margin-top: 0.5rem;
+.menuLink:focus-visible,
+.logoutBTN:focus-visible {
+  outline: 2px solid #FFF;
+  outline-offset: 2px;
 }
 
 .logoutBTN {
   outline: none;
-
-  width: 80px;
-  margin-bottom: 0.6rem;
+  margin-top: 0.35rem;
+  padding: 8px 10px;
+  border-radius: 6px;
   background-color: var(--v-ent-red);
   color: #FFF;
-}
-
-.viewProfile:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
 .logoutBTN:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--v-ent-light-red);
 }
 
 @media only screen and (min-width: 300px) {

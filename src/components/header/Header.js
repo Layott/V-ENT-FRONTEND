@@ -247,8 +247,29 @@ const Header = ({
             <FaCaretDown className={styles.dropdownArrow} onClick={toggleDropdown} />
           </div>
             {isDropdownOpen && <div className={styles.dropdownMenu}>
-                <Link href={'/user-profile'} className={styles.viewProfile}>
+                {/* The one place that lists everything you own.
+                    "as a user I dont see where to do that. There should be like
+                    an overall place" - the events you run had no route into
+                    them from anywhere except a small button on /events, and the
+                    tournaments you run had one only from /tournaments. This menu
+                    is on every page, so it is the overall place. */}
+                <Link href={'/user-profile'} className={styles.menuLink}>
                   {tt("ui.view.profile.685e", "View Profile")}
+                </Link>
+                <Link href={'/tournaments/my-tournaments'} className={styles.menuLink}>
+                  {tt("menu.myTournaments", "My tournaments")}
+                </Link>
+                <Link href={'/events/my-events'} className={styles.menuLink}>
+                  {tt("menu.myEvents", "My events")}
+                </Link>
+                <Link href={'/events/my-tickets'} className={styles.menuLink}>
+                  {tt("menu.myTickets", "My tickets")}
+                </Link>
+                <Link href={'/wallets'} className={styles.menuLink}>
+                  {tt("menu.wallet", "Wallet")}
+                </Link>
+                <Link href={'/settings'} className={styles.menuLink}>
+                  {tt("menu.settings", "Settings")}
                 </Link>
 
                 <button className={styles.logoutBTN} onClick={handleLogout}>

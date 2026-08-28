@@ -18,7 +18,7 @@ const TournamentDetailsBanner = ({
 }) => {
   const tx = useTx();
   const tt = useT();
-  const [shareLabel, setShareLabel] = useState('Share');
+  const [shareLabel, setShareLabel] = useState(() => tt("ui.share.09ca", "Share"));
   const handleShare = async () => {
     await shareLink({
       path: linkTo.tournament(tournament),
@@ -26,7 +26,7 @@ const TournamentDetailsBanner = ({
       text: 'Tournament on V-ENT',
       notify: message => {
         setShareLabel(message);
-        window.setTimeout(() => setShareLabel('Share'), 3000);
+        window.setTimeout(() => setShareLabel(tt("ui.share.09ca", "Share")), 3000);
       }
     });
   };
@@ -73,17 +73,16 @@ const TournamentDetailsBanner = ({
 
   // Handle next step after selection
   const handleModalNext = selectedOption => {
-    console.log('Selected option:', selectedOption);
     setIsModalOpen(false);
     // Here you can redirect to the appropriate registration form
     // based on the selected option (individual or team)
 
     // Example:
-    if (tournament) {
-      window.location.href = `/tournaments/${tournament.tournament_id}/register?type=${selectedOption}`;
-    } else {
-      window.location.href = `/tournaments/register-tournament?type=${selectedOption}`;
-    }
+    // The address a person sees carries the slug, never the primary key.
+    const address = tournament?.slug || tournament?.tournament_slug;
+    window.location.href = address
+      ? `/tournaments/${address}/register?type=${selectedOption}`
+      : `/tournaments/register-tournament?type=${selectedOption}`;
   };
   if (!tournament) {
     // Fallback to original static content when no tournament data
@@ -120,19 +119,13 @@ const TournamentDetailsBanner = ({
       </>;
   }
 
-  // Debug logging
-  console.log('Tournament data:', tournament);
-  console.log('Tournament banner field:', tournament?.tournament_banner);
   return <>
       <div className={bannerDetailsStyles.tournamentDetailsBannerContainer}>
           <div className={bannerDetailsStyles.tournamentDetailsBanner}>
               <Image src={getImageUrl(tournament?.tournament_banner)} alt={tournament ? `${tournament.tournament_title} Banner` : tx("Tournament Details Banner")} width={800} height={400} onError={e => {
-          console.error('Image failed to load:', e.target.src);
-          console.log('Falling back to default banner');
-          // Fallback to default banner on error
+          // The banner is decorative; a missing file must not leave a broken
+          // image icon on the page.
           e.target.src = tournamentDetailsBanner;
-        }} onLoad={() => {
-          console.log('Image loaded successfully');
         }} />
           </div>
 
@@ -157,8 +150,8 @@ const TournamentDetailsBanner = ({
                   </div>
               </div>
               <div className={bannerDetailsStyles.headerRight}>
-                  <button className={bannerDetailsStyles.shareBTN}>
-                      <RiShare2Fill className={bannerDetailsStyles.shareIcon} /> {tt("ui.share.09ca", "Share")}
+                  <button type="button" className={bannerDetailsStyles.shareBTN} onClick={handleShare}>
+                      <RiShare2Fill className={bannerDetailsStyles.shareIcon} /> {shareLabel}
                   </button>
                   <button onClick={handleJoinTournament} className={bannerDetailsStyles.joinTournamentBTN}>
                     {tt("ui.join.tournament.cda2", "Join Tournament")}
