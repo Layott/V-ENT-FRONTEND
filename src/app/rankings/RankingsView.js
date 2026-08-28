@@ -226,7 +226,9 @@ const RankingsView = () => {
   const navigateToProfile = entry => {
     if (!entry) return;
     if (tab === 'players') {
-      router.push(`/u/${encodeURIComponent(entry.id)}`);
+      // A profile address is the username, not the row number. /u/3 is against
+      // the slug rule and lets anybody walk the user table by counting.
+      router.push(`/u/${encodeURIComponent(entry.username || entry.name || entry.id)}`);
     } else if (tab === 'teams') {
       router.push(`/teams/${encodeURIComponent(entry.id)}`);
     } else if (tab === 'organizations') {
