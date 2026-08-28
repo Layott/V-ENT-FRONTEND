@@ -13,6 +13,7 @@ import styles from './tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import RulesEditor from '@/components/rules-editor/RulesEditor';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -456,6 +457,19 @@ function EditTournamentModal({
               </select>
             </div>
           </>}
+
+        {/* The rules an admin may need to correct: the points, the placement
+            table and the ORDER of the tie-breakers. The organiser's own editor,
+            the same component, so the two cannot show different things. An
+            admin can still change these after results, which the organiser
+            cannot, and the change is recorded. */}
+        {form && !loadError && <div className={styles.rulesBlock}>
+            <RulesEditor
+              tournamentId={tournament.id}
+              token={typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null}
+              canEdit
+            />
+          </div>}
 
         <div className={styles.modalBtns}>
           <button className={`${shared.actBtn}`} onClick={onCancel}>{tt("ui.cancel.77df", "Cancel")}</button>

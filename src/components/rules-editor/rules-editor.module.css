@@ -1,0 +1,285 @@
+/* Filled surfaces, no strokes. Every number is a field because every number is
+   the organiser's to set. */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.formatNote {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+  max-width: 60ch;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.blockTitle {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.pointsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fieldLabel {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+}
+
+.number {
+  width: 100px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.number:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.number:disabled {
+  opacity: 0.5;
+}
+
+/* The placement table */
+
+.placementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.5rem;
+}
+
+.placementRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+}
+
+.position {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+}
+
+.presetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 5px 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.chip:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+/* Tie-breakers, in order */
+
+.breakerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.breaker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  padding: 0.5rem 0.7rem;
+}
+
+.breakerOrder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  background-color: var(--v-ent-red);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.breakerLabel {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.84rem;
+}
+
+.breakerActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  outline: none;
+}
+
+.iconBtn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.iconBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.iconBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.ghost {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 13px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.ghost:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.save {
+  align-self: flex-start;
+  background-color: var(--v-ent-red);
+  border-radius: 9px;
+  padding: 10px 22px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.save:hover:not(:disabled) {
+  background-color: var(--v-ent-light-red);
+}
+
+.save:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.locked {
+  background-color: rgba(229, 185, 78, 0.12);
+  border-radius: 9px;
+  padding: 0.65rem 0.85rem;
+  color: #E5B94E;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.error {
+  color: var(--v-ent-red);
+  font-size: 0.84rem;
+}
+
+.note {
+  color: var(--v-ent-success);
+  font-size: 0.84rem;
+}
+
+.state {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 560px) {
+  .number {
+    width: 84px;
+  }
+
+  .placementGrid {
+    grid-template-columns: 1fr;
+  }
+}

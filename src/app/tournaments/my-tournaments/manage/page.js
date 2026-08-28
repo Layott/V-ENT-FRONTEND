@@ -11,6 +11,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import RulesEditor from '@/components/rules-editor/RulesEditor';
 import { ventFetch, API, tokenFrom, toTournament, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -316,6 +317,16 @@ const ManageContent = ({
               </div>
 
               {/* Registrations */}
+              {/* Points, the placement table and the order of the tie-breakers,
+                  all editable, because an organiser's league is theirs. */}
+              <div className={styles.section}>
+                <RulesEditor
+                  tournamentId={tournament?.id}
+                  token={token}
+                  canEdit={Boolean(token)}
+                />
+              </div>
+
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>{tt("ui.registrations.5fbc", "Registrations (")}{participants.length})</h2>
                 {participants.length === 0 ? <div className={styles.emptyState}>
