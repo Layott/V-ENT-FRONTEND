@@ -3969,6 +3969,7 @@ export const dictionaries = {
     'api.couldNotLoadEvent': 'Could not load this event.',
     'api.couldNotSaveEvent': 'Could not save the changes.',
     'req.why.member': '{member}: {what}',
+    'ui.login.7b3c': 'Log in',
   },
 
   fr: {
@@ -7924,6 +7925,7 @@ export const dictionaries = {
     'api.couldNotLoadEvent': 'Impossible de charger cet événement.',
     'api.couldNotSaveEvent': 'Impossible d\'enregistrer les modifications.',
     'req.why.member': '{member} : {what}',
+    'ui.login.7b3c': 'Se connecter',
   },
 
   pt: {
@@ -11879,5 +11881,6 @@ export const dictionaries = {
     'api.couldNotLoadEvent': 'Não foi possível carregar este evento.',
     'api.couldNotSaveEvent': 'Não foi possível guardar as alterações.',
     'req.why.member': '{member}: {what}',
+    'ui.login.7b3c': 'Entrar',
   },
 };
