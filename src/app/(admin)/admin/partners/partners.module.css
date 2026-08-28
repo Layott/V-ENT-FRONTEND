@@ -289,3 +289,92 @@
   font-size: 0.8rem;
   line-height: 1.45;
 }
+
+/* Redirect addresses: editable, not a read-only line.
+   Same row shape as the keys block above it, so the panel reads as one thing. */
+
+.redirectBlock {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.redirectTitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.redirectHint {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  max-width: 62ch;
+  margin: 0 0 0.15rem;
+}
+
+.redirectRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  padding: 0.55rem 0.75rem;
+}
+
+.redirectUri {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.75);
+  word-break: break-all;
+  min-width: 0;
+  flex: 1;
+}
+
+.redirectInput {
+  flex: 1;
+  min-width: 220px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.redirectInput:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.primary {
+  background-color: var(--v-ent-red);
+  border-radius: 7px;
+  padding: 6px 14px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.76rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--v-ent-light-red);
+}
+
+.primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.primary:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
