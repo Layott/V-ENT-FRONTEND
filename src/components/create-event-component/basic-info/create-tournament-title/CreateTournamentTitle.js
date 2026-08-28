@@ -1,4 +1,8 @@
+'use client';
+
 import { useState } from 'react';
+import useGameModes from '@/components/game-modes/useGameModes';
+import useGames from '@/components/game-modes/useGames';
 import { FaAsterisk } from "react-icons/fa6";
 import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
@@ -12,17 +16,22 @@ const CreateTournamentTitle = ({
   const [selectedGame, setSelectedGame] = useState(formData.game || '');
   const [selectedGameMode, setSelectedGameMode] = useState(formData.game_mode || '');
   const [description, setDescription] = useState(formData.tournament_description || '');
-  const gameModes = {
-    'Free Fire': ['Battle Royale', 'Clash Squad'],
-    'PUBG': ['Battle Royale', 'Multiplayer'],
-    'CODM': ['Battle Royale', 'Multiplayer'],
-    'EAFC': ['1 vs 1', '2 vs 2']
-  };
+  // Both lists come from the server. This screen fed its GAME select from the
+  // keys of a hardcoded mode map, so an event could only be attached to one of
+  // four games however many the platform actually runs, and a game added in the
+  // admin console never appeared here at all.
+  const { games, loading: gamesLoading } = useGames();
+  const chosenGameId = games.find(g => g.name === selectedGame)?.id ?? null;
+  const { modes: availableModes, loading: modesLoading, failed: modesFailed } =
+    useGameModes(chosenGameId, null);
+
   const handleGameChange = event => {
     const value = event.target.value;
     setSelectedGame(value);
     updateFormData('game', value);
+    updateFormData('game_id', games.find(g => g.name === value)?.id ?? null);
     setSelectedGameMode('');
+    updateFormData('game_mode', '');
   };
   const handleGameModeChange = event => {
     const value = event.target.value;
@@ -58,10 +67,14 @@ const CreateTournamentTitle = ({
                 <FaAsterisk className={createTournamentStyles.asteriskIcon} />
               </span>
             </label>
-            <select value={selectedGame} onChange={handleGameChange} className={createTournamentStyles.inputWithDropdown}>
-              <option value="">{tt("ui.select.game.9212", "Select Game")}</option>
-              {Object.keys(gameModes).map(game => <option key={game} value={game}>
-                  {game}
+            <select value={selectedGame} onChange={handleGameChange} className={createTournamentStyles.inputWithDropdown} disabled={gamesLoading}>
+              <option value="">
+                {gamesLoading
+                  ? tt("ui.loading.33ce", "Loading…")
+                  : tt("ui.select.game.9212", "Select Game")}
+              </option>
+              {games.map(game => <option key={game.id ?? game.name} value={game.name}>
+                  {game.name}
                 </option>)}
             </select>
           </div>
@@ -73,12 +86,25 @@ const CreateTournamentTitle = ({
                 <FaAsterisk className={createTournamentStyles.asteriskIcon} />
               </span>
             </label>
-            <select value={selectedGameMode} onChange={handleGameModeChange} className={createTournamentStyles.inputWithDropdown} disabled={!selectedGame}>
-              <option value="">{tt("ui.select.game.mode.8e83", "Select Game Mode")}</option>
-              {selectedGame && gameModes[selectedGame]?.map((mode, index) => <option key={index} value={mode}>
-                    {mode}
-                  </option>)}
+            <select value={selectedGameMode} onChange={handleGameModeChange} className={createTournamentStyles.inputWithDropdown} disabled={!selectedGame || modesLoading}>
+              <option value="">
+                {modesLoading
+                  ? tt("ui.loading.33ce", "Loading…")
+                  : tt("ui.select.game.mode.8e83", "Select Game Mode")}
+              </option>
+              {availableModes.map(mode => <option key={mode.id} value={mode.name}>
+                  {mode.name}{mode.team_size ? ` (${mode.team_size} a side)` : ''}
+                </option>)}
             </select>
+            {selectedGame && !modesLoading && availableModes.length === 0 && <input
+        type="text"
+        className={createTournamentStyles.inputText}
+        value={selectedGameMode}
+        placeholder={modesFailed
+          ? tt("createTournament.modesFailed", "Could not load the modes. Type one.")
+          : tt("createTournament.noModes", "No modes recorded for this game. Type one.")}
+        onChange={handleGameModeChange}
+      />}
           </div>
         </div>
   

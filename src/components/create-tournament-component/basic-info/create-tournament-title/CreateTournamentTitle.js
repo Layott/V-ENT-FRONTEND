@@ -2,6 +2,7 @@
 
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState } from 'react';
+import useGameModes from '@/components/game-modes/useGameModes';
 import { FaAsterisk } from "react-icons/fa6";
 import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
@@ -9,18 +10,10 @@ import styles from './create-tournament-title.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 
-// Known game-mode options per game. Any game not in this map (e.g. one
-// derived dynamically from existing tournaments) falls back to a generic
-// mode so the dropdown is never a dead end.
-const GAME_MODES = {
-  'Free Fire': ['Battle Royale', 'Clash Squad'],
-  'PUBG': ['Battle Royale', 'Multiplayer'],
-  'PUBG Mobile': ['Battle Royale', 'Multiplayer'],
-  'CODM': ['Battle Royale', 'Multiplayer'],
-  'Call of Duty Mobile': ['Battle Royale', 'Multiplayer'],
-  'EAFC': ['1 vs 1', '2 vs 2']
-};
-const DEFAULT_GAME_MODES = ['Standard'];
+// The modes come from the server, keyed on the game's id. This used to be a
+// fixed map keyed on the game's TITLE, which failed two ways: a game added in
+// the admin console offered "Standard" as its only mode, and renaming a game
+// silently lost its modes because the key no longer matched.
 const CreateTournamentTitle = ({
   formData = {},
   updateFormData,
@@ -60,7 +53,22 @@ const CreateTournamentTitle = ({
       updateFormData('tournament_description', value);
     }, 300);
   };
-  const availableModes = selectedGame ? GAME_MODES[selectedGame] || DEFAULT_GAME_MODES : [];
+  const chosenGameId = games.find(g => g.name === selectedGame)?.id ?? null;
+  const { modes: availableModes, loading: modesLoading, failed: modesFailed } =
+    useGameModes(chosenGameId, formData.series_id || null);
+
+  // Picking a mode carries its defaults forward: Battle Royale means placement
+  // scoring with the right table, and a mode that fixes how many a side sets
+  // the team size. Defaults, not constraints - the organiser can still change
+  // both on the next step.
+  const applyMode = mode => {
+    if (!mode) return;
+    if (mode.default_format) updateFormData('bracket_type', mode.default_format);
+    if (mode.default_placement_table) {
+      updateFormData('default_placement_table', mode.default_placement_table);
+    }
+    if (mode.team_size) updateFormData('team_size', mode.team_size);
+  };
   return <div className={`${createTournamentStyles.createSubSectionContainer} ${styles.createSubSectionContainer}`}>
         <div className={styles.tournamentTitleContainer}>
           <label htmlFor="title" className={createTournamentStyles.labelWithAsterisk}>
@@ -112,12 +120,30 @@ const CreateTournamentTitle = ({
                 <FaAsterisk className={createTournamentStyles.asteriskIcon} />
               </span> <InfoTip id="gameMode" /></span>
             </label>
-            <select id="gameMode" value={selectedGameMode} onChange={handleGameModeChange} className={createTournamentStyles.inputWithDropdown} disabled={!selectedGame}>
-              <option value="">{tt("ui.select.game.mode.8e83", "Select Game Mode")}</option>
-              {availableModes.map(mode => <option key={mode} value={mode}>
-                  {mode}
+            <select id="gameMode" value={selectedGameMode} onChange={e => {
+        handleGameModeChange(e);
+        applyMode(availableModes.find(m => m.name === e.target.value));
+      }} className={createTournamentStyles.inputWithDropdown} disabled={!selectedGame || modesLoading}>
+              <option value="">
+                {modesLoading ? tx("Loading…") : tx("Select Game Mode")}
+              </option>
+              {availableModes.map(mode => <option key={mode.id} value={mode.name}>
+                  {mode.name}{mode.team_size ? ` (${mode.team_size} a side)` : ''}
                 </option>)}
             </select>
+            {/* A game nobody has recorded modes for is not a dead end: the
+                select still takes a typed answer, because refusing to let
+                somebody run a tournament because we have no list for their
+                game is worse than an empty list. */}
+            {selectedGame && !modesLoading && availableModes.length === 0 && <input
+        type="text"
+        className={createTournamentStyles.inputText}
+        value={selectedGameMode}
+        placeholder={modesFailed
+          ? tt("createTournament.modesFailed", "Could not load the modes. Type one.")
+          : tt("createTournament.noModes", "No modes recorded for this game. Type one.")}
+        onChange={handleGameModeChange}
+      />}
           </div>
         </div>
 
