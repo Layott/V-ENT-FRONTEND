@@ -27,7 +27,9 @@ const normalize = p => ({
   wins: p.wins ?? '-',
   losses: p.losses ?? '-',
   avatar: p.profile_picture || p.avatar || p.team_logo || null,
-  profileId: p.user_id || p.id || null
+  // The username, because that is the address a person sees and shares. The id
+  // is the fallback only, and only so a row with no username still links.
+  profileId: p.username || p.user_id || p.id || null
 });
 const Avatar = ({
   src,
