@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'rea
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { LuTrophy, LuCalendar, LuUsers, LuMapPin, LuShare2, LuRadio, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket } from 'react-icons/lu';
+import { LuTrophy, LuCalendar, LuUsers, LuMapPin, LuRadio, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket } from 'react-icons/lu';
 import { FaTwitter, FaInstagram, FaTwitch, FaYoutube, FaFacebookF, FaTiktok } from 'react-icons/fa';
 import { SiKick } from 'react-icons/si';
 import { coinsAsNgn } from '@/lib/currency';
@@ -16,7 +16,8 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } from '@/components/tournament-lib/tournamentApi';
 import styles from './view-tournament.module.css';
-import { shareLink, linkTo } from '@/lib/share';
+import { linkTo } from '@/lib/share';
+import ShareCard from '@/components/share/ShareCard';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
 import { useT } from '@/i18n/LanguageProvider';
@@ -216,7 +217,6 @@ export const ViewTournamentContent = ({
   const [reloadKey, setReloadKey] = useState(0);
   // Sharing needs somewhere to say what happened, including the case where the
   // clipboard is refused and the link itself has to be shown.
-  const [shareNotice, setShareNotice] = useState('');
 
   // Keep tab in sync with URL when search params change (the audit checks
   // that ?tab=prize actually selects the prize tab regardless of mount order).
@@ -260,7 +260,18 @@ export const ViewTournamentContent = ({
   const retryLoad = useCallback(() => setReloadKey(k => k + 1), []);
   const sessionUserId = session?.user?.user_id ?? session?.user?.id;
   const creatorId = tournament?.tournament_creator?.user_id ?? tournament?.organizer?.id;
-  const isOrganizer = !!(sessionUserId != null && creatorId != null && String(sessionUserId) === String(creatorId));
+  const creatorName = tournament?.tournament_creator?.username ?? tournament?.organizer?.username;
+  // Two ways to be the same person, because `session.user.id` is not reliably
+  // an id: authOptions falls back to the username when the login response
+  // carries no user_id, so comparing it against a numeric creator id silently
+  // fails and the organiser of a tournament loses every control on their own
+  // page. The event page already matched on both; this one did not.
+  const isOrganizer = !!(
+    (sessionUserId != null && creatorId != null
+      && String(sessionUserId) === String(creatorId))
+    || (creatorName && session?.user?.username
+      && String(creatorName) === String(session.user.username))
+  );
   const registrationClosed = ['live', 'in_progress', 'completed', 'cancelled', 'registration_closed'].includes(tournament?.status);
   if (!id) return <NotFoundShell />;
   if (loading) return <SkeletonShell />;
@@ -358,18 +369,16 @@ export const ViewTournamentContent = ({
                   <p className={styles.heroOrganizer}>by {organizerDisplayName}</p>
                 </div>
                 <div className={styles.heroActions}>
-                  <button type="button" className={styles.shareBtn} onClick={() => shareLink({
-                  path: linkTo.tournament(tournament),
-                  title: tournament?.name || tournament?.tournament_title,
-                  text: 'Tournament on V-ENT',
-                  notify: message => {
-                    setShareNotice(message);
-                    window.setTimeout(() => setShareNotice(''), 4000);
-                  }
-                })}>
-                    <LuShare2 /> {tt("ui.share.09ca", "Share")}
-                  </button>
-                  {shareNotice && <span className={styles.shareNotice}>{shareNotice}</span>}
+                  {/* Copying a link was all this did. A tournament spreads by
+                      somebody holding a phone up in a venue or dropping a
+                      screenshot into a WhatsApp group, and neither of those
+                      carries a clipboard, so it shows the QR too. */}
+                  <ShareCard
+                    url={linkTo.tournament(tournament)}
+                    title={tournament?.name || tournament?.tournament_title}
+                    text={tt('share.tournamentText', 'Brackets and entry for {name} on V-ENT.')
+                      .replace('{name}', tournament?.name || tournament?.tournament_title || '')}
+                  />
                   {isOrganizer ? <Link href={`/tournaments/${id}/manage`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.manage.bf58", "Manage")}</button>
                     </Link> : tournament.is_registered ?
@@ -456,7 +465,8 @@ export const ViewTournamentContent = ({
 
           {/* Panel content */}
           <div className={styles.panel}>
-            {activeTab === 'overview' && <OverviewPanel tournament={tournament} token={token} />}
+            {activeTab === 'overview' && <OverviewPanel tournament={tournament} token={token}
+              isOrganizer={isOrganizer} tournamentRef={id} />}
             {activeTab === 'rules' && <RulesPanel tournament={tournament} />}
             {activeTab === 'bracket' && <BracketPanel tournamentId={id} isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
@@ -473,7 +483,12 @@ export const ViewTournamentContent = ({
 /* ──────────────── OVERVIEW ──────────────── */
 const OverviewPanel = ({
   tournament,
-  token
+  token,
+  // Whether the reader runs this, and the slug to build their links from. The
+  // panel had neither, so the organiser's own routes had nowhere to live and
+  // "Manage" on the hero was the only one anywhere.
+  isOrganizer,
+  tournamentRef
 }) => {
   const tt = useT();
   const organizer = getOrganizer(tournament);
@@ -563,10 +578,27 @@ const OverviewPanel = ({
                 {organizer.username && <p className={styles.organizerHandle}>@{organizer.username}</p>}
               </div>
             </div>
-            <button className={styles.outlineBtn} style={{
+            {/* Running it yourself. These were on the hero as a single
+                "Manage" button and nowhere else, so an organiser looking at
+                their own tournament had no route to editing it. */}
+            {isOrganizer && <div className={styles.ownerLinks}>
+                <Link href={`/tournaments/${tournamentRef}/manage`} className={styles.ownerLink}>
+                  <span>{tt('tournament.editThis', 'Edit this tournament')}</span>
+                  <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                </Link>
+                <Link href={`/tournaments/${tournamentRef}/manage?tab=bracket`} className={styles.ownerLink}>
+                  <span>{tt('tournament.runBracket', 'Bracket and scores')}</span>
+                  <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                </Link>
+                <Link href={`/tournaments/${tournamentRef}/manage?tab=participants`} className={styles.ownerLink}>
+                  <span>{tt('tournament.entrants', 'Entrants and check-in')}</span>
+                  <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                </Link>
+              </div>}
+            {!isOrganizer && <button className={styles.outlineBtn} style={{
           marginTop: '0.75rem',
           width: '100%'
-        }}>{tt("ui.follow.organizer.5a61", "Follow Organizer")}</button>
+        }}>{tt("ui.follow.organizer.5a61", "Follow Organizer")}</button>}
           </section>}
 
         {socials.length > 0 && <section className={styles.section}>

@@ -12,6 +12,7 @@ import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
+import ShareCard from '@/components/share/ShareCard';
 import { useCheckoutFields, CheckoutFieldList, missingRequired }
   from '@/components/checkout-fields/CheckoutFields';
 import Link from 'next/link';
@@ -816,21 +817,42 @@ export const ViewEventContent = ({
                 </div>
 
                 <aside className={styles.sideCard}>
+                  {/* Anybody can pass the event on. The QR is the part that
+                      matters here: most of how this spreads is a phone held up
+                      at a venue or a screenshot in a WhatsApp group. */}
+                  <ShareCard
+                    url={`/events/${id}`}
+                    title={event.name}
+                    text={tt('share.eventText', 'Tickets and details for {name} on V-ENT.')
+                      .replace('{name}', event.name || '')}
+                    label={tt('share.event', 'Share this event')}
+                  />
+
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
-                  {/* Editing your own event. The endpoint existed with nothing
-                      calling it, so the only route to a mistyped venue was to
-                      create the event again. */}
-                  {isOrganizer && <Link href={`/events/${id}/edit`} className={styles.doorListLink}>
-                      {tt("manage.editThisEvent", "Edit this event →")}
-                    </Link>}
-                  {isOrganizer && <Link href={`/events/${id}/attendees`} className={styles.doorListLink}>
-                      {tt("ui.door.list.check.2f19", "Door list & check-in →")}
-                    </Link>}
-                  {/* The commercial side: influencer links, promo codes, and
-                      who else may help run this. */}
-                  {isOrganizer && <Link href={`/events/${id}/manage`} className={styles.doorListLink}>
-                      {tt("manage.runThisEvent", "Influencers, promos & team →")}
-                    </Link>}
+
+                  {/* Three separate places to go, so they are three rows rather
+                      than three inline links running into each other on one
+                      line, which is what they were. */}
+                  {isOrganizer && <div className={styles.ownerLinks}>
+                      {/* Editing your own event. The endpoint existed with
+                          nothing calling it, so the only route to a mistyped
+                          venue was to create the event again. */}
+                      <Link href={`/events/${id}/edit`} className={styles.ownerLink}>
+                        <span>{tt("manage.editThisEventPlain", "Edit this event")}</span>
+                        <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                      </Link>
+                      <Link href={`/events/${id}/attendees`} className={styles.ownerLink}>
+                        <span>{tt("manage.doorListPlain", "Door list and check-in")}</span>
+                        <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                      </Link>
+                      {/* The commercial side: influencer links, promo codes,
+                          and who else may help run this. */}
+                      <Link href={`/events/${id}/manage`} className={styles.ownerLink}>
+                        <span>{tt("manage.runThisEventPlain", "Influencers, promos and team")}</span>
+                        <span className={styles.ownerArrow} aria-hidden="true">→</span>
+                      </Link>
+                    </div>}
+
                   <div className={styles.organizerRow}>
                     <div className={styles.organizerAvatar}>
                       <FaCrown />
