@@ -312,6 +312,13 @@ export const ViewEventContent = ({
   // runs once tokenless on mount and again when NextAuth resolves, doubling every
   // request on the page (measured: view-event, vendors and the events list were
   // each fetched four times per load).
+  // sessionStatus is a dependency, not just a guard. Without it, a
+  // signed-out visitor gets: first run while the session is still
+  // resolving, return early; session resolves to no token, so
+  // authHeaders keeps the same identity and this never runs again.
+  // The page then sits on "Loading event..." for ever. It only looked
+  // fine because whether the session resolves before the first effect
+  // is a race, and signed-in visitors change authHeaders anyway.
   useEffect(() => {
     if (!id) {
       setError(tt("msg.eventIdMissing", "Event ID missing"));
@@ -367,7 +374,7 @@ export const ViewEventContent = ({
       }
     };
     fetchEvent();
-  }, [id, authHeaders]);
+  }, [id, authHeaders, sessionStatus]);
 
   // Fetch wallet balance for ticket flow
   useEffect(() => {
@@ -405,7 +412,7 @@ export const ViewEventContent = ({
       }
     };
     fetchVendors();
-  }, [id, authHeaders]);
+  }, [id, authHeaders, sessionStatus]);
 
   // Linked tournaments. The list carries per-viewer flags (does your ticket cover
   // entry, are you the organizer), so it has to wait for the session to resolve
