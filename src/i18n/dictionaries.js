@@ -3847,6 +3847,7 @@ export const dictionaries = {
     'partners.instant': 'instant',
     'partners.reviewed': 'reviewed',
     'partners.scopeIntro': 'Most of this is granted the moment you ask, because it is already readable by anybody with a browser. The rest is about identifiable people, so somebody looks at it.',
+    'ui.dateNotSet': 'Date not set',
   },
 
   fr: {
@@ -7680,6 +7681,7 @@ export const dictionaries = {
     'partners.instant': 'immédiat',
     'partners.reviewed': 'examiné',
     'partners.scopeIntro': 'La plupart est accordée dès la demande, car c\'est déjà lisible par n\'importe qui avec un navigateur. Le reste concerne des personnes identifiables : quelqu\'un l\'examine.',
+    'ui.dateNotSet': 'Date non définie',
   },
 
   pt: {
@@ -11513,5 +11515,6 @@ export const dictionaries = {
     'partners.instant': 'imediato',
     'partners.reviewed': 'analisado',
     'partners.scopeIntro': 'A maior parte é concedida assim que a pede, porque já é legível por qualquer pessoa com um navegador. O resto diz respeito a pessoas identificáveis, por isso alguém o analisa.',
+    'ui.dateNotSet': 'Data por definir',
   },
 };

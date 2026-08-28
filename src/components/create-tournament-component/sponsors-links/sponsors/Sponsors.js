@@ -40,26 +40,45 @@ const Sponsors = ({
     setFields(updatedFields);
     updateFormData('sponsors', updatedFields); // Update parent formData
   };
+  // The File itself, kept alongside the preview.
+  //
+  // Sponsor logos have never saved. The backend has always read
+  // request.FILES.getlist('sponsor_logos') and matched them by index; the wizard
+  // read the file into a base64 data URL, put that in formData, and never
+  // appended a single file to the request. So the name and the type went up and
+  // the picture was silently dropped every time.
+  //
+  // The data URL also went into localStorage with the draft, which is how an
+  // image big enough to matter blew the storage quota and lost the whole draft.
   const handleLogoUpload = (index, event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const updatedFields = [...fields];
-        updatedFields[index].logo = e.target.result; // Preview URL
-        setFields(updatedFields);
-        updateFormData('sponsors', updatedFields); // Update parent formData
-      };
-      reader.readAsDataURL(file);
-    }
     event.target.value = '';
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+    const updatedFields = [...fields];
+    if (updatedFields[index].logoPreview) {
+      URL.revokeObjectURL(updatedFields[index].logoPreview);
+    }
+    updatedFields[index] = {
+      ...updatedFields[index],
+      logo: preview,
+      logoFile: file,
+    };
+    setFields(updatedFields);
+    updateFormData('sponsors', updatedFields);
   };
   const handleResetLogo = (index, event) => {
     event.stopPropagation();
     const updatedFields = [...fields];
-    updatedFields[index].logo = null;
+    // An object URL that is never revoked leaks every time somebody changes
+    // their mind about a logo.
+    if (updatedFields[index].logo && updatedFields[index].logoFile) {
+      URL.revokeObjectURL(updatedFields[index].logo);
+    }
+    updatedFields[index] = { ...updatedFields[index], logo: null, logoFile: null };
     setFields(updatedFields);
-    updateFormData('sponsors', updatedFields); // Update parent formData
+    updateFormData('sponsors', updatedFields);
   };
   const triggerFileInput = index => {
     fileInputs.current[index].click();
