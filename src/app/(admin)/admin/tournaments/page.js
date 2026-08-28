@@ -379,12 +379,28 @@ function EditTournamentModal({
         }
         const t = data.data.tournament || data.data;
         const at = v => v ? String(v).slice(0, 16) : '';
+        // Every field the endpoint accepts and an admin would ever need to
+        // correct. It showed seven, so the money, the size and the shape of a
+        // tournament were all uneditable from the one screen whose purpose is
+        // correcting somebody else's mistake.
+        const num = v => (v === 0 || v ? String(v) : '');
         const initial = {
           tournament_title: t.tournament_title || t.name || '',
           tournament_description: t.tournament_description || '',
           tournament_rules: t.tournament_rules || '',
           tournament_location: t.tournament_location || '',
+          virtual_link: t.virtual_link || '',
           tournament_visibility: t.tournament_visibility || 'public',
+          tournament_type: t.tournament_type || 'online',
+          tournament_access: t.tournament_access || 'individual',
+          game_mode: t.game_mode || '',
+          entry_fee: t.entry_fee || 'Free',
+          entry_fee_price: num(t.entry_fee_price),
+          prize_type: t.prize_type || 'no_prize',
+          team_size: num(t.team_size),
+          player_size: num(t.player_size),
+          min_number_of_teams: num(t.min_number_of_teams),
+          max_number_of_teams: num(t.max_number_of_teams),
           start_date_and_time: at(t.start_date_and_time),
           end_date_and_time: at(t.end_date_and_time)
         };
@@ -452,12 +468,97 @@ function EditTournamentModal({
                 <DateField value={form.end_date_and_time} onChange={e => set('end_date_and_time', e.target.value)} className={styles.formInput} withTime />
               </div>
             </div>
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldVisibility", "Visibility")}</label>
+                <select className={styles.formInput} value={form.tournament_visibility} onChange={e => set('tournament_visibility', e.target.value)}>
+                  <option value="public">{tt("admin.visibilityPublic", "Public")}</option>
+                  <option value="private">{tt("admin.visibilityPrivate", "Private")}</option>
+                </select>
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldType", "Where it is played")}</label>
+                <select className={styles.formInput} value={form.tournament_type} onChange={e => set('tournament_type', e.target.value)}>
+                  <option value="online">{tt("admin.typeOnline", "Online")}</option>
+                  <option value="physical">{tt("admin.typePhysical", "In person")}</option>
+                  <option value="hybrid">{tt("admin.typeHybrid", "Both")}</option>
+                </select>
+              </div>
+            </div>
+
             <div className={styles.formRow}>
-              <label className={styles.formLabel}>{tt("admin.fieldVisibility", "Visibility")}</label>
-              <select className={styles.formInput} value={form.tournament_visibility} onChange={e => set('tournament_visibility', e.target.value)}>
-                <option value="public">{tt("admin.visibilityPublic", "Public")}</option>
-                <option value="private">{tt("admin.visibilityPrivate", "Private")}</option>
-              </select>
+              <label className={styles.formLabel}>{tt("admin.fieldVirtualLink", "Link for people playing online")}</label>
+              <input className={styles.formInput} value={form.virtual_link} onChange={e => set('virtual_link', e.target.value)} />
+            </div>
+
+            {/* The money. Uneditable until now, so an organiser who set the
+                entry fee wrong had to be told to cancel and start again. */}
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldEntryFee", "Entry")}</label>
+                <select className={styles.formInput} value={form.entry_fee} onChange={e => set('entry_fee', e.target.value)}>
+                  <option value="Free">{tt("admin.entryFree", "Free")}</option>
+                  <option value="Paid">{tt("admin.entryPaid", "Paid")}</option>
+                </select>
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldEntryPrice", "Entry fee, in VENT COINS")}</label>
+                <input className={styles.formInput} type="number" min="0" step="1"
+                       value={form.entry_fee_price}
+                       onChange={e => set('entry_fee_price', e.target.value)}
+                       disabled={form.entry_fee !== 'Paid'} />
+              </div>
+            </div>
+
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldPrizeType", "Prize")}</label>
+                <select className={styles.formInput} value={form.prize_type} onChange={e => set('prize_type', e.target.value)}>
+                  <option value="no_prize">{tt("admin.prizeNone", "No prize")}</option>
+                  <option value="distributed">{tt("admin.prizeDistributed", "Split across places")}</option>
+                  <option value="winner_takes_all">{tt("admin.prizeWinnerTakesAll", "Winner takes all")}</option>
+                </select>
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldAccess", "Who enters")}</label>
+                <select className={styles.formInput} value={form.tournament_access} onChange={e => set('tournament_access', e.target.value)}>
+                  <option value="individual">{tt("admin.accessIndividual", "Individuals")}</option>
+                  <option value="team">{tt("admin.accessTeam", "Teams")}</option>
+                  <option value="team_and_individual">{tt("admin.accessBoth", "Either")}</option>
+                </select>
+              </div>
+            </div>
+
+            {/* The size. Changing a cap below what is already registered is the
+                organiser's call to make and ours to record, not ours to
+                prevent - the registration path refuses the next entrant, and
+                nobody already in is thrown out. */}
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldTeamSize", "Players a side")}</label>
+                <input className={styles.formInput} type="number" min="1" step="1"
+                       value={form.team_size} onChange={e => set('team_size', e.target.value)} />
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldGameMode", "Game mode")}</label>
+                <input className={styles.formInput} value={form.game_mode}
+                       onChange={e => set('game_mode', e.target.value)} />
+              </div>
+            </div>
+
+            <div className={styles.formRow2}>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldMinTeams", "Fewest entrants")}</label>
+                <input className={styles.formInput} type="number" min="2" step="1"
+                       value={form.min_number_of_teams}
+                       onChange={e => set('min_number_of_teams', e.target.value)} />
+              </div>
+              <div>
+                <label className={styles.formLabel}>{tt("admin.fieldMaxTeams", "Most entrants")}</label>
+                <input className={styles.formInput} type="number" min="2" step="1"
+                       value={form.max_number_of_teams}
+                       onChange={e => set('max_number_of_teams', e.target.value)} />
+              </div>
             </div>
           </>}
 
