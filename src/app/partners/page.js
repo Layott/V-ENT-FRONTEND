@@ -108,6 +108,55 @@ const PartnersPage = () => {
       requested_scopes: f.requested_scopes.includes(key) ? f.requested_scopes.filter(s => s !== key) : [...f.requested_scopes, key]
     }));
   };
+  // Adding a sign-in address after approval.
+  //
+  // `redirect_uris` was editable only on the application form, and that form
+  // disappears once the partner is approved - so the moment you actually know
+  // your callback URL, while building the integration, is the moment there is
+  // no field for it. The endpoint has accepted it all along.
+  const [newRedirect, setNewRedirect] = useState('');
+
+  const saveRedirects = async uris => {
+    if (!partner) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${apiBase}/partners/${partner.id}/update/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ redirect_uris: uris })
+      });
+      const body = await res.json().catch(() => ({}));
+      say(body.message || (res.ok
+        ? tt('partners.redirectsSaved', 'Sign-in addresses saved.')
+        : tt('partners.redirectsFailed', 'Could not save those addresses.')));
+      if (res.ok) {
+        setNewRedirect('');
+        await load();
+      }
+    } catch {
+      say(tt('partners.redirectsFailed', 'Could not save those addresses.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addRedirect = () => {
+    const uri = newRedirect.trim();
+    if (!uri) return;
+    const current = partner?.redirect_uris || [];
+    if (current.includes(uri)) {
+      say(tt('partners.redirectAlready', 'That address is already registered.'));
+      return;
+    }
+    saveRedirects([...current, uri]);
+  };
+
+  const removeRedirect = uri =>
+    saveRedirects((partner?.redirect_uris || []).filter(u => u !== uri));
+
   const apply = async e => {
     e.preventDefault();
     if (!token) {
@@ -222,6 +271,43 @@ const PartnersPage = () => {
                     {tt("ui.admin.reviews.every.application.e0aa", "An admin reviews every application. Nothing is granted until they do.")}
                   </p>}
               </div>
+
+              {partner.status === 'approved' && partner.sso_status === 'approved' && <div className={styles.card}>
+                  <h2 className={styles.cardTitle}>
+                    {tt('partners.signInAddresses', 'Sign-in addresses')}
+                  </h2>
+                  <p className={styles.muted}>
+                    {tt('partners.signInAddressesHelp', 'Where we send somebody back to after they sign in with V-ENT. Any address not listed here is refused, so add the one your integration actually uses. The sign-in callback is usually a different path from the one you connect accounts on.')}
+                  </p>
+
+                  {(partner.redirect_uris || []).length === 0 ? (
+                    <p className={styles.muted}>
+                      {tt('partners.noRedirects', 'None registered yet, so signing in with V-ENT is refused.')}
+                    </p>
+                  ) : <div className={styles.keyList}>
+                      {(partner.redirect_uris || []).map(uri => <div key={uri} className={styles.keyRow}>
+                          <code className={styles.secret}>{uri}</code>
+                          <button type="button" className={styles.ghostBtn} disabled={saving}
+                                  onClick={() => removeRedirect(uri)}>
+                            {tt('partners.redirectRemove', 'Remove')}
+                          </button>
+                        </div>)}
+                    </div>}
+
+                  <div className={styles.rowBetween}>
+                    <input
+                      className={styles.input}
+                      value={newRedirect}
+                      onChange={e => setNewRedirect(e.target.value)}
+                      placeholder="https://your-site.com/auth/v-ent/sso/callback/"
+                      aria-label={tt('partners.redirectAdd', 'Add an address')}
+                    />
+                    <button type="button" className={styles.primaryBtn}
+                            disabled={saving || !newRedirect.trim()} onClick={addRedirect}>
+                      {tt('partners.redirectAdd', 'Add an address')}
+                    </button>
+                  </div>
+                </div>}
 
               {partner.status === 'approved' && <div className={styles.card}>
                   <div className={styles.rowBetween}>

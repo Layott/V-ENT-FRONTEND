@@ -4012,6 +4012,14 @@ export const dictionaries = {
     'admin.fieldMinTeams': 'Fewest entrants',
     'admin.fieldMaxTeams': 'Most entrants',
     'api.MIN_ABOVE_MAX': 'The fewest entrants cannot be more than the most.',
+    'partners.signInAddresses': 'Sign-in addresses',
+    'partners.signInAddressesHelp': 'Where we send somebody back to after they sign in with V-ENT. Any address not listed here is refused, so add the one your integration actually uses. The sign-in callback is usually a different path from the one you connect accounts on.',
+    'partners.noRedirects': 'None registered yet, so signing in with V-ENT is refused.',
+    'partners.redirectAdd': 'Add an address',
+    'partners.redirectRemove': 'Remove',
+    'partners.redirectsSaved': 'Sign-in addresses saved.',
+    'partners.redirectsFailed': 'Could not save those addresses.',
+    'partners.redirectAlready': 'That address is already registered.',
   },
 
   fr: {
@@ -8010,6 +8018,14 @@ export const dictionaries = {
     'admin.fieldMinTeams': 'Minimum d\'inscrits',
     'admin.fieldMaxTeams': 'Maximum d\'inscrits',
     'api.MIN_ABOVE_MAX': 'Le minimum d\'inscrits ne peut pas dépasser le maximum.',
+    'partners.signInAddresses': 'Adresses de connexion',
+    'partners.signInAddressesHelp': 'Où nous renvoyons une personne après sa connexion avec V-ENT. Toute adresse absente de cette liste est refusée : ajoutez donc celle que votre intégration utilise réellement. Le callback de connexion est en général un chemin différent de celui de la liaison de compte.',
+    'partners.noRedirects': 'Aucune enregistrée pour l\'instant : la connexion avec V-ENT est donc refusée.',
+    'partners.redirectAdd': 'Ajouter une adresse',
+    'partners.redirectRemove': 'Retirer',
+    'partners.redirectsSaved': 'Adresses de connexion enregistrées.',
+    'partners.redirectsFailed': 'Impossible d\'enregistrer ces adresses.',
+    'partners.redirectAlready': 'Cette adresse est déjà enregistrée.',
   },
 
   pt: {
@@ -12008,5 +12024,13 @@ export const dictionaries = {
     'admin.fieldMinTeams': 'Mínimo de inscritos',
     'admin.fieldMaxTeams': 'Máximo de inscritos',
     'api.MIN_ABOVE_MAX': 'O mínimo de inscritos não pode ser maior do que o máximo.',
+    'partners.signInAddresses': 'Endereços de início de sessão',
+    'partners.signInAddressesHelp': 'Para onde enviamos alguém depois de iniciar sessão com a V-ENT. Qualquer endereço que não esteja aqui é recusado, por isso adicione o que a sua integração usa mesmo. O callback de início de sessão costuma ser um caminho diferente do de ligação de contas.',
+    'partners.noRedirects': 'Ainda nenhum registado, por isso o início de sessão com a V-ENT é recusado.',
+    'partners.redirectAdd': 'Adicionar um endereço',
+    'partners.redirectRemove': 'Remover',
+    'partners.redirectsSaved': 'Endereços de início de sessão guardados.',
+    'partners.redirectsFailed': 'Não foi possível guardar esses endereços.',
+    'partners.redirectAlready': 'Esse endereço já está registado.',
   },
 };
