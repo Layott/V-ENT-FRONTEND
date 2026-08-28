@@ -9,6 +9,7 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import styles from './create-tournament-type.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { appLocale } from '@/lib/appLocale';
 const CreateTournamentType = ({
   formData = {},
   updateFormData
@@ -85,7 +86,17 @@ const CreateTournamentType = ({
         location: event.location
       })).filter(event => event.id && event.name); // Filter out events without ID or name
 
-      setAvailableEvents(formattedEvents);
+      // An event can be BOTH featured and upcoming, and the two lists were
+      // concatenated, so it appeared twice in the results. Keyed by id, first
+      // one wins.
+      const seen = new Set();
+      const unique = formattedEvents.filter(event => {
+        if (seen.has(event.id)) return false;
+        seen.add(event.id);
+        return true;
+      });
+
+      setAvailableEvents(unique);
     } catch (error) {
       // Fallback to empty array if fetch fails
       setAvailableEvents([]);
@@ -198,16 +209,27 @@ const CreateTournamentType = ({
                       {tt("ui.loading.events.f691", "Loading events...")}
                     </div>}
                   
-                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length > 0 && <div>
-                      {filteredEvents.map(event => <div key={event.id} className={styles.eventOption} onClick={() => handleEventSelect(event.id)}>
-                          <div className={styles.eventName}>{event.name}</div>
-                          <div className={styles.eventDate}>{event.date}</div>
-                          {/* Debug info - remove after fixing */}
-                          <div style={{
-                    fontSize: '10px',
-                    color: 'gray'
-                  }}>{tt("ui.id.d789", "ID:")} {event.id}</div>
-                        </div>)}
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length > 0 && <div className={styles.eventResults} role="listbox">
+                      {filteredEvents.map(event => <button
+                          type="button"
+                          key={event.id}
+                          role="option"
+                          aria-selected={false}
+                          className={styles.eventOption}
+                          onClick={() => handleEventSelect(event.id)}>
+                          <span className={styles.eventName}>{event.name}</span>
+                          <span className={styles.eventMeta}>
+                            {/* Was the raw ISO timestamp, and below it a debug
+                                line printing the database id to every organiser
+                                who ever opened this. */}
+                            {event.date
+                              ? new Date(event.date).toLocaleDateString(appLocale(), {
+                                  day: 'numeric', month: 'long', year: 'numeric',
+                                })
+                              : tt('ui.dateNotSet', 'Date not set')}
+                            {event.location ? ` · ${event.location}` : ''}
+                          </span>
+                        </button>)}
                     </div>}
                   
                   {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && <div className={styles.noEventsFound}>

@@ -46,7 +46,15 @@ const CreateTournamentComponent = () => {
     setFormData((prevData) => {
       const updatedData = { ...prevData, [key]: value };
       try {
-        localStorage.setItem('createTournamentData', JSON.stringify(updatedData));
+        // A File cannot be stored and an object URL is meaningless in the next
+        // session, so neither goes into the draft. Only what can be restored.
+        const forStorage = {
+          ...updatedData,
+          sponsors: Array.isArray(updatedData.sponsors)
+            ? updatedData.sponsors.map(({ logoFile, logo, ...rest }) => rest)
+            : updatedData.sponsors,
+        };
+        localStorage.setItem('createTournamentData', JSON.stringify(forStorage));
       } catch {
         // Storage can fail (private mode, quota) - keep going in-memory.
       }
@@ -175,6 +183,21 @@ const CreateTournamentComponent = () => {
 
       if (logoFile) formDataToSend.append('tournament_logo', logoFile);
       if (bannerFile) formDataToSend.append('tournament_banner', bannerFile);
+
+      // Sponsor logos, in the same order as the names above. The backend has
+      // always read request.FILES.getlist('sponsor_logos') and matched them by
+      // index; nothing ever sent them, so every sponsor logo was silently
+      // dropped. An empty slot is sent as a blank so the indexes still line up
+      // with the names.
+      if (Array.isArray(formData.sponsors)) {
+        formData.sponsors.forEach((sponsor) => {
+          if (sponsor?.logoFile instanceof File) {
+            formDataToSend.append('sponsor_logos', sponsor.logoFile);
+          } else {
+            formDataToSend.append('sponsor_logos', new Blob([]), '');
+          }
+        });
+      }
 
       if (socialLinks.facebook_link) formDataToSend.append('facebook_link', socialLinks.facebook_link);
       if (socialLinks.twitter_link) formDataToSend.append('twitter_link', socialLinks.twitter_link);
