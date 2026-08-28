@@ -1171,7 +1171,8 @@ export const ViewEventContent = ({
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>
-                {buyStep === 3 ? tx("Ticket secured") : `Buy ${buyTier.name}`}
+                {buyStep === 3 ? tx("Ticket secured")
+                  : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
               </h2>
               <button className={styles.modalClose} onClick={closeBuy} type="button">
                 <MdOutlineClose />

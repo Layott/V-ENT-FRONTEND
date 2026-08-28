@@ -4195,6 +4195,7 @@ export const dictionaries = {
     'manage.pickEvent': 'Open this from the event you want to manage.',
     'manage.myEvents': 'My events',
     'manage.signIn': 'Sign in to manage an event you run.',
+    'buy.title': 'Buy {tier}',
   },
 
   fr: {
@@ -8376,6 +8377,7 @@ export const dictionaries = {
     'manage.pickEvent': 'Ouvrez ceci depuis l’événement que vous voulez gérer.',
     'manage.myEvents': 'Mes événements',
     'manage.signIn': 'Connectez-vous pour gérer un événement que vous organisez.',
+    'buy.title': 'Acheter : {tier}',
   },
 
   pt: {
@@ -12557,5 +12559,6 @@ export const dictionaries = {
     'manage.pickEvent': 'Abra isto a partir do evento que quer gerir.',
     'manage.myEvents': 'Os meus eventos',
     'manage.signIn': 'Inicie sessão para gerir um evento que organiza.',
+    'buy.title': 'Comprar: {tier}',
   },
 };
