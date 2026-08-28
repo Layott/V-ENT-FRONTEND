@@ -332,3 +332,20 @@
   gap: 1rem;
   flex-wrap: wrap;
 }
+
+.checkInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.checkInline input {
+  accent-color: var(--v-ent-red);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

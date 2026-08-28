@@ -11,6 +11,9 @@ import { useSession } from 'next-auth/react';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
+import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
+import { useCheckoutFields, CheckoutFieldList, missingRequired }
+  from '@/components/checkout-fields/CheckoutFields';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
@@ -247,6 +250,9 @@ export const ViewEventContent = ({
   // only mounts once the tab is open, and a tab that has to be opened before it
   // will appear can never be opened.
   const [hasProgramme, setHasProgramme] = useState(false);
+  // Which tier a signed-out visitor is buying, if any.
+  const [guestTier, setGuestTier] = useState(null);
+  const [tierRefresh, setTierRefresh] = useState(0);
 
   useEffect(() => {
     if (!id) return undefined;
@@ -277,6 +283,13 @@ export const ViewEventContent = ({
   const [buyOpen, setBuyOpen] = useState(false);
   const [buyStep, setBuyStep] = useState(1);
   const [buyTier, setBuyTier] = useState(null);
+  // The organiser's questions. A signed-in buyer answers the same list a guest
+  // does, drawn by the same component, because the questions belong to the
+  // event and not to the way somebody happened to arrive at it.
+  const { fields: askFields, perOrder: askPerOrder, perTicket: askPerTicket } =
+    useCheckoutFields(id);
+  const [buyAnswers, setBuyAnswers] = useState({});
+  const [buyPeople, setBuyPeople] = useState([{ answers: {} }]);
   const [buyQty, setBuyQty] = useState(1);
   const [buyError, setBuyError] = useState('');
   const [buyLoading, setBuyLoading] = useState(false);
@@ -537,7 +550,8 @@ export const ViewEventContent = ({
     return String(event.organizer.user_id ?? event.organizer.id ?? '') === String(me.id ?? '') || event.organizer.username && event.organizer.username === me.username;
   }, [session?.user, event?.organizer]);
 
-  // Load the real tiers for this event.
+  // Load the real tiers for this event. Re-read after a sale, because the
+  // remaining count on every card moved the moment a ticket was issued.
   useEffect(() => {
     if (!id) return;
     const controller = new AbortController();
@@ -556,11 +570,13 @@ export const ViewEventContent = ({
       }
     })();
     return () => controller.abort();
-  }, [id]);
+  }, [id, tierRefresh]);
   const openBuy = tier => {
     setBuyTier(tier);
     setBuyPin('');
     setBuyQty(1);
+    setBuyAnswers({});
+    setBuyPeople([{ answers: {} }]);
     setBuyStep(1);
     setBuyError('');
     setBuyResult(null);
@@ -570,6 +586,17 @@ export const ViewEventContent = ({
     setBuyOpen(false);
     setBuyResult(null);
   };
+  useEffect(() => {
+    setBuyPeople(prev => {
+      const next = [...prev];
+      while (next.length < buyQty) next.push({ answers: {} });
+      return next.slice(0, buyQty);
+    });
+  }, [buyQty]);
+  const setBuyAnswer = (index, id, value) => setBuyPeople(prev => prev.map(
+    (person, i) => (i === index
+      ? { ...person, answers: { ...person.answers, [id]: value } }
+      : person)));
   const totalCost = buyTier ? buyTier.price * buyQty : 0;
   const handleBuy = async () => {
     if (!buyTier) return;
@@ -590,7 +617,9 @@ export const ViewEventContent = ({
         body: JSON.stringify({
           tier_id: buyTier.id,
           quantity: buyQty,
-          pin: buyPin
+          pin: buyPin,
+          answers: buyAnswers,
+          attendees: buyPeople.map(person => ({ answers: person.answers }))
         })
       });
       const data = await res.json();
@@ -882,7 +911,13 @@ export const ViewEventContent = ({
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.buy.tickets.029a", "Buy tickets")}</h2>
                     <p className={styles.body}>
-                      {countdown?.ended ? tx("This event has ended, so tickets are no longer on sale.") : tx("Pick your tier. Payment is deducted from your V-ENT wallet.")}
+                      {countdown?.ended
+                  ? tx("This event has ended, so tickets are no longer on sale.")
+                  : session?.user?.sessionToken
+                    ? tx("Pick your tier. Payment is deducted from your V-ENT wallet.")
+                    /* Somebody signed out has no wallet, so promising one is a
+                       lie about how they are about to be charged. */
+                    : tx("Pick your tier. No account needed.")}
                     </p>
                   </div>
                   {walletBalance !== null && <div className={styles.walletPill}>
@@ -898,6 +933,18 @@ export const ViewEventContent = ({
                   token={session?.user?.sessionToken}
                   soldOut={tiers.length > 0 && tiers.every(x => x.sold_out || x.available <= 0)}
                 />
+
+                {/* Signed out, buying anyway. A sign-in wall in front of a
+                    checkout is how a one-off ticket sale is lost: the account
+                    it would have gained never comes back, and the sale does not
+                    happen either. Signing in is offered inside the form,
+                    after it, for somebody who has a wallet. */}
+                {!session?.user?.sessionToken && guestTier && <GuestCheckout
+                  eventRef={id}
+                  tier={guestTier}
+                  onDone={() => setTierRefresh(n => n + 1)}
+                  onClose={() => setGuestTier(null)}
+                />}
 
                 <div className={styles.tierGrid}>
                   {tickets.map(t => <div key={t.id} className={`${styles.tierCard} ${styles['tierCard_' + t.tier]}`}>
@@ -931,7 +978,17 @@ export const ViewEventContent = ({
                       <p className={styles.tierStock}>
                         {t.available > 0 ? `${t.available} remaining` : tx("Sold out")}
                       </p>
-                      <button className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`} disabled={t.available === 0 || countdown?.ended} onClick={() => openBuy(t)} type="button">
+                      <button className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
+                  // Which checkout somebody gets must not depend on a race.
+                  // While the session is still resolving there is no token
+                  // yet, and deciding on that would send a signed-in member to
+                  // the guest form: asked for an email they already gave, and
+                  // handed a ticket detached from the account they were logged
+                  // into. Wait for the answer instead.
+                  if (sessionStatus === 'loading') return;
+                  if (session?.user?.sessionToken) openBuy(t);
+                  else setGuestTier(t);
+                }} type="button">
                         {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : tx("Buy ticket")}
                       </button>
                     </div>)}
@@ -1114,7 +1171,8 @@ export const ViewEventContent = ({
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>
-                {buyStep === 3 ? tx("Ticket secured") : `Buy ${buyTier.name}`}
+                {buyStep === 3 ? tx("Ticket secured")
+                  : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
               </h2>
               <button className={styles.modalClose} onClick={closeBuy} type="button">
                 <MdOutlineClose />
@@ -1152,9 +1210,31 @@ export const ViewEventContent = ({
                     </span>
                   </div>}
 
+                {askPerOrder.length > 0 && <div className={styles.askBlock}>
+                    <CheckoutFieldList fields={askPerOrder} values={buyAnswers}
+                      onChange={(fid, value) => setBuyAnswers(a => ({ ...a, [fid]: value }))} />
+                  </div>}
+
+                {askPerTicket.length > 0 && buyPeople.map((person, index) => <div key={index} className={styles.askBlock}>
+                      {buyQty > 1 && <p className={styles.modalLabel}>
+                        {tt('guest.ticketN', 'Ticket {n}').replace('{n}', index + 1)}
+                      </p>}
+                      <CheckoutFieldList fields={askPerTicket} values={person.answers}
+                        onChange={(fid, value) => setBuyAnswer(index, fid, value)} />
+                    </div>)}
+
                 {buyError && <p className={styles.modalError}>{buyError}</p>}
 
-                <button className={`${styles.modalPrimaryBtn} redBTN`} onClick={() => setBuyStep(2)} type="button">
+                <button className={`${styles.modalPrimaryBtn} redBTN`} onClick={() => {
+              const missing = missingRequired(askFields, buyAnswers, buyPeople);
+              if (missing) {
+                setBuyError(tt('guest.answerNeeded', '{label} is needed.')
+                  .replace('{label}', missing.label));
+                return;
+              }
+              setBuyError('');
+              setBuyStep(2);
+            }} type="button">
                   {tt("ui.continue.2e02", "Continue")}
                 </button>
               </div>}

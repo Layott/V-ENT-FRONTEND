@@ -195,3 +195,27 @@
   .pageTitle { font-size: var(--mobile-h3-size); }
   .statRow { grid-template-columns: 1fr; }
 }
+
+/* What the organiser asked at checkout, stacked so a shirt size and a
+   dietary note do not fight for one line. Filled chips, no strokes. */
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 150px;
+}
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.answerLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+}

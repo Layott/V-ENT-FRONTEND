@@ -59,6 +59,8 @@ export const ManageEventContent = ({
   const [queue, setQueue] = useState(null);
   const [newTier, setNewTier] = useState({ name: '', price: '', quantity: '', perks: '' });
   const [pricing, setPricing] = useState(null);   // tier id being priced
+  const [askFields, setAskFields] = useState([]);
+  const [newField, setNewField] = useState({ label: '', kind: 'text', required: false, per_ticket: true, options: '' });
   const [editing, setEditing] = useState(null);
   const [referrals, setReferrals] = useState([]);
   const [promos, setPromos] = useState([]);
@@ -110,12 +112,20 @@ export const ManageEventContent = ({
     };
   }, [eventRef, token]);
   const load = useCallback(async () => {
-    if (!token || !eventRef) return;
+    // Returning here without clearing the spinner is how a page hangs on
+    // "Loading..." forever: the flag starts true and nothing ever turns it
+    // off. Somebody who opened this without an event, or before signing in,
+    // is owed a sentence rather than a spinner that never resolves.
+    if (!token || !eventRef) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
-    const [r, p, m, ti, mo, ho, se, qu] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
+      call('/checkout-fields/manage/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -127,6 +137,7 @@ export const ManageEventContent = ({
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
     setQueue(qu.body?.data || null);
+    setAskFields(cf.body?.data?.fields || []);
     setReferrals(r.body?.data?.results || []);
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
@@ -248,6 +259,35 @@ export const ManageEventContent = ({
     body: JSON.stringify(patch),
   }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setPricing(null));
 
+  // What a buyer is asked for. The organiser decides, because a five-a-side
+  // needs a shirt size and a conference needs a dietary requirement, and
+  // neither is a column anybody could have guessed.
+  //
+  // Email is not in this list and cannot be: a ticket with no way to reach the
+  // holder is not a ticket.
+  const saveFields = next => run(() => call('/checkout-fields/manage/', {
+    method: 'PUT',
+    body: JSON.stringify({
+      fields: next.map(f => ({
+        label: f.label,
+        kind: f.kind,
+        help_text: f.help_text || '',
+        required: f.required,
+        per_ticket: f.per_ticket,
+        options: Array.isArray(f.options) ? f.options
+          : String(f.options || '').split(',').map(o => o.trim()).filter(Boolean),
+      })),
+    }),
+  }), 'manage.fieldsSaved', 'Saved.');
+
+  const addField = async () => {
+    if (!newField.label.trim()) return;
+    const done = await saveFields([...askFields, newField]);
+    if (done) setNewField({ label: '', kind: 'text', required: false, per_ticket: true, options: '' });
+  };
+
+  const removeField = row => saveFields(askFields.filter(f => f.id !== row.id));
+
   // ------------------------------------------------------------------ holds
   const addHold = () => {
     if (!newHold.name.trim()) return;
@@ -332,7 +372,22 @@ export const ManageEventContent = ({
 
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
-          {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p> : <>
+          {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
+            : !eventRef ? <p className={styles.muted}>
+                {tt('manage.pickEvent', 'Open this from the event you want to manage.')}
+                {' '}
+                <Link href="/events/my-events" className={styles.link}>
+                  {tt('manage.myEvents', 'My events')}
+                </Link>
+              </p>
+            : !token ? <p className={styles.muted}>
+                {tt('manage.signIn', 'Sign in to manage an event you run.')}
+                {' '}
+                <Link href="/login" className={styles.link}>
+                  {tt('ui.login.7b3c', 'Log in')}
+                </Link>
+              </p>
+            : <>
               {/* ---------------------------------------------------- tickets */}
               {tab === 'tickets' && <section className={styles.card}>
                   <p className={styles.cardHint}>
@@ -432,6 +487,72 @@ export const ManageEventContent = ({
                         </div>)}
                     </div>}
 
+                  {/* What a buyer is asked for at checkout. */}
+                  <h3 className={styles.subTitle}>
+                    {tt('manage.askTitle', 'What buyers are asked for')}
+                  </h3>
+                  <p className={styles.cardHint}>
+                    {tt('manage.askHint', 'An email address is always collected and cannot be turned off, because a ticket with no way to reach the holder is not a ticket. Anything else is up to you: a shirt size, a dietary requirement, which day they are coming.')}
+                  </p>
+
+                  {askFields.length === 0 ? <p className={styles.muted}>
+                      {tt('manage.noFields', 'Just an email address. Buyers can check out in one step.')}
+                    </p> : <div className={styles.rows}>
+                      {askFields.map(row => <div key={row.id} className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{row.label}</strong>
+                            <span className={styles.code}>{row.kind}</span>
+                            {row.required && <span className={styles.muted}>
+                              {tt('manage.fieldRequired', 'required')}
+                            </span>}
+                            {!row.per_ticket && <span className={styles.muted}>
+                              {tt('manage.fieldPerOrder', 'once per order')}
+                            </span>}
+                          </div>
+                          <div className={styles.rowActions}>
+                            <button type="button" className={styles.ghostBtn} disabled={busy}
+                                    onClick={() => removeField(row)}>
+                              {tt('manage.fieldRemove', 'Remove')}
+                            </button>
+                          </div>
+                        </div>)}
+                    </div>}
+
+                  <div className={styles.newRow}>
+                    <input className={styles.input} value={newField.label}
+                           placeholder={tt('manage.fieldLabel', 'What to ask, e.g. Shirt size')}
+                           onChange={e => setNewField(v => ({ ...v, label: e.target.value }))} />
+                    <select className={styles.input} value={newField.kind}
+                            onChange={e => setNewField(v => ({ ...v, kind: e.target.value }))}>
+                      <option value="text">{tt('manage.kindText', 'Text')}</option>
+                      <option value="phone">{tt('manage.kindPhone', 'Phone number')}</option>
+                      <option value="number">{tt('manage.kindNumber', 'A number')}</option>
+                      <option value="choice">{tt('manage.kindChoice', 'One of a list')}</option>
+                      <option value="checkbox">{tt('manage.kindCheckbox', 'A yes or no')}</option>
+                    </select>
+                    {newField.kind === 'choice' && <input className={styles.input}
+                           value={newField.options}
+                           placeholder={tt('manage.fieldOptions', 'The options, separated by commas')}
+                           onChange={e => setNewField(v => ({ ...v, options: e.target.value }))} />}
+                    <label className={styles.checkInline}>
+                      <input type="checkbox" checked={newField.required}
+                             onChange={e => setNewField(v => ({ ...v, required: e.target.checked }))} />
+                      <span>{tt('manage.fieldRequiredLabel', 'Must be answered')}</span>
+                    </label>
+                    <label className={styles.checkInline}>
+                      <input type="checkbox" checked={!newField.per_ticket}
+                             onChange={e => setNewField(v => ({ ...v, per_ticket: !e.target.checked }))} />
+                      <span>{tt('manage.fieldOnceLabel', 'Ask once per order')}</span>
+                    </label>
+                    <button type="button" className={styles.primaryBtn}
+                            disabled={busy || !newField.label.trim()} onClick={addField}>
+                      {tt('manage.addField', 'Add the question')}
+                    </button>
+                  </div>
+
+                  <h3 className={styles.subTitle}>
+                    {tt('manage.addTierTitle', 'Add a ticket type')}
+                  </h3>
                   <div className={styles.newRow}>
                     <input className={styles.input} value={newTier.name}
                            placeholder={tt('manage.tierName', 'Name, e.g. VIP')}

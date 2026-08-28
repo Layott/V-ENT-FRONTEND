@@ -103,8 +103,15 @@ const AttendeesContent = ({
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return rows;
-    return rows.filter(r => [r.attendee_name, r.username, r.code, r.tier].some(v => (v || '').toLowerCase().includes(q)));
+    return rows.filter(r => [r.attendee_name, r.username, r.code, r.tier,
+      r.attendee_email, r.attendee_phone].some(v => (v || '').toLowerCase().includes(q)));
   }, [rows, search]);
+  // An event that asked nothing gets no column, rather than a column of blanks
+  // taking width away from the name on a phone.
+  const anyAnswers = useMemo(
+    () => rows.some(r => (r.answers || []).some(a => a.value !== '' && a.value !== null
+      && a.value !== undefined)),
+    [rows]);
   const body = () => {
     if (!eventId) return <p className={styles.stateText}>{tt("ui.no.event.selected.97ca", "No event selected.")}</p>;
     if (loading) return <p className={styles.stateText}>{tt("ui.loading.attendees.f4fd", "Loading attendees…")}</p>;
@@ -167,6 +174,10 @@ const AttendeesContent = ({
                   <th>{tt("ui.attendee.aabc", "Attendee")}</th>
                   <th>{tt("ui.ticket.a767", "Ticket")}</th>
                   <th>{tt("ui.tier.5bd4", "Tier")}</th>
+                  {/* What the organiser asked for at checkout. Without this
+                      column the shirt sizes are collected and never seen,
+                      which is the same as not collecting them. */}
+                  {anyAnswers && <th>{tt('door.asked', 'Answers')}</th>}
                   <th>{tt("ui.status.bae7", "Status")}</th>
                   <th>{tt("ui.checked.cb4a", "Checked in")}</th>
                 </tr>
@@ -175,10 +186,26 @@ const AttendeesContent = ({
                 {filtered.map(r => <tr key={r.code}>
                     <td>
                       <span className={styles.name}>{r.attendee_name || r.full_name || r.username}</span>
-                      <span className={styles.handle}>@{r.username}</span>
+                      {/* A guest has no handle, and rendering a bare "@" for
+                          them looks like a bug on the door list. Their email
+                          is the thing that identifies them. */}
+                      <span className={styles.handle}>
+                        {r.username ? '@' + r.username : r.attendee_email}
+                      </span>
+                      {r.attendee_phone && <span className={styles.handle}>
+                        {r.attendee_phone}
+                      </span>}
                     </td>
                     <td className={styles.code}>{r.code}</td>
                     <td>{r.tier}</td>
+                    {anyAnswers && <td className={styles.answers}>
+                      {(r.answers || []).filter(a => a.value !== '' && a.value !== null
+                        && a.value !== undefined).map(a => <span key={a.label} className={styles.answer}>
+                          <span className={styles.answerLabel}>{a.label}</span>
+                          <span>{a.value === true ? tt('door.yes', 'Yes')
+                            : a.value === false ? tt('door.no', 'No') : String(a.value)}</span>
+                        </span>)}
+                    </td>}
                     <td>
                       <span className={`${styles.badge} ${styles[`badge_${r.status}`] || ''}`}>
                         {r.status === 'checked_in' ? tx("checked in") : r.status}

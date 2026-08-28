@@ -1,0 +1,63 @@
+/* The organiser's questions, shared by both checkouts. Filled surfaces, no
+   strokes, tap targets above 44px because most of these are answered on a
+   phone. Mirrors guest-checkout.module.css so the two forms read as one. */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+}
+
+.help {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+.input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  /* Measured at 390px: 12px landed the box on 43px, one short of the 44 a
+     thumb needs. These are bought on a phone almost exclusively, so the
+     rounding matters here more than anywhere else on the site. */
+  padding: 13px 12px;
+  /* A select draws its own box and ignores the padding an input
+     honours, so it came out at 40px while everything beside it was
+     45. Stated rather than inferred. */
+  min-height: 44px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.checkRow input {
+  accent-color: var(--v-ent-red);
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  cursor: pointer;
+}
