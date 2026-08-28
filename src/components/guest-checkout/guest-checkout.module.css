@@ -1,0 +1,200 @@
+/* A checkout, so: one column, big targets, nothing to read twice. Filled
+   surfaces, no strokes. */
+
+.wrap,
+.done {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+
+.intro {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+}
+
+.help {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+.input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  /* Measured at 390px: 12px landed the box on 43px, one short of the 44 a
+     thumb needs. These are bought on a phone almost exclusively, so the
+     rounding matters here more than anywhere else on the site. */
+  padding: 13px 12px;
+  /* A select draws its own box and ignores the padding an input
+     honours, so it came out at 40px while everything beside it was
+     45. Stated rather than inferred. */
+  min-height: 44px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.checkRow input {
+  accent-color: var(--v-ent-red);
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  cursor: pointer;
+}
+
+/* One block per ticket, so the size on ticket two is visibly not the size on
+   ticket one. */
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 11px;
+  padding: 0.8rem;
+}
+
+.personTitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.buy {
+  background-color: var(--v-ent-red);
+  border-radius: 10px;
+  padding: 14px 24px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.buy:hover:not(:disabled) {
+  background-color: var(--v-ent-light-red);
+}
+
+.buy:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.buy:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.error {
+  color: var(--v-ent-red);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.link {
+  color: var(--v-ent-success);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- booked */
+
+.done {
+  background-color: rgba(76, 175, 80, 0.14);
+}
+
+.doneTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+}
+
+.codes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.code {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 9px;
+  padding: 0.7rem 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.code strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.code span {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+}
+
+/* Leaving the confirmation is the buyer's decision, not something that happens
+   to them the instant the sale lands. Filled, no stroke. */
+.done_close {
+  align-self: flex-start;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  padding: 11px 20px;
+}
+
+.done_close:hover { background-color: rgba(255, 255, 255, 0.16); }
+.done_close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
