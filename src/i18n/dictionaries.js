@@ -3837,6 +3837,13 @@ export const dictionaries = {
     'tiebreak.rounds_difference': 'Rounds won minus rounds lost',
     'tiebreak.total_kills': 'Total kills',
     'tiebreak.wins': 'Number of wins',
+    'admin.aggregateNote': 'This tournament also has {n} aggregate fixtures. Those decide a tie on total goals, so they are corrected from the tie itself rather than here.',
+    'admin.noMatchesYet': 'This tournament has no playable matches yet. A bracket has to be generated before a result can be corrected.',
+    'admin.notPlayed': 'not played',
+    'admin.overrideSub': 'Pick the match, then set the result. The change is recorded in the audit log with your reason.',
+    'admin.versus': 'v',
+    'admin.whoWon': 'Who won',
+    'api.matchesLoadFailed': 'Could not load the matches for this tournament.',
   },
 
   fr: {
@@ -7660,6 +7667,13 @@ export const dictionaries = {
     'tiebreak.rounds_difference': 'Manches gagnées moins manches perdues',
     'tiebreak.total_kills': 'Total d\'éliminations',
     'tiebreak.wins': 'Nombre de victoires',
+    'admin.aggregateNote': 'Ce tournoi compte aussi {n} rencontres à points cumulés. Elles se décident au total de buts et se corrigent depuis la confrontation, pas ici.',
+    'admin.noMatchesYet': 'Ce tournoi n\'a pas encore de matchs jouables. Un tableau doit être généré avant de pouvoir corriger un résultat.',
+    'admin.notPlayed': 'non joué',
+    'admin.overrideSub': 'Choisissez le match, puis définissez le résultat. La modification est inscrite au journal d\'audit avec votre motif.',
+    'admin.versus': 'c.',
+    'admin.whoWon': 'Qui a gagné',
+    'api.matchesLoadFailed': 'Impossible de charger les matchs de ce tournoi.',
   },
 
   pt: {
@@ -11483,5 +11497,12 @@ export const dictionaries = {
     'tiebreak.rounds_difference': 'Rondas ganhas menos rondas perdidas',
     'tiebreak.total_kills': 'Total de eliminações',
     'tiebreak.wins': 'Número de vitórias',
+    'admin.aggregateNote': 'Este torneio tem também {n} jogos agregados. Esses decidem-se pelo total de golos e corrigem-se a partir da eliminatória, não aqui.',
+    'admin.noMatchesYet': 'Este torneio ainda não tem jogos jogáveis. É preciso gerar um quadro antes de se poder corrigir um resultado.',
+    'admin.notPlayed': 'por jogar',
+    'admin.overrideSub': 'Escolha o jogo e defina o resultado. A alteração fica registada no registo de auditoria com o seu motivo.',
+    'admin.versus': 'v',
+    'admin.whoWon': 'Quem ganhou',
+    'api.matchesLoadFailed': 'Não foi possível carregar os jogos deste torneio.',
   },
 };
