@@ -119,6 +119,47 @@ export const clamp = (text, max = 160) => {
  * poster, a team logo. A shared link showing the actual banner is the single
  * biggest difference between a link that gets clicked and one that does not.
  */
+/**
+ * The image card a scraper reads, built so every scraper can use it.
+ *
+ * The tags were right and the preview still came back with no picture when the
+ * CEO pasted an event into WhatsApp. Three reasons, and this fixes all three:
+ *
+ * - The URL pointed at the media host. Every scraper then has to fetch from a
+ *   second domain it has never been told about, with its own certificate and
+ *   its own redirects. It now goes through this site, at `/api/og`.
+ * - There were no dimensions. WhatsApp is documented as needing
+ *   `og:image:width` and `og:image:height`, and renders a link with no picture
+ *   when they are absent. There is one canonical card size, so they are known.
+ * - An organiser's banner is whatever they uploaded, routinely several
+ *   megabytes, and WhatsApp will not render an image much over 600KB. `/api/og`
+ *   is the one place that can do anything about that.
+ */
+export function ogImage(image, alt) {
+  const fallback = absolute('/images/og-default.png');
+  let url = fallback;
+
+  if (image) {
+    const direct = image.startsWith('http') ? image : absolute(image);
+    // Anything already on this site is served as it is; anything on the media
+    // host goes through the proxy, which is the case that was broken.
+    url = direct.startsWith(SITE.url)
+      ? direct
+      : `${SITE.url}/api/og?src=${encodeURIComponent(direct)}`;
+  }
+
+  return {
+    url,
+    secureUrl: url,
+    // The card size every platform crops from. Stated rather than guessed at,
+    // because a missing dimension is the difference between a picture and none.
+    width: 1200,
+    height: 630,
+    type: 'image/jpeg',
+    alt: alt || SITE.name,
+  };
+}
+
 export function buildMetadata({
   title,
   description,
@@ -133,9 +174,7 @@ export function buildMetadata({
   const lang = locale || currentLocale();
   const url = absolute(withLocale(path, lang));
   const desc = clamp(description || SITE.description);
-  const images = image
-    ? [{ url: image.startsWith('http') ? image : absolute(image), alt: title }]
-    : [{ url: absolute('/images/og-default.png'), alt: SITE.name }];
+  const images = [ogImage(image, title)];
 
   return {
     title,

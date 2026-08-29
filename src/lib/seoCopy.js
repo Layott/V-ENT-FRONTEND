@@ -176,6 +176,14 @@ export const SECTION_COPY = {
     },
   },
 
+  terms: {
+    en: { title: 'Terms of use',
+          description: 'The rules for using V-ENT: accounts, VENT COINS, tournaments, tickets and what happens when something goes wrong.' },
+    fr: { title: 'Conditions d’utilisation',
+          description: 'Les règles d’utilisation de V-ENT : comptes, VENT COINS, tournois, billets et ce qui se passe en cas de problème.' },
+    pt: { title: 'Termos de utilização',
+          description: 'As regras de utilização da V-ENT: contas, VENT COINS, torneios, bilhetes e o que acontece quando algo corre mal.' },
+  },
   'privacy-policy': {
     en: { title: 'Privacy policy',
           description: 'What V-ENT collects, why, how long it is kept and how to get it deleted.' },
