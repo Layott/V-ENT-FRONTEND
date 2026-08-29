@@ -37,6 +37,10 @@ const CreateTournamentComponent = () => {
 
   const [formData, setFormData] = useState(readSavedFormData);
   const [logoFile, setLogoFile] = useState(null);
+  // The rules as a document, held here beside the images for the same
+  // reason: a File cannot go into the draft, so the parent has to hold it
+  // or a step change loses it.
+  const [rulesFile, setRulesFile] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
 
   // Centralized function to update both state and localStorage. This is the
@@ -67,6 +71,8 @@ const CreateTournamentComponent = () => {
       setLogoFile(file);
     } else if (key === 'tournament_banner') {
       setBannerFile(file);
+    } else if (key === 'rules_document') {
+      setRulesFile(file);
     }
   };
 
@@ -182,6 +188,7 @@ const CreateTournamentComponent = () => {
       formDataToSend.append('is_draft', isDraft ? '1' : '0');
 
       if (logoFile) formDataToSend.append('tournament_logo', logoFile);
+      if (rulesFile) formDataToSend.append('rules_document', rulesFile);
       if (bannerFile) formDataToSend.append('tournament_banner', bannerFile);
 
       // Sponsor logos, in the same order as the names above. The backend has
@@ -273,6 +280,8 @@ const CreateTournamentComponent = () => {
             updateLocalStorage={updateFormData}
             handleSubmit={handleSubmit}
             isSavingDraft={isSavingDraft}
+            rulesFile={rulesFile}
+            updateFileData={updateFileData}
           />
         );
       case 3:

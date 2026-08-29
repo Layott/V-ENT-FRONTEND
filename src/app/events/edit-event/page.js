@@ -53,6 +53,7 @@ const forInput = value => {
 const FIELDS = [
   'name', 'desc', 'event_type', 'category', 'location', 'event_link',
   'entry_fee', 'capacity', 'start_date', 'end_date', 'is_active',
+  'max_tickets_per_email',
 ];
 
 export const EditEventContent = ({ slug: slugFromPath }) => {
@@ -95,6 +96,11 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
           start_date: forInput(e.start_date),
           end_date: forInput(e.end_date),
           is_active: e.is_active !== false,
+          // Held as a string so the empty box means "no limit" rather than
+          // being coerced to a 0 that the API would read the same way but the
+          // form would draw as an actual zero.
+          max_tickets_per_email: e.max_tickets_per_email != null
+            ? String(e.max_tickets_per_email) : '',
         };
         setOriginal(shaped);
         setForm(shaped);
@@ -280,6 +286,34 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                          onChange={e => setBanner(e.target.files?.[0] || null)} />
                 </label>
               </div>
+
+              {/* How many tickets one email address may hold.
+                  CEO: "the owner should be able to set if one person can get
+                  multiple tickets or its limited to one per mail."
+                  A number rather than a switch, because the next question
+                  after "one each" is always "let a family of four in". */}
+              <label className={styles.checkRow}>
+                <input type="checkbox"
+                       checked={form.max_tickets_per_email !== ''}
+                       onChange={e => set('max_tickets_per_email',
+                         e.target.checked ? '1' : '')} />
+                <span>
+                  {tt('eventEdit.limitPerEmail', 'Limit how many tickets one email address can get')}
+                  <span className={styles.hint}>
+                    {tt('eventEdit.limitPerEmailHint', 'Off means somebody can buy as many as they like. On, and an address that already has its share is refused, however many times they retype it.')}
+                  </span>
+                </span>
+              </label>
+
+              {form.max_tickets_per_email !== '' && <label className={styles.field}>
+                <span className={styles.label}>
+                  {tt('eventEdit.perEmailCount', 'Tickets allowed per email address')}
+                </span>
+                <input className={styles.input} type="number" min="1" max="50"
+                       value={form.max_tickets_per_email}
+                       onChange={e => set('max_tickets_per_email',
+                         e.target.value.replace(/[^0-9]/g, ''))} />
+              </label>}
 
               <label className={styles.checkRow}>
                 <input type="checkbox" checked={form.is_active}

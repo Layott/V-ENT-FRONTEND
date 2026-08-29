@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'rea
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { LuTrophy, LuCalendar, LuUsers, LuMapPin, LuRadio, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket } from 'react-icons/lu';
+import { LuTrophy, LuCalendar, LuUsers, LuMapPin, LuRadio, LuFileText, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket } from 'react-icons/lu';
 import { FaTwitter, FaInstagram, FaTwitch, FaYoutube, FaFacebookF, FaTiktok } from 'react-icons/fa';
 import { SiKick } from 'react-icons/si';
 import { coinsAsNgn } from '@/lib/currency';
@@ -625,143 +625,45 @@ const RulesPanel = ({
   const tx = useTx();
   const tt = useT();
   const rulesText = tournament?.tournament_rules || tournament?.rules;
-  if (rulesText) {
+  const rulesDoc = tournament?.rules_document;
+
+  // The document, offered wherever the rules are. It is the version somebody
+  // argues a call from, so it sits with the text rather than in a corner.
+  const documentBlock = rulesDoc ? <a className={styles.rulesDoc} href={rulesDoc}
+      target="_blank" rel="noopener noreferrer">
+      <LuFileText aria-hidden="true" />
+      <span>
+        {tt('rules.download', 'Download the full rules document')}
+        <span className={styles.rulesDocHint}>
+          {tt('rules.downloadHint', "The organiser's own file. Opens in a new tab.")}
+        </span>
+      </span>
+    </a> : null;
+
+  if (rulesText || rulesDoc) {
     return <div className={styles.rulesContainer}>
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>{tt("ui.tournament.rules.df25", "Tournament Rules")}</h2>
-          <div className={styles.sectionText} style={{
+          {rulesText && <div className={styles.sectionText} style={{
           whiteSpace: 'pre-wrap'
-        }}>{rulesText}</div>
+        }}>{rulesText}</div>}
+          {documentBlock}
         </section>
       </div>;
   }
 
-  // Fallback static rules - only shown when the backend hasn't provided
-  // rules text for this tournament yet.
+  // No rules written yet. This used to print five invented ones - "All matches
+  // are best-of-3", "check in 15 minutes before" - as though the organiser had
+  // set them. Somebody could be disqualified citing a rule that exists nowhere
+  // but this file, so it now says plainly that there are none.
   return <div className={styles.rulesContainer}>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{tt("ui.tournament.rules.df25", "Tournament Rules")}</h2>
-        <ol className={styles.ruleList}>
-          <li>{tt("ui.all.matches.best.unless.42b2", "All matches are best-of-3 unless stated otherwise. Finals are best-of-5.")}</li>
-          <li>{tt("ui.players.must.check.minutes.7282", "Players must check in 15 minutes before their scheduled match time.")}</li>
-          <li>{tt("ui.each.match.must.played.dd04", "Each match must be played on the agreed game version and platform.")}</li>
-          <li>{tt("ui.disconnects.player.who.disconnects.962b", "Disconnects: a player who disconnects before the 5-minute mark may pause; afterwards the match stands.")}</li>
-          <li>{tournament?.participant_type === 'team' ? tx("Team rosters are locked at registration close.") : tx("Substitutes are not permitted in solo brackets.")}</li>
-        </ol>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{tt("ui.code.conduct.2643", "Code of Conduct")}</h2>
-        <ul className={styles.ruleList}>
-          <li>{tt("ui.no.toxic.behaviour.harassment.d9e6", "No toxic behaviour. Harassment leads to immediate disqualification.")}</li>
-          <li>{tt("ui.no.cheating.exploits.unauthorized.1413", "No cheating, exploits, or unauthorized macros.")}</li>
-          <li>{tt("ui.all.game.communication.must.72f7", "All in-game communication must be in English or Pidgin.")}</li>
-          <li>{tt("ui.players.must.keep.their.aac8", "Players must keep their stream camera on for the duration of finals matches.")}</li>
-        </ul>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{tt("ui.dispute.process.c70b", "Dispute Process")}</h2>
-        <ol className={styles.ruleList}>
-          <li>{tt("ui.file.disputes.screenshots.within.229f", "File disputes with screenshots within 10 minutes of the disputed event.")}</li>
-          <li>{tt("ui.admin.will.review.respond.f0af", "An admin will review and respond inside the official Discord ticket.")}</li>
-          <li>{tt("ui.decisions.final.once.delivered.94d7", "Decisions are final once delivered. Re-matches only at admin discretion.")}</li>
-        </ol>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{tt("ui.penalty.schedule.8480", "Penalty Schedule")}</h2>
-        <div className={styles.penaltyTable}>
-          <div className={styles.penaltyRow}><span>{tt("ui.late.check.6f63", "Late check-in")}</span><span>{tt("ui.map.04b4", "−1 map")}</span></div>
-          <div className={styles.penaltyRow}><span>{tt("ui.verbal.abuse.23f7", "Verbal abuse")}</span><span>{tt("ui.warning.dq.repeat.28dc", "Warning + DQ on repeat")}</span></div>
-          <div className={styles.penaltyRow}><span>{tt("ui.cheating.exploits.2477", "Cheating / exploits")}</span><span>{tt("ui.permanent.dq.month.ban.d086", "Permanent DQ + 3-month ban")}</span></div>
-          <div className={styles.penaltyRow}><span>{tt("ui.no.show.7560", "No-show")}</span><span>{tt("ui.forfeit.entry.fee.held.a0ec", "Forfeit + entry fee held")}</span></div>
-        </div>
+        <p className={styles.sectionText}>
+          {tt('rules.none', 'The organiser has not published rules for this tournament yet.')}
+        </p>
       </section>
     </div>;
-};
-
-/* ──────────────── BRACKET ──────────────── */
-
-// A match's score can arrive either on the match itself (score_p1/score_p2 -
-// the real contract) or per-participant (participant.score - the mock/legacy
-// shape). Normalize to participant.score so the render logic only has one
-// shape to deal with.
-const normalizeMatch = m => {
-  // Real backend shape (get-tournament-brackets): participant_1/participant_2
-  // objects + score_p1/score_p2 + match_id + winner:{id}. Mock/legacy shape:
-  // participants[] array with per-participant score. Bridge both to a single
-  // participants[] shape so the render logic is uniform.
-  const parts = Array.isArray(m?.participants) ? m.participants : [m?.participant_1 || {}, m?.participant_2 || {}];
-  const p0 = parts[0] || {};
-  const p1 = parts[1] || {};
-  const score0 = p0.score ?? m?.score_p1 ?? null;
-  const score1 = p1.score ?? m?.score_p2 ?? null;
-  const winnerId = m?.winner?.id ?? m?.winner_registration_id ?? m?.winner ?? null;
-  const idOf = p => p?.id ?? p?.registration_id ?? p?.user_id;
-  return {
-    ...m,
-    id: m?.id ?? m?.match_id,
-    participants: [{
-      ...p0,
-      score: score0,
-      is_winner: p0.is_winner ?? (winnerId != null && idOf(p0) != null && String(idOf(p0)) === String(winnerId))
-    }, {
-      ...p1,
-      score: score1,
-      is_winner: p1.is_winner ?? (winnerId != null && idOf(p1) != null && String(idOf(p1)) === String(winnerId))
-    }]
-  };
-};
-const normalizeRounds = rounds => {
-  if (!Array.isArray(rounds)) return [];
-  return rounds.map(r => ({
-    ...r,
-    matches: Array.isArray(r?.matches) ? r.matches.map(normalizeMatch) : []
-  }));
-};
-
-// Best-effort match between the logged-in session and one side of a match.
-// Backends have been seen shaping participant rows as team registrations
-// (registration_id) or bare users (user_id) - try every plausible id field
-// plus a username fallback before giving up.
-const identifyParticipant = (match, session) => {
-  const none = {
-    isParticipant: false,
-    mySide: -1,
-    myParticipant: null,
-    opponentSide: -1,
-    opponentParticipant: null
-  };
-  const parts = Array.isArray(match?.participants) ? match.participants : [];
-  if (!session?.user || !parts.length) return none;
-  const sessionUserId = session.user.user_id ?? session.user.id;
-  const sessionUsername = session.user.username;
-  for (let i = 0; i < parts.length; i += 1) {
-    const p = parts[i] || {};
-    const idCandidates = [p.user_id, p.id, p.registration_id].filter(v => v != null).map(String);
-    const matchesId = sessionUserId != null && idCandidates.includes(String(sessionUserId));
-    const matchesUsername = !!sessionUsername && sessionUsername === p.username;
-    if (matchesId || matchesUsername) {
-      const opponentSide = i === 0 ? 1 : 0;
-      return {
-        isParticipant: true,
-        mySide: i,
-        myParticipant: p,
-        opponentSide,
-        opponentParticipant: parts[opponentSide] || null
-      };
-    }
-  }
-  return none;
-};
-
-// The BE contract doesn't pin down the exact field name the match uses to
-// record who filed the score report - try the plausible spellings. Returns
-// null when undeterminable (mock data, or a BE shape we haven't seen yet).
-const getReporterRegistrationId = match => {
-  const raw = match?.reported_by_registration_id ?? match?.reported_by ?? match?.score_reported_by ?? match?.reporter_registration_id ?? match?.reporter_id ?? null;
-  return raw != null ? String(raw) : null;
 };
 const BracketPanel = ({
   tournamentId,

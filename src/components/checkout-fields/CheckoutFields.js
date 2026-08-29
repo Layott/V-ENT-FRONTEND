@@ -22,13 +22,19 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 /** What this event asks for, split the way the two forms need it. */
 export function useCheckoutFields(eventRef) {
   const [fields, setFields] = useState([]);
+  // How many one address may hold, so a form can cap its own quantity box
+  // instead of refusing after somebody has filled everything in.
+  const [maxPerEmail, setMaxPerEmail] = useState(null);
 
   const load = useCallback(async () => {
     if (!eventRef) return;
     try {
       const res = await fetch(`${API}/event/${eventRef}/checkout-fields/`);
       const body = await res.json().catch(() => ({}));
-      if (res.ok && body.status === 'success') setFields(body.data.fields || []);
+      if (res.ok && body.status === 'success') {
+        setFields(body.data.fields || []);
+        setMaxPerEmail(body.data.max_tickets_per_email ?? null);
+      }
     } catch {
       // An organiser who asked nothing is a working checkout. Email alone
       // still sells a ticket, so a failure here must not block the sale.
@@ -39,9 +45,10 @@ export function useCheckoutFields(eventRef) {
 
   return useMemo(() => ({
     fields,
+    maxPerEmail,
     perOrder: fields.filter(f => !f.per_ticket),
     perTicket: fields.filter(f => f.per_ticket),
-  }), [fields]);
+  }), [fields, maxPerEmail]);
 }
 
 /** One field, drawn according to what the organiser said it was. */

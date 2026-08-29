@@ -1546,3 +1546,12 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 /* The share control sits above the organiser label and needs to breathe. */
 .sideCard > button:first-child { margin-bottom: 1.1rem; width: 100%; }
+
+/* The date a ticket admits you on, under its name. Quiet: it is the answer to
+   "which day", not a headline. */
+.tierDay {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}

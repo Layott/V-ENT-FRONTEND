@@ -1,0 +1,88 @@
+/* Rules: a box you can actually write a ruleset in, and the document beside
+   it. Filled surfaces, no strokes. */
+
+.rulesArea {
+  /* Four lines was the old height, which made a page of rules feel like the
+     wrong place to put them. Resizable, because how long a ruleset runs is the
+     organiser's business and not this form's. */
+  min-height: 260px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.docBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.docTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.docHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.docPick,
+.docRemove {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.87rem;
+  min-height: 44px;
+  padding: 0 0.95rem;
+  align-self: flex-start;
+  transition: background-color 0.12s;
+}
+
+.docPick:hover { background-color: rgba(255, 255, 255, 0.18); }
+.docPick:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
+
+.docRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  color: #fff;
+  font-size: 0.88rem;
+}
+
+.docName {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.docRemove {
+  background-color: rgba(237, 28, 36, 0.18);
+  color: #ff9a9e;
+  min-height: 38px;
+  font-size: 0.8rem;
+}
+
+.docRemove:hover { background-color: rgba(237, 28, 36, 0.3); color: #fff; }
+.docRemove:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.docError {
+  color: #ff9a9e;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
