@@ -19,6 +19,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './post.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const relativeTime = iso => {
   if (!iso) return '';
   const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -194,8 +195,7 @@ const PostInner = ({
                     </Link>
                     <div className={styles.authorInfo}>
                       <span className={styles.authorName}>
-                        {post.author.full_name}{post.author.founder_badge && <FounderBadge size="sm" />}
-                        {post.author.verified && <span className={styles.verifiedDot} title={tt("ui.verified.aed3", "Verified")} />}
+                        <UserChip user={post.author} size={0} nameClassName={styles.authorName} />
                       </span>
                       <span className={styles.authorHandle}>@{post.author.username}</span>
                     </div>

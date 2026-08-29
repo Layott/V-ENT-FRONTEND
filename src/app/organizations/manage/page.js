@@ -19,6 +19,7 @@ import styles from './manage-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import UserChip from '@/components/user-chip/UserChip';
 const TABS = [{
   id: 'members',
   label: 'Members'
@@ -133,7 +134,16 @@ const ManageOrgContent = ({
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', activeTab);
-    router.replace(`/organizations/manage?${params.toString()}`, {
+    // Keep the address we are actually on. This hardcoded
+    // `/organizations/manage`, so arriving at `/organizations/<name>/manage`
+    // rewrote the URL on the first render and threw the organisation away:
+    // there was no slug in the path any more and no `?id=` either, so the page
+    // looked itself up with nothing and reported "Organization not found".
+    // That is what the CEO saw on every sub-page of an organisation.
+    const base = slugFromPath
+      ? `/organizations/${encodeURIComponent(slugFromPath)}/manage`
+      : '/organizations/manage';
+    router.replace(`${base}?${params.toString()}`, {
       scroll: false
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -444,8 +454,9 @@ const ManageOrgContent = ({
                                 {r.user?.avatar && <Image src={mediaUrl(r.user.avatar)} alt={r.user.full_name} width={36} height={36} />}
                               </div>
                               <div>
-                                <p className={styles.memberName}>{r.user?.full_name}</p>
-                                <p className={styles.memberHandle}>@{r.user?.username}</p>
+                                <UserChip user={r.user} size={0} secondary
+                                          nameClassName={styles.memberName}
+                                          handleClassName={styles.memberHandle} />
                               </div>
                             </div>
                             <span className={styles.requestTime}>{formatDate(r.requested_at)}</span>

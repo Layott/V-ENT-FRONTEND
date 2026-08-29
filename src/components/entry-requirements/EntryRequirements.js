@@ -22,6 +22,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import { kindLabel } from './kinds';
 import styles from './entry-requirements.module.css';
+import UserChip from '@/components/user-chip/UserChip';
 
 const base = () => `${process.env.NEXT_PUBLIC_API_URL}/tournament`;
 
@@ -311,7 +312,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
           ) : queue.map(item => (
             <div key={item.id} className={styles.submission}>
               <div className={styles.subHead}>
-                <span className={styles.subWho}>{item.user?.username}</span>
+                <UserChip user={item.user} size={0} nameClassName={styles.subWho} />
                 <span className={styles.subWhat}>{kindLabel(tt, item.requirement?.kind, item.requirement?.label)}</span>
               </div>
               <pre className={styles.subValue}>

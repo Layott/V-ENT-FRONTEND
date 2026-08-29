@@ -29,10 +29,6 @@ const SRC = join(ROOT, 'src');
 
 // Screens that legitimately write a name without the chip.
 //
-// Named one by one with a reason, rather than a pattern, because a blanket
-// exemption is how the rule quietly stops applying to half the app.
-// Screens that legitimately write a name without the chip.
-//
 // Deliberately short. An earlier draft of this list exempted the viewer's own
 // name in the header, the sidebar and the bottom menu, on the reasoning that
 // somebody knows who they are. The CEO settled it: "everywhere i type or my
@@ -47,6 +43,10 @@ const ALLOWED = new Map([
   ['src/app/signup/page.js', 'a username being chosen, not a person being shown'],
   ['src/app/claim/[token]/page.js', 'a reserved username being claimed'],
   ['src/app/onboarding/page.js', 'the viewer filling in their own details'],
+  // A sentence confirming which account is about to authorise a partner:
+  // "Signed in as X." It is the viewer's own handle inside a sentence,
+  // not a person being presented to click on.
+  ['src/app/partners/authorize/page.js', "the viewer's own handle inside a sentence"],
   // A sponsor's "username" is that brand's social handle, typed in by the
   // organiser. It is not a V-ENT account, so it has no profile to open and no
   // founder mark to carry.
@@ -71,7 +71,11 @@ function walk(dir, out = []) {
 }
 
 // `{x.full_name}` or `{x?.username}` rendered as text, and `@{x.username}`.
-const NAME_EXPR = /\{\s*[a-zA-Z_$][\w$]*\??\.(full_name|username)\b[^}]*\}/;
+// One level of nesting is allowed on the left: `{m.user?.full_name}` is
+// exactly how the organisation member table wrote a name, and the first
+// version of this pattern walked straight past it, so that row shipped with
+// no badge and no link while the checker reported everything clean.
+const NAME_EXPR = /\{\s*[a-zA-Z_$][\w$]*\??\.(?:[a-zA-Z_$][\w$]*\??\.)?(full_name|username)\b[^}]*\}/;
 
 /**
  * A name rendered as JSX TEXT, which is the only case that needs a badge and
