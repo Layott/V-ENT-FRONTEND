@@ -16,6 +16,7 @@
  *   node scripts/check-embeds.mjs [baseUrl]
  * Default base is http://127.0.0.1:3001, so it runs against `pnpm dev`.
  */
+import sharp from 'sharp';
 
 const BASE = process.argv[2] || 'http://127.0.0.1:3001';
 
@@ -112,7 +113,24 @@ for (const route of ROUTES) {
             `${route} og:image:type says ${declaredType} but the URL serves ${servedType}`
           );
         }
-        const bytes = Number(img.headers.get('content-length') || 0);
+        // The dimensions stated in the tags have to be the dimensions of the
+        // bytes. A scraper that crops to a stated 1200x630 and receives
+        // something else produces a card nobody designed.
+        const buf = Buffer.from(await img.arrayBuffer());
+        try {
+          const m = await sharp(buf).metadata();
+          const w = Number(meta(html, 'og:image:width'));
+          const h = Number(meta(html, 'og:image:height'));
+          if (w && h && (m.width !== w || m.height !== h)) {
+            problems.push(
+              `${route} og:image says ${w}x${h} but the image is ${m.width}x${m.height}`
+            );
+          }
+        } catch (err) {
+          problems.push(`${route} og:image is not a readable image: ${err.message}`);
+        }
+
+        const bytes = buf.length;
         // WhatsApp will not render an image much over 600KB.
         if (bytes > 600 * 1024) {
           problems.push(
