@@ -498,3 +498,112 @@
     display: none;
   }
 }
+
+/* Seeding, chosen before the bracket is drawn. Filled surfaces, the chosen
+   option a stronger fill rather than a ring around it. */
+.seedBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 13px;
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.seedTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.seedChoices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem;
+}
+
+.seedChoice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 11px;
+  cursor: pointer;
+  padding: 0.7rem 0.8rem;
+  transition: background-color 0.12s;
+}
+
+.seedChoice:hover { background-color: rgba(255, 255, 255, 0.09); }
+.seedOn { background-color: rgba(212, 175, 55, 0.15); }
+
+.seedChoice strong {
+  display: block;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+}
+
+.seedOn strong { color: var(--v-ent-light-gold, #E8C760); }
+
+.seedHint {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin-top: 0.2rem;
+}
+
+.seedOrder { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.seedList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.seedRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 9px;
+  padding: 0.45rem 0.6rem;
+}
+
+.seedRank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.73rem;
+}
+
+.seedName { flex: 1; color: #fff; font-size: 0.86rem; overflow-wrap: anywhere; }
+
+.seedMove { display: flex; gap: 0.3rem; flex-shrink: 0; }
+
+.seedBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.seedBtn:hover { background-color: rgba(255, 255, 255, 0.18); }
+.seedBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.seedBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
