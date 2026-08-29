@@ -17,6 +17,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './club.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const TABS = [{
   id: 'posts',
   label: 'Posts',
@@ -206,12 +207,13 @@ const ClubInner = ({
                 </div>}
 
               {activeTab === 'members' && <div className={styles.membersGrid}>
-                  {members.map(m => <Link href={`/user-profile?username=${m.username}`} key={m.id} className={styles.memberCard}>
+                  {members.map(m => <Link href={`/u/${encodeURIComponent(m.username)}`} key={m.id} className={styles.memberCard}>
                       <div className={styles.memberAvatar}>
                         <Avatar src={m.avatar} name={m.username} size={48} />
                       </div>
                       <div className={styles.memberInfo}>
-                        <span className={styles.memberName}>{m.full_name}</span>
+                        <UserChip user={m} size={0} link={false}
+                                  nameClassName={styles.memberName} />
                         <span className={styles.memberHandle}>@{m.username}</span>
                       </div>
                       <span className={`${styles.memberRole} ${m.role === 'Owner' ? styles.roleOwner : m.role === 'Mod' ? styles.roleMod : ''}`}>

@@ -22,6 +22,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './search.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -988,8 +989,9 @@ const UserCard = ({
       <img src={mediaUrl(u.avatar)} alt={u.full_name} />
     </div>
     <div className={styles.userBody}>
-      <h3 className={styles.userName}>{u.full_name}{u.founder_badge && <FounderBadge size="sm" />}</h3>
-      <span className={styles.userHandle}>@{u.username}</span>
+      <UserChip user={u} size={0} secondary link={false}
+                nameClassName={styles.userName}
+                handleClassName={styles.userHandle} />
       <div className={styles.userMetaRow}>
         <span className={styles.metaPair}>
           <MdOutlineLocationOn /> {u.country || u.region}

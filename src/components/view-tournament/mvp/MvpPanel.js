@@ -15,6 +15,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import styles from './mvp.module.css';
+import UserChip from '@/components/user-chip/UserChip';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -65,7 +66,7 @@ export default function MvpPanel({ tournamentId }) {
     <div className={styles.wrap}>
       {award && <div className={styles.award}>
         <span className={styles.awardLabel}>{tt('mvp.award', 'Most valuable player')}</span>
-        <strong className={styles.awardName}>{award.username}</strong>
+        <UserChip user={award} size={0} nameClassName={styles.awardName} />
         <span className={styles.awardScore}>
           {tt('mvp.awardScore', '{n} points').replace('{n}', show(award.score, 1))}
         </span>

@@ -6,6 +6,7 @@ import styles from './edit-team.module.css';
 import image from '@/images/signed_in_user_big.webp';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const EditTeamRosterModal = ({
   isOpen,
   onClose,
@@ -182,7 +183,8 @@ const EditTeamRosterModal = ({
                       <span className={styles.memberName}>
                         {member.name} {member.isCurrentUser && "(You)"}
                       </span>
-                      <span className={styles.memberUsername}>{member.username}</span>
+                      <UserChip user={member} size={0} link={false}
+                                nameClassName={styles.memberUsername} />
                     </div>
                   </div>
                   {!member.isCurrentUser && <button className={styles.removeButton} onClick={() => handleRemoveMember(member.id)}>

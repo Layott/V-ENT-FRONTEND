@@ -6,6 +6,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { mediaUrl } from '@/lib/mediaUrl';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import styles from './user-picker.module.css';
+import UserChip from '@/components/user-chip/UserChip';
 
 // Choosing a person, rather than spelling their handle from memory.
 //
@@ -140,9 +141,9 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
 
       {picked && (
         <p className={styles.picked}>
-          {t('dm.sendingTo', 'Sending to {name}').replace('{name}', picked.full_name)}
-          {' '}
-          <span className={styles.pickedHandle}>@{picked.username}</span>
+          {t('dm.sendingTo', 'Sending to {name}').replace('{name}', '')}
+          <UserChip user={picked} size={0} secondary link={false}
+                    handleClassName={styles.pickedHandle} />
         </p>
       )}
 

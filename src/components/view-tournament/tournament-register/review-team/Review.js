@@ -7,6 +7,7 @@ import styles from './review.module.css';
 import image from '@/images/signed_in_user_big.webp';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const ReviewModal = ({
   isOpen,
   onClose,
@@ -256,8 +257,10 @@ const ReviewModal = ({
                         <Image src={mediaUrl(member.avatar || image)} alt={member.name} width={32} height={32} />
                       </div>
                       <div className={styles.memberDetails}>
-                        <span className={styles.memberName}>{member.name}</span>
-                        <span className={styles.memberUsername}>{member.username}</span>
+                        <UserChip user={{ ...member, full_name: member.name }}
+                                  size={0} secondary link={false}
+                                  nameClassName={styles.memberName}
+                                  handleClassName={styles.memberUsername} />
                       </div>
                     </div>)}
                 </div>}

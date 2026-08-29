@@ -27,6 +27,7 @@ import DateField from '@/components/date-field/DateField';
 import { appLocale } from '@/lib/appLocale';
 import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -1518,7 +1519,8 @@ export const ManageEventContent = ({
                   {managers.length === 0 ? <p className={styles.muted}>{tt('manage.noManagers', 'Nobody else is helping run this yet.')}</p> : <div className={styles.rows}>
                       {managers.map(row => <div key={row.id} className={styles.row}>
                           <div className={styles.rowMain}>
-                            <strong className={styles.rowName}>{row.username}</strong>
+                            <UserChip user={row} size={0}
+                                      nameClassName={styles.rowName} />
                             <span className={styles.code}>
                               {row.role === 'door' ? tt('manage.roleDoor', 'Door staff') : tt('manage.roleManager', 'Manager')}
                             </span>
