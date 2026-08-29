@@ -1,0 +1,194 @@
+/* The organiser's schedule builder. Filled surfaces, no strokes, no glow. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.02rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.hint,
+.state,
+.emptyDay {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.83rem;
+  line-height: 1.55;
+  max-width: 68ch;
+}
+
+.hint { margin-top: 0.25rem; }
+
+.addDay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  outline: none;
+}
+
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.primary,
+.ghost,
+.assign,
+.iconBtn {
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.83rem;
+  min-height: 44px;
+  transition: background-color 0.12s;
+}
+
+.primary {
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  padding: 0 1rem;
+}
+
+.primary:hover { background-color: var(--v-ent-light-red, #FF0008); }
+.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ghost {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0 0.7rem;
+  min-height: 38px;
+  font-size: 0.78rem;
+}
+
+.ghost:hover { background-color: rgba(255, 255, 255, 0.16); color: #fff; }
+
+.assign {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  padding: 0 0.6rem;
+  min-height: 38px;
+  outline: none;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  min-height: 38px;
+  background-color: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.iconBtn:hover { background-color: rgba(255, 255, 255, 0.17); }
+.iconBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.primary:focus-visible,
+.ghost:focus-visible,
+.assign:focus-visible,
+.iconBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* One day. A filled block, its date on the platform's gold. */
+.day {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 13px;
+  padding: 0.9rem;
+}
+
+.dayName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(212, 175, 55, 0.14);
+  border-radius: 7px;
+  color: var(--v-ent-light-gold, #E8C760);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.7rem;
+  padding: 0.3rem 0.6rem;
+  text-transform: uppercase;
+}
+
+.count {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  font-size: 0.7rem;
+  padding: 0 0.32rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fixture {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  flex-wrap: wrap;
+}
+
+.pos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.76rem;
+}
+
+.names {
+  flex: 1;
+  min-width: 140px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.87rem;
+  line-height: 1.4;
+}
+
+.v {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.7rem;
+  margin: 0 0.45rem;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.error { color: #e5636a; font-size: 0.85rem; line-height: 1.5; }
+.notice { color: var(--v-ent-success-light, #66bb6a); font-size: 0.85rem; }
+
+@media (max-width: 640px) {
+  .fixture { align-items: flex-start; }
+  .actions { width: 100%; }
+}
