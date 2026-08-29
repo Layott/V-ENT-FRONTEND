@@ -28,7 +28,10 @@ const readSavedFormData = () => {
   }
 };
 
-const CreateTournamentComponent = () => {
+// `draftId` is the tournament this wizard is EDITING, when it was opened from
+// a saved draft. Without it every save created another row: the CEO pressed
+// Save Draft twice and got two identical tournaments in the list.
+const CreateTournamentComponent = ({ draftId = null }) => {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
   // Status-banner sentences are English in the source and looked up by
@@ -150,6 +153,11 @@ const CreateTournamentComponent = () => {
         formDataToSend.append('game_id', formData.game_id);
       }
       formDataToSend.append('game_mode', formData.game_mode || '');
+      // The edition and the event this tournament belongs to. Both are asked
+      // for on step 1 and neither was ever sent, so both were gone the moment
+      // the organiser left the page.
+      formDataToSend.append('series_id', formData.series_id || '');
+      if (formData.event) formDataToSend.append('event', formData.event);
       formDataToSend.append('tournament_description', formData.tournament_description || '');
       formDataToSend.append('tournament_type', formData.tournament_type || '');
       formDataToSend.append('start_date_and_time', formData.start_date_and_time || '');
@@ -246,12 +254,24 @@ const CreateTournamentComponent = () => {
       if (socialLinks.tiktok_link) formDataToSend.append('tiktok_link', socialLinks.tiktok_link);
       if (socialLinks.bigolive_link) formDataToSend.append('bigolive_link', socialLinks.bigolive_link);
 
-      const data = await ventFetch(API.TOURNAMENT.CREATE, {
-        method: 'POST',
-        token,
-        isFormData: true,
-        body: formDataToSend,
-      });
+      // Update the draft we opened, or create one if this is a new tournament.
+      //
+      // This was always a POST to CREATE, so pressing Save Draft twice made two
+      // tournaments, and the second copy carried none of the images from the
+      // first - which is why the logo and banner appeared to "not save".
+      const data = draftId
+        ? await ventFetch(API.TOURNAMENT.EDIT(draftId), {
+            method: 'PUT',
+            token,
+            isFormData: true,
+            body: formDataToSend,
+          })
+        : await ventFetch(API.TOURNAMENT.CREATE, {
+            method: 'POST',
+            token,
+            isFormData: true,
+            body: formDataToSend,
+          });
 
       const tournamentId = data?.tournament_id || data?.tournament?.id || data?.id || null;
       // The readable address, so the organiser lands on the link they will copy.

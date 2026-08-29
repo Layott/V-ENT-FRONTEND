@@ -13,16 +13,24 @@
   padding: 0 0.5rem;
 }
 
+/* The five destinations share the row evenly and always fit.
+ *
+ * This used to be `overflow-x: auto` with `width: auto` items, so on a real
+ * phone the row silently scrolled: "Wallets" was cut to "Wall" with its icon
+ * sliced in half and the profile column sitting on top of it. Nothing said the
+ * row could be scrolled, so the last destination simply looked broken - and a
+ * navigation bar is the one thing on the page that must never look broken.
+ *
+ * `min-width: 0` is what actually allows the shrink. Flex items refuse to go
+ * below their content width without it, which is how a row that says
+ * `flex: 1` still overflows. */
 .bottomNavContainer {
   display: flex;
   align-items: center;
-  width: calc(100% - 60px - 1rem);
+  flex: 1 1 auto;
+  min-width: 0;
   height: 60px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: hidden;
 }
 
 .bottomMenuContainer::-webkit-scrollbar {
@@ -34,11 +42,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .profileContainer {
   height: 50px;
-  width: 60px;
+  /* Was a hard 60px. It is one of six columns, so it takes a share like the
+     rest rather than forcing the other five to fit around it. */
+  width: 100%;
+  min-width: 0;
+  max-width: 76px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -108,7 +122,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  /* No gap. At 411px, five items plus the profile column leaves about 68px
+     each, and a 1rem gap between them was 64px of the row spent on nothing. */
+  gap: 0;
+  width: 100%;
   height: 100%;
   flex-wrap: nowrap;
 }
@@ -119,12 +136,13 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  width: calc(100% - 1.5rem);
-  width: auto;
-  padding: 0.25rem 0.5rem;
+  /* Equal shares of whatever the row has, and `min-width: 0` so they may
+     actually shrink to it. */
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.25rem 0.15rem;
   border-radius: 5px;
-  transition: all ease-in-out 0.5s;
-
+  transition: background-color 120ms ease-in-out;
 }
 
 .sidebarItem:hover {
@@ -138,7 +156,29 @@
   justify-content: center;
   height: 100%;
   width: 100%;
+  min-width: 0;
   border-radius: 5px;
+  /* The label sits under the icon and is the part that has to give. It stays
+     on one line and is centred; the size below is what makes "Tournaments"
+     fit a 68px column without being cut. */
+  font-size: 0.62rem;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* The profile column matches the others rather than being a fixed 60px island
+   beside them, so the six read as one row. */
+.profileContainer .username {
+  font-size: 0.62rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .iconShopSpan,

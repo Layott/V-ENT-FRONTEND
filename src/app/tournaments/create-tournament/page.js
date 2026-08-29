@@ -51,6 +51,28 @@ const mapTournamentToFormData = t => {
     prize_distribution: Array.isArray(t.prize_distribution) ? t.prize_distribution : [],
     winner_prize: t.winner_prize ?? '',
     sponsors: Array.isArray(t.sponsors) ? t.sponsors : [],
+
+    // Everything below was collected by the wizard and dropped on the way
+    // back in, so re-opening a draft asked for it all again.
+    //
+    // `options` is the whole of step 2 - who may enter, check-in, rosters,
+    // the country restriction. `series_id` is the game edition. `event` is the
+    // event this tournament belongs to. The league block is what makes an
+    // aggregate table score correctly. The two image URLs are so the step can
+    // show what is already saved rather than an empty box, which reads as
+    // "your upload was lost".
+    options: t.options && typeof t.options === 'object' ? t.options : {},
+    series_id: t.series_id ?? t.tournament_series_id ?? '',
+    event: t.event ?? t.event_id ?? '',
+    points_win: t.points_win ?? t.league?.points_win ?? 3,
+    points_draw: t.points_draw ?? t.league?.points_draw ?? 1,
+    points_loss: t.points_loss ?? t.league?.points_loss ?? 0,
+    players_per_team: t.players_per_team ?? t.league?.players_per_team ?? '',
+    tiebreakers: Array.isArray(t.tiebreakers) ? t.tiebreakers
+      : (Array.isArray(t.league?.tiebreakers) ? t.league.tiebreakers : []),
+    existing_logo: t.tournament_logo ?? null,
+    existing_banner: t.tournament_banner ?? null,
+
     webSocialLinks,
     ...webSocialLinks
   };
@@ -113,7 +135,7 @@ function CreateTournamentPageInner() {
                 {tt("ui.tryAgain", "Try again")}
               </button>
             </div>
-          </div> : ready ? <CreateTournamentComponent /> : <div className={styles.loadingState}>
+          </div> : ready ? <CreateTournamentComponent draftId={draftId} /> : <div className={styles.loadingState}>
             <div className={styles.loadingCard}>
               <div className={styles.spinner} />
               <span>{tt("ui.loading.draft.b83b", "Loading your draft…")}</span>
