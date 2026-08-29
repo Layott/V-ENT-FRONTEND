@@ -790,3 +790,50 @@
     margin-top: 0.4rem;
   }
 }
+
+/* ------------------------------------------------------------- reminders */
+
+.remindGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+}
+
+.remindCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+
+.remindTitle {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+  color: #fff;
+}
+
+.remindCount {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.remindBody {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  width: 100%;
+  resize: vertical;
+  outline: none;
+}
+
+.remindBody:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

@@ -1,0 +1,29 @@
+/* The explanation of the format that was just picked.
+
+   A filled surface a step off the panel behind it, no stroke and no accent
+   stripe down the side. The label carries the emphasis instead. */
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  margin-top: 1.1rem;
+}
+
+.noteLabel {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.noteBody {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}

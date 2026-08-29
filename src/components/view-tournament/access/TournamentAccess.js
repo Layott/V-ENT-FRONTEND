@@ -244,6 +244,27 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
             </ul>}
       </div>
 
+      {/* The data out. CSV because the next step is a pivot table or a mail
+          merge, and every spreadsheet on earth opens it. */}
+      <div className={styles.block}>
+        <p className={styles.title}>{tt('export.title', 'Take the data out')}</p>
+        <p className={styles.hint}>
+          {tt('export.hint', 'Spreadsheets you can open anywhere. The results sheet has a row per match, so an aggregate fixture is not collapsed into one line.')}
+        </p>
+        <div className={styles.mint}>
+          {[['participants', 'export.participants', 'Entrants'],
+            ['results', 'export.results', 'Results'],
+            ['standings', 'export.standings', 'Standings']].map(([sheet, key, label]) => (
+            <button key={sheet} type="button" className={styles.ghost}
+                    onClick={() => window.open(
+                      `${API}/tournament/${tournamentId}/export/?sheet=${sheet}`,
+                      '_blank', 'noopener')}>
+              <LuDownload aria-hidden="true" /> {tt(key, label)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {error && <p className={styles.error}>{error}</p>}
       {notice && <p className={styles.notice}>{notice}</p>}
     </section>

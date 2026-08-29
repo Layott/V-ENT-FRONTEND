@@ -27,6 +27,9 @@ const TABS = [{
 }, {
   id: 'production',
   label: 'Production'
+}, {
+  id: 'reminders',
+  label: 'Reminders'
 }];
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
@@ -181,6 +184,7 @@ const ManageContent = () => {
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
             {tab === 'production' && <ProductionLinkPanel tournament={tournament} />}
+            {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
           </div>
         </div>
       </main>
@@ -188,6 +192,135 @@ const ManageContent = () => {
       <BottomMenu />
 
       {toast && <div className={styles.toast}>{toast}</div>}
+    </div>;
+};
+
+/* ──────────────── REMINDERS ──────────────── */
+
+// Nudging entrants before they miss something.
+//
+// The counts are fetched before anything is offered, so an organiser sees "0
+// entrants have not checked in" rather than pressing a button that reaches
+// nobody. That is the same rule as everywhere else here: say what will happen
+// before somebody spends the effort, not after.
+const RemindersPanel = ({ tournamentId, token, showToast }) => {
+  const tt = useT();
+  const [audience, setAudience] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [draft, setDraft] = useState({ subject: '', body: '' });
+
+  const load = useCallback(async () => {
+    if (!token || !tournamentId) return;
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentId}/remind/audience/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') setAudience(body.data);
+    } catch {
+      // A panel that cannot count its audience still has to render, and the
+      // buttons below explain themselves without it.
+      setAudience(null);
+    }
+  }, [tournamentId, token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const send = async payload => {
+    setBusy(true);
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentId}/remind/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast(tt('run.remindSent', 'Sent to {n} people.')
+          .replace('{n}', body.data.people));
+        if (payload.kind === 'custom') setDraft({ subject: '', body: '' });
+        await load();
+        return;
+      }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const checkInCount = audience?.check_in?.entrants ?? 0;
+  const matchCount = audience?.match?.sides ?? 0;
+  const usesCheckIn = audience?.check_in?.used !== false;
+
+  return <div>
+      <h2 className={styles.panelTitle}>{tt('run.tabReminders', 'Reminders')}</h2>
+      <p className={styles.panelSub}>
+        {tt('run.remindersHint', 'Nudge entrants before they miss something. Check-in skips anybody who has already checked in, and a match reminder names the opponent, the round and the time.')}
+      </p>
+
+      <div className={styles.remindGrid}>
+        <div className={styles.remindCard}>
+          <strong className={styles.remindTitle}>
+            {tt('run.remindCheckIn', 'Remind them to check in')}
+          </strong>
+          <span className={styles.remindCount}>
+            {!usesCheckIn
+              ? tt('run.remindNoCheckIn', 'This tournament does not use check-in.')
+              : tt('run.remindCheckInCount', '{n} entrants have not checked in')
+                .replace('{n}', checkInCount)}
+          </span>
+          <button type="button" className={styles.btn} disabled={busy || !usesCheckIn || checkInCount === 0}
+                  onClick={() => send({ kind: 'check_in' })}>
+            {checkInCount === 0 && usesCheckIn
+              ? tt('run.remindNobody', 'Nobody needs this one right now.')
+              : tt('run.remindCheckIn', 'Remind them to check in')}
+          </button>
+        </div>
+
+        <div className={styles.remindCard}>
+          <strong className={styles.remindTitle}>
+            {tt('run.remindMatch', 'Tell them who they play')}
+          </strong>
+          <span className={styles.remindCount}>
+            {tt('run.remindMatchCount', '{n} sides still to play').replace('{n}', matchCount)}
+          </span>
+          <button type="button" className={styles.btn} disabled={busy || matchCount === 0}
+                  onClick={() => send({ kind: 'match' })}>
+            {matchCount === 0
+              ? tt('run.remindNobody', 'Nobody needs this one right now.')
+              : tt('run.remindMatch', 'Tell them who they play')}
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.remindCard} style={{ marginTop: '1rem' }}>
+        <strong className={styles.remindTitle}>
+          {tt('run.remindCustom', 'Send your own message')}
+        </strong>
+        <input className={styles.modalInput} maxLength={140}
+               placeholder={tt('run.remindSubject', 'Subject')}
+               value={draft.subject}
+               onChange={e => setDraft({ ...draft, subject: e.target.value })} />
+        <textarea className={styles.remindBody} rows={4} maxLength={2000}
+                  placeholder={tt('run.remindBody', 'What do they need to know?')}
+                  value={draft.body}
+                  onChange={e => setDraft({ ...draft, body: e.target.value })} />
+        <span className={styles.remindCount}>
+          {audience
+            ? tt('run.remindToday', '{sent} of {limit} reminders sent today.')
+              .replace('{sent}', audience.sent_today)
+              .replace('{limit}', audience.daily_limit)
+            : ''}
+        </span>
+        <button type="button" className={styles.btn}
+                disabled={busy || !draft.subject.trim() || !draft.body.trim()}
+                onClick={() => send({ kind: 'custom', ...draft })}>
+          {tt('run.remindCustom', 'Send your own message')}
+        </button>
+      </div>
     </div>;
 };
 

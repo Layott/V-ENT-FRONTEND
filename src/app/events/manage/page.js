@@ -35,8 +35,8 @@ const formatDateTime = value => (value
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
   : '');
-const TABS = ['tickets', 'money', 'holds', 'programme', 'queue',
-  'influencers', 'promos', 'team'];
+const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
+  'programme', 'queue', 'influencers', 'promos', 'team'];
 export const ManageEventContent = ({
   slug: slugFromPath
 }) => {
@@ -66,6 +66,12 @@ export const ManageEventContent = ({
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
   const [canAddManagers, setCanAddManagers] = useState(false);
+  const [metrics, setMetrics] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+  const [audience, setAudience] = useState(null);
+  const [draftMessage, setDraftMessage] = useState({ subject: '', body: '', audience: 'all' });
+  const [polls, setPolls] = useState([]);
+  const [draftPoll, setDraftPoll] = useState({ question: '', options: ['', ''], show_results_before_voting: false });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -122,10 +128,12 @@ export const ManageEventContent = ({
     }
     setLoading(true);
     setError('');
-    const [r, p, m, ti, mo, ho, se, qu, cf] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
       call('/checkout-fields/manage/'),
+      call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
+      call('/polls/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -142,6 +150,10 @@ export const ManageEventContent = ({
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
     setCanAddManagers(!!m.body?.data?.can_add);
+    setMetrics(me.body?.data || null);
+    setAnnouncements(an.body?.data?.announcements || []);
+    setAudience(au.body?.data || null);
+    setPolls(po.body?.data?.polls || []);
     setLoading(false);
   }, [call, token, eventRef]);
   useEffect(() => {
@@ -164,6 +176,65 @@ export const ManageEventContent = ({
     setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
     return false;
   };
+
+  // ------------------------------------------------------ messages and polls
+
+  // The CSV comes back as a file rather than as JSON, so it is fetched as a
+  // blob and handed to a temporary link. A plain href would send the browser
+  // without the Bearer token and be refused.
+  const downloadSheet = async sheet => {
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`${API}/event/${eventRef}/metrics/export/?sheet=${sheet}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        setError(tt('manage.downloadFailed', 'That sheet could not be downloaded.'));
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${eventRef}-${sheet}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    const done = await run(() => call('/announcements/', {
+      method: 'POST',
+      body: JSON.stringify(draftMessage),
+    }), 'manage.messageSent', 'Sent.');
+    if (done) setDraftMessage({ subject: '', body: '', audience: 'all' });
+  };
+
+  const addPoll = async () => {
+    const done = await run(() => call('/polls/', {
+      method: 'POST',
+      body: JSON.stringify({
+        question: draftPoll.question,
+        options: draftPoll.options.filter(o => o.trim()),
+        show_results_before_voting: draftPoll.show_results_before_voting,
+      }),
+    }), 'manage.pollAdded', 'Poll added.');
+    if (done) setDraftPoll({ question: '', options: ['', ''], show_results_before_voting: false });
+  };
+
+  const setPollOpen = (poll, isOpen) => run(() => call(`/polls/${poll.id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ is_open: isOpen }),
+  }), 'manage.pollUpdated', 'Poll updated.');
+
+  const removePoll = poll => run(() => call(`/polls/${poll.id}/`, {
+    method: 'DELETE',
+  }), 'manage.pollRemoved', 'Poll removed.');
 
   // ------------------------------------------------------------- influencers
   const addReferral = async () => {
@@ -343,7 +414,10 @@ export const ManageEventContent = ({
     queue: tt('manage.tabQueue', 'Waiting list'),
     influencers: tt('manage.tabInfluencers', 'Influencers'),
     promos: tt('manage.tabPromos', 'Promo codes'),
-    team: tt('manage.tabTeam', 'Team')
+    team: tt('manage.tabTeam', 'Team'),
+    numbers: tt('manage.tabNumbers', 'Sales and attendance'),
+    messages: tt('manage.tabMessages', 'Messages'),
+    polls: tt('manage.tabPolls', 'Polls')
   })[key];
   return <div className={styles.pageContainer}>
       <Header />
@@ -760,6 +834,193 @@ export const ManageEventContent = ({
                               {tt('manage.queueOffered', 'Offered, expires {when}')
                                 .replace('{when}', formatDateTime(row.offer_expires_at))}
                             </span>}
+                          </div>
+                        </div>)}
+                    </div>}
+                </section>}
+
+              {/* ------------------------------------------- sales and attendance */}
+              {tab === 'numbers' && <section className={styles.card}>
+                  <p className={styles.cardHint}>
+                    {tt('manage.numbersHint', 'What sold, who turned up, and what is left. Refunded tickets are counted on their own, because a refund is not a sale that happened.')}
+                  </p>
+
+                  {!metrics ? <p className={styles.muted}>{tt('ui.loading', 'Loading...')}</p>
+                    : <>
+                      <div className={styles.figureGrid}>
+                        <div className={styles.figure}>
+                          <strong className={styles.figureValue}>{metrics.tickets.issued}</strong>
+                          <span className={styles.figureLabel}>{tt('manage.figureIssued', 'Tickets out')}</span>
+                        </div>
+                        <div className={styles.figure}>
+                          <strong className={styles.figureValue}>{metrics.tickets.checked_in}</strong>
+                          <span className={styles.figureLabel}>{tt('manage.figureArrived', 'Turned up')}</span>
+                        </div>
+                        <div className={styles.figure}>
+                          <strong className={styles.figureValue}>
+                            {metrics.tickets.attendance_rate === null
+                              ? tt('manage.noneYet', 'None yet')
+                              : `${metrics.tickets.attendance_rate}%`}
+                          </strong>
+                          <span className={styles.figureLabel}>{tt('manage.figureAttendance', 'Attendance')}</span>
+                        </div>
+                        <div className={styles.figure}>
+                          <strong className={styles.figureValue}>{Number(metrics.revenue.vc).toLocaleString(appLocale())}</strong>
+                          <span className={styles.figureLabel}>{tt('manage.figureTaken', 'VENT COINS taken')}</span>
+                        </div>
+                      </div>
+
+                      <p className={styles.cardHint}>
+                        {tt('manage.checkInSplit', '{door} scanned at a gate, {self} marked themselves present, {refunded} refunded.')
+                          .replace('{door}', metrics.tickets.at_door)
+                          .replace('{self}', metrics.tickets.self_checked_in)
+                          .replace('{refunded}', metrics.tickets.refunded)}
+                      </p>
+
+                      <h3 className={styles.subTitle}>{tt('manage.byTier', 'By ticket type')}</h3>
+                      {metrics.tiers.length === 0
+                        ? <p className={styles.muted}>{tt('manage.noTiersYet', 'No ticket types yet.')}</p>
+                        : <div className={styles.rows}>
+                          {metrics.tiers.map(row => <div key={row.tier_id} className={styles.row}>
+                              <div className={styles.rowMain}>
+                                <strong className={styles.rowName}>{row.name}</strong>
+                              </div>
+                              <div className={styles.rowStats}>
+                                <span>{tt('manage.sold', 'Sold')}: <strong>{row.sold}</strong></span>
+                                <span>
+                                  {tt('manage.left', 'Left')}:{' '}
+                                  <strong>{row.remaining === null ? tt('manage.uncapped', 'No cap') : row.remaining}</strong>
+                                </span>
+                                <span>{tt('manage.figureArrived', 'Turned up')}: <strong>{row.checked_in}</strong></span>
+                              </div>
+                            </div>)}
+                        </div>}
+
+                      <h3 className={styles.subTitle}>{tt('manage.download', 'Download')}</h3>
+                      <div className={styles.rowActions}>
+                        <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('attendees')}>
+                          {tt('manage.sheetAttendees', 'Attendee list')}
+                        </button>
+                        <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('tiers')}>
+                          {tt('manage.sheetTiers', 'Sales by ticket type')}
+                        </button>
+                        <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('sales')}>
+                          {tt('manage.sheetSales', 'Sales by day')}
+                        </button>
+                      </div>
+                    </>}
+                </section>}
+
+              {/* ---------------------------------------------------- messages */}
+              {tab === 'messages' && <section className={styles.card}>
+                  <p className={styles.cardHint}>
+                    {tt('manage.messagesHint', 'One email to everybody holding a ticket, guests included. Each person is written to on their own, so nobody sees anybody else on the list, and somebody holding four tickets is told once.')}
+                  </p>
+
+                  <div className={styles.newRow}>
+                    <input className={styles.input} placeholder={tt('manage.messageSubject', 'Subject')} maxLength={140} value={draftMessage.subject} onChange={e => setDraftMessage({ ...draftMessage, subject: e.target.value })} />
+                    <select className={styles.audienceSelect} value={draftMessage.audience} onChange={e => setDraftMessage({ ...draftMessage, audience: e.target.value })} aria-label={tt('manage.messageAudience', 'Who gets it')}>
+                      <option value="all">
+                        {tt('manage.audienceAll', 'Everybody with a ticket')}
+                        {audience ? ` (${audience.audiences.all})` : ''}
+                      </option>
+                      <option value="not_checked_in">
+                        {tt('manage.audienceNotArrived', 'Not arrived yet')}
+                        {audience ? ` (${audience.audiences.not_checked_in})` : ''}
+                      </option>
+                      <option value="checked_in">
+                        {tt('manage.audienceArrived', 'Already inside')}
+                        {audience ? ` (${audience.audiences.checked_in})` : ''}
+                      </option>
+                    </select>
+                  </div>
+                  <textarea className={styles.textarea} rows={5} maxLength={2000} placeholder={tt('manage.messageBody', 'What do they need to know?')} value={draftMessage.body} onChange={e => setDraftMessage({ ...draftMessage, body: e.target.value })} />
+                  <div className={styles.rowBetween}>
+                    <span className={styles.muted}>
+                      {audience
+                        ? tt('manage.sentToday', '{sent} of {limit} messages sent today.')
+                          .replace('{sent}', audience.sent_today).replace('{limit}', audience.daily_limit)
+                        : ''}
+                    </span>
+                    <button type="button" className={styles.addBtn} disabled={busy || !draftMessage.subject.trim() || !draftMessage.body.trim()} onClick={sendMessage}>
+                      {tt('manage.sendMessage', 'Send it')}
+                    </button>
+                  </div>
+
+                  <h3 className={styles.subTitle}>{tt('manage.messagesSent', 'Already sent')}</h3>
+                  {announcements.length === 0
+                    ? <p className={styles.muted}>{tt('manage.noMessages', 'You have not sent anything yet.')}</p>
+                    : <div className={styles.rows}>
+                      {announcements.map(row => <div key={row.id} className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{row.subject}</strong>
+                            <span className={styles.code}>{formatDateTime(row.sent_at)}</span>
+                            {row.email_error && <span className={styles.offBadge}>{row.email_error}</span>}
+                          </div>
+                          <div className={styles.rowStats}>
+                            <span>{tt('manage.reached', 'Reached')}: <strong>{row.recipients}</strong></span>
+                          </div>
+                        </div>)}
+                    </div>}
+                </section>}
+
+              {/* ------------------------------------------------------- polls */}
+              {tab === 'polls' && <section className={styles.card}>
+                  <p className={styles.cardHint}>
+                    {tt('manage.pollsHint', 'Ask the room. One ticket is one answer, so people without an account can still take part. The count stays hidden until somebody has answered, because a visible tally pulls later answers toward whatever is winning.')}
+                  </p>
+
+                  <div className={styles.newRow}>
+                    <input className={styles.input} placeholder={tt('manage.pollQuestion', 'What do you want to ask?')} maxLength={200} value={draftPoll.question} onChange={e => setDraftPoll({ ...draftPoll, question: e.target.value })} />
+                  </div>
+                  {draftPoll.options.map((option, index) => <div key={index} className={styles.newRow}>
+                      <input className={styles.input} placeholder={tt('manage.pollOption', 'Option {n}').replace('{n}', index + 1)} maxLength={140} value={option} onChange={e => {
+                        const next = [...draftPoll.options];
+                        next[index] = e.target.value;
+                        setDraftPoll({ ...draftPoll, options: next });
+                      }} />
+                      {draftPoll.options.length > 2 && <button type="button" className={styles.iconBtn} aria-label={tt('manage.removeOption', 'Remove this option')} onClick={() => setDraftPoll({ ...draftPoll, options: draftPoll.options.filter((_, i) => i !== index) })}>
+                        <FaTrash />
+                      </button>}
+                    </div>)}
+                  <div className={styles.rowBetween}>
+                    <button type="button" className={styles.ghostBtn} disabled={draftPoll.options.length >= 10} onClick={() => setDraftPoll({ ...draftPoll, options: [...draftPoll.options, ''] })}>
+                      <FaPlus /> {tt('manage.addOption', 'Another option')}
+                    </button>
+                    <label className={styles.checkInline}>
+                      <input type="checkbox" checked={draftPoll.show_results_before_voting} onChange={e => setDraftPoll({ ...draftPoll, show_results_before_voting: e.target.checked })} />
+                      {tt('manage.pollShowEarly', 'Show the count before people answer')}
+                    </label>
+                    <button type="button" className={styles.addBtn} disabled={busy || !draftPoll.question.trim() || draftPoll.options.filter(o => o.trim()).length < 2} onClick={addPoll}>
+                      {tt('manage.addPoll', 'Ask it')}
+                    </button>
+                  </div>
+
+                  <h3 className={styles.subTitle}>{tt('manage.pollsAsked', 'Your polls')}</h3>
+                  {polls.length === 0
+                    ? <p className={styles.muted}>{tt('manage.noPolls', 'You have not asked anything yet.')}</p>
+                    : <div className={styles.rows}>
+                      {polls.map(poll => <div key={poll.id} className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{poll.question}</strong>
+                            {!poll.is_open && <span className={styles.offBadge}>{tt('manage.pollClosed', 'Closed')}</span>}
+                            <span className={styles.code}>
+                              {tt('manage.pollAnswers', '{n} answers').replace('{n}', poll.total_votes ?? 0)}
+                            </span>
+                          </div>
+                          <div className={styles.rowStats}>
+                            {poll.options.map(option => <span key={option.id}>
+                              {option.text}: <strong>{option.votes ?? 0}</strong>
+                              {option.share === null ? '' : ` (${option.share}%)`}
+                            </span>)}
+                          </div>
+                          <div className={styles.rowActions}>
+                            <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setPollOpen(poll, !poll.is_open)}>
+                              {poll.is_open ? tt('manage.closePoll', 'Close it') : tt('manage.reopenPoll', 'Reopen it')}
+                            </button>
+                            {(poll.total_votes ?? 0) === 0 && <button type="button" className={styles.iconBtn} aria-label={tt('manage.removePoll', 'Remove this poll')} disabled={busy} onClick={() => removePoll(poll)}>
+                              <FaTrash />
+                            </button>}
                           </div>
                         </div>)}
                     </div>}

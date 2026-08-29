@@ -256,9 +256,73 @@ export const ViewEventContent = ({
   // only mounts once the tab is open, and a tab that has to be opened before it
   // will appear can never be opened.
   const [hasProgramme, setHasProgramme] = useState(false);
+  // What the organiser has said, and what they are asking. Both are public: a
+  // reader deciding whether to buy benefits from seeing that the doors moved
+  // twice, and a poll with the count hidden gives nothing away.
+  const [announcements, setAnnouncements] = useState([]);
+  const [polls, setPolls] = useState([]);
+  // The ticket code a signed-out reader answers a poll with. Kept in the page
+  // rather than asked per poll, because somebody with a ticket has one code and
+  // typing it once is the whole interaction.
+  const [pollCode, setPollCode] = useState('');
+  const [pollBusy, setPollBusy] = useState(null);
   // Which tier a signed-out visitor is buying, if any.
   const [guestTier, setGuestTier] = useState(null);
   const [tierRefresh, setTierRefresh] = useState(0);
+
+  // Announcements and polls, loaded on the page rather than by a tab's own
+  // component, for the same reason the programme is: a section that only
+  // appears once its data arrives cannot fetch that data from inside itself.
+  const loadTalk = useCallback(async () => {
+    if (!id) return;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/event/${id}`;
+    const query = pollCode.trim()
+      ? `?ticket_code=${encodeURIComponent(pollCode.trim().toUpperCase())}`
+      : '';
+    // The token when there is one. Without it the server sees an anonymous
+    // reader, so a signed-in ticket holder is told to answer a poll they have
+    // already answered, and the organiser cannot see their own counts.
+    const auth = session?.user?.sessionToken
+      ? { Authorization: `Bearer ${session.user.sessionToken}` }
+      : {};
+    try {
+      const [a, p] = await Promise.all([
+        fetch(`${url}/announcements/`).then(r => r.json()).catch(() => ({})),
+        fetch(`${url}/polls/${query}`, { headers: auth })
+          .then(r => r.json()).catch(() => ({})),
+      ]);
+      setAnnouncements(a?.data?.announcements || []);
+      setPolls(p?.data?.polls || []);
+    } catch {
+      // A public page must not break because an optional section did not load.
+      setAnnouncements([]);
+      setPolls([]);
+    }
+  }, [id, pollCode, session?.user?.sessionToken]);
+
+  useEffect(() => { loadTalk(); }, [loadTalk]);
+
+  const answerPoll = async (poll, optionId) => {
+    const code = pollCode.trim().toUpperCase();
+    setPollBusy(poll.id);
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/polls/${poll.id}/vote/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session?.user?.sessionToken
+              ? { Authorization: `Bearer ${session.user.sessionToken}` }
+              : {}),
+          },
+          body: JSON.stringify({ option_id: optionId, ...(code ? { ticket_code: code } : {}) }),
+        });
+      await loadTalk();
+    } finally {
+      setPollBusy(null);
+    }
+  };
 
   useEffect(() => {
     if (!id) return undefined;
@@ -802,6 +866,94 @@ export const ViewEventContent = ({
                   <p className={styles.body}>
                     {event.description || event.desc || tx("The organizer has not written a description for this event yet.")}
                   </p>
+
+                  {/* Getting there. `location` alone is a line somebody typed;
+                      it is enough to print on a ticket and not enough to
+                      travel to. */}
+                  {(event.venue_name || event.directions || event.map_link || event.map_search_url) && <>
+                      <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                        {tt('event.gettingThere', 'Getting there')}
+                      </h2>
+                      {event.venue_name && <p className={styles.body}>
+                        <strong>{event.venue_name}</strong>
+                        {event.location ? `, ${event.location}` : ''}
+                      </p>}
+                      {event.directions && <p className={styles.body} style={{ whiteSpace: 'pre-line' }}>
+                        {event.directions}
+                      </p>}
+                      {(event.map_link || event.map_search_url) && <p className={styles.body}>
+                        <a href={event.map_link || event.map_search_url}
+                           target="_blank" rel="noopener noreferrer"
+                           className={styles.inlineLink}>
+                          {tt('event.openInMaps', 'Open in maps')}
+                        </a>
+                      </p>}
+                    </>}
+
+                  {/* What the organiser has said since tickets went on sale. */}
+                  {announcements.length > 0 && <>
+                      <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                        {tt('event.announcements', 'From the organiser')}
+                      </h2>
+                      {announcements.map(row => <div key={row.id} className={styles.announcement}>
+                          <strong className={styles.announcementSubject}>{row.subject}</strong>
+                          <span className={styles.announcementWhen}>
+                            {new Date(row.sent_at).toLocaleString(appLocale(), {
+                              day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                            })}
+                          </span>
+                          <p className={styles.announcementBody}>{row.body}</p>
+                        </div>)}
+                    </>}
+
+                  {/* Polls. The control is only live for somebody who can
+                      actually answer: a button that fails after they press it
+                      is worse than one that explains itself first. */}
+                  {polls.length > 0 && <>
+                      <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
+                        {tt('event.polls', 'Polls')}
+                      </h2>
+                      {!session?.user && <p className={styles.body}>
+                        {tt('event.pollNeedsTicket', 'Answering needs a ticket. Enter your ticket code to take part.')}
+                      </p>}
+                      {!session?.user && <input
+                        className={styles.pollCode}
+                        value={pollCode}
+                        placeholder={tt('event.pollCodeLabel', 'Ticket code')}
+                        aria-label={tt('event.pollCodeLabel', 'Ticket code')}
+                        onChange={e => setPollCode(e.target.value)} />}
+                      {polls.map(poll => <div key={poll.id} className={styles.poll}>
+                          <strong className={styles.pollQuestion}>{poll.question}</strong>
+                          {!poll.is_open && <span className={styles.pollNote}>
+                            {tt('event.pollClosedNote', 'This poll has closed.')}
+                          </span>}
+                          <div className={styles.pollOptions}>
+                            {poll.options.map(option => {
+                              const mine = poll.my_option_id === option.id;
+                              const canAnswer = poll.is_open && !mine
+                                && (session?.user || pollCode.trim());
+                              return <button
+                                key={option.id}
+                                type="button"
+                                className={`${styles.pollOption} ${mine ? styles.pollOptionMine : ''}`}
+                                disabled={!canAnswer || pollBusy === poll.id}
+                                onClick={() => answerPoll(poll, option.id)}>
+                                <span>{option.text}</span>
+                                {option.share === null || option.share === undefined
+                                  ? null
+                                  : <span className={styles.pollShare}>{option.share}%</span>}
+                              </button>;
+                            })}
+                          </div>
+                          <span className={styles.pollNote}>
+                            {poll.my_option_id
+                              ? tt('event.pollVoted', 'Your answer is in.')
+                              : poll.results_visible
+                                ? ''
+                                : tt('event.pollHidden', 'The count appears once you have answered.')}
+                          </span>
+                        </div>)}
+                    </>}
 
                   {eventSocials.length > 0 && <>
                       <h2 className={styles.sectionTitle} style={{
