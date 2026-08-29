@@ -16,6 +16,7 @@
  *   node scripts/check-embeds.mjs [baseUrl]
  * Default base is http://127.0.0.1:3001, so it runs against `pnpm dev`.
  */
+import sharp from 'sharp';
 
 const BASE = process.argv[2] || 'http://127.0.0.1:3001';
 
@@ -90,6 +91,55 @@ for (const route of ROUTES) {
     // one host.
     if (!image.startsWith('https://v-ent.co/')) {
       problems.push(`${route} og:image is on another host: ${image}`);
+    }
+  }
+
+  // The declared type has to be what the image actually serves, and the image
+  // has to be small enough to render. og:image:type was hardcoded to
+  // image/jpeg while the default card is a PNG, so every page falling back to
+  // it advertised one format and served another. WhatsApp shows nothing and
+  // says nothing when it rejects an image, so the only way to know is to
+  // fetch it the way a scraper does.
+  if (image) {
+    try {
+      const img = await fetch(image, { redirect: 'follow' });
+      const servedType = (img.headers.get('content-type') || '').split(';')[0].trim();
+      const declaredType = meta(html, 'og:image:type');
+      if (!img.ok) {
+        problems.push(`${route} og:image does not load: ${img.status} ${image}`);
+      } else {
+        if (declaredType && servedType && declaredType !== servedType) {
+          problems.push(
+            `${route} og:image:type says ${declaredType} but the URL serves ${servedType}`
+          );
+        }
+        // The dimensions stated in the tags have to be the dimensions of the
+        // bytes. A scraper that crops to a stated 1200x630 and receives
+        // something else produces a card nobody designed.
+        const buf = Buffer.from(await img.arrayBuffer());
+        try {
+          const m = await sharp(buf).metadata();
+          const w = Number(meta(html, 'og:image:width'));
+          const h = Number(meta(html, 'og:image:height'));
+          if (w && h && (m.width !== w || m.height !== h)) {
+            problems.push(
+              `${route} og:image says ${w}x${h} but the image is ${m.width}x${m.height}`
+            );
+          }
+        } catch (err) {
+          problems.push(`${route} og:image is not a readable image: ${err.message}`);
+        }
+
+        const bytes = buf.length;
+        // WhatsApp will not render an image much over 600KB.
+        if (bytes > 600 * 1024) {
+          problems.push(
+            `${route} og:image is ${Math.round(bytes / 1024)}KB, over the 600KB a scraper will take`
+          );
+        }
+      }
+    } catch (err) {
+      problems.push(`${route} og:image could not be fetched: ${err.message}`);
     }
   }
 
