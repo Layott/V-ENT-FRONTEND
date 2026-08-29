@@ -369,7 +369,14 @@ const SendPage = () => {
                     {tt("ui.back.b52b", "Back")}
                   </button>
                   <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={() => { setPinError(''); setPinOpen(true); }} disabled={submitting}>
-                    {submitting ? tx("Sending…") : `Send ${formatNumber(numericAmount)} VC`}
+                    {/* Built with t(), not interpolated into an English
+                        sentence. This read "Send 5 VC" on a French page,
+                        which is the failure a template literal always
+                        produces: the number is translated and the words
+                        around it are not. */}
+                    {submitting ? tx("Sending…")
+                      : tt('wallet.sendAmount', 'Send {amount} VC')
+                          .replace('{amount}', formatNumber(numericAmount))}
                   </button>
                 </div>
               </>}
@@ -432,7 +439,9 @@ const SendPage = () => {
         onConfirm={handleSend}
         title={tt('wallet.send.pinTitle', 'Confirm this transfer')}
         detail={recipient
-          ? `${formatNumber(numericAmount)} VC to @${recipient.username}`
+          ? tt('wallet.sendSummary', '{amount} VC to @{who}')
+              .replace('{amount}', formatNumber(numericAmount))
+              .replace('{who}', recipient.username)
           : ''}
       />
     </div>;

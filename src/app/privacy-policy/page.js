@@ -126,7 +126,7 @@ export default function PrivacyPolicy() {
             {section.contact && (
               <p style={paragraphStyle}>
                 {k('contactIntro')}{' '}
-                <a href="mailto:privacy@v-ent.co" style={linkStyle}>privacy@v-ent.co</a>.
+                <a href="mailto:info@v-ent.co" style={linkStyle}>info@v-ent.co</a>.
                 {' '}{k('contactAfter')}
               </p>
             )}

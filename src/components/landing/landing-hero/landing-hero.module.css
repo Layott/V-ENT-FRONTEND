@@ -426,3 +426,73 @@
 .headlineWord {
   display: block;
 }
+
+/* The way in without an account.
+   Filled surfaces and weight, never a stroked pill: hierarchy here comes from
+   fill and colour, and a ring around a chip is banned platform wide. */
+.browseLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-primary, #f2f2f2);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.browseLink:hover {
+  /* Fill, not motion. Nothing on this platform rises under the cursor. */
+  background: var(--overlay-gray, #212225);
+}
+
+.heroEntryRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.heroEntryPrimary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.heroEntrySecondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--overlay-gray, #212225);
+  color: var(--text-primary, #f2f2f2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.heroEntryPrimary:hover { background: #c8161d; }
+.heroEntrySecondary:hover { background: #2c2d31; }
+
+.heroEntryNote {
+  color: var(--text-secondary, #b6b6b6);
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  /* The header is tight on a phone; the two hero buttons carry it there. */
+  .browseLink { display: none; }
+  .heroEntryPrimary,
+  .heroEntrySecondary { flex: 1 1 auto; justify-content: center; }
+  .heroEntryNote { flex-basis: 100%; }
+}

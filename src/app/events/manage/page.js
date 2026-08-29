@@ -220,7 +220,12 @@ export const ManageEventContent = ({
     } = await fn();
     setBusy(false);
     if (ok) {
-      setNotice(body.message || tt(successKey, successText));
+      // The translated string wins, and the server's sentence is only the
+      // fallback. It was the other way round, so every success on this page
+      // showed English on a French one: the server writes "Link added." in
+      // Python and Python cannot be translated. Same rule as the error path,
+      // which already goes through apiMessage for exactly this reason.
+      setNotice(successKey ? tt(successKey, successText) : (body.message || ''));
       await load();
       return true;
     }
