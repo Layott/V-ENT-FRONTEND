@@ -2,11 +2,12 @@
 
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 
-// This module has no backend yet. It used to render hardcoded sample content,
-// which was indistinguishable from real data. The designed layout is preserved
-// in docs/wip/ and returns when the API lands.
+// Stream overlays are BUILT. They are not built here: an overlay belongs to one
+// tournament, so it lives on that tournament's own console, under Production.
+// This route kept telling visitors the feature did not exist for as long as it
+// did exist, which is worse than saying nothing. It now says where to go.
 const Page = () => {
-  return <ComingSoon phase="Milestone 2" title="Production hub" blurb="Stream overlays, scene configuration and the OBS pipeline are part of the production milestone. The panels are designed but not connected to a live backend." alternatives={[{
+  return <ComingSoon phase="Live now" title="Production hub" blurb="Production is run from a tournament rather than from one hub. Open a tournament you run, then the Production tab: upload a designer's HTML overlay, bind it to live standings and rosters, and copy the URL you paste into OBS." alternatives={[{
     href: "/tournaments/my-tournaments",
     label: "My tournaments"
   }]} />;

@@ -2,11 +2,12 @@
 
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 
-// This module has no backend yet. It used to render hardcoded sample content,
-// which was indistinguishable from real data. The designed layout is preserved
-// in docs/wip/ and returns when the API lands.
+// Stream overlays are BUILT. They are not built here: an overlay belongs to one
+// tournament, so it lives on that tournament's own console, under Production.
+// This route kept telling visitors the feature did not exist for as long as it
+// did exist, which is worse than saying nothing. It now says where to go.
 const Page = () => {
-  return <ComingSoon phase="Milestone 2" title="Production panel" blurb="Live match control for broadcasts is part of the production milestone and is not connected to a stream yet." alternatives={[{
+  return <ComingSoon phase="Live now" title="Production panel" blurb="Match control and the broadcast tools belong to one tournament, so they live on that tournament's console rather than on an address of their own. Open a tournament you run and choose Production." alternatives={[{
     href: "/tournaments/my-tournaments",
     label: "My tournaments"
   }]} />;
