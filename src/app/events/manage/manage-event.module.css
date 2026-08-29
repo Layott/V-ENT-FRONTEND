@@ -434,3 +434,47 @@
     flex: 1 1 100%;
   }
 }
+
+/* The kind of question a poll asks. Filled chips, no rings: a selected chip is
+   a stronger fill and a brighter label, never an outline. */
+.pollKindRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.pollKindChip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 0.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #26262c;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.pollKindChip:hover {
+  background-color: #303039;
+  color: #fff;
+}
+
+.pollKindChip:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.pollKindChipOn {
+  background-color: var(--v-ent-gold, #D4AF37);
+  color: #131316;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.pollKindChipOn:hover {
+  background-color: var(--v-ent-light-gold, #E8C760);
+  color: #131316;
+}
