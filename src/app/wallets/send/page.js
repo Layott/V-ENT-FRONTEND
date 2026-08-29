@@ -13,6 +13,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import { formatNumber, ngnFromVc } from '@/components/wallet/walletHelpers';
+import PinPrompt from '@/components/wallet/PinPrompt';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -166,9 +167,16 @@ const SendPage = () => {
     setError('');
     setStep(3);
   };
-  const handleSend = async () => {
+  // The endpoint has always required a PIN and this page never asked for one,
+  // so every send returned "recipient_username, amount, and pin are required"
+  // and the screen showed that sentence as though the recipient were at fault.
+  const [pinOpen, setPinOpen] = useState(false);
+  const [pinError, setPinError] = useState('');
+
+  const handleSend = async (pin) => {
     setSubmitting(true);
     setError('');
+    setPinError('');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/send/`, {
         method: 'POST',
@@ -176,21 +184,32 @@ const SendPage = () => {
         body: JSON.stringify({
           recipient_username: recipient.username,
           amount: numericAmount,
+          pin,
           note: memo
         })
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(apiMessage(tt, data, "api.transferFailed", "Transfer failed."));
+        const message = apiMessage(tt, data, "api.transferFailed", "Transfer failed.");
+        // A refused PIN is answered where it was typed. Closing the prompt and
+        // showing it on the page behind would read as the send having failed
+        // for some other reason.
+        if (/PIN/i.test(String(data?.code || '')) || /pin/i.test(message)) {
+          setPinError(message);
+        } else {
+          setPinOpen(false);
+          setError(message);
+        }
         setSubmitting(false);
         return;
       }
+      setPinOpen(false);
       setNewBalance(Number(data.data?.new_balance ?? balance - numericAmount));
       setReference(data.data?.transaction_id || data.data?.reference || `TXN-${Date.now().toString().slice(-8)}`);
       setStep(4);
     } catch (err) {
       console.error(err);
-      setError(tt("msg.networkErrorPleaseTryAgain", "Network error. Please try again."));
+      setPinError(tt("msg.networkErrorPleaseTryAgain", "Network error. Please try again."));
     } finally {
       setSubmitting(false);
     }
@@ -349,7 +368,7 @@ const SendPage = () => {
                   <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setStep(2)} disabled={submitting}>
                     {tt("ui.back.b52b", "Back")}
                   </button>
-                  <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handleSend} disabled={submitting}>
+                  <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={() => { setPinError(''); setPinOpen(true); }} disabled={submitting}>
                     {submitting ? tx("Sending…") : `Send ${formatNumber(numericAmount)} VC`}
                   </button>
                 </div>
@@ -404,6 +423,18 @@ const SendPage = () => {
       </main>
 
       <BottomMenu />
+
+      <PinPrompt
+        open={pinOpen}
+        busy={submitting}
+        error={pinError}
+        onCancel={() => { setPinOpen(false); setPinError(''); }}
+        onConfirm={handleSend}
+        title={tt('wallet.send.pinTitle', 'Confirm this transfer')}
+        detail={recipient
+          ? `${formatNumber(numericAmount)} VC to @${recipient.username}`
+          : ''}
+      />
     </div>;
 };
 export default SendPage;
