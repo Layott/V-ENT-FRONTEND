@@ -290,3 +290,14 @@
   color: #ef9a9a;
   background-color: rgba(237, 28, 36, 0.12);
 }
+
+/* The one line under a mode that says what it is. Muted text on the page, not
+   a boxed callout: a hint that needs a rectangle drawn round it is a hint
+   nobody reads. */
+.modeBlurb {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary, #b6b6b6);
+}
