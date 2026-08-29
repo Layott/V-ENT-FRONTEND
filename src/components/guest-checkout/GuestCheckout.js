@@ -24,6 +24,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useCheckoutFields, CheckoutFieldList }
   from '@/components/checkout-fields/CheckoutFields';
 import styles from './guest-checkout.module.css';
+import { refFor } from '@/lib/referral';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -75,6 +76,10 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
           attendees: people.map(p => ({ name: p.name, answers: p.answers })),
           callback_url: typeof window === 'undefined' ? ''
             : `${window.location.origin}/events/ticket-confirmed`,
+          // The influencer link this buyer arrived through. A guest is the
+          // common case for a link posted publicly, so this is the path that
+          // matters most for crediting one.
+          ref: refFor(eventRef),
         }),
       });
       const body = await res.json().catch(() => ({}));

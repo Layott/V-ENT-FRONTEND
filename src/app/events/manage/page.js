@@ -63,6 +63,9 @@ export const ManageEventContent = ({
   const [newField, setNewField] = useState({ label: '', kind: 'text', required: false, per_ticket: true, options: '' });
   const [editing, setEditing] = useState(null);
   const [referrals, setReferrals] = useState([]);
+  // Which link the organiser just copied, so the button can say so. Held here
+  // rather than per row because only one can be the most recent.
+  const [copiedLink, setCopiedLink] = useState('');
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
   const [canAddManagers, setCanAddManagers] = useState(false);
@@ -357,6 +360,20 @@ export const ManageEventContent = ({
       allocation: ''
     });
   };
+  // The organiser copies this and sends it to the influencer, so it has to be
+  // the whole address rather than the code alone. Falls back to selecting the
+  // text where the clipboard is refused, which is any page not on https and
+  // any browser where the user has denied it.
+  const copyShare = async url => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(url);
+      setTimeout(() => setCopiedLink(''), 2000);
+    } catch {
+      setError(tt('manage.copyFailed', 'Copying was blocked. Select the link and copy it.'));
+    }
+  };
+
   const saveReferral = (row, patch) => run(() => call(`/referrals/${row.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch)
@@ -1008,6 +1025,103 @@ export const ManageEventContent = ({
                             </div>)}
                         </div>}
 
+                      {/* Everything else about the event, in the same place as
+                          the tickets. Each of these was already counted on the
+                          tab that owned it, so an organiser wanting the whole
+                          picture opened six tabs and added up in their head. A
+                          section stays visible at zero rather than disappearing:
+                          a block that vanishes when empty makes the page jump
+                          and reads as broken. */}
+                      {metrics.arrivals_by_hour && <>
+                        <h3 className={styles.subTitle}>{tt('manage.whenTheyCame', 'When they arrived')}</h3>
+                        {metrics.arrivals_by_hour.length === 0
+                          ? <p className={styles.muted}>{tt('manage.nobodyArrivedYet', 'Nobody has been checked in yet.')}</p>
+                          : <div className={styles.hourBars}>
+                              {metrics.arrivals_by_hour.map(h => {
+                                const peak = Math.max(...metrics.arrivals_by_hour.map(x => x.arrivals), 1);
+                                return <div key={h.hour} className={styles.hourBar}>
+                                    <span className={styles.hourCount}>{h.arrivals}</span>
+                                    <span className={styles.hourFill} style={{ height: Math.round(h.arrivals * 100 / peak) + '%' }} />
+                                    <span className={styles.hourLabel}>{h.hour.slice(11, 16)}</span>
+                                  </div>;
+                              })}
+                            </div>}
+                      </>}
+
+                      {metrics.referrals && <>
+                        <h3 className={styles.subTitle}>{tt('manage.whoBroughtThem', 'Who brought them')}</h3>
+                        {metrics.referrals.links.length === 0
+                          ? <p className={styles.muted}>{tt('manage.noLinksYet', 'No influencer links on this event yet. Add one on the Money tab and the visits and sales it brings will show here.')}</p>
+                          : <>
+                            <div className={styles.figureGrid}>
+                              <div className={styles.figure}>
+                                <strong className={styles.figureValue}>{Number(metrics.referrals.total_visits).toLocaleString(appLocale())}</strong>
+                                <span className={styles.figureLabel}>{tt('manage.figureLinkVisits', 'Arrived by a link')}</span>
+                              </div>
+                              <div className={styles.figure}>
+                                <strong className={styles.figureValue}>{Number(metrics.referrals.total_sold).toLocaleString(appLocale())}</strong>
+                                <span className={styles.figureLabel}>{tt('manage.figureLinkSold', 'Tickets from links')}</span>
+                              </div>
+                              <div className={styles.figure}>
+                                <strong className={styles.figureValue}>{metrics.referrals.best || tt('manage.noneYet', 'None yet')}</strong>
+                                <span className={styles.figureLabel}>{tt('manage.figureBestLink', 'Best link')}</span>
+                              </div>
+                            </div>
+                            <div className={styles.rows}>
+                              {metrics.referrals.links.map(link => <div key={link.id} className={styles.row}>
+                                  <div className={styles.rowMain}>
+                                    <strong className={styles.rowName}>{link.name}</strong>
+                                    <span className={styles.code}>{link.code}</span>
+                                  </div>
+                                  <div className={styles.rowStats}>
+                                    <span>{tt('manage.visits', 'Visits')}: <strong>{Number(link.visits).toLocaleString(appLocale())}</strong></span>
+                                    <span>{tt('manage.sold', 'Sold')}: <strong>{Number(link.tickets_sold).toLocaleString(appLocale())}</strong></span>
+                                    <span>
+                                      {tt('manage.conversion', 'Converted')}:{' '}
+                                      <strong>{link.conversion == null ? tt('manage.noVisitsYet', 'nobody yet') : link.conversion + '%'}</strong>
+                                    </span>
+                                  </div>
+                                </div>)}
+                            </div>
+                          </>}
+                      </>}
+
+                      {metrics.engagement && <>
+                        <h3 className={styles.subTitle}>{tt('manage.attention', 'Whether they are listening')}</h3>
+                        <div className={styles.figureGrid}>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{metrics.engagement.announcements}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figureAnnouncements', 'Announcements sent')}</span>
+                          </div>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{metrics.engagement.polls}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figurePolls', 'Polls asked')}</span>
+                          </div>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{Number(metrics.engagement.poll_answers).toLocaleString(appLocale())}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figurePollAnswers', 'Answers given')}</span>
+                          </div>
+                        </div>
+                      </>}
+
+                      {metrics.shop && <>
+                        <h3 className={styles.subTitle}>{tt('manage.merch', 'Sold at the event')}</h3>
+                        <div className={styles.figureGrid}>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{Number(metrics.shop.orders).toLocaleString(appLocale())}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figureShopOrders', 'Shop orders')}</span>
+                          </div>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{Number(metrics.shop.revenue_vc).toLocaleString(appLocale())}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figureShopTaken', 'VENT COINS from the shop')}</span>
+                          </div>
+                          <div className={styles.figure}>
+                            <strong className={styles.figureValue}>{Number(metrics.shop.collected).toLocaleString(appLocale())}</strong>
+                            <span className={styles.figureLabel}>{tt('manage.figureShopCollected', 'Collected at the stall')}</span>
+                          </div>
+                        </div>
+                      </>}
+
                       <h3 className={styles.subTitle}>{tt('manage.download', 'Download')}</h3>
                       <div className={styles.rowActions}>
                         <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('attendees')}>
@@ -1250,12 +1364,32 @@ export const ManageEventContent = ({
                             {!row.is_active && <span className={styles.offBadge}>{tt('manage.switchedOff', 'Switched off')}</span>}
                           </div>
                           <div className={styles.rowStats}>
-                            <span>{tt('manage.sold', 'Sold')}: <strong>{row.sold}</strong></span>
+                            {/* Counted from the tickets that carry this link,
+                                not from a counter, so a refund corrects itself.
+                                Visits come first because a link that brought a
+                                thousand people and sold nothing is a different
+                                problem from one nobody clicked. */}
+                            <span>{tt('manage.visits', 'Visits')}: <strong>{(row.visits ?? 0).toLocaleString(appLocale())}</strong></span>
+                            <span>{tt('manage.sold', 'Sold')}: <strong>{(row.tickets_sold ?? row.sold ?? 0).toLocaleString(appLocale())}</strong></span>
+                            <span>
+                              {tt('manage.conversion', 'Converted')}:{' '}
+                              <strong>{row.conversion == null
+                                ? tt('manage.noVisitsYet', 'nobody yet')
+                                : `${row.conversion}%`}</strong>
+                            </span>
                             <span>
                               {tt('manage.allocation', 'Allocation')}:{' '}
                               <strong>{row.allocation ? `${row.remaining} / ${row.allocation}` : tt('manage.uncapped', 'No cap')}</strong>
                             </span>
                           </div>
+                          {row.share_url && <div className={styles.shareRow}>
+                              <code className={styles.shareLink}>{row.share_url}</code>
+                              <button type="button" className={styles.ghostBtn} onClick={() => copyShare(row.share_url)}>
+                                {copiedLink === row.share_url
+                                  ? tt('manage.copied', 'Copied')
+                                  : tt('manage.copyLink', 'Copy link')}
+                              </button>
+                            </div>}
                           <div className={styles.rowActions}>
                             <input className={styles.smallInput} type="number" min={row.sold} defaultValue={row.allocation} aria-label={tt('manage.allocation', 'Allocation')} onBlur={e => {
                       const next = Number(e.target.value) || 0;
