@@ -74,6 +74,10 @@ export const ManageEventContent = ({
   const [draftPoll, setDraftPoll] = useState({ question: '', options: ['', ''], show_results_before_voting: false });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Set when the event exists and this person may not run it. Kept apart from
+  // `error`, which also covers a network failure: one is a refusal and the
+  // other is a retry, and the page owes a different sentence for each.
+  const [refused, setRefused] = useState(false);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -128,6 +132,7 @@ export const ManageEventContent = ({
     }
     setLoading(true);
     setError('');
+    setRefused(false);
     const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
@@ -137,6 +142,12 @@ export const ManageEventContent = ({
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
+      // A refusal, not a failure. Every panel below is an editing form, and
+      // rendering them under a "only the organiser can edit this" line offers
+      // somebody controls whose save is already decided - the same fault as a
+      // compose box that answers 401 after they have typed.
+      setRefused(['NOT_ORGANIZER', 'ONLY_EVENT_ORGANIZER_CAN', 'FORBIDDEN']
+        .includes(r.body?.code || p.body?.code || m.body?.code));
       setLoading(false);
       return;
     }
@@ -446,7 +457,14 @@ export const ManageEventContent = ({
 
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
-          {loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
+          {refused ? <p className={styles.muted}>
+              {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}
+              {' '}
+              <Link href={`/events/${eventRef}`} className={styles.link}>
+                {tt('manage.backToEvent', '← Back to the event')}
+              </Link>
+            </p>
+            : loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
             : !eventRef ? <p className={styles.muted}>
                 {tt('manage.pickEvent', 'Open this from the event you want to manage.')}
                 {' '}

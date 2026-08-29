@@ -266,6 +266,10 @@ export const ViewEventContent = ({
   // typing it once is the whole interaction.
   const [pollCode, setPollCode] = useState('');
   const [pollBusy, setPollBusy] = useState(null);
+  // Whether THIS reader holds a ticket, as the server sees it. Being signed in
+  // is not the same thing: an account with no ticket, and somebody who bought
+  // as a guest under another address, both reach this page.
+  const [canAnswerPolls, setCanAnswerPolls] = useState(false);
   // Which tier a signed-out visitor is buying, if any.
   const [guestTier, setGuestTier] = useState(null);
   const [tierRefresh, setTierRefresh] = useState(0);
@@ -293,10 +297,12 @@ export const ViewEventContent = ({
       ]);
       setAnnouncements(a?.data?.announcements || []);
       setPolls(p?.data?.polls || []);
+      setCanAnswerPolls(Boolean(p?.data?.can_answer));
     } catch {
       // A public page must not break because an optional section did not load.
       setAnnouncements([]);
       setPolls([]);
+      setCanAnswerPolls(false);
     }
   }, [id, pollCode, session?.user?.sessionToken]);
 
@@ -913,10 +919,14 @@ export const ViewEventContent = ({
                       <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
                         {tt('event.polls', 'Polls')}
                       </h2>
-                      {!session?.user && <p className={styles.body}>
+                      {/* Keyed on holding a ticket, not on being signed in. An
+                          account is not a ticket, and a live button that
+                          answers 403 tells somebody only after they have
+                          chosen. */}
+                      {!canAnswerPolls && <p className={styles.body}>
                         {tt('event.pollNeedsTicket', 'Answering needs a ticket. Enter your ticket code to take part.')}
                       </p>}
-                      {!session?.user && <input
+                      {!canAnswerPolls && <input
                         className={styles.pollCode}
                         value={pollCode}
                         placeholder={tt('event.pollCodeLabel', 'Ticket code')}
@@ -931,7 +941,7 @@ export const ViewEventContent = ({
                             {poll.options.map(option => {
                               const mine = poll.my_option_id === option.id;
                               const canAnswer = poll.is_open && !mine
-                                && (session?.user || pollCode.trim());
+                                && canAnswerPolls;
                               return <button
                                 key={option.id}
                                 type="button"
