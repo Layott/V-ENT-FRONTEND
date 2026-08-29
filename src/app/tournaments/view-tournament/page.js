@@ -15,6 +15,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } from '@/components/tournament-lib/tournamentApi';
+import MvpPanel from '@/components/view-tournament/mvp/MvpPanel';
 import styles from './view-tournament.module.css';
 import { linkTo } from '@/lib/share';
 import ShareCard from '@/components/share/ShareCard';
@@ -55,6 +56,12 @@ const TABS = [{
   // riddle rather than a menu.
   label: 'Standings',
   leagueOnly: true
+}, {
+  // Player stats and the award. Offered whatever the format, because a
+  // knockout has an MVP too - it is the standings that are league-only, not
+  // the question of who played best.
+  id: 'players',
+  label: 'Players'
 }, {
   id: 'participants',
   label: 'Participants'
@@ -488,6 +495,8 @@ export const ViewTournamentContent = ({
               numericId={tournament?.tournament_id || tournament?.id}
               isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
             {activeTab === 'table' && <StandingsPanel
+              tournamentId={tournament?.tournament_id || tournament?.id} />}
+            {activeTab === 'players' && <MvpPanel
               tournamentId={tournament?.tournament_id || tournament?.id} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
             {activeTab === 'prize' && <PrizePanel tournament={tournament} />}
