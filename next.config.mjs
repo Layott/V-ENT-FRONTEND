@@ -92,7 +92,20 @@ const nextConfig = {
     // build finish reliably.
     workerThreads: false,
     cpus: 1,
-  }
+  },
+
+  // The legal documents were PDFs in `/public` and are pages now. The old
+  // addresses have been sent in emails and printed on a listing, so they keep
+  // working rather than 404ing at the moment somebody is checking what they
+  // agreed to.
+  async redirects() {
+    return [
+      { source: '/terms-of-use.pdf', destination: '/terms', permanent: true },
+      { source: '/privacy-policy.pdf', destination: '/privacy-policy', permanent: true },
+      { source: '/terms-of-use', destination: '/terms', permanent: true },
+      { source: '/term-of-use', destination: '/terms', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
