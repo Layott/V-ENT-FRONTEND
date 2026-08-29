@@ -101,18 +101,31 @@ function OverviewInner() {
           Authorization: `Bearer ${token}`
         }
       })]);
-      const k = await kpisRes.json();
-      const c = await chartsRes.json();
-      const a = await activityRes.json();
+      const k = await kpisRes.json().catch(() => ({}));
+      const c = await chartsRes.json().catch(() => ({}));
+      const a = await activityRes.json().catch(() => ({}));
       if (k.status === 'success') setKpis(k.data || {});
       if (c.status === 'success') setCharts(c.data?.timeline || []);
       if (a.status === 'success') setActivity(a.data?.activity || []);
+
+      // A refused request is not an empty console.
+      //
+      // Every branch above is an `if (success)`, so a 401 or a 403 set nothing
+      // and said nothing: the tiles fell back to `fmt(null)`, which is a dash,
+      // and an operator saw a dashboard reading "-" everywhere with no reason
+      // given. The server's own sentence is more use than any wording invented
+      // here, so it is preferred when there is one.
+      if (k.status !== 'success') {
+        setError(k.message
+          || tt('msg.failedToLoadDashboardData', 'Failed to load dashboard data.'));
+      }
     } catch {
-      setError(tt("msg.failedToLoadDashboardData", "Failed to load dashboard data."));
+      setError(tt('api.NETWORK_UNREACHABLE',
+        'Could not reach the server. Check the connection and try again.'));
     } finally {
       setDataLoading(false);
     }
-  }, []);
+  }, [tt]);
   useEffect(() => {
     if (!authLoading && admin) fetchAll();
   }, [authLoading, admin, fetchAll]);

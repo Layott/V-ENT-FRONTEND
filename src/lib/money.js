@@ -11,7 +11,7 @@
 // the amount billed would be a lie about their money, so anything that displays
 // one also says what the actual price is.
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const CurrencyContext = createContext(null);
 const PREFERENCE_KEY = 'vent.currency';
@@ -45,19 +45,26 @@ export function CurrencyProvider({
       // Private window, or storage refused. No preference is fine.
     }
   }, []);
-  const choose = code => {
+  const choose = useCallback(code => {
     setPreferred(code);
     try {
       if (code) localStorage.setItem(PREFERENCE_KEY, code);else localStorage.removeItem(PREFERENCE_KEY);
     } catch {
       // The choice still applies to this page; it just will not be remembered.
     }
-  };
-  return <CurrencyContext.Provider value={{
-    rates,
-    preferred,
-    choose
-  }}>
+  }, []);
+
+  // Memoised for the same reason as the admin toast provider, which shipped
+  // this exact fault: an object literal here is a new value on every render,
+  // so every consumer re-renders and anything that lists the context in a
+  // `useCallback` dependency array is rebuilt, re-running whatever effect
+  // depends on it. Nothing does that here today; the point is that it becomes
+  // a refetch loop the first time somebody does, and it is invisible until it
+  // reaches a slow connection.
+  const value = useMemo(() => ({ rates, preferred, choose }),
+    [rates, preferred, choose]);
+
+  return <CurrencyContext.Provider value={value}>
       {children}
     </CurrencyContext.Provider>;
 }
