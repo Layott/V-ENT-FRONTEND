@@ -256,7 +256,6 @@
 .chapterRow:hover {
   background-color: #25262b;
 
-  transform: translateX(2px);
 }
 .chapterNumber {
   font-size: 0.85rem;

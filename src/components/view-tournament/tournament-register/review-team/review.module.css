@@ -449,7 +449,7 @@
 
 .proceedButton:hover:not(.disabled) {
   background: #dc2626;
-  transform: translateY(-1px);
+  
 }
 
 .proceedButton:active:not(.disabled) {

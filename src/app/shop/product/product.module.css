@@ -690,10 +690,6 @@
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.relatedCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .relatedImageWrap {
   position: relative;

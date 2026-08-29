@@ -138,6 +138,13 @@
   overflow-x: auto;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.stepper > * {
+  flex-shrink: 0;
+}
+
 .stepItem {
   display: flex;
   align-items: center;
@@ -273,10 +280,6 @@
   transition: background-color 0.2s, background 0.2s, transform 0.2s;
 }
 
-.matchRow:hover {
-
-  transform: translateY(-1px);
-}
 
 .matchRowActive {
 
@@ -361,10 +364,6 @@
   font-weight: var(--fw-semi-bold);
 }
 
-.sideBtn:hover {
-
-  transform: translateY(-1px);
-}
 
 .sideBtnActive {
 
@@ -474,10 +473,6 @@
   transition: background-color 0.2s, background 0.2s, transform 0.2s;
 }
 
-.opponentCard:hover {
-
-  transform: translateY(-1px);
-}
 
 .opponentCardActive {
 

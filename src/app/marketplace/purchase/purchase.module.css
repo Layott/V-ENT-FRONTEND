@@ -106,6 +106,13 @@
   padding-bottom: 0.25rem;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.stepper > * {
+  flex-shrink: 0;
+}
+
 .stepper::-webkit-scrollbar { display: none; }
 
 .step {

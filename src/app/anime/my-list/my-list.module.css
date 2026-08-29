@@ -51,6 +51,13 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabsBar > * {
+  flex-shrink: 0;
+}
 .tabsBar::-webkit-scrollbar { display: none; }
 .tabBtn {
   padding: 0.65rem 1.1rem;
@@ -209,7 +216,7 @@
 
   transition: transform 0.15s;
 }
-.progressSlider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
 .progressSlider::-moz-range-thumb {
   width: 14px;
   height: 14px;

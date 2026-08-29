@@ -61,6 +61,13 @@
   margin-bottom: 1rem;
   overflow-x: auto;
 }
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabs > * {
+  flex-shrink: 0;
+}
 .tab {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;

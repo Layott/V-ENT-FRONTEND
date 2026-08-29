@@ -342,7 +342,6 @@
 .payButton:hover:not(.disabled):not(:disabled) {
   background-color: var(--v-ent-light-gold);
 
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
 }
 

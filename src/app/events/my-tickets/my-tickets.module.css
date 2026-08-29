@@ -75,6 +75,13 @@
   flex: 1 1 auto;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.filterRow > * {
+  flex-shrink: 0;
+}
+
 .filterRow::-webkit-scrollbar { display: none; }
 
 .filterBtn {
@@ -161,10 +168,6 @@
   width: 100%;
 }
 
-.ticketCard:hover {
-
-  transform: translateY(-2px);
-}
 
 /* Left QR region */
 .ticketLeft {

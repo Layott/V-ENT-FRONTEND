@@ -327,6 +327,13 @@
   scrollbar-width: none;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.profileTabs > * {
+  flex-shrink: 0;
+}
+
 .profileTabs::-webkit-scrollbar {
   display: none;
 }

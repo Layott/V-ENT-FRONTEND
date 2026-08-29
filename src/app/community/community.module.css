@@ -79,6 +79,13 @@
   scrollbar-width: none;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabs > * {
+  flex-shrink: 0;
+}
+
 .tabs::-webkit-scrollbar { display: none; }
 
 .tabBtn {
@@ -480,6 +487,13 @@
   flex-direction: row;
   gap: 0.35rem;
   overflow-x: auto;
+}
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.categoryList > * {
+  flex-shrink: 0;
 }
 
 .categoryList::-webkit-scrollbar { display: none; }

@@ -87,6 +87,13 @@
   scrollbar-width: thin;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabsBar > * {
+  flex-shrink: 0;
+}
+
 .tabsBar::-webkit-scrollbar {
   height: 4px;
 }
@@ -282,7 +289,7 @@
 .actionTile:hover {
 
   background-color: #1f1f24;
-  transform: translateY(-1px);
+  
 }
 
 .actionIcon {
@@ -510,10 +517,6 @@
   flex-direction: column;
 }
 
-.overlayCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .overlayThumb {
   height: 130px;

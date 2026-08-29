@@ -143,7 +143,7 @@
   flex-direction: column;
   transition: transform 0.2s, background-color 0.2s;
 }
-.amvCard:hover { transform: translateY(-2px); border-color: rgba(237, 28, 36, 0.35); }
+.amvCard:hover {  border-color: rgba(237, 28, 36, 0.35); }
 .amvThumb {
   position: relative;
   width: 100%;
@@ -169,7 +169,7 @@
   padding-left: 4px;
   transition: transform 0.2s;
 }
-.amvCard:hover .amvPlayIcon { transform: translate(-50%, -50%) scale(1.08); }
+
 .amvDuration {
   position: absolute;
   bottom: 0.55rem;

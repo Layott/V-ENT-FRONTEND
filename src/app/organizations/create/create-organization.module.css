@@ -92,6 +92,13 @@
   overflow-x: auto;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.progressBar > * {
+  flex-shrink: 0;
+}
+
 .progressStep {
   display: flex;
   align-items: center;

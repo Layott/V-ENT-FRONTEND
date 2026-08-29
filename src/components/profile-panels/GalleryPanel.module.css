@@ -76,9 +76,6 @@
   transition: transform 0.4s ease;
 }
 
-.tile:hover img {
-  transform: scale(1.04);
-}
 
 .tileOverlay {
   position: absolute;

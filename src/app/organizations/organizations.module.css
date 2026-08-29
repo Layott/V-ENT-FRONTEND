@@ -63,7 +63,6 @@
 .createBtn:hover {
   background-color: var(--v-ent-light-red);
 
-  transform: translateY(-1px);
 }
 
 .plusIcon { font-size: 1rem; }
@@ -79,6 +78,13 @@
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabsRow > * {
+  flex-shrink: 0;
 }
 
 .tabsRow::-webkit-scrollbar { display: none; }
@@ -254,10 +260,6 @@
   position: relative;
 }
 
-.card:hover {
-
-  transform: translateY(-2px);
-}
 
 .cardBanner {
   width: 100%;
