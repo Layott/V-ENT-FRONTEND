@@ -3,7 +3,6 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react'; // Add this import
 import Image from 'next/image';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
 import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers } from 'react-icons/fa';
@@ -11,6 +10,7 @@ import { IoWalletOutline, IoGameControllerOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import styles from './bottom-menu.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { logOut } from '@/lib/logout';
 const BottomMenu = ({
   customClass
 }) => {
@@ -102,27 +102,10 @@ const BottomMenu = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   const handleLogout = async () => {
-    try {
-      // First clear all local storage items
-      localStorage.removeItem('userProfile');
-      localStorage.removeItem('authToken');
-      sessionStorage.clear();
-
-      // Set the logged out cookie
-      document.cookie = "isLoggedOut=true; path=/; max-age=60";
-
-      // Use NextAuth signOut but handle it properly
-      await signOut({
-        redirect: false // Change this to false
-      }).then(() => {
-        // Manual redirect after successful signOut
-        window.location.href = '/login';
-      });
-    } catch (error) {
-      console.error("Error during logout:", error);
-      // Still redirect even if there was an error
-      window.location.href = '/login';
-    }
+    // One way out for the whole app: see src/lib/logout.js. This used to
+    // call signOut() alone, which leaves the `session` cookie the
+    // middleware also accepts, so pressing Logout did not sign anybody out.
+    await logOut();
   };
   return <div className={styles.bottomMenuContainer}>
         <nav className={styles.bottomNavContainer}>
