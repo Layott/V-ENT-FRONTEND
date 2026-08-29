@@ -1,0 +1,185 @@
+/* Roster management. Filled surfaces stepped off the page, no strokes, no
+   glow, no lift on hover. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--overlay-gray, #212225);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #f2f2f2);
+}
+
+.subTitle {
+  margin: 18px 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #f2f2f2);
+}
+
+.hint,
+.muted {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.roleBlurb {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #3a1d1f;
+  color: #ffb4b8;
+  font-size: 13px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input,
+.select,
+.small {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: #303136;
+  color: var(--text-primary, #f2f2f2);
+  font-size: 14px;
+}
+
+.input { flex: 1 1 200px; }
+.small { flex: 1 1 150px; }
+.select { flex: 0 1 170px; }
+
+.primary,
+.ghost,
+.danger {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.primary { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.primary:hover { background: #c8161d; }
+.primary:disabled { background: #5a2427; color: #b98d90; cursor: not-allowed; }
+
+.ghost { background: #303136; color: var(--text-primary, #f2f2f2); }
+.ghost:hover { background: #3a3b41; }
+
+.danger { background: #3a1d1f; color: #ffb4b8; }
+.danger:hover { background: #4a2427; }
+
+.linkBlock { margin-top: 8px; }
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #1a1b1e;
+}
+
+.linkUrl {
+  flex: 1 1 240px;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--text-secondary, #b6b6b6);
+  overflow-wrap: anywhere;
+}
+
+.linkMeta {
+  font-size: 12px;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+/* Zebra fill rather than a rule between rows. */
+.memberRow:nth-child(odd) {
+  background: #1a1b1e;
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.roleTag {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #303136;
+  font-size: 12px;
+  text-transform: capitalize;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.details { margin-top: 14px; }
+
+.summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.roleList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.roleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #1a1b1e;
+}
+
+.roleName { font-size: 13px; color: var(--text-primary, #f2f2f2); }
+.roleText { font-size: 12px; color: var(--text-secondary, #b6b6b6); }
+
+@media (max-width: 768px) {
+  .card { padding: 16px; }
+  .input,
+  .select,
+  .small { flex-basis: 100%; }
+  .primary,
+  .ghost,
+  .danger { flex: 1 1 auto; }
+}

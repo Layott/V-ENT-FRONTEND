@@ -514,3 +514,44 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Invitations waiting for the person looking. Filled rows, zebra fill instead
+   of rules, no stroke round anything. */
+.inviteList { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+
+.inviteRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--overlay-gray, #212225);
+}
+
+.inviteMain { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.inviteTeam { font-size: 16px; font-weight: 700; color: var(--text-primary, #f2f2f2); }
+.inviteMeta { font-size: 13px; color: var(--text-secondary, #b6b6b6); text-transform: capitalize; }
+.inviteMessage { font-size: 13px; color: var(--text-secondary, #b6b6b6); }
+
+.inviteActions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.inviteAccept, .inviteDecline {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.inviteAccept { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.inviteAccept:hover { background: #c8161d; }
+.inviteDecline { background: #303136; color: var(--text-primary, #f2f2f2); }
+.inviteDecline:hover { background: #3a3b41; }
+
+@media (max-width: 768px) {
+  .inviteRow { flex-direction: column; align-items: stretch; }
+  .inviteActions { }
+  .inviteAccept, .inviteDecline { flex: 1 1 auto; }
+}
