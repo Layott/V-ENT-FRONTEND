@@ -10,10 +10,25 @@
   flex-direction: column;
   align-items: center;
   padding-top: 1rem;
-  padding-bottom: 1rem;
+  /* Clears the bottom navigation, which is fixed at 70px and would otherwise
+     sit on top of the last item in the list. */
+  padding-bottom: 84px;
   transform: translateX(100%);
   transition: transform 0.5s ease-in-out;
-  height: 100vh;
+
+  /* The drawer scrolls itself.
+   *
+   * It was `height: 100vh` on top of `top: 55px`, which makes it 55px taller
+   * than the space it has, with no overflow rule - so everything past the fold
+   * was clipped and unreachable. On a 412x915 phone that was Shop, Settings,
+   * Wager, Partners, the admin console and Logout: a menu whose bottom half
+   * did not exist, and nothing on screen to say so.
+   *
+   * `top` and `bottom` already give it a height. Setting one as well is what
+   * broke it. */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .mobileSidebar.open {

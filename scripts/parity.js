@@ -49,30 +49,36 @@ function key(label) {
     .toLowerCase();
 }
 
+// `buttons` and `links` are COUNTS in this report; the labels live in
+// `buttonList` and `linkList`. Reading the counts as arrays is how the first
+// version of this script threw on its first run.
 function controls(page) {
   const out = new Set();
-  for (const b of page.buttons || []) {
-    const k = key(b.label || b.text || b);
+  for (const b of page.buttonList || []) {
+    const k = key(b.text);
     // An unlabelled icon button cannot be matched by name and would otherwise
     // report as missing on every run. Counted separately below.
     if (k) out.add(`button:${k}`);
   }
-  for (const a of page.links || []) {
-    const k = key(a.label || a.text || a);
+  for (const a of page.linkList || []) {
+    // Links match on where they GO, not on what they say: the same
+    // destination is often an icon on a phone and a word on a desktop, and
+    // that is a deliberate difference rather than a missing control.
+    const k = key(a.href) || key(a.text);
     if (k) out.add(`link:${k}`);
   }
   return out;
 }
 
 function iconCount(page) {
-  const unlabelled = (list) => (list || []).filter((x) => !key(x.label || x.text || x)).length;
-  return unlabelled(page.buttons) + unlabelled(page.links);
+  const unlabelled = (list) => (list || []).filter((x) => !key(x.text)).length;
+  return unlabelled(page.buttonList) + unlabelled(page.linkList);
 }
 
 function byRoute(report) {
   const map = new Map();
-  for (const p of report.pages || report.results || []) {
-    map.set(p.route || p.path || p.url, p);
+  for (const p of report.results || report.pages || []) {
+    map.set(p.route, p);
   }
   return map;
 }
@@ -105,8 +111,8 @@ for (const [route, d] of desktop) {
     extra,
     iconGap,
     overflowM: !!m.overflow,
-    errsM: (m.consoleErrors || []).length,
-    failsM: (m.failedRequests || []).length,
+    errsM: (m.errors || []).length,
+    failsM: (m.netFails || []).length,
     deadM: (m.deadLinks || []).length,
   });
 }
