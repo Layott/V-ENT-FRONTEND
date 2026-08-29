@@ -9,6 +9,8 @@ import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { MdOutlineSettings, MdBusiness } from "react-icons/md";
+import { LuDices, LuCode, LuShield } from "react-icons/lu";
+import { useSession } from 'next-auth/react';
 import { LuGamepad2 } from "react-icons/lu";
 import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react"; // Import signOut function from next-auth
@@ -22,6 +24,9 @@ const MobileSidebar = ({
   // until they arrive.
   const isComingSoon = useComingSoon();
   const tt = useT();
+  // The admin entry is shown to staff only, the same condition the desktop
+  // sidebar uses.
+  const { data: session } = useSession();
   const t = useT();
   const pathname = usePathname(); // Gets the current pathname
 
@@ -158,12 +163,38 @@ const MobileSidebar = ({
                     </Link>
                 </li>
 
+                {/* Wager, Partners and the admin console.
+                    All three sat in the desktop sidebar and in no mobile
+                    navigation at all, so a phone could not reach them by any
+                    route - which is most of what "the UI on mobile is
+                    different from PC" meant. The conditions are copied from
+                    the desktop sidebar rather than invented, so the two
+                    cannot drift apart again. */}
+                <li className={`${styles.sidebarItem} ${isActive('/wager') ? styles.activeLink : ''}`}>
+                    <Link href={'/wager'} className={styles.iconTextLink}>
+                        {tt("ui.wager.aee1", "Wager")} <LuDices className={styles.sidebarIcon} />
+                        {isComingSoon('/wager') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
+                    </Link>
+                </li>
+
+                <li className={`${styles.sidebarItem} ${isActive('/partners') ? styles.activeLink : ''}`}>
+                    <Link href={'/partners'} className={styles.iconTextLink}>
+                        {t('nav.partners')} <LuCode className={styles.sidebarIcon} />
+                    </Link>
+                </li>
+
                 <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
                         {t('nav.settings')} <MdOutlineSettings className={styles.sidebarIcon} />
                         {isComingSoon('/settings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
                 </li>
+
+                {session?.user?.isStaff && <li className={`${styles.sidebarItem} ${isActive('/admin') ? styles.activeLink : ''}`}>
+                    <Link href={'/admin'} className={styles.iconTextLink}>
+                        {tt("nav.adminConsole", "Admin console")} <LuShield className={styles.sidebarIcon} />
+                    </Link>
+                </li>}
 
                 <li className={styles.sidebarItem}>
                     <button onClick={handleLogout} className={styles.logoutButtonLink}>
