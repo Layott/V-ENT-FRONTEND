@@ -1555,3 +1555,129 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   line-height: 1.4;
   margin-top: 0.2rem;
 }
+
+/* --------------------------------- getting there, announcements, polls */
+
+.inlineLink {
+  color: var(--v-ent-success);
+  text-decoration: none;
+}
+
+.inlineLink:hover { text-decoration: underline; }
+
+/* An announcement. A filled surface a step off the page, no stroke, so a run
+   of them reads as a stack rather than a set of boxes. */
+.announcement {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.announcementSubject {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.announcementWhen {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.announcementBody {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: pre-line;
+}
+
+.poll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.pollQuestion {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.pollCode {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.7rem;
+  width: 100%;
+  max-width: 260px;
+  outline: none;
+}
+
+.pollCode:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.pollOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* A filled row, not an outlined one. Selected is a stronger fill and a brighter
+   label, never a ring. */
+.pollOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+}
+
+.pollOption:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.pollOption:disabled { cursor: default; }
+
+.pollOption:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.pollOptionMine {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #fff;
+}
+
+.pollShare {
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+}
+
+.pollNote {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}

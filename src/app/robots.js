@@ -38,6 +38,9 @@ export default function robots() {
           '/events/*/edit',
           '/events/*/manage',      // promo codes and who may run the event
           '/events/*/attendees',   // the door list is attendee data
+          '/events/check-in/',     // a ticket code in a URL; indexing one would
+                                   // hand a stranger somebody's admission
+          '/events/find-ticket',   // a lookup form, and nothing to rank for
         ],
       },
       {
@@ -46,7 +49,8 @@ export default function robots() {
         userAgent: ['GPTBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot'],
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
-                   '/events/*/edit', '/events/*/manage', '/events/*/attendees'],
+                   '/events/*/edit', '/events/*/manage', '/events/*/attendees',
+                   '/events/check-in/'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

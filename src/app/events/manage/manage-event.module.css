@@ -349,3 +349,88 @@
   height: 16px;
   cursor: pointer;
 }
+
+/* ------------------------------------------------- sales, messages, polls */
+
+/* A textarea for a message somebody is actually going to read. Same fill as
+   the inputs above, taller, and resizable vertically only so dragging it wide
+   cannot break the column. */
+.textarea {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  margin: 0.7rem 0 1rem;
+  resize: vertical;
+}
+
+.textarea:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* The headline numbers. Auto-fit rather than a fixed count, so four figures
+   sit in a row on a desktop and two per line on a phone without a breakpoint
+   for every width in between. */
+.figureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.figure {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.figureValue {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.figureLabel {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+@media (max-width: 480px) {
+  .figureValue {
+    font-size: 1.35rem;
+  }
+}
+
+/* The audience picker carries its option labels plus a head count, so it needs
+   room to show them. `smallInput` is 90px wide and truncated every one of them
+   to "Everybody with a t...", which is the half of the label that matters. */
+.audienceSelect {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 9px 12px;
+  border-radius: 8px;
+  flex: 0 1 260px;
+  min-width: 0;
+}
+
+.audienceSelect:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 560px) {
+  .audienceSelect {
+    flex: 1 1 100%;
+  }
+}

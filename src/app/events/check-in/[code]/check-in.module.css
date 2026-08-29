@@ -1,0 +1,134 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 5rem 1rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.title {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.9rem;
+  color: #fff;
+}
+
+.sub {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+
+/* The one that says you are in. A filled surface rather than an outline, and
+   flat: nothing here glows or pulses. */
+.done {
+  background-color: rgba(76, 175, 80, 0.14);
+}
+
+/* Refused, or not open yet. Same shape, different fill, so the two states read
+   apart at a glance on a phone held at arm's length at a gate. */
+.blocked {
+  background-color: rgba(237, 28, 36, 0.12);
+}
+
+.eventName {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.meta {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.go {
+  background-color: var(--v-ent-success);
+  border-radius: 10px;
+  padding: 15px 22px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.go:hover:not(:disabled) { filter: brightness(1.1); }
+.go:disabled { opacity: 0.5; cursor: default; }
+.go:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.error {
+  color: var(--v-ent-red);
+  font-size: 0.86rem;
+}
+
+.link {
+  color: var(--v-ent-success);
+  text-decoration: none;
+}
+
+.link:hover { text-decoration: underline; }
+
+/* The tick. Drawn once when the ticket is accepted, then still. Motion only for
+   real feedback, and this is the feedback. */
+.tick {
+  font-size: 2.6rem;
+  color: var(--v-ent-success);
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tick { animation: none; }
+}
