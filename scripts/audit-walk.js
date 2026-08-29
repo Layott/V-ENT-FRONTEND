@@ -324,6 +324,20 @@ async function walkRoute(page, route, allRoutes) {
       document.cookie = `adminToken=${t}; path=/; max-age=604800; SameSite=Lax`;
     }, tok || '', adminObj);
     authNote = tok ? `admin(${USER})` : 'admin-login-FAILED';
+  } else if (process.env.SESSION_JWT) {
+    // A minted session cookie rather than a typed password.
+    //
+    // Faster, and it does not depend on the login form still having the same
+    // three inputs in the same order - which is a brittle thing for an audit
+    // harness to depend on, given the audit exists to find changes.
+    await page.goto(`${BASE}/tournaments`, { waitUntil: 'domcontentloaded' });
+    await page.setCookie({
+      name: 'next-auth.session-token',
+      value: process.env.SESSION_JWT,
+      domain: new URL(BASE).hostname,
+      path: '/',
+    });
+    authNote = 'user(session-jwt)';
   } else {
     try {
       await page.goto(`${BASE}/login`, { waitUntil: 'networkidle0' });
