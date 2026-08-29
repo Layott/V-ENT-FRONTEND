@@ -11,6 +11,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import TeamProfileHero from '@/components/team-profile/TeamProfileHero';
 import TeamProfileOverview from '@/components/team-profile/TeamProfileOverview';
 import TeamProfileMembersTable from '@/components/team-profile/TeamProfileMembersTable';
+import TeamRosterManager from '@/components/team-profile/TeamRosterManager';
 import TeamProfileTournaments from '@/components/team-profile/TeamProfileTournaments';
 import TeamProfileEvents from '@/components/team-profile/TeamProfileEvents';
 import TeamProfileStats from '@/components/team-profile/TeamProfileStats';
@@ -179,7 +180,13 @@ export const TeamProfileContent = ({
 
               <div className={styles.tabPanel}>
                 {activeTab === 'overview' && <TeamProfileOverview team={team} isOwner={isOwner} />}
-                {activeTab === 'members' && <TeamProfileMembersTable team={team} isOwner={isOwner} onToast={showToast} />}
+                {activeTab === 'members' && <>
+                  {/* Invites, the join link and roles. Draws nothing for
+                      somebody with no power to manage, so an ordinary player
+                      sees the roster and not a wall of disabled buttons. */}
+                  <TeamRosterManager team={team} onToast={showToast} />
+                  <TeamProfileMembersTable team={team} isOwner={isOwner} onToast={showToast} />
+                </>}
                 {activeTab === 'tournaments' && <TeamProfileTournaments team={team} />}
                 {activeTab === 'events' && <TeamProfileEvents team={team} />}
                 {activeTab === 'stats' && <TeamProfileStats team={team} />}

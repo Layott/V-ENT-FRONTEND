@@ -44,6 +44,52 @@ const AllTeams = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
+
+  // Invitations addressed to the person looking. The Invited tab used to be
+  // a tab over an empty list, because the server answered it with `none()`
+  // and a comment saying the model was not built. It is built now.
+  const [invites, setInvites] = useState([]);
+  const [inviteBusy, setInviteBusy] = useState(false);
+
+  const loadInvites = useCallback(async () => {
+    if (!session?.user?.sessionToken) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/team/my-invites/`, {
+        headers: { Authorization: `Bearer ${session.user.sessionToken}` },
+      });
+      const data = await res.json();
+      if (data.status === 'success') setInvites(data.data.invites || []);
+    } catch {
+      /* the rest of the page still works */
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (activeTab === 'invited') loadInvites();
+  }, [activeTab, loadInvites]);
+
+  const answerInvite = async (invite, accept) => {
+    setInviteBusy(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/team/invite/${invite.id}/respond/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.sessionToken}`,
+          },
+          body: JSON.stringify({ accept }),
+        });
+      const data = await res.json();
+      if (data.status === 'success') {
+        await loadInvites();
+        if (accept && invite.team_slug) router.push(`/teams/${invite.team_slug}`);
+      }
+    } finally {
+      setInviteBusy(false);
+    }
+  };
   const [game, setGame] = useState(searchParams.get('game') || '');
   const [region, setRegion] = useState(searchParams.get('region') || '');
   const [openToJoin, setOpenToJoin] = useState(searchParams.get('open_to_join') || '');
@@ -224,7 +270,38 @@ const AllTeams = () => {
 
       {!loading && error && <p className={styles.errorText}>{error}</p>}
 
-      {!loading && !error && teams.length === 0 && <div className={styles.emptyState}>
+      {activeTab === 'invited' && (
+        invites.length === 0
+          ? <div className={styles.emptyState}>
+              <p>{tt('team.noInvites', 'Nobody has invited you to a team yet.')}</p>
+            </div>
+          : <div className={styles.inviteList}>
+              {invites.map(inv => (
+                <div key={inv.id} className={styles.inviteRow}>
+                  <div className={styles.inviteMain}>
+                    <strong className={styles.inviteTeam}>{inv.team_name}</strong>
+                    <span className={styles.inviteMeta}>
+                      {tt('team.invitedAsRole', 'Invited as {role}')
+                        .replace('{role}', String(inv.role || 'member').replace('_', ' '))}
+                    </span>
+                    {inv.message && <span className={styles.inviteMessage}>{inv.message}</span>}
+                  </div>
+                  <div className={styles.inviteActions}>
+                    <button type="button" className={styles.inviteAccept} disabled={inviteBusy}
+                            onClick={() => answerInvite(inv, true)}>
+                      {tt('team.acceptInvite', 'Join')}
+                    </button>
+                    <button type="button" className={styles.inviteDecline} disabled={inviteBusy}
+                            onClick={() => answerInvite(inv, false)}>
+                      {tt('team.declineInvite', 'No thanks')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+      )}
+
+      {activeTab !== 'invited' && !loading && !error && teams.length === 0 && <div className={styles.emptyState}>
           <p className={styles.emptyTitle}>{tt("ui.no.teams.found.197b", "No teams found")}</p>
           <p className={styles.emptySub}>{tt("ui.try.different.filter.create.1b20", "Try a different filter, or create your own team.")}</p>
           <Link href="/teams/create-team" className={`${styles.createTeamBTN} ${styles.emptyCta}`}>

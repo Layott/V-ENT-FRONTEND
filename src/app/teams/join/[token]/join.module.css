@@ -1,0 +1,90 @@
+/* Following a join link. One card, filled surfaces, no strokes. */
+
+.page {
+  min-height: 100vh;
+  background: var(--primary-bg, #131316);
+}
+
+.main {
+  display: flex;
+  min-height: calc(100vh - 72px);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 90px;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+  border-radius: 16px;
+  background: var(--overlay-gray, #212225);
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--text-primary, #f2f2f2);
+}
+
+.message {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #1a1b1e;
+  font-size: 14px;
+  color: var(--text-primary, #f2f2f2);
+}
+
+.muted {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary, #b6b6b6);
+}
+
+.warning {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #3a1d1f;
+  color: #ffb4b8;
+  font-size: 14px;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.primary:hover { background: #c8161d; }
+.primary:disabled { background: #5a2427; color: #b98d90; cursor: not-allowed; }
+
+.secondary { background: #303136; color: var(--text-primary, #f2f2f2); font-weight: 600; }
+.secondary:hover { background: #3a3b41; }
+
+@media (max-width: 768px) {
+  .content { padding: 20px 16px 90px; }
+  .card { padding: 20px; }
+  .title { font-size: 20px; }
+}
