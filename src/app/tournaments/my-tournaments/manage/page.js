@@ -2,11 +2,11 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { LuTrophy, LuUsers, LuCalendar, LuShuffle, LuPencil, LuEye, LuTriangleAlert, LuX } from 'react-icons/lu';
+import { LuTrophy, LuUsers, LuCalendar, LuShuffle, LuPencil, LuEye, LuTriangleAlert, LuX, LuChevronUp, LuChevronDown } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -55,7 +55,15 @@ const STATUS_BADGE_CLASS = {
 
 // Registrations arrive in different shapes depending on participant type
 // (team vs individual) and backend maturity - guard every field.
-const participantName = p => p?.team?.name || p?.team_name || p?.username || p?.player_name || p?.name || p?.full_name || 'Unknown entrant';
+// The participants endpoint nests the entrant under `participant`, which this
+// did not read - so every team on the registrations table said "Unknown
+// entrant" while the name sat one level down in the payload it was handed.
+const participantName = p => p?.participant?.name
+  || p?.participant?.username
+  || p?.team?.name || p?.team_name
+  || p?.user?.full_name || p?.user?.username
+  || p?.username || p?.player_name || p?.name || p?.full_name
+  || 'Unknown entrant';
 const participantSeed = (p, i) => p?.seed ?? i + 1;
 const participantStatus = p => p?.status ? String(p.status).toLowerCase() : null;
 const participantWhen = p => p?.registered_at || p?.created_at || p?.joined_at || null;
@@ -80,6 +88,33 @@ const ManageContent = ({
   const [busyAction, setBusyAction] = useState(null); // 'bracket' | 'cancel' | null
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  // How the field is seeded when the bracket is drawn. Defaults to results,
+  // because that is the answer that is right whenever there is anything to go
+  // on, and harmlessly falls back when there is not.
+  const [seedStrategy, setSeedStrategy] = useState('ranked');
+  const [manualOrder, setManualOrder] = useState([]);
+  // The entrants in the order the organiser has arranged them, with anybody
+  // who registered after the arrangement appended rather than dropped.
+  const orderedEntrants = useMemo(() => {
+    const rows = participants.map((p, i) => ({
+      id: p?.registration_id ?? p?.id ?? i,
+      name: participantName(p),
+    }));
+    if (manualOrder.length === 0) return rows;
+    const byId = new Map(rows.map(r => [String(r.id), r]));
+    const picked = manualOrder.map(id => byId.get(String(id))).filter(Boolean);
+    const rest = rows.filter(r => !manualOrder.some(id => String(id) === String(r.id)));
+    return [...picked, ...rest];
+  }, [participants, manualOrder]);
+
+  const moveEntrant = (index, by) => {
+    const list = orderedEntrants.map(r => r.id);
+    const to = index + by;
+    if (to < 0 || to >= list.length) return;
+    [list[index], list[to]] = [list[to], list[index]];
+    setManualOrder(list);
+  };
+
   const showToast = msg => {
     setToast(msg);
     setTimeout(() => setToast(null), 2400);
@@ -145,7 +180,10 @@ const ManageContent = ({
         method: 'POST',
         token,
         body: {
-          seed_strategy: 'random'
+          seed_strategy: seedStrategy,
+          // Only meaningful for manual_order; harmless otherwise, and sending
+          // it always keeps the request shape stable.
+          manual_order: manualOrder
         }
       });
       setPendingBackend(s => {
@@ -304,6 +342,67 @@ const ManageContent = ({
               {/* Actions */}
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>{tt("ui.actions.c3cd", "Actions")}</h2>
+                {/* How the field is seeded, chosen before it is drawn.
+                    Seeding decides who meets whom, and it used to be random
+                    with no way to say otherwise - which is fine for a kickabout
+                    and wrong for anything with a group stage behind it. */}
+                <div className={styles.seedBlock}>
+                  <p className={styles.seedTitle}>{tt('seed.title', 'How to seed the field')}</p>
+                  <div className={styles.seedChoices}>
+                    {[
+                      ['ranked', 'seed.ranked', 'By results',
+                       'seed.rankedHint', 'Best record first, from what has been played. Falls back to any seeds you set, then to alphabetical.'],
+                      ['manual_order', 'seed.manual', 'The order I set',
+                       'seed.manualHint', 'Yours exactly. Anybody you leave out is added at the end rather than dropped.'],
+                      ['registration', 'seed.registration', 'Who signed up first',
+                       'seed.registrationHint', 'First come, first seeded.'],
+                      ['random', 'seed.random', 'Draw at random',
+                       'seed.randomHint', 'Out of a hat. Nothing carries over from anything.'],
+                    ].map(([value, key, label, hintKey, hint]) => (
+                      <label key={value}
+                             className={`${styles.seedChoice} ${seedStrategy === value ? styles.seedOn : ''}`}>
+                        <input type="radio" name="seed_strategy" value={value}
+                               checked={seedStrategy === value}
+                               onChange={() => setSeedStrategy(value)} />
+                        <span>
+                          <strong>{tt(key, label)}</strong>
+                          <span className={styles.seedHint}>{tt(hintKey, hint)}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {seedStrategy === 'manual_order' && <div className={styles.seedOrder}>
+                    <p className={styles.seedHint}>
+                      {tt('seed.manualPick', 'Move entrants into the order you want. Top of the list is the top seed.')}
+                    </p>
+                    <ol className={styles.seedList}>
+                      {orderedEntrants.map((entrant, index) => (
+                        <li key={entrant.id} className={styles.seedRow}>
+                          <span className={styles.seedRank}>{index + 1}</span>
+                          <span className={styles.seedName}>{entrant.name}</span>
+                          <span className={styles.seedMove}>
+                            <button type="button" className={styles.seedBtn} disabled={index === 0}
+                                    onClick={() => moveEntrant(index, -1)}
+                                    aria-label={tt('league.moveUp', 'Move up')}>
+                              <LuChevronUp aria-hidden="true" />
+                            </button>
+                            <button type="button" className={styles.seedBtn}
+                                    disabled={index === orderedEntrants.length - 1}
+                                    onClick={() => moveEntrant(index, 1)}
+                                    aria-label={tt('league.moveDown', 'Move down')}>
+                              <LuChevronDown aria-hidden="true" />
+                            </button>
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                    {orderedEntrants.length === 0 && <p className={styles.seedHint}>
+                      {tt('seed.noEntrants', 'Nobody has registered yet.')}
+                    </p>}
+                  </div>}
+                </div>
+
                 <div className={styles.actionsRow}>
                   <button className={`${styles.btn} goldBTN`} onClick={handleGenerateBracket} disabled={!!busyAction}>
                     <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tx("Close Registration & Generate Bracket")}
