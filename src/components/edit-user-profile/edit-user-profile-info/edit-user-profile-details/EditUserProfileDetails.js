@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from './edit-user-profile-details.module.css';
+import { COUNTRIES, isKnownCountry } from '@/constants/countries';
 
 const EditUserProfileDetails = ({ fullname, username, description, state, country, handleInputChange }) => {
 
@@ -56,13 +57,27 @@ const EditUserProfileDetails = ({ fullname, username, description, state, countr
 
         <div className={styles.inputGroup}>
           <label htmlFor="country">Country</label>
-          <input
-            type="text"
+          {/* A list, not a text box, and the same list the tournament wizard
+              restricts by. These two values are compared: a tournament open to
+              "Nigeria" checks it against whatever is stored here, so free text
+              on either side quietly turned away people who qualified.
+
+              The placeholder used to read "Lagos" - a city, in a country
+              field - which taught people to enter a value no country
+              restriction could ever match.
+
+              A value already saved that is not on the list stays selectable,
+              so nobody's profile is silently blanked. */}
+          <select
+            id="country"
             name="country"
-            placeholder="Lagos"
-            value={country}
+            value={country || ''}
             onChange={handleInputChange}
-          />
+          >
+            <option value="">Select your country</option>
+            {country && !isKnownCountry(country) && <option value={country}>{country}</option>}
+            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
         </div>
       </div>
     </div>

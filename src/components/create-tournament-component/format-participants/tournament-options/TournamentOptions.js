@@ -4,6 +4,7 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import styles from './tournament-options.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { COUNTRIES, isKnownCountry } from '@/constants/countries';
 
 // The settings an organiser configures beyond the headline fields. Every one of
 // these changes what the platform does: who is refused at registration, how the
@@ -221,7 +222,19 @@ const TournamentOptions = ({
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="restrict_country">
               <span className={styles.fieldLabel}>{tt("ui.country.d523", "Country")}<InfoTip id="restrictCountry" /></span>
-              <input id="restrict_country" type="text" placeholder={tt("ui.open.everyone.4558", "Open to everyone")} className={`${createTournamentStyles.inputText} ${styles.select}`} value={options.restrict_country} onChange={e => set('restrict_country', e.target.value)} />
+              {/* A list, not a text box. The value here is compared against
+                  the entrant's own `user.country`, so free text on either side
+                  meant an organiser could type "Naija" and turn away every
+                  Nigerian on the platform without anything looking wrong. Both
+                  ends now pick from src/constants/countries.js.
+
+                  A value already saved that is not on the list stays
+                  selectable, so an old restriction is never silently dropped. */}
+              <select id="restrict_country" className={`${createTournamentStyles.inputText} ${styles.select}`} value={options.restrict_country || ''} onChange={e => set('restrict_country', e.target.value)}>
+                <option value="">{tt("ui.open.everyone.4558", "Open to everyone")}</option>
+                {options.restrict_country && !isKnownCountry(options.restrict_country) && <option value={options.restrict_country}>{options.restrict_country}</option>}
+                {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
             </label>
 
             <label className={styles.field} htmlFor="min_age">
