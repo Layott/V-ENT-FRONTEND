@@ -5,6 +5,7 @@ import { usePrice } from '@/lib/money';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { recordArrival, refFor } from '@/lib/referral';
 import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -241,6 +242,16 @@ export const ViewEventContent = ({
   const searchParams = useSearchParams();
   // `/events/anime-night-lagos` passes the slug; `?id=` still resolves.
   const id = slug || searchParams.get('id');
+
+  // Somebody arriving through an influencer's link. Counted once when the page
+  // opens, and the code is remembered so that a purchase several screens later
+  // still credits the person who sent them. `?ref=` is read here rather than in
+  // the checkout, because most people who arrive never reach a checkout and the
+  // organiser needs to know that too.
+  useEffect(() => {
+    if (!id) return;
+    recordArrival(id, process.env.NEXT_PUBLIC_API_URL);
+  }, [id]);
   const tabParam = searchParams.get('tab');
   const {
     data: session,
@@ -715,7 +726,10 @@ export const ViewEventContent = ({
           quantity: buyQty,
           pin: buyPin,
           answers: buyAnswers,
-          attendees: buyPeople.map(person => ({ answers: person.answers }))
+          attendees: buyPeople.map(person => ({ answers: person.answers })),
+          // Who sent them here, if anybody did. Empty is the ordinary case and
+          // credits nobody.
+          ref: refFor(id)
         })
       });
       const data = await res.json();

@@ -9,6 +9,7 @@ import { IoChevronBack } from 'react-icons/io5';
 import styles from './event-ticket-modal.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { refFor } from '@/lib/referral';
 const EventTicketModal = ({
   open,
   onClose,
@@ -141,7 +142,9 @@ const EventTicketModal = ({
           tier_id: selectedTier?.id,
           quantity: qty,
           pin,
-          attendees
+          attendees,
+          // Who sent them here, if anybody did.
+          ref: refFor(eventId)
         })
       });
       const data = await res.json();

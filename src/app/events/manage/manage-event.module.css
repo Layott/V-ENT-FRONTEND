@@ -478,3 +478,80 @@
   background-color: var(--v-ent-light-gold, #E8C760);
   color: #131316;
 }
+
+/* The influencer link the organiser copies and sends on. A filled surface one
+   step off the row, never a stroked box. */
+.shareRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--overlay-gray);
+  flex-wrap: wrap;
+}
+
+.shareLink {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--text-secondary, #b6b6b6);
+  overflow-wrap: anywhere;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .shareRow { gap: 8px; }
+  .shareLink { font-size: 11px; }
+}
+
+/* When people actually walked through the door. Bars are filled surfaces with
+   no stroke and no glow; height carries the number and the count is written
+   above it, so the chart is still readable to somebody who cannot compare
+   lengths by eye. */
+.hourBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 140px;
+  margin: 12px 0 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--overlay-gray);
+  overflow-x: auto;
+}
+
+.hourBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  flex: 0 0 34px;
+  height: 100%;
+}
+
+.hourCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary, #f2f2f2);
+}
+
+.hourFill {
+  width: 100%;
+  min-height: 3px;
+  border-radius: 5px;
+  background: var(--v-ent-success, #4caf50);
+}
+
+.hourLabel {
+  font-size: 10px;
+  color: var(--text-secondary, #b6b6b6);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .hourBars { height: 116px; }
+  .hourBar { flex-basis: 30px; }
+}
