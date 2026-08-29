@@ -20,6 +20,7 @@ import { linkTo } from '@/lib/share';
 import ShareCard from '@/components/share/ShareCard';
 import StandingsPanel from '@/components/view-tournament/standings/StandingsPanel';
 import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/BracketVisualizer';
+import RunningOrder from '@/components/view-tournament/running-order/RunningOrder';
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
@@ -1096,6 +1097,12 @@ const BracketPanel = ({
 
   return <div className={styles.bracketWrap}>
       <BracketVisualizer tournamentId={numericId || tournamentId} />
+
+      {/* The organiser's schedule builder, under the picture of the fixtures
+          it schedules. Only they see it: it is an editing surface, and the
+          resulting order is public through the visualizer above. */}
+      {isOrganizer && <RunningOrder tournamentId={numericId || tournamentId}
+        token={token} />}
 
       {(!flatFormat && isOrganizer) && <>
       <div className={styles.bracketHeader}>
