@@ -244,3 +244,37 @@
     text-align: center;
   }
 }
+
+/* The artwork an event already has. Shown at a size that says "this is what
+   you have" without taking over the form. Filled plate, no stroke. */
+.artNow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.5rem;
+  min-height: 72px;
+  overflow: hidden;
+  margin-bottom: 0.45rem;
+}
+
+.artLogo {
+  max-height: 62px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.artBanner {
+  max-height: 62px;
+  max-width: 100%;
+  width: auto;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.artNone {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+}

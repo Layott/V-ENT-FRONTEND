@@ -18,6 +18,8 @@ import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } fro
 import styles from './view-tournament.module.css';
 import { linkTo } from '@/lib/share';
 import ShareCard from '@/components/share/ShareCard';
+import StandingsPanel from '@/components/view-tournament/standings/StandingsPanel';
+import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
 import { useT } from '@/i18n/LanguageProvider';
@@ -42,6 +44,15 @@ const TABS = [{
 }, {
   id: 'bracket',
   label: 'Bracket'
+}, {
+  // Only for a format decided by a table. A knockout has no standings, and a
+  // tab that is always empty is worse than no tab.
+  id: 'table',
+  // "Standings", not "Table": the Bracket tab already reads "Tableau" in
+  // French, and two tabs called Tableau and Table beside each other is a
+  // riddle rather than a menu.
+  label: 'Standings',
+  leagueOnly: true
 }, {
   id: 'participants',
   label: 'Participants'
@@ -457,7 +468,8 @@ export const ViewTournamentContent = ({
           {/* Sticky tab nav */}
           <div className={styles.stickyTabs}>
             <div className={styles.tabBar}>
-              {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)}>
+              {TABS.filter(t => !t.leagueOnly || isLeagueFormat(tournament?.bracket_type))
+                .map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)}>
                   {tx(t.label)}
                 </button>)}
             </div>
@@ -469,6 +481,8 @@ export const ViewTournamentContent = ({
               isOrganizer={isOrganizer} tournamentRef={id} />}
             {activeTab === 'rules' && <RulesPanel tournament={tournament} />}
             {activeTab === 'bracket' && <BracketPanel tournamentId={id} isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
+            {activeTab === 'table' && <StandingsPanel
+              tournamentId={tournament?.tournament_id || tournament?.id} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
             {activeTab === 'prize' && <PrizePanel tournament={tournament} />}
             {activeTab === 'stream' && <StreamPanel tournament={tournament} session={session} />}
