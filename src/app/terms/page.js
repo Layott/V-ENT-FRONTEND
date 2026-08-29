@@ -124,7 +124,7 @@ export default function TermsOfUse() {
             {section.contact && (
               <p style={{ ...paragraphStyle, marginTop: '0.9rem', marginBottom: 0 }}>
                 {k('contactIntro')}{' '}
-                <a href="mailto:support@v-ent.co" style={linkStyle}>support@v-ent.co</a>.
+                <a href="mailto:info@v-ent.co" style={linkStyle}>info@v-ent.co</a>.
                 {' '}{k('contactAfter')}
               </p>
             )}

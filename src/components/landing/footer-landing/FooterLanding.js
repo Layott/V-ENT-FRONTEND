@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import logoRed from "@/images/logo_mark_red.svg"
 import { BsEnvelope } from "react-icons/bs";
-import { IoCallOutline } from "react-icons/io5";
 import { socialLinks } from "./SocialList";
 import styles from './footer-landing.module.css'
 
@@ -40,13 +39,14 @@ const FooterLanding = () => {
                 <div className={styles.contactContainer}>
                     <h3>{tt('landing.contact', 'Contact')}</h3>
                     <div className={styles.innerContactContainer}>
+                        {/* One address for everything. The phone number was
+                            removed at the CEO's request: a number on a public
+                            page is answered by a person or it is not answered
+                            at all, and an unanswered number reads worse than
+                            no number. */}
                         <p className={styles.emailParagraph}>
                             <span className={styles.envelopeSpan}><BsEnvelope /></span>
-                            <span>support@v-ent.co</span>
-                        </p>
-                        <p className={styles.emailParagraph}>
-                            <span className={styles.envelopeSpan}><IoCallOutline /></span>
-                            <span>+234 913 601 7004</span>
+                            <a href="mailto:info@v-ent.co">info@v-ent.co</a>
                         </p>
                     </div>
                 </div>

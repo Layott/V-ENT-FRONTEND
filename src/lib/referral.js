@@ -81,8 +81,26 @@ export function recordArrival(eventRef, apiBase) {
   const seen = all[key];
   const firstTime = !(fresh(seen) && seen.code === code);
 
-  all[key] = { code, at: Date.now() };
+  // One arrival is one arrival, even when the page loads twice.
+  //
+  // Landing on `/events/x?ref=CODE` with a language set redirects to
+  // `/fr/events/x?ref=CODE`, which is a second page load and was a second
+  // POST: a single human visit reported as two. Measured on the device, not
+  // reasoned about - the panel read "Visites: 2" after one visit. Every
+  // francophone and lusophone arrival would have been counted twice, so an
+  // influencer's conversion rate would have read half what it was.
+  //
+  // A short window per event and code. Long enough to swallow a redirect, a
+  // refresh or a back button; short enough that somebody genuinely returning
+  // in the evening is counted again.
+  const REVISIT_MS = 30 * 60 * 1000;
+  const justCounted = seen && seen.code === code
+    && typeof seen.hit === 'number' && Date.now() - seen.hit < REVISIT_MS;
+
+  all[key] = { code, at: Date.now(), hit: justCounted ? seen.hit : Date.now() };
   write(all);
+
+  if (justCounted) return code;
 
   // Fire and forget. A failed count must never be visible to the person
   // reading the page, and there is nothing useful to do about it.

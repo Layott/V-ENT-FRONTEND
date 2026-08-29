@@ -74,6 +74,15 @@ const LandingHero = ({
           </div>
 
           <div className={styles.authButtonsWrapper}>
+            {/* The way in without an account. The platform is public by
+                default - tournaments, events and teams all render signed out -
+                but this page offered only Login and Signup, so the only people
+                who could reach the content were the ones who already had an
+                account or were willing to make one first. */}
+            <Link href="/tournaments" className={styles.browseLink}>
+              {tt("landing.browse", "Browse tournaments")}
+            </Link>
+
             <Link href="/login" className={`${profileStyles.waitlistBTN} ${styles.signupBTN}`}>
               {tt("ui.login.4e5a", "Login")}
             </Link>
@@ -95,6 +104,20 @@ const LandingHero = ({
             </div>
             <div className={styles.heroWelcomeTextContainer}>
               <p>{tt("ui.welcome.v.ent.ultimate.3370", "Welcome to V-ENT, the ultimate platform where gaming, anime, and community converge. Whether you're a competitive esports player, a casual gamer, or an anime enthusiast, V-ENT offers tournaments, a vibrant marketplace, and unique features to help you immerse yourself in what you love most. Connect, compete, and engage in a community built for fans by fans.")}</p>
+              {/* Said plainly, and next to the thing it describes. Somebody
+                  who has just read what the site is should not have to guess
+                  whether they can look before joining. */}
+              <div className={styles.heroEntryRow}>
+                <Link href="/tournaments" className={styles.heroEntryPrimary}>
+                  {tt("landing.seeTournaments", "See what is running now")}
+                </Link>
+                <Link href="/events" className={styles.heroEntrySecondary}>
+                  {tt("landing.seeEvents", "Browse events")}
+                </Link>
+                <span className={styles.heroEntryNote}>
+                  {tt("landing.noAccountNeeded", "No account needed to look around.")}
+                </span>
+              </div>
               {/* <div className={styles.formContainer} ref={formRef} >
                 <form onSubmit={handleSubmit} className={styles.form}>
                   <input

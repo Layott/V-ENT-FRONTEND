@@ -152,7 +152,7 @@ export const SECTIONS = [
       + 'and use it to promote the tournament or event it belongs to. Nothing more.',
       'That permission ends when you delete the content, except where it is already part of a '
       + 'published result or an image somebody else has been sent.',
-      'If you believe something on V-ENT infringes your rights, write to support@v-ent.co with enough '
+      'If you believe something on V-ENT infringes your rights, write to info@v-ent.co with enough '
       + 'detail to find it.',
     ],
   },
@@ -189,7 +189,7 @@ export const SECTIONS = [
       + 'conflict of law principles.',
       'Any dispute arising from these terms or from your use of the platform is subject to the '
       + 'exclusive jurisdiction of the courts of Lagos State, Nigeria.',
-      'Before that, write to support@v-ent.co. Almost everything that has ever been raised was a '
+      'Before that, write to info@v-ent.co. Almost everything that has ever been raised was a '
       + 'question about a result, a payout or a ticket, and those are settled in days rather than in court.',
     ],
   },
