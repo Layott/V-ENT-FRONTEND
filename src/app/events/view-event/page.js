@@ -40,6 +40,15 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { normalizeEvent, findEventInList } from '@/components/events/normalizeEvents';
 import styles from './view-event.module.css';
+import PollAnswer from '@/components/view-event/poll/PollAnswer';
+import dynamic from 'next/dynamic';
+// Leaflet touches `window` on import, so the map is loaded in the browser
+// only. The fallback is the page's own surface at the map's height, so the
+// section does not jump when it arrives.
+const VenueMap = dynamic(
+  () => import('@/components/view-event/venue-map/VenueMap'),
+  { ssr: false, loading: () => <div style={{ height: 300, borderRadius: 14, backgroundColor: '#212225' }} /> },
+);
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
@@ -308,7 +317,11 @@ export const ViewEventContent = ({
 
   useEffect(() => { loadTalk(); }, [loadTalk]);
 
-  const answerPoll = async (poll, optionId) => {
+  // `answer` is whatever that kind of question needs: `{option_id}` for pick
+  // one, `{option_ids}` for pick several and for a ranking, `{number}` for a
+  // scale, `{text}` for the two written kinds. The server validates it; this
+  // only has to pass it along.
+  const answerPoll = async (poll, answer) => {
     const code = pollCode.trim().toUpperCase();
     setPollBusy(poll.id);
     try {
@@ -322,7 +335,7 @@ export const ViewEventContent = ({
               ? { Authorization: `Bearer ${session.user.sessionToken}` }
               : {}),
           },
-          body: JSON.stringify({ option_id: optionId, ...(code ? { ticket_code: code } : {}) }),
+          body: JSON.stringify({ ...answer, ...(code ? { ticket_code: code } : {}) }),
         });
       await loadTalk();
     } finally {
@@ -876,7 +889,8 @@ export const ViewEventContent = ({
                   {/* Getting there. `location` alone is a line somebody typed;
                       it is enough to print on a ticket and not enough to
                       travel to. */}
-                  {(event.venue_name || event.directions || event.map_link || event.map_search_url) && <>
+                  {(event.venue_name || event.directions || event.map_link
+                    || event.map_search_url || event.latitude) && <>
                       <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
                         {tt('event.gettingThere', 'Getting there')}
                       </h2>
@@ -887,13 +901,17 @@ export const ViewEventContent = ({
                       {event.directions && <p className={styles.body} style={{ whiteSpace: 'pre-line' }}>
                         {event.directions}
                       </p>}
-                      {(event.map_link || event.map_search_url) && <p className={styles.body}>
-                        <a href={event.map_link || event.map_search_url}
-                           target="_blank" rel="noopener noreferrer"
-                           className={styles.inlineLink}>
-                          {tt('event.openInMaps', 'Open in maps')}
-                        </a>
-                      </p>}
+                      {/* The map itself. "Open in maps" lives inside it, next
+                          to the share control, because they are the two things
+                          somebody does with a location. */}
+                      <VenueMap
+                        latitude={event.latitude}
+                        longitude={event.longitude}
+                        venueName={event.venue_name || event.location}
+                        eventSlug={event.slug || id}
+                        mapLink={event.map_link || event.map_search_url}
+                        sessionToken={session?.user?.sessionToken}
+                      />
                     </>}
 
                   {/* What the organiser has said since tickets went on sale. */}
@@ -915,7 +933,7 @@ export const ViewEventContent = ({
                   {/* Polls. The control is only live for somebody who can
                       actually answer: a button that fails after they press it
                       is worse than one that explains itself first. */}
-                  {polls.length > 0 && <>
+                  {polls.filter(p => p.visible !== false).length > 0 && <>
                       <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
                         {tt('event.polls', 'Polls')}
                       </h2>
@@ -932,37 +950,16 @@ export const ViewEventContent = ({
                         placeholder={tt('event.pollCodeLabel', 'Ticket code')}
                         aria-label={tt('event.pollCodeLabel', 'Ticket code')}
                         onChange={e => setPollCode(e.target.value)} />}
-                      {polls.map(poll => <div key={poll.id} className={styles.poll}>
-                          <strong className={styles.pollQuestion}>{poll.question}</strong>
-                          {!poll.is_open && <span className={styles.pollNote}>
-                            {tt('event.pollClosedNote', 'This poll has closed.')}
-                          </span>}
-                          <div className={styles.pollOptions}>
-                            {poll.options.map(option => {
-                              const mine = poll.my_option_id === option.id;
-                              const canAnswer = poll.is_open && !mine
-                                && canAnswerPolls;
-                              return <button
-                                key={option.id}
-                                type="button"
-                                className={`${styles.pollOption} ${mine ? styles.pollOptionMine : ''}`}
-                                disabled={!canAnswer || pollBusy === poll.id}
-                                onClick={() => answerPoll(poll, option.id)}>
-                                <span>{option.text}</span>
-                                {option.share === null || option.share === undefined
-                                  ? null
-                                  : <span className={styles.pollShare}>{option.share}%</span>}
-                              </button>;
-                            })}
-                          </div>
-                          <span className={styles.pollNote}>
-                            {poll.my_option_id
-                              ? tt('event.pollVoted', 'Your answer is in.')
-                              : poll.results_visible
-                                ? ''
-                                : tt('event.pollHidden', 'The count appears once you have answered.')}
-                          </span>
-                        </div>)}
+                      {/* A question revealed by an earlier answer is not
+                          drawn until it is. The server decides; the
+                          endpoint refuses it too, so this is presentation
+                          rather than the guard. */}
+                      {polls.filter(poll => poll.visible !== false).map(poll => <PollAnswer
+                        key={poll.id}
+                        poll={poll}
+                        canAnswer={canAnswerPolls}
+                        busy={pollBusy === poll.id}
+                        onAnswer={answer => answerPoll(poll, answer)} />)}
                     </>}
 
                   {eventSocials.length > 0 && <>

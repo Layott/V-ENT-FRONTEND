@@ -11,6 +11,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import TransactionTable from '@/components/wallet/TransactionTable';
+import ConvertPanel from '@/components/wallet/ConvertPanel';
 import { formatNumber, ngnFromVc, isCreditType, normalizeType, normalizeStatus } from '@/components/wallet/walletHelpers';
 import styles from './wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -161,6 +162,7 @@ const WalletsContent = () => {
   }, [session?.user?.sessionToken]);
   const stats = computeStats(transactions, withdrawals);
   const ngnBalance = ngnFromVc(balance ?? 0);
+  const [convertOpen, setConvertOpen] = useState(false);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -273,7 +275,7 @@ const WalletsContent = () => {
                   </span>
                   <span className={styles.actionLabel}>{tt("ui.withdraw.47e5", "Withdraw")}</span>
                 </Link>
-                <button type="button" className={styles.actionBtn} disabled aria-label={tt("ui.convert.coming.soon.11d9", "Convert (coming soon)")}>
+                <button type="button" className={styles.actionBtn} onClick={() => setConvertOpen(true)} aria-label={tt("ui.convert.3f15", "Convert")}>
                   <span className={`${styles.actionIcon} ${styles.actionIconConvert}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="17 1 21 5 17 9" />
@@ -340,6 +342,12 @@ const WalletsContent = () => {
       </main>
 
       <BottomMenu />
+
+      <ConvertPanel
+        open={convertOpen}
+        onClose={() => setConvertOpen(false)}
+        balance={balance ?? 0}
+      />
     </div>;
 };
 const Wallets = () => {

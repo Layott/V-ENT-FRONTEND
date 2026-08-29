@@ -187,6 +187,13 @@
   padding-bottom: 0.5rem;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.featuredScroll > * {
+  flex-shrink: 0;
+}
+
 .featuredScroll::-webkit-scrollbar { display: none; }
 
 .featuredProduct {
@@ -205,10 +212,6 @@
   gap: 0.45rem;
 }
 
-.featuredProduct:hover {
-
-  transform: translateY(-2px);
-}
 
 .featuredImgWrap {
   width: 100%;
@@ -310,6 +313,13 @@
   padding-bottom: 0.25rem;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.categoryRow > * {
+  flex-shrink: 0;
+}
+
 .categoryRow::-webkit-scrollbar { display: none; }
 
 .categoryBtn {
@@ -372,10 +382,6 @@
   transition: all 0.2s;
 }
 
-.vendorCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .vendorBannerWrap {
   position: relative;

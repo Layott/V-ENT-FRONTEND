@@ -83,7 +83,11 @@ const PostInner = ({
   }, []);
   useEffect(() => {
     if (!id) {
+      // No slug means somebody trimmed the address or followed an old
+      // link. Send them to the list rather than telling them a thing
+      // they never named is missing.
       setLoading(false);
+      router.replace('/community?tab=feed');
       return;
     }
     const fetchPost = async () => {
@@ -104,7 +108,7 @@ const PostInner = ({
       }
     };
     fetchPost();
-  }, [id, apiUrl]);
+  }, [id, apiUrl, router]);
   const handleToggleLike = async () => {
     if (!post || !signedIn) return;
     const before = { is_liked: post.is_liked, likes_count: post.likes_count };

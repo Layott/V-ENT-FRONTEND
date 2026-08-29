@@ -225,6 +225,11 @@ const useCountUp = (target, duration = 400, start = false, decimals = 0) => {
 
 /* ─────────────────────────── stat card ─────────────────────────── */
 
+// A stat is a summary of something that has its own page, so it is the way
+// there. CEO, 29 August 2026: "those sub headers (wallet balance, open
+// tournaments, etc) should be clickable or tapable and they take you to the
+// right places." Four numbers, four destinations, and reading a count of open
+// tournaments is exactly the moment somebody wants to see them.
 const StatCard = ({
   label,
   icon,
@@ -233,10 +238,12 @@ const StatCard = ({
   sub,
   animated,
   decimals,
-  accent
+  accent,
+  href
 }) => {
   const display = useCountUp(value, 700, animated, decimals);
-  return <div className={`${styles.statCard} ${accent === 'green' ? styles.statCardGreen : ''} ${accent === 'red' ? styles.statCardRed : ''}`}>
+  const className = `${styles.statCard} ${href ? styles.statCardLink : ''} ${accent === 'green' ? styles.statCardGreen : ''} ${accent === 'red' ? styles.statCardRed : ''}`;
+  const inner = <>
       <div className={styles.statHeader}>
         <span className={styles.statLabel}>{label}</span>
         <span className={styles.statIcon}>{icon}</span>
@@ -246,7 +253,15 @@ const StatCard = ({
         {suffix && <span className={styles.statUnit}>{suffix}</span>}
       </p>
       {sub && <p className={styles.statSub}>{sub}</p>}
-    </div>;
+    </>;
+
+  // A real link, not a div with an onClick: it has to open in a new tab on a
+  // long press, and be reachable by keyboard without any of that being written
+  // out by hand.
+  if (href) {
+    return <Link href={href} className={className}>{inner}</Link>;
+  }
+  return <div className={className}>{inner}</div>;
 };
 
 /* ─────────────────────────── HomePage ─────────────────────────── */
@@ -404,10 +419,10 @@ const HomePage = () => {
             {loading ? Array.from({
             length: 4
           }).map((_, i) => <div key={i} className={`${styles.statCard} ${styles.skeletonCard}`} aria-hidden />) : <>
-                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} suffix=" VC" sub={`₦${ngnFormatter.format(wallet.balance_ngn)} equivalent`} animated={animateStats} accent="green" />
-                <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub="Open to join now" animated={animateStats} />
-                <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub="Happening soon" animated={animateStats} />
-                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub="Squads you own" animated={animateStats} accent="red" />
+                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} suffix=" VC" sub={`₦${ngnFormatter.format(wallet.balance_ngn)} equivalent`} animated={animateStats} accent="green" href="/wallets" />
+                <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub="Open to join now" animated={animateStats} href="/tournaments" />
+                <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub="Happening soon" animated={animateStats} href="/events" />
+                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub="Squads you own" animated={animateStats} accent="red" href="/teams" />
               </>}
           </section>
 

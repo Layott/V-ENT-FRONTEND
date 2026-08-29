@@ -34,6 +34,13 @@
   padding: 0;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.submenuList > * {
+  flex-shrink: 0;
+}
+
 .submenuItem button {
   display: flex;
   align-items: center;

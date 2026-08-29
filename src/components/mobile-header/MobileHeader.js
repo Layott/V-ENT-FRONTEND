@@ -188,19 +188,36 @@ const MobileHeader = ({
         }} aria-hidden="true" tabIndex={-1}>{tt("ui.search.bce0", "Search")}</button>
         </form>
 
-        <div className={`${styles.searchIconMobileContainer}`}>
-          {isSearchBarVisible ? <MdOutlineClose className={styles.searchCloseIconMobile} onClick={toggleSearchBar} /> : <LuSearch className={styles.searchIconMobile} onClick={toggleSearchBar} />}
-        </div>
+        {/* One row, evenly spaced. Each of these used to be absolutely
+            positioned at a hard-coded offset from the right edge, so the bell
+            and the search icon collided while a gap sat next to the hamburger,
+            and the spacing changed with the width of the phone. CEO,
+            29 August 2026: it "doesn't look good and is not efficient". */}
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.headerAction}
+            onClick={toggleSearchBar}
+            aria-label={isSearchBarVisible
+              ? tt("ui.close.search.4a1c", "Close search")
+              : tt("ui.search.v.ent.6327", "Search V-ENT")}
+            aria-expanded={isSearchBarVisible}
+          >
+            {isSearchBarVisible
+              ? <MdOutlineClose className={styles.searchCloseIconMobile} />
+              : <LuSearch className={styles.searchIconMobile} />}
+          </button>
 
-        {!isSearchBarVisible && <Link href="/notifications" className={styles.bellContainer} aria-label={tt("ui.notifications.753a", "Notifications")}>
-            <IoNotificationsOutline className={styles.bellIconMobile} />
-            {notifCount > 0 && <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>}
-          </Link>}
+          {!isSearchBarVisible && <Link href="/notifications" className={`${styles.headerAction} ${styles.bellContainer}`} aria-label={tt("ui.notifications.753a", "Notifications")}>
+              <IoNotificationsOutline className={styles.bellIconMobile} />
+              {notifCount > 0 && <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>}
+            </Link>}
 
-        <div className={styles.hamburgerContainer} onClick={toggleMobileMenu}>
-          <label className={styles.hamburger}>
-            <span className={`${styles.hamburgerLines} ${isMobileMenuOpen ? styles.show : ''}`}></span>
-          </label> 
+          <div className={`${styles.headerAction} ${styles.hamburgerContainer}`} onClick={toggleMobileMenu}>
+            <label className={styles.hamburger}>
+              <span className={`${styles.hamburgerLines} ${isMobileMenuOpen ? styles.show : ''}`}></span>
+            </label>
+          </div>
         </div>
 
         <MobileSidebar isOpen={isMobileMenuOpen} />

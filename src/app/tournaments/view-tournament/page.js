@@ -27,6 +27,7 @@ import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
 import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
+import InvitationBanner from '@/components/view-tournament/invitation-banner/InvitationBanner';
 import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
@@ -473,6 +474,11 @@ export const ViewTournamentContent = ({
               </div>
             </div>
           </div>
+
+          {/* An invitation addressed to this viewer, with the two buttons that
+              answer it. Above the tabs because it is about whether they are in
+              this tournament at all, not about one part of it. */}
+          <InvitationBanner tournamentRef={id} token={session?.user?.sessionToken} />
 
           {/* Sticky tab nav */}
           <div className={styles.stickyTabs}>

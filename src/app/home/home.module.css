@@ -117,27 +117,46 @@
 }
 
 /* ───────────────────────────── STAT CARDS ───────────────────────────── */
+/* Two across on a phone, not one.
+   Four cards at 130px each, stacked with 16px gaps, came to 568px: most of a
+   390px screen spent on four numbers, which is what the CEO meant by the pages
+   being "too large for phones". Two columns puts all four above the fold and
+   leaves room for what is under them. */
 .statGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
 }
 
 .statCard {
   background-color: var(--overlay-gray);
 
   border-radius: 10px;
-  padding: 1.25rem;
-  min-height: 130px;
+  padding: 0.95rem;
+  min-height: 104px;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.18s ease;
 }
 
-.statCard:hover {
+/* A stat that goes somewhere. It reads as pressable through a brighter fill on
+   hover rather than a lift: a card that rises on hover is on every generated
+   page this year, and it moves the number somebody is trying to read. */
+.statCardLink {
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  cursor: pointer;
+}
 
-  transform: translateY(-2px);
+.statCardLink:hover {
+  background-color: #2b2c30;
+}
+
+.statCardLink:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .statCardGreen .statValue {
@@ -172,7 +191,7 @@
 
 .statValue {
   font-family: "Fraunces", sans-serif;
-  font-size: var(--mobile-h2-size);
+  font-size: var(--mobile-h3-size);
   font-weight: var(--fw-extra-bold);
   color: var(--primary-bg);
   margin: 0;
@@ -189,7 +208,7 @@
 }
 
 .statSub {
-  font-size: var(--fs-p-size-mobile);
+  font-size: 0.76rem;
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
@@ -270,6 +289,13 @@
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.cardStrip > * {
+  flex-shrink: 0;
+}
+
 .cardStrip::-webkit-scrollbar {
   height: 6px;
 }
@@ -298,10 +324,6 @@
   cursor: pointer;
 }
 
-.matchCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .matchCardLive:hover {
   background-color: rgba(255, 255, 255, 0.06);
@@ -463,10 +485,6 @@
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.gridCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .gridBanner {
   height: 100px;
@@ -565,10 +583,6 @@
   min-height: 130px;
 }
 
-.teamAvatarCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .teamAvatar {
   width: 52px;
@@ -919,10 +933,6 @@
   min-height: 230px;
 }
 
-.recoCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .recoBanner {
   height: 88px;
@@ -1054,8 +1064,17 @@
     gap: 1.25rem;
   }
 
+  .statCard {
+    padding: 1.25rem;
+    min-height: 130px;
+  }
+
   .statValue {
     font-size: var(--desktop-h4-size);
+  }
+
+  .statSub {
+    font-size: var(--fs-p-size-mobile);
   }
 
   .sectionTitle {

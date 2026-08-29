@@ -83,6 +83,7 @@ export default async function sitemap() {
     entry('/login', { changeFrequency: 'yearly', priority: 0.3 }),
     entry('/signup', { changeFrequency: 'yearly', priority: 0.4 }),
     entry('/privacy-policy', { changeFrequency: 'yearly', priority: 0.2 }),
+    entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
   const [tournaments, events, teams] = await Promise.all([

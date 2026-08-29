@@ -242,3 +242,11 @@
     display: none;
   }
 }
+
+/* The whole column is the target, not just the icon and the word.
+   Measured on the emulator these anchors were 66x34 inside a 70px bar: a third
+   of the bar's height was padding nothing could press, so a thumb aimed at the
+   bottom of "Wallets" hit the page behind it. */
+.iconTextLink {
+  min-height: 56px;
+}

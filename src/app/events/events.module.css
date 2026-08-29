@@ -133,10 +133,6 @@
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.featuredCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .featuredImgWrap {
   width: 100%;
@@ -194,6 +190,13 @@
   scrollbar-width: none;
   margin-bottom: 1rem;
   padding-bottom: 0.25rem;
+}
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabRow > * {
+  flex-shrink: 0;
 }
 
 .tabRow::-webkit-scrollbar { display: none; }
@@ -425,10 +428,6 @@
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.eventCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .cardImgWrap {
   width: 100%;

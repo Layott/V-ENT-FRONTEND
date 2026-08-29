@@ -290,7 +290,7 @@
   flex-direction: column;
   transition: transform 0.2s, background-color 0.2s;
 }
-.mangaCard:hover { transform: translateY(-2px); border-color: rgba(237, 28, 36, 0.35); }
+.mangaCard:hover {  border-color: rgba(237, 28, 36, 0.35); }
 .mangaCover {
   position: relative;
   width: 100%;
@@ -358,7 +358,7 @@
   flex-direction: column;
   transition: transform 0.2s, background-color 0.2s;
 }
-.amvCard:hover { transform: translateY(-2px); border-color: rgba(237, 28, 36, 0.35); }
+.amvCard:hover {  border-color: rgba(237, 28, 36, 0.35); }
 .amvThumb {
   position: relative;
   width: 100%;
@@ -384,7 +384,7 @@
   padding-left: 4px;
   transition: transform 0.2s;
 }
-.amvCard:hover .amvPlayIcon { transform: translate(-50%, -50%) scale(1.08); }
+
 .amvDuration {
   position: absolute;
   bottom: 0.55rem;
@@ -429,7 +429,7 @@
   flex-direction: column;
   transition: transform 0.2s, background-color 0.2s;
 }
-.roomCard:hover { transform: translateY(-2px); border-color: rgba(212, 175, 55, 0.35); }
+.roomCard:hover {  border-color: rgba(212, 175, 55, 0.35); }
 .roomCover {
   position: relative;
   width: 100%;

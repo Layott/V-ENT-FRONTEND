@@ -3,6 +3,7 @@ import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
 import JsonLd from "@/components/seo/JsonLd";
 import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
+import PageHelp from "@/components/page-help/PageHelp";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -94,6 +95,12 @@ export default function RootLayout({ children }) {
           <CurrencyProvider>
             <PlatformModulesProvider>
             <WalkthroughProvider>{children}</WalkthroughProvider>
+            {/* "What is this page?", on every page and every sub-page.
+                Mounted once here so nobody has to remember to add it when they
+                build a new page, and so it cannot be missing from exactly the
+                page a new person got stuck on. It renders nothing on a route
+                with no guide written for it. */}
+            <PageHelp />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>

@@ -192,7 +192,7 @@
 .teamCard:hover {
 
   background-color: #4a3a3a;
-  transform: translateY(-1px);
+  
 }
 
 .teamCard.selected {
@@ -307,7 +307,6 @@
 .proceedButton:hover:not(.disabled) {
   background-color: #dc2626;
 
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 

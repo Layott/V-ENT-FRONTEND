@@ -211,9 +211,6 @@
   padding: 0;
 }
 
-.colorSwatch:hover {
-  transform: scale(1.08);
-}
 
 .colorSwatchActive {
   background-color: rgba(237, 28, 36, 0.16);

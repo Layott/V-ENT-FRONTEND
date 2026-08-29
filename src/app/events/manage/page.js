@@ -71,7 +71,44 @@ export const ManageEventContent = ({
   const [audience, setAudience] = useState(null);
   const [draftMessage, setDraftMessage] = useState({ subject: '', body: '', audience: 'all' });
   const [polls, setPolls] = useState([]);
-  const [draftPoll, setDraftPoll] = useState({ question: '', options: ['', ''], show_results_before_voting: false });
+  // The six kinds a poll can ask, and what each one needs from the form.
+  // `needsOptions` is what decides whether the option rows are drawn at all: an
+  // option list on a question answered in words is a control that does nothing.
+  const POLL_KINDS = [
+    { id: 'single', label: tt('manage.pollKindSingle', 'Pick one'),
+      hint: tt('manage.pollKindSingleHint', 'One answer from a list.'), needsOptions: true },
+    { id: 'multiple', label: tt('manage.pollKindMultiple', 'Pick several'),
+      hint: tt('manage.pollKindMultipleHint', 'Any number from a list, or a number you set.'), needsOptions: true },
+    { id: 'scale', label: tt('manage.pollKindScale', 'Rate it'),
+      hint: tt('manage.pollKindScaleHint', 'A number on a scale, with a word at each end.'), needsOptions: false },
+    { id: 'ranking', label: tt('manage.pollKindRanking', 'Put in order'),
+      hint: tt('manage.pollKindRankingHint', 'Everything on the list, in the order they choose.'), needsOptions: true },
+    { id: 'short_text', label: tt('manage.pollKindShort', 'Short answer'),
+      hint: tt('manage.pollKindShortHint', 'A line of text. Only you read the answers.'), needsOptions: false },
+    { id: 'long_text', label: tt('manage.pollKindLong', 'Long answer'),
+      hint: tt('manage.pollKindLongHint', 'A paragraph. Only you read the answers.'), needsOptions: false },
+  ];
+
+  const [draftPoll, setDraftPoll] = useState({
+    question: '', kind: 'single', help_text: '',
+    options: ['', ''], show_results_before_voting: false,
+    min_choices: 0, max_choices: 0,
+    scale_min: 1, scale_max: 5, scale_min_label: '', scale_max_label: '',
+    // Which earlier question reveals this one, and on which answer.
+    depends_on: '', depends_on_option: '', depends_on_max: '',
+  });
+  // Only a question that can gate another: one answered by picking an option,
+  // or one with a scale. There is nothing sensible to branch on in a paragraph
+  // somebody typed.
+  const gateable = polls.filter(p => ['single', 'multiple', 'ranking', 'scale'].includes(p.kind));
+  const gate = gateable.find(p => String(p.id) === String(draftPoll.depends_on));
+  const pollKind = POLL_KINDS.find(k => k.id === draftPoll.kind) || POLL_KINDS[0];
+
+  // Tickets handed out rather than sold.
+  const [compTier, setCompTier] = useState('');
+  const [compEmails, setCompEmails] = useState('');
+  const [compNote, setCompNote] = useState('');
+  const [compResult, setCompResult] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // Set when the event exists and this person may not run it. Kept apart from
@@ -226,13 +263,70 @@ export const ManageEventContent = ({
     if (done) setDraftMessage({ subject: '', body: '', audience: 'all' });
   };
 
+  // Tickets handed out by typing addresses. The response names which were
+  // skipped and which could not be emailed, and both are said out loud: an
+  // organiser needs to know who is still waiting for a ticket that exists.
+  const sendComps = async () => {
+    setBusy(true);
+    setCompResult('');
+    try {
+      const res = await fetch(`${API}/event/${eventRef}/comp-tickets/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          tier_id: compTier,
+          emails: compEmails,
+          note: compNote,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data?.status !== 'success') {
+        setCompResult(data?.message || tt('manage.compFailed', 'That did not go through.'));
+        return;
+      }
+      const out = data.data || {};
+      const parts = [
+        tt('manage.compSent', '{n} sent.').replace('{n}', out.issued_count ?? 0),
+      ];
+      if (out.skipped_already_had_one?.length) {
+        parts.push(tt('manage.compSkipped', '{n} already had one.')
+          .replace('{n}', out.skipped_already_had_one.length));
+      }
+      if (out.not_emailed?.length) {
+        parts.push(tt('manage.compNotEmailed', '{n} could not be emailed: {who}')
+          .replace('{n}', out.not_emailed.length)
+          .replace('{who}', out.not_emailed.join(', ')));
+      }
+      setCompResult(parts.join(' '));
+      setCompEmails('');
+      await load();
+    } catch {
+      setCompResult(tt('manage.compFailed', 'That did not go through.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const addPoll = async () => {
     const done = await run(() => call('/polls/', {
       method: 'POST',
       body: JSON.stringify({
         question: draftPoll.question,
-        options: draftPoll.options.filter(o => o.trim()),
+        kind: draftPoll.kind,
+        help_text: draftPoll.help_text,
+        // Only for the kinds that have them. Sending options with a text
+        // question would be sending something the server discards.
+        options: pollKind.needsOptions ? draftPoll.options.filter(o => o.trim()) : [],
+        min_choices: Number(draftPoll.min_choices) || 0,
+        max_choices: Number(draftPoll.max_choices) || 0,
+        scale_min: Number(draftPoll.scale_min) || 1,
+        scale_max: Number(draftPoll.scale_max) || 5,
+        scale_min_label: draftPoll.scale_min_label,
+        scale_max_label: draftPoll.scale_max_label,
         show_results_before_voting: draftPoll.show_results_before_voting,
+        depends_on: draftPoll.depends_on || null,
+        depends_on_option: draftPoll.depends_on_option || null,
+        depends_on_max: draftPoll.depends_on_max === '' ? null : draftPoll.depends_on_max,
       }),
     }), 'manage.pollAdded', 'Poll added.');
     if (done) setDraftPoll({ question: '', options: ['', ''], show_results_before_voting: false });
@@ -983,6 +1077,34 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- polls */}
+              {/* Tickets an organiser hands out. Its own card on the Tickets
+                  tab, because it is the same object as a sale and belongs next
+                  to the types it is issued from. */}
+              {tab === 'tickets' && tiers.length > 0 && <section className={styles.card}>
+                  <h3 className={styles.subTitle}>{tt('manage.compTitle', 'Send tickets to people')}</h3>
+                  <p className={styles.cardHint}>
+                    {tt('manage.compHint', 'For the guest list, the press, the sponsor\'s people. They get a real ticket with a real code, emailed to them, and it comes out of the same stock as a sale. Somebody who already has one of that type is skipped.')}
+                  </p>
+                  <div className={styles.newRow}>
+                    <select className={styles.input} aria-label={tt('manage.compTier', 'Which type')} value={compTier} onChange={e => setCompTier(e.target.value)}>
+                      <option value="">{tt('manage.compTier', 'Which type')}</option>
+                      {tiers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                  </div>
+                  <div className={styles.newRow}>
+                    <textarea className={styles.input} rows={3} placeholder={tt('manage.compEmails', 'Email addresses, one per line or separated by commas')} value={compEmails} onChange={e => setCompEmails(e.target.value)} />
+                  </div>
+                  <div className={styles.newRow}>
+                    <input className={styles.input} maxLength={280} placeholder={tt('manage.compNote', 'A line to go with it (optional)')} value={compNote} onChange={e => setCompNote(e.target.value)} />
+                  </div>
+                  <div className={styles.rowBetween}>
+                    <span className={styles.muted}>{compResult}</span>
+                    <button type="button" className={styles.addBtn} disabled={busy || !compTier || !compEmails.trim()} onClick={sendComps}>
+                      {tt('manage.compSend', 'Send them')}
+                    </button>
+                  </div>
+                </section>}
+
               {tab === 'polls' && <section className={styles.card}>
                   <p className={styles.cardHint}>
                     {tt('manage.pollsHint', 'Ask the room. One ticket is one answer, so people without an account can still take part. The count stays hidden until somebody has answered, because a visible tally pulls later answers toward whatever is winning.')}
@@ -991,7 +1113,42 @@ export const ManageEventContent = ({
                   <div className={styles.newRow}>
                     <input className={styles.input} placeholder={tt('manage.pollQuestion', 'What do you want to ask?')} maxLength={200} value={draftPoll.question} onChange={e => setDraftPoll({ ...draftPoll, question: e.target.value })} />
                   </div>
-                  {draftPoll.options.map((option, index) => <div key={index} className={styles.newRow}>
+
+                  {/* What kind of question. Chips rather than a select: the
+                      difference between them needs a sentence, and a native
+                      select on a phone hides five of the six. */}
+                  <div className={styles.pollKindRow}>
+                    {POLL_KINDS.map(kind => <button
+                      key={kind.id}
+                      type="button"
+                      className={`${styles.pollKindChip} ${draftPoll.kind === kind.id ? styles.pollKindChipOn : ''}`}
+                      aria-pressed={draftPoll.kind === kind.id}
+                      onClick={() => setDraftPoll({ ...draftPoll, kind: kind.id })}
+                    >{kind.label}</button>)}
+                  </div>
+                  <p className={styles.muted}>{pollKind.hint}</p>
+
+                  <div className={styles.newRow}>
+                    <input className={styles.input} placeholder={tt('manage.pollHelp', 'A note under the question, if it needs one (optional)')} maxLength={280} value={draftPoll.help_text} onChange={e => setDraftPoll({ ...draftPoll, help_text: e.target.value })} />
+                  </div>
+
+                  {draftPoll.kind === 'scale' && <>
+                    <div className={styles.newRow}>
+                      <input className={styles.input} type="number" min={0} max={9} aria-label={tt('manage.pollScaleFrom', 'Scale starts at')} value={draftPoll.scale_min} onChange={e => setDraftPoll({ ...draftPoll, scale_min: e.target.value })} />
+                      <input className={styles.input} type="number" min={1} max={10} aria-label={tt('manage.pollScaleTo', 'Scale ends at')} value={draftPoll.scale_max} onChange={e => setDraftPoll({ ...draftPoll, scale_max: e.target.value })} />
+                    </div>
+                    <div className={styles.newRow}>
+                      <input className={styles.input} placeholder={tt('manage.pollScaleLow', 'Word for the low end, e.g. Poor')} maxLength={40} value={draftPoll.scale_min_label} onChange={e => setDraftPoll({ ...draftPoll, scale_min_label: e.target.value })} />
+                      <input className={styles.input} placeholder={tt('manage.pollScaleHigh', 'Word for the high end, e.g. Excellent')} maxLength={40} value={draftPoll.scale_max_label} onChange={e => setDraftPoll({ ...draftPoll, scale_max_label: e.target.value })} />
+                    </div>
+                  </>}
+
+                  {draftPoll.kind === 'multiple' && <div className={styles.newRow}>
+                    <input className={styles.input} type="number" min={0} aria-label={tt('manage.pollMin', 'Fewest they may pick (0 for no limit)')} placeholder={tt('manage.pollMin', 'Fewest they may pick (0 for no limit)')} value={draftPoll.min_choices} onChange={e => setDraftPoll({ ...draftPoll, min_choices: e.target.value })} />
+                    <input className={styles.input} type="number" min={0} aria-label={tt('manage.pollMax', 'Most they may pick (0 for no limit)')} placeholder={tt('manage.pollMax', 'Most they may pick (0 for no limit)')} value={draftPoll.max_choices} onChange={e => setDraftPoll({ ...draftPoll, max_choices: e.target.value })} />
+                  </div>}
+
+                  {pollKind.needsOptions && draftPoll.options.map((option, index) => <div key={index} className={styles.newRow}>
                       <input className={styles.input} placeholder={tt('manage.pollOption', 'Option {n}').replace('{n}', index + 1)} maxLength={140} value={option} onChange={e => {
                         const next = [...draftPoll.options];
                         next[index] = e.target.value;
@@ -1001,15 +1158,50 @@ export const ManageEventContent = ({
                         <FaTrash />
                       </button>}
                     </div>)}
+                  {/* Linking one question to an earlier answer. Only shown once
+                      there is an earlier question that can gate anything. */}
+                  {gateable.length > 0 && <div className={styles.newRow}>
+                    <select
+                      className={styles.input}
+                      aria-label={tt('manage.pollAfter', 'Show this only after')}
+                      value={draftPoll.depends_on}
+                      onChange={e => setDraftPoll({ ...draftPoll, depends_on: e.target.value, depends_on_option: '', depends_on_max: '' })}
+                    >
+                      <option value="">{tt('manage.pollAlways', 'Always show this question')}</option>
+                      {gateable.map(p => <option key={p.id} value={p.id}>
+                        {tt('manage.pollAfterOne', 'Only after: {q}').replace('{q}', p.question)}
+                      </option>)}
+                    </select>
+
+                    {gate && gate.kind !== 'scale' && <select
+                      className={styles.input}
+                      aria-label={tt('manage.pollAfterAnswer', 'And only if they answered')}
+                      value={draftPoll.depends_on_option}
+                      onChange={e => setDraftPoll({ ...draftPoll, depends_on_option: e.target.value })}
+                    >
+                      <option value="">{tt('manage.pollAnyAnswer', 'Whatever they answered')}</option>
+                      {(gate.options || []).map(o => <option key={o.id} value={o.id}>
+                        {tt('manage.pollIfAnswered', 'If they answered: {a}').replace('{a}', o.text)}
+                      </option>)}
+                    </select>}
+
+                    {gate && gate.kind === 'scale' && <input
+                      className={styles.input} type="number"
+                      aria-label={tt('manage.pollIfAtMost', 'Only if they rated it at most')}
+                      placeholder={tt('manage.pollIfAtMost', 'Only if they rated it at most')}
+                      value={draftPoll.depends_on_max}
+                      onChange={e => setDraftPoll({ ...draftPoll, depends_on_max: e.target.value })} />}
+                  </div>}
+
                   <div className={styles.rowBetween}>
-                    <button type="button" className={styles.ghostBtn} disabled={draftPoll.options.length >= 10} onClick={() => setDraftPoll({ ...draftPoll, options: [...draftPoll.options, ''] })}>
+                    {pollKind.needsOptions && <button type="button" className={styles.ghostBtn} disabled={draftPoll.options.length >= 10} onClick={() => setDraftPoll({ ...draftPoll, options: [...draftPoll.options, ''] })}>
                       <FaPlus /> {tt('manage.addOption', 'Another option')}
-                    </button>
+                    </button>}
                     <label className={styles.checkInline}>
                       <input type="checkbox" checked={draftPoll.show_results_before_voting} onChange={e => setDraftPoll({ ...draftPoll, show_results_before_voting: e.target.checked })} />
                       {tt('manage.pollShowEarly', 'Show the count before people answer')}
                     </label>
-                    <button type="button" className={styles.addBtn} disabled={busy || !draftPoll.question.trim() || draftPoll.options.filter(o => o.trim()).length < 2} onClick={addPoll}>
+                    <button type="button" className={styles.addBtn} disabled={busy || !draftPoll.question.trim() || (pollKind.needsOptions && draftPoll.options.filter(o => o.trim()).length < 2)} onClick={addPoll}>
                       {tt('manage.addPoll', 'Ask it')}
                     </button>
                   </div>

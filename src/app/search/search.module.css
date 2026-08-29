@@ -179,6 +179,13 @@
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabsRow > * {
+  flex-shrink: 0;
+}
+
 .tabsRow::-webkit-scrollbar {
   height: 4px;
 }
@@ -479,7 +486,7 @@
 
 .viewAllLink:hover {
   color: var(--v-ent-light-gold);
-  transform: translateX(2px);
+  
 }
 
 .tabResultCount {
@@ -665,10 +672,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.tCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .tCardBanner {
   height: 140px;
@@ -831,10 +834,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.teamCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .teamHeader {
   display: flex;
@@ -929,10 +928,6 @@
   align-items: flex-start;
 }
 
-.userCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .userAvatar {
   width: 56px;
@@ -1005,10 +1000,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.listingCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .listingImageWrap {
   position: relative;
@@ -1024,9 +1015,6 @@
   transition: transform 0.4s;
 }
 
-.listingCard:hover .listingImage {
-  transform: scale(1.04);
-}
 
 .listingCategory {
   position: absolute;
@@ -1175,10 +1163,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.threadCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .threadHead {
   display: flex;
@@ -1250,10 +1234,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.clubCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .clubBanner {
   height: 90px;
@@ -1324,10 +1304,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.mangaCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .mangaCoverWrap {
   position: relative;
@@ -1403,10 +1379,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.amvCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .amvThumbWrap {
   position: relative;
@@ -1504,10 +1476,6 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.orgCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .orgBanner {
   height: 90px;

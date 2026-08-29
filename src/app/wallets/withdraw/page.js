@@ -12,6 +12,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import { formatNumber, ngnFromVc, calcWithdrawFee, calcNetPayout, NIGERIAN_BANKS } from '@/components/wallet/walletHelpers';
+import PinPrompt from '@/components/wallet/PinPrompt';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -168,12 +169,20 @@ const WithdrawPage = () => {
     }
     setStep(2);
   };
-  const handleSubmit = async () => {
+  // The endpoint has always required a PIN and this page never asked for one,
+  // so every withdrawal came back "amount, bank_name, account_number,
+  // account_name, and pin are required" and read like a form validation error.
+  const [pinOpen, setPinOpen] = useState(false);
+  const [pinError, setPinError] = useState('');
+
+  const handleSubmit = async (pin) => {
     setSubmitting(true);
     setError('');
+    setPinError('');
     const payload = {
       amount: numericVc,
       amount_vc: numericVc,
+      pin,
       bank_name: activeBank.bank_name,
       account_number: activeBank.account_number,
       account_name: activeBank.account_name
@@ -186,10 +195,18 @@ const WithdrawPage = () => {
       });
       const data = await res.json();
       if (data?.status !== 'success') {
-        setError(apiMessage(tt, data, "api.withdrawalRequestFailed", "Withdrawal request failed."));
+        const message = apiMessage(tt, data, "api.withdrawalRequestFailed", "Withdrawal request failed.");
+        // A refused PIN is answered where it was typed.
+        if (/PIN/i.test(String(data?.code || '')) || /pin/i.test(message)) {
+          setPinError(message);
+        } else {
+          setPinOpen(false);
+          setError(message);
+        }
         setSubmitting(false);
         return;
       }
+      setPinOpen(false);
       setReference(data.data?.reference || `WDR-${Date.now().toString().slice(-8)}`);
 
       // Save bank for future if requested + on a "new" submission
@@ -214,7 +231,7 @@ const WithdrawPage = () => {
       setStep(3);
     } catch (err) {
       console.error(err);
-      setError(tt("msg.networkErrorPleaseTryAgain", "Network error. Please try again."));
+      setPinError(tt("msg.networkErrorPleaseTryAgain", "Network error. Please try again."));
     } finally {
       setSubmitting(false);
     }
@@ -423,7 +440,7 @@ const WithdrawPage = () => {
                   <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setStep(1)} disabled={submitting}>
                     {tt("ui.back.b52b", "Back")}
                   </button>
-                  <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handleSubmit} disabled={submitting}>
+                  <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={() => { setPinError(''); setPinOpen(true); }} disabled={submitting}>
                     {submitting ? tx("Submitting…") : tx("Submit Request")}
                   </button>
                 </div>
@@ -475,6 +492,18 @@ const WithdrawPage = () => {
       </main>
 
       <BottomMenu />
+
+      <PinPrompt
+        open={pinOpen}
+        busy={submitting}
+        error={pinError}
+        onCancel={() => { setPinOpen(false); setPinError(''); }}
+        onConfirm={handleSubmit}
+        title={tt('wallet.withdraw.pinTitle', 'Confirm this payout')}
+        detail={activeBank
+          ? `${formatNumber(numericVc)} VC to ${activeBank.bank_name} ${activeBank.account_number}`
+          : ''}
+      />
     </div>;
 };
 export default WithdrawPage;

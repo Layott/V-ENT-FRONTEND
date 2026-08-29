@@ -239,6 +239,13 @@
   scrollbar-width: none;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabsRow > * {
+  flex-shrink: 0;
+}
+
 .tabsRow::-webkit-scrollbar { display: none; }
 
 .tabBTN {
@@ -467,10 +474,6 @@
   display: block;
 }
 
-.miniCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .miniBanner {
   height: 80px;

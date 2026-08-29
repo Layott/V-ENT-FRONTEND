@@ -124,7 +124,7 @@
   flex-direction: column;
   transition: transform 0.2s, background-color 0.2s;
 }
-.animeCard:hover { transform: translateY(-2px); border-color: rgba(237, 28, 36, 0.35); }
+.animeCard:hover {  border-color: rgba(237, 28, 36, 0.35); }
 .animeCover {
   position: relative;
   width: 100%;
@@ -167,7 +167,7 @@
   transition: transform 0.2s, background 0.2s;
   font-size: 0.85rem;
 }
-.playBtn:hover { background-color: var(--v-ent-red); transform: scale(1.08); }
+.playBtn:hover { background-color: var(--v-ent-red);  }
 
 .animeBody { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.3rem; }
 .animeTitle {

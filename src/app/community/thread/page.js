@@ -143,7 +143,11 @@ const ThreadInner = ({
   }, []);
   useEffect(() => {
     if (!id) {
+      // No slug means somebody trimmed the address or followed an old
+      // link. Send them to the list rather than telling them a thing
+      // they never named is missing.
       setLoading(false);
+      router.replace('/community?tab=forums');
       return;
     }
     const fetchThread = async () => {
@@ -165,7 +169,7 @@ const ThreadInner = ({
       }
     };
     fetchThread();
-  }, [id, apiUrl, authHeaders]);
+  }, [id, apiUrl, authHeaders, router]);
   const handleReply = async () => {
     if (!replyText.trim() || !id || thread?.is_locked) return;
     setPosting(true);

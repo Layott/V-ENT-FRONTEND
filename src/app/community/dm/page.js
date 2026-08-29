@@ -64,7 +64,11 @@ const DmInner = ({
   const messagesEndRef = useRef(null);
   useEffect(() => {
     if (!id) {
+      // No slug means somebody trimmed the address or followed an old
+      // link. Send them to the list rather than telling them a thing
+      // they never named is missing.
       setLoading(false);
+      router.replace('/community?tab=dms');
       return;
     }
     const fetchThread = async () => {
@@ -93,7 +97,7 @@ const DmInner = ({
       }
     };
     fetchThread();
-  }, [id, apiUrl, authHeaders]);
+  }, [id, apiUrl, authHeaders, router]);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth'

@@ -143,6 +143,13 @@
   scrollbar-width: none;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabBar > * {
+  flex-shrink: 0;
+}
+
 .tabBar::-webkit-scrollbar { display: none; }
 
 .tabBtn {
@@ -740,7 +747,7 @@
 
 .linkCard:hover .linkArrow {
   color: var(--v-ent-gold);
-  transform: translateX(4px);
+  
 }
 
 /* ── Toast ── */
@@ -929,4 +936,65 @@
 
 .statField .statWeight {
   width: 100%;
+}
+
+/* --------------------------------------------------- scheduled reminders */
+
+.remindRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  max-width: 620px;
+}
+
+/* Narrow, because it holds a number of minutes and nothing else. */
+.remindOffset {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  width: 88px;
+  outline: none;
+}
+
+.remindOffset:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.remindOffset:disabled { opacity: 0.45; }
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 620px;
+  margin-top: 0.7rem;
+}
+
+/* A filled row per entry, no strokes. */
+.scheduleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+}
+
+.scheduleWhat {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

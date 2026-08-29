@@ -278,10 +278,6 @@
   color: inherit;
 }
 
-.outcomeCard:hover:not(:disabled) {
-
-  transform: translateY(-1px);
-}
 
 .outcomeCardActive {
 

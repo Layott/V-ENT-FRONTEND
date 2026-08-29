@@ -138,6 +138,18 @@ html {
   cursor: pointer;
 }
 
+/* 37px is a comfortable button under a mouse and a small one under a thumb.
+   Most of this platform is read on a phone, so on a phone every button built
+   from the shared class is at least 44px, which is the smallest thing a thumb
+   hits reliably. Measured, not assumed: the emulator reported the pair on the
+   tournaments page at 38px tall. */
+@media (max-width: 768px) {
+  .btn {
+    height: auto;
+    min-height: 44px;
+  }
+}
+
 /* Documented in CLAUDE.md as one of the three global button classes, alongside
    .btn and .redBTN, and never actually written. Three places used it, so three
    buttons - including Try again on the tournament wizard's error screen - were

@@ -163,6 +163,13 @@
   scrollbar-width: none;
 }
 
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabRow > * {
+  flex-shrink: 0;
+}
+
 .tabRow::-webkit-scrollbar { display: none; }
 
 .tab {
@@ -263,10 +270,6 @@
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.poolCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .poolCardTop {
   display: flex;

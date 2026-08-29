@@ -320,10 +320,6 @@
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.gameTile:hover .gameImg {
-
-  transform: translateY(-2px);
-}
 
 .gameImg img {
   width: 100%;
@@ -376,10 +372,6 @@
   padding: 0.6rem;
 }
 
-.achvTile:hover .achvMedal {
-
-  transform: translateY(-2px);
-}
 
 .achvName {
   font-family: "ClashGrotesk-Variable", sans-serif;

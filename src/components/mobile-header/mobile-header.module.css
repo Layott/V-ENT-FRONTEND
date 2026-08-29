@@ -97,15 +97,42 @@
   display: flex;
 }
 
-.searchIconMobileContainer {
+/* The three controls on the right, laid out rather than pinned.
+   Each used to be `position: absolute` at a hard-coded offset from the right
+   edge - the search at 3rem, the bell at 5.25rem - so they collided at one
+   width and left a gap at another, and none of them had a real tap target. */
+.headerActions {
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.headerAction {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 44px is the smallest thing a thumb reliably hits. */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--primary-bg);
+  cursor: pointer;
+  outline: none;
   z-index: 20;
-  transition: transform 0.5s ease-in-out;
-  position: absolute;
-  top: 50%;
-  right: 3rem;
-  transform: translateY(-50%);
+}
+
+.headerAction:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.headerAction:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
 }
 
 .searchCloseIconMobile,
@@ -275,6 +302,10 @@
   align-items: center;
   width: 100%;
   gap: 0.25rem;
+  /* The mark is 25px tall and it is the way home from every page. The target
+     around it is 44px; the mark itself is unchanged. */
+  min-height: 44px;
+  padding-right: 0.35rem;
 }
 
 .innerLogoContainer {
@@ -292,16 +323,7 @@
 }
 
 .bellContainer {
-  position: absolute;
-  top: 50%;
-  right: 5.25rem;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-  cursor: pointer;
-  color: var(--primary-bg);
+  text-decoration: none;
 }
 
 .bellIconMobile {
@@ -309,9 +331,11 @@
 }
 
 .bellBadgeMobile {
+  /* Anchored to the icon inside the 44px target rather than to the target
+     itself, so it sits on the bell and not out in the padding. */
   position: absolute;
-  top: -6px;
-  right: -8px;
+  top: 8px;
+  right: 8px;
   min-width: 15px;
   height: 15px;
   padding: 0 3px;
@@ -329,19 +353,16 @@
 }
 
 .hamburgerContainer {
-  min-height: 33px;
-  min-width: 33px;
-  position: relative;
-  z-index: 2 !important;
-  transform: translateX(0%);
-  transition: transform 500ms ease-in-out;
+  z-index: 21;
 }
 
 .hamburger {
   cursor: pointer;
-  float: right;
-  z-index: 2 !important;
-  padding: 14px 1.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .hamburgerLines {

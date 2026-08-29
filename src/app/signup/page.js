@@ -291,13 +291,15 @@ const Signup = () => {
             }} /> : tx("Create account")}
                         </button>
                         <p className={styles.termsAndPrivacy}>{tt("ui.by.creating.account.agree.034e", "By creating an account, you agree to our")} 
-                            {/* /term-of-use is not a route - the terms live as a PDF in /public. */}
-                            <a href="/terms-of-use.pdf" target="_blank" rel="noopener noreferrer">
+                            {/* Both are pages now. They used to be PDFs, which could not be
+                                translated, could not be read by a crawler, and in the case of
+                                the terms still carried "[Insert Jurisdiction]" in the section
+                                naming which country's law applies. */}
+                            <a href="/terms" target="_blank" rel="noopener noreferrer">
                               {tt("ui.terms.use.9773", "Terms of Use")}
                             </a>
                             &nbsp;&amp;&nbsp;
-                            {/* <Link href={'/privacy-policy'}>Privacy Policy</Link> */}
-                            <a href="/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">
+                            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">
                               {tt("ui.privacy.policy.9db1", "Privacy Policy")}
                             </a>
                         </p>

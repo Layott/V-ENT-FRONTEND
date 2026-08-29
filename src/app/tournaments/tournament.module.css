@@ -94,9 +94,6 @@
   transition: transform 0.2s;
 }
 
-.featuredCard:hover {
-  transform: translateY(-2px);
-}
 
 .featuredBanner {
   height: 220px;
@@ -165,6 +162,13 @@
   margin-bottom: 1rem;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+/* Children of a scrolling row keep their width. Without this they
+   shrink to fit, the row never exceeds its container, and there is
+   nothing left to scroll. */
+.tabBar > * {
+  flex-shrink: 0;
 }
 
 .tabBar::-webkit-scrollbar { display: none; }
@@ -334,10 +338,6 @@
   flex-direction: column;
 }
 
-.tCard:hover {
-  transform: translateY(-2px);
-
-}
 
 .tCardBanner {
   height: 140px;

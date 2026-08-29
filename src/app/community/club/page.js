@@ -74,7 +74,11 @@ const ClubInner = ({
   const [activeTab, setActiveTab] = useState('posts');
   useEffect(() => {
     if (!id) {
+      // No slug means somebody trimmed the address or followed an old
+      // link. Send them to the list rather than telling them a thing
+      // they never named is missing.
       setLoading(false);
+      router.replace('/community?tab=clubs');
       return;
     }
     const fetchClub = async () => {
@@ -94,7 +98,7 @@ const ClubInner = ({
       }
     };
     fetchClub();
-  }, [id, apiUrl]);
+  }, [id, apiUrl, router]);
 
   // Real club content - the page used to generate five fake posts, a dozen fake
   // members and invented events from the club's own name.

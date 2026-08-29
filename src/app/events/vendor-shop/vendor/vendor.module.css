@@ -265,10 +265,6 @@
   padding: 0;
 }
 
-.productCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .productImgWrap {
   position: relative;

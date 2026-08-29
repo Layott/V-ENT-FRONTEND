@@ -469,10 +469,6 @@
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.similarCard:hover {
-
-  transform: translateY(-2px);
-}
 
 .similarImg {
   width: 100%;
