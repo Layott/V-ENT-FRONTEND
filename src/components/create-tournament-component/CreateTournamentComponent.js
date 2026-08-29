@@ -1,11 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTx } from '@/i18n/LanguageProvider';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import { validateAll } from './tournamentWizardValidation';
 import ProgressMenu from './progress-menu/ProgressMenu';
 import BasicInfo from './basic-info/BasicInfo';
 import FormatParticipants from './format-participants/FormatParticipants';
+import { isLeagueFormat } from './format-participants/league-setup/LeagueSetup';
 import PrizeDistribution from './prize-distribution/PrizeDistribution';
 import SponsorsLinks from './sponsors-links/SponsorsLinks';
 import Review from './review/Review';
@@ -28,12 +30,16 @@ const readSavedFormData = () => {
 
 const CreateTournamentComponent = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
+  // Status-banner sentences are English in the source and looked up by
+  // their text, the same way the wizard's validation messages are.
+  const tx = useTx();
 
   const [selectedTab, setSelectedTab] = useState(1);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null); // { type: 'error' | 'success', text }
+  const bannerRef = useRef(null);
 
   const [formData, setFormData] = useState(readSavedFormData);
   const [logoFile, setLogoFile] = useState(null);
@@ -90,9 +96,17 @@ const CreateTournamentComponent = () => {
       }
     }
 
+    // A session that is still resolving has no token yet, and treating that as
+    // "not logged in" is how somebody who IS logged in gets told they are not.
+    // The publish waits for the answer instead of racing it.
+    if (sessionStatus === 'loading') {
+      setStatusMessage({ type: 'error', text: tx('One moment - still checking you are signed in. Press again.') });
+      return;
+    }
+
     const token = tokenFrom(session);
     if (!token) {
-      setStatusMessage({ type: 'error', text: 'You must be logged in to create a tournament.' });
+      setStatusMessage({ type: 'error', text: tx('You must be logged in to create a tournament.') });
       return;
     }
 
@@ -184,6 +198,23 @@ const CreateTournamentComponent = () => {
       formDataToSend.append('sponsor_names', JSON.stringify(sponsor_names));
       formDataToSend.append('sponsor_types', JSON.stringify(sponsor_types));
       formDataToSend.append('sponsor_usernames', JSON.stringify(sponsor_usernames));
+
+      // How the table is scored, for a format decided by one. Sent with the
+      // tournament rather than as a second call: a tournament created without
+      // these generates a plain round robin, because the seat count lives on
+      // the league rules row - so a second call that failed would leave a
+      // league whose fixtures have no matches in them, and no sign of why.
+      if (isLeagueFormat(formData.bracket_type)) {
+        formDataToSend.append('points_win', String(formData.points_win ?? 3));
+        formDataToSend.append('points_draw', String(formData.points_draw ?? 1));
+        formDataToSend.append('points_loss', String(formData.points_loss ?? 0));
+        formDataToSend.append('players_per_team',
+          String(formData.players_per_team ?? formData.team_size ?? 1));
+        // A multipart form cannot carry a list, so the order travels as JSON
+        // and the server parses it back.
+        formDataToSend.append('tiebreakers',
+          JSON.stringify(Array.isArray(formData.tiebreakers) ? formData.tiebreakers : []));
+      }
 
       formDataToSend.append('is_draft', isDraft ? '1' : '0');
 
@@ -330,10 +361,22 @@ const CreateTournamentComponent = () => {
     }
   };
 
+  // Scrolled to, not just rendered. See the note on the banner below.
+  useEffect(() => {
+    if (statusMessage && bannerRef.current) {
+      bannerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [statusMessage]);
+
   return (
     <div className={styles.createTournamentContainer}>
+      {/* Brought into view when it appears. It renders at the top of a page
+          several screens long and Publish is at the bottom, so a refusal was
+          being announced somewhere nobody was looking - which reads exactly
+          like the button doing nothing. */}
       {statusMessage && (
         <div
+          ref={bannerRef}
           className={`${styles.statusBanner} ${statusMessage.type === 'success' ? styles.statusSuccess : styles.statusError}`}
           role="status"
         >

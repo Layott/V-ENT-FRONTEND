@@ -1,0 +1,180 @@
+/* League settings. Filled surfaces and space, no strokes, no glow. */
+
+.lead,
+.hint {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  max-width: 66ch;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.9rem 0;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  min-height: 44px;
+  padding: 12px;
+  outline: none;
+  max-width: 200px;
+}
+
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* The worked example. Monospaced because it is a scoresheet, and the columns
+   are the point of it. */
+.worked {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin: 0.5rem 0 1.1rem;
+}
+
+.workedTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.workedBody {
+  color: #fff;
+  font-family: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  margin: 0 0 0.5rem;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.workedNote {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.points .field { flex: 1 1 150px; margin: 0.6rem 0; }
+
+/* Tiebreaks. The order is the setting, so the number is loud. */
+.tbList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0.7rem 0;
+  padding: 0;
+}
+
+.tbRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+}
+
+.tbRank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.tbName { flex: 1; color: #fff; font-size: 0.9rem; }
+
+.tbMove { display: flex; gap: 0.3rem; flex-shrink: 0; }
+
+.tbBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.tbBtn:hover { background-color: rgba(255, 255, 255, 0.18); }
+.tbBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.tbBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* What the settings actually build, in numbers. */
+.shape {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1.1rem;
+}
+
+.shapeTitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  margin-bottom: 0.7rem;
+}
+
+.shapeList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.8rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shapeList li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.shapeList strong {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.shapeList span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.79rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .points .field { flex: 1 1 100%; }
+  .input { max-width: 100%; }
+}

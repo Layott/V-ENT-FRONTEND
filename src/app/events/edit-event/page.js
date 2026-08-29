@@ -32,6 +32,17 @@ import { useT } from '@/i18n/LanguageProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// The five the model has always documented. A free-text box let one organiser
+// type "esports", another "Esports" and a third "gaming", and nothing can
+// group or filter on that afterwards.
+const CATEGORIES = [
+  ['esports', 'eventEdit.catEsports', 'Esports'],
+  ['anime', 'eventEdit.catAnime', 'Anime'],
+  ['concert', 'eventEdit.catConcert', 'Concert'],
+  ['convention', 'eventEdit.catConvention', 'Convention'],
+  ['other', 'eventEdit.catOther', 'Something else'],
+];
+
 const TYPES = [
   ['physical', 'eventEdit.typePhysical', 'In person'],
   ['virtual', 'eventEdit.typeVirtual', 'Online'],
@@ -68,10 +79,28 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
   const [form, setForm] = useState(null);
   const [logo, setLogo] = useState(null);
   const [banner, setBanner] = useState(null);
+  // What the event already has, so the form can show it rather than leaving
+  // two empty file inputs that look like the artwork went missing.
+  const [current, setCurrent] = useState({ logo: '', banner: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+
+  const [logoPreview, setLogoPreview] = useState('');
+  const [bannerPreview, setBannerPreview] = useState('');
+  useEffect(() => {
+    if (!logo) { setLogoPreview(''); return undefined; }
+    const url = URL.createObjectURL(logo);
+    setLogoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logo]);
+  useEffect(() => {
+    if (!banner) { setBannerPreview(''); return undefined; }
+    const url = URL.createObjectURL(banner);
+    setBannerPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [banner]);
 
   const load = useCallback(async () => {
     if (!ref) { setLoading(false); setError(tt('eventEdit.noEvent', 'No event named.')); return; }
@@ -84,6 +113,10 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         const e = body.data?.event || body.data;
+        setCurrent({
+          logo: e.logo || e.logo_url || '',
+          banner: e.banner || e.banner_url || '',
+        });
         const shaped = {
           name: e.name || '',
           desc: e.desc || e.description || '',
@@ -222,8 +255,19 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
 
                 <label className={styles.field}>
                   <span className={styles.label}>{tt('eventEdit.category', 'Category')}</span>
-                  <input className={styles.input} value={form.category}
-                         onChange={e => set('category', e.target.value)} />
+                  <select className={styles.input} value={form.category}
+                          onChange={e => set('category', e.target.value)}>
+                    <option value="">{tt('eventEdit.catNone', 'Not set')}</option>
+                    {CATEGORIES.map(([value, key, fallback]) => (
+                      <option key={value} value={value}>{tt(key, fallback)}</option>
+                    ))}
+                    {/* An older event may hold something typed before this was
+                        a list. Showing it keeps the save from silently
+                        changing a value nobody touched. */}
+                    {form.category
+                      && !CATEGORIES.some(([value]) => value === form.category)
+                      && <option value={form.category}>{form.category}</option>}
+                  </select>
                 </label>
               </div>
 
@@ -273,17 +317,44 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 </label>
               </div>
 
+              {/* The artwork the event currently has, shown rather than
+                  implied. The form only ever offered "Replace the logo" with
+                  an empty file input, so after saving there was nothing on
+                  screen to say the image had been kept - which reads exactly
+                  like it was lost. It never was; it was only invisible. */}
               <div className={styles.row}>
                 <label className={styles.field}>
                   <span className={styles.label}>{tt('eventEdit.logo', 'Replace the logo')}</span>
+                  <span className={styles.artNow}>
+                    {logoPreview || current.logo
+                      ? <img src={logoPreview || current.logo} alt=""
+                             className={styles.artLogo} />
+                      : <span className={styles.artNone}>
+                          {tt('eventEdit.noArt', 'None yet')}
+                        </span>}
+                  </span>
                   <input className={styles.file} type="file" accept="image/*"
                          onChange={e => setLogo(e.target.files?.[0] || null)} />
+                  {logo && <span className={styles.hint}>
+                    {tt('eventEdit.willReplace', 'Saves when you press Save changes.')}
+                  </span>}
                 </label>
 
                 <label className={styles.field}>
                   <span className={styles.label}>{tt('eventEdit.banner', 'Replace the banner')}</span>
+                  <span className={styles.artNow}>
+                    {bannerPreview || current.banner
+                      ? <img src={bannerPreview || current.banner} alt=""
+                             className={styles.artBanner} />
+                      : <span className={styles.artNone}>
+                          {tt('eventEdit.noArt', 'None yet')}
+                        </span>}
+                  </span>
                   <input className={styles.file} type="file" accept="image/*"
                          onChange={e => setBanner(e.target.files?.[0] || null)} />
+                  {banner && <span className={styles.hint}>
+                    {tt('eventEdit.willReplace', 'Saves when you press Save changes.')}
+                  </span>}
                 </label>
               </div>
 

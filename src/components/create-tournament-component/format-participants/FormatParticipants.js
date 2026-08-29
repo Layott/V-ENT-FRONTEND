@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { IoMdArrowForward, IoMdArrowBack } from "react-icons/io";
 import TournamentFormat from "./tournament-format/TournamentFormat";
+import LeagueSetup, { isLeagueFormat } from "./league-setup/LeagueSetup";
 import Participants from "./participants/Participants";
 import TournamentOptions from "./tournament-options/TournamentOptions";
 import TournamentRules from "./tournament-rules/TournamentRules";
@@ -58,6 +59,12 @@ const FormatParticipants = ({
       <TournamentFormat formData={formData} updateFormData={updateLocalStorage} />
 
       <Participants formData={formData} updateFormData={updateLocalStorage} />
+
+      {/* Only for a format decided by a table. A knockout has no points and no
+          tiebreak order, and asking about them there is how a form becomes a
+          wall of settings that mean nothing for what somebody picked. */}
+      {isLeagueFormat(formData.bracket_type)
+        && <LeagueSetup formData={formData} updateFormData={updateLocalStorage} />}
 
       <TournamentOptions formData={formData} updateFormData={updateLocalStorage} />
 
