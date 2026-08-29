@@ -30,6 +30,9 @@ const TABS = [{
 }, {
   id: 'reminders',
   label: 'Reminders'
+}, {
+  id: 'stats',
+  label: 'Player stats'
 }];
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
@@ -185,6 +188,7 @@ const ManageContent = () => {
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
             {tab === 'production' && <ProductionLinkPanel tournament={tournament} />}
             {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
+            {tab === 'stats' && <StatsPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} />}
           </div>
         </div>
       </main>
@@ -192,6 +196,268 @@ const ManageContent = () => {
       <BottomMenu />
 
       {toast && <div className={styles.toast}>{toast}</div>}
+    </div>;
+};
+
+/* ──────────────── PLAYER STATS AND THE MVP ──────────────── */
+
+// What counts as a good game here, what each player did, and who wins.
+//
+// The weights are shown while the organiser edits them, because the score is
+// the sum of value times weight and somebody setting a weight of 0.001 for
+// damage should see why: damage is counted in thousands and would otherwise
+// drown every other metric.
+//
+// An award that goes against the table has to carry a reason. "The numbers
+// said X and the organiser chose Y" is a fact somebody will ask about, and the
+// reason is what makes it a decision rather than a surprise.
+const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
+  const tt = useT();
+  const [metrics, setMetrics] = useState([]);
+  const [isDefault, setIsDefault] = useState(true);
+  const [catalogue, setCatalogue] = useState([]);
+  const [table, setTable] = useState([]);
+  const [award, setAward] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [matchId, setMatchId] = useState('');
+  const [player, setPlayer] = useState('');
+  const [entry, setEntry] = useState({});
+  const [overrideTo, setOverrideTo] = useState('');
+  const [overrideWhy, setOverrideWhy] = useState('');
+
+  const load = useCallback(async () => {
+    if (!token || !tournamentId) return;
+    try {
+      const [m, v] = await Promise.all([
+        fetch(`${API}/tournament/${tournamentId}/metrics/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then(r => r.json()).catch(() => ({})),
+        fetch(`${API}/tournament/${tournamentId}/mvp/`)
+          .then(r => r.json()).catch(() => ({})),
+      ]);
+      setMetrics(m?.data?.metrics || []);
+      setIsDefault(m?.data?.is_default !== false);
+      setCatalogue(m?.data?.catalogue || []);
+      setTable(v?.data?.table || []);
+      setAward(v?.data?.award || null);
+    } catch {
+      // A panel that cannot load still has to render rather than spin.
+      setMetrics([]);
+    }
+  }, [tournamentId, token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const saveMetrics = async next => {
+    setBusy(true);
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentId}/metrics/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ metrics: next }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') { await load(); return true; }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addMetric = key => saveMetrics([
+    ...metrics.map(m => ({ key: m.key, weight: m.weight })),
+    { key },
+  ]);
+
+  const removeMetric = key => saveMetrics(
+    metrics.filter(m => m.key !== key).map(m => ({ key: m.key, weight: m.weight })));
+
+  const setWeight = (key, weight) => saveMetrics(
+    metrics.map(m => ({ key: m.key, weight: m.key === key ? weight : m.weight })));
+
+  // The order is the tiebreak, so moving a row up is a real setting and not a
+  // cosmetic sort.
+  const move = (index, by) => {
+    const next = [...metrics];
+    const target = index + by;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    saveMetrics(next.map(m => ({ key: m.key, weight: m.weight })));
+  };
+
+  const recordLine = async () => {
+    const stats = {};
+    Object.entries(entry).forEach(([key, value]) => {
+      if (value !== '' && value !== null && value !== undefined) {
+        stats[key] = Number(value);
+      }
+    });
+    if (!matchId || !player.trim() || !Object.keys(stats).length) return;
+    setBusy(true);
+    try {
+      const res = await fetch(
+        `${API}/tournament/${tournamentId}/matches/${matchId}/stats/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ players: [{ player: player.trim(), stats }] }),
+        });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast(tt('stats.recorded', 'Recorded.'));
+        setPlayer('');
+        setEntry({});
+        await load();
+        return;
+      }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const makeAward = async () => {
+    setBusy(true);
+    try {
+      const payload = overrideTo.trim()
+        ? { player: overrideTo.trim(), reason: overrideWhy.trim() }
+        : {};
+      const res = await fetch(`${API}/tournament/${tournamentId}/mvp/award/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast(tt('stats.awarded', 'Award recorded.'));
+        setOverrideTo('');
+        setOverrideWhy('');
+        await load();
+        return;
+      }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const unused = catalogue.filter(c => !metrics.some(m => m.key === c.key));
+  const overriding = overrideTo.trim()
+    && (!table.length || table[0].username !== overrideTo.trim());
+
+  return <div>
+      <h2 className={styles.panelTitle}>{tt('stats.title', 'Player stats')}</h2>
+      <p className={styles.panelSub}>
+        {tt('stats.hint', 'What counts as a good game here, what each player did, and who wins. The score is every number times what you said it is worth, so the answer to "why them" is a row of figures rather than an opinion.')}
+      </p>
+
+      {/* -------------------------------------------------- what counts */}
+      <h3 className={styles.statsHeading}>{tt('stats.whatCounts', 'What counts')}</h3>
+      {isDefault && <p className={styles.remindCount}>
+        {tt('stats.usingDefaults', 'These are suggestions for this game. Change any of them and they become yours.')}
+      </p>}
+
+      <div className={styles.statMetrics}>
+        {metrics.map((m, index) => <div key={m.key} className={styles.statMetric}>
+            <span className={styles.statMetricName}>{m.label}</span>
+            <input
+              className={styles.statWeight}
+              type="number"
+              step="0.001"
+              defaultValue={m.weight}
+              aria-label={tt('stats.weightFor', 'What one {metric} is worth').replace('{metric}', m.label)}
+              onBlur={e => {
+                const next = Number(e.target.value);
+                if (!Number.isNaN(next) && next !== m.weight) setWeight(m.key, next);
+              }} />
+            <button type="button" className={styles.smallBtn} disabled={busy || index === 0}
+                    aria-label={tt('stats.moveUp', 'Move up')}
+                    onClick={() => move(index, -1)}>↑</button>
+            <button type="button" className={styles.smallBtn} disabled={busy || index === metrics.length - 1}
+                    aria-label={tt('stats.moveDown', 'Move down')}
+                    onClick={() => move(index, 1)}>↓</button>
+            <button type="button" className={styles.smallBtnRed} disabled={busy}
+                    aria-label={tt('stats.remove', 'Stop counting this')}
+                    onClick={() => removeMetric(m.key)}>×</button>
+          </div>)}
+      </div>
+      <p className={styles.remindCount}>
+        {tt('stats.orderIsTiebreak', 'The order is the tiebreak: two players level on score are separated by the first metric in this list, then the second.')}
+      </p>
+
+      {unused.length > 0 && <div className={styles.newRowInline}>
+        <select className={styles.modalInput} value="" disabled={busy}
+                aria-label={tt('stats.addMetric', 'Count something else')}
+                onChange={e => e.target.value && addMetric(e.target.value)}>
+          <option value="">{tt('stats.addMetric', 'Count something else')}</option>
+          {unused.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+        </select>
+      </div>}
+
+      {/* ------------------------------------------------- record a line */}
+      <h3 className={styles.statsHeading}>{tt('stats.record', 'Record a stat line')}</h3>
+      <div className={styles.newRowInline}>
+        <select className={styles.modalInput} value={matchId}
+                aria-label={tt('stats.match', 'Match')}
+                onChange={e => setMatchId(e.target.value)}>
+          <option value="">{tt('stats.pickMatch', 'Which match')}</option>
+          {(matches || []).map(m => <option key={m.id} value={m.id}>
+            {`R${m.round} M${m.match_number}: ${nameOf(m.p1)} v ${nameOf(m.p2)}`}
+          </option>)}
+        </select>
+        <input className={styles.modalInput} value={player}
+               placeholder={tt('stats.player', 'Player username')}
+               onChange={e => setPlayer(e.target.value)} />
+      </div>
+      <div className={styles.statEntry}>
+        {metrics.map(m => <label key={m.key} className={styles.statField}>
+            <span className={styles.statFieldLabel}>{m.label}</span>
+            <input className={styles.statWeight} type="number"
+                   step={m.decimals ? '0.1' : '1'}
+                   value={entry[m.key] ?? ''}
+                   onChange={e => setEntry({ ...entry, [m.key]: e.target.value })} />
+          </label>)}
+      </div>
+      <button type="button" className={styles.btn}
+              disabled={busy || !matchId || !player.trim()}
+              onClick={recordLine}>
+        {tt('stats.save', 'Record it')}
+      </button>
+
+      {/* -------------------------------------------------------- award */}
+      <h3 className={styles.statsHeading}>{tt('stats.mvp', 'Most valuable player')}</h3>
+      {award && <p className={styles.remindCount}>
+        {tt('stats.currentAward', 'Currently {name}, on {score} points.')
+          .replace('{name}', award.username)
+          .replace('{score}', Number(award.score).toFixed(1))}
+        {award.overridden ? ` ${tt('stats.wasOverridden', 'Chosen by you rather than by the table.')}` : ''}
+      </p>}
+      {!table.length ? <p className={styles.remindCount}>
+          {tt('stats.noStatsYet', 'Record some stat lines and the table will fill in.')}
+        </p>
+        : <>
+          <p className={styles.remindCount}>
+            {tt('stats.topOfTable', 'Top of the table: {name}, {score} points.')
+              .replace('{name}', table[0].username)
+              .replace('{score}', Number(table[0].score).toFixed(1))}
+          </p>
+          <div className={styles.newRowInline}>
+            <input className={styles.modalInput} value={overrideTo}
+                   placeholder={tt('stats.orSomebodyElse', 'Or somebody else, by username')}
+                   onChange={e => setOverrideTo(e.target.value)} />
+            {overriding && <input className={styles.modalInput} value={overrideWhy}
+                   placeholder={tt('stats.why', 'Why them?')}
+                   onChange={e => setOverrideWhy(e.target.value)} />}
+          </div>
+          {overriding && <p className={styles.remindCount}>
+            {tt('stats.whyNeeded', 'A reason is required when the award does not go to the top of the table. It is what makes it a decision rather than a surprise.')}
+          </p>}
+          <button type="button" className={styles.btn}
+                  disabled={busy || (overriding && !overrideWhy.trim())}
+                  onClick={makeAward}>
+            {tt('stats.award', 'Record the award')}
+          </button>
+        </>}
     </div>;
 };
 

@@ -837,3 +837,96 @@
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* ---------------------------------------------------------- player stats */
+
+.statsHeading {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin: 1.6rem 0 0.5rem;
+}
+
+/* Capped, because the panel around it is as wide as the screen. Left to
+   stretch, a metric's name sat at the far left and its weight at the far
+   right with a metre of empty row between them, and the reorder buttons ran
+   off the edge entirely. A setting and its value belong within a glance of
+   each other. */
+.statMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+  max-width: 560px;
+}
+
+/* A filled row, no stroke. The weight sits beside the name because the two
+   together are the whole setting. */
+.statMetric {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+}
+
+.statMetricName {
+  flex: 1 1 auto;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+}
+
+.statWeight {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  width: 82px;
+  outline: none;
+}
+
+.statWeight:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.newRowInline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  margin: 0.6rem 0;
+  max-width: 560px;
+}
+
+/* One box per metric, wrapping. A row of eight numbers on a phone is a column
+   of eight, not a horizontal scroll. */
+.statEntry {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.55rem;
+  margin: 0.7rem 0 0.9rem;
+  max-width: 720px;
+}
+
+.statField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statFieldLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+}
+
+.statField .statWeight {
+  width: 100%;
+}
