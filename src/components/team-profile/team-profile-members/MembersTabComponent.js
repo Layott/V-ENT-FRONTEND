@@ -13,6 +13,7 @@ import profileStyles from "@/styles/profile/profile-page.module.css";
 import tableStyles from "@/styles/modules/tables/tables.module.css";
 import styles from './team-members.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const MembersTabComponent = ({
   teamId
 }) => {
@@ -142,8 +143,10 @@ const MembersTabComponent = ({
               }} />}
                   </div>
                   <div className={styles.memberNamesContainer}>
-                    <p className={styles.memberName}>{member.display_name || member.username}</p>
-                    <p className={styles.memberUsername}>@{member.username}</p>
+                    <UserChip user={{ ...member, full_name: member.display_name }}
+                              size={0} secondary
+                              nameClassName={styles.memberName}
+                              handleClassName={styles.memberUsername} />
                   </div>
                 </div>
 

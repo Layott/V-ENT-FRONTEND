@@ -31,6 +31,7 @@ import InvitationBanner from '@/components/view-tournament/invitation-banner/Inv
 import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import UserChip from '@/components/user-chip/UserChip';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -609,8 +610,11 @@ const OverviewPanel = ({
             <div className={styles.organizerCard}>
               <div className={styles.organizerAvatar}>{(organizer.full_name || organizer.username || 'O').charAt(0)}</div>
               <div>
-                <p className={styles.organizerName}>{organizer.full_name || organizer.username || 'Organizer'}</p>
-                {organizer.username && <p className={styles.organizerHandle}>@{organizer.username}</p>}
+                {/* The organiser is a person. Their name opens their
+                    profile like every other name on the platform. */}
+                <UserChip user={organizer} size={0} secondary
+                          nameClassName={styles.organizerName}
+                          handleClassName={styles.organizerHandle} />
               </div>
             </div>
             {/* Running it yourself. These were on the hero as a single

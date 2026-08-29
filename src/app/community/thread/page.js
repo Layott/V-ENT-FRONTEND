@@ -271,7 +271,7 @@ const ThreadInner = ({
             {loading ? <p className={styles.stateText}>{tt("ui.loading.thread.3510", "Loading thread...")}</p> : !thread ? <p className={styles.stateText}>{tt("ui.thread.not.found.c823", "Thread not found.")}</p> : <>
                 <article className={styles.parentPost}>
                   <div className={styles.postHead}>
-                    <Link href={`/user-profile?username=${thread.author.username}`} className={styles.avatarLink}>
+                    <Link href={`/u/${encodeURIComponent(thread.author.username)}`} className={styles.avatarLink}>
                       <div className={styles.avatar}>
                         <Avatar src={thread.author.avatar} name={thread.author.username} size={42} />
                       </div>

@@ -187,7 +187,7 @@ const PostInner = ({
             {loading ? <p className={styles.stateText}>{tt("ui.loading.post.958b", "Loading post...")}</p> : !post ? <p className={styles.stateText}>{tt("ui.post.not.found.9c5a", "Post not found.")}</p> : <>
                 <article className={styles.postCard}>
                   <div className={styles.postHeader}>
-                    <Link href={`/user-profile?username=${post.author.username}`} className={styles.avatarLink}>
+                    <Link href={`/u/${encodeURIComponent(post.author.username)}`} className={styles.avatarLink}>
                       <div className={styles.avatar}>
                         <Avatar src={post.author.avatar} name={post.author.username} size={44} />
                       </div>

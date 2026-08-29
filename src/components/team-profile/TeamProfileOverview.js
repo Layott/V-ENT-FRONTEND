@@ -8,6 +8,7 @@ import { FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook } fr
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const SOCIAL_ICONS = {
   twitter: FaTwitter,
   instagram: FaInstagram,
@@ -76,8 +77,11 @@ const TeamProfileOverview = ({
               {ownerAvatar ? <Image src={mediaUrl(ownerAvatar)} alt="" aria-hidden="true" width={48} height={48} /> : <div className={styles.ownerAvatarFallback} />}
             </div>
             <div>
-              <p className={styles.ownerName}>{owner.full_name || owner.name || owner.username}</p>
-              <p className={styles.ownerUsername}>@{owner.username}</p>
+              {/* The owner is a person: their name carries their badge
+                  and opens their profile. */}
+              <UserChip user={owner} size={0} secondary
+                        nameClassName={styles.ownerName}
+                        handleClassName={styles.ownerUsername} />
             </div>
             <Link href={`/user-profile`} className={styles.ownerLink}>{tt("ui.view.profile.b987", "View profile")}</Link>
           </div>

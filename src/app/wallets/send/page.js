@@ -17,6 +17,7 @@ import PinPrompt from '@/components/wallet/PinPrompt';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const STEPS = [{
   n: 1,
   lbl: 'Recipient'
@@ -249,8 +250,11 @@ const SendPage = () => {
                       {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.full_name} unoptimized /> : initials}
                     </div>
                     <div className={styles.recipientInfo}>
-                      <p className={styles.recipientName}>{recipient.full_name}</p>
-                      <p className={styles.recipientHandle}>@{recipient.username}</p>
+                      {/* Who the money is going to. Their badge and a way
+                          to check the profile before sending. */}
+                      <UserChip user={recipient} size={0} secondary
+                                nameClassName={styles.recipientName}
+                                handleClassName={styles.recipientHandle} />
                     </div>
                     <span className={`${styles.recipientStatus} ${styles.recipientFound}`}>
                       {tt("ui.found.d7a7", "✓ Found")}

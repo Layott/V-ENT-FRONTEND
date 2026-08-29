@@ -18,6 +18,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { useSession } from "next-auth/react";
 import { logOut } from '@/lib/logout';
+import FounderBadge from '@/components/founder-badge/FounderBadge';
 
 const Header = ({
   className = ''
@@ -28,6 +29,9 @@ const Header = ({
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [fullName, setFullName] = useState(null);
+  // The founder mark on the viewer's own name, at the CEO's instruction:
+  // "everywhere i type or my name appears, the badge must show beside it".
+  const [founder, setFounder] = useState(false);
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
@@ -68,6 +72,7 @@ const Header = ({
         if (belongsToSession) {
           setProfileImage(parsedData?.profile_picture || null);
           setFullName(parsedData?.full_name || null);
+          setFounder(!!parsedData?.founder_badge);
           setUsername(parsedData?.username || null);
         }
       }
@@ -94,6 +99,7 @@ const Header = ({
         const d = json.data || {};
         setProfileImage(d.profile_picture || null);
         setFullName(d.full_name || null);
+        setFounder(!!d.founder_badge);
         setUsername(d.username || null);
         try {
           localStorage.setItem('userProfile', JSON.stringify(d));
@@ -223,7 +229,10 @@ const Header = ({
             {tt("ui.log.f7c4", "Log in")}
           </Link> : <div className={styles.userDetails} ref={dropdownRef}>
           <div className={styles.userInfo}>
-            <p className={styles.userName}>{fullName || session?.user?.name || tx("Your account")}</p>
+            <p className={styles.userName}>
+              {fullName || session?.user?.name || tx("Your account")}
+              {founder && <FounderBadge size="sm" />}
+            </p>
             {username && <p className={styles.userUsername}>@{username}</p>}
           </div>
           <div className={styles.userAvatar}>

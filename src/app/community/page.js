@@ -21,6 +21,7 @@ import styles from './community.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const TABS = [{
   id: 'feed',
   label: 'Feed',
@@ -626,7 +627,7 @@ const CommunityInner = () => {
                   {feedQuery ? tx("No posts match your search.") : tx("No posts yet. Be the first.")}
                 </p> : filteredPosts.map(post => <article key={post.id} className={styles.postCard}>
                     <div className={styles.postHeader}>
-                      <Link href={`/user-profile?username=${post.author.username}`} className={styles.postAvatarLink}>
+                      <Link href={`/u/${encodeURIComponent(post.author.username)}`} className={styles.postAvatarLink}>
                         <div className={styles.postAvatar}>
                           <Avatar src={post.author.avatar} name={post.author.username} size={40} />
                         </div>
@@ -814,9 +815,12 @@ const CommunityInner = () => {
                           </div>
                           <div className={styles.dmConvoMain}>
                             <div className={styles.dmConvoHeader}>
-                              <span className={styles.dmConvoName}>
-                                {other?.full_name || other?.username || 'User'}
-                              </span>
+                              {/* Unlinked on purpose: the whole row already
+                                  opens the conversation, and an anchor inside
+                                  a button is invalid and stops working. The
+                                  badge still belongs on the name. */}
+                              <UserChip user={other} size={0} link={false}
+                                        nameClassName={styles.dmConvoName} />
                               <span className={styles.dmConvoTime}>{relativeTime(convo.last_message_at)}</span>
                             </div>
                             <span className={styles.dmConvoPreview}>

@@ -12,6 +12,7 @@ import { BsThreeDots, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { LuUserPlus } from 'react-icons/lu';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const ROLE_LABEL = {
   owner: 'Owner',
   captain: 'Captain',
@@ -136,8 +137,9 @@ const TeamProfileMembersTable = ({
                 {m.profile_pic ? <Image src={mediaUrl(m.profile_pic)} alt="" aria-hidden="true" width={36} height={36} /> : <div className={styles.avatarFallback} />}
               </div>
               <div>
-                <p className={styles.memberName}>{m.full_name || m.username}</p>
-                <p className={styles.memberHandle}>@{m.username}</p>
+                <UserChip user={m} size={0} secondary
+                          nameClassName={styles.memberName}
+                          handleClassName={styles.memberHandle} />
               </div>
             </div>
 

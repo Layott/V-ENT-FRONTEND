@@ -16,6 +16,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './dm.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const formatTime = iso => {
   if (!iso) return '';
   return new Date(iso).toLocaleTimeString(appLocale(), {
@@ -195,13 +196,13 @@ const DmInner = ({
                 <button className={styles.backBtn} onClick={() => router.push('/community?tab=dms')} aria-label={tt("ui.back.b52b", "Back")}>
                   <FiArrowLeft />
                 </button>
-                <div className={styles.dmAvatar}>
-                  <Avatar src={other?.avatar} name={other?.username || 'user'} size={42} />
-                </div>
-                <div className={styles.dmHeaderInfo}>
-                  <h1 className={styles.dmName}>{other?.full_name || other?.username || tx("Direct Message")}</h1>
-                  <span className={styles.dmStatus}>@{other?.username}</span>
-                </div>
+                {/* Through UserChip, so the founder mark travels with the
+                    name and the whole thing opens their profile. Written out
+                    by hand here before, which is why the badge was missing
+                    from exactly this screen. */}
+                <UserChip user={other} size={42} secondary
+                          nameClassName={styles.dmName}
+                          handleClassName={styles.dmStatus} />
               </header>
 
               <div className={styles.dmMessages}>

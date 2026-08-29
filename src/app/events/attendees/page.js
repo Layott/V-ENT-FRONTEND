@@ -15,6 +15,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './attendees.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const AttendeesContent = ({
   slug: slugFromPath
@@ -189,9 +190,10 @@ const AttendeesContent = ({
                       {/* A guest has no handle, and rendering a bare "@" for
                           them looks like a bug on the door list. Their email
                           is the thing that identifies them. */}
-                      <span className={styles.handle}>
-                        {r.username ? '@' + r.username : r.attendee_email}
-                      </span>
+                      {r.username
+                        ? <UserChip user={r} size={0} secondary
+                                    handleClassName={styles.handle} />
+                        : <span className={styles.handle}>{r.attendee_email}</span>}
                       {r.attendee_phone && <span className={styles.handle}>
                         {r.attendee_phone}
                       </span>}
