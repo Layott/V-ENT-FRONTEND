@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import TournamentAccess from '@/components/view-tournament/access/TournamentAccess';
 import { LuTrophy, LuUsers, LuCalendar, LuShuffle, LuPencil, LuEye, LuTriangleAlert, LuX, LuChevronUp, LuChevronDown } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -342,6 +343,11 @@ const ManageContent = ({
               {/* Actions */}
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>{tt("ui.actions.c3cd", "Actions")}</h2>
+                {/* Who may enter at all: the codes that open a closed
+                    tournament, and the queue waiting to be accepted. */}
+                <TournamentAccess tournamentId={tournament?.tournament_id || tournament?.id || id}
+                  token={token} visibility={tournament?.tournament_visibility} />
+
                 {/* How the field is seeded, chosen before it is drawn.
                     Seeding decides who meets whom, and it used to be random
                     with no way to say otherwise - which is fine for a kickabout
