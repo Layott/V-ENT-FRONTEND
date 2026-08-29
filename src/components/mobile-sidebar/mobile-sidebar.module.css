@@ -166,3 +166,14 @@
     display: none;
   }
 }
+
+/* Every row in this drawer is something to tap, so every row is at least 44px.
+   Measured on the emulator they were 282x34: readable, and small enough that a
+   thumb lands between two of them. `padding: 0.5rem` on a 0.9rem line gives 34,
+   and nothing said otherwise because nothing was measuring. */
+.iconTextLink,
+.logoutButton,
+.logoutButtonLink,
+.sidebarItem span.disabledLink {
+  min-height: 44px;
+}
