@@ -1,0 +1,163 @@
+/* Inviting a player or a team. Filled surfaces, no strokes; a status is a
+   colour and a word, never a ring around the row. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.subTitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+.kindRow {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.kindChip {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.kindChip:hover { background-color: #33343a; color: #fff; }
+.kindChip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.kindChipOn {
+  background-color: var(--v-ent-gold, #D4AF37);
+  color: #131316;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0.6rem;
+  padding: 0.7rem 0.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.error {
+  margin-top: 0.6rem;
+  color: #FF6B6B;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.send {
+  margin-top: 0.8rem;
+  min-height: 46px;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.94rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.send:hover:enabled { background-color: #ff2229; }
+.send:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.send:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.7rem 0.95rem;
+  min-height: 52px;
+}
+
+.name {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+/* The answer is the colour and the word together, so it reads without the
+   colour as well as with it. */
+.status {
+  flex: 0 0 auto;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.status_accepted { color: var(--v-ent-success, #4caf50); }
+.status_declined { color: #FF6B6B; }
+.status_withdrawn { color: rgba(255, 255, 255, 0.4); }
+
+.withdraw {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.86rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.withdraw:hover:enabled { background-color: #3d3e45; color: #fff; }
+.withdraw:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.withdraw:disabled { color: rgba(255, 255, 255, 0.35); cursor: default; }

@@ -11,16 +11,32 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+// The thin organiser page, which is now this console's first tab rather
+// than a second screen at another address.
+import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
+import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
+import OverlaysPanel from '@/components/tournament-manage/OverlaysPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
+  // The thin `/tournaments/<slug>/manage` page, which every organiser link used
+  // to land on. It is a tab here rather than a second screen, because two
+  // screens for one tournament is how the Reminders panel ended up unreachable.
+  id: 'actions',
+  label: 'Actions'
+}, {
   id: 'match-control',
   label: 'Match Control'
 }, {
   id: 'participants',
   label: 'Participants'
+}, {
+  // Asking named players and teams, as opposed to the invite codes on the
+  // Actions tab which anybody holding one can spend.
+  id: 'invitations',
+  label: 'Invitations'
 }, {
   id: 'brackets',
   label: 'Brackets'
@@ -59,7 +75,7 @@ const flattenMatches = (rounds = []) => rounds.flatMap(r => (r.matches || []).ma
 })));
 const nameOf = p => p?.name || p?.participant?.name || 'TBD';
 const regIdOf = p => p?.registration_id ?? p?.id ?? null;
-const ManageContent = () => {
+const ManageContent = ({ slug }) => {
   const tx = useTx();
   const tt = useT();
   const searchParams = useSearchParams();
@@ -67,13 +83,17 @@ const ManageContent = () => {
     data: session
   } = useSession();
   const token = session?.user?.sessionToken;
-  const id = searchParams.get('id');
+  // The address is the slug. `?id=` still resolves, because it is what this
+  // page answered to before it had a route of its own and links exist.
+  const id = slug || searchParams.get('id');
   const [tournament, setTournament] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [rounds, setRounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tab, setTab] = useState('match-control');
+  // Opens on Actions, because that is the screen every organiser link used
+  // to reach and the one they will look for.
+  const [tab, setTab] = useState('actions');
   const [toast, setToast] = useState(null);
   const showToast = msg => {
     setToast(msg);
@@ -183,10 +203,18 @@ const ManageContent = () => {
           </div>
 
           <div className={styles.panelArea}>
+            {tab === 'actions' && <ActionsPanel slug={slug} />}
             {tab === 'match-control' && <MatchControlPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} />}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
+            {tab === 'invitations' && <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
-            {tab === 'production' && <ProductionLinkPanel tournament={tournament} />}
+            {tab === 'production' && <>
+              <ProductionLinkPanel tournament={tournament} />
+              {/* Uploading an overlay, the URL for OBS, and the prompt that
+                  converts a design into one. On this tab because this is
+                  where somebody is already setting up their stream. */}
+              <OverlaysPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
+            </>}
             {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
             {tab === 'stats' && <StatsPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} />}
           </div>
@@ -474,15 +502,27 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
   const [audience, setAudience] = useState(null);
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState({ subject: '', body: '' });
+  // The diary: reminders set now for the platform to send later.
+  const [scheduled, setScheduled] = useState([]);
+  const [anchors, setAnchors] = useState([]);
+  const [plan, setPlan] = useState({
+    kind: 'check_in', anchor: 'check_in_opens', offset_minutes: 60,
+    subject: '', body: '',
+  });
 
   const load = useCallback(async () => {
     if (!token || !tournamentId) return;
+    const auth = { Authorization: `Bearer ${token}` };
     try {
-      const res = await fetch(`${API}/tournament/${tournamentId}/remind/audience/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const body = await res.json().catch(() => ({}));
-      if (res.ok && body.status === 'success') setAudience(body.data);
+      const [a, s] = await Promise.all([
+        fetch(`${API}/tournament/${tournamentId}/remind/audience/`, { headers: auth })
+          .then(r => r.json()).catch(() => ({})),
+        fetch(`${API}/tournament/${tournamentId}/remind/scheduled/`, { headers: auth })
+          .then(r => r.json()).catch(() => ({})),
+      ]);
+      setAudience(a?.status === 'success' ? a.data : null);
+      setScheduled(s?.data?.scheduled || []);
+      setAnchors(s?.data?.anchors || []);
     } catch {
       // A panel that cannot count its audience still has to render, and the
       // buttons below explain themselves without it.
@@ -508,6 +548,45 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
         showToast(tt('run.remindSent', 'Sent to {n} people.')
           .replace('{n}', body.data.people));
         if (payload.kind === 'custom') setDraft({ subject: '', body: '' });
+        await load();
+        return;
+      }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const schedule = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentId}/remind/scheduled/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(plan),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast(tt('run.scheduled', 'Scheduled.'));
+        setPlan({ ...plan, subject: '', body: '' });
+        await load();
+        return;
+      }
+      showToast(apiMessage(tt, body, 'api.failed', 'Failed.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancelScheduled = async (id) => {
+    setBusy(true);
+    try {
+      const res = await fetch(
+        `${API}/tournament/${tournamentId}/remind/scheduled/${id}/`,
+        { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast(tt('run.scheduleCancelled', 'Called off.'));
         await load();
         return;
       }
@@ -560,6 +639,85 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
               : tt('run.remindMatch', 'Tell them who they play')}
           </button>
         </div>
+      </div>
+
+      {/* ------------------------------------------------ the diary ------ */}
+      <div className={styles.remindCard} style={{ marginTop: '1rem' }}>
+        <strong className={styles.remindTitle}>
+          {tt('run.scheduleTitle', 'Set one to go out later')}
+        </strong>
+        <span className={styles.remindCount}>
+          {tt('run.scheduleHint', 'Measured from the tournament rather than pinned to a date, so if you move the tournament the reminder moves with it.')}
+        </span>
+
+        <div className={styles.remindRow}>
+          <select className={styles.modalInput} value={plan.kind}
+                  aria-label={tt('run.scheduleWhat', 'What to send')}
+                  onChange={e => setPlan({ ...plan, kind: e.target.value })}>
+            <option value="check_in">{tt('run.remindCheckIn', 'Remind them to check in')}</option>
+            <option value="match">{tt('run.remindMatch', 'Tell them who they play')}</option>
+            <option value="custom">{tt('run.remindCustom', 'Send your own message')}</option>
+          </select>
+
+          <input className={styles.remindOffset} type="number" step="5"
+                 aria-label={tt('run.scheduleMinutes', 'Minutes before')}
+                 value={plan.offset_minutes}
+                 disabled={plan.anchor === 'fixed'}
+                 onChange={e => setPlan({ ...plan, offset_minutes: Number(e.target.value) })} />
+
+          <select className={styles.modalInput} value={plan.anchor}
+                  aria-label={tt('run.scheduleWhen', 'Measured from')}
+                  onChange={e => setPlan({ ...plan, anchor: e.target.value })}>
+            {(anchors.length ? anchors : [
+              { value: 'check_in_opens', label: 'Check-in opening' },
+              { value: 'check_in_closes', label: 'Check-in closing' },
+              { value: 'tournament_start', label: 'The tournament start' },
+            ]).filter(a => a.value !== 'fixed').map(a => (
+              <option key={a.value} value={a.value}>
+                {tt(`run.anchor_${a.value}`, a.label)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {plan.kind === 'custom' && <div className={styles.remindRow}>
+          <input className={styles.modalInput} maxLength={140}
+                 placeholder={tt('run.remindSubject', 'Subject')}
+                 value={plan.subject}
+                 onChange={e => setPlan({ ...plan, subject: e.target.value })} />
+        </div>}
+        {plan.kind === 'custom' && <textarea className={styles.remindBody} rows={3}
+                  maxLength={2000}
+                  placeholder={tt('run.remindBody', 'What do they need to know?')}
+                  value={plan.body}
+                  onChange={e => setPlan({ ...plan, body: e.target.value })} />}
+
+        <button type="button" className={styles.btn}
+                disabled={busy || (plan.kind === 'custom' && (!plan.subject.trim() || !plan.body.trim()))}
+                onClick={schedule}>
+          {tt('run.scheduleIt', 'Schedule it')}
+        </button>
+
+        {scheduled.length > 0 && <div className={styles.scheduleList}>
+          {scheduled.map(row => <div key={row.id} className={styles.scheduleRow}>
+            <span className={styles.scheduleWhat}>
+              {row.kind === 'custom' ? row.subject
+                : row.kind === 'match' ? tt('run.remindMatch', 'Tell them who they play')
+                  : tt('run.remindCheckIn', 'Remind them to check in')}
+            </span>
+            <span className={styles.remindCount}>
+              {row.cancelled_at ? tt('run.scheduleOff', 'Called off')
+                : row.skipped_reason ? row.skipped_reason
+                  : row.sent_at ? tt('run.scheduleSent', 'Sent to {n}').replace('{n}', row.people_reached)
+                    : row.schedulable ? formatDateTime(row.due_at)
+                      : tt('run.scheduleNoTime', 'Waiting for a start time')}
+            </span>
+            {!row.sent_at && !row.cancelled_at && <button type="button"
+                    className={styles.smallBtnRed} disabled={busy}
+                    aria-label={tt('run.scheduleCancel', 'Call it off')}
+                    onClick={() => cancelScheduled(row.id)}>×</button>}
+          </div>)}
+        </div>}
       </div>
 
       <div className={styles.remindCard} style={{ marginTop: '1rem' }}>
@@ -863,3 +1021,7 @@ const Manage = () => <Suspense fallback={<div style={{
     <ManageContent />
   </Suspense>;
 export default Manage;
+
+// Rendered by `/tournaments/<slug>/manage`, which is where every organiser link
+// in the app actually points.
+export { ManageContent };
