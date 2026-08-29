@@ -115,7 +115,12 @@ const normaliseTier = t => {
     price_ngn: Number(t.price_ngn ?? 0),
     available: Number(t.remaining ?? 0),
     sold_out: !!t.sold_out,
-    perks: Array.isArray(t.perks) ? t.perks : []
+    perks: Array.isArray(t.perks) ? t.perks : [],
+    // Which day this ticket is for. Without it a multi-day event shows two
+    // cards reading "Day 1" and "Day 2" and nothing that says which dates
+    // those are, so somebody buys the wrong one and finds out at the gate.
+    day: t.day || null,
+    day_label: t.day_label || ''
   };
 };
 const VENUE_BOOTHS = [{
@@ -983,6 +988,14 @@ export const ViewEventContent = ({
                         </span>
                         <p className={styles.tierName}>{t.name}</p>
                       </div>
+                      {/* The date this ticket admits you on. A label with no
+                          date beside it ("Day 2") is the half of the answer
+                          the buyer already had. */}
+                      {(t.day || t.day_label) && <p className={styles.tierDay}>
+                        {t.day ? formatDate(t.day) : ''}
+                        {t.day && t.day_label ? ' · ' : ''}
+                        {t.day_label}
+                      </p>}
                       <p className={styles.tierPrice}>
                         {t.price.toLocaleString()} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>
@@ -1220,6 +1233,13 @@ export const ViewEventContent = ({
                   <span className={styles.confirmLabel}>{tt("ui.tier.5bd4", "Tier")}</span>
                   <span className={styles.confirmValue}>{buyTier.name}</span>
                 </div>
+                {/* Which day, on the screen where the money is confirmed. It is
+                    the last chance to notice you picked Day 1 when you meant
+                    Day 2, and the gate is where you would otherwise find out. */}
+                {buyTier.day && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('ticket.day', 'Day')}</span>
+                    <span className={styles.confirmValue}>{formatDate(buyTier.day)}</span>
+                  </div>}
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.confirmValue}>

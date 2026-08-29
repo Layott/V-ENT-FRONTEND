@@ -1500,3 +1500,29 @@
   color: rgba(255, 255, 255, 0.45);
   flex-shrink: 0;
 }
+
+/* The rules document, offered beside the typed rules. A filled row, no stroke:
+   it is a thing to press, not a box drawn around a link. */
+.rulesDoc {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 11px;
+  color: #fff;
+  font-size: 0.92rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.rulesDoc:hover { background-color: rgba(255, 255, 255, 0.14); }
+.rulesDoc:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.rulesDocHint {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.79rem;
+  margin-top: 0.15rem;
+}

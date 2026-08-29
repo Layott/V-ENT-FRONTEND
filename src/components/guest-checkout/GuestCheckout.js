@@ -30,7 +30,7 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
   const tt = useT();
 
-  const { perOrder, perTicket } = useCheckoutFields(eventRef);
+  const { perOrder, perTicket, maxPerEmail } = useCheckoutFields(eventRef);
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [orderAnswers, setOrderAnswers] = useState({});
@@ -42,6 +42,10 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
 
   // One answer set per ticket, so the size on ticket two is not the size on
   // ticket one.
+  useEffect(() => {
+    if (maxPerEmail && quantity > maxPerEmail) setQuantity(maxPerEmail);
+  }, [maxPerEmail, quantity]);
+
   useEffect(() => {
     setPeople(prev => {
       const next = [...prev];
@@ -145,12 +149,25 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
                placeholder="you@example.com" autoComplete="email" />
       </label>
 
-      <label className={styles.field}>
-        <span className={styles.label}>{tt('guest.howMany', 'How many tickets')}</span>
-        <input className={styles.input} type="number" min="1" max="10"
-               value={quantity}
-               onChange={e => setQuantity(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
-      </label>
+      {/* One ticket allowed means there is nothing to choose, so the box is
+          not drawn at all. Offering a number somebody cannot use, and refusing
+          them for picking it, is the thing this replaces. */}
+      {maxPerEmail === 1
+        ? <p className={styles.help}>
+            {tt('guest.oneEachHint', 'One ticket per email address for this event.')}
+          </p>
+        : <label className={styles.field}>
+            <span className={styles.label}>{tt('guest.howMany', 'How many tickets')}</span>
+            <input className={styles.input} type="number" min="1"
+                   max={maxPerEmail || 10}
+                   value={quantity}
+                   onChange={e => setQuantity(Math.max(1, Math.min(
+                     maxPerEmail || 10, Number(e.target.value) || 1)))} />
+            {maxPerEmail > 1 && <span className={styles.help}>
+              {tt('guest.maxEachHint', 'Up to {n} per email address for this event.')
+                .replace('{n}', maxPerEmail)}
+            </span>}
+          </label>}
 
       <CheckoutFieldList fields={perOrder} values={orderAnswers}
         onChange={(id, value) => setOrderAnswers(a => ({ ...a, [id]: value }))} />

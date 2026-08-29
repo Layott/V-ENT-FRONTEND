@@ -23,7 +23,12 @@ const FormatParticipants = ({
   formData = {},
   updateLocalStorage,
   handleSubmit,
-  isSavingDraft
+  isSavingDraft,
+  // The rules document lives in the parent, like the logo and banner: a File
+  // cannot be written to the draft, so a step that held it would lose it the
+  // moment somebody went back a page.
+  rulesFile,
+  updateFileData
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -56,7 +61,8 @@ const FormatParticipants = ({
 
       <TournamentOptions formData={formData} updateFormData={updateLocalStorage} />
 
-      <TournamentRules formData={formData} updateFormData={updateLocalStorage} />
+      <TournamentRules formData={formData} updateFormData={updateLocalStorage}
+        rulesFile={rulesFile} updateFileData={updateFileData} />
 
       <div className={createTournamentStyles.buttonContainer}>
         <button className={`${createTournamentStyles.btn} ${createTournamentStyles.saveDraftBTN}`} onClick={handleSaveDraft} disabled={isSavingDraft}>
