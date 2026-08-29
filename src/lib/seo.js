@@ -155,9 +155,31 @@ export function ogImage(image, alt) {
     // because a missing dimension is the difference between a picture and none.
     width: 1200,
     height: 630,
-    type: 'image/jpeg',
+    // The type has to describe the bytes actually served, not the type we
+    // would prefer. This was hardcoded to image/jpeg while the fallback card
+    // is a PNG, so every page without its own banner - the home page and
+    // /events among them, which are the two most pasted links on the site -
+    // advertised a JPEG and served a PNG. A scraper that trusts the declared
+    // type and finds another one is entitled to drop the image, and the
+    // symptom is exactly the one reported: no picture, no error, nothing to
+    // look at.
+    type: imageType(url),
     alt: alt || SITE.name,
   };
+}
+
+/** The MIME type of what a URL actually serves.
+ *
+ * `/api/og` always re-encodes to JPEG, so anything going through the proxy is
+ * a JPEG whatever the source was. Everything else is read off the extension,
+ * which is the only thing available without fetching it. */
+function imageType(url) {
+  if (url.includes('/api/og')) return 'image/jpeg';
+  const path = url.split('?')[0].toLowerCase();
+  if (path.endsWith('.png')) return 'image/png';
+  if (path.endsWith('.webp')) return 'image/webp';
+  if (path.endsWith('.gif')) return 'image/gif';
+  return 'image/jpeg';
 }
 
 export function buildMetadata({

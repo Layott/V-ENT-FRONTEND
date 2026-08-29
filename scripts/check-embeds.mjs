@@ -93,6 +93,38 @@ for (const route of ROUTES) {
     }
   }
 
+  // The declared type has to be what the image actually serves, and the image
+  // has to be small enough to render. og:image:type was hardcoded to
+  // image/jpeg while the default card is a PNG, so every page falling back to
+  // it advertised one format and served another. WhatsApp shows nothing and
+  // says nothing when it rejects an image, so the only way to know is to
+  // fetch it the way a scraper does.
+  if (image) {
+    try {
+      const img = await fetch(image, { redirect: 'follow' });
+      const servedType = (img.headers.get('content-type') || '').split(';')[0].trim();
+      const declaredType = meta(html, 'og:image:type');
+      if (!img.ok) {
+        problems.push(`${route} og:image does not load: ${img.status} ${image}`);
+      } else {
+        if (declaredType && servedType && declaredType !== servedType) {
+          problems.push(
+            `${route} og:image:type says ${declaredType} but the URL serves ${servedType}`
+          );
+        }
+        const bytes = Number(img.headers.get('content-length') || 0);
+        // WhatsApp will not render an image much over 600KB.
+        if (bytes > 600 * 1024) {
+          problems.push(
+            `${route} og:image is ${Math.round(bytes / 1024)}KB, over the 600KB a scraper will take`
+          );
+        }
+      }
+    } catch (err) {
+      problems.push(`${route} og:image could not be fetched: ${err.message}`);
+    }
+  }
+
   if (named(html, 'twitter:card') !== 'summary_large_image') {
     problems.push(`${route} twitter:card is not summary_large_image`);
   }
