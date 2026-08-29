@@ -53,6 +53,7 @@ const VenueMap = dynamic(
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import UserChip from '@/components/user-chip/UserChip';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1036,9 +1037,10 @@ export const ViewEventContent = ({
                       <FaCrown />
                     </div>
                     <div>
-                      <p className={styles.organizerName}>
-                        {event.organizer?.full_name || event.organizer?.username || tx("V-ENT Live")}
-                      </p>
+                      {event.organizer
+                        ? <UserChip user={event.organizer} size={0}
+                                    nameClassName={styles.organizerName} />
+                        : <p className={styles.organizerName}>{tx("V-ENT Live")}</p>}
                       <p className={styles.organizerSub}>
                         @{event.organizer?.username || 'v-ent'}
                       </p>

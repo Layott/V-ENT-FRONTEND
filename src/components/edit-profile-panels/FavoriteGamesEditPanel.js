@@ -145,7 +145,7 @@ const FavoriteGamesEditPanel = ({
                 <button type="button" className={styles.gameRemove} onClick={() => removeGame(g.id)} aria-label={`Remove ${g.name}`}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
-                {g.cover ? <img src={mediaUrl(g.cover)} alt={g.name} /> : <span className={styles.coverFallback}>{(g.name || '?').charAt(0)}</span>}
+                {gameCover(g) ? <img src={mediaUrl(gameCover(g))} alt={g.name} /> : <span className={styles.coverFallback}>{(g.name || '?').charAt(0)}</span>}
               </div>
               <div className={styles.gameBody}>
                 <h4 className={styles.gameTitle}>{g.name}</h4>
@@ -190,7 +190,7 @@ const FavoriteGamesEditPanel = ({
             </div>
             <div className={styles.modalList}>
               {filteredCatalog.map(cg => <div className={styles.modalGame} key={cg.id} onClick={() => addGameFromCatalog(cg)} role="button" tabIndex={0}>
-                  <div className={styles.modalGameCover}>{cg.cover ? <img src={mediaUrl(cg.cover)} alt="" aria-hidden="true" /> : <span className={styles.coverFallback}>{(cg.name || '?').charAt(0)}</span>}</div>
+                  <div className={styles.modalGameCover}>{gameCover(cg) ? <img src={mediaUrl(gameCover(cg))} alt="" aria-hidden="true" /> : <span className={styles.coverFallback}>{(cg.name || '?').charAt(0)}</span>}</div>
                   <span className={styles.modalGameName}>{cg.name}</span>
                 </div>)}
             </div>

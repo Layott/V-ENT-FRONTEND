@@ -19,6 +19,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './thread.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const PAGE_SIZE = 10;
 const relativeTime = iso => {
   if (!iso) return '';
@@ -277,8 +278,9 @@ const ThreadInner = ({
                       </div>
                     </Link>
                     <div className={styles.authorInfo}>
-                      <span className={styles.authorName}>{thread.author.full_name}{thread.author.founder_badge && <FounderBadge size="sm" />}</span>
-                      <span className={styles.authorHandle}>@{thread.author.username}</span>
+                      <UserChip user={thread.author} size={0} secondary
+                                nameClassName={styles.authorName}
+                                handleClassName={styles.authorHandle} />
                     </div>
                     <div className={styles.postMeta}>
                       <span className={styles.categoryPill}>{thread.category}</span>

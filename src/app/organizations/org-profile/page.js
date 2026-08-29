@@ -21,6 +21,7 @@ import styles from './org-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import UserChip from '@/components/user-chip/UserChip';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -168,7 +169,12 @@ const OrgProfileContent = ({
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);
-    router.replace(`/organizations/org-profile?${params.toString()}`, {
+    // Same fault as the manage screen: hardcoding the path dropped the slug
+    // and the page lost the organisation it was showing.
+    const base = slugFromPath
+      ? `/organizations/${encodeURIComponent(slugFromPath)}`
+      : '/organizations/org-profile';
+    router.replace(`${base}?${params.toString()}`, {
       scroll: false
     });
   };
@@ -605,8 +611,9 @@ const OrgProfileContent = ({
                                 {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
                               </div>
                               <div className={styles.memberText}>
-                                <span className={styles.memberName}>{m.user?.full_name}</span>
-                                <span className={styles.memberHandle}>@{m.user?.username}</span>
+                                <UserChip user={m.user} size={0} secondary
+                                          nameClassName={styles.memberName}
+                                          handleClassName={styles.memberHandle} />
                               </div>
                             </div>
                           </td>

@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { LuCheck, LuX, LuClock } from 'react-icons/lu';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const TeamProfileRequests = ({
   team,
   onToast
@@ -114,7 +115,8 @@ const TeamProfileRequests = ({
                     {r.applicant?.avatar ? <Image src={mediaUrl(r.applicant.avatar)} alt="" aria-hidden="true" width={48} height={48} /> : <div className={styles.avatarFallback} />}
                   </div>
                   <div>
-                    <p className={styles.memberName}>{r.applicant?.full_name || r.applicant?.username}</p>
+                    <UserChip user={r.applicant} size={0}
+                              nameClassName={styles.memberName} />
                     <p className={styles.memberHandle}>@{r.applicant?.username} {tt("ui.rank.f371", "· Rank #")}{r.applicant?.rank || '-'}</p>
                   </div>
                 </div>

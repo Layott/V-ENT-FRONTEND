@@ -14,6 +14,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './my-tickets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import UserChip from '@/components/user-chip/UserChip';
 const STATUS_FILTERS = [{
   id: 'all',
   label: 'All'
@@ -250,7 +251,10 @@ const MyTickets = () => {
                       </div>
 
                       <p className={styles.attendee}>
-                        {tt("ui.attendee.7124", "Attendee:")} {t.holder?.full_name || t.attendee_name || '-'}
+                        {tt("ui.attendee.7124", "Attendee:")}{' '}
+                        {t.holder
+                          ? <UserChip user={t.holder} size={0} />
+                          : (t.attendee_name || '-')}
                       </p>
 
                       <span className={styles.viewHint}>{tt("ui.tap.view.full.qr.337d", "Tap to view full QR →")}</span>
