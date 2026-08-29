@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
+import { clearSessionCookies } from '@/lib/logout';
 
 /**
  * Global session-expiry handler.
@@ -80,7 +81,13 @@ export default function SessionExpiryGuard() {
             // so it is not inlined into the browser bundle and next-auth's client
             // falls back to http://localhost:3000 - which is what a relative
             // callbackUrl resolves against in production.
-            signOut({ callbackUrl: `${window.location.origin}/login?expired=1` });
+            // Through the shared helper, which also expires the httpOnly
+            // `session` cookie. signOut() alone leaves it, and the middleware
+            // accepts it on its own, so an expired token used to leave the
+            // browser still holding a credential the app would take.
+            clearSessionCookies().then(() => {
+              signOut({ callbackUrl: `${window.location.origin}/login?expired=1` });
+            });
           }
         }
       } catch {

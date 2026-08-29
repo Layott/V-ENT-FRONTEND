@@ -16,9 +16,9 @@ import { MdOutlineSettings, MdBusiness, MdShield, MdCode } from "react-icons/md"
 import { MdLogout } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg";
 import styles from './sidebar.module.css';
-import { signOut } from "next-auth/react"; // Import signOut function from next-auth
 import { PiUserCircle } from "react-icons/pi";
 import { useT } from '@/i18n/LanguageProvider';
+import { logOut } from '@/lib/logout';
 const Sidebar = ({
   customClass
 }) => {
@@ -42,27 +42,10 @@ const Sidebar = ({
     return pathname === href || pathname.startsWith(href);
   };
   const handleLogout = async () => {
-    try {
-      // First clear all local storage items
-      localStorage.removeItem('userProfile');
-      localStorage.removeItem('authToken');
-      sessionStorage.clear();
-
-      // Set the logged out cookie
-      document.cookie = "isLoggedOut=true; path=/; max-age=60";
-
-      // Use NextAuth signOut but handle it properly
-      await signOut({
-        redirect: false // Change this to false
-      }).then(() => {
-        // Manual redirect after successful signOut
-        window.location.href = '/login';
-      });
-    } catch (error) {
-      console.error("Error during logout:", error);
-      // Still redirect even if there was an error
-      window.location.href = '/login';
-    }
+    // One way out for the whole app: see src/lib/logout.js. This used to
+    // call signOut() alone, which leaves the `session` cookie the
+    // middleware also accepts, so pressing Logout did not sign anybody out.
+    await logOut();
   };
   return <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`} data-tour="sidebar">
         <div className={styles.logoContainer}>
