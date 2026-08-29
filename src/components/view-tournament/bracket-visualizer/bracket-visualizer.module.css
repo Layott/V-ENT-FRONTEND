@@ -1,0 +1,306 @@
+/* The fixture visualizer. Filled surfaces and space, no strokes, no glow.
+   Everything wide scrolls inside its own box rather than pushing the page. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.state,
+.empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.formatName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.formatHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-top: 0.2rem;
+  max-width: 60ch;
+}
+
+/* The view switch. Filled chips, the chosen one a stronger fill - never a
+   ring around the selected one. */
+.switch {
+  display: flex;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 11px;
+  padding: 0.25rem;
+  flex-shrink: 0;
+}
+
+.switchBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: transparent;
+  border-radius: 9px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  min-height: 40px;
+  padding: 0 0.85rem;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.switchBtn:hover { color: #fff; }
+.switchOn {
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+}
+.switchBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ── The map ── */
+
+.mapScroller {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapRow {
+  display: flex;
+  gap: 1.4rem;
+  min-width: min-content;
+}
+
+.mapCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 190px;
+}
+
+.mapStack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The matchday label, on the platform's gold. A filled chip, because a
+   coloured stripe down the side of a card is the cliche this avoids. */
+.colTitle {
+  align-self: flex-start;
+  background-color: rgba(212, 175, 55, 0.14);
+  border-radius: 7px;
+  color: var(--v-ent-light-gold, #E8C760);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  padding: 0.3rem 0.55rem;
+  text-transform: uppercase;
+}
+
+/* ── One fixture ── */
+
+.fixture {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.side {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.045);
+  border-radius: 9px;
+  padding: 0.55rem 0.65rem;
+  min-height: 40px;
+}
+
+/* The winner reads in the platform's gold - the same colour the Register and
+   Manage buttons use, so "this one came through" is the same signal everywhere.
+   A flat fill and a colour, never a glow or a coloured edge. */
+.sideWon {
+  background-color: rgba(212, 175, 55, 0.16);
+}
+
+.sideName {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.sideWon .sideName {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.sideWon .sideScore { color: var(--v-ent-light-gold, #E8C760); }
+
+.tbd { color: rgba(255, 255, 255, 0.35); font-style: normal; }
+
+.sideScore {
+  color: #fff;
+  flex-shrink: 0;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+}
+
+/* ── The list (knockout, grid view) ── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.listRound {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.listStack {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.6rem;
+}
+
+/* ── The crosstab ── */
+
+.gridScroller {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: 3px;
+  min-width: 520px;
+}
+
+.gridCorner { width: 110px; }
+
+.gridHead,
+.gridRowHead {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  font-weight: var(--fw-medium, 500);
+  padding: 0.5rem;
+}
+
+.gridHead { min-width: 76px; vertical-align: bottom; }
+.gridHeadText { display: block; line-height: 1.25; }
+
+.gridRowHead {
+  text-align: left;
+  min-width: 110px;
+  white-space: normal;
+}
+
+.gridCell,
+.gridNone,
+.gridSelf {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  min-width: 76px;
+}
+
+/* Nobody plays themselves: filled darker so the diagonal reads as intended. */
+.gridSelf { background-color: rgba(255, 255, 255, 0.015); }
+
+.gridDash { color: rgba(255, 255, 255, 0.25); }
+
+.gridScore {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+}
+
+/* Meaning by colour, one hue each, flat fills. */
+.gridWin { color: var(--v-ent-success-light, #66bb6a); }
+.gridLoss { color: #e5636a; }
+.gridDraw { color: rgba(255, 255, 255, 0.7); }
+
+.gridToPlay {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.72rem;
+}
+
+.gridNote {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.79rem;
+  line-height: 1.5;
+  margin-top: 0.7rem;
+  max-width: 66ch;
+}
+
+@media (max-width: 640px) {
+  .head { flex-direction: column; }
+  .switch { width: 100%; }
+  .switchBtn { flex: 1; justify-content: center; }
+}
+
+/* The join between the two sides of a fixture. Sits in the gap rather than
+   taking a row of its own, so a fixture stays two lines tall. */
+.versus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.fixture { position: relative; }
+
+/* A fixture is pressable in every view: it opens what happened inside it. */
+.fixture {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.fixture:hover { background-color: #2a2a2f; }
+.fixture:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.gridBtn {
+  display: block;
+  width: 100%;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 6px;
+}
+
+.gridBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

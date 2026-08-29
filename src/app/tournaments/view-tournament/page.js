@@ -19,6 +19,7 @@ import styles from './view-tournament.module.css';
 import { linkTo } from '@/lib/share';
 import ShareCard from '@/components/share/ShareCard';
 import StandingsPanel from '@/components/view-tournament/standings/StandingsPanel';
+import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/BracketVisualizer';
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
@@ -480,7 +481,11 @@ export const ViewTournamentContent = ({
             {activeTab === 'overview' && <OverviewPanel tournament={tournament} token={token}
               isOrganizer={isOrganizer} tournamentRef={id} />}
             {activeTab === 'rules' && <RulesPanel tournament={tournament} />}
-            {activeTab === 'bracket' && <BracketPanel tournamentId={id} isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
+            {activeTab === 'bracket' && <BracketPanel tournamentId={id}
+              /* The fixtures endpoint takes the numeric id, not the slug, and
+                 the panel is addressed by slug like the rest of the page. */
+              numericId={tournament?.tournament_id || tournament?.id}
+              isOrganizer={isOrganizer} token={token} tournament={tournament} session={session} />}
             {activeTab === 'table' && <StandingsPanel
               tournamentId={tournament?.tournament_id || tournament?.id} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
@@ -679,8 +684,91 @@ const RulesPanel = ({
       </section>
     </div>;
 };
+/**
+ * The fixtures endpoint's rounds, in the shape this panel draws.
+ *
+ * Called and never defined, so opening the Bracket tab threw
+ * "normalizeRounds is not defined" and every reader got an error page where
+ * the fixtures should be. Two of its neighbours were missing the same way.
+ *
+ * Tolerant on purpose: the payload has carried `matches` and `games`, and
+ * `round` and `round_number`, at different points. A drawing function that
+ * throws on a renamed key takes the whole tab down with it.
+ */
+function normalizeRounds(rounds) {
+  if (!Array.isArray(rounds)) return [];
+  return rounds.map((round, index) => ({
+    ...round,
+    id: round.id ?? round.round ?? index + 1,
+    round: round.round ?? round.round_number ?? index + 1,
+    matches: Array.isArray(round.matches) ? round.matches
+      : Array.isArray(round.games) ? round.games : [],
+  }));
+}
+
+/**
+ * Which side reported the score that is waiting to be confirmed, if any.
+ *
+ * Returns a string so it can be compared with the reader's own id without
+ * 3 == '3' surprises, and null when nobody has reported - which is the
+ * ordinary case and must not be mistaken for "the reader reported it".
+ */
+function getReporterRegistrationId(match) {
+  const raw = match?.reported_by_registration_id
+    ?? match?.reported_by
+    ?? match?.score_reported_by
+    ?? null;
+  return raw === null || raw === undefined || raw === '' ? null : String(raw);
+}
+
+/**
+ * Whether the signed-in reader is one of the two sides of this match, and which.
+ *
+ * This was called and never defined anywhere in the codebase, so opening the
+ * Bracket tab threw "identifyParticipant is not defined" and the panel showed
+ * an error page instead of the fixtures - for everybody, organiser included.
+ *
+ * Deliberately conservative. It answers "yes" only when a side can be matched
+ * to this session by id or by username; anything it cannot place confidently is
+ * "no". The participant score-report flow is gated on this, and that flow moves
+ * money-adjacent state, so guessing wrong in the generous direction is the
+ * expensive mistake.
+ */
+function identifyParticipant(match, session) {
+  const none = { isParticipant: false, myParticipant: null };
+  if (!match || !session?.user) return none;
+
+  const myId = String(session.user.user_id ?? session.user.id ?? '');
+  const myName = String(session.user.username || '').toLowerCase();
+  if (!myId && !myName) return none;
+
+  const sides = [match.participant_1, match.participant_2].filter(Boolean);
+  for (const side of sides) {
+    const ids = [side.user_id, side.id, side.registration_id]
+      .filter(v => v !== undefined && v !== null).map(String);
+    if (myId && ids.includes(myId)) return { isParticipant: true, myParticipant: side };
+
+    const names = [side.username, side.name].filter(Boolean).map(v => String(v).toLowerCase());
+    if (myName && names.includes(myName)) return { isParticipant: true, myParticipant: side };
+
+    // A team entry: the reader is a participant if they are on its roster, and
+    // the roster is only present on some payloads. Absent means "cannot tell",
+    // which is a no.
+    const roster = Array.isArray(side.members) ? side.members : [];
+    for (const member of roster) {
+      const memberIds = [member?.user_id, member?.id].filter(Boolean).map(String);
+      const memberName = String(member?.username || '').toLowerCase();
+      if ((myId && memberIds.includes(myId)) || (myName && memberName === myName)) {
+        return { isParticipant: true, myParticipant: side };
+      }
+    }
+  }
+  return none;
+}
+
 const BracketPanel = ({
   tournamentId,
+  numericId,
   isOrganizer,
   token,
   tournament,
@@ -732,7 +820,9 @@ const BracketPanel = ({
     setLoading(true);
     setError(null);
     try {
-      const data = await ventFetch(API.TOURNAMENT.BRACKETS(tournamentId), {
+      // The fixtures endpoint takes the numeric id. The page is addressed by
+      // slug, so passing the slug here 404s and the whole tab shows an error.
+      const data = await ventFetch(API.TOURNAMENT.BRACKETS(numericId || tournamentId), {
         token
       });
       setRounds(normalizeRounds(data?.rounds));
@@ -742,7 +832,7 @@ const BracketPanel = ({
     } finally {
       setLoading(false);
     }
-  }, [tournamentId, token]);
+  }, [tournamentId, numericId, token]);
   useEffect(() => {
     loadBrackets();
   }, [loadBrackets, reloadKey]);
@@ -995,7 +1085,19 @@ const BracketPanel = ({
   }
   const teamsCount = rounds[0]?.matches?.length ? rounds[0].matches.length * (rounds[0].matches[0]?.participants?.length || 2) : null;
   const entrantWord = tournament?.participant_type === 'team' ? 'Teams' : 'Players';
+  // Everybody's view of the fixtures, in either of two shapes, and public.
+  // The chart below it is the organiser's editing surface and is drawn only
+  // where it is correct: it assumes every round halves, which is true of a
+  // knockout and false of a league, so pointing it at a round robin joins
+  // fixtures that have nothing to do with each other.
+  const flatFormat = ['round_robin', 'round-robin', 'league', 'ladder', 'swiss',
+    'swiss-system', 'swiss_system', 'battle_royale', 'battle-royale']
+    .includes(String(bracketType || '').toLowerCase().replace(/\s+/g, '_'));
+
   return <div className={styles.bracketWrap}>
+      <BracketVisualizer tournamentId={numericId || tournamentId} />
+
+      {(!flatFormat && isOrganizer) && <>
       <div className={styles.bracketHeader}>
         <p className={styles.bracketSub}>{formatLabel(bracketType)}{teamsCount ? ` · ${teamsCount} ${entrantWord}` : ''}</p>
         <p className={styles.bracketHint}>{tt("ui.click.any.match.view.6a64", "Click any match to view details")}{isOrganizer ? tx(" or edit score") : ''}.</p>
@@ -1197,6 +1299,8 @@ const BracketPanel = ({
             </div>
           </div>
         </div>}
+
+      </>}
 
       {toast && <div className={styles.toast}>{toast}</div>}
     </div>;
