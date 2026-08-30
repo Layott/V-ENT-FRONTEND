@@ -29,24 +29,34 @@ const ExternalSignInContent = () => {
 
     const token = params.get('token');
 
-    // Opened as a popup from the login page: this window's job is to hand the
-    // token back and get out of the way. The exchange happens in the page that
-    // opened it, which is the one the person is actually looking at. Posting to
-    // this origin only - the token is a live session and must not be readable
-    // by whatever else has a handle on this window.
+    // Opened as a popup from the login page. `window.opener` is the fast path,
+    // but it cannot be relied on: this window has been to AFC and back since it
+    // was opened, and a browser is entitled to sever the opener across that.
+    // The CEO signed in and the popup sat on /home rather than closing, which
+    // is exactly what a severed opener looks like.
+    //
+    // So the popup is recognised by the name it was opened with, which survives
+    // the round trip, and the page that opened it does not wait to be told: it
+    // watches for the session appearing. The cookie is set for the whole
+    // origin, so the moment this window signs in the opener is signed in too.
+    const isPopup = (window.name || '').startsWith('vent-sso-')
+      || (window.opener && window.opener !== window);
+
     const opener = window.opener;
-    if (opener && opener !== window) {
+    if (opener && opener !== window && token) {
+      // Fast path, when the opener survived. Posting to this origin only: the
+      // token is a live session and must not be readable by anything else
+      // holding a handle on this window.
       window.history.replaceState({}, '', '/auth/external');
       try {
         opener.postMessage(
-          { source: 'v-ent-sso', token: token || '', username: params.get('username') || '' },
+          { source: 'v-ent-sso', token, username: params.get('username') || '' },
           window.location.origin,
         );
         window.close();
         return;
       } catch {
-        // Could not reach the opener - fall through and sign in here instead,
-        // which still works, just in the smaller window.
+        // Fall through and sign in here instead.
       }
     }
 
@@ -63,6 +73,16 @@ const ExternalSignInContent = () => {
         redirect: false
       });
       if (result?.ok) {
+        // Signed in. If this is the popup, the opener is now signed in too -
+        // same origin, same cookie - and it is watching for exactly that. Shut
+        // this window rather than showing a second copy of the site inside it.
+        if (isPopup) {
+          window.close();
+          // A window the browser refuses to close should not sit on a blank
+          // page, so carry on to /home as though it were an ordinary tab.
+          setTimeout(() => router.replace('/home'), 400);
+          return;
+        }
         router.replace('/home');
         return;
       }

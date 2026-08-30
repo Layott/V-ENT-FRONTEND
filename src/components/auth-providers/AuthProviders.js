@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -128,12 +128,36 @@ const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError
   // here and closes itself. Nothing is trusted that did not come from this
   // origin: the token is a live session, and a message from anywhere else is
   // somebody else's page talking to ours.
+  // How the popup's result gets back here.
+  //
+  // Two ways, because one of them is not reliable. `postMessage` from the popup
+  // is the fast path, but this window has sat still while that popup went to
+  // the provider and came back, and a browser may sever `window.opener` across
+  // that. The CEO hit exactly this: the popup signed in and then sat on /home,
+  // because its message went nowhere and nothing here was watching.
+  //
+  // So the second way needs no channel at all. The popup signs in against this
+  // same origin, so its cookie is this window's cookie: watching for a session
+  // to appear works whether or not the opener survived.
   const watchPopup = popup => {
-    const onMessage = async event => {
+    let settled = false;
+    let timer = null;
+
+    const stop = () => {
+      settled = true;
+      if (timer) clearInterval(timer);
+      window.removeEventListener('message', onMessage);
+    };
+
+    const go = () => {
+      window.location.href = callbackUrl || `${window.location.origin}/home`;
+    };
+
+    async function onMessage(event) {
       if (event.origin !== window.location.origin) return;
       if (event.data?.source !== 'v-ent-sso') return;
-      window.removeEventListener('message', onMessage);
-      clearInterval(closedTimer);
+      if (settled) return;
+      stop();
 
       if (!event.data.token) {
         onError?.(tt('msg.thatSignInCouldNot', 'That sign-in could not be started.'));
@@ -144,24 +168,29 @@ const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError
         token: event.data.token,
         redirect: false,
       });
-      if (result?.ok) {
-        window.location.href = callbackUrl || `${window.location.origin}/home`;
-        return;
-      }
+      if (result?.ok) return go();
       onError?.(tt('msg.thatSignInCouldNot', 'That sign-in could not be started.'));
       onBusy?.(false);
-    };
+    }
     window.addEventListener('message', onMessage);
 
-    // Somebody who closes the window without finishing has not failed at
-    // anything, but the button must stop saying it is working.
-    const closedTimer = setInterval(() => {
+    timer = setInterval(async () => {
+      if (settled) return;
+
+      const session = await getSession().catch(() => null);
+      if (session?.user) {
+        stop();
+        try { if (!popup.closed) popup.close(); } catch { /* not ours to close */ }
+        return go();
+      }
+
+      // Somebody who closed the window without finishing has not failed at
+      // anything, but the button must stop saying it is working.
       if (popup.closed) {
-        clearInterval(closedTimer);
-        window.removeEventListener('message', onMessage);
+        stop();
         onBusy?.(false);
       }
-    }, 600);
+    }, 900);
   };
 
   const rows = Object.entries(external).filter(([, meta]) => meta.configured);
