@@ -1,0 +1,162 @@
+/* The challenge record on a profile.
+   Table measurements taken from ActivityPanel's tournament table so the two
+   tabs read as the same table with different columns. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.state {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------- the record */
+
+.record {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  flex: 1 1 110px;
+  background-color: #303136;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.statValue {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  line-height: 1.1;
+}
+
+.tone_win { color: #7fce82; }
+.tone_loss { color: #ef9a9a; }
+
+.statLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* -------------------------------------------------------------- the table */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr { background-color: #303136; }
+
+.table th {
+  padding: 0.75rem 1.1rem;
+  text-align: left;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.85rem 1.1rem;
+  font-size: 0.85rem;
+  vertical-align: middle;
+  color: #A7A6A6;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+}
+
+.table tbody tr:hover td { background-color: rgba(255, 255, 255, 0.04); }
+
+.link { color: #fff; text-decoration: none; }
+.link:hover { color: #e2be44; }
+
+.score {
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.outcome {
+  display: inline-block;
+  padding: 0.24rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.outcome_won { background-color: rgba(76, 175, 80, 0.16); color: #7fce82; }
+.outcome_lost { background-color: rgba(237, 28, 36, 0.14); color: #ef9a9a; }
+
+/* --------------------------------------------------------------- on a phone */
+
+.cards { display: none; }
+
+@media only screen and (max-width: 767px) {
+  .table { display: none; }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .card {
+    background-color: #303136;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-decoration: none;
+  }
+
+  .cardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .cardName {
+    font-family: "ClashGrotesk-Variable", sans-serif;
+    font-size: 0.95rem;
+    font-weight: var(--fw-semi-bold);
+    color: #fff;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cardMeta {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cardScore {
+    font-family: "ClashGrotesk-Variable", sans-serif;
+    font-size: 1.05rem;
+    font-weight: var(--fw-bold);
+    color: #fff;
+  }
+}

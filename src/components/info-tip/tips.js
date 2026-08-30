@@ -317,7 +317,7 @@ export const TIPS = {
     'Which finishing position this amount is paid for. First place is required; '
     + 'the rest are yours to decide.',
   teamRegion:
-    'Where your team plays from. It decides which scrims and regional '
+    'Where your team plays from. It decides which challenges and regional '
     + 'tournaments you are shown.',
   teamSocial:
     'Where people can find your team. Shown on your team page, and it is what '
@@ -411,7 +411,7 @@ export const TIPS = {
     'The mark shown on accounts that joined before launch. You can wear it or '
     + 'switch it off.',
   scrimTeam:
-    'Which of your teams is playing. You can only offer a scrim for a team you '
+    'Which of your teams is playing. You can only offer a challenge for a team you '
     + 'own or captain.',
   scrimFormat:
     'The shape of the practice match: 5v5, best of three, whatever you want to '

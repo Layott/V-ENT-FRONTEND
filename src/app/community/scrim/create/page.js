@@ -3,7 +3,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { Suspense, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { FaCheckCircle, FaCrosshairs } from 'react-icons/fa';
@@ -44,7 +44,15 @@ const ScrimCreateInner = () => {
     } : {})
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // The same form posts a new challenge and edits an existing one. Two screens
+  // for one set of fields is two screens that drift: the modes cascade, the
+  // formats depend on the mode, and every one of those rules would have to be
+  // written twice and then kept the same by hand.
+  const editing = searchParams.get('edit') || '';
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const [loadingExisting, setLoadingExisting] = useState(!!editing);
+  const [loadError, setLoadError] = useState('');
   const [teams, setTeams] = useState([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +71,11 @@ const ScrimCreateInner = () => {
     map_code: '',
     scheduled_at: '',
     country: 'Nigeria',
+    // Who may answer. CEO: "for country should be able to open it to all, or
+    // select a group of countries they want also." One country was the only
+    // option, which turns everybody else away by default.
+    open_to: 'country',
+    countries: [],
     opponent: '',
     notes: ''
   });
@@ -118,6 +131,52 @@ const ScrimCreateInner = () => {
     };
     loadTeams();
   }, [apiUrl, session?.user?.sessionToken]);
+  // Fill the form from the challenge being edited. It runs once the catalogue
+  // has arrived, because the two cascade effects below rewrite `mode` and
+  // `format` the moment they see a game they have no catalogue for, and would
+  // throw away the values just loaded.
+  useEffect(() => {
+    if (!editing || !catalogue) return;
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch(`${apiUrl}/scrim/${editing}/detail/`, { headers: authHeaders() });
+        const body = await res.json();
+        const c = body?.data?.scrim;
+        if (!alive) return;
+        if (!res.ok || !c) {
+          setLoadError(apiMessage(tt, body, 'api.challengeNotFound', 'That challenge could not be found.'));
+          return;
+        }
+        if (c.status !== 'open') {
+          setLoadError(tt('scrim.editClosed', 'This challenge has been accepted, so its terms cannot be changed.'));
+          return;
+        }
+        setForm(p => ({
+          ...p,
+          solo: !!c.is_solo,
+          team: c.is_solo ? '' : (c.team_a?.id || p.team),
+          game: c.game || '',
+          mode: c.mode || '',
+          team_size: String(c.team_size || (c.is_solo ? 1 : '')),
+          format: c.format || '',
+          map_code: c.map_code || '',
+          scheduled_at: c.scheduled_at ? c.scheduled_at.slice(0, 16) : '',
+          country: c.country || p.country,
+          open_to: c.open_to || 'country',
+          countries: c.countries || [],
+          notes: c.notes || '',
+          opponent: ''
+        }));
+      } catch {
+        if (alive) setLoadError(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'));
+      } finally {
+        if (alive) setLoadingExisting(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [editing, catalogue, apiUrl, session?.user?.sessionToken]);   // eslint-disable-line react-hooks/exhaustive-deps
+
   const updateField = (field, value) => {
     setForm(p => ({
       ...p,
@@ -141,7 +200,10 @@ const ScrimCreateInner = () => {
     }
     if (!form.scheduled_at) e.scheduled_at = tt('scrim.pickDate', 'Pick a date and time');
     else if (new Date(form.scheduled_at).getTime() < Date.now()) e.scheduled_at = tt('scrim.futureOnly', 'Schedule must be in the future');
-    if (!form.country) e.country = tt('scrim.pickCountry', 'Choose a country');
+    if (form.open_to === 'country' && !form.country) e.country = tt('scrim.pickCountry', 'Choose a country');
+    if (form.open_to === 'countries' && form.countries.length === 0) {
+      e.countries = tt('scrim.pickCountries', 'Choose at least one country, or open it to everybody');
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -152,7 +214,7 @@ const ScrimCreateInner = () => {
   // a battle royale "first to 5 rounds", which the endpoint then refuses after
   // they have filled the whole form in.
   useEffect(() => {
-    if (!catalogue) return;
+    if (!catalogue || loadingExisting) return;
     const ids = offeredModes.map(m => m.id);
     if (!ids.includes(form.mode)) {
       setForm(p => ({ ...p, mode: ids[0] || '', format: '', team_size: '' }));
@@ -160,7 +222,7 @@ const ScrimCreateInner = () => {
   }, [catalogue, form.game, form.solo]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!currentMode) return;
+    if (!currentMode || loadingExisting) return;
     setForm(p => {
       const next = { ...p };
       if (!currentMode.formats.includes(p.format)) next.format = currentMode.formats[0] || '';
@@ -187,20 +249,31 @@ const ScrimCreateInner = () => {
         format: form.format,
         map_code: form.map_code.trim(),
         country: form.country,
+        open_to: form.open_to,
+        countries: form.open_to === 'countries' ? form.countries : [],
         scheduled_at: new Date(form.scheduled_at).toISOString(),
         notes: form.notes,
         opponent: form.opponent.trim()
       };
-      const res = await fetch(`${apiUrl}/scrim/create/`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(payload)
-      });
+      const res = editing
+        ? await fetch(`${apiUrl}/scrim/${editing}/detail/`, {
+            method: 'PATCH',
+            headers: authHeaders(),
+            body: JSON.stringify(payload)
+          })
+        : await fetch(`${apiUrl}/scrim/create/`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify(payload)
+          });
       const data = await res.json();
       if (data.status === 'success' && data.data?.scrim) {
-        setSuccess(data.data.scrim);
+        // An edit goes straight back to the challenge, because that is where
+        // the person came from and what they wanted to look at.
+        if (editing) router.push(`/community/challenge/${data.data.scrim.slug}`);
+        else setSuccess(data.data.scrim);
       } else {
-        setSubmitError(apiMessage(tt, data, "api.couldNotPostThatScrim", "Could not post that scrim."));
+        setSubmitError(apiMessage(tt, data, "api.couldNotPostThatScrim", "Could not post that challenge."));
       }
     } catch (err) {
       console.error('Create scrim error:', err);
@@ -218,14 +291,14 @@ const ScrimCreateInner = () => {
           <div className={styles.rightPaneContainer}>
             <div className={styles.successCard}>
               <FaCheckCircle className={styles.successIcon} />
-              <h2 className={styles.successTitle}>{tt("ui.scrim.posted.72ba", "Scrim posted")}</h2>
+              <h2 className={styles.successTitle}>{tt("ui.challenge.posted.72ba", "Challenge posted")}</h2>
               <p className={styles.successText}>
-                {tt("scrim.liveFor", "Your {format} {game} scrim is now live for {country}.").replace("{format}", form.format).replace("{game}", form.game).replace("{country}", form.country)}
+                {tt("scrim.liveFor", "Your {format} {game} challenge is now live for {who}.").replace("{format}", form.format).replace("{game}", form.game).replace("{who}", form.open_to === 'anywhere' ? tt("scrim.anybody", "anybody, anywhere") : form.open_to === 'countries' ? form.countries.join(', ') : form.country)}
                 {success.challenged ? ` ${success.challenged.name} has been notified.` : tx(" Other teams can accept it.")}
               </p>
               <div className={styles.successActions}>
-                <button className={`${styles.successBtn} goldBTN`} onClick={() => router.push('/community?tab=scrims')}>
-                  {tt("ui.view.scrims.817d", "View scrims")}
+                <button className={`${styles.successBtn} goldBTN`} onClick={() => router.push(success.slug ? `/community/challenge/${success.slug}` : '/community?tab=challenges')}>
+                  {tt("ui.view.challenge.817d", "View the challenge")}
                 </button>
                 <button className={styles.successCancel} onClick={() => {
                 setSuccess(null);
@@ -252,20 +325,24 @@ const ScrimCreateInner = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <button className={styles.backLink} onClick={() => router.push('/community?tab=scrims')}>
-            <FiArrowLeft /> {tt("ui.back.scrims.3f01", "Back to scrims")}
+          <button className={styles.backLink} onClick={() => router.push(editing ? `/community/challenge/${editing}` : '/community?tab=challenges')}>
+            <FiArrowLeft /> {editing ? tt("ui.back.challenge.7c14", "Back to the challenge") : tt("ui.back.challenges.3f01", "Back to challenges")}
           </button>
 
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>
-              <FaCrosshairs className={styles.titleIcon} /> {tt("ui.challenge.team.6a5a", "Challenge a team")}
+              <FaCrosshairs className={styles.titleIcon} /> {editing ? tt("ui.edit.challenge.9b3d", "Edit your challenge") : tt("ui.post.challenge.6a5a", "Post a challenge")}
             </h1>
             <p className={styles.pageSubtitle}>
-              {tt("ui.post.open.scrim.call.b5e4", "Post an open scrim or call out a specific opponent. Other captains see it instantly.")}
+              {editing ? tt("ui.edit.challenge.sub.4e21", "Change the terms while nobody has accepted it yet. Once somebody has, these are what they agreed to.") : tt("ui.post.open.scrim.call.b5e4", "Play one against one or team against team. Post it open, or call out a specific opponent.")}
             </p>
           </div>
 
-          <form className={styles.formCard} onSubmit={handleSubmit}>
+          {/* An edit that cannot go ahead says so instead of drawing a form
+              whose Save will be refused. */}
+          {loadError && <p className={styles.submitError}>{loadError}</p>}
+
+          {!loadError && <form className={styles.formCard} onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <div className={styles.field}>
                 {/* Who is playing. Most of what is played here is one
@@ -348,12 +425,40 @@ const ScrimCreateInner = () => {
                 {errors.format && <span className={styles.errorText}>{errors.format}</span>}
               </div>
 
-              <div className={styles.field}>
-                <label className={styles.label}><span className="fieldLabelRow">{tt("scrim.country", "Country *")} <InfoTip id="scrimRegion" /></span></label>
-                <select className={`${styles.input} ${errors.country ? styles.inputError : ''}`} value={form.country} onChange={e => updateField('country', e.target.value)}>
-                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                {errors.country && <span className={styles.errorText}>{errors.country}</span>}
+              <div className={`${styles.field} ${styles.fieldFull}`}>
+                <label className={styles.label}><span className="fieldLabelRow">{tt("scrim.openTo", "Who can answer *")} <InfoTip id="scrimRegion" /></span></label>
+                <div className={styles.formatRow}>
+                  {[['country', tt("scrim.openToOne", "One country")], ['countries', tt("scrim.openToSome", "A few countries")], ['anywhere', tt("scrim.openToAll", "Anybody, anywhere")]].map(([id, label]) => <button key={id} type="button" className={`${styles.formatBtn} ${form.open_to === id ? styles.formatBtnActive : ''}`} onClick={() => updateField('open_to', id)}>
+                      {label}
+                    </button>)}
+                </div>
+
+                {form.open_to === 'country' && <>
+                  <select className={`${styles.input} ${styles.openToSelect} ${errors.country ? styles.inputError : ''}`} value={form.country} onChange={e => updateField('country', e.target.value)}>
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  {errors.country && <span className={styles.errorText}>{errors.country}</span>}
+                </>}
+
+                {form.open_to === 'countries' && <>
+                  {/* Checkable fills rather than a multi-select: a native
+                      multiple select needs a modifier key nobody on a phone
+                      has, and hides what is picked behind a scroll. */}
+                  <div className={styles.countryGrid}>
+                    {COUNTRIES.map(c => {
+                  const on = form.countries.includes(c);
+                  return <button key={c} type="button" className={`${styles.countryChip} ${on ? styles.countryChipOn : ''}`} aria-pressed={on} onClick={() => updateField('countries', on ? form.countries.filter(x => x !== c) : [...form.countries, c])}>
+                        {c}
+                      </button>;
+                })}
+                  </div>
+                  <span className={styles.modeBlurb}>
+                    {form.countries.length === 0 ? tt("scrim.noCountriesYet", "Nobody can answer this yet. Pick the countries you will play.") : tt("scrim.countriesPicked", "{n} chosen.").replace("{n}", String(form.countries.length))}
+                  </span>
+                  {errors.countries && <span className={styles.errorText}>{errors.countries}</span>}
+                </>}
+
+                {form.open_to === 'anywhere' && <span className={styles.modeBlurb}>{tt("scrim.openToAllBlurb", "Any player, in any country, can accept this.")}</span>}
               </div>
 
               <div className={styles.field}>
@@ -377,14 +482,14 @@ const ScrimCreateInner = () => {
             {submitError && <p className={styles.submitError}>{submitError}</p>}
 
             <div className={styles.actions}>
-              <button type="button" className={styles.cancelBtn} onClick={() => router.push('/community?tab=scrims')}>
+              <button type="button" className={styles.cancelBtn} onClick={() => router.push(editing ? `/community/challenge/${editing}` : '/community?tab=challenges')}>
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
-              <button type="submit" className={`${styles.submitBtn} goldBTN`} disabled={submitting}>
-                {submitting ? tx("Posting scrim...") : tx("Post scrim")}
+              <button type="submit" className={`${styles.submitBtn} goldBTN`} disabled={submitting || loadingExisting}>
+                {submitting ? (editing ? tt("ui.saving.8c02", "Saving...") : tt("ui.posting.challenge.1f7a", "Posting challenge...")) : editing ? tt("ui.save.changes.5d19", "Save changes") : tt("ui.post.challenge.btn.2a83", "Post challenge")}
               </button>
             </div>
-          </form>
+          </form>}
         </div>
       </main>
 

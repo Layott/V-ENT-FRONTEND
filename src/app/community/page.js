@@ -19,6 +19,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './community.module.css';
 import useGames from '@/hooks/useGames';
+import { COUNTRIES } from '@/constants/countries';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
@@ -39,12 +40,30 @@ const TABS = [{
   label: 'DMs',
   icon: <FaEnvelope />
 }, {
-  id: 'scrims',
-  label: 'Scrims',
+  id: 'challenges',
+  label: 'Challenges',
   icon: <FaCrosshairs />
 }];
+
+// A tab that has been renamed still has to answer to its old address. Anybody
+// who bookmarked or shared ?tab=scrims should land on Challenges rather than
+// being quietly dropped back on the feed.
+const TAB_ALIASES = { scrims: 'challenges' };
+
+// The status in a reader's words rather than the database's. It was printed
+// straight off the API - `in_progress`, `cancelled` - so a French reader saw
+// English column values under French headings.
+const challengeStatusWord = (tt, status) => ({
+  open: tt('ui.status.open.7c28', 'Open'),
+  accepted: tt('ui.matched.1bf3', 'Matched'),
+  in_progress: tt('ui.progress.f61e', 'In Progress'),
+  played: tt('ui.played.6c19', 'Played'),
+  completed: tt('ui.completed.1798', 'Completed'),
+  cancelled: tt('ui.cancelled.2e77', 'Called off'),
+}[status] || status);
+
 const FORUM_CATEGORIES = ['All', 'General', 'Tournaments', 'Anime', 'Marketplace', 'Tech'];
-const SCRIM_REGIONS = ['NG-West', 'NG-East', 'ZA', 'KE', 'EU-West', 'NA-East'];
+
 const relativeTime = iso => {
   if (!iso) return '';
   const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -97,7 +116,8 @@ const CommunityInner = () => {
   const searchParams = useSearchParams();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const tabParam = searchParams.get('tab');
-  const initialTab = TABS.find(t => t.id === tabParam) ? tabParam : 'feed';
+  const resolvedTab = TAB_ALIASES[tabParam] || tabParam;
+  const initialTab = TABS.find(t => t.id === resolvedTab) ? resolvedTab : 'feed';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [me, setMe] = useState({
     username: 'you',
@@ -477,7 +497,7 @@ const CommunityInner = () => {
   const [scrimsLoading, setScrimsLoading] = useState(true);
   const [scrimFilters, setScrimFilters] = useState({
     game: '',
-    region: '',
+    country: '',
     status: ''
   });
   const [myTeams, setMyTeams] = useState([]);
@@ -488,7 +508,7 @@ const CommunityInner = () => {
     try {
       const params = new URLSearchParams();
       if (scrimFilters.game) params.set('game', scrimFilters.game);
-      if (scrimFilters.region) params.set('region', scrimFilters.region);
+      if (scrimFilters.country) params.set('country', scrimFilters.country);
       if (scrimFilters.status) params.set('status', scrimFilters.status);
       const qs = params.toString();
       const res = await fetch(`${apiUrl}/scrim/list/${qs ? `?${qs}` : ''}`, {
@@ -518,7 +538,7 @@ const CommunityInner = () => {
     }
   };
   useEffect(() => {
-    if (sessionReady && activeTab === 'scrims') {
+    if (sessionReady && activeTab === 'challenges') {
       loadScrims();
       loadMyTeams();
     }
@@ -575,7 +595,7 @@ const CommunityInner = () => {
             <div>
               <h1 className={styles.pageTitle}>{tt("ui.community.bfd5", "Community")}</h1>
               <p className={styles.pageSubtitle}>
-                {tt("ui.feed.forums.clubs.dms.bea9", "Feed, forums, clubs, DMs and scrims. The social layer of V-ENT.")}
+                {tt("ui.feed.forums.clubs.challenges.4d7a", "Feed, forums, clubs, DMs and challenges. The social layer of V-ENT.")}
               </p>
             </div>
           </div>
@@ -877,7 +897,7 @@ const CommunityInner = () => {
             </div>}
 
           {/* ─── SCRIMS ─── */}
-          {activeTab === 'scrims' && <div className={styles.scrimsSection}>
+          {activeTab === 'challenges' && <div className={styles.scrimsSection}>
               <div className={styles.scrimsHeaderRow}>
                 <div className={styles.scrimsFilters}>
                   <select className={styles.scrimSelect} value={scrimFilters.game} onChange={e => setScrimFilters(p => ({
@@ -887,12 +907,12 @@ const CommunityInner = () => {
                     <option value="">{tt("ui.all.games.f0ae", "All games")}</option>
                     {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <select className={styles.scrimSelect} value={scrimFilters.region} onChange={e => setScrimFilters(p => ({
+                  <select className={styles.scrimSelect} value={scrimFilters.country} onChange={e => setScrimFilters(p => ({
                 ...p,
-                region: e.target.value
+                country: e.target.value
               }))}>
-                    <option value="">{tt("ui.all.regions.3fc0", "All regions")}</option>
-                    {SCRIM_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    <option value="">{tt("ui.all.countries.3fc0", "All countries")}</option>
+                    {COUNTRIES.map(cn => <option key={cn} value={cn}>{cn}</option>)}
                   </select>
                   <select className={styles.scrimSelect} value={scrimFilters.status} onChange={e => setScrimFilters(p => ({
                 ...p,
@@ -900,9 +920,10 @@ const CommunityInner = () => {
               }))}>
                     <option value="">{tt("ui.all.statuses.6405", "All statuses")}</option>
                     <option value="open">{tt("ui.open.cf9b", "Open")}</option>
-                    <option value="matched">{tt("ui.matched.1bf3", "Matched")}</option>
+                    <option value="accepted">{tt("ui.matched.1bf3", "Matched")}</option>
                     <option value="in_progress">{tt("ui.progress.f61e", "In Progress")}</option>
-                    <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
+                    <option value="past">{tt("ui.past.matches.5b17", "Past matches")}</option>
+                    <option value="cancelled">{tt("ui.cancelled.2e77", "Called off")}</option>
                   </select>
                 </div>
                 {signedIn && <Link href="/community/scrim/create" className={`${styles.scrimChallengeCta} goldBTN`}>
@@ -914,7 +935,7 @@ const CommunityInner = () => {
 
               <div className={styles.scrimTable}>
                 <div className={styles.scrimTableHeader}>
-                  <div>{tt("ui.team.2188", "Team")}</div>
+                  <div>{tt("ui.challenger.4a71", "Challenger")}</div>
                   <div>{tt("ui.opponent.4548", "Opponent")}</div>
                   <div>{tt("ui.game.e3e8", "Game")}</div>
                   <div>{tt("ui.format.041a", "Format")}</div>
@@ -925,14 +946,23 @@ const CommunityInner = () => {
               }}>{tt("ui.action.97c8", "Action")}</div>
                 </div>
 
-                {scrimsLoading ? <p className={styles.stateText}>{tt("ui.loading.scrims.5a29", "Loading scrims...")}</p> : scrims.length === 0 ? <p className={styles.stateText}>{tt("ui.no.scrims.match.filters.75cc", "No scrims match your filters.")}</p> : scrims.map(scrim => {
+                {scrimsLoading ? <p className={styles.stateText}>{tt("ui.loading.challenges.5a29", "Loading challenges...")}</p> : scrims.length === 0 ? <p className={styles.stateText}>{scrimFilters.status === 'past' ? tt("ui.no.past.matches.9c04", "No matches have been played and agreed yet.") : tt("ui.no.challenges.match.filters.75cc", "No challenges match your filters.")}</p> : scrims.map(scrim => {
               const oppBlock = scrim.opponent_open_or_team_b;
               const opponent = oppBlock?.opponent;
               const isOpen = oppBlock?.open || scrim.status === 'open';
+              // Reported is not played. A score nobody has agreed to is still
+              // one side's claim, and printing it as the result would make the
+              // list say something the record does not.
+              const played = scrim.result && scrim.result.status !== 'reported';
               return <div key={scrim.id} className={styles.scrimRow}>
-                        <div className={`${styles.scrimCol} ${styles.scrimTeam}`} data-label={tt("ui.team.2188", "Team")}>
+                        {/* The name is the link rather than the whole row, so
+                            the Accept button beside it stays separately
+                            reachable by keyboard. */}
+                        <div className={`${styles.scrimCol} ${styles.scrimTeam}`} data-label={tt("ui.challenger.4a71", "Challenger")}>
                           {scrim.team_a?.tag && <span className={styles.scrimTag}>[{scrim.team_a.tag}]</span>}{' '}
-                          {scrim.team_a?.name}
+                          <Link href={`/community/challenge/${scrim.slug}`} className={styles.scrimRowLink}>
+                            {scrim.team_a?.name || scrim.created_by?.username}
+                          </Link>
                         </div>
                         <div className={styles.scrimCol} data-label={tt("ui.opponent.4548", "Opponent")}>
                           {opponent ? <>
@@ -943,21 +973,28 @@ const CommunityInner = () => {
                         <div className={styles.scrimCol} data-label={tt("scrim.game", "Game")}>{scrim.game}</div>
                         <div className={styles.scrimCol} data-label={tt("scrim.format", "Format")}>
                           {scrim.format || tx("Not set")}
-                          {scrim.region && <span className={styles.scrimRegionMini}> · {scrim.region}</span>}
+                          {/* Built here, not taken from the server: open_to_label
+                              is a sentence assembled in Python and arrived in
+                              English on a French page. */}
+                          <span className={styles.scrimRegionMini}> · {scrim.open_to === 'anywhere' ? tt("scrim.anybody", "anybody, anywhere") : scrim.open_to === 'countries' ? (scrim.countries || []).join(', ') : scrim.country}</span>
                         </div>
                         <div className={styles.scrimCol} data-label={tt("scrim.when", "When")}>
-                          {scrim.scheduled_at ? formatDateTime(scrim.scheduled_at) : 'Flexible'}
+                          {scrim.scheduled_at ? formatDateTime(scrim.scheduled_at) : tt("ui.flexible.7b02", "Flexible")}
                         </div>
                         <div className={styles.scrimCol} data-label={tt("ui.status.bae7", "Status")}>
-                          <span className={`${styles.scrimStatus} ${statusClassFor(scrim.status)}`}>
-                            {scrim.status?.replace('_', ' ')}
-                          </span>
+                          {/* A past-matches list whose every row reads "played"
+                              is a list of nothing. Show the score. */}
+                          {played ? <span className={styles.scrimScore}>{scrim.result.score_a} - {scrim.result.score_b}</span> : <span className={`${styles.scrimStatus} ${statusClassFor(scrim.status)}`}>
+                            {challengeStatusWord(tt, scrim.status)}
+                          </span>}
                         </div>
                         <div className={styles.scrimCol} style={{
                   textAlign: 'right'
                 }} data-label={tt("scrim.action", "Action")}>
-                          {scrim.is_mine && scrim.status === 'open' ? <span className={styles.scrimOwnLabel}>{tt("ui.yours.7558", "Yours")}</span> : <button className={`${styles.scrimAcceptBtn} ${isOpen && !scrim.is_mine ? 'goldBTN' : ''}`} onClick={() => handleAcceptScrim(scrim)} disabled={!isOpen || scrim.status !== 'open' || !token}>
-                              {scrim.status === 'open' ? 'Accept' : scrim.status === 'accepted' ? 'Matched' : 'Closed'}
+                          {scrim.status !== 'open' || scrim.is_mine ? <Link href={`/community/challenge/${scrim.slug}`} className={styles.scrimOpenBtn}>
+                              {scrim.is_mine && scrim.status === 'open' ? tt("ui.yours.7558", "Yours") : tt("ui.view.d3f1", "View")}
+                            </Link> : <button className={`${styles.scrimAcceptBtn} ${isOpen ? 'goldBTN' : ''}`} onClick={() => handleAcceptScrim(scrim)} disabled={!isOpen || !token}>
+                              {tt("ui.accept.9a2f", "Accept")}
                             </button>}
                           {acceptFor === scrim.id && <div className={styles.scrimTeamPicker}>
                               {myTeams.filter(t => (t.id || t.team_id) !== scrim.team_a?.id).map(t => <button key={t.id || t.team_id} className={styles.scrimTeamPickBtn} onClick={() => acceptScrimWithTeam(scrim.id, t.id || t.team_id)}>
