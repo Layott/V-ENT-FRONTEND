@@ -61,3 +61,20 @@
     width: 100%;
   }
 }
+
+/* The partner's letters, in the same 38px slot the drawn icons use, so the
+   rows line up whether the provider ships artwork or not. */
+.monogram {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* Wider than it is tall, so it is sized on width inside the 38px slot and
+   finds its own height rather than being squared off. */
+.partnerMark {
+  width: 22px;
+  height: auto;
+}

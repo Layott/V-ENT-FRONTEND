@@ -12,6 +12,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import OverviewPanel from '@/components/profile-panels/OverviewPanel';
 import ActivityPanel from '@/components/profile-panels/ActivityPanel';
+import ChallengesPanel from '@/components/profile-panels/ChallengesPanel';
 import GalleryPanel from '@/components/profile-panels/GalleryPanel';
 import SocialLinksPanel from '@/components/profile-panels/SocialLinksPanel';
 import FavoriteGamesPanel from '@/components/profile-panels/FavoriteGamesPanel';
@@ -36,6 +37,10 @@ const TABS = [{
 }, {
   id: 'games',
   label: 'Favorite Games'
+}, {
+  // CEO: "the results should also show on their profiles as history".
+  id: 'challenges',
+  label: 'Challenges'
 }];
 
 // ── helpers ───────────────────────────────────────────────────────────────
@@ -480,7 +485,7 @@ const UserProfileContent = ({
 
           {/* PANELS */}
           <div className={styles.panelArea}>
-            {isEmpty && isOwner ? <EmptyStatePanel achievementsTotal={achievements.length} /> : tab === 'overview' ? <OverviewPanel interests={interests} gamingAccounts={gamingAccounts} socialLinks={socialLinks} walletBalance={profileData.wallet_balance ?? 0} penaltyPoints={profileData.penalty_point ?? profileData.penalty_points ?? 0} rank={rankStats?.rank ?? profileData.rank ?? null} tournamentsPlayed={tournaments.length} wins={rankStats?.wins ?? profileData.wins ?? 0} losses={rankStats?.losses ?? profileData.losses ?? 0} favoriteGames={favoriteGames} achievements={achievements} isOwner={isOwner} onAddGame={() => router.push('/edit-user-profile?panel=games')} onSeeAll={() => setActiveTab('games')} /> : tab === 'activity' ? <ActivityPanel tournaments={tournaments} events={events} /> : tab === 'gallery' ? <GalleryPanel images={galleryImages} isOwner={isOwner} onUpload={() => showToast(tt("msg.photoUploadComingSoon", "Photo upload coming soon"))} /> : tab === 'social' ? <SocialLinksPanel socialLinks={socialLinks} /> : tab === 'games' ? <FavoriteGamesPanel games={favoriteGames} /> : null}
+            {isEmpty && isOwner ? <EmptyStatePanel achievementsTotal={achievements.length} /> : tab === 'overview' ? <OverviewPanel interests={interests} gamingAccounts={gamingAccounts} socialLinks={socialLinks} walletBalance={profileData.wallet_balance ?? 0} penaltyPoints={profileData.penalty_point ?? profileData.penalty_points ?? 0} rank={rankStats?.rank ?? profileData.rank ?? null} tournamentsPlayed={tournaments.length} wins={rankStats?.wins ?? profileData.wins ?? 0} losses={rankStats?.losses ?? profileData.losses ?? 0} favoriteGames={favoriteGames} achievements={achievements} isOwner={isOwner} onAddGame={() => router.push('/edit-user-profile?panel=games')} onSeeAll={() => setActiveTab('games')} /> : tab === 'activity' ? <ActivityPanel tournaments={tournaments} events={events} /> : tab === 'gallery' ? <GalleryPanel images={galleryImages} isOwner={isOwner} onUpload={() => showToast(tt("msg.photoUploadComingSoon", "Photo upload coming soon"))} /> : tab === 'social' ? <SocialLinksPanel socialLinks={socialLinks} /> : tab === 'games' ? <FavoriteGamesPanel games={favoriteGames} /> : tab === 'challenges' ? <ChallengesPanel username={username} /> : null}
           </div>
         </div>
       </main>

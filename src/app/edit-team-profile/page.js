@@ -34,7 +34,8 @@ const EditTeamProfileContent = ({
   const router = useRouter();
   const teamId = slugFromPath || searchParams.get('id') || '';
   const {
-    data: session
+    data: session,
+    status: sessionStatus
   } = useSession();
   const [activeTab, setActiveTab] = useState('profile-info');
   const [team, setTeam] = useState(null);
@@ -42,6 +43,14 @@ const EditTeamProfileContent = ({
   const [error, setError] = useState(null);
   const [toast, setToast] = useState('');
   const fetchTeam = useCallback(async () => {
+    // Nothing is decided until the session has resolved. This page used to
+    // fetch immediately, so on a slow connection the team arrived while
+    // `session` was still undefined, every ownership comparison was made
+    // against nothing, and the owner of a team they had just created was shown
+    // "Access denied" on their own team. It also meant the request went out
+    // with no Authorization header, so the server could not answer
+    // `viewer_is_owner` either. Reported by the CEO, 30 August 2026.
+    if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
       setError(tt("msg.missingTeamId", "Missing team id"));
@@ -65,16 +74,21 @@ const EditTeamProfileContent = ({
     } finally {
       setLoading(false);
     }
-  }, [teamId, session]);
+  }, [teamId, session, sessionStatus, tt]);
   useEffect(() => {
     fetchTeam();
   }, [fetchTeam]);
-  const isOwner = !!team && (team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username || team?.owner?.user_id === session?.user?.id);
+  // The server settles this, from the session token, exactly as the team page
+  // does. The three-way comparison stays as a fallback for a payload that
+  // predates `viewer_is_owner`, and it has to be three-way because
+  // `session.user.id` is the username whenever the login response carried no
+  // user_id.
+  const isOwner = !!team && (team?.viewer_is_owner ?? (team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username || team?.owner?.user_id === session?.user?.id));
   const showToast = msg => {
     setToast(msg);
     window.setTimeout(() => setToast(''), 2200);
   };
-  if (loading) {
+  if (loading || sessionStatus === 'loading') {
     return <div className={styles.pageContainer}>
         <Header className={styles.customHeader} />
         <MobileHeader />

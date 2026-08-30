@@ -1,0 +1,96 @@
+/* The row of other ways in, on login and on signup.
+   Filled surfaces only: every button is one fill step off the card, and the
+   shape comes from the fill and the spacing rather than from a stroke. */
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  /* The form above carries 12px of its own padding, so its inputs and its Log
+     in button stop 12px short of the card. Matching that puts every control on
+     the page on one vertical line; without it the provider buttons were 24px
+     wider than the button they sit under, which reads as a mistake even when
+     nobody can say why. */
+  padding: 0 12px;
+}
+
+/* One shape for every provider. Before this Google was a pill sized to its own
+   text and the partner button was full width with its own margin, so the two
+   sat at different widths and different heights on the same row and read as
+   two unrelated controls. */
+.provider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #303136;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.provider:hover { background-color: #3a3b41; }
+
+.provider:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* A fixed slot so every label starts at the same x, whatever the mark is. */
+.mark {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Google's mark is drawn for a light ground. */
+.markLight { background-color: #ffffff; }
+
+.markMuted { background-color: rgba(255, 255, 255, 0.09); }
+
+/* A mark that carries its own colour needs no plate behind it. Google's is
+   drawn for a light ground and so gets one; AFC's is already its brand green
+   on transparent, and a grey tile behind it only makes it look boxed in. */
+.markPlain { background-color: transparent; }
+
+/* Wider than it is tall, so it is sized on width and left to find its own
+   height rather than being squared off. 21px rather than a round 20 because
+   the two marks are matched on the area they cover, not on one edge: Google's
+   square G covers 17x17, and this one covers 21x13 for the same weight beside
+   it. A wide mark set to the same width as a square one always reads lighter. */
+.partnerMark {
+  width: 21px;
+  height: auto;
+}
+
+.googleMark {
+  width: 17px;
+  height: 17px;
+}
+
+/* The partner's letters, when it has no artwork we are licensed to draw. */
+.monogram {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

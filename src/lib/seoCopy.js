@@ -97,19 +97,19 @@ export const SECTION_COPY = {
 
   community: {
     en: {
-      title: 'Community: posts, forums, clubs and scrims',
+      title: 'Community: posts, forums, clubs and challenges',
       description:
         'Talk to other players, argue about the meta in the forums, join a club for your game '
-        + 'and find a team to scrim against.',
+        + 'and challenge a team or a player.',
     },
     fr: {
-      title: 'Communauté : publications, forums, clubs et scrims',
+      title: 'Communauté : publications, forums, clubs et défis',
       description:
         'Échangez avec d’autres joueurs, débattez du méta sur les forums, rejoignez un club pour '
         + 'votre jeu et trouvez une équipe contre qui vous entraîner.',
     },
     pt: {
-      title: 'Comunidade: publicações, fóruns, clubes e scrims',
+      title: 'Comunidade: publicações, fóruns, clubes e desafios',
       description:
         'Fale com outros jogadores, discuta a meta nos fóruns, entre num clube do seu jogo e '
         + 'encontre uma equipa para treinar.',

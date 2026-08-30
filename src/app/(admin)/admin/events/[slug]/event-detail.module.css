@@ -1,0 +1,255 @@
+/* One event in the console. Surfaces and space, no strokes: the cards, the
+   stat tiles and the tab strip all come from a fill one step off the page. */
+
+.back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+}
+
+.back:hover { color: #fff; }
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 1.5rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  margin: 0 0 0.3rem;
+}
+
+.sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cancelledNote {
+  background-color: rgba(237, 28, 36, 0.1);
+  color: #ef9a9a;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+
+/* ------------------------------------------------------------------- tabs */
+
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.tab:hover { background-color: rgba(255, 255, 255, 0.09); }
+
+/* Selected is a stronger fill and a brighter label, never a ring. */
+.tabOn {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* ------------------------------------------------------------- the numbers */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  background-color: #1c1c21;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.statValue {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* --------------------------------------------------------------- the cards */
+
+.cardTitle {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  margin: 0 0 0.35rem;
+}
+
+.cardSub {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1rem;
+}
+
+.plainList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.plainRow {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.attName {
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.attMeta {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  word-break: break-word;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------- an announcement */
+
+.announcement {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.annTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.annBody {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.annError {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #ef9a9a;
+}
+
+/* ---------------------------------------------------------- ticket status */
+
+.s_valid,
+.s_checked_in,
+.s_refunded,
+.s_cancelled {
+  display: inline-block;
+  padding: 0.24rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+  white-space: nowrap;
+}
+
+.s_valid { background-color: rgba(255, 255, 255, 0.09); color: rgba(255, 255, 255, 0.75); }
+.s_checked_in { background-color: rgba(76, 175, 80, 0.16); color: #7fce82; }
+.s_refunded { background-color: rgba(201, 162, 39, 0.18); color: #e2be44; }
+.s_cancelled { background-color: rgba(237, 28, 36, 0.14); color: #ef9a9a; }
+
+/* Asking why, in the page. A native prompt blocks the tab, cannot be styled,
+   and reads as a browser warning rather than as part of the console. */
+.askPanel {
+  background-color: rgba(237, 28, 36, 0.08);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.askLabel {
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.askInput {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+}
+
+.askActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

@@ -1,10 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import afcMark from '../../../public/images/afc-mark.png';
 import shared from './settingsShared.module.css';
 import styles from './LinkedAccountsPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { useTx } from '@/i18n/LanguageProvider';
 
 // Three providers, and no more, because these are the three that can actually be
@@ -27,6 +30,11 @@ const ICONS = {
       <path d="M12 0C5.4 0 .15 5.13.01 11.6L6.45 14.27a3.36 3.36 0 011.94-.61c.06 0 .12 0 .19.01l2.86-4.15v-.06a4.49 4.49 0 014.49-4.5c2.48 0 4.5 2.02 4.5 4.51 0 2.49-2.02 4.51-4.5 4.51h-.1l-4.08 2.92c0 .05.01.1.01.16a3.36 3.36 0 01-6.71.13L1.3 15.51A12 12 0 0012 24c6.63 0 12-5.37 12-12S18.63 0 12 0zM7.55 18.21l-1.48-.61c.26.55.72.97 1.29 1.21 1.27.53 2.74-.07 3.27-1.34a2.5 2.5 0 00-1.34-3.27l-1.53-.63c.61-.23 1.3-.24 1.95.04 1.59.65 2.34 2.51 1.69 4.1-.65 1.59-2.51 2.34-4.1 1.69a3.06 3.06 0 01-1.74-1.81l1.99.62zM18.93 9.46c0-1.66-1.35-3-3-3-1.66 0-3 1.35-3 3s1.35 3 3 3c1.66 0 3-1.35 3-3zm-5.25 0a2.25 2.25 0 014.5 0 2.25 2.25 0 01-4.5 0z" />
     </svg>
 };
+// A partner community's own mark, where we hold the artwork. Drawn in the same
+// 38px slot as the three above so a row does not change shape depending on
+// whether the provider shipped a logo. AFC's file is their own, at 1526x1082
+// and drawn at 22px. A partner with no artwork falls back to its monogram.
+const MARKS = { afc: afcMark };
 const PROVIDERS = [{
   id: 'google',
   label: 'Google',
@@ -49,17 +57,31 @@ const LinkedAccountsPanel = ({
   const tx = useTx();
   const tt = useT();
   const {
-    data: session
+    data: session,
+    status: sessionStatus
   } = useSession();
   const token = session?.user?.sessionToken;
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
   const [linked, setLinked] = useState({});
   const [available, setAvailable] = useState({});
+  // Communities you can sign in with, and whether this account is one of them.
+  // These are not PlatformAccount rows: they are whole sign-ins, so they come
+  // back from the same endpoint under their own key.
+  const [external, setExternal] = useState({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const load = useCallback(async () => {
-    if (!token) return;
+    // A bare `if (!token) return` left the spinner turning forever once the
+    // session had resolved to nobody, which reads as a hang rather than as a
+    // sign-in problem. Wait while it is still loading; give up once it is not.
+    if (!token) {
+      if (sessionStatus !== 'loading') {
+        setLoading(false);
+        setError(tt("msg.signInToSeeLinked", "Sign in to see your linked accounts."));
+      }
+      return;
+    }
     try {
       const res = await fetch(`${apiBase}/auth/link/status/`, {
         headers: {
@@ -70,13 +92,14 @@ const LinkedAccountsPanel = ({
       const body = await res.json();
       setLinked(body?.data?.linked || {});
       setAvailable(body?.data?.providers || {});
+      setExternal(body?.data?.external || {});
       setError('');
     } catch {
       setError(tt("msg.couldNotLoadYourLinked", "Could not load your linked accounts."));
     } finally {
       setLoading(false);
     }
-  }, [apiBase, token]);
+  }, [apiBase, token, sessionStatus]);
   useEffect(() => {
     load();
   }, [load]);
@@ -85,18 +108,33 @@ const LinkedAccountsPanel = ({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    ['discord', 'steam'].forEach(id => {
+    // The provider names itself on the way back. The outside communities use
+    // the same convention, and say more than yes or no: `taken` means that
+    // account is already on somebody else's V-ENT profile, which is a
+    // different problem from a link that simply failed.
+    const OUTCOMES = {
+      linked: tt("msg.linkedAccountConnected", "Account connected."),
+      already: tt("msg.linkedAccountAlready", "That account is already connected here."),
+      taken: tt("msg.linkedAccountTaken", "That account is already connected to another V-ENT profile."),
+      failed: tt("msg.linkedAccountFailed", "Connecting did not complete. Try again.")
+    };
+    ['discord', 'steam', ...Object.keys(external)].forEach(id => {
       const outcome = params.get(id);
       if (!outcome) return;
-      showToast?.(outcome === 'linked' ? `${id[0].toUpperCase()}${id.slice(1)} linked` : `${id[0].toUpperCase()}${id.slice(1)} linking did not complete`);
+      showToast?.(OUTCOMES[outcome] || OUTCOMES.failed);
       params.delete(id);
     });
-    if (params.get('panel')) params.delete('panel');
+    // `panel` stays. It is what says this panel is open: the settings page
+    // reads it out of the URL on every render, so deleting it here made the
+    // panel close itself the instant it mounted, and Linked accounts could not
+    // be reached at all - not from the menu, not from a link, not on the way
+    // back from a provider. Only the outcome parameters are cleaned up, and
+    // only when one was actually there, so a reload does not repeat the toast.
     const rest = params.toString();
-    if (window.location.search) {
-      window.history.replaceState({}, '', rest ? `/settings?${rest}` : '/settings');
+    if (rest !== new URLSearchParams(window.location.search).toString()) {
+      window.history.replaceState({}, '', rest ? `?${rest}` : window.location.pathname);
     }
-  }, [showToast]);
+  }, [showToast, external, tt]);
   const connect = async id => {
     setBusy(id);
     try {
@@ -117,6 +155,49 @@ const LinkedAccountsPanel = ({
       window.location.href = body.data.url;
     } catch {
       showToast?.('Could not start linking. Try again.');
+    } finally {
+      setBusy('');
+    }
+  };
+  // Signing in with an outside community, started from here rather than from
+  // the login page. The bearer token is what tells the backend this is a link
+  // rather than a sign-in: without it the callback would have no idea which
+  // V-ENT account to attach the identity to.
+  const connectExternal = async slug => {
+    setBusy(slug);
+    try {
+      const res = await fetch(`${apiBase}/partners/inbound/${slug}/start/`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const body = await res.json();
+      if (!res.ok || !body?.data?.url) {
+        showToast?.(body?.message || tt("msg.couldNotStartLinking", "Could not start linking. Try again."));
+        setBusy('');
+        return;
+      }
+      window.location.href = body.data.url;
+    } catch {
+      showToast?.(tt("msg.couldNotStartLinking", "Could not start linking. Try again."));
+      setBusy('');
+    }
+  };
+  const disconnectExternal = async slug => {
+    setBusy(slug);
+    try {
+      const res = await fetch(`${apiBase}/partners/inbound/${slug}/disconnect/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const body = await res.json();
+      showToast?.(apiMessage(tt, body, "api.linkedAccountDisconnected", "Account disconnected."));
+      await load();
+    } catch {
+      showToast?.(tt("msg.couldNotDisconnect", "Could not disconnect. Try again."));
     } finally {
       setBusy('');
     }
@@ -164,14 +245,42 @@ const LinkedAccountsPanel = ({
                       {connected && <span className={`${shared.verifyBadge} ${shared.verifyBadgeOk}`}>{tt("ui.connected.c2f9", "Connected")}</span>}
                     </div>
                     <div className={styles.sub}>
-                      {connected && state.label ? state.label : !configured && p.linkable ? tx("Not set up yet.") : p.sub}
+                      {connected && state.label ? state.label : !configured && p.linkable ? tt("ui.not.set.up.yet.3b91", "Not set up yet.") : tx(p.sub)}
                     </div>
                   </div>
 
                   {p.id === 'google' ? <span className={styles.sub}>{connected ? tx("Sign-in method") : tx("Not used")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${connected ? shared.ghostBTN : shared.goldBTN}`} onClick={() => connected ? disconnect(p.id) : connect(p.id)} disabled={working || !connected && !configured}>
-                      {working ? tx("Working...") : connected ? 'Disconnect' : 'Connect'}
+                      {working ? tt("ui.working.9a03", "Working...") : connected ? tt("ui.disconnect.5f2b", "Disconnect") : tt("ui.connect.8e41", "Connect")}
                     </button>}
                 </div>;
+        })}
+
+            {/* Communities you can sign in with. Somebody who signed in with
+                their African Free Fire Community account was connected in the
+                database and told nothing about it here, which is the one place
+                anybody would look. */}
+            {Object.entries(external).map(([slug, meta]) => {
+          const working = busy === slug;
+          return <div key={slug} className={styles.item}>
+                    <div className={styles.iconWrap}>
+                      {MARKS[slug]
+              ? <Image src={MARKS[slug]} alt="" aria-hidden="true" className={styles.partnerMark} />
+              : <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>}
+                    </div>
+                    <div className={styles.meta}>
+                      <div className={styles.row1}>
+                        <span className={styles.label}>{tx(meta.label)}</span>
+                        {meta.connected && <span className={`${shared.verifyBadge} ${shared.verifyBadgeOk}`}>{tt("ui.connected.c2f9", "Connected")}</span>}
+                      </div>
+                      <div className={styles.sub}>
+                        {meta.connected && meta.handle ? meta.handle : meta.connected ? tt("ui.linked.signIn.community.1a7c", "You can sign in with this community.") : !meta.configured ? tt("ui.not.set.up.yet.3b91", "Not set up yet.") : tt("ui.linked.signIn.offer.7d2e", "Sign in with this community instead of a password.")}
+                      </div>
+                    </div>
+
+                    {meta.is_sign_in_method ? <span className={styles.sub}>{tt("ui.sign.in.method.4c1a", "Sign-in method")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${meta.connected ? shared.ghostBTN : shared.goldBTN}`} onClick={() => meta.connected ? disconnectExternal(slug) : connectExternal(slug)} disabled={working || !meta.connected && !meta.configured}>
+                        {working ? tt("ui.working.9a03", "Working...") : meta.connected ? tt("ui.disconnect.5f2b", "Disconnect") : tt("ui.connect.8e41", "Connect")}
+                      </button>}
+                  </div>;
         })}
           </div>}
       </div>

@@ -301,3 +301,42 @@
   line-height: 1.45;
   color: var(--text-secondary, #b6b6b6);
 }
+
+/* The country picker, when a challenge is open to a handful of them. Filled
+   chips that darken or brighten, never a ring: a selected state drawn as an
+   outline is invisible at a glance on a dark surface. */
+.openToSelect {
+  margin-top: 0.6rem;
+}
+
+.countryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 0.2rem 0;
+}
+
+.countryChip {
+  padding: 0.42rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.countryChip:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+.countryChipOn {
+  background-color: #c9a227;
+  color: #191919;
+  font-weight: var(--fw-semi-bold);
+}
+
+.countryChipOn:hover { background-color: #d9b02b; }

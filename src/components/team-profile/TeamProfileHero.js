@@ -59,7 +59,7 @@ const TeamProfileHero = ({
               was offered "Leave team", and an open team showed both buttons at
               once. */}
           {isOwner ? <>
-              <Link href={`/edit-team-profile/${team.id}`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
+              <Link href={`/edit-team-profile/${team.slug || team.id}`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
                 <FiEdit3 className={styles.heroBtnIcon} /> {tt("ui.manage.bf58", "Manage")}
               </Link>
               <button type="button" className={`${styles.heroBtn} ${styles.heroBtnGhost}`} onClick={onShare}>

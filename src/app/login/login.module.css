@@ -7,20 +7,6 @@
 }
 /* An outside sign-in, styled like the Google button beside it: filled surface,
    no ring, no glow. */
-.oauthBTN {
-  width: 100%;
-  background: #303136;
-  color: #fff;
-  font-family: "ClashGrotesk-Variable", sans-serif;
-  font-weight: 500;
-  padding: 11px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.oauthBTN:disabled { opacity: 0.5; cursor: default; }
-
 /* The second half of the sign-in. Filled surfaces, no strokes: the code box is
    a fill one step up from the card, not a box drawn around nothing. */
 .codeStep {

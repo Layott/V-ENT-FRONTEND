@@ -1,12 +1,10 @@
 "use client";
 
 import { apiMessage } from '@/lib/apiMessage';
+import AuthProviders from '@/components/auth-providers/AuthProviders';
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import googleLogo from "../../../public/images/google.svg";
-import { signIn } from "next-auth/react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
 import PasswordStrength from "./passwordStrength";
@@ -212,21 +210,6 @@ const Signup = () => {
       setLoading(false);
     }
   };
-  const handleOAuthSignUp = async (provider, options = {}) => {
-    setLoading(true);
-    try {
-      await signIn(provider, {
-        callbackUrl: `${window.location.origin}/user-profile`,
-        redirect: true
-      });
-      setLoading(false);
-    } catch (error) {
-      setSnackbarMessage(tt("msg.anErrorOccurredDuringSignup", "An error occurred during signup. Please try again."));
-      setSnackbarType("error");
-      setOpen(true);
-      setLoading(false);
-    }
-  };
   const isPasswordValid = password => {
     return password.length >= 8 && /[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password);
   };
@@ -305,16 +288,18 @@ const Signup = () => {
                         </p>
                     </form>
 
+                    {/* The same providers as the login page, from the same
+                        component. Somebody who can sign in with an outside
+                        community can now sign up with it too; before this the
+                        partner button existed only on /login, so the account it
+                        would have created had no way to be created here. */}
                     <div className={generalStyles.alternativeAuthContainer}>
                         <p>{tt("ui.sign.up.b337", "Or sign up with")}</p>
-                        <div className={generalStyles.logoContainer}>
-                            <button type="button" className={generalStyles.oauthButton} aria-label={tt("ui.sign.up.google.3384", "Sign up with Google")} onClick={() => handleOAuthSignUp("google", {
-              callbackUrl: `${window.location.origin}/onboarding`
-            })}>
-                                <Image src={googleLogo} alt="" aria-hidden="true" className={`${styles.googleLogo} ${generalStyles.authLogo}`} />
-                                <span>{tt("ui.google.2b68", "Google")}</span>
-                            </button>
-                        </div>
+                        <AuthProviders mode="signup" callbackUrl={typeof window !== 'undefined' ? `${window.location.origin}/onboarding` : undefined} onError={msg => {
+              setSnackbarMessage(msg);
+              setSnackbarType('error');
+              setOpen(true);
+            }} />
                     </div>
 
                     <div className={generalStyles.formHelperContainer}>
