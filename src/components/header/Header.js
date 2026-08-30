@@ -11,6 +11,7 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import breadCrumbTitles from './BreadCrumbData';
 import { unreadCount } from '@/components/notifications/notificationsApi';
+import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import { getJson } from '@/lib/apiCache';
 import styles from './header.module.css';
 import { usePathname, useRouter } from 'next/navigation';
@@ -35,6 +36,9 @@ const Header = ({
   const [username, setUsername] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  // The bell opens a drawer over the page now rather than navigating away, so
+  // glancing at what just happened does not cost you the screen you were on.
+  const [notifOpen, setNotifOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef(null);
@@ -219,10 +223,24 @@ const Header = ({
           {isSearchBarVisible ? <MdOutlineClose className={styles.searchIconMobile} onClick={toggleSearchBar} /> : <FcSearch className={styles.searchIconMobile} onClick={toggleSearchBar} />}
         </div>
 
-        <Link href="/notifications" className={styles.bellBtn} aria-label={tt("ui.notifications.753a", "Notifications")}>
+        <button
+          type="button"
+          className={styles.bellBtn}
+          aria-label={tt("ui.notifications.753a", "Notifications")}
+          aria-expanded={notifOpen}
+          onClick={() => setNotifOpen(o => !o)}
+        >
           <IoNotificationsOutline className={styles.bellIcon} />
           {notifCount > 0 && <span className={styles.bellBadge}>{notifCount > 99 ? '99+' : notifCount}</span>}
-        </Link>
+        </button>
+
+        <NotificationDrawer
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+          token={sessionToken}
+          unread={notifCount}
+          onUnreadChange={setNotifCount}
+        />
 
         {/* Signed out: offer the way in rather than a placeholder identity. */}
         {!session ? <Link href="/login" className={`btn redBTN ${styles.headerLoginBtn}`}>

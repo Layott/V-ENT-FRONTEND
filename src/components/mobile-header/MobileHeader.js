@@ -12,6 +12,7 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import breadCrumbTitles from '../header/BreadCrumbData';
 import { unreadCount } from '@/components/notifications/notificationsApi';
+import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import styles from './mobile-header.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 import MobileSidebar from '../mobile-sidebar/MobileSidebar';
@@ -30,6 +31,9 @@ const MobileHeader = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  // Same drawer the desktop header opens; on a phone it comes up from the
+  // bottom. One component, so a fix to it is a fix to both.
+  const [notifOpen, setNotifOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const {
@@ -208,10 +212,24 @@ const MobileHeader = ({
               : <LuSearch className={styles.searchIconMobile} />}
           </button>
 
-          {!isSearchBarVisible && <Link href="/notifications" className={`${styles.headerAction} ${styles.bellContainer}`} aria-label={tt("ui.notifications.753a", "Notifications")}>
+          {!isSearchBarVisible && <button
+              type="button"
+              className={`${styles.headerAction} ${styles.bellContainer}`}
+              aria-label={tt("ui.notifications.753a", "Notifications")}
+              aria-expanded={notifOpen}
+              onClick={() => setNotifOpen(o => !o)}
+            >
               <IoNotificationsOutline className={styles.bellIconMobile} />
               {notifCount > 0 && <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>}
-            </Link>}
+            </button>}
+
+          <NotificationDrawer
+            open={notifOpen}
+            onClose={() => setNotifOpen(false)}
+            token={sessionToken}
+            unread={notifCount}
+            onUnreadChange={setNotifCount}
+          />
 
           <div className={`${styles.headerAction} ${styles.hamburgerContainer}`} onClick={toggleMobileMenu}>
             <label className={styles.hamburger}>
