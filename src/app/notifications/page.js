@@ -9,27 +9,13 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import { listNotifications, markRead, markAllRead } from '@/components/notifications/notificationsApi';
+import { categoryIcon, relativeTime } from '@/components/notifications/notificationMeta';
 import styles from './notifications.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 
 // ── Category → icon map ──────────────────────────────────────────────────────
-const CATEGORY_ICON = {
-  tournament: IoTrophyOutline,
-  event: IoCalendarOutline,
-  wallet: IoWalletOutline,
-  dispute: IoWarningOutline,
-  team: IoPeopleOutline,
-  kyc: IoShieldCheckmarkOutline,
-  payout: IoCashOutline,
-  system: IoInformationCircleOutline,
-  mention: IoAtCircleOutline,
-  follower: IoPersonAddOutline
-};
-
-// Per-category accent class so the icon chip picks up a hint of colour, mirroring
-// the wallet transaction badge treatment. All colours resolve from globals.css.
 const CATEGORY_CLASS = {
   tournament: styles.catTournament,
   event: styles.catEvent,
@@ -44,26 +30,6 @@ const CATEGORY_CLASS = {
 };
 
 // ── Relative time ────────────────────────────────────────────────────────────
-const relativeTime = iso => {
-  if (!iso) return '';
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return '';
-  const s = Math.floor(Math.max(0, Date.now() - then) / 1000);
-  if (s < 60) return 'just now';
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `${d}d ago`;
-  const w = Math.floor(d / 7);
-  if (w < 5) return `${w}w ago`;
-  return new Date(iso).toLocaleDateString(appLocale(), {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-};
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 const Notifications = () => {
@@ -233,7 +199,7 @@ const Notifications = () => {
               </div> : <>
                 <div className={styles.rowList}>
                   {rows.map(row => {
-                const Icon = CATEGORY_ICON[row.category] || IoNotificationsOutline;
+                const Icon = categoryIcon(row.category);
                 const catClass = CATEGORY_CLASS[row.category] || styles.catSystem;
                 return <div key={row.id} className={`${styles.row} ${!row.is_read ? styles.rowUnread : ''}`} role="button" tabIndex={0} onClick={() => handleRowClick(row)} onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {

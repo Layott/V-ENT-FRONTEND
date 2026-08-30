@@ -1,0 +1,226 @@
+/* The bell's drawer.
+
+   Filled surfaces and spacing do the structure here, not strokes: no borders,
+   no rings, no dividers between rows. Unread is a fill step and a solid dot,
+   never a glow and never anything that pulses. */
+
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 4.75rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.panel {
+  width: 100%;
+  max-width: 380px;
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  background: #1c1d21;
+  border-radius: 16px;
+  overflow: hidden;
+  /* Neutral, downward, low opacity. It genuinely floats over the page. */
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.7rem;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* The number, as a filled chip rather than a ring. */
+.count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.headActions { display: flex; align-items: center; gap: 0.4rem; }
+
+.headBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: #26272c;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.headBtn:hover { background: #303136; }
+.headBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: #26272c;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.closeBtn:hover { background: #303136; }
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0.6rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.7rem;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.row:hover { background: #26272c; }
+
+/* Unread is a fill, and it is what separates the rows. No lines between them. */
+.rowUnread { background: #232529; }
+.rowUnread:hover { background: #2a2c31; }
+
+.rowIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.rowBody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+
+.rowTitle {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.rowText {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rowMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.rowTime { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); white-space: nowrap; }
+
+/* Solid. Not a halo, and it does not breathe. */
+.rowDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--v-ent-red, #ED1C24);
+}
+
+.state {
+  margin: 0;
+  padding: 1.75rem 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.skeletonWrap { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.15rem 0; }
+
+.skeletonRow {
+  height: 58px;
+  border-radius: 10px;
+  background: #232529;
+}
+
+.seeAll {
+  flex-shrink: 0;
+  display: block;
+  padding: 0.85rem 1rem;
+  background: #232529;
+  color: #fff;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.seeAll:hover { background: #2a2c31; }
+
+/* On a phone it comes up from the bottom, which is where a thumb is and which
+   is what a sheet over a page is expected to do. */
+@media only screen and (max-width: 767px) {
+  .layer {
+    align-items: flex-end;
+    justify-content: center;
+    /* Clear of the bottom navigation, which is fixed at 70px and sits above
+       this. Without it the sheet's last row and "See all notifications" were
+       behind the nav bar - and that link is the whole point of the drawer:
+       the CEO asked for a glance first and the full page as a decision. */
+    padding: 0 0 70px;
+  }
+  .panel {
+    max-width: none;
+    max-height: calc(78vh - 70px);
+    border-radius: 18px 18px 0 0;
+  }
+  .body { padding-bottom: 0.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row, .headBtn, .closeBtn, .seeAll { transition: none; }
+}
