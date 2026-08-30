@@ -21,7 +21,16 @@ import { signIn } from 'next-auth/react';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import googleLogo from '../../../public/images/google.svg';
+import afcMark from '../../../public/images/afc-mark.png';
 import styles from './AuthProviders.module.css';
+
+// A partner's own mark, where we hold the artwork. Google, Discord and Steam
+// are drawn from their real logos in the settings panel, so a partner drawn as
+// two grey letters next to them reads as the one that is not quite a real
+// option. AFC's is their own file, from their repository on this machine, at
+// 1526x1082 and drawn at 20px, so it is never scaled above its own resolution.
+// A partner with no artwork still falls back to its monogram.
+const MARKS = { afc: afcMark };
 
 const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError, onBusy }) => {
   const tt = useT();
@@ -106,8 +115,10 @@ const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError
           onClick={() => startExternal(slug)}
           disabled={disabled}
         >
-          <span className={`${styles.mark} ${styles.markMuted}`}>
-            <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>
+          <span className={`${styles.mark} ${MARKS[slug] ? styles.markPlain : styles.markMuted}`}>
+            {MARKS[slug]
+              ? <Image src={MARKS[slug]} alt="" aria-hidden="true" className={styles.partnerMark} />
+              : <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>}
           </span>
           <span className={styles.label}>{tx(meta.label)}</span>
         </button>

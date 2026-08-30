@@ -71,3 +71,10 @@
   letter-spacing: 0.02em;
   color: #fff;
 }
+
+/* Wider than it is tall, so it is sized on width inside the 38px slot and
+   finds its own height rather than being squared off. */
+.partnerMark {
+  width: 22px;
+  height: auto;
+}

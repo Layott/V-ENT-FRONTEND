@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import afcMark from '../../../public/images/afc-mark.png';
 import shared from './settingsShared.module.css';
 import styles from './LinkedAccountsPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -28,6 +30,11 @@ const ICONS = {
       <path d="M12 0C5.4 0 .15 5.13.01 11.6L6.45 14.27a3.36 3.36 0 011.94-.61c.06 0 .12 0 .19.01l2.86-4.15v-.06a4.49 4.49 0 014.49-4.5c2.48 0 4.5 2.02 4.5 4.51 0 2.49-2.02 4.51-4.5 4.51h-.1l-4.08 2.92c0 .05.01.1.01.16a3.36 3.36 0 01-6.71.13L1.3 15.51A12 12 0 0012 24c6.63 0 12-5.37 12-12S18.63 0 12 0zM7.55 18.21l-1.48-.61c.26.55.72.97 1.29 1.21 1.27.53 2.74-.07 3.27-1.34a2.5 2.5 0 00-1.34-3.27l-1.53-.63c.61-.23 1.3-.24 1.95.04 1.59.65 2.34 2.51 1.69 4.1-.65 1.59-2.51 2.34-4.1 1.69a3.06 3.06 0 01-1.74-1.81l1.99.62zM18.93 9.46c0-1.66-1.35-3-3-3-1.66 0-3 1.35-3 3s1.35 3 3 3c1.66 0 3-1.35 3-3zm-5.25 0a2.25 2.25 0 014.5 0 2.25 2.25 0 01-4.5 0z" />
     </svg>
 };
+// A partner community's own mark, where we hold the artwork. Drawn in the same
+// 38px slot as the three above so a row does not change shape depending on
+// whether the provider shipped a logo. AFC's file is their own, at 1526x1082
+// and drawn at 22px. A partner with no artwork falls back to its monogram.
+const MARKS = { afc: afcMark };
 const PROVIDERS = [{
   id: 'google',
   label: 'Google',
@@ -256,7 +263,9 @@ const LinkedAccountsPanel = ({
           const working = busy === slug;
           return <div key={slug} className={styles.item}>
                     <div className={styles.iconWrap}>
-                      <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>
+                      {MARKS[slug]
+              ? <Image src={MARKS[slug]} alt="" aria-hidden="true" className={styles.partnerMark} />
+              : <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>}
                     </div>
                     <div className={styles.meta}>
                       <div className={styles.row1}>
