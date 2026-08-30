@@ -59,19 +59,24 @@
 
 .markMuted { background-color: rgba(255, 255, 255, 0.09); }
 
-/* A mark that carries its own colour needs no plate behind it. Google's is
-   drawn for a light ground and so gets one; AFC's is already its brand green
-   on transparent, and a grey tile behind it only makes it look boxed in. */
-.markPlain { background-color: transparent; }
+/* Google's mark is drawn for a light ground and gets a white plate. A partner
+   mark drawn for a dark ground gets the dark one, for the same reason: the
+   button surface is a mid grey, and both marks read as washed out on it.
+   #09090b is the surface AFC publish their mark against on their own brand
+   page, so this is their contrast, not a colour invented here. */
+.markPlain { background-color: #09090b; }
 
-/* Wider than it is tall, so it is sized on width and left to find its own
-   height rather than being squared off. 21px rather than a round 20 because
-   the two marks are matched on the area they cover, not on one edge: Google's
-   square G covers 17x17, and this one covers 21x13 for the same weight beside
-   it. A wide mark set to the same width as a square one always reads lighter. */
+/* 20px, which is the size AFC's own reference button uses.
+   Google's 17px mark sits on a white plate, because Google's mark is drawn for
+   a light ground; AFC's on-dark mark needs no plate, and at 17px it read much
+   lighter than the G beside it - about a third of its square is the wordmark,
+   so the letterform was only ~11px of it. 20px brings the two to the same
+   weight, which is what AFC ask for, and still leaves clear space on every side
+   inside the 26px slot plus the 12px gap to the label. Square, so no aspect
+   correction. */
 .partnerMark {
-  width: 21px;
-  height: auto;
+  width: 20px;
+  height: 20px;
 }
 
 .googleMark {

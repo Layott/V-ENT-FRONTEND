@@ -21,14 +21,21 @@ import { signIn } from 'next-auth/react';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import googleLogo from '../../../public/images/google.svg';
-import afcMark from '../../../public/images/afc-mark.png';
+import afcMark from '../../../public/images/afc-mark.svg';
 import styles from './AuthProviders.module.css';
 
-// A partner's own mark, where we hold the artwork. Google, Discord and Steam
-// are drawn from their real logos in the settings panel, so a partner drawn as
-// two grey letters next to them reads as the one that is not quite a real
-// option. AFC's is their own file, from their repository on this machine, at
-// 1526x1082 and drawn at 20px, so it is never scaled above its own resolution.
+// A partner's own mark. Google, Discord and Steam are drawn from their real
+// logos, so a partner drawn as two grey letters next to them reads as the one
+// that is not quite a real option.
+//
+// AFC's is now their published vector rather than a crop of a raster: they
+// serve one at api.africanfreefirecommunity.com/sso/brand/logo.svg, and their
+// brand page asks for the `?on=dark` variant on a dark surface, because the
+// wordmark in the default mark is near-black and disappears against one. Held
+// here rather than hotlinked, because our login page should not stop drawing
+// correctly on a day their site is down - which has happened. Re-fetch it if
+// their brand JSON changes: curl https://api.africanfreefirecommunity.com/sso/brand/
+//
 // A partner with no artwork still falls back to its monogram.
 const MARKS = { afc: afcMark };
 
@@ -189,7 +196,12 @@ const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError
               ? <Image src={MARKS[slug]} alt="" aria-hidden="true" className={styles.partnerMark} />
               : <span className={styles.monogram}>{meta.short || slug.toUpperCase().slice(0, 3)}</span>}
           </span>
-          <span className={styles.label}>{tx(meta.label)}</span>
+          {/* The short name. AFC's brand rules say in as many words not to use
+              the full name as a button label - "African Free Fire Community"
+              set as one makes the button about twice the width of every other
+              provider on the row. The full name still names the row in the
+              settings panel, which is a description rather than a button. */}
+          <span className={styles.label}>{tx(meta.short || meta.label)}</span>
         </button>
       ))}
     </div>

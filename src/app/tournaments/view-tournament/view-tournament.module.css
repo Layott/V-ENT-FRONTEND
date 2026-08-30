@@ -1383,6 +1383,32 @@
   .partCardList { display: flex; }
   .heroActions { margin-top: 0.6rem; }
   .heroActions button { flex: 1; }
+
+  /* The hero was a fixed 280px box with an absolutely positioned overlay, so
+     on a narrow screen its own content ran out of the bottom and printed over
+     the check-in card below it: "by Vermillion Events" sat underneath Share and
+     "You are registered". Reported from a 411px phone.
+
+     Two separate things did it. The banner could not grow, and `.heroLeft` has
+     `min-width: 0`, which lets flexbox squeeze the title rather than wrap the
+     buttons onto their own line - which is why "Naija Free Fire Weekly #12"
+     came out one word per line.
+
+     So on a phone the overlay is in flow and the banner grows to fit it, and
+     the two halves stack instead of competing for one row. */
+  .heroBanner {
+    height: auto;
+    min-height: 280px;
+  }
+  .heroOverlay {
+    position: relative;
+    inset: auto;
+  }
+  .heroContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .heroActions { width: 100%; }
 }
 
 /* ── Parent event strip (tournament running inside an event) ── */
