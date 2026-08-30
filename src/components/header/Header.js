@@ -229,11 +229,14 @@ const Header = ({
             {tt("ui.log.f7c4", "Log in")}
           </Link> : <div className={styles.userDetails} ref={dropdownRef}>
           <div className={styles.userInfo}>
+            {/* Username first: it is what identifies somebody here, and two
+                people can share a real name. See UserChip for the same rule. */}
             <p className={styles.userName}>
-              {fullName || session?.user?.name || tx("Your account")}
+              {username ? `@${username}` : (fullName || session?.user?.name || tx("Your account"))}
               {founder && <FounderBadge size="sm" />}
             </p>
-            {username && <p className={styles.userUsername}>@{username}</p>}
+            {username && fullName && fullName.toLowerCase() !== username.toLowerCase()
+              && <p className={styles.userUsername}>{fullName}</p>}
           </div>
           <div className={styles.userAvatar}>
             <Image src={mediaUrl(profileImage || profileImageSmall)} width={100} height={100} alt={tt("ui.signed.user.5f34", "Signed in user")} className={styles.profileImage} onClick={toggleDropdown} />

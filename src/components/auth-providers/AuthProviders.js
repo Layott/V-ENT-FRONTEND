@@ -74,18 +74,87 @@ const AuthProviders = ({ mode = 'signin', disabled = false, callbackUrl, onError
 
   const startExternal = async slug => {
     onBusy?.(true);
+
+    // A window rather than the whole page. The CEO asked why pressing this
+    // takes you off v-ent.co entirely; it does not have to. What it cannot be
+    // is an in-page modal: an outside sign-in form can only be embedded in an
+    // iframe if that site allows it, AFC sends `X-Frame-Options: SAMEORIGIN`,
+    // and a login form for another site rendered inside ours is the shape of a
+    // phishing page whether or not we mean it that way. A named popup keeps
+    // this page underneath, keeps the address bar visible so somebody can see
+    // whose site they are typing into, and hands the result back here.
+    //
+    // Opened here, before the await. A popup opened after one is no longer tied
+    // to the click that asked for it and browsers block it.
+    let popup = null;
+    try {
+      popup = window.open('', `vent-sso-${slug}`, 'width=520,height=680,menubar=no,toolbar=no');
+    } catch {
+      popup = null;
+    }
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/inbound/${slug}/start/`);
       const body = await res.json();
       if (res.ok && body?.data?.url) {
-        window.location.href = body.data.url;
+        if (popup && !popup.closed) {
+          popup.location.href = body.data.url;
+          watchPopup(popup);
+        } else {
+          // Blocked, or a browser that turns popups into tabs and lost this
+          // one. The whole-page redirect still works, so use it rather than
+          // reporting a failure.
+          window.location.href = body.data.url;
+        }
         return;
       }
+      popup?.close();
       onError?.(apiMessage(tt, body, 'api.thatSignInIsNot', 'That sign-in is not available yet.'));
     } catch {
+      popup?.close();
       onError?.(tt('msg.thatSignInCouldNot', 'That sign-in could not be started.'));
     }
     onBusy?.(false);
+  };
+
+  // The popup finishes on /auth/external, which posts the session token back
+  // here and closes itself. Nothing is trusted that did not come from this
+  // origin: the token is a live session, and a message from anywhere else is
+  // somebody else's page talking to ours.
+  const watchPopup = popup => {
+    const onMessage = async event => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.source !== 'v-ent-sso') return;
+      window.removeEventListener('message', onMessage);
+      clearInterval(closedTimer);
+
+      if (!event.data.token) {
+        onError?.(tt('msg.thatSignInCouldNot', 'That sign-in could not be started.'));
+        onBusy?.(false);
+        return;
+      }
+      const result = await signIn('external-token', {
+        token: event.data.token,
+        redirect: false,
+      });
+      if (result?.ok) {
+        window.location.href = callbackUrl || `${window.location.origin}/home`;
+        return;
+      }
+      onError?.(tt('msg.thatSignInCouldNot', 'That sign-in could not be started.'));
+      onBusy?.(false);
+    };
+    window.addEventListener('message', onMessage);
+
+    // Somebody who closes the window without finishing has not failed at
+    // anything, but the button must stop saying it is working.
+    const closedTimer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(closedTimer);
+        window.removeEventListener('message', onMessage);
+        onBusy?.(false);
+      }
+    }, 600);
   };
 
   const rows = Object.entries(external).filter(([, meta]) => meta.configured);

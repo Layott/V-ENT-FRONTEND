@@ -49,7 +49,8 @@ export const TeamProfileContent = ({
   // `/teams/lagos-rangers` passes the slug; `?id=` still resolves.
   const teamId = slug || searchParams.get('id') || '';
   const {
-    data: session
+    data: session,
+    status: sessionStatus
   } = useSession();
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,12 @@ export const TeamProfileContent = ({
   const [requestState, setRequestState] = useState(null); // 'pending' | 'success' | null
   const [toast, setToast] = useState('');
   const fetchTeam = useCallback(async () => {
-    if (!session?.user?.sessionToken) return;
+    // A team page is public and is in the sitemap, so this must not wait for a
+    // token that is never coming. It returned here before `loading` was ever
+    // cleared, so a signed-out visitor got "Loading the team..." for ever. The
+    // header below is already only added when there is a token, and the server
+    // answers the viewer flags as "not you" without one.
+    if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
       setError(tt("msg.missingTeamId", "Missing team id"));
@@ -89,7 +95,7 @@ export const TeamProfileContent = ({
     } finally {
       setLoading(false);
     }
-  }, [teamId, session, router]);
+  }, [teamId, session, sessionStatus, router]);
   useEffect(() => {
     fetchTeam();
   }, [fetchTeam]);

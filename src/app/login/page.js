@@ -44,7 +44,19 @@ const Login = () => {
     setExpired(params.get("expired") === "1");
     const failed = params.get("error");
     if (failed) {
-      setSnackbarMessage(params.get("message") || "Sign-in did not complete. Please try again.");
+      // Some refusals have an answer, and a generic sentence hides it. Somebody
+      // whose provider sent no address needs to be told to sign in normally and
+      // connect it from settings, not to "try again", which will fail the same
+      // way every time.
+      const SSO_ERRORS = {
+        'sso-no-email': tt(
+          "msg.ssoNoEmail",
+          "That community did not share your email address, so we cannot tell which V-ENT account is yours. Sign in with your email and password, then connect it under Settings, Linked accounts.",
+        ),
+        'sso-unavailable': tt("msg.ssoUnavailable", "That sign-in is switched off at the moment."),
+        'sso-cancelled': tt("msg.ssoCancelled", "That sign-in was cancelled."),
+      };
+      setSnackbarMessage(SSO_ERRORS[failed] || params.get("message") || tt("msg.signInDidNotComplete", "Sign-in did not complete. Please try again."));
       setSnackbarType("error");
       setOpen(true);
       params.delete("error");
@@ -52,7 +64,7 @@ const Login = () => {
       const rest = params.toString();
       window.history.replaceState({}, "", rest ? `/login?${rest}` : "/login");
     }
-  }, []);
+  }, [tt]);
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Inline validation: identifier required (valid email if it looks like one),

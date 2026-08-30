@@ -51,8 +51,14 @@ const UserChip = ({
 }) => {
   if (!user) return null;
 
-  const name = user.full_name || user.username || '';
+  // CEO, 30 August 2026: "the main name on the platform will now be the
+  // username". Two people had both set their real name to "Layott" and the
+  // platform called them the same thing on every screen, because it led with
+  // full_name. A username is unique and a real name is not, so the username is
+  // what identifies somebody here and the real name is the quieter second line.
   const handle = user.username || '';
+  const realName = (user.full_name || '').trim();
+  const name = handle || realName;
   // A profile is addressed by username. Anybody without one - a guest ticket
   // holder, an attendee who typed only an email - has no profile to open, so
   // they render as plain text rather than as a link that 404s.
@@ -69,8 +75,10 @@ const UserChip = ({
           {user.founder_badge && <FounderBadge size={badgeSize} />}
           {user.verified && <span className={styles.verified} title="Verified" />}
         </span>
-        {secondary && handle && (
-          <span className={`${styles.handle} ${handleClassName}`}>@{handle}</span>
+        {/* The second line is the real name now, not a repeat of the handle.
+            Only drawn when they gave one and it is not just the handle again. */}
+        {secondary && realName && realName.toLowerCase() !== handle.toLowerCase() && (
+          <span className={`${styles.handle} ${handleClassName}`}>{realName}</span>
         )}
         {children}
       </span>

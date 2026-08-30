@@ -1,8 +1,8 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import styles from './external.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -17,8 +17,39 @@ const ExternalSignInContent = () => {
   const params = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState('');
+  // Exactly once. `params` is a fresh object on every render, so this effect
+  // used to run again after the first pass had already replaced the URL and
+  // spent the token. The second run failed and painted "Sign-in did not
+  // complete" over a session that had in fact been created - reported by the
+  // CEO on 30 August 2026 as "it said not successful but still logged me in".
+  const started = useRef(false);
   useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+
     const token = params.get('token');
+
+    // Opened as a popup from the login page: this window's job is to hand the
+    // token back and get out of the way. The exchange happens in the page that
+    // opened it, which is the one the person is actually looking at. Posting to
+    // this origin only - the token is a live session and must not be readable
+    // by whatever else has a handle on this window.
+    const opener = window.opener;
+    if (opener && opener !== window) {
+      window.history.replaceState({}, '', '/auth/external');
+      try {
+        opener.postMessage(
+          { source: 'v-ent-sso', token: token || '', username: params.get('username') || '' },
+          window.location.origin,
+        );
+        window.close();
+        return;
+      } catch {
+        // Could not reach the opener - fall through and sign in here instead,
+        // which still works, just in the smaller window.
+      }
+    }
+
     if (!token) {
       setError(tt("msg.thatSignInLinkIs", "That sign-in link is incomplete. Start again from the login page."));
       return;
@@ -33,11 +64,19 @@ const ExternalSignInContent = () => {
       });
       if (result?.ok) {
         router.replace('/home');
-      } else {
-        setError(tt("msg.thatSignInCouldNot", "That sign-in could not be completed. Please try again."));
+        return;
       }
+      // Ask before announcing a failure. A signed-in person told they are not
+      // signed in will go round the loop again, and the second attempt is the
+      // one that really cannot work.
+      const session = await getSession();
+      if (session?.user) {
+        router.replace('/home');
+        return;
+      }
+      setError(tt("msg.thatSignInCouldNot", "That sign-in could not be completed. Please try again."));
     })();
-  }, [params, router]);
+  }, [params, router, tt]);
   return <main className={styles.wrap}>
       <div className={styles.card}>
         {error ? <>

@@ -32,6 +32,8 @@ const TABS = [{
   label: 'Invited'
 }];
 const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa'];
+// The tabs that mean "mine". Everything else is the public catalogue.
+const PERSONAL_TABS = ['owned', 'joined', 'invited'];
 const AllTeams = () => {
   const tx = useTx();
   const tt = useT();
@@ -39,7 +41,8 @@ const AllTeams = () => {
     gameTitles
   } = useGames();
   const {
-    data: session
+    data: session,
+    status: sessionStatus
   } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -100,7 +103,21 @@ const AllTeams = () => {
   const [pendingRequests, setPendingRequests] = useState({});
   const [toast, setToast] = useState('');
   const fetchTeams = useCallback(async () => {
-    if (!session?.user?.sessionToken) return;
+    // Browsing teams is public, so this must not sit waiting for a token that
+    // is never coming. It used to return here before `setLoading(false)` ever
+    // ran, and `loading` starts true, so a signed-out visitor got six skeleton
+    // cards that turned for ever on a page that answers 200 and is in the
+    // sitemap. The header below is already added only when there is a token.
+    if (sessionStatus === 'loading') return;
+    const token = session?.user?.sessionToken;
+    if (!token && PERSONAL_TABS.includes(activeTab)) {
+      // These three are "mine", so signed out they are legitimately empty.
+      // Say so, rather than turning.
+      setTeams([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -129,10 +146,15 @@ const AllTeams = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, game, region, openToJoin, search, session]);
+  }, [activeTab, game, region, openToJoin, search, session, sessionStatus]);
   useEffect(() => {
     fetchTeams();
   }, [fetchTeams]);
+
+  // A personal tab with nobody signed in. Not the same as a filter that
+  // matched nothing, and it must not be worded as though it were.
+  const signedOutPersonalTab = !session?.user?.sessionToken
+    && PERSONAL_TABS.includes(activeTab);
 
   // Sync URL with filters / tab
   useEffect(() => {
@@ -301,13 +323,25 @@ const AllTeams = () => {
             </div>
       )}
 
-      {activeTab !== 'invited' && !loading && !error && teams.length === 0 && <div className={styles.emptyState}>
-          <p className={styles.emptyTitle}>{tt("ui.no.teams.found.197b", "No teams found")}</p>
-          <p className={styles.emptySub}>{tt("ui.try.different.filter.create.1b20", "Try a different filter, or create your own team.")}</p>
-          <Link href="/teams/create-team" className={`${styles.createTeamBTN} ${styles.emptyCta}`}>
-            <FiPlus className={styles.plusIcon} /> {tt("ui.create.team.8d82", "Create team")}
-          </Link>
-        </div>}
+      {activeTab !== 'invited' && !loading && !error && teams.length === 0 && (
+        signedOutPersonalTab
+          // "No teams found" would be a lie here: there is nothing to find
+          // without an account, and offering Create team leads to a login wall.
+          ? <div className={styles.emptyState}>
+              <p className={styles.emptyTitle}>{tt("ui.teams.signIn.title.4e12", "Sign in to see your teams")}</p>
+              <p className={styles.emptySub}>{tt("ui.teams.signIn.sub.9c07", "The teams you own and the ones you have joined show up here once you are signed in. Browsing every team needs no account.")}</p>
+              <Link href="/login" className={`${styles.createTeamBTN} ${styles.emptyCta}`}>
+                {tt("ui.log.in.2f3d", "Log in")}
+              </Link>
+            </div>
+          : <div className={styles.emptyState}>
+              <p className={styles.emptyTitle}>{tt("ui.no.teams.found.197b", "No teams found")}</p>
+              <p className={styles.emptySub}>{tt("ui.try.different.filter.create.1b20", "Try a different filter, or create your own team.")}</p>
+              <Link href="/teams/create-team" className={`${styles.createTeamBTN} ${styles.emptyCta}`}>
+                <FiPlus className={styles.plusIcon} /> {tt("ui.create.team.8d82", "Create team")}
+              </Link>
+            </div>
+      )}
 
       {!loading && !error && teams.length > 0 && <div className={styles.cardGrid}>
           {teams.map(team => {
