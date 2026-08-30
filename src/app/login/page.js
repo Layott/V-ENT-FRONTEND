@@ -1,10 +1,9 @@
 "use client";
 
 import { apiMessage } from '@/lib/apiMessage';
+import AuthProviders from '@/components/auth-providers/AuthProviders';
 import { useActionState, useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import googleLogo from "../../../public/images/google.svg";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { getSession, signIn } from "next-auth/react";
@@ -15,9 +14,7 @@ import AuthHeader from "@/components/auth-header/AuthHeader";
 import generalStyles from "@/styles/auth/auth.module.css";
 import styles from "./login.module.css";
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
 const Login = () => {
-  const tx = useTx();
   const tt = useT();
   const [showPassword, setShowPassword] = useState(true);
   const [username_or_email, setEmailOrUsername] = useState("");
@@ -35,7 +32,6 @@ const Login = () => {
   const [expired, setExpired] = useState(false);
   // Outside sign-ins appear only when their keys exist. A button that leads to
   // a 503 is worse than no button.
-  const [externalProviders, setExternalProviders] = useState({});
   const router = useRouter();
 
   // Show a notice when the session-expiry guard bounced the user here, and
@@ -57,42 +53,6 @@ const Login = () => {
       window.history.replaceState({}, "", rest ? `/login?${rest}` : "/login");
     }
   }, []);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/inbound/providers/`);
-        if (!res.ok) return;
-        const body = await res.json();
-        if (!cancelled) setExternalProviders(body?.data?.providers || {});
-      } catch {
-        /* the page works without them */
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  const startExternal = async slug => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/inbound/${slug}/start/`);
-      const body = await res.json();
-      if (res.ok && body?.data?.url) {
-        window.location.href = body.data.url;
-        return;
-      }
-      setSnackbarMessage(apiMessage(tt, body, "api.thatSignInIsNot", "That sign-in is not available yet."));
-      setSnackbarType('error');
-      setOpen(true);
-    } catch {
-      setSnackbarMessage(tt("msg.thatSignInCouldNot", "That sign-in could not be started."));
-      setSnackbarType('error');
-      setOpen(true);
-    } finally {
-      setLoading(false);
-    }
-  };
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Inline validation: identifier required (valid email if it looks like one),
@@ -239,29 +199,6 @@ const Login = () => {
     }
     setLoading(false);
   };
-  const handleOAuthSignIn = async provider => {
-    setLoading(true);
-    try {
-      // Force redirection to Google's auth page
-      await signIn(provider, {
-        redirect: true,
-        callbackUrl: `${window.location.origin}/home`,
-        prompt: "select_account consent" // Explicitly request prompt and consent
-      });
-
-      // Nothing is announced here. signIn() with redirect: true resolves as
-      // soon as the browser starts leaving for Google, which is long before
-      // anyone has picked an account - so a success message at this point
-      // claimed the sign-in had worked while the chooser was still open. The
-      // real outcome arrives back on /home or, if it failed, on
-      // /login?error=..., and it is reported there.
-    } catch (error) {
-      setSnackbarMessage(`Failed to log in with ${provider}`);
-      setSnackbarType("error");
-      setOpen(true);
-      setLoading(false);
-    }
-  };
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
@@ -377,16 +314,11 @@ const Login = () => {
               they are should not be shown another way in beside it. */}
           {!challenge && <div className={generalStyles.alternativeAuthContainer}>
             <p>{tt("ui.sign.96ec", "Or sign in with")}</p>
-            <div className={generalStyles.logoContainer}>
-              <button type="button" className={generalStyles.oauthButton} onClick={() => handleOAuthSignIn("google")} aria-label={tt("ui.sign.google.4a0b", "Sign in with Google")} disabled={loading}>
-                <Image src={googleLogo} alt="" aria-hidden="true" className={`${styles.googleLogo} ${generalStyles.authLogo}`} />
-                <span>{tt("ui.google.2b68", "Google")}</span>
-              </button>
-
-              {Object.entries(externalProviders).filter(([, meta]) => meta.configured).map(([slug, meta]) => <button key={slug} type="button" className={styles.oauthBTN} onClick={() => startExternal(slug)} disabled={loading}>
-                    {tt("ui.continue.with.6433", "Continue with")} {tx(meta.label)}
-                  </button>)}
-            </div>
+            <AuthProviders mode="signin" disabled={loading} onBusy={setLoading} onError={msg => {
+            setSnackbarMessage(msg);
+            setSnackbarType('error');
+            setOpen(true);
+          }} />
           </div>}
 
           <div className={generalStyles.formHelperContainer}>
