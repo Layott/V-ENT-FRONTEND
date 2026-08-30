@@ -72,9 +72,9 @@
   color: #fff;
 }
 
-/* Wider than it is tall, so it is sized on width inside the 38px slot and
-   finds its own height rather than being squared off. */
+/* Square, and 25px in the 38px slot: AFC ask for clear space of at least a
+   quarter of the mark's width, which needs a slot of 1.5 times it. */
 .partnerMark {
-  width: 22px;
-  height: auto;
+  width: 25px;
+  height: 25px;
 }
