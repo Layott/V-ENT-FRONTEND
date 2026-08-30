@@ -278,14 +278,18 @@ const ManageContent = ({
   const status = tournamentStatus(tournament);
   const statusLabel = STATUS_LABELS[status] || 'Upcoming';
   const badgeClass = styles[STATUS_BADGE_CLASS[status]] || styles.status_upcoming;
-  return <div className={styles.pageContainer}>
-      <Header />
-      <MobileHeader />
+  // As the console's Actions tab this is one panel inside a page that already
+  // has a header, a sidebar and a bottom menu. Drawing its own put a second
+  // sidebar beside the first and pushed the content off the screen; the tab
+  // only ever wanted the panel, not the page around it.
+  return <div className={embedded ? undefined : styles.pageContainer}>
+      {!embedded && <Header />}
+      {!embedded && <MobileHeader />}
 
-      <main className={styles.mainContainer}>
-        <Sidebar />
+      <main className={embedded ? undefined : styles.mainContainer}>
+        {!embedded && <Sidebar />}
 
-        <div className={styles.rightPaneContainer}>
+        <div className={embedded ? undefined : styles.rightPaneContainer}>
           {!embedded && <div className={styles.pageHeader}>
             <div>
               <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
@@ -476,7 +480,7 @@ const ManageContent = ({
         </div>
       </main>
 
-      <BottomMenu />
+      {!embedded && <BottomMenu />}
 
       {toast && <div className={styles.toast}>{toast}</div>}
 
