@@ -13,6 +13,7 @@
 import { withLocalDatesAsISO } from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -197,6 +198,13 @@ function EventsInner() {
                         </td>
                         <td>
                           <div className={shared.actGroup}>
+                            {/* Manage is where the numbers, the tickets and
+                                what the organiser sent actually live. Reading
+                                is open to every admin role, so it is not behind
+                                the edit permission. */}
+                            <Link href={`/admin/events/${e.slug || e.id}`} className={`${shared.actBtn} ${shared.actView}`}>
+                              {tt("admin.manage", "Manage")}
+                            </Link>
                             {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(e)} disabled={!!actionLoading[e.id]} title={tt("admin.editEventAsAdmin", "Edit this event as an admin. The organiser is told it changed.")}>
                               {tt("admin.editTournament", "Edit")}
                             </button>}
