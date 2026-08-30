@@ -203,7 +203,7 @@ const ManageContent = ({ slug }) => {
           </div>
 
           <div className={styles.panelArea}>
-            {tab === 'actions' && <ActionsPanel slug={slug} />}
+            {tab === 'actions' && <ActionsPanel slug={slug} embedded />}
             {tab === 'match-control' && <MatchControlPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} />}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'invitations' && <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />}

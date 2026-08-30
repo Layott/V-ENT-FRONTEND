@@ -69,7 +69,12 @@ const participantSeed = (p, i) => p?.seed ?? i + 1;
 const participantStatus = p => p?.status ? String(p.status).toLowerCase() : null;
 const participantWhen = p => p?.registered_at || p?.created_at || p?.joined_at || null;
 const ManageContent = ({
-  slug: slugFromPath
+  slug: slugFromPath,
+  // Drawn as the Actions tab of the tournament console, which already carries
+  // the back link, the title and View Public Page. Rendering them again put the
+  // same heading on the page twice with a gap between the copies. Still a page
+  // in its own right at /tournaments/my-tournaments/manage, where it needs one.
+  embedded = false
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -281,7 +286,7 @@ const ManageContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <div className={styles.pageHeader}>
+          {!embedded && <div className={styles.pageHeader}>
             <div>
               <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
               <h1 className={styles.pageTitle}>
@@ -296,7 +301,7 @@ const ManageContent = ({
                   </Link>
                 </div>}
             </div>
-          </div>
+          </div>}
 
           {loading ? <div aria-hidden="true">
               <div className={styles.skeletonBlock} style={{
