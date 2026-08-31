@@ -86,10 +86,12 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
+    readList('/club/list/'),
+    readList('/organization/list/'),
   ]);
 
   const tournamentPages = tournaments
@@ -112,6 +114,23 @@ export default async function sitemap() {
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
 
+  // A club is a public conversation, so it is worth finding. A private one is
+  // readable only from the inside and has no business in a sitemap.
+  const clubPages = clubs
+    .filter((c) => c?.slug && !c.is_private)
+    .map((c) => entry(`/community/club/${c.slug}`, {
+      changeFrequency: 'daily',
+      priority: 0.6,
+    }));
+
+  const orgPages = organizations
+    .filter((o) => o?.slug)
+    .map((o) => entry(`/organizations/${o.slug}`, {
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
+
   // entry() returns one row per language, so the lists arrive nested.
-  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages].flat();
+  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages,
+          ...clubPages, ...orgPages].flat();
 }

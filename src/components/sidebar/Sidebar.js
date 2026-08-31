@@ -33,6 +33,11 @@ const Sidebar = ({
     status
   } = useSession();
   const logoHref = status === 'authenticated' ? '/home' : '/';
+  // `data` alone cannot tell "signed out" from "still asking", and drawing the
+  // signed-out shell while the answer is in flight makes it flicker. Neither
+  // branch renders until `status` settles.
+  const signedIn = status === 'authenticated';
+  const signedOut = status === 'unauthenticated';
 
   // Function to Check if the Route is Active
   const isActive = href => {
@@ -59,19 +64,21 @@ const Sidebar = ({
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
-                <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
+                {/* Home is a member's dashboard and Profile is a member's own
+                    profile. Neither means anything without an account. */}
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
                     <Link href={'/home'} className={styles.iconTextLink}>
                         <BiHomeCircle className={styles.sidebarIcon} /> {tt("ui.home.70f8", "Home")}
                         {isComingSoon('/home') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
-                <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink} data-tour="nav-profile">
                         <PiUserCircle className={styles.sidebarIcon} /> {t('nav.profile')}
                         {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink} data-tour="nav-tournaments">
@@ -111,12 +118,12 @@ const Sidebar = ({
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink} data-tour="nav-wallets">
                         <IoWalletOutline className={styles.sidebarIcon} /> {t('nav.wallets')}
                         {isComingSoon('/wallets') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
                 <li className={`${styles.sidebarItem} ${isActive('/wager') ? styles.activeLink : ''}`}>
                     <Link href={'/wager'} className={styles.iconTextLink}>
@@ -161,12 +168,12 @@ const Sidebar = ({
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink} data-tour="nav-settings">
                         <MdOutlineSettings className={styles.sidebarIcon} /> {t('nav.settings')}
                         {isComingSoon('/settings') && <span className={styles.comingSoon}>{tt('nav.comingSoon', 'Coming Soon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
                 {/* Building on V-ENT was reachable only from the landing
                     footer, which a signed-in person never sees - so anybody
@@ -189,11 +196,25 @@ const Sidebar = ({
                     </Link>
                 </li>}
 
-                <li className={`${styles.sidebarItem}`}>
+                {signedIn && <li className={`${styles.sidebarItem}`}>
                     <button onClick={handleLogout} className={styles.logoutButtonLink}>
                         <MdLogout className={styles.sidebarIcon} /> {tt("ui.logout.e43d", "Logout")}
                     </button>
-                </li>
+                </li>}
+
+                {/* Somebody with no account gets the way in where a member has
+                    their way out, rather than a Logout for a session that does
+                    not exist. */}
+                {signedOut && <li className={`${styles.sidebarItem} ${styles.signInItem}`}>
+                    <Link href={'/login'} className={styles.iconTextLink}>
+                        <MdLogout className={styles.sidebarIcon} /> {tt("ui.log.f7c4", "Log in")}
+                    </Link>
+                </li>}
+                {signedOut && <li className={`${styles.sidebarItem}`}>
+                    <Link href={'/signup'} className={styles.iconTextLink}>
+                        <PiUserCircle className={styles.sidebarIcon} /> {tt("ui.create.account.3c19", "Create an account")}
+                    </Link>
+                </li>}
             </ul>
         </nav>
     </div>;

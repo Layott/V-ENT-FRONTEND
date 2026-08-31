@@ -215,3 +215,38 @@
   font-size: 0.8rem;
   color: #9A9AA3;
 }
+
+/* A country worked out from an address, said plainly rather than presented as
+   a fact. Filled surface, no stroke. */
+.locationGuess {
+  display: block;
+  margin-top: 0.4rem;
+  background-color: rgba(240, 180, 41, 0.12);
+  color: #e8c766;
+  border-radius: 9px;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* The city a sign-in address suggests. A press, not a prefill: the value only
+   lands in the field when somebody chooses it. Filled surface, no stroke. */
+.cityOffer {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-top: 0.4rem;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 9px;
+  padding: 0.55rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.cityOffer:hover { background-color: #34353b; color: #fff; }
+.cityOffer strong { color: #fff; }
+.cityOfferAction { color: var(--v-ent-success, #4caf50); font-weight: 600; }

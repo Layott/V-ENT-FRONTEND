@@ -6,6 +6,14 @@
   margin: 0 auto;
 }
 
+/* A grid item defaults to `min-width: auto`, which means "at least as wide as
+   my content" - so the panel sized itself to its widest child and ran 178px
+   past a 412px phone. The page did not scroll sideways to reveal it, because
+   the container clips: the right-hand edge of every field was simply gone. The
+   country control and its correction note landed in that gap, which is how it
+   was noticed. */
+.pageGrid > * { min-width: 0; }
+
 .submenuCard {
   background-color: var(--overlay-gray);
 
@@ -232,6 +240,7 @@
   .submenuItem button .chev { display: none; }
   .submenuLabel { display: none; }
   .card { padding: 1.1rem; }
+  .formInput, .formTextarea, .formSelect { max-width: 100%; }
   .formFooter { flex-direction: column-reverse; }
   .formFooter .btn { width: 100%; }
 }

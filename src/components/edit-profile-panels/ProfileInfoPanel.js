@@ -2,26 +2,28 @@
 
 import { uploadHint } from '@/lib/uploadSpecs';
 import InfoTip from '@/components/info-tip/InfoTip';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import shared from './editProfileShared.module.css';
 import styles from './ProfileInfoPanel.module.css';
+import { COUNTRIES, isKnownCountry } from '@/constants/countries';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 
-// Location is not chosen here any more. The server reads it from the address
-// the first sign-in of each day arrives from, so the profile says where the
-// person actually is rather than which of eight cities they once picked.
-const describeLocation = (data = {}) => {
-  const city = (data.state || '').trim();
-  const country = (data.country || '').trim();
-  if (city && country) return `${city}, ${country}`;
-  return country || city || '';
-};
+// Location IS chosen here. It was display-only, with a line saying it came from
+// where you sign in - and an address places somebody in a country reliably and
+// in a city barely at all. Nigerian mobile data routes through a handful of
+// gateways, so a Lagos player read "Ilorin" on their own profile with no
+// control anywhere to correct it.
+//
+// Now: the country is a list (the same list a tournament restricts by, so the
+// two can be compared), the city is a plain field nobody guesses for you, and
+// a country that was worked out from an address says so until it is confirmed.
 const ProfileInfoPanel = ({
   initialData = {},
   onSave,
   onCancel,
-  showToast
+  showToast,
+  sessionToken = null
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -35,7 +37,38 @@ const ProfileInfoPanel = ({
   const [username, setUsername] = useState(initialData.username || '');
   const [profileName, setProfileName] = useState(initialData.full_name || initialData.fullname || '');
   const [bio, setBio] = useState(initialData.description || initialData.bio || '');
-  const location = describeLocation(initialData);
+  const [country, setCountry] = useState(initialData.country || '');
+  const [city, setCity] = useState(initialData.state || '');
+  const countryIsGuess = !!initialData.country_is_guess && country === (initialData.country || '');
+  // What the sign-in address looks like, offered rather than applied. The
+  // platform will not write a city onto somebody's profile from an address -
+  // a carrier gateway is a real place and it is not where the subscriber is -
+  // but showing the guess and letting one press accept it is the honest use of
+  // a value that might be right.
+  const [suggested, setSuggested] = useState(null);
+
+  useEffect(() => {
+    // Only worth asking when there is a blank to fill or a guess to settle.
+    // Somebody who has already said where they are is not asked again.
+    if (city.trim() && !countryIsGuess) return undefined;
+    const token = sessionToken;
+    if (!token) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || ''}/settings/location-suggestion/`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => null);
+        if (!cancelled && body?.status === 'success') setSuggested(body.data);
+      } catch { /* no suggestion is a fine outcome; the fields still work */ }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionToken]);
+
+  const offeredCity = (suggested?.city || '').trim();
+  const showCityOffer = !!offeredCity && offeredCity !== city.trim();
   const [interests, setInterests] = useState(Array.isArray(initialData.interests) ? initialData.interests : []);
   const [interestSearch, setInterestSearch] = useState('');
   const [saving, setSaving] = useState(false);
@@ -69,6 +102,8 @@ const ProfileInfoPanel = ({
         username,
         full_name: profileName,
         description: bio,
+        country,
+        state: city,
         interests,
         profilePicFile: avatarFile,
         bannerFile,
@@ -144,10 +179,42 @@ const ProfileInfoPanel = ({
         </div>
 
         <div className={shared.formGroup}>
-          <span className={shared.formLabel}>{tt("ui.location.d219", "Location")}</span>
-          <p className={styles.locationValue}>{location || tx("Set on your next sign-in")}</p>
+          <label className={shared.formLabel} htmlFor="country">
+            {tt("ui.country.7b04", "Country")}
+          </label>
+          {/* A list, not a text box, and the same list a tournament restricts
+              by: an event open to "Nigeria" compares against whatever is stored
+              here, so free text on either side quietly turns away people who
+              qualify. A value already saved that is not on the list stays
+              selectable, so nobody's profile is silently blanked. */}
+          <select className={shared.formInput} id="country" value={country}
+                  onChange={e => setCountry(e.target.value)}>
+            <option value="">{tt("ui.select.your.country.3d15", "Select your country")}</option>
+            {country && !isKnownCountry(country) && <option value={country}>{country}</option>}
+            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          {countryIsGuess && <span className={styles.locationGuess}>
+            {tt("ui.country.guessed.4e71",
+                "We worked this out from your connection, so it may be wrong. Pick your country to settle it.")}
+          </span>}
+        </div>
+
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel} htmlFor="city">
+            {tt("ui.city.9a37", "City")}
+          </label>
+          <input className={shared.formInput} id="city" value={city} maxLength={120}
+                 placeholder={tt("ui.city.placeholder.5e28", "Lagos")}
+                 onChange={e => setCity(e.target.value)} />
+          {showCityOffer && <button type="button" className={styles.cityOffer}
+                                    onClick={() => setCity(offeredCity)}>
+            {tt("ui.city.looks.like.2f64", "Looks like")} <strong>{offeredCity}</strong>.{' '}
+            <span className={styles.cityOfferAction}>
+              {tt("ui.city.use.it.8d70", "Use it")}
+            </span>
+          </button>}
           <span className={styles.locationNote}>
-            {tt("ui.taken.from.where.sign.147b", "Taken from where you sign in, updated once a day.")}
+            {tt("ui.city.yours.to.set.8b39", "Only you set this. We never guess your city.")}
           </span>
         </div>
       </div>

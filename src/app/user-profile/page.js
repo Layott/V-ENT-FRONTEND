@@ -65,7 +65,12 @@ const normaliseGalleryImage = (img, idx) => {
   return {
     id: img.id ?? img.image_id ?? `img_${idx}`,
     url: img.url || img.image || img.image_url || img.src,
-    category: img.category || img.cat || 'highlights',
+    // Which of the two kinds this is. The panel groups and labels by it, and a
+    // released esports picture is the only kind an organiser may use, so the
+    // distinction has to survive the mapper rather than be flattened into a
+    // decorative category.
+    kind: img.kind || 'personal',
+    is_released: !!img.is_released,
     caption: img.caption || ''
   };
 };
@@ -123,7 +128,14 @@ const UserProfileContent = ({
     setTab(next);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', next);
-    router.push(`/user-profile?${params.toString()}`, {
+    // Stay on the address we are actually on. This hardcoded `/user-profile`,
+    // so pressing any tab while reading somebody ELSE'S profile threw their
+    // username away and landed on your own - which is exactly what the CEO
+    // saw. The org manage screen had the same fault for the same reason.
+    const base = slugFromPath
+      ? `/u/${encodeURIComponent(slugFromPath)}`
+      : '/user-profile';
+    router.push(`${base}?${params.toString()}`, {
       scroll: false
     });
   };
@@ -172,11 +184,17 @@ const UserProfileContent = ({
           }
         }
       } catch (err) {
-        // Fallback: read from localStorage if the request fails.
-        try {
-          const stored = localStorage.getItem('userProfile');
-          if (stored) setProfileData(JSON.parse(stored));
-        } catch {}
+        // Only ever fall back to the stored copy when the profile being asked
+        // for is the reader's own. It used to fall back unconditionally, so a
+        // failed request for somebody else's profile drew the reader's name
+        // and face under that person's address - wrong in the way nobody
+        // notices, because the page looks fine.
+        if (isOwner) {
+          try {
+            const stored = localStorage.getItem('userProfile');
+            if (stored) setProfileData(JSON.parse(stored));
+          } catch {}
+        }
       } finally {
         setLoading(false);
       }
@@ -188,10 +206,24 @@ const UserProfileContent = ({
   // GET /auth/get-user-informations/ returns none of these, so the profile used
   // to render "No teams" for an organizer who owns one.
   useEffect(() => {
-    if (status !== 'authenticated' || !session?.user?.sessionToken) return;
+    // Somebody else's teams and tournaments come from THEIR profile payload.
+    //
+    // This block used to run for every profile and read /team/my-teams/,
+    // /tournament/get-organizer-tournaments/ and /ranking/, all of which are
+    // scoped to the signed-in account. So opening another player's profile
+    // showed the reader their own teams, their own tournaments and their own
+    // rank under that player's name. It is the second half of the CEO's report:
+    // the tabs went to the wrong page, and the data on them was the wrong
+    // person's.
+    if (!isOwner) {
+      setMyTeams(Array.isArray(profileData?.teams) ? profileData.teams : []);
+      setMyTournaments(Array.isArray(profileData?.tournaments) ? profileData.tournaments : []);
+      setRankStats(null);
+      return undefined;
+    }
+    if (status !== 'authenticated' || !session?.user?.sessionToken) return undefined;
     let cancelled = false;
     const controller = new AbortController();
-    const headers = jsonHeaders(session.user.sessionToken);
     (async () => {
       const get = async path => {
         try {
@@ -215,7 +247,7 @@ const UserProfileContent = ({
       cancelled = true;
       controller.abort();
     };
-  }, [status, session, apiBase]);
+  }, [status, session, apiBase, isOwner, profileData]);
 
   // ── Fetch gallery (real endpoint: GET /auth/get-user-gallery/) ──
   useEffect(() => {
@@ -223,7 +255,12 @@ const UserProfileContent = ({
     // The gallery endpoint is Bearer-scoped to the signed-in user. For other
     // users' profiles, fall back to any gallery embedded in the profile payload.
     if (!isOwner) {
-      const embedded = Array.isArray(profileData?.gallery) ? profileData.gallery : [];
+      // Their pictures: the personal ones the profile chose to show, plus any
+      // esports pictures they have released. Both arrive on the payload.
+      const embedded = [
+        ...(Array.isArray(profileData?.gallery) ? profileData.gallery : []),
+        ...(Array.isArray(profileData?.esports_images) ? profileData.esports_images : []),
+      ];
       setGalleryImages(embedded.map(normaliseGalleryImage).filter(Boolean));
       return;
     }
@@ -485,7 +522,7 @@ const UserProfileContent = ({
 
           {/* PANELS */}
           <div className={styles.panelArea}>
-            {isEmpty && isOwner ? <EmptyStatePanel achievementsTotal={achievements.length} /> : tab === 'overview' ? <OverviewPanel interests={interests} gamingAccounts={gamingAccounts} socialLinks={socialLinks} walletBalance={profileData.wallet_balance ?? 0} penaltyPoints={profileData.penalty_point ?? profileData.penalty_points ?? 0} rank={rankStats?.rank ?? profileData.rank ?? null} tournamentsPlayed={tournaments.length} wins={rankStats?.wins ?? profileData.wins ?? 0} losses={rankStats?.losses ?? profileData.losses ?? 0} favoriteGames={favoriteGames} achievements={achievements} isOwner={isOwner} onAddGame={() => router.push('/edit-user-profile?panel=games')} onSeeAll={() => setActiveTab('games')} /> : tab === 'activity' ? <ActivityPanel tournaments={tournaments} events={events} /> : tab === 'gallery' ? <GalleryPanel images={galleryImages} isOwner={isOwner} onUpload={() => showToast(tt("msg.photoUploadComingSoon", "Photo upload coming soon"))} /> : tab === 'social' ? <SocialLinksPanel socialLinks={socialLinks} /> : tab === 'games' ? <FavoriteGamesPanel games={favoriteGames} /> : tab === 'challenges' ? <ChallengesPanel username={username} /> : null}
+            {isEmpty && isOwner ? <EmptyStatePanel achievementsTotal={achievements.length} /> : tab === 'overview' ? <OverviewPanel interests={interests} gamingAccounts={gamingAccounts} socialLinks={socialLinks} walletBalance={profileData.wallet_balance ?? 0} penaltyPoints={profileData.penalty_point ?? profileData.penalty_points ?? 0} rank={rankStats?.rank ?? profileData.rank ?? null} tournamentsPlayed={tournaments.length} wins={rankStats?.wins ?? profileData.wins ?? 0} losses={rankStats?.losses ?? profileData.losses ?? 0} favoriteGames={favoriteGames} achievements={achievements} isOwner={isOwner} onAddGame={() => router.push('/edit-user-profile?panel=games')} onSeeAll={() => setActiveTab('games')} /> : tab === 'activity' ? <ActivityPanel tournaments={tournaments} events={events} /> : tab === 'gallery' ? <GalleryPanel images={galleryImages} isOwner={isOwner} sessionToken={session?.user?.sessionToken || null} onUploaded={added => setGalleryImages(prev => [...added.map(normaliseGalleryImage).filter(Boolean), ...prev])} /> : tab === 'social' ? <SocialLinksPanel socialLinks={socialLinks} /> : tab === 'games' ? <FavoriteGamesPanel games={favoriteGames} /> : tab === 'challenges' ? <ChallengesPanel username={username} /> : null}
           </div>
         </div>
       </main>

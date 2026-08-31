@@ -1,0 +1,180 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer { width: 100%; }
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 1.75rem 1.5rem 4rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem 2rem 4rem;
+  }
+}
+
+.backChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 9px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.backChip:hover { background-color: #34353b; color: #fff; }
+
+.pageTitle {
+  margin: 0.5rem 0 0;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.pageSubtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+}
+
+.problem {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff9ba0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.skeletonCard {
+  height: 132px;
+  border-radius: 14px;
+  background-color: #1c1d21;
+}
+
+.emptyState {
+  background-color: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.emptyTitle { margin: 0; color: #fff; font-size: 1rem; font-weight: 600; }
+.emptyLink { color: var(--v-ent-success, #4caf50); font-size: 0.88rem; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cardHead { display: flex; align-items: center; gap: 0.75rem; }
+
+.orgLogo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.orgLogo img { width: 100%; height: 100%; object-fit: cover; }
+
+.cardText { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.orgName { color: #fff; font-size: 0.95rem; font-weight: 600; }
+
+.cardMeta {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+}
+
+/* Only the role is capitalised. On the whole line it turned "invited you as"
+   into "Invited You As", which reads like a headline rather than a sentence. */
+.cardMeta strong { text-transform: capitalize; color: rgba(255, 255, 255, 0.75); }
+
+.cardWhen {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.byLine { display: flex; align-items: center; gap: 0.5rem; }
+
+.byLabel {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.message {
+  margin: 0;
+  background-color: #17181c;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.acceptBtn,
+.declineBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.acceptBtn { background-color: var(--v-ent-success, #4caf50); color: #0e1a10; }
+.declineBtn { background-color: #2a2b30; color: rgba(255, 255, 255, 0.7); }
+
+.acceptBtn:disabled,
+.declineBtn:disabled { opacity: 0.55; cursor: default; }

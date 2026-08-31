@@ -75,6 +75,11 @@ const CreateOrganizationContent = () => {
   const [formData, setFormData] = useState(emptyForm());
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+  // The File, kept beside the preview. An object URL is something a browser can
+  // draw and nothing a server can read, so posting one is the same as posting
+  // no picture at all.
+  const [logoFile, setLogoFile] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
   const logoInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
@@ -89,8 +94,8 @@ const CreateOrganizationContent = () => {
           ...emptyForm(),
           ...draft.formData
         });
-        if (draft?.logoPreview) setLogoPreview(draft.logoPreview);
-        if (draft?.bannerPreview) setBannerPreview(draft.bannerPreview);
+        // A File cannot be written to localStorage, and an object URL from a
+        // previous visit points at nothing. The picture is picked again.
         if (draft?.step) setStep(draft.step);
       }
     } catch {/* ignore */}
@@ -134,11 +139,13 @@ const CreateOrganizationContent = () => {
   const onLogoChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
   };
   const onBannerChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setBannerFile(file);
     setBannerPreview(URL.createObjectURL(file));
   };
   const validateStep = () => {
@@ -184,8 +191,6 @@ const CreateOrganizationContent = () => {
     try {
       const draft = {
         formData,
-        logoPreview,
-        bannerPreview,
         step,
         savedAt: new Date().toISOString()
       };
@@ -204,23 +209,37 @@ const CreateOrganizationContent = () => {
     setSubmitting(true);
     setErrorMsg(null);
     try {
-      const headers = {
-        'Content-Type': 'application/json'
-      };
+      const headers = {};
       if (session?.user?.sessionToken) {
         headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
       }
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/create/`, {
+      // Multipart, so the pictures actually travel. Content-Type is left to the
+      // browser: setting it by hand drops the boundary and the body arrives
+      // unparseable.
+      const body = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value === null || value === undefined) return;
+        body.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+      });
+      if (logoFile) body.append('logo', logoFile);
+      if (bannerFile) body.append('banner', bannerFile);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/create/`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          ...formData,
-          logo: logoPreview || undefined,
-          banner: bannerPreview || undefined
-        })
+        body
       });
+      const payload = await res.json().catch(() => null);
+      if (payload?.status !== 'success') {
+        setErrorMsg(payload?.message
+          || tt("api.failedToCreateOrg", "Failed to create org."));
+        return;
+      }
       clearDraft();
-      router.push('/organizations?created=true');
+      const created = payload.data?.organization;
+      router.push(created?.slug
+        ? `/organizations/${created.slug}?created=true`
+        : '/organizations?created=true');
     } catch (err) {
       setErrorMsg(apiMessage(tt, err, "api.failedToCreateOrg", "Failed to create org."));
     } finally {
@@ -294,7 +313,7 @@ const CreateOrganizationContent = () => {
                       <button type="button" className={styles.uploadBtn} onClick={() => logoInputRef.current?.click()}>
                         <FiUpload /> {tt("ui.upload.logo.a564", "Upload logo")}
                       </button>
-                      {logoPreview && <button type="button" className={styles.uploadGhost} onClick={() => setLogoPreview(null)}>
+                      {logoPreview && <button type="button" className={styles.uploadGhost} onClick={() => { setLogoPreview(null); setLogoFile(null); }}>
                           <FiX /> {tt("ui.remove.e963", "Remove")}
                         </button>}
                       <input ref={logoInputRef} type="file" accept="image/*" onChange={onLogoChange} style={{
@@ -315,7 +334,7 @@ const CreateOrganizationContent = () => {
                     <button type="button" className={styles.uploadBtn} onClick={() => bannerInputRef.current?.click()}>
                       <FiUpload /> {tt("ui.upload.banner.abba", "Upload banner")}
                     </button>
-                    {bannerPreview && <button type="button" className={styles.uploadGhost} onClick={() => setBannerPreview(null)}>
+                    {bannerPreview && <button type="button" className={styles.uploadGhost} onClick={() => { setBannerPreview(null); setBannerFile(null); }}>
                         <FiX /> {tt("ui.remove.e963", "Remove")}
                       </button>}
                     <input ref={bannerInputRef} type="file" accept="image/*" onChange={onBannerChange} style={{

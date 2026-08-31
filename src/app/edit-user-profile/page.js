@@ -145,6 +145,9 @@ const EditUserProfileContent = () => {
     if (payload.username != null) fd.append('username', payload.username);
     if (payload.full_name != null) fd.append('fullname', payload.full_name); // BE field: fullname
     if (payload.country != null) fd.append('country', payload.country);
+    // The city. It was never sent, so the only thing that could ever set it
+    // was the daily IP guess.
+    if (payload.state != null) fd.append('state', payload.state);
     if (payload.description != null) fd.append('description', payload.description);
     fd.append('interests', JSON.stringify(payload.interests || []));
     await postMultipart('/auth/edit-profile-info/', fd);
@@ -168,6 +171,11 @@ const EditUserProfileContent = () => {
       fullname: payload.full_name,
       description: payload.description,
       bio: payload.description,
+      country: payload.country,
+      state: payload.state,
+      // Choosing settles it, so the "we guessed this" line goes away at once
+      // rather than at the next reload.
+      country_is_guess: false,
       interests: payload.interests
     };
     if (payload.profilePicPreview) {
@@ -298,7 +306,7 @@ const EditUserProfileContent = () => {
             </aside>
 
             <section>
-              {activePanel === 'info' && <ProfileInfoPanel initialData={profileData || {}} onSave={handleSaveProfileInfo} onCancel={handleCancel} showToast={showToast} />}
+              {activePanel === 'info' && <ProfileInfoPanel initialData={profileData || {}} onSave={handleSaveProfileInfo} onCancel={handleCancel} showToast={showToast} sessionToken={session?.user?.sessionToken || null} />}
               {activePanel === 'games' && <FavoriteGamesEditPanel initialGames={profileData?.favorite_games} onSave={handleSaveGames} onCancel={handleCancel} showToast={showToast} />}
               {activePanel === 'accounts' && <GamingAccountsPanel initialAccounts={profileData?.gaming_accounts || {}} onSave={handleSaveAccounts} onCancel={handleCancel} showToast={showToast} />}
               {activePanel === 'social' && <SocialLinksEditPanel initialLinks={profileData?.social_links_object || {}} initialCustom={profileData?.custom_links || []} onSave={handleSaveSocial} onCancel={handleCancel} showToast={showToast} />}

@@ -210,6 +210,10 @@
 
 /* ── Tabs ── */
 .tabRow {
+  /* The header is fixed, so scrolling the strip to the viewport top would put
+     it underneath. This is the clearance, applied by the browser rather than
+     computed by hand. */
+  scroll-margin-top: 76px;
   display: flex;
   gap: 0.25rem;
 

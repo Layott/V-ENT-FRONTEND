@@ -7,7 +7,11 @@
 .layer {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  /* Above everything. At 1200 it went behind the things this app already puts
+     at 9000, 9999 and 10000, so the drawer opened underneath whatever was on
+     screen - which is what the CEO hit. It is the top layer by definition: it
+     is what you just asked for. */
+  z-index: 10050;
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
@@ -201,22 +205,23 @@
 }
 .seeAll:hover { background: #2a2c31; }
 
-/* On a phone it comes up from the bottom, which is where a thumb is and which
-   is what a sheet over a page is expected to do. */
+/* It comes down from the top on a phone as well, directly under the header
+   the bell is in. CEO, 31 August: "it should also draw over at the top, not
+   from bottom, same on desktop." A sheet from the bottom put it at the far end
+   of the screen from the control that opened it, and behind the bottom
+   navigation. */
 @media only screen and (max-width: 767px) {
   .layer {
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: center;
-    /* Clear of the bottom navigation, which is fixed at 70px and sits above
-       this. Without it the sheet's last row and "See all notifications" were
-       behind the nav bar - and that link is the whole point of the drawer:
-       the CEO asked for a glance first and the full page as a decision. */
-    padding: 0 0 70px;
+    /* Under the mobile header, and clear of the bottom navigation so the
+       "See all notifications" link is always reachable. */
+    padding: 4.25rem 0.5rem 78px;
   }
   .panel {
     max-width: none;
-    max-height: calc(78vh - 70px);
-    border-radius: 18px 18px 0 0;
+    max-height: calc(100vh - 4.25rem - 86px);
+    border-radius: 16px;
   }
   .body { padding-bottom: 0.6rem; }
 }

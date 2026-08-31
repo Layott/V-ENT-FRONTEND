@@ -65,3 +65,19 @@
 .inputGroup input::placeholder {
   color: #EEEEF0;
 }
+/* A field that carries a caveat: the country we worked out from a connection,
+   and the city we deliberately never guess. Filled surface, no stroke. */
+.guessNote,
+.fieldNote {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.guessNote {
+  background-color: rgba(240, 180, 41, 0.12);
+  color: #e8c766;
+  border-radius: 9px;
+  padding: 0.5rem 0.65rem;
+}

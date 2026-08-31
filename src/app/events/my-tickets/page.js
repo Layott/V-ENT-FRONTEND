@@ -16,17 +16,13 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 const STATUS_FILTERS = [{
-  id: 'all',
-  label: 'All'
+  id: 'all'
 }, {
-  id: 'active',
-  label: 'Active'
+  id: 'active'
 }, {
-  id: 'used',
-  label: 'Used'
+  id: 'used'
 }, {
-  id: 'refunded',
-  label: 'Refunded'
+  id: 'refunded'
 }];
 const formatDate = iso => {
   if (!iso) return '-';
@@ -122,30 +118,53 @@ const MyTickets = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [activeTicket, setActiveTicket] = useState(null);
+  // The counts the API computed from the same rows it sent. Kept apart from
+  // the list so the two can never disagree about how many there are.
+  const [serverCounts, setServerCounts] = useState(null);
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
     'Content-Type': 'application/json'
   }), [session?.user?.sessionToken]);
-  useEffect(() => {
+  const fetchTickets = useCallback(async ({ quiet = false } = {}) => {
     if (!session?.user?.sessionToken) return;
-    const fetchTickets = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/my-tickets/`, {
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          setTickets((data.data.tickets || []).map(normaliseTicket));
-        }
-      } catch (err) {
-        console.error('My tickets fetch error:', err);
-      } finally {
-        setLoading(false);
+    if (!quiet) setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/my-tickets/`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setTickets((data.data.tickets || []).map(normaliseTicket));
+        setServerCounts(data.data.counts || null);
       }
-    };
-    fetchTickets();
+    } catch (err) {
+      console.error('My tickets fetch error:', err);
+    } finally {
+      if (!quiet) setLoading(false);
+    }
   }, [authHeaders, session?.user?.sessionToken]);
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
+
+  // A ticket changes state at a door, not in this tab. Coming back to the page
+  // is the moment somebody wants the truth, and a slow poll covers the case of
+  // watching it while a friend is scanned in. Both are quiet: a refresh that
+  // blanks the list to a spinner would be worse than a stale number.
+  useEffect(() => {
+    if (!session?.user?.sessionToken) return undefined;
+    const again = () => {
+      if (document.visibilityState === 'visible') fetchTickets({ quiet: true });
+    };
+    document.addEventListener('visibilitychange', again);
+    window.addEventListener('focus', again);
+    const timer = setInterval(again, 30000);
+    return () => {
+      document.removeEventListener('visibilitychange', again);
+      window.removeEventListener('focus', again);
+      clearInterval(timer);
+    };
+  }, [fetchTickets, session?.user?.sessionToken]);
   const filtered = useMemo(() => {
     let out = [...tickets];
     if (statusFilter !== 'all') {
@@ -158,6 +177,7 @@ const MyTickets = () => {
     return out;
   }, [tickets, statusFilter, search]);
   const counts = useMemo(() => {
+    if (serverCounts) return serverCounts;
     const c = {
       all: tickets.length,
       active: 0,
@@ -168,7 +188,19 @@ const MyTickets = () => {
       if (c[t.status] !== undefined) c[t.status] += 1;
     });
     return c;
-  }, [tickets]);
+  }, [tickets, serverCounts]);
+  // Four literal keys, not tx(label) and not an interpolated key.
+  //
+  // tx() looks a key up by its English TEXT, and two different keys can share
+  // one word: "Used" resolved to the config page's `cfg.used`, whose French is
+  // "Occasion" - second-hand, not "already scanned". An interpolated key would
+  // have been just as wrong and additionally invisible to check-keys.
+  const filterLabel = id => ({
+    all: tt("ui.all.6a72", "All"),
+    active: tt("ui.active.a733", "Active"),
+    used: tt("ui.ticket.used.4c72", "Used"),
+    refunded: tt("ui.refunded.d6fb", "Refunded")
+  }[id] || id);
   const statusIcon = s => {
     if (s === 'active') return <FaCheckCircle />;
     if (s === 'used') return <FaRegClock />;
@@ -199,7 +231,7 @@ const MyTickets = () => {
           <div className={styles.controlsRow}>
             <div className={styles.filterRow}>
               {STATUS_FILTERS.map(f => <button key={f.id} className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`} onClick={() => setStatusFilter(f.id)} type="button">
-                  {tx(f.label)}
+                  {filterLabel(f.id)}
                   <span className={styles.filterCount}>{counts[f.id] || 0}</span>
                 </button>)}
             </div>

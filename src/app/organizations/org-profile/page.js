@@ -35,6 +35,9 @@ const TABS = [{
   id: 'events',
   label: 'Events'
 }, {
+  id: 'clubs',
+  label: 'Clubs'
+}, {
   id: 'members',
   label: 'Members'
 }, {
@@ -87,6 +90,7 @@ const OrgProfileContent = ({
   const [teams, setTeams] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
+  const [clubs, setClubs] = useState([]);
   const [members, setMembers] = useState([]);
   const [activity, setActivity] = useState([]);
   const [following, setFollowing] = useState(false);
@@ -123,7 +127,7 @@ const OrgProfileContent = ({
         headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
       }
       const API = process.env.NEXT_PUBLIC_API_URL;
-      const [orgRes, teamsRes, tmtRes, evRes, memRes, actRes] = await Promise.all([fetch(`${API}/organization/${orgId}/`, {
+      const [orgRes, teamsRes, tmtRes, evRes, memRes, actRes, clubRes] = await Promise.all([fetch(`${API}/organization/${orgId}/`, {
         headers
       }), fetch(`${API}/organization/${orgId}/teams/`, {
         headers
@@ -134,6 +138,8 @@ const OrgProfileContent = ({
       }), fetch(`${API}/organization/${orgId}/members/`, {
         headers
       }), fetch(`${API}/organization/${orgId}/activity/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/clubs/`, {
         headers
       })]);
       const orgData = await orgRes.json();
@@ -150,6 +156,8 @@ const OrgProfileContent = ({
       setMembers(memData?.data?.members || []);
       const actData = await actRes.json();
       setActivity(actData?.data?.activity || []);
+      const clubData = await clubRes.json().catch(() => null);
+      setClubs(clubData?.data?.clubs || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -520,6 +528,27 @@ const OrgProfileContent = ({
                     </div>
                   </Link>)}
                 {teams.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.teams.under.org.2f9f", "No teams under this org yet.")}</div>}
+              </div>}
+
+            {activeTab === 'clubs' && <div className={styles.cardGridSm}>
+                {clubs.map(club => <Link key={club.slug || club.id} href={`/community/club/${club.slug}`} className={styles.miniCard}>
+                    <div className={styles.miniBanner}>
+                      {club.banner && <Image src={mediaUrl(club.banner)} alt={`${club.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" style={{
+                  objectFit: 'cover'
+                }} />}
+                    </div>
+                    <div className={styles.miniLogo}>
+                      {club.logo && <Image src={mediaUrl(club.logo)} alt={`${club.name} logo`} width={44} height={44} />}
+                    </div>
+                    <div className={styles.miniBody}>
+                      <h2 className={styles.miniTitle}>{club.name}</h2>
+                      <p className={styles.miniMeta}>
+                        {club.game ? `${club.game} · ` : ''}{club.member_count ?? 0}{' '}
+                        {tt("ui.members.lower.51bd", "members")}
+                      </p>
+                    </div>
+                  </Link>)}
+                {clubs.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.clubs.under.org.3b57", "No clubs under this org yet.")}</div>}
               </div>}
 
             {activeTab === 'tournaments' && <div className={styles.tableWrap}>
