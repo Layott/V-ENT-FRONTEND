@@ -909,9 +909,17 @@ export const ViewEventContent = ({
                       <h2 className={styles.sectionTitle} style={{ marginTop: '1.75rem' }}>
                         {tt('event.gettingThere', 'Getting there')}
                       </h2>
-                      {event.venue_name && <p className={styles.body}>
-                        <strong>{event.venue_name}</strong>
-                        {event.location ? `, ${event.location}` : ''}
+                      {/* The address, in words. It used to be drawn only when
+                          the organiser had filled in `venue_name`, so an event
+                          carrying its whole address in `location` - which is
+                          most of them - showed a heading and then a map and
+                          never said where it was. Reported by the CEO from a
+                          phone, with the address visible in the hero above and
+                          nowhere near the map. */}
+                      {(event.venue_name || event.location) && <p className={styles.body} data-testid="gettingThereAddress">
+                        {event.venue_name
+                          ? <><strong>{event.venue_name}</strong>{event.location ? `, ${event.location}` : ''}</>
+                          : <strong>{event.location}</strong>}
                       </p>}
                       {event.directions && <p className={styles.body} style={{ whiteSpace: 'pre-line' }}>
                         {event.directions}

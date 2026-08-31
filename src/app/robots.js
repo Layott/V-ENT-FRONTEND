@@ -41,6 +41,8 @@ export default function robots() {
           '/events/check-in/',     // a ticket code in a URL; indexing one would
                                    // hand a stranger somebody's admission
           '/events/find-ticket',   // a lookup form, and nothing to rank for
+          '/organizations/invites',  // somebody's own invitations
+          '/organizations/*/manage', // roles, invites, and the profile form
         ],
       },
       {

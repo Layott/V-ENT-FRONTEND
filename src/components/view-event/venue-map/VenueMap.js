@@ -54,9 +54,21 @@ export default function VenueMap({
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
 
+  // `Number(null)` is 0, and 0 is finite, so an event with no coordinates used
+  // to pass this test and the map drew latitude 0, longitude 0 - a point in the
+  // Gulf of Guinea with no land on it. That is what the CEO saw: a flat
+  // blue-grey square with a marker in the middle of the ocean, which reads as a
+  // map that failed to load rather than a venue nobody has pinned.
+  //
+  // So absent is checked before the conversion, and exactly 0,0 is treated as
+  // absent too. No venue on this platform is in the middle of the Atlantic, and
+  // a placeholder that happens to be finite is still a placeholder.
+  const given = v => v !== null && v !== undefined && v !== '';
   const lat = Number(latitude);
   const lng = Number(longitude);
-  const havePoint = Number.isFinite(lat) && Number.isFinite(lng);
+  const havePoint = given(latitude) && given(longitude)
+    && Number.isFinite(lat) && Number.isFinite(lng)
+    && !(lat === 0 && lng === 0);
 
   // ---------------------------------------------------------------- the map
 

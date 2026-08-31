@@ -571,3 +571,441 @@
   font-family: inherit;
   cursor: pointer;
 }
+
+/* ------------------------------------------------------------------ */
+/* A club as a group chat: topics down one side, the conversation in   */
+/* the middle, the people running it on their own tab.                 */
+/*                                                                     */
+/* Hierarchy here is surface and space. Every panel is a fill one step */
+/* off the page, never a line drawn around content.                    */
+/* ------------------------------------------------------------------ */
+
+.problem {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff9ba0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.leaveBtn {
+  background-color: #303136;
+  color: rgba(255, 255, 255, 0.82);
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.leaveBtn:hover { background-color: #3a3b41; color: #fff; }
+
+/* -- empty and locked states --------------------------------------- */
+
+.emptyState {
+  background-color: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.emptyIcon { font-size: 1.6rem; color: rgba(255, 255, 255, 0.35); }
+.emptyTitle { color: #fff; font-size: 1.05rem; font-weight: 600; margin: 0; }
+
+.emptyBody {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.88rem;
+  margin: 0;
+  max-width: 34ch;
+  line-height: 1.5;
+}
+
+.emptyLink { color: var(--v-ent-success, #4caf50); font-size: 0.88rem; }
+
+/* -- loading -------------------------------------------------------- */
+
+.skeletonHero,
+.skeletonRail,
+.skeletonThread,
+.skeletonMsg {
+  background-color: #1c1d21;
+  border-radius: 12px;
+}
+
+.skeletonHero { height: 260px; }
+.skeletonRail { height: 54px; }
+.skeletonThread { height: 320px; }
+.skeletonMsg { height: 52px; margin-bottom: 0.75rem; }
+
+/* -- layout --------------------------------------------------------- */
+
+.chatLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+@media only screen and (min-width: 900px) {
+  .chatLayout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* -- topics --------------------------------------------------------- */
+
+.topicRail {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.railHeading {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.railList {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+}
+
+@media only screen and (min-width: 900px) {
+  .railList { flex-direction: column; overflow-x: visible; }
+}
+
+/* A filled chip, not a ring. Selected is a stronger fill plus brighter
+   text, which reads at a glance without drawing an outline. */
+.topicChip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  text-align: left;
+}
+
+@media only screen and (min-width: 900px) { .topicChip { width: 100%; } }
+
+.topicChip:hover { background-color: #33343a; color: #fff; }
+
+.topicChipOpen {
+  background-color: #43444c;
+  color: #fff;
+  font-weight: 600;
+}
+
+.topicChipName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topicLockIcon { font-size: 0.7rem; opacity: 0.7; flex-shrink: 0; }
+
+.topicCount {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.addTopicBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.addTopicBtn:hover { background-color: #2a2b30; color: #fff; }
+
+.topicForm { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.topicInput {
+  flex: 1 1 100%;
+  min-width: 0;
+  background-color: #17181c;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.topicInput::placeholder { color: rgba(255, 255, 255, 0.32); }
+
+.topicSave,
+.topicCancel {
+  border: none;
+  border-radius: 9px;
+  padding: 0.45rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.topicSave { background-color: var(--v-ent-success, #4caf50); color: #0e1a10; }
+.topicCancel { background-color: #2a2b30; color: rgba(255, 255, 255, 0.65); }
+
+/* -- the conversation ----------------------------------------------- */
+
+.threadPane {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.threadHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.threadName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.threadDesc {
+  margin: 0.15rem 0 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+}
+
+.threadTools { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 9px;
+  padding: 0.4rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toolBtn:hover { background-color: #35363c; color: #fff; }
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background-color: #17181c;
+  border-radius: 12px;
+  padding: 0.9rem;
+  min-height: 260px;
+  max-height: 52vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media only screen and (min-width: 900px) { .thread { max-height: 58vh; } }
+
+.threadEmpty {
+  margin: auto;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.msgRow { display: flex; gap: 0.6rem; align-items: flex-start; min-width: 0; }
+
+.msgBody { min-width: 0; flex: 1; }
+
+.msgHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.msgAuthor { color: #fff; font-size: 0.85rem; font-weight: 600; }
+
+.msgTime {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.msgDelete {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  font-size: 0.68rem;
+  padding: 0.1rem 0.2rem;
+  margin-left: auto;
+}
+
+.msgDelete:hover { color: #ff8a8f; }
+
+.msgText {
+  margin: 0.15rem 0 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msgRemoved {
+  margin: 0.15rem 0 0;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+/* -- saying something ------------------------------------------------ */
+
+.composerNote {
+  margin: 0;
+  background-color: #1c1d21;
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.83rem;
+  text-align: center;
+}
+
+.composer { display: flex; gap: 0.5rem; align-items: flex-end; }
+
+.composerInput {
+  flex: 1;
+  min-width: 0;
+  background-color: #17181c;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  resize: none;
+  min-height: 44px;
+  max-height: 140px;
+}
+
+.composerInput::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.composerSend {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--v-ent-success, #4caf50);
+  color: #0e1a10;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.composerSend:disabled {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: default;
+}
+
+/* -- members --------------------------------------------------------- */
+
+.membersList { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  background-color: var(--overlay-gray);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+}
+
+.memberWho {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.memberTools { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+
+.roleSelect {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 9px;
+  padding: 0.4rem 0.55rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.roleIcon { margin-right: 0.3rem; font-size: 0.7rem; }
+
+.role_owner { color: #f0b429; }
+.role_admin { color: #6fb3f2; }
+.role_moderator { color: #9ad29c; }
+.role_member { color: rgba(255, 255, 255, 0.4); }

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from './edit-user-profile-details.module.css';
 import { COUNTRIES, isKnownCountry } from '@/constants/countries';
+import { useT } from '@/i18n/LanguageProvider';
 
-const EditUserProfileDetails = ({ fullname, username, description, state, country, handleInputChange }) => {
+const EditUserProfileDetails = ({ fullname, username, description, state, country, countryIsGuess = false, handleInputChange }) => {
+  const tt = useT();
 
 
   return (
@@ -53,6 +55,11 @@ const EditUserProfileDetails = ({ fullname, username, description, state, countr
     value={state}
     onChange={handleInputChange}
   />
+  {/* Never filled from an address. A carrier gateway put a Lagos player in
+      Ilorin, so the city is only ever what somebody typed. */}
+  <p className={styles.fieldNote}>
+    {tt("ui.city.yours.to.set.8b39", "Only you set this. We never guess your city.")}
+  </p>
 </div>
 
         <div className={styles.inputGroup}>
@@ -78,6 +85,14 @@ const EditUserProfileDetails = ({ fullname, username, description, state, countr
             {country && !isKnownCountry(country) && <option value={country}>{country}</option>}
             {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          {/* A guess and an answer look identical once stored, and a screen
+              that cannot tell them apart presents the guess as a fact. This is
+              the only place the difference is visible, so it says so here and
+              stops saying it the moment the person picks a country. */}
+          {countryIsGuess && <p className={styles.guessNote}>
+            {tt("ui.country.guessed.4e71",
+                "We worked this out from your connection, so it may be wrong. Pick your country to settle it.")}
+          </p>}
         </div>
       </div>
     </div>

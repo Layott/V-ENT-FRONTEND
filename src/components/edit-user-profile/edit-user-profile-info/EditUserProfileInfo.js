@@ -473,7 +473,7 @@ const EditUserProfileInfo = () => {
             <EditProfileBanner onChange={handleBannerChange} currentBanner={profileData.banner} />
           </div>
         </div>
-        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} description={tx(profileData.description)} country={profileData.country} state={profileData.state} handleInputChange={handleInputChange} />
+        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} description={tx(profileData.description)} country={profileData.country} state={profileData.state} countryIsGuess={!!profileData.country_is_guess} handleInputChange={handleInputChange} />
         <EditInterests selectedInterests={profileData.interests} handleInterestsChange={handleInterestsChange} />
         <div className={styles.buttonContainer}>
           <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>

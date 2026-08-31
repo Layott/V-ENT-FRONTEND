@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { LuChevronDown } from 'react-icons/lu';
 import { useComingSoon } from '@/lib/platformModules';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -30,6 +32,16 @@ const MobileSidebar = ({
   const t = useT();
   const pathname = usePathname(); // Gets the current pathname
 
+  // Which groups are open. CEO, 31 August: the things you run - my tickets, my
+  // events, my tournaments - were top-level rows, which made the menu long and
+  // put "My tickets" at the same level as "Events". They belong under the
+  // section they are part of, and only once you ask for it.
+  //
+  // A group starts open when you are already somewhere inside it, so the menu
+  // shows you where you are rather than making you find it again.
+  const [openGroups, setOpenGroups] = useState({});
+  const toggleGroup = key => setOpenGroups(g => ({ ...g, [key]: !g[key] }));
+
   // Function to Check if the Route is Active
   const isActive = href => {
     if (href === '/') {
@@ -54,48 +66,85 @@ const MobileSidebar = ({
                     </Link>
                 </li>
 
-                {/* The things you run, rather than the things you browse. On a
-                    phone the header dropdown does not exist, so without these
-                    the events you created were reachable only from a small
-                    button on /events. */}
-                <li className={`${styles.sidebarItem} ${isActive('/tournaments/my-tournaments') ? styles.activeLink : ''}`}>
-                    <Link href={'/tournaments/my-tournaments'} className={styles.iconTextLink}>
-                        {t('menu.myTournaments', 'My tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
-                    </Link>
-                </li>
+                {/* Three sections, each holding the things you browse and
+                    the things you run. They open on a tap rather than
+                    navigating, so "My tickets" is one press away without being
+                    a top-level row competing with "Events". */}
+                {[
+                  {
+                    key: 'tournaments',
+                    label: t('nav.tournaments'),
+                    Icon: LuGamepad2,
+                    root: '/tournaments',
+                    children: [
+                      { href: '/tournaments', label: t('menu.allTournaments', 'All tournaments'), exact: true },
+                      { href: '/tournaments/my-tournaments', label: t('menu.myTournaments', 'My tournaments') },
+                      { href: '/tournaments/drafts', label: t('menu.drafts', 'Drafts') },
+                    ],
+                  },
+                  {
+                    key: 'events',
+                    label: t('nav.events'),
+                    Icon: MdOutlineEvent,
+                    root: '/events',
+                    children: [
+                      { href: '/events', label: t('menu.allEvents', 'All events'), exact: true },
+                      { href: '/events/my-events', label: t('menu.myEvents', 'My events') },
+                      { href: '/events/my-tickets', label: t('menu.myTickets', 'My tickets') },
+                    ],
+                  },
+                  {
+                    key: 'teams',
+                    label: t('nav.teams'),
+                    Icon: FaUsers,
+                    root: '/teams',
+                    children: [
+                      { href: '/teams', label: t('menu.allTeams', 'All teams'), exact: true },
+                      { href: '/teams?tab=owned', label: t('menu.teamsOwned', 'Owned by me') },
+                      { href: '/teams?tab=joined', label: t('menu.teamsJoined', 'Joined') },
+                      { href: '/teams?tab=invited', label: t('menu.teamsInvited', 'Invited') },
+                    ],
+                  },
+                ].map(group => {
+                  // Open if you asked for it, or if you are already in it.
+                  const inHere = pathname.startsWith(group.root);
+                  const open = openGroups[group.key] ?? inHere;
+                  return (
+                    <li key={group.key} className={styles.groupItem}>
+                      <button
+                        type="button"
+                        className={`${styles.iconTextLink} ${styles.groupHead} ${inHere ? styles.activeLink : ''}`}
+                        onClick={() => toggleGroup(group.key)}
+                        aria-expanded={open}
+                      >
+                        <LuChevronDown
+                          className={`${styles.groupChevron} ${open ? styles.groupChevronOpen : ''}`}
+                          aria-hidden="true"
+                        />
+                        <span className={styles.groupLabel}>{group.label}</span>
+                        <group.Icon className={styles.sidebarIcon} />
+                        {isComingSoon(group.root) && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
+                      </button>
 
-                <li className={`${styles.sidebarItem} ${isActive('/events/my-events') ? styles.activeLink : ''}`}>
-                    <Link href={'/events/my-events'} className={styles.iconTextLink}>
-                        {t('menu.myEvents', 'My events')} <MdOutlineEvent className={styles.sidebarIcon} />
-                    </Link>
-                </li>
-
-                <li className={`${styles.sidebarItem} ${isActive('/events/my-tickets') ? styles.activeLink : ''}`}>
-                    <Link href={'/events/my-tickets'} className={styles.iconTextLink}>
-                        {t('menu.myTickets', 'My tickets')} <MdOutlineEvent className={styles.sidebarIcon} />
-                    </Link>
-                </li>
-
-                <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
-                    <Link href={'/tournaments'} className={styles.iconTextLink}>
-                        {t('nav.tournaments')} <LuGamepad2 className={styles.sidebarIcon} />
-                        {isComingSoon('/tournaments') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
-                    </Link>
-                </li>
-
-                <li className={`${styles.sidebarItem} ${isActive('/events') ? styles.activeLink : ''}`}>
-                    <Link href={'/events'} className={styles.iconTextLink}>
-                        {t('nav.events')} <MdOutlineEvent className={styles.sidebarIcon} />
-                        {isComingSoon('/events') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
-                    </Link>
-                </li>
-
-                <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>
-                    <Link href={'/teams'} className={styles.iconTextLink}>
-                        {t('nav.teams')} <FaUsers className={styles.sidebarIcon} />
-                        {isComingSoon('/teams') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
-                    </Link>
-                </li>
+                      {open && (
+                        <ul className={styles.subList}>
+                          {group.children.map(child => (
+                            <li key={child.href} className={styles.subItem}>
+                              <Link
+                                href={child.href}
+                                className={`${styles.subLink} ${
+                                  (child.exact ? pathname === child.href.split('?')[0] : pathname.startsWith(child.href.split('?')[0]))
+                                    ? styles.subLinkActive : ''}`}
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
 
                 <li className={`${styles.sidebarItem} ${isActive('/rankings') ? styles.activeLink : ''}`}>
                     <Link href={'/rankings'} className={styles.iconTextLink}>

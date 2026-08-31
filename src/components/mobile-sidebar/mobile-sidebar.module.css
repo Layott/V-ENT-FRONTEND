@@ -148,12 +148,86 @@
   font-size: 0.9rem;
 }
 
+/* The badge sits at the far left of its row, and every label stays in the same
+   right-hand column whether or not the row carries one.
+
+   `margin-left: auto` did the opposite: on a badged row it shoved the label and
+   its icon to the LEFT and left the badge on the right, so "Anime" and
+   "Marketplace" sat out of line with "Tournaments" and "Rankings" directly
+   above them. The CEO photographed exactly that. `order: -1` moves the badge
+   to the start of the row without touching the markup, and `margin-right: auto`
+   holds it there while the label keeps its column. */
 .comingSoon {
-  margin-left: auto;
+  order: -1;
+  margin-right: auto;
   font-size: 0.6rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
   border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* ── Sections that open ─────────────────────────────────────────────────── */
+
+.groupItem {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 3rem);
+  gap: 0.35rem;
+}
+
+.groupHead {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: right;
+}
+
+.groupHead:hover { background-color: rgba(255, 255, 255, 0.06); }
+
+.groupLabel { white-space: nowrap; }
+
+/* Turns when the section opens. Motion for a real state change, not decoration. */
+.groupChevron {
+  order: -2;
+  margin-right: auto;
+  font-size: 0.9rem;
+  opacity: 0.55;
+  transition: transform 0.18s ease;
+}
+.groupChevronOpen { transform: rotate(180deg); }
+
+.subList {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+  padding: 0.15rem 0 0.3rem;
+  list-style: none;
+  margin: 0;
+}
+
+.subItem { display: flex; }
+
+/* The child rows are a filled surface one step off the panel rather than an
+   indent line, per the standing ban on drawing structure with strokes. */
+.subLink {
+  flex: 1;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.85rem;
+  text-align: right;
+  text-decoration: none;
+}
+.subLink:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
+.subLinkActive { background: rgba(237, 28, 36, 0.24); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .groupChevron { transition: none; }
 }
 
 @media only screen and (min-width: 300px) {
