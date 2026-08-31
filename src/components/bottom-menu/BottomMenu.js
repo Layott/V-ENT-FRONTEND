@@ -7,6 +7,7 @@ import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
 import { FaUsers } from 'react-icons/fa';
 import { IoWalletOutline, IoGameControllerOutline } from "react-icons/io5";
+import { FiLogIn } from 'react-icons/fi';
 import profileImageSmall from "@/images/signed_in_user_small.webp";
 import styles from './bottom-menu.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -18,8 +19,13 @@ const BottomMenu = ({
   const t = useT();
   const pathname = usePathname();
   const {
-    data: session
-  } = useSession(); // Add session hook
+    data: session,
+    status
+  } = useSession();
+  // `data` alone cannot tell "signed out" from "still asking", and treating the
+  // second as the first is what makes a shell flicker. Decide on `status`.
+  const signedIn = status === 'authenticated';
+  const signedOut = status === 'unauthenticated';
   const [menuOpen, setMenuOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [profilePic, setProfilePic] = useState(profileImageSmall);
@@ -110,11 +116,13 @@ const BottomMenu = ({
   return <div className={styles.bottomMenuContainer}>
         <nav className={styles.bottomNavContainer}>
             <ul className={styles.sidebarList}>
-                <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
+                {/* Home is a member's dashboard and redirects a visitor to
+                    sign in, so it is not a place to send one from the bar. */}
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/home') ? styles.activeLink : ''}`}>
                     <Link href={'/home'} className={styles.iconTextLink}>
                         <BiHomeCircle className={`${styles.sidebarIcon} ${isActive('/home') ? styles.activeSidebarIcon : ''}`} /> {t('nav.home')}
                     </Link>
-                </li>
+                </li>}
 
                 <li className={`${styles.sidebarItem} ${isActive('/tournaments') ? styles.activeLink : ''}`}>
                     <Link href={'/tournaments'} className={styles.iconTextLink}>
@@ -134,15 +142,30 @@ const BottomMenu = ({
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
+                {/* A wallet belongs to somebody. Offering one to a visitor with
+                    no account is the shell claiming they have things here. */}
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         <IoWalletOutline className={`${styles.sidebarIcon} ${isActive('/wallets') ? styles.activeSidebarIcon : ''}`} /> {t('nav.wallets')}
                     </Link>
-                </li>
+                </li>}
+                {signedOut && <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
+                    <Link href={'/community'} className={styles.iconTextLink}>
+                        <FaUsers className={`${styles.sidebarIcon} ${isActive('/community') ? styles.activeSidebarIcon : ''}`} /> {t('nav.community')}
+                    </Link>
+                </li>}
             </ul>
         </nav>
 
-        <div className={styles.profileContainerOuter} ref={menuRef}>
+        {/* While the session is still resolving, neither state is drawn. A
+            shell that shows an avatar and then flips to "Log in" a moment later
+            is worse than one that waits: it looks like being signed out. */}
+        {signedOut ? <div className={styles.profileContainerOuter}>
+            <Link href="/login" className={styles.signInLink}>
+                <FiLogIn className={styles.sidebarIcon} />
+                <span className={styles.signInLabel}>{tt("ui.log.f7c4", "Log in")}</span>
+            </Link>
+        </div> : signedIn ? <div className={styles.profileContainerOuter} ref={menuRef}>
             <div className={styles.profileContainer} onClick={toggleMenu}>
                 <div className={styles.profileImageContainer}>
                     {isExternalImage ? <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} className={styles.profileImage} width={40} height={40} /> : <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} className={styles.profileImage} width={40} height={40} />}
@@ -155,7 +178,7 @@ const BottomMenu = ({
                     <Link href={'/login'} className={styles.openUpItem} onClick={handleLogout}>{tt("ui.logout.e43d", "Logout")}</Link>
                 </div>}
 
-        </div>
+        </div> : <div className={styles.profileContainerOuter} />}
 
     </div>;
 };

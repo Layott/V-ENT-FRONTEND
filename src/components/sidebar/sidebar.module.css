@@ -234,3 +234,7 @@
   letter-spacing: 0.04em;
   color: #9A9AA3;
 }
+
+/* The way in, sitting where a member's way out sits. Colour and weight rather
+   than an outline, like everything else in this list. */
+.signInItem a { color: var(--v-ent-red, #ED1C24); font-weight: 600; }

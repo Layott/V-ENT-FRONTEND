@@ -251,3 +251,7 @@
 .sidebarItem span.disabledLink {
   min-height: 44px;
 }
+
+/* The way in, first in the menu for somebody with no account. Colour and
+   weight rather than an outline. */
+.signInItem a { color: var(--v-ent-red, #ED1C24); font-weight: 600; }

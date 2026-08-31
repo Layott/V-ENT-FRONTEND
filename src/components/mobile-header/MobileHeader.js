@@ -212,7 +212,9 @@ const MobileHeader = ({
               : <LuSearch className={styles.searchIconMobile} />}
           </button>
 
-          {!isSearchBarVisible && <button
+          {/* Somebody's own messages. Not shown to a visitor with no account,
+              who would read a bell as "you have something here". */}
+          {!isSearchBarVisible && sessionToken && <button
               type="button"
               className={`${styles.headerAction} ${styles.bellContainer}`}
               aria-label={tt("ui.notifications.753a", "Notifications")}
@@ -223,13 +225,13 @@ const MobileHeader = ({
               {notifCount > 0 && <span className={styles.bellBadgeMobile}>{notifCount > 99 ? '99+' : notifCount}</span>}
             </button>}
 
-          <NotificationDrawer
+          {sessionToken && <NotificationDrawer
             open={notifOpen}
             onClose={() => setNotifOpen(false)}
             token={sessionToken}
             unread={notifCount}
             onUnreadChange={setNotifCount}
-          />
+          />}
 
           <div className={`${styles.headerAction} ${styles.hamburgerContainer}`} onClick={toggleMobileMenu}>
             <label className={styles.hamburger}>

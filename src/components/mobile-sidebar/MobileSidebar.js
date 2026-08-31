@@ -28,7 +28,12 @@ const MobileSidebar = ({
   const tt = useT();
   // The admin entry is shown to staff only, the same condition the desktop
   // sidebar uses.
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  // `data` alone cannot tell "signed out" from "still asking". Neither branch
+  // is drawn until `status` settles, so the menu does not flicker from a
+  // member's shell to a visitor's.
+  const signedIn = status === 'authenticated';
+  const signedOut = status === 'unauthenticated';
   const t = useT();
   const pathname = usePathname(); // Gets the current pathname
 
@@ -59,12 +64,25 @@ const MobileSidebar = ({
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>
-                <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/user-profile') ? styles.activeLink : ''}`}>
                     <Link href={'/user-profile'} className={styles.iconTextLink}>
                         {t('nav.profile')} <PiUserCircle className={styles.sidebarIcon} />
                         {isComingSoon('/user-profile') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
-                </li>
+                </li>}
+
+                {/* First thing in the menu for somebody with no account: the
+                    way in, rather than a profile that is not theirs. */}
+                {signedOut && <li className={`${styles.sidebarItem} ${styles.signInItem}`}>
+                    <Link href={'/login'} className={styles.iconTextLink}>
+                        {tt("ui.log.f7c4", "Log in")} <MdLogout className={styles.sidebarIcon} />
+                    </Link>
+                </li>}
+                {signedOut && <li className={styles.sidebarItem}>
+                    <Link href={'/signup'} className={styles.iconTextLink}>
+                        {tt("ui.create.account.3c19", "Create an account")} <PiUserCircle className={styles.sidebarIcon} />
+                    </Link>
+                </li>}
 
                 {/* Three sections, each holding the things you browse and
                     the things you run. They open on a tap rather than
@@ -78,8 +96,8 @@ const MobileSidebar = ({
                     root: '/tournaments',
                     children: [
                       { href: '/tournaments', label: t('menu.allTournaments', 'All tournaments'), exact: true },
-                      { href: '/tournaments/my-tournaments', label: t('menu.myTournaments', 'My tournaments') },
-                      { href: '/tournaments/drafts', label: t('menu.drafts', 'Drafts') },
+                      { mine: true, href: '/tournaments/my-tournaments', label: t('menu.myTournaments', 'My tournaments') },
+                      { mine: true, href: '/tournaments/drafts', label: t('menu.drafts', 'Drafts') },
                     ],
                   },
                   {
@@ -89,8 +107,8 @@ const MobileSidebar = ({
                     root: '/events',
                     children: [
                       { href: '/events', label: t('menu.allEvents', 'All events'), exact: true },
-                      { href: '/events/my-events', label: t('menu.myEvents', 'My events') },
-                      { href: '/events/my-tickets', label: t('menu.myTickets', 'My tickets') },
+                      { mine: true, href: '/events/my-events', label: t('menu.myEvents', 'My events') },
+                      { mine: true, href: '/events/my-tickets', label: t('menu.myTickets', 'My tickets') },
                     ],
                   },
                   {
@@ -100,9 +118,9 @@ const MobileSidebar = ({
                     root: '/teams',
                     children: [
                       { href: '/teams', label: t('menu.allTeams', 'All teams'), exact: true },
-                      { href: '/teams?tab=owned', label: t('menu.teamsOwned', 'Owned by me') },
-                      { href: '/teams?tab=joined', label: t('menu.teamsJoined', 'Joined') },
-                      { href: '/teams?tab=invited', label: t('menu.teamsInvited', 'Invited') },
+                      { mine: true, href: '/teams?tab=owned', label: t('menu.teamsOwned', 'Owned by me') },
+                      { mine: true, href: '/teams?tab=joined', label: t('menu.teamsJoined', 'Joined') },
+                      { mine: true, href: '/teams?tab=invited', label: t('menu.teamsInvited', 'Invited') },
                     ],
                   },
                 ].map(group => {
@@ -128,7 +146,11 @@ const MobileSidebar = ({
 
                       {open && (
                         <ul className={styles.subList}>
-                          {group.children.map(child => (
+                          {/* "My tournaments", "My tickets", "Owned by me" and
+                              the rest are a member's own things. Offering them
+                              to a visitor is the menu telling them they have
+                              some. The public entry in each group stays. */}
+                          {group.children.filter(child => signedIn || !child.mine).map(child => (
                             <li key={child.href} className={styles.subItem}>
                               <Link
                                 href={child.href}
@@ -153,12 +175,12 @@ const MobileSidebar = ({
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/wallets') ? styles.activeLink : ''}`}>
                     <Link href={'/wallets'} className={styles.iconTextLink}>
                         {t('nav.wallets')} <IoWalletOutline className={styles.sidebarIcon} />
                         {isComingSoon('/wallets') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
                 <li className={`${styles.sidebarItem} ${isActive('/anime') ? styles.activeLink : ''}`}>
                     <Link href={'/anime'} className={styles.iconTextLink}>
@@ -215,12 +237,12 @@ const MobileSidebar = ({
                     </Link>
                 </li>
 
-                <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
+                {signedIn && <li className={`${styles.sidebarItem} ${isActive('/settings') ? styles.activeLink : ''}`}>
                     <Link href={'/settings'} className={styles.iconTextLink}>
                         {t('nav.settings')} <MdOutlineSettings className={styles.sidebarIcon} />
                         {isComingSoon('/settings') && <span className={styles.comingSoon}>{t('nav.comingSoon')}</span>}
                     </Link>
-                </li>
+                </li>}
 
                 {session?.user?.isStaff && <li className={`${styles.sidebarItem} ${isActive('/admin') ? styles.activeLink : ''}`}>
                     <Link href={'/admin'} className={styles.iconTextLink}>
@@ -228,11 +250,11 @@ const MobileSidebar = ({
                     </Link>
                 </li>}
 
-                <li className={styles.sidebarItem}>
+                {signedIn && <li className={styles.sidebarItem}>
                     <button onClick={handleLogout} className={styles.logoutButtonLink}>
                         {tt("ui.logout.e43d", "Logout")} <MdLogout className={styles.sidebarIcon} />
                     </button>
-                </li>
+                </li>}
             </ul>
         </nav>
     </div>;

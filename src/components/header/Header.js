@@ -223,7 +223,10 @@ const Header = ({
           {isSearchBarVisible ? <MdOutlineClose className={styles.searchIconMobile} onClick={toggleSearchBar} /> : <FcSearch className={styles.searchIconMobile} onClick={toggleSearchBar} />}
         </div>
 
-        <button
+        {/* Notifications are somebody's own. A bell over a shell with no
+            account behind it is the site telling a visitor they have messages
+            waiting. */}
+        {sessionToken && <button
           type="button"
           className={styles.bellBtn}
           aria-label={tt("ui.notifications.753a", "Notifications")}
@@ -232,15 +235,15 @@ const Header = ({
         >
           <IoNotificationsOutline className={styles.bellIcon} />
           {notifCount > 0 && <span className={styles.bellBadge}>{notifCount > 99 ? '99+' : notifCount}</span>}
-        </button>
+        </button>}
 
-        <NotificationDrawer
+        {sessionToken && <NotificationDrawer
           open={notifOpen}
           onClose={() => setNotifOpen(false)}
           token={sessionToken}
           unread={notifCount}
           onUnreadChange={setNotifCount}
-        />
+        />}
 
         {/* Signed out: offer the way in rather than a placeholder identity. */}
         {!session ? <Link href="/login" className={`btn redBTN ${styles.headerLoginBtn}`}>

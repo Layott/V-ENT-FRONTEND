@@ -6,7 +6,7 @@ import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { recordArrival, refFor } from '@/lib/referral';
-import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
@@ -270,6 +270,20 @@ export const ViewEventContent = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(tabParam || 'overview');
+
+  // Where the tabs live, so a button that opens one can put it under the
+  // reader's eyes. "Get tickets" sits in the hero and only switched the tab,
+  // which is several screens further down - so pressing it looked like it did
+  // nothing at all. The CEO reported it as exactly that.
+  const tabsRef = useRef(null);
+  // Only a press should move the page. Landing on ?tab=tickets from a link, or
+  // the tab syncing itself to the URL, must not yank somebody who is reading.
+  const scrollWanted = useRef(false);
+  const openTab = id => {
+    scrollWanted.current = true;
+    setActiveTab(id);
+  };
+
   // Whether the organiser has published a programme. The Schedule tab appears
   // only when they have, so an empty tab never shows.
   //
@@ -651,6 +665,52 @@ export const ViewEventContent = ({
   const countdown = useCountdown(event?.start_date, event?.end_date);
   const tickets = useMemo(() => tiers.map(normaliseTier), [tiers]);
 
+  // After the commit, and again as the panel fills.
+  //
+  // One attempt is not enough, and the reason is worth writing down. The ticket
+  // panel fetches its tiers, so at the moment the tab changes it is a spinner:
+  // the page is barely taller than the window and there is nothing to scroll.
+  // A single `scrollIntoView` there does nothing at all, which is precisely
+  // what pressing the button looked like. The intent is held until the strip
+  // has actually reached the top, or until the page admits it cannot scroll
+  // any further - and it is dropped after a moment either way, so a slow
+  // request cannot move the page under somebody who has started reading.
+  useEffect(() => {
+    if (!scrollWanted.current) return undefined;
+
+    let stop = false;
+    const settle = () => {
+      if (stop || !scrollWanted.current) return;
+      const strip = tabsRef.current;
+      if (!strip) return;
+      const top = strip.getBoundingClientRect().top;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const atEnd = window.scrollY >= maxScroll - 2;
+      // Close enough to the top, or the page has no more to give.
+      if (top <= 96 || atEnd) {
+        scrollWanted.current = false;
+        return;
+      }
+      // `behavior: 'smooth'` is silently swallowed on this page - measured:
+      // an instant scroll moves to the maximum, a smooth one leaves scrollY at
+      // zero. Depending on it would have shipped a button that does nothing
+      // again, which is the bug being fixed. Instant is also what somebody
+      // pressing "Get tickets" wants: to be there, not to watch a journey. It
+      // needs no reduced-motion branch for the same reason.
+      strip.scrollIntoView({ block: 'start', behavior: 'auto' });
+    };
+
+    settle();
+    const timers = [180, 420, 800, 1400].map(ms => window.setTimeout(settle, ms));
+    // Give up rather than pull the page around later.
+    const giveUp = window.setTimeout(() => { scrollWanted.current = false; }, 2000);
+    return () => {
+      stop = true;
+      timers.forEach(window.clearTimeout);
+      window.clearTimeout(giveUp);
+    };
+  }, [activeTab, tiersLoading, tiers.length]);
+
   // Only the organizer gets the door list (the endpoint enforces it too).
   const isOrganizer = useMemo(() => {
     const me = session?.user;
@@ -875,7 +935,7 @@ export const ViewEventContent = ({
               {countdown?.ended && <div className={styles.endedBadge}>{tt("ui.event.has.ended.2027", "This event has ended")}</div>}
 
               <div className={styles.heroActions}>
-                <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => setActiveTab('tickets')} type="button">
+                <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
                   <IoTicketOutline /> {tt("ui.get.tickets.0b90", "Get tickets")}
                 </button>
                 <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
@@ -886,8 +946,8 @@ export const ViewEventContent = ({
           </div>
 
           {/* Tabs */}
-          <div className={styles.tabRow}>
-            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)} type="button">
+          <div className={styles.tabRow} ref={tabsRef}>
+            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)} type="button">
                 {tx(t.label)}
               </button>)}
           </div>
