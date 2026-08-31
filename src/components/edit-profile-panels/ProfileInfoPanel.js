@@ -2,7 +2,7 @@
 
 import { uploadHint } from '@/lib/uploadSpecs';
 import InfoTip from '@/components/info-tip/InfoTip';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import shared from './editProfileShared.module.css';
 import styles from './ProfileInfoPanel.module.css';
 import { COUNTRIES, isKnownCountry } from '@/constants/countries';
@@ -22,7 +22,8 @@ const ProfileInfoPanel = ({
   initialData = {},
   onSave,
   onCancel,
-  showToast
+  showToast,
+  sessionToken = null
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -39,6 +40,35 @@ const ProfileInfoPanel = ({
   const [country, setCountry] = useState(initialData.country || '');
   const [city, setCity] = useState(initialData.state || '');
   const countryIsGuess = !!initialData.country_is_guess && country === (initialData.country || '');
+  // What the sign-in address looks like, offered rather than applied. The
+  // platform will not write a city onto somebody's profile from an address -
+  // a carrier gateway is a real place and it is not where the subscriber is -
+  // but showing the guess and letting one press accept it is the honest use of
+  // a value that might be right.
+  const [suggested, setSuggested] = useState(null);
+
+  useEffect(() => {
+    // Only worth asking when there is a blank to fill or a guess to settle.
+    // Somebody who has already said where they are is not asked again.
+    if (city.trim() && !countryIsGuess) return undefined;
+    const token = sessionToken;
+    if (!token) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || ''}/settings/location-suggestion/`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => null);
+        if (!cancelled && body?.status === 'success') setSuggested(body.data);
+      } catch { /* no suggestion is a fine outcome; the fields still work */ }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionToken]);
+
+  const offeredCity = (suggested?.city || '').trim();
+  const showCityOffer = !!offeredCity && offeredCity !== city.trim();
   const [interests, setInterests] = useState(Array.isArray(initialData.interests) ? initialData.interests : []);
   const [interestSearch, setInterestSearch] = useState('');
   const [saving, setSaving] = useState(false);
@@ -176,6 +206,13 @@ const ProfileInfoPanel = ({
           <input className={shared.formInput} id="city" value={city} maxLength={120}
                  placeholder={tt("ui.city.placeholder.5e28", "Lagos")}
                  onChange={e => setCity(e.target.value)} />
+          {showCityOffer && <button type="button" className={styles.cityOffer}
+                                    onClick={() => setCity(offeredCity)}>
+            {tt("ui.city.looks.like.2f64", "Looks like")} <strong>{offeredCity}</strong>.{' '}
+            <span className={styles.cityOfferAction}>
+              {tt("ui.city.use.it.8d70", "Use it")}
+            </span>
+          </button>}
           <span className={styles.locationNote}>
             {tt("ui.city.yours.to.set.8b39", "Only you set this. We never guess your city.")}
           </span>

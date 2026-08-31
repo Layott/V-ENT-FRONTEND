@@ -306,7 +306,7 @@ const EditUserProfileContent = () => {
             </aside>
 
             <section>
-              {activePanel === 'info' && <ProfileInfoPanel initialData={profileData || {}} onSave={handleSaveProfileInfo} onCancel={handleCancel} showToast={showToast} />}
+              {activePanel === 'info' && <ProfileInfoPanel initialData={profileData || {}} onSave={handleSaveProfileInfo} onCancel={handleCancel} showToast={showToast} sessionToken={session?.user?.sessionToken || null} />}
               {activePanel === 'games' && <FavoriteGamesEditPanel initialGames={profileData?.favorite_games} onSave={handleSaveGames} onCancel={handleCancel} showToast={showToast} />}
               {activePanel === 'accounts' && <GamingAccountsPanel initialAccounts={profileData?.gaming_accounts || {}} onSave={handleSaveAccounts} onCancel={handleCancel} showToast={showToast} />}
               {activePanel === 'social' && <SocialLinksEditPanel initialLinks={profileData?.social_links_object || {}} initialCustom={profileData?.custom_links || []} onSave={handleSaveSocial} onCancel={handleCancel} showToast={showToast} />}
