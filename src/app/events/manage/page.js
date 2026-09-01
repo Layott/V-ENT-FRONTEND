@@ -63,6 +63,10 @@ export const ManageEventContent = ({
   // Every rule about how many tickets one address may hold: across the event,
   // per ticket type, and per day. One payload because the three are edited on
   // one screen and stack rather than override.
+  // The days the event actually runs, from the server rather than worked out
+  // here, so this screen and the creation wizard cannot disagree about how many
+  // days an event has.
+  const [eventDays, setEventDays] = useState([]);
   const [limits, setLimits] = useState(null);
   // What is typed but not yet saved, keyed the way the API takes it, so
   // pressing Save sends exactly what changed and nothing else.
@@ -200,6 +204,8 @@ export const ManageEventContent = ({
       return;
     }
     setTiers(ti.body?.data?.tiers || []);
+    setEventDays(ti.body?.data?.days || []);
+    setEventDays(ti.body?.data?.days || []);
     setMoney(mo.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
@@ -679,6 +685,22 @@ export const ManageEventContent = ({
                                 .replace('{sold}', row.sold)
                                 .replace('{total}', row.quantity || '-')}
                             </span>
+                            {/* When it admits, and a plain warning when a type
+                                named for a day carries no date. The buyer's
+                                card showed nothing at all for those, so the
+                                organiser had no way to know it was wrong. */}
+                            <span className={styles.muted}>
+                              {row.day
+                                ? `${row.day}${row.day_label ? ` · ${row.day_label}` : ''}`
+                                : eventDays.length > 1
+                                  ? tt('manage.tierAllDays', 'All days')
+                                  : ''}
+                            </span>
+                            {!row.day && eventDays.length > 1
+                              && /(day|jour|dia)\s*\d/i.test(row.name)
+                              && <span className={styles.warnBadge}>
+                                {tt('manage.tierNoDate', 'No date set')}
+                              </span>}
                             {row.sold_out && <span className={styles.offBadge}>
                               {tt('manage.tierSoldOut', 'Sold out')}
                             </span>}
@@ -728,10 +750,37 @@ export const ManageEventContent = ({
                                      defaultValue={row.quantity}
                                      placeholder={tt('manage.tierQuantity', 'How many')}
                                      onChange={e => { row._quantity = e.target.value; }} />
+                              {/* Which day it admits on. The wizard could set
+                                  this and nothing could ever correct it, which
+                                  is how a type called "Day 2" ended up with no
+                                  date and told the buyer nothing. */}
+                              {eventDays.length > 1 && <select className={styles.input}
+                                      defaultValue={row.day || ''}
+                                      onChange={e => { row._day = e.target.value; }}>
+                                <option value="">
+                                  {tt('manage.tierAllDaysOption', 'All days (full pass)')}
+                                </option>
+                                {eventDays.map(d => <option key={d.day} value={d.day}>
+                                  {tt('createEvent.dayN', 'Day {n}').replace('{n}', d.n)}
+                                  {' · '}{d.day}
+                                </option>)}
+                              </select>}
                               <button type="button" className={styles.primaryBtn} disabled={busy}
                                       onClick={() => saveTier(row, {
                                         ...(row._price !== undefined ? { price: row._price } : {}),
                                         ...(row._quantity !== undefined ? { quantity: row._quantity } : {}),
+                                        // The label follows the day rather than
+                                        // being typed separately, so a type
+                                        // cannot end up reading "Day 2" while
+                                        // admitting on day one.
+                                        ...(row._day !== undefined ? {
+                                          day: row._day || null,
+                                          day_label: row._day
+                                            ? tt('createEvent.dayN', 'Day {n}').replace(
+                                              '{n}',
+                                              eventDays.find(d => d.day === row._day)?.n || '')
+                                            : '',
+                                        } : {}),
                                       })}>
                                 {tt('manage.save', 'Save')}
                               </button>
