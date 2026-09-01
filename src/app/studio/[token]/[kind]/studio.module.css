@@ -167,7 +167,13 @@
 /* ----------------------------------------------------------- lower third */
 
 .lower {
+  /* A column, explicitly. Both children are inline-block so they would
+     otherwise sit side by side, which is what shipped: the name and the line
+     under it printed on one row. Watched on air before it was caught. */
+  align-items: flex-start;
   bottom: 110px;
+  display: flex;
+  flex-direction: column;
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
   left: 80px;
   position: absolute;
