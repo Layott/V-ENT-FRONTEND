@@ -718,6 +718,36 @@ export const ViewEventContent = ({
     return String(event.organizer.user_id ?? event.organizer.id ?? '') === String(me.id ?? '') || event.organizer.username && event.organizer.username === me.username;
   }, [session?.user, event?.organizer]);
 
+  // How many calendar days this event runs. Used only to decide what a ticket
+  // with no date of its own means, which is the whole question below.
+  const eventDayCount = useMemo(() => {
+    const from = event?.start_date ? new Date(event.start_date) : null;
+    const to = event?.end_date ? new Date(event.end_date) : from;
+    if (!from || Number.isNaN(from.getTime())) return 0;
+    const last = to && !Number.isNaN(to.getTime()) ? to : from;
+    const a = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    const b = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+    return Math.max(Math.round((b - a) / 86400000) + 1, 1);
+  }, [event?.start_date, event?.end_date]);
+
+  // What a ticket card says about when it lets you in. Every card says
+  // something, which is the fix: a type carrying no date printed nothing at
+  // all, and beside a card that did print one it read as a loading failure
+  // rather than as "this one covers everything".
+  const ticketWhen = useCallback((t) => {
+    if (t.day) {
+      return t.day_label ? `${formatDate(t.day)} · ${t.day_label}` : formatDate(t.day);
+    }
+    // No date of its own. On a run of several days that is the full pass, and
+    // on a single day event it is simply the day the event happens.
+    if (eventDayCount > 1) {
+      return t.day_label
+        ? `${tt('event.allDaysPass', 'All days')} · ${t.day_label}`
+        : tt('event.allDaysPass', 'All days');
+    }
+    return event?.start_date ? formatDate(event.start_date) : '';
+  }, [eventDayCount, event?.start_date, tt]);
+
   // Shortening this event's ticket link.
   //
   // CEO, 1 September: "add an option for people to be able to shorten their
@@ -1255,14 +1285,17 @@ export const ViewEventContent = ({
                         </span>
                         <p className={styles.tierName}>{t.name}</p>
                       </div>
-                      {/* The date this ticket admits you on. A label with no
-                          date beside it ("Day 2") is the half of the answer
-                          the buyer already had. */}
-                      {(t.day || t.day_label) && <p className={styles.tierDay}>
-                        {t.day ? formatDate(t.day) : ''}
-                        {t.day && t.day_label ? ' · ' : ''}
-                        {t.day_label}
-                      </p>}
+                      {/* When this ticket admits you. Every card says it.
+                          CEO, 1 September, with a screenshot: "General
+                          Admission Day 2" printed nothing at all while Day 1
+                          printed its date, because a type with no `day` fell
+                          through this block entirely.
+                          A type with no date is not missing an answer - on a
+                          multi-day event it is the full pass, and "All days" is
+                          the answer. Saying nothing left the buyer to guess,
+                          and next to a card that DID show a date it read as
+                          though something had failed to load. */}
+                      <p className={styles.tierDay}>{ticketWhen(t)}</p>
                       <p className={styles.tierPrice}>
                         {t.price.toLocaleString()} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>

@@ -631,3 +631,17 @@
   /* The number goes under its label rather than squeezing beside it. */
   .limitInput { flex: 1 1 100%; }
 }
+
+/* A type named for a day that carries no date. A filled chip, not a ring: the
+   buyer's card showed nothing at all for these, so the organiser had no way to
+   know it was wrong. */
+.warnBadge {
+  background-color: rgba(229, 185, 78, 0.18);
+  border-radius: 6px;
+  color: #E5B94E;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.5rem;
+  white-space: nowrap;
+}

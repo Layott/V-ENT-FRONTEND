@@ -17,6 +17,14 @@ export const LANGUAGES = [
 
 export const dictionaries = {
   en: {
+    "event.allDaysPass": "All days",
+    "manage.tierAllDays": "All days",
+    "manage.tierAllDaysOption": "All days (full pass)",
+    "manage.tierNoDate": "No date set",
+    "api.USERNAME_RESERVED": "That name is one of the handles reserved before launch on the V-ENT waitlist. It is being held for the member who reserved it. Please choose another.",
+    "api.USERNAME_TAKEN_WAITLIST": "That name was one of the handles reserved before launch on the V-ENT waitlist, and the member who reserved it has claimed it. Please choose another.",
+    "api.USERNAME_ALREADY_TAKEN": "Username already taken",
+    "api.signupFailed": "Failed to create account",
     "share.shorten": "Shorten this link",
     "share.shortening": "Shortening...",
     "share.shortOn": "Short link. Points at the same page.",
@@ -5640,6 +5648,14 @@ export const dictionaries = {
   },
 
   fr: {
+    "event.allDaysPass": "Tous les jours",
+    "manage.tierAllDays": "Tous les jours",
+    "manage.tierAllDaysOption": "Tous les jours (pass complet)",
+    "manage.tierNoDate": "Aucune date définie",
+    "api.USERNAME_RESERVED": "Ce nom fait partie des pseudos réservés avant le lancement sur la liste d'attente V-ENT. Il est gardé pour le membre qui l'a réservé. Choisissez-en un autre.",
+    "api.USERNAME_TAKEN_WAITLIST": "Ce nom faisait partie des pseudos réservés avant le lancement sur la liste d'attente V-ENT, et le membre qui l'avait réservé l'a récupéré. Choisissez-en un autre.",
+    "api.USERNAME_ALREADY_TAKEN": "Ce nom d'utilisateur est déjà pris",
+    "api.signupFailed": "La création du compte a échoué",
     "share.shorten": "Raccourcir ce lien",
     "share.shortening": "Raccourcissement...",
     "share.shortOn": "Lien court. Il mène à la même page.",
@@ -11263,6 +11279,14 @@ export const dictionaries = {
   },
 
   pt: {
+    "event.allDaysPass": "Todos os dias",
+    "manage.tierAllDays": "Todos os dias",
+    "manage.tierAllDaysOption": "Todos os dias (passe completo)",
+    "manage.tierNoDate": "Sem data definida",
+    "api.USERNAME_RESERVED": "Esse nome é um dos utilizadores reservados antes do lançamento na lista de espera da V-ENT. Está guardado para o membro que o reservou. Escolha outro.",
+    "api.USERNAME_TAKEN_WAITLIST": "Esse nome foi um dos utilizadores reservados antes do lançamento na lista de espera da V-ENT, e o membro que o reservou já o reclamou. Escolha outro.",
+    "api.USERNAME_ALREADY_TAKEN": "Esse nome de utilizador já está em uso",
+    "api.signupFailed": "Não foi possível criar a conta",
     "share.shorten": "Encurtar este link",
     "share.shortening": "A encurtar...",
     "share.shortOn": "Link curto. Aponta para a mesma página.",

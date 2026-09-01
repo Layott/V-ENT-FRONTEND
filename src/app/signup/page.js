@@ -197,8 +197,14 @@ const Signup = () => {
         setSnackbarType("success");
         setOpen(true);
       } else {
-        const errorMessage = data.error || data.message || data.detail || "Failed to create account";
-        setSnackbarMessage(errorMessage);
+        // Through apiMessage, so the reason is translated. `data.message` is a
+        // sentence written in Python and cannot be; going straight to it is how
+        // a French reader got told in English why their signup failed. It
+        // matters most here, because the refusal somebody actually meets is
+        // "that name was reserved before launch on the waitlist", which is only
+        // useful if they can read it.
+        setSnackbarMessage(apiMessage(
+          tt, data, "api.signupFailed", "Failed to create account"));
         setSnackbarType("error");
         setOpen(true);
       }
