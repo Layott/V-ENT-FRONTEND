@@ -1,0 +1,81 @@
+/* The page somebody lands on when a short link no longer opens anything.
+   Filled surfaces and space, no strokes, no glow. */
+
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem 1rem;
+}
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 16px;
+  max-width: 32rem;
+  padding: 2rem 1.75rem;
+  /* A grid or flex child sizes to its widest content by default and then the
+     container clips it. Nothing here is wide, and the next thing added might
+     be. */
+  min-width: 0;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.body {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.code {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 0.1rem 0.4rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primary,
+.ghost {
+  align-items: center;
+  border-radius: 10px;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.primary {
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+}
+
+.primary:hover { background-color: #c9161d; }
+
+.ghost {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.ghost:hover { background-color: rgba(255, 255, 255, 0.18); }
+
+.primary:focus-visible,
+.ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

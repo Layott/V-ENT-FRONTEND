@@ -60,12 +60,27 @@ const QrCanvas = ({ value }) => {
 /**
  * `url` may be relative; it is resolved against the current origin so the QR
  * carries something a stranger's phone can actually open.
+ *
+ * `shorten`, when given, is an async function returning a short address for
+ * this page. It is only passed by a screen whose viewer may actually shorten
+ * this event's links, so the button is absent rather than present-and-refused
+ * for everybody else. A control that renders live and fails on press is the
+ * thing the community feed shipped once and had to take back.
  */
-export default function ShareCard({ url, title, text, label, compact = false }) {
+export default function ShareCard({ url, title, text, label, compact = false,
+                                    shorten = null }) {
   const tt = useT();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [absolute, setAbsolute] = useState('');
+  // The short address, once somebody has asked for one. Held beside the full
+  // one rather than replacing it, so the toggle can put the long link back:
+  // the long one carries the event's name and is the better thing to paste
+  // into a message, while the short one is for reading aloud and printing.
+  const [short, setShort] = useState('');
+  const [shortening, setShortening] = useState(false);
+  const [shortError, setShortError] = useState('');
+  const [useShort, setUseShort] = useState(false);
   const canvasWrapRef = useRef(null);
 
   useEffect(() => {
@@ -76,6 +91,40 @@ export default function ShareCard({ url, title, text, label, compact = false }) 
       setAbsolute(window.location.href);
     }
   }, [url]);
+
+  // A different page, a different link. Without this, opening the card on one
+  // event and then another would offer the first event's short code for the
+  // second, which is the worst possible way for this to be wrong.
+  useEffect(() => {
+    setShort('');
+    setUseShort(false);
+    setShortError('');
+  }, [url]);
+
+  const showing = useShort && short ? short : absolute;
+
+  const makeShort = useCallback(async () => {
+    if (!shorten) return;
+    if (short) { setUseShort(true); return; }
+    setShortening(true);
+    setShortError('');
+    try {
+      const made = await shorten();
+      const value = typeof made === 'string' ? made : made?.url;
+      if (!value) throw new Error('no url');
+      // Resolved the same way the full link is, because the API returns it
+      // against FRONTEND_URL and a relative answer would otherwise reach the
+      // QR as a path no camera can open.
+      const resolved = new URL(value, window.location.origin).href;
+      setShort(resolved);
+      setUseShort(true);
+    } catch {
+      setShortError(tt('share.shortenFailed',
+        'The short link could not be made. The full link below still works.'));
+    } finally {
+      setShortening(false);
+    }
+  }, [shorten, short, tt]);
 
   // Copied resets itself, so the button does not sit reading "Copied" for ever
   // over a clipboard that was replaced ten minutes ago.
@@ -94,13 +143,13 @@ export default function ShareCard({ url, title, text, label, compact = false }) 
 
   const copy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(absolute);
+      await navigator.clipboard.writeText(showing);
       setCopied(true);
     } catch {
       // Clipboard is blocked outside a secure context and in some in-app
       // browsers. The address is on screen and selectable either way.
     }
-  }, [absolute]);
+  }, [showing]);
 
   // The phone's own share sheet, where there is one. It reaches WhatsApp,
   // which is where this is actually going, without this page having to guess
@@ -108,11 +157,11 @@ export default function ShareCard({ url, title, text, label, compact = false }) 
   const nativeShare = useCallback(async () => {
     if (typeof navigator === 'undefined' || !navigator.share) return;
     try {
-      await navigator.share({ title, text, url: absolute });
+      await navigator.share({ title, text, url: showing });
     } catch {
       // Dismissing the sheet throws. That is a person changing their mind.
     }
-  }, [absolute, title, text]);
+  }, [showing, title, text]);
 
   const saveQr = useCallback(() => {
     const canvas = canvasWrapRef.current?.querySelector('canvas');
@@ -158,13 +207,38 @@ export default function ShareCard({ url, title, text, label, compact = false }) 
             {title && <p className={styles.what}>{title}</p>}
 
             <div className={styles.qrWrap} ref={canvasWrapRef}>
-              <QrCanvas value={absolute} />
+              <QrCanvas value={showing} />
             </div>
             <p className={styles.hint}>
               {tt('share.scanHint', 'Point a phone camera at this to open the page.')}
             </p>
 
-            <p className={styles.url}>{absolute}</p>
+            <p className={styles.url}>{showing}</p>
+
+            {shorten && (
+              <div className={styles.shortRow}>
+                {useShort && short ? (
+                  <>
+                    <span className={styles.shortNote}>
+                      {tt('share.shortOn', 'Short link. Points at the same page.')}
+                    </span>
+                    <button type="button" className={styles.linkBtn}
+                            onClick={() => setUseShort(false)}>
+                      {tt('share.showFull', 'Show the full link')}
+                    </button>
+                  </>
+                ) : (
+                  <button type="button" className={styles.linkBtn}
+                          onClick={makeShort} disabled={shortening}>
+                    {shortening
+                      ? tt('share.shortening', 'Shortening...')
+                      : tt('share.shorten', 'Shorten this link')}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {shortError && <p className={styles.shortError}>{shortError}</p>}
 
             <div className={styles.actions}>
               <button type="button" className={styles.primary} onClick={copy}>
