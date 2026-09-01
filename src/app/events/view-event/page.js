@@ -718,6 +718,29 @@ export const ViewEventContent = ({
     return String(event.organizer.user_id ?? event.organizer.id ?? '') === String(me.id ?? '') || event.organizer.username && event.organizer.username === me.username;
   }, [session?.user, event?.organizer]);
 
+  // Shortening this event's ticket link.
+  //
+  // CEO, 1 September: "add an option for people to be able to shorten their
+  // ticket links, so you create very short versions of the ticket links."
+  //
+  // Passed to ShareCard only when the viewer is the organiser, because only an
+  // organiser may create one. An attendee sees the card without the control
+  // rather than with a control that answers 403 after they press it.
+  const shortenTicketLink = useCallback(async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/short-links/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
+        },
+        body: JSON.stringify({ target: `/events/${id}?tab=tickets` }),
+      });
+    const body = await res.json().catch(() => null);
+    if (!res.ok || body?.status !== 'success') throw new Error('shorten failed');
+    return body.data.link.url;
+  }, [id, session?.user?.sessionToken]);
+
   // Load the real tiers for this event. Re-read after a sale, because the
   // remaining count on every card moved the moment a ticket was issued.
   useEffect(() => {
@@ -1073,6 +1096,7 @@ export const ViewEventContent = ({
                     text={tt('share.eventText', 'Tickets and details for {name} on V-ENT.')
                       .replace('{name}', event.name || '')}
                     label={tt('share.event', 'Share this event')}
+                    shorten={isOrganizer ? shortenTicketLink : null}
                   />
 
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>

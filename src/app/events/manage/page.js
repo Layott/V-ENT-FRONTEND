@@ -60,6 +60,13 @@ export const ManageEventContent = ({
   const [queue, setQueue] = useState(null);
   const [newTier, setNewTier] = useState({ name: '', price: '', quantity: '', perks: '' });
   const [pricing, setPricing] = useState(null);   // tier id being priced
+  // Every rule about how many tickets one address may hold: across the event,
+  // per ticket type, and per day. One payload because the three are edited on
+  // one screen and stack rather than override.
+  const [limits, setLimits] = useState(null);
+  // What is typed but not yet saved, keyed the way the API takes it, so
+  // pressing Save sends exactly what changed and nothing else.
+  const [limitDraft, setLimitDraft] = useState({});
   const [askFields, setAskFields] = useState([]);
   const [newField, setNewField] = useState({ label: '', kind: 'text', required: false, per_ticket: true, options: '' });
   const [editing, setEditing] = useState(null);
@@ -174,12 +181,12 @@ export const ManageEventContent = ({
     setLoading(true);
     setError('');
     setRefused(false);
-    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
       call('/checkout-fields/manage/'),
       call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
-      call('/polls/'),
+      call('/polls/'), call('/email-limits/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -206,6 +213,11 @@ export const ManageEventContent = ({
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
     setPolls(po.body?.data?.polls || []);
+    setLimits(el.body?.data || null);
+    // Cleared on every load so a saved value is read back from the server
+    // rather than from what somebody typed. A draft that survives its own save
+    // is how a field goes on showing a number the database refused.
+    setLimitDraft({});
     setLoading(false);
   }, [call, token, eventRef]);
   useEffect(() => {
@@ -458,6 +470,54 @@ export const ManageEventContent = ({
     body: JSON.stringify(patch),
   }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setPricing(null));
 
+  // ------------------------------------------------- tickets per email address
+  //
+  // CEO, 1 September: "if there is several different days or types of ticket,
+  // the option to set this for each ticket type and day should be available.
+  // for all tickets and days at once also."
+  //
+  // The three scopes stack: a purchase has to satisfy every one that carries a
+  // number. So an empty box means "this scope sets no rule", never "unlimited",
+  // and the copy on screen says so in those words.
+
+  // What a box currently shows: the unsaved draft if there is one, otherwise
+  // whatever is saved. Kept as a string so an empty box is empty rather than a
+  // zero, which the API would refuse and the reader would misread.
+  const limitValue = (key, saved) => (
+    limitDraft[key] !== undefined ? limitDraft[key]
+      : (saved == null ? '' : String(saved)));
+
+  const setLimitField = (key, raw) =>
+    setLimitDraft(d => ({ ...d, [key]: raw.replace(/[^0-9]/g, '') }));
+
+  // Only what was touched is sent. A payload carrying every scope would rewrite
+  // rules the organiser never opened, and clearing one by not mentioning it is
+  // exactly the accident this avoids.
+  const saveLimits = () => {
+    const payload = {};
+    const tiersPatch = {};
+    const daysPatch = {};
+    Object.entries(limitDraft).forEach(([key, raw]) => {
+      const value = raw === '' ? null : Number(raw);
+      if (key === 'event' || key === 'all_tiers' || key === 'all_days') {
+        payload[key] = value;
+      } else if (key.startsWith('tier:')) {
+        tiersPatch[key.slice(5)] = value;
+      } else if (key.startsWith('day:')) {
+        daysPatch[key.slice(4)] = value;
+      }
+    });
+    if (Object.keys(tiersPatch).length) payload.tiers = tiersPatch;
+    if (Object.keys(daysPatch).length) payload.days = daysPatch;
+    if (!Object.keys(payload).length) return Promise.resolve();
+    return run(() => call('/email-limits/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }), 'manage.limitsSaved', 'Ticket limits saved.');
+  };
+
+  const limitsChanged = Object.keys(limitDraft).length > 0;
+
   // What a buyer is asked for. The organiser decides, because a five-a-side
   // needs a shirt size and a conference needs a dietary requirement, and
   // neither is a column anybody could have guessed.
@@ -695,6 +755,115 @@ export const ManageEventContent = ({
                             </div>}
                         </div>)}
                     </div>}
+
+                  {/* How many tickets one email address may hold.
+                      Three scopes, and they stack: a purchase has to satisfy
+                      every rule that carries a number. */}
+                  <h3 className={styles.subTitle}>
+                    {tt('manage.limitsTitle', 'Tickets per email address')}
+                  </h3>
+                  <p className={styles.cardHint}>
+                    {tt('manage.limitsHint', 'Leave a box empty and that rule is off. Rules add up rather than replace each other: set one VIP each and four per day and both are checked, so somebody who already holds a VIP is refused a second whatever the day allows. Counted against what an address already holds, so retyping it after a refresh does not get round it.')}
+                  </p>
+
+                  <div className={styles.limitRows}>
+                    <label className={styles.limitRow}>
+                      <span className={styles.limitName}>
+                        {tt('manage.limitEvent', 'Across the whole event')}
+                        <span className={styles.limitNote}>
+                          {tt('manage.limitEventNote', 'All tickets and all days at once.')}
+                        </span>
+                      </span>
+                      <input className={styles.limitInput} type="number" min="1" max="999"
+                             inputMode="numeric"
+                             placeholder={tt('manage.limitNone', 'No limit')}
+                             value={limitValue('event', limits?.event)}
+                             onChange={e => setLimitField('event', e.target.value)} />
+                    </label>
+
+                    {(limits?.tiers?.length || 0) > 1 && <label className={styles.limitRow}>
+                      <span className={styles.limitName}>
+                        {tt('manage.limitAllTiers', 'Every ticket type')}
+                        <span className={styles.limitNote}>
+                          {tt('manage.limitAllTiersNote', 'Sets the same number on each type below, so it does not have to be typed once per type.')}
+                        </span>
+                      </span>
+                      <input className={styles.limitInput} type="number" min="1" max="999"
+                             inputMode="numeric"
+                             placeholder={tt('manage.limitLeave', 'Leave alone')}
+                             value={limitValue('all_tiers', null)}
+                             onChange={e => setLimitField('all_tiers', e.target.value)} />
+                    </label>}
+
+                    {limits?.has_days && (limits?.days?.length || 0) > 1
+                      && <label className={styles.limitRow}>
+                      <span className={styles.limitName}>
+                        {tt('manage.limitAllDays', 'Every day')}
+                        <span className={styles.limitNote}>
+                          {tt('manage.limitAllDaysNote', 'Sets the same number on each day below.')}
+                        </span>
+                      </span>
+                      <input className={styles.limitInput} type="number" min="1" max="999"
+                             inputMode="numeric"
+                             placeholder={tt('manage.limitLeave', 'Leave alone')}
+                             value={limitValue('all_days', null)}
+                             onChange={e => setLimitField('all_days', e.target.value)} />
+                    </label>}
+                  </div>
+
+                  {(limits?.tiers?.length || 0) > 0 && <>
+                    <p className={styles.limitGroup}>
+                      {tt('manage.limitPerType', 'Per ticket type')}
+                    </p>
+                    <div className={styles.limitRows}>
+                      {limits.tiers.map(row => <label key={row.id} className={styles.limitRow}>
+                        <span className={styles.limitName}>
+                          {row.name}
+                          {row.day && <span className={styles.limitNote}>
+                            {row.day_label || row.day}
+                          </span>}
+                        </span>
+                        <input className={styles.limitInput} type="number" min="1" max="999"
+                               inputMode="numeric"
+                               placeholder={tt('manage.limitNoneOwn', 'No rule of its own')}
+                               value={limitValue(`tier:${row.id}`, row.max_tickets_per_email)}
+                               onChange={e => setLimitField(`tier:${row.id}`, e.target.value)} />
+                      </label>)}
+                    </div>
+                  </>}
+
+                  {limits?.has_days && <>
+                    <p className={styles.limitGroup}>
+                      {tt('manage.limitPerDay', 'Per day')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {tt('manage.limitPerDayHint', 'Counted across every type admitting on that day, so somebody holding a Standard and a VIP for Saturday holds two tickets for Saturday.')}
+                    </p>
+                    <div className={styles.limitRows}>
+                      {limits.days.map(row => <label key={row.day} className={styles.limitRow}>
+                        <span className={styles.limitName}>
+                          {row.label || row.day}
+                          {row.label && <span className={styles.limitNote}>{row.day}</span>}
+                        </span>
+                        <input className={styles.limitInput} type="number" min="1" max="999"
+                               inputMode="numeric"
+                               placeholder={tt('manage.limitNoneOwn', 'No rule of its own')}
+                               value={limitValue(`day:${row.day}`, row.max_tickets_per_email)}
+                               onChange={e => setLimitField(`day:${row.day}`, e.target.value)} />
+                      </label>)}
+                    </div>
+                  </>}
+
+                  <div className={styles.limitActions}>
+                    <button type="button" className={styles.primaryBtn}
+                            disabled={busy || !limitsChanged} onClick={saveLimits}>
+                      {tt('manage.limitsSave', 'Save ticket limits')}
+                    </button>
+                    {limitsChanged && <button type="button" className={styles.ghostBtn}
+                            onClick={() => setLimitDraft({})}>
+                      {tt('ui.cancel.77df', 'Cancel')}
+                    </button>}
+                  </div>
 
                   {/* What a buyer is asked for at checkout. */}
                   <h3 className={styles.subTitle}>

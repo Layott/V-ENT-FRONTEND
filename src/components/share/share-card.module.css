@@ -155,3 +155,44 @@
 @media (max-width: 480px) {
   .panel { max-width: 100%; padding: 1.1rem; }
 }
+
+/* Shortening the link. A row under the address rather than another button in
+   the action strip: it changes what the address IS, and the three buttons
+   below all act on whatever it currently says. */
+
+.shortRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: -0.35rem 0 0.9rem;
+  min-width: 0;
+}
+
+.shortNote {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+}
+
+.linkBtn {
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.2rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.linkBtn:disabled { color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+.linkBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.shortError {
+  color: #ff8a8a;
+  font-size: 0.82rem;
+  margin: -0.4rem 0 0.9rem;
+  text-align: center;
+}
