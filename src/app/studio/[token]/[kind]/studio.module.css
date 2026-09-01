@@ -1,0 +1,318 @@
+/* Broadcast graphics. Composited onto live video by OBS or vMix.
+ *
+ * Different constraints from the rest of the product, and worth stating:
+ *
+ * - The page paints NOTHING. Every surface belongs to an element, because
+ *   anything else covers the video.
+ * - Legibility beats subtlety. These are read at a glance, at a distance,
+ *   often over a bright pitch. Solid fills, heavy weights, high contrast.
+ * - Still no strokes and no glow. Structure comes from filled surfaces and
+ *   space here exactly as it does everywhere else. The one shadow used is a
+ *   neutral downward one, because a graphic genuinely does float above video
+ *   and needs to separate from a light frame.
+ * - No looping animation. A graphic that breathes on air is a graphic the
+ *   viewer looks at instead of the match.
+ */
+
+.stage {
+  background: transparent;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
+}
+
+/* ------------------------------------------------------------- score bar */
+
+.scorebar {
+  align-items: stretch;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  left: 50%;
+  position: absolute;
+  top: 38px;
+  transform: translateX(-50%);
+}
+
+.sbSide {
+  align-items: center;
+  background: #17171a;
+  color: #fff;
+  display: flex;
+  gap: 14px;
+  min-width: 300px;
+  padding: 0 26px;
+}
+
+.sbSide { border-radius: 10px 0 0 10px; justify-content: flex-end; }
+.sbAway { border-radius: 0 10px 10px 0; justify-content: flex-start; }
+
+.sbLogo { height: 42px; object-fit: contain; width: 42px; }
+
+.sbName {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.sbScore {
+  align-items: center;
+  background: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  display: flex;
+  gap: 14px;
+  padding: 16px 26px;
+}
+
+.sbNum {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 34px;
+  text-align: center;
+}
+
+/* A block, not a hyphen: a hyphen at this weight reads as part of a number. */
+.sbDash {
+  background: rgba(255, 255, 255, 0.5);
+  height: 3px;
+  width: 14px;
+}
+
+.sbCaption {
+  background: #0e0e10;
+  border-radius: 0 0 8px 8px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  left: 50%;
+  letter-spacing: 0.06em;
+  padding: 6px 20px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 100%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- standings */
+
+.standings {
+  background: #17171a;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  left: 60px;
+  min-width: 430px;
+  overflow: hidden;
+  position: absolute;
+  top: 90px;
+}
+
+.stTitle {
+  background: var(--v-ent-red, #ED1C24);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  padding: 13px 20px;
+}
+
+.stHead {
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  padding: 9px 20px 5px;
+  text-transform: uppercase;
+}
+
+.stRow {
+  align-items: center;
+  display: flex;
+  font-size: 19px;
+  padding: 9px 20px;
+}
+
+/* Zebra fill, never a rule between rows. */
+.stRow:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
+
+.stPos {
+  color: rgba(255, 255, 255, 0.55);
+  flex: 0 0 34px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.stTeam {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  font-weight: 600;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stLogo { height: 24px; object-fit: contain; width: 24px; }
+
+.stNum {
+  flex: 0 0 46px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ----------------------------------------------------------- lower third */
+
+.lower {
+  bottom: 110px;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  left: 80px;
+  position: absolute;
+}
+
+.lowerTitle {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px 8px 0 0;
+  color: #fff;
+  display: inline-block;
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  padding: 12px 26px;
+}
+
+.lowerSub {
+  background: #17171a;
+  border-radius: 0 8px 8px 8px;
+  color: rgba(255, 255, 255, 0.82);
+  display: inline-block;
+  font-size: 20px;
+  padding: 10px 26px;
+}
+
+/* ----------------------------------------------------------- player card */
+
+.card {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  bottom: 120px;
+  color: #fff;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 20px;
+  padding: 20px 30px 20px 20px;
+  position: absolute;
+  right: 70px;
+}
+
+.cardFace {
+  border-radius: 10px;
+  height: 96px;
+  object-fit: cover;
+  width: 96px;
+}
+
+.cardBody { display: flex; flex-direction: column; gap: 4px; }
+
+.cardName {
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.cardTeam { color: var(--v-ent-red, #ED1C24); font-size: 19px; font-weight: 600; }
+
+.cardStat {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- ticker */
+
+.ticker {
+  background: #17171a;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+}
+
+.tickerInner {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  font-size: 19px;
+  gap: 46px;
+  padding: 13px 34px;
+  white-space: nowrap;
+}
+
+.tickerItem { font-variant-numeric: tabular-nums; }
+
+/* --------------------------------------------------------- intro / outro */
+
+.title {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 14px;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  text-align: center;
+}
+
+/* Full-bleed, because an intro is the whole frame rather than an overlay. */
+.title_intro { background: #0e0e10; }
+.title_outro { background: #0e0e10; }
+
+.titleMain {
+  color: #fff;
+  font-size: 74px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  max-width: 76vw;
+}
+
+.titleSub {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* --------------------------------------------------------------- bracket */
+
+.bracket {
+  background: #17171a;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  overflow: hidden;
+  position: absolute;
+  right: 60px;
+  top: 90px;
+}
+
+.bracketRow {
+  align-items: center;
+  display: flex;
+  font-size: 19px;
+  gap: 20px;
+  padding: 10px 20px;
+}
+
+.bracketRow:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
+
+.bracketRound { color: rgba(255, 255, 255, 0.55); font-size: 15px; }
+
+.bracketScore { font-variant-numeric: tabular-nums; font-weight: 650; }
