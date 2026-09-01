@@ -718,35 +718,41 @@ export const ViewEventContent = ({
     return String(event.organizer.user_id ?? event.organizer.id ?? '') === String(me.id ?? '') || event.organizer.username && event.organizer.username === me.username;
   }, [session?.user, event?.organizer]);
 
-  // How many calendar days this event runs. Used only to decide what a ticket
-  // with no date of its own means, which is the whole question below.
-  const eventDayCount = useMemo(() => {
+  // The span this event runs over, as real dates rather than a count.
+  const eventSpan = useMemo(() => {
     const from = event?.start_date ? new Date(event.start_date) : null;
-    const to = event?.end_date ? new Date(event.end_date) : from;
-    if (!from || Number.isNaN(from.getTime())) return 0;
-    const last = to && !Number.isNaN(to.getTime()) ? to : from;
+    if (!from || Number.isNaN(from.getTime())) return null;
+    const raw = event?.end_date ? new Date(event.end_date) : from;
+    const to = Number.isNaN(raw.getTime()) ? from : raw;
     const a = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-    const b = new Date(last.getFullYear(), last.getMonth(), last.getDate());
-    return Math.max(Math.round((b - a) / 86400000) + 1, 1);
+    const b = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+    return { first: a, last: b, days: Math.max(Math.round((b - a) / 86400000) + 1, 1) };
   }, [event?.start_date, event?.end_date]);
 
   // What a ticket card says about when it lets you in. Every card says
-  // something, which is the fix: a type carrying no date printed nothing at
-  // all, and beside a card that did print one it read as a loading failure
-  // rather than as "this one covers everything".
+  // something, which was the first fix: a type carrying no date printed
+  // nothing at all, and beside a card that did print one it read as a loading
+  // failure rather than as "this one covers everything".
+  //
+  // CEO, second look: "it should show the dates that ticket was assigned to".
+  // Right, and "All days" was hiding exactly that. A full pass IS assigned to
+  // dates - all of them - so it names them. A buyer deciding between a day
+  // ticket and a full pass is comparing dates, and making them scroll up to
+  // the header to find out what "all" covers is making them do arithmetic the
+  // page already knows the answer to.
   const ticketWhen = useCallback((t) => {
     if (t.day) {
       return t.day_label ? `${formatDate(t.day)} · ${t.day_label}` : formatDate(t.day);
     }
-    // No date of its own. On a run of several days that is the full pass, and
-    // on a single day event it is simply the day the event happens.
-    if (eventDayCount > 1) {
-      return t.day_label
-        ? `${tt('event.allDaysPass', 'All days')} · ${t.day_label}`
-        : tt('event.allDaysPass', 'All days');
-    }
-    return event?.start_date ? formatDate(event.start_date) : '';
-  }, [eventDayCount, event?.start_date, tt]);
+    if (!eventSpan) return '';
+    // A single day event: the ticket is for that day, and saying "all days" of
+    // one day is a strange way to say a date.
+    if (eventSpan.days < 2) return formatDate(eventSpan.first);
+
+    const span = `${formatDate(eventSpan.first)} - ${formatDate(eventSpan.last)}`;
+    const all = tt('event.allDaysPass', 'All days');
+    return t.day_label ? `${span} · ${t.day_label}` : `${span} · ${all}`;
+  }, [eventSpan, tt]);
 
   // Shortening this event's ticket link.
   //
