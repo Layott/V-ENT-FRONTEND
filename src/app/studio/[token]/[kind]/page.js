@@ -1,0 +1,276 @@
+'use client';
+
+// A production studio element, as a browser source.
+//
+// CEO, 1 September 2026: "each element can be copied and pasted into your
+// streaming software as browser sources and it updates in realtime."
+//
+// ## The three rules this page is built around
+//
+// **It holds no state.** Everything on screen comes from the feed, every time.
+// That is what makes a broadcast survivable: OBS can be restarted mid-show, the
+// machine can be swapped, a second operator can open the same URL on another
+// laptop, and the graphic comes back exactly as it was. A page that remembered
+// anything would lose the broadcast with the tab, at the moment nobody has time
+// to rebuild it.
+//
+// **It is transparent.** The streaming software composites this onto video, so
+// the page paints nothing of its own. Not a dark background, not white:
+// nothing. Every surface belongs to an element.
+//
+// **It never shows a spinner, an error or a placeholder.** Anything this page
+// draws is going out on air. A connection that drops keeps the last good frame
+// on screen and retries quietly, because a graphic that flickers to "Loading"
+// mid-match is worse than a graphic that is a few seconds stale.
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import styles from './studio.module.css';
+
+// Fast enough that a score correction looks immediate to a viewer, slow enough
+// that six hours on a venue hotspot is not a problem. The feed answers every
+// element in one request, so this is the only timer in the whole studio.
+const POLL_MS = 1200;
+
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+/** Ordinal for a standings place: 1st, 2nd, 3rd. */
+const place = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+// ---------------------------------------------------------------- elements
+//
+// Each takes `{payload, data}`: what the operator typed, and what the bracket
+// says. The operator names the fixture; the numbers come from the tournament,
+// never from the operator, so a scorebar cannot disagree with the standings.
+
+function Scorebar({ payload, data }) {
+  const teams = data.teams || [];
+  const find = (tag) => teams.find(
+    (t) => t.tag === tag || t.name === tag) || null;
+
+  const home = find(payload.home) || teams[0] || null;
+  const away = find(payload.away) || teams[1] || null;
+  if (!home || !away) return null;
+
+  // The aggregate is the operator's, because it is the running score of a tie
+  // in progress and the bracket only learns it when the leg is recorded.
+  const hs = payload.home_score;
+  const as = payload.away_score;
+
+  return (
+    <div className={styles.scorebar}>
+      <div className={styles.sbSide}>
+        {home.logo && <img className={styles.sbLogo} src={home.logo} alt="" />}
+        <span className={styles.sbName}>{home.name}</span>
+      </div>
+      <div className={styles.sbScore}>
+        <span className={styles.sbNum}>{hs ?? 0}</span>
+        <span className={styles.sbDash} />
+        <span className={styles.sbNum}>{as ?? 0}</span>
+      </div>
+      <div className={`${styles.sbSide} ${styles.sbAway}`}>
+        <span className={styles.sbName}>{away.name}</span>
+        {away.logo && <img className={styles.sbLogo} src={away.logo} alt="" />}
+      </div>
+      {payload.caption && (
+        <div className={styles.sbCaption}>{payload.caption}</div>
+      )}
+    </div>
+  );
+}
+
+function Standings({ payload, data }) {
+  const teams = (data.teams || []).slice(0, Number(payload.limit) || 10);
+  if (!teams.length) return null;
+
+  return (
+    <div className={styles.standings}>
+      <div className={styles.stTitle}>
+        {payload.title || data.tournament?.title || 'Standings'}
+      </div>
+      <div className={styles.stHead}>
+        <span className={styles.stPos} />
+        <span className={styles.stTeam}>Team</span>
+        <span className={styles.stNum}>P</span>
+        <span className={styles.stNum}>W</span>
+        <span className={styles.stNum}>L</span>
+        <span className={styles.stNum}>+/-</span>
+      </div>
+      {teams.map((t) => (
+        <div key={t.tag || t.name} className={styles.stRow}>
+          <span className={styles.stPos}>{t.place}</span>
+          <span className={styles.stTeam}>
+            {t.logo && <img className={styles.stLogo} src={t.logo} alt="" />}
+            {t.name}
+          </span>
+          <span className={styles.stNum}>{t.played}</span>
+          <span className={styles.stNum}>{t.won}</span>
+          <span className={styles.stNum}>{t.lost}</span>
+          <span className={styles.stNum}>
+            {t.points_for - t.points_against > 0 ? '+' : ''}
+            {t.points_for - t.points_against}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LowerThird({ payload }) {
+  if (!payload.title) return null;
+  return (
+    <div className={styles.lower}>
+      <div className={styles.lowerTitle}>{payload.title}</div>
+      {payload.subtitle && (
+        <div className={styles.lowerSub}>{payload.subtitle}</div>
+      )}
+    </div>
+  );
+}
+
+function PlayerCard({ payload, data }) {
+  const teams = data.teams || [];
+  let player = null;
+  let team = null;
+  for (const t of teams) {
+    const hit = (t.players || []).find(
+      (p) => p.username === payload.player || p.name === payload.player);
+    if (hit) { player = hit; team = t; break; }
+  }
+  if (!player) return null;
+
+  return (
+    <div className={styles.card}>
+      {player.avatar && (
+        <img className={styles.cardFace} src={player.avatar} alt="" />
+      )}
+      <div className={styles.cardBody}>
+        <div className={styles.cardName}>{player.name || player.username}</div>
+        {team && <div className={styles.cardTeam}>{team.name}</div>}
+        {team && (
+          <div className={styles.cardStat}>
+            {place(team.place)} &middot; {team.won}W {team.lost}L
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Ticker({ payload, data }) {
+  const items = payload.items
+    || (data.teams || []).map((t) => `${place(t.place)}  ${t.name}  ${t.won}W ${t.lost}L`);
+  if (!items.length) return null;
+  return (
+    <div className={styles.ticker}>
+      <div className={styles.tickerInner}>
+        {items.map((line, i) => (
+          <span key={i} className={styles.tickerItem}>{line}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Titlecard({ payload, data, variant }) {
+  const title = payload.title || data.tournament?.title;
+  if (!title) return null;
+  return (
+    <div className={`${styles.title} ${styles['title_' + variant]}`}>
+      <div className={styles.titleMain}>{title}</div>
+      {payload.subtitle && (
+        <div className={styles.titleSub}>{payload.subtitle}</div>
+      )}
+    </div>
+  );
+}
+
+function Bracket({ data }) {
+  const live = data.live || [];
+  if (!live.length) return null;
+  return (
+    <div className={styles.bracket}>
+      {live.map((m, i) => (
+        <div key={i} className={styles.bracketRow}>
+          <span className={styles.bracketRound}>R{m.round}</span>
+          <span className={styles.bracketScore}>
+            {m.score[0]} - {m.score[1]}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const ELEMENTS = {
+  scorebar: Scorebar,
+  standings: Standings,
+  lower_third: LowerThird,
+  player_card: PlayerCard,
+  bracket: Bracket,
+  ticker: Ticker,
+  intro: (p) => <Titlecard {...p} variant="intro" />,
+  outro: (p) => <Titlecard {...p} variant="outro" />,
+};
+
+// ------------------------------------------------------------------- page
+
+export default function StudioElement({ params }) {
+  const token = String(params?.token || '');
+  const kind = String(params?.kind || '');
+
+  const [feed, setFeed] = useState(null);
+  const version = useRef('');
+
+  // Transparent, and nothing else on the page. Set on the document rather than
+  // in CSS alone because the browser paints the canvas white before any
+  // stylesheet applies, and a white flash on a scene change is visible on air.
+  useEffect(() => {
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    document.body.style.margin = '0';
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const read = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/studio/${encodeURIComponent(token)}/feed/`,
+        { cache: 'no-store' });
+      if (!res.ok) return;
+      const body = await res.json();
+      if (body?.status !== 'success') return;
+      // Only redraw when something actually moved. An element sitting on air
+      // for six hours should cost one comparison a second, not a re-render.
+      if (body.data.version === version.current) return;
+      version.current = body.data.version;
+      setFeed(body.data);
+    } catch {
+      // Keep the last good frame. A graphic that flickers to an error
+      // mid-match is worse than one that is a few seconds stale, and the next
+      // poll is a second away.
+    }
+  }, [token]);
+
+  useEffect(() => {
+    read();
+    const timer = setInterval(read, POLL_MS);
+    return () => clearInterval(timer);
+  }, [read]);
+
+  if (!feed) return null;
+
+  const element = feed.elements?.[kind];
+  if (!element?.active) return null;
+
+  const Component = ELEMENTS[kind];
+  if (!Component) return null;
+
+  return (
+    <main className={styles.stage}>
+      <Component payload={element.payload || {}} data={feed} />
+    </main>
+  );
+}

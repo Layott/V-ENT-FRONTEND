@@ -16,6 +16,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import OverlaysPanel from '@/components/tournament-manage/OverlaysPanel';
+import StudioPanel from '@/components/studio/StudioPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -209,7 +210,11 @@ const ManageContent = ({ slug }) => {
             {tab === 'invitations' && <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
             {tab === 'production' && <>
-              <ProductionLinkPanel tournament={tournament} />
+              {/* The studio. V-ENT's own graphics, bound to this tournament,
+                  each with a URL for a browser source. Replaces a panel that
+                  told organisers broadcast tooling was "still being built"
+                  while showing them four dead cards. */}
+              <StudioPanel tournamentRef={tournament.slug || tournament.tournament_id} />
               {/* Uploading an overlay, the URL for OBS, and the prompt that
                   converts a design into one. On this tab because this is
                   where somebody is already setting up their stream. */}
@@ -965,55 +970,7 @@ const BracketsPanel = ({
     </div>;
 };
 
-/* ──────────────── PRODUCTION LINK PANEL ──────────────── */
-const ProductionLinkPanel = ({
-  tournament
-}) => {
-  const tt = useT();
-  return <div className={styles.linkPanel}>
-    <h2 className={styles.panelTitle}>{tt("ui.production.streaming.f4e0", "Production & Streaming")}</h2>
-    <p className={styles.panelSub}>
-      {tt("ui.broadcast.tooling.still.being.17f8", "Broadcast tooling is still being built - these panels are UI previews and are not wired to a\n      live stream yet.")}
-    </p>
-    <div className={styles.linkGrid}>
-      <span className={styles.linkCard} aria-disabled="true" title={tt("ui.production.not.available.yet.c87f", "Production is not available yet")} style={{
-        opacity: 0.45,
-        cursor: 'default'
-      }}>
-        <LuRadio className={styles.linkIcon} />
-        <div>
-          <p className={styles.linkTitle}>{tt("ui.production.panel.ccb3", "Production Panel")}</p>
-          <p className={styles.linkSub}>{tt("ui.match.selector.score.input.9ed2", "Match selector, score input and scoreboard preview.")}</p>
-        </div>
-        <LuArrowRight className={styles.linkArrow} />
-      </span>
 
-      <span className={styles.linkCard} aria-disabled="true" title={tt("ui.production.not.available.yet.c87f", "Production is not available yet")} style={{
-        opacity: 0.45,
-        cursor: 'default'
-      }}>
-        <LuExternalLink className={styles.linkIcon} />
-        <div>
-          <p className={styles.linkTitle}>{tt("ui.obs.overlay.url.9faf", "OBS Overlay URL")}</p>
-          <p className={styles.linkSub}>{tt("ui.transparent.overlay.streaming.software.6bba", "Transparent overlay for streaming software.")}</p>
-        </div>
-        <LuArrowRight className={styles.linkArrow} />
-      </span>
-
-      <span className={styles.linkCard} aria-disabled="true" title={tt("ui.production.not.available.yet.c87f", "Production is not available yet")} style={{
-        opacity: 0.45,
-        cursor: 'default'
-      }}>
-        <LuPencil className={styles.linkIcon} />
-        <div>
-          <p className={styles.linkTitle}>{tt("ui.v.ent.production.hub.865e", "V-ENT Production Hub")}</p>
-          <p className={styles.linkSub}>{tt("ui.scene.overlay.configuration.2c49", "Scene and overlay configuration.")}</p>
-        </div>
-        <LuArrowRight className={styles.linkArrow} />
-      </span>
-    </div>
-  </div>;
-};
 const Manage = () => <Suspense fallback={<div style={{
   minHeight: '100vh',
   backgroundColor: '#131316'

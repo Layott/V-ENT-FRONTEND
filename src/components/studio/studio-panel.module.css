@@ -1,0 +1,225 @@
+/* The operator's console. Read while a broadcast is running, so density and
+   legibility matter more than elegance. Filled surfaces and space, no strokes,
+   no glow, and the live indicator is a solid dot that does not pulse. */
+
+.wrap { display: flex; flex-direction: column; }
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+.sub, .hint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+  max-width: 76ch;
+}
+
+.hint { margin-bottom: 0.85rem; }
+
+.muted { color: rgba(255, 255, 255, 0.45); font-size: 0.85rem; }
+
+.error {
+  background: rgba(237, 28, 36, 0.14);
+  border-radius: 8px;
+  color: #ff8a8a;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.section {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin: 1.6rem 0 0.4rem;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------ start / live */
+
+.startBox {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1.4rem;
+}
+
+.startText {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  max-width: 62ch;
+}
+
+.liveBar {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+}
+
+/* Solid. It does not pulse, breathe or glow. */
+.liveDot {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 50%;
+  flex: 0 0 9px;
+  height: 9px;
+}
+
+.liveName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.liveMeta { color: rgba(255, 255, 255, 0.45); font-size: 0.82rem; flex: 1 1 auto; }
+
+/* ------------------------------------------------------------- elements */
+
+.elements { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.element {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+}
+
+.elHead {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.elName {
+  color: #fff;
+  flex: 1 1 auto;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.onAir {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  padding: 0.18rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.elUrl {
+  color: rgba(255, 255, 255, 0.42);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------- fields */
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  min-width: 0;
+}
+
+.field { display: flex; flex: 1 1 9rem; flex-direction: column; gap: 0.25rem; min-width: 0; }
+
+.fieldLabel { color: rgba(255, 255, 255, 0.5); font-size: 0.76rem; }
+
+.input {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  min-width: 0;
+  padding: 8px 11px;
+  width: 100%;
+}
+
+.input:focus { background: rgba(255, 255, 255, 0.1); }
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.fieldActions { align-items: flex-end; display: flex; flex: 0 0 auto; gap: 0.5rem; }
+
+/* -------------------------------------------------------------- buttons */
+
+.primary, .ghost, .onBtn, .offBtn, .copyBtn {
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 0.95rem;
+  transition: background-color 0.12s;
+  white-space: nowrap;
+}
+
+.primary { background: #E5B94E; color: #1a1a1a; }
+.primary:hover { background: #f0c65f; }
+.primary:disabled { background: rgba(229, 185, 78, 0.32); color: rgba(26, 26, 26, 0.5); cursor: default; }
+
+.ghost { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.ghost:hover { background: rgba(255, 255, 255, 0.16); }
+
+.onBtn { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.onBtn:hover { background: #c9161d; }
+
+.offBtn { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.offBtn:hover { background: rgba(255, 255, 255, 0.2); }
+
+.copyBtn { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); }
+.copyBtn:hover { background: rgba(255, 255, 255, 0.14); }
+
+.primary:focus-visible, .ghost:focus-visible, .onBtn:focus-visible,
+.offBtn:focus-visible, .copyBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------------- past */
+
+.pastRows { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.pastRow {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.6rem 0.85rem;
+}
+
+.pastName { color: rgba(255, 255, 255, 0.8); flex: 1 1 auto; font-size: 0.88rem; }
+
+@media (max-width: 640px) {
+  .field { flex: 1 1 100%; }
+  .fieldActions { flex: 1 1 100%; }
+  .elName { flex: 1 1 100%; }
+}
