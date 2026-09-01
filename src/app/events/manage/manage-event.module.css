@@ -645,3 +645,42 @@
   padding: 0.2rem 0.5rem;
   white-space: nowrap;
 }
+
+/* The primary action on this console. Nine buttons referenced this class and
+   the module never defined it, so `styles.primaryBtn` was undefined and every
+   one of them rendered as class="undefined": no fill, no padding, bare text on
+   a dark surface. Save buttons that do not look like buttons do not get
+   pressed, which is exactly what happened - ticket dates typed in and then
+   reported as "there was no save button on that page".
+
+   Matches .addBtn, which is what the rest of the page already uses for a
+   primary action. Filled, no stroke, no glow. */
+
+.primaryBtn {
+  align-items: center;
+  background-color: #E5B94E;
+  border-radius: 8px;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  gap: 0.45rem;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 16px;
+  transition: background-color 0.12s;
+}
+
+.primaryBtn:hover { background-color: #f0c65f; }
+
+.primaryBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Disabled has to still read as a button, or somebody hunts the page for the
+   one they cannot see. Dimmer, not absent. */
+.primaryBtn:disabled {
+  background-color: rgba(229, 185, 78, 0.35);
+  color: rgba(26, 26, 26, 0.55);
+  cursor: default;
+}
