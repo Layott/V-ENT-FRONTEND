@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  breadcrumbLd, buildMetadata, clamp, eventLd, fetchForMetadata,
+  breadcrumbLd, buildMetadata, clamp, eventLd, eventMetadata, fetchForMetadata,
 } from '@/lib/seo';
 import EventBySlugClient from './EventBySlugClient';
 
@@ -18,56 +18,9 @@ const pick = (data) => (data?.__moved ? data : (data?.event || data));
 
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);
-  const raw = await load(slug);
-  const e = pick(raw);
-
-  if (!e) {
-    return buildMetadata({
-      title: 'Event not found',
-      description: 'This event does not exist, or it is no longer listed.',
-      path: `/events/${slug}`,
-      noindex: true,
-    });
-  }
-  if (e.__moved) {
-    return buildMetadata({
-      title: 'Event moved',
-      description: 'This event has been renamed.',
-      path: e.__moved,
-      noindex: true,
-    });
-  }
-
-  const when = e.event_date || e.start_datetime;
-  const dateLabel = when
-    ? new Date(when).toLocaleDateString('en-NG', {
-      day: 'numeric', month: 'long', year: 'numeric',
-    })
-    : null;
-  const tiers = Array.isArray(e.ticket_tiers) ? e.ticket_tiers : [];
-  const cheapest = tiers.length
-    ? Math.min(...tiers.map((t) => Number(t.price || 0)))
-    : Number(e.entry_fee || 0);
-
-  const description = clamp(
-    e.desc || e.description
-    || [
-      `${e.event_type === 'physical' ? 'In person' : e.event_type === 'hybrid' ? 'In person and online' : 'Online'} event${dateLabel ? ` on ${dateLabel}` : ''}.`,
-      e.location ? `${e.location}.` : null,
-      cheapest > 0 ? `Tickets from ${cheapest.toLocaleString()} NGN.` : 'Free to attend.',
-    ].filter(Boolean).join(' '),
-  );
-
-  return buildMetadata({
-    title: e.name || e.title,
-    description,
-    path: `/events/${e.slug || slug}`,
-    image: e.banner || e.logo,
-    type: 'article',
-    keywords: [e.game?.game_title || e.game, 'gaming event', e.location, 'Nigeria']
-      .filter(Boolean).join(', '),
-    noindex: e.is_active === false,
-  });
+  // One builder, shared with the short-link route, so a second address for this
+  // event describes it identically. See `eventMetadata` for why.
+  return eventMetadata(pick(await load(slug)), slug);
 }
 
 const EventBySlug = async ({ params }) => {

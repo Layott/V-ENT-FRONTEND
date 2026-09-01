@@ -258,6 +258,125 @@ export async function fetchForMetadata(path, { revalidate = 900 } = {}) {
 }
 
 // ---------------------------------------------------------------------------
+// Describing one record
+// ---------------------------------------------------------------------------
+//
+// These live here rather than inside the `[slug]` routes because a second
+// address can point at the same record and has to describe it identically.
+//
+// The case that made this necessary: a shortened ticket link pasted into a chat
+// previewed as "Short link - Opening a V-ENT link" with the house logo. An
+// unfurler reads the address it is given; it does not always follow the
+// redirect, and even when it does it may keep the first page's tags. So the
+// short URL has to carry the destination's own title, description and picture,
+// which means exactly one builder, used by both routes.
+
+const dateLabel = (value) => (value
+  ? new Date(value).toLocaleDateString('en-NG', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  })
+  : null);
+
+/** Metadata for one event. `slug` is the address it was asked for. */
+export function eventMetadata(e, slug, { path } = {}) {
+  if (!e) {
+    return buildMetadata({
+      title: 'Event not found',
+      description: 'This event does not exist, or it is no longer listed.',
+      path: path || `/events/${slug}`,
+      noindex: true,
+    });
+  }
+  if (e.__moved) {
+    return buildMetadata({
+      title: 'Event moved',
+      description: 'This event has been renamed.',
+      path: e.__moved,
+      noindex: true,
+    });
+  }
+
+  const when = dateLabel(e.event_date || e.start_datetime);
+  const tiers = Array.isArray(e.ticket_tiers) ? e.ticket_tiers : [];
+  const cheapest = tiers.length
+    ? Math.min(...tiers.map((t) => Number(t.price || 0)))
+    : Number(e.entry_fee || 0);
+
+  const description = clamp(
+    e.desc || e.description
+    || [
+      `${e.event_type === 'physical' ? 'In person' : e.event_type === 'hybrid' ? 'In person and online' : 'Online'} event${when ? ` on ${when}` : ''}.`,
+      e.location ? `${e.location}.` : null,
+      cheapest > 0 ? `Tickets from ${cheapest.toLocaleString()} NGN.` : 'Free to attend.',
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    title: e.name || e.title,
+    description,
+    // Always the record's own address, never the short one. A short link is a
+    // second door to one page, and the canonical is what stops the two
+    // competing in search.
+    path: `/events/${e.slug || slug}`,
+    image: e.banner || e.logo,
+    type: 'article',
+    keywords: [e.game?.game_title || e.game, 'gaming event', e.location, 'Nigeria']
+      .filter(Boolean).join(', '),
+    noindex: e.is_active === false,
+  });
+}
+
+/** Metadata for one tournament. */
+export function tournamentMetadata(t, slug, { path } = {}) {
+  if (!t) {
+    return buildMetadata({
+      title: 'Tournament not found',
+      description: 'This tournament does not exist, or it is no longer listed.',
+      path: path || `/tournaments/${slug}`,
+      noindex: true,
+    });
+  }
+  if (t.__moved) {
+    return buildMetadata({
+      title: 'Tournament moved',
+      description: 'This tournament has been renamed.',
+      path: t.__moved,
+      noindex: true,
+    });
+  }
+
+  const game = t.game ? `${t.game} ` : '';
+  const prize = Number(t.prize_pool || 0);
+  const when = dateLabel(t.start_date_and_time);
+
+  // Written to be read in a search result, so it leads with what somebody is
+  // deciding: the game, the date, what it pays, what it costs to enter.
+  const description = clamp(
+    t.tournament_description
+    || [
+      `${game}tournament${when ? ` on ${when}` : ''}.`,
+      prize > 0 ? `${prize.toLocaleString()} VENT COINS prize pool.` : null,
+      t.entry_fee === 'Paid'
+        ? `Entry ${Number(t.entry_fee_price || 0).toLocaleString()} VC.`
+        : 'Free to enter.',
+      t.max_participants ? `${t.current_participants || 0} of ${t.max_participants} places taken.` : null,
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    title: t.tournament_title,
+    description,
+    path: `/tournaments/${t.slug || slug}`,
+    image: t.tournament_banner || t.tournament_logo,
+    type: 'article',
+    keywords: [t.game, t.game_mode, 'esports tournament', 'Nigeria', t.format_label]
+      .filter(Boolean).join(', '),
+    // A draft is not published, and a cancelled tournament should stop ranking.
+    noindex: Boolean(t.is_draft) || t.status === 'cancelled',
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Structured data
 // ---------------------------------------------------------------------------
 //
