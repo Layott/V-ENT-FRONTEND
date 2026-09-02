@@ -34,7 +34,7 @@ const Avatar = ({ src, name, size = 40, className = '', rounded = true, fill = f
   if (src) {
     if (fill) {
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={src} alt={name || ''} className={`${styles.img} ${className}`} />;
+      return <img src={src} alt={name || ''} className={`${styles.img} ${styles.fill} ${className}`} />;
     }
     return (
       <Image
@@ -51,7 +51,7 @@ const Avatar = ({ src, name, size = 40, className = '', rounded = true, fill = f
 
   return (
     <span
-      className={`${styles.fallback} ${className}`}
+      className={`${styles.fallback} ${fill ? styles.fill : ''} ${className}`}
       style={fill ? undefined : { ...style, fontSize: Math.max(11, Math.round(size * 0.38)) }}
       aria-label={name || ''}
     >

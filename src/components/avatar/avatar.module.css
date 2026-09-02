@@ -20,3 +20,27 @@
      Avatar is given a pixel size. */
   font-size: 0.95rem;
 }
+
+/* `fill` mode: the wrapper owns the size.
+ *
+ * Without this the initials badge sat in the top-left corner of whatever box
+ * it was in, because the fallback had no dimensions of its own and the page's
+ * class is usually on the PARENT rather than on the avatar. A crest that is a
+ * small square in the corner of a large grey square looks like a broken image
+ * in a different way. */
+.fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  /* Scales with the box rather than sitting at a fixed 0.95rem in a 120px
+     crest and a 32px avatar alike. */
+  font-size: clamp(0.8rem, 38cqmin, 2.4rem);
+}
+
+/* `cqmin` needs a containment context, and the parent is the page's own class
+   which cannot be reached from here. The fallback provides its own, so the
+   clamp has something to measure. */
+.fallback.fill {
+  container-type: size;
+}
