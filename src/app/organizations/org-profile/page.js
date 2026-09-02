@@ -22,7 +22,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
-import { sameUser, usernameOf } from '@/lib/gating';
+import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 const TABS = [{
   id: 'overview',
@@ -110,7 +110,11 @@ const OrgProfileContent = ({
 
   // The server decides: `my_role` is computed from real membership. (This used
   // to compare against a mock user id, so ownership never resolved.)
-  const isOwner = org?.my_role === 'owner';
+  const viewer = useViewer();
+  // Signed in AND the owner. `my_role` is absent for a stranger so the
+  // second half alone is already false, but a control that needs an
+  // account says so where it is written.
+  const isOwner = viewer.signedIn && org?.my_role === 'owner';
   const isMember = !!org?.my_role;
 
   // ── Data fetch ──
@@ -669,7 +673,7 @@ const OrgProfileContent = ({
                                   <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}>
                                     <BsThreeDots />
                                   </button>
-                                  {openMenu === m.id && <div className={styles.menuDropdown}>
+                                  {openMenu === m.id && viewer.signedIn && <div className={styles.menuDropdown}>
                                       {role !== 'admin' && <button type="button" onClick={() => promoteMember(m, 'Admin')}>
                                           {tt("ui.promote.admin.7e73", "Promote to Admin")}
                                         </button>}

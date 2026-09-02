@@ -570,16 +570,16 @@ const UserProfileContent = ({
                     <div ref={moreMenuRef} style={{
                   position: 'relative'
                 }}>
-                      <button type="button" className={styles.heroIconBtn} onClick={() => setShowMore(s => !s)} aria-label={tt("ui.more.4bab", "More")}>
+                      {status === 'authenticated' && <button type="button" className={styles.heroIconBtn} onClick={() => setShowMore(s => !s)} aria-label={tt("ui.more.4bab", "More")}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="1.5" fill="currentColor" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /><circle cx="12" cy="19" r="1.5" fill="currentColor" /></svg>
-                      </button>
+                      </button>}
                       {/* Real, as of 2 September 2026. All three used to show
                           a toast and make no request, so somebody who blocked a
                           harasser was told it worked. The label now reflects
                           what is actually true for this viewer, read once from
                           /user/<name>/safety/ so the menu is right on first
                           paint rather than flipping a moment later. */}
-                      {showMore && <div className={styles.moreMenu}>
+                      {showMore && status === 'authenticated' && <div className={styles.moreMenu}>
                           <button type="button" disabled={safetyBusy} onClick={() => runSafety('mute', !safety.muted)}>
                             {safety.muted
                               ? tt('safety.unmute', 'Unmute')
@@ -602,7 +602,7 @@ const UserProfileContent = ({
                 {/* Report asks why. A report with no reason and no location is
                     a report nobody can action, and the queue fills with rows a
                     moderator has to go and investigate from scratch. */}
-                {reportOpen && <div className={styles.reportOverlay} onClick={e => { if (e.target === e.currentTarget) setReportOpen(false); }}>
+                {reportOpen && status === 'authenticated' && <div className={styles.reportOverlay} onClick={e => { if (e.target === e.currentTarget) setReportOpen(false); }}>
                     <div className={styles.reportPanel} role="dialog" aria-modal="true">
                       <p className={styles.reportTitle}>
                         {tt('safety.reportTitle', 'Report @{name}').replace('{name}', username)}
