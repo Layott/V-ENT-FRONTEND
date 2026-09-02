@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -78,7 +79,7 @@ const OrgInvitesPage = () => {
         });
       const body = await res.json().catch(() => null);
       if (body?.status !== 'success') {
-        setProblem(body?.message || tt('ui.invite.failed.3c81', 'That did not go through.'));
+        setProblem(apiMessage(tt, body, 'ui.invite.failed.3c81', 'That did not go through.'));
         return;
       }
       setInvites(prev => prev.filter(i => i.token !== invite.token));

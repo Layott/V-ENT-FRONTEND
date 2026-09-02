@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
@@ -197,7 +198,7 @@ const ClubInner = ({ slug: slugFromPath }) => {
     });
     const payload = await res.json().catch(() => null);
     if (payload?.status !== 'success') {
-      setProblem(payload?.message || tt('ui.club.action.failed.4b71', 'That did not go through.'));
+      setProblem(apiMessage(tt, payload, 'ui.club.action.failed.4b71', 'That did not go through.'));
       return null;
     }
     return payload.data;

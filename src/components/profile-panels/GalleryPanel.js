@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './GalleryPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -93,8 +94,7 @@ const GalleryPanel = ({
       });
       const payload = await res.json().catch(() => null);
       if (payload?.status !== 'success') {
-        setProblem(payload?.message
-          || tt('ui.gallery.upload.failed.2a58', 'That upload did not go through.'));
+        setProblem(apiMessage(tt, payload, 'ui.gallery.upload.failed.2a58', 'That upload did not go through.'));
         return;
       }
       setConsent(false);

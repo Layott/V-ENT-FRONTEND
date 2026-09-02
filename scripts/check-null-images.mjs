@@ -95,7 +95,24 @@ for (const file of files) {
     // with different care about the middle of the path.
     const inner = (expr.match(/mediaUrl\(([^)]*)\)/) || [])[1] || '';
     const before = src.slice(Math.max(0, m.index - 400), m.index);
+    // A guard has to BE the expression, not merely contain it. `club.bannerUrl`
+    // contains `club.banner`, so a plain `includes` let
+    //   {club.bannerUrl && <img src={mediaUrl(club.banner)} />}
+    // through, which guards a different field and nothing else. The character
+    // after the match has to end the identifier.
     const plain = (t) => t.replace(/\?\./g, '.').replace(/\s+/g, '');
+    const guards = (haystack, needle) => {
+      const h = plain(haystack);
+      const n = plain(needle);
+      let at = h.indexOf(n);
+      while (at !== -1) {
+        const after = h[at + n.length] || '';
+        const before2 = at === 0 ? '' : h[at - 1];
+        if (!/[\w.[]/.test(after) && !/[\w.]/.test(before2)) return true;
+        at = h.indexOf(n, at + 1);
+      }
+      return false;
+    };
     // And one more shape, which is the normal way to show the first of a list:
     //
     //     {post.images && post.images.length > 0 && <img src={mediaUrl(post.images[0])} />}
@@ -106,8 +123,8 @@ for (const file of files) {
     // real one.
     const first = inner.replace(/\[0\]$/, '');
     if (inner && (before.includes(`mediaUrl(${inner})`)
-      || plain(before).includes(plain(inner))
-      || (first !== inner && plain(before).includes(plain(first))))) continue;
+      || guards(before, inner)
+      || (first !== inner && guards(before, first)))) continue;
 
     findings.push({
       rel,
@@ -159,6 +176,11 @@ const FIXTURES = [
     src: '<img src={mediaUrl(org.logo) || placeholder} alt={org.name} />',
   },
   {
+    name: 'guarded by a field whose name merely CONTAINS the one used',
+    shouldFlag: true,
+    src: '{club.bannerUrl && <img src={mediaUrl(club.banner)} alt="" />}',
+  },
+  {
     name: 'guarded by a DIFFERENT field, which guards nothing',
     shouldFlag: true,
     src: '{club.name && <img src={mediaUrl(club.banner)} alt={club.name} />}',
@@ -172,11 +194,28 @@ const flagsIn = (text) => {
     if (/\|\||\?\?/.test(expr)) continue;
     const inner = (expr.match(/mediaUrl\(([^)]*)\)/) || [])[1] || '';
     const before = text.slice(Math.max(0, m.index - 400), m.index);
+    // A guard has to BE the expression, not merely contain it. `club.bannerUrl`
+    // contains `club.banner`, so a plain `includes` let
+    //   {club.bannerUrl && <img src={mediaUrl(club.banner)} />}
+    // through, which guards a different field and nothing else. The character
+    // after the match has to end the identifier.
     const plain = (t) => t.replace(/\?\./g, '.').replace(/\s+/g, '');
+    const guards = (haystack, needle) => {
+      const h = plain(haystack);
+      const n = plain(needle);
+      let at = h.indexOf(n);
+      while (at !== -1) {
+        const after = h[at + n.length] || '';
+        const before2 = at === 0 ? '' : h[at - 1];
+        if (!/[\w.[]/.test(after) && !/[\w.]/.test(before2)) return true;
+        at = h.indexOf(n, at + 1);
+      }
+      return false;
+    };
     const first = inner.replace(/\[0\]$/, '');
     if (inner && (before.includes(`mediaUrl(${inner})`)
-      || plain(before).includes(plain(inner))
-      || (first !== inner && plain(before).includes(plain(first))))) continue;
+      || guards(before, inner)
+      || (first !== inner && guards(before, first)))) continue;
     n += 1;
   }
   return n;

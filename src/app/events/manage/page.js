@@ -343,7 +343,7 @@ export const ManageEventContent = ({
       });
       const data = await res.json().catch(() => ({}));
       if (data?.status !== 'success') {
-        setCompResult(data?.message || tt('manage.compFailed', 'That did not go through.'));
+        setCompResult(apiMessage(tt, data, 'manage.compFailed', 'That did not go through.'));
         return;
       }
       const out = data.data || {};

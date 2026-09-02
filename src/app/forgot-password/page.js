@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -68,14 +69,14 @@ const ForgotPassword = () => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('forgotPasswordEmail', email);
         }
-        setSnackbarMessage(data.message);
+        setSnackbarMessage(apiMessage(tt, data, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
         setSnackbarType('success');
         await signOut({
           redirect: false
         });
         router.push('/reset-email');
       } else {
-        setSnackbarMessage(data.message);
+        setSnackbarMessage(apiMessage(tt, data, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
         setSnackbarType('error');
       }
       setOpen(true);
