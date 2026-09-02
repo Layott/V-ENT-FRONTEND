@@ -6,6 +6,7 @@ import FounderBadge from '@/components/founder-badge/FounderBadge';
 import UserPicker from '@/components/community/UserPicker';
 import { mediaUrl } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
+import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import { useEffect, useMemo, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -308,11 +309,67 @@ const CommunityInner = () => {
     if (sessionReady && activeTab === 'clubs') loadClubs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token, sessionReady]);
+  // "Mine" is what makes an owned club findable rather than merely present.
+  // Two presses from this page - the Clubs tab, then the card - only holds if
+  // the card is on screen, and it is not once the list is long.
+  const [clubScope, setClubScope] = useState('all');
   const filteredClubs = useMemo(() => {
     const q = clubQuery.trim().toLowerCase();
-    if (!q) return clubs;
-    return clubs.filter(c => (c.name || '').toLowerCase().includes(q) || (c.game || '').toLowerCase().includes(q));
-  }, [clubs, clubQuery]);
+    let rows = clubs;
+    if (clubScope === 'mine') rows = rows.filter(c => c.is_owner || c.is_joined);
+    if (!q) return rows;
+    return rows.filter(c => (c.name || '').toLowerCase().includes(q) || (c.game || '').toLowerCase().includes(q));
+  }, [clubs, clubQuery, clubScope]);
+  const myClubCount = useMemo(
+    () => clubs.filter(c => c.is_owner || c.is_joined).length, [clubs]);
+
+  // Creating one. The control is not rendered live to somebody signed out:
+  // a form that answers 401 after they have filled it in tells them what they
+  // needed only once the effort is spent.
+  const [clubFormOpen, setClubFormOpen] = useState(false);
+  const [clubDraft, setClubDraft] = useState({ name: '', description: '', game: '', is_private: false });
+  const [clubSaving, setClubSaving] = useState(false);
+  const [clubProblem, setClubProblem] = useState('');
+  const handleCreateClub = async (e) => {
+    e.preventDefault();
+    if (clubSaving) return;
+    const name = clubDraft.name.trim();
+    if (!name) {
+      setClubProblem(tt('community.clubNameNeeded', 'Give the club a name.'));
+      return;
+    }
+    setClubSaving(true);
+    setClubProblem('');
+    try {
+      const res = await fetch(`${apiUrl}/club/create/`, {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description: clubDraft.description.trim(),
+          game: clubDraft.game || undefined,
+          is_private: clubDraft.is_private,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.status !== 'success') {
+        setClubProblem(apiMessage(tt, data, 'api.couldNotCreateClub', 'That club could not be created.'));
+        return;
+      }
+      const made = data.data?.club;
+      setClubFormOpen(false);
+      setClubDraft({ name: '', description: '', game: '', is_private: false });
+      // Straight into it. Making a club and being returned to a list to hunt
+      // for it is the same as not being told whether it worked.
+      if (made?.slug || made?.id) router.push(`/community/club/${made.slug || made.id}`);
+      else loadClubs();
+    } catch (err) {
+      console.error('Create club error:', err);
+      setClubProblem(tt('api.networkError', 'Could not reach the server.'));
+    } finally {
+      setClubSaving(false);
+    }
+  };
   const handleJoinClub = async id => {
     setClubs(prev => prev.map(c => c.id === id ? {
       ...c,
@@ -769,10 +826,64 @@ const CommunityInner = () => {
 
           {/* ─── CLUBS ─── */}
           {activeTab === 'clubs' && <div className={styles.clubsSection}>
-              <div className={styles.feedSearchBar}>
-                <FaSearch className={styles.feedSearchIcon} />
-                <input className={styles.feedSearchInput} placeholder={tt("ui.search.clubs.name.game.fd0d", "Search clubs by name or game...")} value={clubQuery} onChange={e => setClubQuery(e.target.value)} />
+              <div className={styles.clubsBar}>
+                <div className={styles.feedSearchBar}>
+                  <FaSearch className={styles.feedSearchIcon} />
+                  <input className={styles.feedSearchInput} placeholder={tt("ui.search.clubs.name.game.fd0d", "Search clubs by name or game...")} value={clubQuery} onChange={e => setClubQuery(e.target.value)} />
+                </div>
+                <NeedsAccount action={tt('community.createClubAction', 'create a club')}>
+                  <button type="button" className={`${styles.clubCreateBtn} goldBTN`}
+                          onClick={() => { setClubFormOpen(o => !o); setClubProblem(''); }}>
+                    <FaPlus /> {tt('community.createClub', 'Create a club')}
+                  </button>
+                </NeedsAccount>
               </div>
+
+              {signedIn && myClubCount > 0 && <div className={styles.clubScope}>
+                <button type="button"
+                        className={clubScope === 'all' ? styles.clubScopeOn : styles.clubScopeOff}
+                        onClick={() => setClubScope('all')}>
+                  {tt('community.clubsAll', 'All clubs')}
+                </button>
+                <button type="button"
+                        className={clubScope === 'mine' ? styles.clubScopeOn : styles.clubScopeOff}
+                        onClick={() => setClubScope('mine')}>
+                  {tt('community.clubsMine', 'Mine')} ({myClubCount})
+                </button>
+              </div>}
+
+              {clubFormOpen && signedIn && <form className={styles.clubForm} onSubmit={handleCreateClub}>
+                <p className={styles.clubFormTitle}>{tt('community.newClub', 'A new club')}</p>
+                <p className={styles.clubFormHint}>
+                  {tt('community.newClubHint', 'A club is a group chat with topics. You run the one you make, and you can rename or delete it later.')}
+                </p>
+                <input className={styles.clubFormInput} value={clubDraft.name} maxLength={120}
+                       placeholder={tt('community.clubNamePlaceholder', 'What is it called?')}
+                       onChange={e => setClubDraft(d => ({ ...d, name: e.target.value }))} />
+                <textarea className={styles.clubFormArea} value={clubDraft.description} rows={3}
+                          placeholder={tt('community.clubDescPlaceholder', 'Who is it for, and what happens in it?')}
+                          onChange={e => setClubDraft(d => ({ ...d, description: e.target.value }))} />
+                <select className={styles.clubFormInput} value={clubDraft.game}
+                        onChange={e => setClubDraft(d => ({ ...d, game: e.target.value }))}>
+                  <option value="">{tt('community.clubNoGame', 'No particular game')}</option>
+                  {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                <label className={styles.clubFormCheck}>
+                  <input type="checkbox" checked={clubDraft.is_private}
+                         onChange={e => setClubDraft(d => ({ ...d, is_private: e.target.checked }))} />
+                  <span>{tt('community.clubPrivate', 'Private: only members can read it')}</span>
+                </label>
+                {clubProblem && <p className={styles.clubFormProblem}>{clubProblem}</p>}
+                <div className={styles.clubFormActions}>
+                  <button type="submit" className={`${styles.clubCreateBtn} goldBTN`} disabled={clubSaving}>
+                    {clubSaving ? tt('community.creating', 'Creating...') : tt('community.createClub', 'Create a club')}
+                  </button>
+                  <button type="button" className={styles.clubFormCancel}
+                          onClick={() => { setClubFormOpen(false); setClubProblem(''); }}>
+                    {tt('ui.cancel', 'Cancel')}
+                  </button>
+                </div>
+              </form>}
 
               <div className={styles.clubsGrid}>
                 {clubsLoading ? <p className={styles.stateText}>{tt("ui.loading.clubs.0f67", "Loading clubs...")}</p> : filteredClubs.length === 0 ? <p className={styles.stateText}>{tt("ui.no.clubs.match.search.31f3", "No clubs match your search.")}</p> : filteredClubs.map(club => <div key={club.id} className={styles.clubCard}>
@@ -785,7 +896,7 @@ const CommunityInner = () => {
                           </div>
                           <h2 className={styles.clubName}>{club.name}</h2>
                           <p className={styles.clubMeta}>
-                            {club.member_count.toLocaleString()} {club.member_count === 1 ? 'member' : 'members'} · {club.game || tx("No game set")}
+                            {(club.member_count || 0).toLocaleString(appLocale())} {club.member_count === 1 ? tt('community.memberOne', 'member') : tt('community.memberMany', 'members')} · {club.game || tx("No game set")}
                           </p>
                           <p className={styles.clubDesc}>{tx(club.description)}</p>
                         </div>

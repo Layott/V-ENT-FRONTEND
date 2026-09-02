@@ -1450,3 +1450,154 @@
   color: #fff;
   white-space: nowrap;
 }
+
+/* Making a club, and finding one you already run. Filled surfaces and space,
+   no strokes: the search bar and the button share a row, the scope buttons are
+   fills that change weight rather than rings. */
+
+/* Grid rather than flex, and the search column is minmax(0, 1fr) rather than
+   1fr. A grid or flex child refuses to shrink below its content by default,
+   so a 1fr column holding a full-width input sizes itself by that input and
+   pushes the button off the right edge instead of wrapping it. The 0 minimum
+   is what actually lets the column give way. */
+.clubsBar {
+  align-items: center;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.clubsBar .feedSearchBar {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.clubsBar .feedSearchInput {
+  min-width: 0;
+}
+
+@media (max-width: 620px) {
+  .clubsBar { grid-template-columns: minmax(0, 1fr); }
+}
+
+.clubCreateBtn {
+  align-items: center;
+  border-radius: 10px;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  gap: 0.45rem;
+  padding: 0.62rem 1rem;
+  white-space: nowrap;
+}
+
+.clubScope {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.clubScopeOn,
+.clubScopeOff {
+  border-radius: 999px;
+  font-size: 0.84rem;
+  padding: 0.4rem 0.9rem;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.clubScopeOn {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-weight: 600;
+}
+
+.clubScopeOff {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.clubScopeOff:hover { background: rgba(255, 255, 255, 0.1); }
+
+.clubForm {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  padding: 1.1rem;
+}
+
+.clubFormTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.clubFormHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.83rem;
+  line-height: 1.5;
+  margin: 0 0 0.2rem;
+  max-width: 52ch;
+}
+
+.clubFormInput,
+.clubFormArea {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.65rem 0.8rem;
+  width: 100%;
+}
+
+.clubFormArea { resize: vertical; }
+
+.clubFormInput::placeholder,
+.clubFormArea::placeholder { color: rgba(255, 255, 255, 0.35); }
+
+.clubFormCheck {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.86rem;
+  gap: 0.5rem;
+}
+
+.clubFormProblem {
+  background: rgba(237, 28, 36, 0.14);
+  border-radius: 9px;
+  color: #ff9a9e;
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+}
+
+.clubFormActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.clubFormCancel {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
+  padding: 0.62rem 1rem;
+}
+
+.clubFormCancel:hover { background: rgba(255, 255, 255, 0.11); }
+
+@media (max-width: 560px) {
+  .clubCreateBtn,
+  .clubFormActions > * { flex: 1 1 100%; justify-content: center; }
+}

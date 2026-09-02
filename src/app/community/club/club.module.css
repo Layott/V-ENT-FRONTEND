@@ -1009,3 +1009,107 @@
 .role_admin { color: #6fb3f2; }
 .role_moderator { color: #9ad29c; }
 .role_member { color: rgba(255, 255, 255, 0.4); }
+
+/* Running the club: what it says about itself, and ending it. Two separate
+   surfaces because they are two different weights of decision, not one form
+   with a dangerous button at the bottom. */
+
+.settingsPanel {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  padding: 1rem 0;
+}
+
+.settingsCard,
+.dangerCard {
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 1.15rem;
+}
+
+.settingsCard { background: rgba(255, 255, 255, 0.04); }
+
+/* A filled warm surface rather than a red outline: the weight comes from the
+   fill, and the confirm field is what actually protects it. */
+.dangerCard {
+  align-self: start;
+  background: rgba(237, 28, 36, 0.09);
+}
+
+.settingsTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.settingsHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.83rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 48ch;
+}
+
+.settingsField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.settingsLabel {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.8rem;
+}
+
+.settingsInput,
+.settingsArea {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.62rem 0.78rem;
+  width: 100%;
+}
+
+.settingsArea { resize: vertical; }
+
+.settingsInput::placeholder { color: rgba(255, 255, 255, 0.32); }
+
+.settingsCheck {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.86rem;
+  gap: 0.5rem;
+}
+
+.settingsSave,
+.deleteBtn {
+  align-self: flex-start;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.62rem 1.2rem;
+}
+
+.deleteBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.settingsSaved {
+  color: #7ddc8a;
+  font-size: 0.84rem;
+}
+
+@media (max-width: 560px) {
+  .settingsSave,
+  .deleteBtn { align-self: stretch; text-align: center; }
+}
