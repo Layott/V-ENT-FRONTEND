@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import LeagueScoring from '@/components/view-tournament/standings/LeagueScoring';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
@@ -236,7 +237,14 @@ const ManageContent = ({ slug }) => {
               <OverlaysPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
             {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
-            {tab === 'stats' && <StatsPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} />}
+            {tab === 'stats' && <>
+                {/* How the league table is worked out, above the MVP metrics:
+                    the table is what everybody looks at, the awards are what
+                    an organiser decides afterwards. */}
+                <LeagueScoring tournamentId={tournament.tournament_id} token={token}
+                               entrants={(participants || []).map(p => p.name || p.team_name || p.username).filter(Boolean)} />
+                <StatsPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} />
+              </>}
           </div>
         </div>
       </main>
