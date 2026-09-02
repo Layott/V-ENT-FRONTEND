@@ -1,0 +1,53 @@
+/* One ticket type, and the two controls that manage the list.
+ *
+ * Everything else on this step borrows the wizard's own classes, so the step
+ * reads as the same designer's work as the four beside it. What is here is
+ * only what the wizard had no shape for: a repeated block, and an add/remove
+ * pair.
+ *
+ * Structure from surface and space, never a stroke. */
+
+.tier {
+  background-color: #26272b;
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.addTier {
+  background-color: #303136;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+}
+
+.addTier:hover { background-color: #3a3b41; }
+.addTier:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.removeTier {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.3rem 0 0.8rem;
+}
+
+.removeTier:hover { color: var(--v-ent-red, #ED1C24); }
+.removeTier:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.error {
+  color: #FF6B6B;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 700px) {
+  .tier { padding: 0.9rem 0.9rem 0.3rem; }
+  .addTier { width: 100%; }
+}

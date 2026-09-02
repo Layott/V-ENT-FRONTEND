@@ -5,8 +5,9 @@ const ProgressMenu = ({ selectedTab, setSelectedTab }) => {
         { id: 1, label: 'Basic Info' },
         { id: 2, label: 'Format & Participants' },
         { id: 3, label: 'Prize Distribution' },
-        { id: 4, label: 'Sponsors & Links' },
-        { id: 5, label: 'Review' },
+        { id: 4, label: 'Tickets & Capacity' },
+        { id: 5, label: 'Sponsors & Links' },
+        { id: 6, label: 'Review' },
     ];
 
   return (
