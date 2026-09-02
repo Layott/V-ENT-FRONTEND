@@ -33,6 +33,7 @@ import UserChip from '@/components/user-chip/UserChip';
 // door count, ticket sales and sponsors, all of which somebody wants on a
 // screen behind a stage, and a second copy of this would have drifted.
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
+import StudioPanel from '@/components/studio/StudioPanel';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -42,7 +43,10 @@ const formatDateTime = value => (value
   })
   : '');
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
-  'programme', 'queue', 'influencers', 'promos', 'overlays', 'team'];
+  'programme', 'queue', 'influencers', 'promos', 'production', 'team'];
+// The tab used to be called overlays, before the studio existed for events.
+// Links carrying the old name still open the right place.
+const TAB_ALIASES = { overlays: 'production' };
 export const ManageEventContent = ({
   slug: slugFromPath
 }) => {
@@ -58,7 +62,7 @@ export const ManageEventContent = ({
   // were reachable only by pressing them, which is why the whole console was
   // hiding behind a button labelled "Influencers and promo codes".
   const [tab, setTab] = useState(() => {
-    const asked = searchParams.get('tab');
+    const asked = TAB_ALIASES[searchParams.get('tab')] || searchParams.get('tab');
     return TABS.includes(asked) ? asked : 'tickets';
   });
 
@@ -676,7 +680,8 @@ export const ManageEventContent = ({
     team: tt('manage.tabTeam', 'Team'),
     numbers: tt('manage.tabNumbers', 'Sales and attendance'),
     messages: tt('manage.tabMessages', 'Messages'),
-    polls: tt('manage.tabPolls', 'Polls')
+    polls: tt('manage.tabPolls', 'Polls'),
+    production: tt('manage.tabProduction', 'Production')
   })[key];
   return <div className={styles.pageContainer}>
       <Header />
@@ -1852,7 +1857,11 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- team */}
-              {tab === 'overlays' && <section className={styles.card}>
+              {tab === 'production' && <section className={styles.card}>
+                {/* The studio: V-ENT's own graphics for an event, bound to the
+                    programme and the door, each with a URL for a browser
+                    source. The same panel the tournament console renders. */}
+                <StudioPanel kind="event" ownerRef={eventRef} />
                 <OverlaysPanel
                   kind="event"
                   ownerRef={eventRef}
