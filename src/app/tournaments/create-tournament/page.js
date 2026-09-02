@@ -9,6 +9,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import CreateTournamentComponent from '@/components/create-tournament-component/CreateTournamentComponent';
 import { ventFetch, API, tokenFrom, toTournament } from '@/components/tournament-lib/tournamentApi';
+import { clearDraft, readDraft, writeDraft } from '@/lib/wizardDraft';
 import styles from './create-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 const SOCIAL_LINK_KEYS = ['facebook_link', 'twitter_link', 'instagram_link', 'youtube_link', 'twitch_link', 'kick_link', 'tiktok_link', 'bigolive_link'];
@@ -98,6 +99,11 @@ function CreateTournamentPageInner() {
   const [loadFailed, setLoadFailed] = useState(false);
   useEffect(() => {
     if (!draftId) {
+      // Anything stamped for a draft is refused by readDraft anyway, but
+      // clearing it here means a browser that has been carrying somebody's
+      // half-finished draft since before the stamp existed stops carrying it.
+      const held = readDraft(localStorage, null);
+      if (!Object.keys(held).length) clearDraft(localStorage);
       setReady(true);
       return undefined;
     }
@@ -105,14 +111,17 @@ function CreateTournamentPageInner() {
     let cancelled = false;
     (async () => {
       try {
-        localStorage.removeItem('createTournamentData');
+        clearDraft(localStorage);
         const token = tokenFrom(session);
         const data = await ventFetch(API.TOURNAMENT.VIEW(draftId), {
           token
         });
         const tournament = toTournament(data);
         if (tournament && !cancelled) {
-          localStorage.setItem('createTournamentData', JSON.stringify(mapTournamentToFormData(tournament)));
+          // Stamped with the draft it belongs to, so the "start a new
+          // tournament" route cannot open pre-filled with it and POST a
+          // second row - which is how one tournament became two.
+          writeDraft(localStorage, mapTournamentToFormData(tournament), draftId);
         }
       } catch {
         // Do NOT fall through to the wizard. It reads its opening values from

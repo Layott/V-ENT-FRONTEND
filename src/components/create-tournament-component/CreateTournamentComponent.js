@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { clearDraft, readDraft, writeDraft } from '@/lib/wizardDraft';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -18,14 +19,13 @@ import styles from './create-tournament-component.module.css';
 // child's own useState-from-props seed - already has any draft data the
 // page shell hydrated before mounting this component) and as a safe helper
 // anywhere else we need the latest snapshot.
-const readSavedFormData = () => {
+const readSavedFormData = (draftId = null) => {
   if (typeof window === 'undefined') return {};
-  try {
-    const saved = localStorage.getItem('createTournamentData');
-    return saved ? JSON.parse(saved) : {};
-  } catch {
-    return {};
-  }
+  // Only the work that belongs to THIS wizard. The two routes into the form
+  // share one storage key, and before the stamp existed "start a new
+  // tournament" opened pre-filled with the last draft somebody had edited -
+  // which then saved as a POST and made a second row.
+  return readDraft(window.localStorage, draftId);
 };
 
 // `draftId` is the tournament this wizard is EDITING, when it was opened from
@@ -44,7 +44,16 @@ const CreateTournamentComponent = ({ draftId = null }) => {
   const [statusMessage, setStatusMessage] = useState(null); // { type: 'error' | 'success', text }
   const bannerRef = useRef(null);
 
-  const [formData, setFormData] = useState(readSavedFormData);
+  // React calls a lazy initialiser with NO arguments, so passing the function
+  // by name would have asked for draftId `null` on every route - which is the
+  // "start a new tournament" case, and exactly the leak this is closing.
+  const [formData, setFormData] = useState(() => readSavedFormData(draftId));
+
+  // updateFormData is a useCallback with no dependencies, deliberately, so it
+  // cannot close over a fresh draftId. A ref keeps the current one reachable
+  // without making every keystroke rebuild the callback.
+  const draftIdRef = useRef(draftId);
+  useEffect(() => { draftIdRef.current = draftId; }, [draftId]);
   const [logoFile, setLogoFile] = useState(null);
   // The rules as a document, held here beside the images for the same
   // reason: a File cannot go into the draft, so the parent has to hold it
@@ -67,7 +76,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
             ? updatedData.sponsors.map(({ logoFile, logo, ...rest }) => rest)
             : updatedData.sponsors,
         };
-        localStorage.setItem('createTournamentData', JSON.stringify(forStorage));
+        writeDraft(window.localStorage, forStorage, draftIdRef.current);
       } catch {
         // Storage can fail (private mode, quota) - keep going in-memory.
       }
@@ -280,9 +289,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
       setFormData({});
       setLogoFile(null);
       setBannerFile(null);
-      try { localStorage.removeItem('createTournamentData'); } catch {
-        // Nothing to clean up if storage isn't available.
-      }
+      clearDraft(typeof window === 'undefined' ? null : window.localStorage);
 
       setStatusMessage({
         type: 'success',
