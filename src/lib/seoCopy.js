@@ -221,6 +221,7 @@ export const SECTION_COPY = {
 /** Titles for pages that are noindex - the tab still needs a name. */
 export const PRIVATE_TITLES = {
   wallets: { en: 'Wallet', fr: 'Portefeuille', pt: 'Carteira' },
+  production: { en: 'Production', fr: 'Production', pt: 'Produção' },
   settings: { en: 'Settings', fr: 'Paramètres', pt: 'Definições' },
   notifications: { en: 'Notifications', fr: 'Notifications', pt: 'Notificações' },
   'edit-user-profile': { en: 'Edit profile', fr: 'Modifier le profil', pt: 'Editar perfil' },

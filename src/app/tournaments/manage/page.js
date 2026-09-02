@@ -6,7 +6,8 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useViewer, sameUser, usernameOf } from '@/lib/gating';
+import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
 import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -81,10 +82,13 @@ const ManageContent = ({ slug }) => {
   const tx = useTx();
   const tt = useT();
   const searchParams = useSearchParams();
-  const {
-    data: session
-  } = useSession();
-  const token = session?.user?.sessionToken;
+  // Branch on session STATUS, never on session data. `data` alone cannot
+  // tell "signed out" from "still asking", and the first render's fetch ran
+  // without a token, then ran again with one: eight duplicate requests on
+  // every console open.
+  const viewer = useViewer();
+  const token = viewer.token;
+  const caps = useAdminCapabilities();
   // The address is the slug. `?id=` still resolves, because it is what this
   // page answered to before it had a route of its own and links exist.
   const id = slug || searchParams.get('id');
@@ -149,9 +153,22 @@ const ManageContent = ({ slug }) => {
     }
   }, [id, token]);
   useEffect(() => {
+    if (viewer.loading) return;
     load();
-  }, [load]);
+  }, [viewer.loading, load]);
   const matches = useMemo(() => flattenMatches(rounds), [rounds]);
+
+  // Whether the viewer runs this tournament. Compared both ways because
+  // session.user.id can be a username on some accounts, and never with
+  // optional chaining on both sides: undefined === undefined is true.
+  const creator = tournament?.tournament_creator;
+  const runsIt = viewer.signedIn && (
+    sameUser(viewer.username, usernameOf(creator))
+    || sameUser(viewer.id, creator?.user_id ?? creator?.id)
+    || sameUser(viewer.id, usernameOf(creator))
+    || caps?.permissions?.manage_tournaments === true
+  );
+  const decided = !viewer.loading && (!viewer.signedIn || !!viewer.username) && caps !== null;
   if (loading) {
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -173,6 +190,28 @@ const ManageContent = ({ slug }) => {
             <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
             <h1 className={styles.pageTitle}>{tt("ui.can.t.open.this.8089", "Can’t open this tournament")}</h1>
             <p className={styles.panelSub}>{error || tx("Tournament not found.")}</p>
+          </div>
+        </main>
+        <BottomMenu />
+      </div>;
+  }
+  // A refusal, not a failure. Every panel below is a control whose save the
+  // API has already decided, and rendering Start a broadcast or Choose File to
+  // somebody who will get a 403 on press is the fault the signed-out rule
+  // exists to stop, one step in. Decided only once the session and the admin
+  // capabilities have answered, so the organiser is never refused their own
+  // console for a moment while those load.
+  if (decided && !runsIt) {
+    const ref = tournament.slug || tournament.tournament_id;
+    return <div className={styles.pageContainer}>
+        <Header /><MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            <Link href={`/tournaments/${ref}`} className={styles.backLink}>{tt("ui.view.public.page.13b1", "View Public Page")}</Link>
+            <h1 className={styles.pageTitle}>{tt("manage.tournamentRefusedTitle", "This console is not yours")}</h1>
+            <p className={styles.panelSub}>{tt("manage.tournamentRefusedHint", "Only the person running this tournament can open its console. The tournament page itself is open to everybody.")}</p>
+            <Link href={`/tournaments/${ref}`} className={styles.outlineBtn}>{tt("manage.viewTournamentPage", "View the tournament page")}</Link>
           </div>
         </main>
         <BottomMenu />
@@ -205,12 +244,12 @@ const ManageContent = ({ slug }) => {
               <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`}>
                 <button className={styles.outlineBtn}><LuEye /> {tt("ui.view.public.page.13b1", "View Public Page")}</button>
               </Link>
-              <span aria-disabled="true" title={tt("ui.production.not.available.yet.c87f", "Production is not available yet")} style={{
-              opacity: 0.45,
-              cursor: 'default'
-            }}>
-                <button type="button" disabled className={`${styles.btn} goldBTN`}><LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}</button>
-              </span>
+              {/* Opens the Production tab below. This was a disabled button
+                  titled "Production is not available yet", beside the tab
+                  that worked. */}
+              <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
+                <LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}
+              </button>
             </div>
           </div>
 

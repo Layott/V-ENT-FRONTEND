@@ -1,6 +1,7 @@
 'use client';
 
 import { withLocalDatesAsISO } from '@/lib/datetime';
+import { formatLabel } from '@/lib/formatLabel';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
@@ -82,13 +83,6 @@ const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   hour: '2-digit',
   minute: '2-digit'
 }) : '-';
-const formatLabel = f => ({
-  single_elimination: 'Single Elimination',
-  double_elimination: 'Double Elimination',
-  round_robin: 'Round Robin',
-  swiss: 'Swiss System',
-  battle_royale: 'Battle Royale'
-})[f] || (f ? String(f).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-');
 
 // Pick the first defined/non-empty value - used to tolerate field-name drift
 // between the mock shape and the real backend contract (e.g. start_date vs.
@@ -499,7 +493,7 @@ export const ViewTournamentContent = ({
               <LuMapPin className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>{tt("ui.format.041a", "Format")}</p>
-                <p className={styles.metaValue}>{tournament.format_label || formatLabel(tournament.format)}</p>
+                <p className={styles.metaValue}>{formatLabel(tt, tournament.format || tournament.bracket_type)}</p>
               </div>
             </div>
           </div>
@@ -1167,7 +1161,7 @@ const BracketPanel = ({
 
       {(!flatFormat && isOrganizer) && <>
       <div className={styles.bracketHeader}>
-        <p className={styles.bracketSub}>{formatLabel(bracketType)}{teamsCount ? ` · ${teamsCount} ${entrantWord}` : ''}</p>
+        <p className={styles.bracketSub}>{formatLabel(tt, bracketType)}{teamsCount ? ` · ${teamsCount} ${entrantWord}` : ''}</p>
         <p className={styles.bracketHint}>{tt("ui.click.any.match.view.6a64", "Click any match to view details")}{isOrganizer ? tx(" or edit score") : ''}.</p>
       </div>
 

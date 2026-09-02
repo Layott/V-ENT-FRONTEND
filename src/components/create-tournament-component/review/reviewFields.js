@@ -12,6 +12,8 @@
 // whole purpose of a review step; filling it with a plausible default would
 // tell somebody their tournament is configured when it is not.
 
+import { formatLabel } from '@/lib/formatLabel';
+
 const DASH = '–';
 
 /** A date and time the way somebody wrote it, read back in their locale. */
@@ -45,12 +47,9 @@ const label = (t, prefix, value, fallbacks = {}) => {
   return t(`${prefix}.${key}`, fallbacks[key] || String(value));
 };
 
-export const bracketLabel = (t, value) => label(t, 'review.bracket', value, {
-  single_elimination: 'Single elimination',
-  double_elimination: 'Double elimination',
-  round_robin: 'Round robin',
-  swiss: 'Swiss',
-});
+// The one format list, so the review names gsl, the aggregate tie and the
+// ladder rather than printing their keys.
+export const bracketLabel = (t, value) => formatLabel(t, value, DASH);
 
 export const accessLabel = (t, value) => label(t, 'review.access', value, {
   teams: 'Teams only',

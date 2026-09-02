@@ -661,8 +661,9 @@ export const GUIDES = {
   },
   '/production': {
     title: 'Production',
-    what: 'The broadcast tools: overlays and stream links for whatever you are running.',
-    does: ['Set up an overlay to capture in OBS or vMix'],
+    what: 'What you can put on a stream, and the console of each thing you run.',
+    does: ['Open a tournament you run to start a broadcast and copy its graphics into OBS or vMix',
+           'Open an event you run to upload an overlay or start from one of ours'],
   },
   '/auth/external': {
     title: 'Signing in',

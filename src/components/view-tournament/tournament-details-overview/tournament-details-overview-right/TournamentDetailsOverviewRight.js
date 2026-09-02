@@ -10,8 +10,11 @@ import tournamentStyles from '@/styles/tournament/tournament.module.css'
 import overviewLtStyles from '@/view-/tournament-left/overview-lt.module.css'
 import overviewRtStyles from '@/view-/overview-right/overview-rt.module.css'
 import { appLocale } from '@/lib/appLocale';
+import { formatLabel } from '@/lib/formatLabel';
+import { useT } from '@/i18n/LanguageProvider';
 
 const TournamentDetailsOverviewRight = ({ tournament }) => {
+  const tt = useT();
   if (!tournament) {
     return <div>Loading tournament details...</div>;
   }
@@ -53,7 +56,7 @@ const TournamentDetailsOverviewRight = ({ tournament }) => {
             <VscTypeHierarchySub className={overviewRtStyles.icons} /> Format
           </p>
           <p className={overviewRtStyles.paragraphValue}>
-            {tournament.bracket_type || 'Single Elimination'}
+            {formatLabel(tt, tournament.bracket_type)}
           </p>
         </div>
 
