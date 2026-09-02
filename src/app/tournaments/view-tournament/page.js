@@ -608,14 +608,18 @@ const OverviewPanel = ({
         {organizer && <section className={styles.section}>
             <h2 className={styles.sectionTitle}>{tt("ui.organizer.debd", "Organizer")}</h2>
             <div className={styles.organizerCard}>
-              <div className={styles.organizerAvatar}>{(organizer.full_name || organizer.username || 'O').charAt(0)}</div>
-              <div>
-                {/* The organiser is a person. Their name opens their
-                    profile like every other name on the platform. */}
-                <UserChip user={organizer} size={0} secondary
-                          nameClassName={styles.organizerName}
-                          handleClassName={styles.organizerHandle} />
-              </div>
+              {/* The organiser is a person, drawn the way every other person
+                  on the platform is drawn.
+
+                  This used to hand-roll a circle with the first letter of
+                  their name in it and pass size={0} to switch UserChip's
+                  avatar off, so the organiser's picture could never appear
+                  however well the API reported it - and the founder badge
+                  could not either, because nothing was sent to show. One
+                  component draws both. */}
+              <UserChip user={organizer} size={44} secondary
+                        nameClassName={styles.organizerName}
+                        handleClassName={styles.organizerHandle} />
             </div>
             {/* Running it yourself. These were on the hero as a single
                 "Manage" button and nowhere else, so an organiser looking at
