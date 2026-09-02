@@ -907,7 +907,12 @@ const CommunityInner = () => {
               </form>}
 
               <div className={styles.clubsGrid}>
-                {clubsLoading ? <p className={styles.stateText}>{tt("ui.loading.clubs.0f67", "Loading clubs...")}</p> : filteredClubs.length === 0 ? <p className={styles.stateText}>{tt("ui.no.clubs.match.search.31f3", "No clubs match your search.")}</p> : filteredClubs.map(club => <div key={club.id} className={styles.clubCard}>
+                {clubsLoading ? <p className={styles.stateText}>{tt("ui.loading.clubs.0f67", "Loading clubs...")}</p> : filteredClubs.length === 0 ? <p className={styles.stateText}>{clubQuery.trim()
+                  ? tt("ui.no.clubs.match.search.31f3", "No clubs match your search.")
+                  // Nothing was searched for. "No clubs match your search"
+                  // told the first person to open this tab that they had
+                  // mistyped something they never typed.
+                  : tt('club.noneYet', 'No clubs yet. Make the first one.')}</p> : filteredClubs.map(club => <div key={club.id} className={styles.clubCard}>
                       <Link href={`/community/club/${club.slug || club.id}`} className={styles.clubLink}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         {club.banner ? <img src={mediaUrl(club.banner)} alt={`${club.name} banner`} className={styles.clubBanner} /> : <div className={styles.clubBannerFallback} />}
