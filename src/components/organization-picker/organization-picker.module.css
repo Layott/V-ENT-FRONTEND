@@ -1,0 +1,41 @@
+/* Whose name a tournament or an event runs in.
+ *
+ * Sits inside the wizard's own sub-section, so it borrows that spacing and
+ * only styles the three things the wizard has no shape for. Surface and space,
+ * no stroke. */
+
+.wrap {
+  background-color: #26272b;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  margin-top: 1rem;
+}
+
+.label {
+  display: block;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.select {
+  width: 100%;
+  background-color: #303136;
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+}
+
+.select:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0.6rem 0 0;
+}

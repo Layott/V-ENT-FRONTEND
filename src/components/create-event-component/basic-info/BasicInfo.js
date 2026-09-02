@@ -1,3 +1,4 @@
+import OrganizationPicker from '@/components/organization-picker/OrganizationPicker';
 import { useEffect } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import CreateTournamentTitle from './create-tournament-title/CreateTournamentTitle';
@@ -45,6 +46,13 @@ const BasicInfo = ({
       <CreateTournamentType updateFormData={updateFormData} formData={formData} />
       <CreateTournamentSchedule updateFormData={updateFormData} formData={formData} />
       <CreateTournamentVisibility updateFormData={updateFormData} formData={formData} />
+      {/* Whose name this runs in. Draws nothing for somebody who runs no
+          organisation, which is almost everybody. */}
+      <OrganizationPicker
+        kind="event"
+        value={formData.organization || ''}
+        onChange={(next) => updateFormData('organization', next)}
+      />
       <CreateTournamentLogo updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />
 
       <div className={createTournamentStyles.buttonContainer}>

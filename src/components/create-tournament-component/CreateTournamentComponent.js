@@ -167,6 +167,10 @@ const CreateTournamentComponent = ({ draftId = null }) => {
       // the organiser left the page.
       formDataToSend.append('series_id', formData.series_id || '');
       if (formData.event) formDataToSend.append('event', formData.event);
+      // Whose name it runs in. Empty means the organiser's own, which is the
+      // common case. Without this the column stayed null on every tournament
+      // ever created and following an organisation showed an empty feed.
+      formDataToSend.append('organization', formData.organization || '');
       formDataToSend.append('tournament_description', formData.tournament_description || '');
       formDataToSend.append('tournament_type', formData.tournament_type || '');
       formDataToSend.append('start_date_and_time', formData.start_date_and_time || '');
