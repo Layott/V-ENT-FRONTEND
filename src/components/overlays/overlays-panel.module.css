@@ -136,3 +136,82 @@
 .ghost:focus-visible, .ghostSmall:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .ghost:disabled, .ghostSmall:disabled { color: rgba(255, 255, 255, 0.35); cursor: default; }
+
+/* ------------------------------------------------------------------ names */
+/* The list of what the runtime can fill. Shown next to the prompt because the
+   prompt is long and the answer somebody usually wants from it is one line. */
+
+.fieldBox { margin-top: 1rem; background-color: #1b1c1f; border-radius: 12px; padding: 1rem; }
+
+.fieldRows { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.6rem; }
+
+.fieldRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  align-items: baseline;
+  background-color: #26272b;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+}
+
+.fieldName {
+  color: var(--v-ent-success, #4caf50);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86rem;
+  min-width: 12.5rem;
+}
+
+.fieldDetail { color: rgba(255, 255, 255, 0.72); font-size: 0.88rem; line-height: 1.45; }
+
+/* -------------------------------------------------------------- templates */
+/* Something to start from. Named for the moment it is used rather than for its
+   shape, because an organiser is choosing a job and not a rectangle. */
+
+.templates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.template {
+  flex: 1 1 15rem;
+  min-width: 0;
+  text-align: left;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.template:hover:enabled { background-color: #33343a; }
+.template:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.template:disabled { cursor: default; color: rgba(255, 255, 255, 0.4); }
+
+.templateName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+}
+
+.templateDetail { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; line-height: 1.45; }
+
+/* ------------------------------------------------------- what it is bound to */
+
+.boundTo { margin: 0.45rem 0 0; color: rgba(255, 255, 255, 0.72); font-size: 0.86rem; }
+.boundTo strong { color: #fff; font-weight: 500; }
+
+.boundFields {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  word-break: break-word;
+}

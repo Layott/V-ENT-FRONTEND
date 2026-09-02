@@ -29,6 +29,10 @@ import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
 import UserChip from '@/components/user-chip/UserChip';
+// The same panel the tournament console uses. An event has a programme, a
+// door count, ticket sales and sponsors, all of which somebody wants on a
+// screen behind a stage, and a second copy of this would have drifted.
+import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -38,7 +42,7 @@ const formatDateTime = value => (value
   })
   : '');
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
-  'programme', 'queue', 'influencers', 'promos', 'team'];
+  'programme', 'queue', 'influencers', 'promos', 'overlays', 'team'];
 export const ManageEventContent = ({
   slug: slugFromPath
 }) => {
@@ -1848,6 +1852,15 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- team */}
+              {tab === 'overlays' && <section className={styles.card}>
+                <OverlaysPanel
+                  kind="event"
+                  ownerRef={eventRef}
+                  token={token}
+                  showToast={setNotice}
+                />
+              </section>}
+
               {tab === 'team' && <section className={styles.card}>
                   {!canAddManagers ? <p className={styles.muted}>
                       {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with other people. Move it to an organisation to give somebody else the door list and the codes.')}

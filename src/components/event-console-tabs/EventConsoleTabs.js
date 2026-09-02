@@ -35,6 +35,7 @@ export const CONSOLE_TABS = [
   ['queue', 'console.tabQueue', 'Waiting list'],
   ['influencers', 'console.tabInfluencers', 'Influencers'],
   ['promos', 'console.tabPromos', 'Promo codes'],
+  ['overlays', 'console.tabOverlays', 'Stream overlays'],
   ['team', 'console.tabTeam', 'Team'],
 ];
 
