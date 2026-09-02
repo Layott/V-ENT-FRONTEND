@@ -623,7 +623,7 @@ const CreateEventPage = () => {
                   <input type="number" className={styles.input} value={formData.capacity} onChange={e => update('capacity', Number(e.target.value))} min={1} />
                   {errors.capacity && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.capacity}</span>}
                 </label>
-                <label className={styles.field}>
+                <label className={styles.label}>
                   <span className="fieldLabelRow">{tt('createEvent.capacityMode', 'And that number is')}</span>
                   <select className={styles.input} value={formData.capacity_mode}
                           onChange={e => update('capacity_mode', e.target.value)}>
