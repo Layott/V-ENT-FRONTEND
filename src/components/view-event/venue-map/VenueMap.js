@@ -25,6 +25,7 @@
 // and cannot draw the districts. Tiles come from OpenStreetMap, which needs no
 // key and no account.
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './venue-map.module.css';
@@ -193,7 +194,7 @@ export default function VenueMap({
             setSharing(true);
             setCells(data.data?.cells || []);
           } else {
-            setNote(data?.message || tt('event.map.couldNotShare',
+            setNote(apiMessage(tt, data, 'event.map.couldNotShare',
               'That did not go through. Try again.'));
           }
         } finally {

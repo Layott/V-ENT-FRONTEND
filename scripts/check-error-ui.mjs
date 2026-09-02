@@ -76,7 +76,10 @@ const INSIDE = [
 ];
 
 // `.message` straight out of a response, put where a person will read it.
-const RAW_MESSAGE = /set(?:Error|Message|Toast|Notice|Banner|Status)\s*\(\s*(?:[\w.?]*(?:err|error|e|res|data|body|json|payload)[\w.?]*\.message)\b/;
+// Any `setSomething(...)`, not a list of six names I happened to think of.
+// `setFeedback(err.message)` slipped straight through the list version, and
+// the next person will invent a seventh name rather than read this file.
+const RAW_MESSAGE = /set[A-Z]\w*\s*\(\s*(?:[\w.?]*(?:err|error|res|data|body|json|payload)[\w.?]*\.message)\b/;
 
 const blank = (t) => t.replace(/[^\n]/g, ' ');
 const stripComments = (src) => src
@@ -148,6 +151,11 @@ const FIXTURES = [
     name: 'the same, from a caught error',
     shouldFlag: true,
     src: `setError(err.message || 'x');`,
+  },
+  {
+    name: 'a setter nobody thought to list',
+    shouldFlag: true,
+    src: `setFeedback(err.message);`,
   },
   {
     name: 'a plain sentence somebody can act on',

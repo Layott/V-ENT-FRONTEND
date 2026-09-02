@@ -231,8 +231,7 @@ const CreateOrganizationContent = () => {
       });
       const payload = await res.json().catch(() => null);
       if (payload?.status !== 'success') {
-        setErrorMsg(payload?.message
-          || tt("api.failedToCreateOrg", "Failed to create org."));
+        setErrorMsg(apiMessage(tt, payload, "api.failedToCreateOrg", "Failed to create org."));
         return;
       }
       clearDraft();

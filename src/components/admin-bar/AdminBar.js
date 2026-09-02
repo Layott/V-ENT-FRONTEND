@@ -147,7 +147,7 @@ export default function AdminBar({
     setNote('');
     const result = await save(payload);
     setSaving(false);
-    setNote(result.message);
+    setNote(apiMessage(tt, result, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     if (result.ok) {
       setOpen(false);
       if (typeof window !== 'undefined') window.location.reload();
