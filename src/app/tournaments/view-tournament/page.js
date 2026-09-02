@@ -4,6 +4,7 @@ import { withLocalDatesAsISO } from '@/lib/datetime';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
+import Avatar from '@/components/avatar/Avatar';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { LuTrophy, LuCalendar, LuUsers, LuMapPin, LuRadio, LuFileText, LuMessageCircle, LuX, LuSearch, LuInfo, LuTriangleAlert, LuTicket } from 'react-icons/lu';
@@ -294,6 +295,32 @@ export const ViewTournamentContent = ({
     || (creatorName && session?.user?.username
       && String(creatorName) === String(session.user.username))
   );
+  // Shortening this tournament's address.
+  //
+  // CEO, 2 September: "NO SHORTEN LINK OPTION?" - the events side had this and
+  // tournaments did not, because ShortLink.event was a required foreign key so
+  // a tournament had nowhere to hang one. A tournament link is long for the
+  // same reasons and shortened for the same ones: read aloud on a stream,
+  // printed on a flyer, dropped into a group chat.
+  //
+  // Passed to ShareCard only when the viewer is the organiser, because only an
+  // organiser may create one. Everybody else sees the card without the control
+  // rather than with a control that answers 403 after they press it.
+  const shortenTournamentLink = useCallback(async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/tournament/${id}/short-links/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
+        },
+        body: JSON.stringify({ target: `/tournaments/${id}` }),
+      });
+    const body = await res.json().catch(() => null);
+    if (!res.ok || body?.status !== 'success') throw new Error('shorten failed');
+    return body.data.link.url;
+  }, [id, session?.user?.sessionToken]);
+
   const registrationClosed = ['live', 'in_progress', 'completed', 'cancelled', 'registration_closed'].includes(tournament?.status);
   if (!id) return <NotFoundShell />;
   if (loading) return <SkeletonShell />;
@@ -396,6 +423,7 @@ export const ViewTournamentContent = ({
                       screenshot into a WhatsApp group, and neither of those
                       carries a clipboard, so it shows the QR too. */}
                   <ShareCard
+                    shorten={isOrganizer ? shortenTournamentLink : null}
                     url={linkTo.tournament(tournament)}
                     title={tournament?.name || tournament?.tournament_title}
                     text={tt('share.tournamentText', 'Brackets and entry for {name} on V-ENT.')
@@ -594,8 +622,14 @@ const OverviewPanel = ({
               {sponsors.map((s, i) => {
             const name = typeof s === 'string' ? s : s?.name || s?.sponsor_name || 'Sponsor';
             const tier = typeof s === 'string' ? '' : s?.tier || '';
+            // A sponsor sent as a bare string has no logo, which is why this
+            // is read defensively rather than assumed.
+            const logo = typeof s === 'string' ? null : s?.logo || s?.logo_url || null;
             return <div key={s?.id || `${name}_${i}`} className={styles.sponsorCard}>
-                    <div className={styles.sponsorLogo}>{name.charAt(0)}</div>
+                    {/* A sponsor has a logo, and drawing the first letter
+                        of their name instead is the same fault as drawing an
+                        initial where a face belongs. */}
+                    <Avatar src={logo} size={40} rounded={false} name={name} />
                     <p className={styles.sponsorName}>{name}</p>
                     {tier && <p className={styles.sponsorTier}>{tier}</p>}
                   </div>;
@@ -1155,7 +1189,12 @@ const BracketPanel = ({
                     </div>
                     <div className={styles.matchTeams}>
                       {m.participants?.map((p, idx) => <div key={p.id || idx} className={`${styles.teamRow} ${p.is_winner ? styles.teamWinner : ''}`}>
-                          <span className={styles.teamAvatar}>{(p.name || p.username || '?').charAt(0)}</span>
+                          {/* The player's own picture where one exists.
+                              This drew a letter and nothing else, so a
+                              participant list could never show a face. Avatar
+                              falls back to initials by itself. */}
+                          <Avatar src={p.avatar || p.logo} size={28}
+                                  name={p.name || p.username || '?'} />
                           <span className={styles.teamName}>{p.name || p.username || 'TBD'}</span>
                           <span className={`${styles.teamScore} ${p.score == null ? styles.scoreNa : ''}`}>
                             {p.score == null ? '-' : p.score}
@@ -1446,7 +1485,7 @@ const ParticipantsPanel = ({
                 <div className={styles.colSeed}>#{r.seed}</div>
                 <div className={styles.colTeam}>
                   <div className={styles.teamCell}>
-                    <div className={styles.teamCellAvatar}>{r.name.charAt(0)}</div>
+                    <Avatar src={r.avatar || r.logo} size={28} name={r.name} />
                     <div>
                       <p className={styles.teamCellName}>{r.name}</p>
                       {r.tag && <p className={styles.teamCellTag}>{r.tag}</p>}
@@ -1478,7 +1517,7 @@ const ParticipantsPanel = ({
             {filtered.map(r => <div key={r.key} className={styles.partCard}>
                 <div className={styles.partCardHead}>
                   <div className={styles.teamCell}>
-                    <div className={styles.teamCellAvatar}>{r.name.charAt(0)}</div>
+                    <Avatar src={r.avatar || r.logo} size={28} name={r.name} />
                     <div>
                       <p className={styles.teamCellName}>{r.name}</p>
                       <p className={styles.teamCellTag}>{r.tag ? `${r.tag} · ` : ''}{tt("ui.seed.2318", "Seed #")}{r.seed}</p>
@@ -1582,8 +1621,9 @@ const PrizePanel = ({
           const tier = typeof s === 'string' ? '' : s?.tier || '';
           const cut = typeof s === 'object' && s?.contribution_percent != null ? Number(s.contribution_percent) : null;
           const amount = cut != null ? Math.round(total * cut / 100) : null;
+          const logo = typeof s === 'string' ? null : s?.logo || s?.logo_url || null;
           return <div key={s?.id || `${name}_${i}`} className={styles.sbRow}>
-                  <div className={styles.sbLogo}>{name.charAt(0)}</div>
+                  <Avatar src={logo} size={32} rounded={false} name={name} />
                   <div className={styles.sbInfo}>
                     <p className={styles.sbName}>{name}</p>
                     {tier && <p className={styles.sbTier}>{tier}</p>}
