@@ -42,7 +42,14 @@ const ENTRY_TYPES = ['All Entries', 'free', 'paid'];
 // / `completed`) and the real M1 contract (`registration_open` / `published` /
 // `ongoing` / `live` / `completed`).
 const UPCOMING_STATUSES = ['upcoming', 'registration_open', 'published'];
-const LIVE_STATUSES = ['ongoing', 'live', 'in_progress'];
+// Registration has closed and the thing is about to start or has: still very
+// much worth showing somebody browsing.
+const LIVE_STATUSES = ['ongoing', 'live', 'in_progress', 'registration_closed'];
+
+// Not shown to somebody browsing, on purpose. A draft is unpublished by
+// definition, and a cancelled tournament is not something to send a player to
+// - the page itself stays reachable for anybody holding the link.
+const DELIBERATELY_HIDDEN = ['draft', 'cancelled'];
 const COMPLETED_STATUSES = ['completed'];
 const STATUS_LABELS = {
   upcoming: 'Upcoming',

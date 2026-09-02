@@ -22,14 +22,33 @@ const TABS = [{
   label: 'Drafts'
 }, {
   id: 'completed',
-  label: 'Completed'
+  label: 'Finished'
 }];
 
 // Status values are tolerant of both the mock shape (`upcoming` / `in_progress`
 // / `completed`) and the real M1 contract (`registration_open` / `published` /
 // `ongoing` / `live` / `completed`).
-const ACTIVE_STATUSES = ['upcoming', 'registration_open', 'published', 'ongoing', 'live', 'in_progress'];
-const COMPLETED_STATUSES = ['completed'];
+// `registration_closed` belongs here: entries have shut but the tournament is
+// still yours to run, and it was in no bucket at all.
+const ACTIVE_STATUSES = ['upcoming', 'registration_open', 'registration_closed', 'published', 'ongoing', 'live', 'in_progress'];
+
+// Statuses with no tab ON PURPOSE, so the omission is a decision somebody
+// wrote down rather than one they forgot. Drafts have their own tab, fed by a
+// different endpoint.
+const DELIBERATELY_HIDDEN = ['draft'];
+// A tournament that is over, however it ended.
+//
+// `cancelled` was in NEITHER list, so a cancelled tournament belonged to no
+// tab and vanished from the page that exists to list everything you organise.
+// The CEO had three tournaments and all three were cancelled; My Tournaments
+// showed Active 0, Drafts 0, Completed 0 and an empty state, as though he had
+// never made anything. Nothing was lost - the rows were all there - and the
+// page simply had nowhere to put them.
+//
+// Cancelled sits here rather than in a fourth tab: it is finished, the badge
+// on the row already says which kind of finished, and an organiser looking for
+// something they cancelled looks under the things that are over.
+const COMPLETED_STATUSES = ['completed', 'cancelled'];
 const STATUS_LABELS = {
   upcoming: 'UPCOMING',
   registration_open: 'REGISTRATION OPEN',
@@ -239,7 +258,7 @@ const MyTournaments = () => {
               </div> : filtered.length === 0 ? <div className={styles.emptyState}>
               <LuTrophy className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>{tab === 'active' && tournaments.length === 0 ? tx("You haven't created any tournaments yet") : tx("Nothing here yet")}</p>
-              <p className={styles.emptySub}>{tab === 'active' ? tx("Create your first tournament to get started.") : tx("No completed tournaments.")}</p>
+              <p className={styles.emptySub}>{tab === 'active' ? tx("Create your first tournament to get started.") : tx("Nothing finished yet. Tournaments you complete or cancel show up here.")}</p>
               <Link href="/tournaments/create-tournament">
                 <button className={`${styles.btn} goldBTN`}>{tt("ui.create.tournament.4440", "Create Tournament")}</button>
               </Link>
