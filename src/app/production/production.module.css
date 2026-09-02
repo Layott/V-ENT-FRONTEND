@@ -7,13 +7,28 @@
   overflow-x: hidden;
 }
 
-.mainContainer { width: 100%; }
+.mainContainer {
+  display: flex;
+  width: 100%;
+}
 
+/* Same shell as /events/my-events: the pane sits beside the 250px sidebar on
+   a desktop and under the header on a phone. Without the offset the whole page
+   drew underneath the sidebar. */
 .rightPaneContainer {
   width: 100%;
   margin-top: 60px;
   min-height: calc(100vh - 60px);
   padding: 1.25rem 1rem 6rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 3rem;
+    max-width: 1150px;
+  }
 }
 
 .pageHeader { margin-bottom: 1.5rem; }
