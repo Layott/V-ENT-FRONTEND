@@ -33,6 +33,7 @@ export default function robots() {
           '/wallet-topup-callback',
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
+          '/production',           // a personal list of what you run
           '/events/my-events',     // a personal list, including unlisted events
           '/events/edit-event',    // a form, and only the organiser may submit it
           '/events/*/edit',
@@ -57,7 +58,7 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
-                   '/events/check-in/', '/s/', '/studio/'],
+                   '/events/check-in/', '/s/', '/studio/', '/production'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

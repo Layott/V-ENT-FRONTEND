@@ -94,14 +94,14 @@ const Sidebar = ({
                     </Link>
                 </li>
 
-                {/* Production is off. Nothing behind it works yet, so the row
-                    is not a link at all - a disabled control that still
-                    navigates is just a slower disappointment. */}
-                <li className={`${styles.sidebarItem} ${styles.unavailableItem}`} aria-disabled="true">
-                    <span className={styles.iconTextLink} title={tt("ui.production.not.available.yet.c87f", "Production is not available yet")}>
+                {/* The studio and the overlays are built and live. This row
+                    read "Unavailable" for as long as they were, beside a
+                    console tab that worked; the hub says what they are and
+                    lists what you run. */}
+                <li className={`${styles.sidebarItem} ${isActive('/production') ? styles.activeLink : ''}`}>
+                    <Link href={'/production'} className={styles.iconTextLink} data-tour="nav-production">
                         <BsBroadcast className={styles.sidebarIcon} /> {t('nav.production')}
-                        <span className={styles.unavailableTag}>{tt("ui.unavailable.2c9c", "Unavailable")}</span>
-                    </span>
+                    </Link>
                 </li>
 
                 <li className={`${styles.sidebarItem} ${isActive('/teams') ? styles.activeLink : ''}`}>

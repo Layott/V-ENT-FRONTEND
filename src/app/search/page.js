@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { formatLabel } from '@/lib/formatLabel';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useRef, Suspense, useCallback } from 'react';
@@ -98,11 +99,6 @@ const fmtDate = iso => {
     return '';
   }
 };
-const fmtFormat = f => ({
-  single_elimination: 'Single Elim',
-  double_elimination: 'Double Elim',
-  round_robin: 'Round Robin'
-})[f] || f || '';
 const matches = (haystack, needle) => {
   if (!haystack || !needle) return false;
   return String(haystack).toLowerCase().includes(needle);
@@ -911,7 +907,7 @@ const TournamentCard = ({
           </div>
         </div>
         <div className={styles.tCardFooter}>
-          <span className={styles.formatTag}>{fmtFormat(t.format)}</span>
+          <span className={styles.formatTag}>{formatLabel(tt, t.format, '')}</span>
           {feeVc(t) > 0 ? <span className={styles.entryFee}>{feeVc(t).toLocaleString()} VC</span> : <span className={styles.entryFreeText}>{tt("ui.free.75f5", "Free")}</span>}
         </div>
       </div>

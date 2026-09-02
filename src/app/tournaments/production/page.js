@@ -7,7 +7,10 @@ import ComingSoon from '@/components/coming-soon/ComingSoon';
 // This route kept telling visitors the feature did not exist for as long as it
 // did exist, which is worse than saying nothing. It now says where to go.
 const Page = () => {
-  return <ComingSoon phase="Live now" title="Production panel" blurb="Match control and the broadcast tools belong to one tournament, so they live on that tournament's console rather than on an address of their own. Open a tournament you run and choose Production." alternatives={[{
+  return <ComingSoon phase="Live now" title="Production panel" blurb="The studio and the overlays belong to one tournament, so they live on that tournament's console under Production: start a broadcast, copy a URL per graphic into OBS or vMix, put each on air from the console, or upload an overlay of your own. The production page lists everything you run." alternatives={[{
+    href: "/production",
+    label: "Production"
+  }, {
     href: "/tournaments/my-tournaments",
     label: "My tournaments"
   }]} />;

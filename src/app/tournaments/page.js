@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { formatLabel, FORMAT_KEYS } from '@/lib/formatLabel';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
@@ -35,7 +36,9 @@ const STATUS_TABS = [{
   id: 'by_game',
   label: 'By Game'
 }];
-const FORMATS = ['All Formats', 'single_elimination', 'double_elimination', 'round_robin'];
+// Every format the backend runs, from the one list. The filter used to offer
+// three of eight.
+const FORMATS = ['All Formats', ...FORMAT_KEYS];
 const ENTRY_TYPES = ['All Entries', 'free', 'paid'];
 
 // Status values are tolerant of both the mock shape (`upcoming` / `in_progress`
@@ -85,17 +88,6 @@ const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   year: 'numeric'
 }) : '-';
 const formatDateRange = (s, e) => `${formatDate(s)} - ${formatDate(e)}`;
-// The API has historically returned hyphens, underscores or title case for the
-// same format, so normalise before labelling.
-const formatLabel = f => {
-  const slug = String(f || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
-  return {
-    single_elimination: 'Single Elim',
-    double_elimination: 'Double Elim',
-    round_robin: 'Round Robin',
-    swiss: 'Swiss'
-  }[slug] || (f ? String(f).replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-');
-};
 const TournamentsContent = () => {
   const tx = useTx();
   const tt = useT();
@@ -332,7 +324,7 @@ const TournamentsContent = () => {
             </div>
             <div className={styles.filterSelect}>
               <select value={format} onChange={e => setFormat(e.target.value)} className={styles.select}>
-                {FORMATS.map(f => <option key={f} value={f}>{f === 'All Formats' ? tt('filters.allFormats', 'All Formats') : formatLabel(f)}</option>)}
+                {FORMATS.map(f => <option key={f} value={f}>{f === 'All Formats' ? tt('filters.allFormats', 'All Formats') : formatLabel(tt, f)}</option>)}
               </select>
               <TiArrowSortedDown className={styles.selectCaret} />
             </div>
@@ -438,7 +430,7 @@ const TournamentCard = ({
           </div>
         </div>
         <div className={styles.tCardFooter}>
-          <span className={styles.formatTag}>{formatLabel(t?.format)}</span>
+          <span className={styles.formatTag}>{formatLabel(tt, t?.format)}</span>
           {fee > 0 ? <span className={styles.entryFee}>{fee.toLocaleString()} {tt("ui.vc.entry.454e", "VC entry")}</span> : <span className={styles.entryFreeText}>{tt("ui.free.75f5", "Free")}</span>}
         </div>
       </div>
