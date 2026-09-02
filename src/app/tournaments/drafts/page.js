@@ -44,6 +44,7 @@ const Drafts = () => {
   const [error, setError] = useState(null);
   const [retryKey, setRetryKey] = useState(0);
   const [busyId, setBusyId] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast] = useState(null);
   const showToast = msg => {
     setToast(msg);
@@ -103,7 +104,13 @@ const Drafts = () => {
   };
   const handleDelete = async draft => {
     if (busyId) return;
-    if (!window.confirm('Delete this draft? This cannot be undone.')) return;
+    // Asked in place. window.confirm is drawn by the browser, so it carries
+    // none of the product's type or colour, cannot be translated, and blocks
+    // the whole tab. The first press asks; this runs on the second.
+    if (confirmId !== draft.id) {
+      setConfirmId(draft.id);
+      return;
+    }
     setBusyId(draft.id);
     try {
       await ventFetch(API.TOURNAMENT.DELETE_DRAFT(draft.id), {
@@ -116,6 +123,7 @@ const Drafts = () => {
       showToast(apiMessage(tt, err, "api.couldNotDeleteThisDraft", "Could not delete this draft."));
     } finally {
       setBusyId(null);
+      setConfirmId(null);
     }
   };
   return <div className={styles.pageContainer}>
@@ -203,7 +211,9 @@ const Drafts = () => {
                         <LuRocket /> {busy ? tx("Publishing…") : 'Publish'}
                       </button>
                       <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(draft)} disabled={anyBusy}>
-                        <LuTrash2 />
+                        {confirmId === draft.id
+                          ? tt('draft.confirmDelete', 'Delete for good')
+                          : <><LuTrash2 /></>}
                       </button>
                     </div>
                   </div>;

@@ -17,9 +17,15 @@ const DraftCard = ({
   const [showDetails, setShowDetails] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [confirming, setConfirming] = useState(false);
   const toggleDetails = () => setShowDetails(prev => !prev);
   const handleDelete = async () => {
-    if (!window.confirm(`Delete "${draft.tournament_title || 'this draft'}"? This cannot be undone.`)) return;
+    // Asked in place rather than by window.confirm, which the browser draws
+    // with none of the product on it and cannot translate.
+    if (!confirming) {
+      setConfirming(true);
+      return;
+    }
     setDeleting(true);
     setDeleteError(null);
     try {
@@ -38,7 +44,7 @@ const DraftCard = ({
       }
     } catch (err) {
       console.error('Delete draft error:', err);
-      setDeleteError('An error occurred. Please try again.');
+      setDeleteError(tt('api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       setDeleting(false);
     }
   };
@@ -53,7 +59,9 @@ const DraftCard = ({
             {showDetails ? tx("Hide Details") : tx("View Details")}
           </button>
           <button className={styles.deleteButton} onClick={handleDelete} disabled={deleting}>
-            {deleting ? tx("Deleting...") : 'Delete'}
+            {confirming
+              ? tt('draft.confirmDelete', 'Delete for good')
+              : <>{deleting ? tx("Deleting...") : 'Delete'}</>}
           </button>
         </div>
       </div>

@@ -921,3 +921,23 @@
 @media only screen and (min-width: 1920px) {
   .rightPaneContainer { padding: 2.5rem; }
 }
+
+/* The reservation confirmation, on the page rather than in a browser alert.
+   An alert is drawn by the browser with none of the product on it, cannot be
+   translated usefully, and blocks the whole tab. */
+.reservedNote {
+  position: fixed;
+  left: 50%;
+  bottom: 5.5rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: min(92vw, 30rem);
+  background-color: #2a2b30;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.8rem 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}
