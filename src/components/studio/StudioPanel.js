@@ -137,9 +137,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     return { ok: res.ok && body.status === 'success', body };
   }, [kind, ref, token]);
 
-  const load = useCallback(async () => {
+  // `quiet` is the five-second refresh while live. It must not touch the
+  // loading state: doing so unmounted the whole panel every five seconds,
+  // which flashed "Opening the studio..." on a desktop and threw a phone back
+  // to the top of the page mid-scroll, every five seconds, for the whole
+  // broadcast.
+  const load = useCallback(async (quiet = false) => {
     if (!token || !ref) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     const { ok, body } = await call('/sessions/');
     if (ok) {
       const rows = body.data.sessions || [];
@@ -161,7 +166,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   // on another machine is not looking at a stale board.
   useEffect(() => {
     if (!live) return undefined;
-    const timer = setInterval(load, 5000);
+    const timer = setInterval(() => load(true), 5000);
     return () => clearInterval(timer);
   }, [live, load]);
 
