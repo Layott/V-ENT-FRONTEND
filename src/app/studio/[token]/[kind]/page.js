@@ -22,6 +22,11 @@
 // draws is going out on air. A connection that drops keeps the last good frame
 // on screen and retries quietly, because a graphic that flickers to "Loading"
 // mid-match is worse than a graphic that is a few seconds stale.
+//
+// The feed says what the broadcast is of (`kind`): a tournament sends teams,
+// live matches and sponsors; an event sends what is on now, the programme, the
+// door count and sponsors. Each element reads the part it needs and returns
+// null for the rest, and the same page serves both.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './studio.module.css';
@@ -40,11 +45,20 @@ const place = (n) => {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 };
 
+/** A clock reading for a programme row. */
+const clock = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 // ---------------------------------------------------------------- elements
 //
 // Each takes `{payload, data}`: what the operator typed, and what the bracket
-// says. The operator names the fixture; the numbers come from the tournament,
-// never from the operator, so a scorebar cannot disagree with the standings.
+// or the programme says. The operator names the fixture; the numbers come from
+// the tournament or the event, never from the operator, so a scorebar cannot
+// disagree with the standings and a doors count cannot disagree with the door.
 
 function Scorebar({ payload, data }) {
   const teams = data.teams || [];
@@ -132,10 +146,9 @@ function LowerThird({ payload }) {
 }
 
 function PlayerCard({ payload, data }) {
-  // The feed sends `ign`, `id` and `img` for a player. This read `username`,
-  // `name` and `avatar`, none of which exist on that row, so the match never
-  // found anybody and the card never drew - for every operator, on every
-  // tournament, since it was written. Nothing reported it: an element that
+  // The feed sends `ign`, `id` and `img` for a player. This once read
+  // `username`, `name` and `avatar`, none of which exist on that row, so the
+  // match never found anybody and the card never drew. An element that
   // returns null looks exactly like an element that is switched off.
   const teams = data.teams || [];
   const wanted = String(payload.player || '').trim().toLowerCase();
@@ -168,8 +181,11 @@ function PlayerCard({ payload, data }) {
 }
 
 function Ticker({ payload, data }) {
-  const items = payload.items
-    || (data.teams || []).map((t) => `${place(t.place)}  ${t.name}  ${t.won}W ${t.lost}L`);
+  const fromTable = (data.teams || []).map(
+    (t) => `${place(t.place)}  ${t.name}  ${t.won}W ${t.lost}L`);
+  const fromProgramme = (data.programme || []).map(
+    (p) => `${clock(p.starts_at)}  ${p.title}${p.room ? `  ${p.room}` : ''}`);
+  const items = payload.items || (data.kind === 'event' ? fromProgramme : fromTable);
   if (!items.length) return null;
   return (
     <div className={styles.ticker}>
@@ -183,7 +199,7 @@ function Ticker({ payload, data }) {
 }
 
 function Titlecard({ payload, data, variant }) {
-  const title = payload.title || data.tournament?.title;
+  const title = payload.title || data.tournament?.title || data.event?.name;
   if (!title) return null;
   return (
     <div className={`${styles.title} ${styles['title_' + variant]}`}>
@@ -198,8 +214,6 @@ function Titlecard({ payload, data, variant }) {
 function Bracket({ data }) {
   const live = data.live || [];
   if (!live.length) return null;
-  // This drew the round and the score and nothing else, so on air it read
-  // "R2  0 - 0" and named nobody. The feed now carries who is playing.
   return (
     <div className={styles.bracket}>
       {live.map((m, i) => (
@@ -218,15 +232,96 @@ function Bracket({ data }) {
   );
 }
 
+// The people who paid for the banners. Both kinds send `sponsors`.
+function SponsorWall({ payload, data }) {
+  const rows = (data.sponsors || []).filter((s) => s.name || s.logo);
+  if (!rows.length) return null;
+  return (
+    <div className={styles.wall}>
+      <div className={styles.wallK}>{payload.title || 'With thanks to'}</div>
+      <div className={styles.wallList}>
+        {rows.map((s, i) => (
+          <div key={i} className={styles.wallOne}>
+            {s.logo && <img className={styles.wallLogo} src={s.logo} alt="" />}
+            <span className={styles.wallName}>{s.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// What is on, and what follows it, read from the programme. Nothing to type.
+function NowNext({ data }) {
+  const ev = data.event || {};
+  if (!ev.now_on && !ev.next_on) return null;
+  return (
+    <div className={styles.nownext}>
+      {ev.now_on && (
+        <div className={styles.nnNow}>
+          <span className={styles.nnLabel}>Now</span>
+          <span className={styles.nnTitle}>{ev.now_on}</span>
+          {ev.room && <span className={styles.nnRoom}>{ev.room}</span>}
+        </div>
+      )}
+      {ev.next_on && (
+        <div className={styles.nnNext}>
+          <span className={styles.nnLabel}>Next</span>
+          <span className={styles.nnTitle}>{ev.next_on}</span>
+          {ev.next_room && <span className={styles.nnRoom}>{ev.next_room}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// The running order. The operator picks how many rows; the feed says which.
+function Programme({ payload, data }) {
+  const rows = (data.programme || []).slice(0, Number(payload.limit) || 6);
+  if (!rows.length) return null;
+  return (
+    <div className={styles.programme}>
+      <div className={styles.pgTitle}>{payload.title || data.event?.name || 'Programme'}</div>
+      {rows.map((p, i) => (
+        <div key={i} className={styles.pgRow}>
+          <span className={styles.pgTime}>{clock(p.starts_at)}</span>
+          <span className={styles.pgName}>{p.title}</span>
+          <span className={styles.pgRoom}>{p.room || ''}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// How many are in, against how many the room holds. Read from the door.
+function Doors({ data }) {
+  const ev = data.event || {};
+  const inside = Number(ev.attending || 0);
+  const cap = Number(ev.capacity || 0);
+  if (!inside && !cap) return null;
+  return (
+    <div className={styles.doors}>
+      <span className={styles.doorsNum}>{inside.toLocaleString()}</span>
+      <span className={styles.doorsLabel}>
+        {cap ? `of ${cap.toLocaleString()} in` : 'in'}
+      </span>
+    </div>
+  );
+}
+
 const ELEMENTS = {
   scorebar: Scorebar,
   standings: Standings,
   lower_third: LowerThird,
   player_card: PlayerCard,
   bracket: Bracket,
+  sponsors: SponsorWall,
   ticker: Ticker,
   intro: (p) => <Titlecard {...p} variant="intro" />,
   outro: (p) => <Titlecard {...p} variant="outro" />,
+  now_next: NowNext,
+  programme: Programme,
+  doors: Doors,
 };
 
 // ------------------------------------------------------------------- page
@@ -263,8 +358,7 @@ export default function StudioElement({ params }) {
       setFeed(body.data);
       // The broadcast is over. Everything is already inactive in this payload,
       // so the graphic clears on this render, and then there is nothing left
-      // to ask about. Stopping is what makes the console's promise true: the
-      // URL keeps answering, and this page will never draw from it again.
+      // to ask about.
       if (body.data.retired) setRetired(true);
     } catch {
       // Keep the last good frame. A graphic that flickers to an error

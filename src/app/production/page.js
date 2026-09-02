@@ -190,9 +190,9 @@ export default function ProductionHub() {
                               {[when(e.start_date), e.venue_name || e.location].filter(Boolean).join(' · ')}
                             </p>
                           </div>
-                          <Link href={`/events/${ref}/manage?tab=overlays`}
+                          <Link href={`/events/${ref}/manage?tab=production`}
                                 className={styles.primaryBtn}>
-                            {tt('production.openOverlays', 'Open overlays')}
+                            {tt('production.openProduction', 'Open production')}
                           </Link>
                         </div>
                       );
