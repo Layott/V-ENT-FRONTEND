@@ -21,6 +21,8 @@ const appendEventRules = (body, formData) => {
     body.append('capacity', String(formData.capacity));
   }
   body.append('capacity_mode', formData.capacity_mode || 'per_day');
+  // Whose name it runs in. Empty means the organiser's own.
+  body.append('organization', formData.organization || '');
 
   const tiers = (formData.ticket_types || [])
     .filter((t) => (t.name || '').trim())

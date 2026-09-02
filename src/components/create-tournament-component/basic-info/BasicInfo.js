@@ -1,3 +1,4 @@
+import OrganizationPicker from '@/components/organization-picker/OrganizationPicker';
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { IoMdArrowForward } from "react-icons/io";
@@ -81,6 +82,13 @@ const BasicInfo = ({
       <CreateTournamentType formData={formData} updateFormData={updateFormData} />
       <CreateTournamentSchedule formData={formData} updateFormData={updateFormData} />
       <CreateTournamentVisibility formData={formData} updateFormData={updateFormData} />
+      {/* Whose name this runs in. Draws nothing for somebody who runs no
+          organisation, which is almost everybody. */}
+      <OrganizationPicker
+        kind="tournament"
+        value={formData.organization || ''}
+        onChange={(next) => updateFormData('organization', next)}
+      />
       <CreateTournamentLogo updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />
 
       {/* Action Buttons */}
