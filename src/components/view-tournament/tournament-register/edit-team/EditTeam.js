@@ -1,4 +1,5 @@
 // ./src/components/view-tournament/tournament-register/EditTeamRosterModal.js
+import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -135,7 +136,8 @@ const EditTeamRosterModal = ({
           <div className={styles.teamHeader}>
             <div className={styles.teamInfo}>
               <div className={styles.teamAvatar}>
-                <Image src={mediaUrl(image)} alt={selectedTeam?.name || "Team"} width={60} height={60} />
+                <Avatar src={mediaUrl(image)} name={selectedTeam?.name || 'Team'}
+                        size={60} rounded={false} />
               </div>
               <div className={styles.teamDetails}>
                 <h3 className={styles.teamName}>{selectedTeam?.name || tx("Kill Streak Team")}</h3>
@@ -177,7 +179,8 @@ const EditTeamRosterModal = ({
               {teamMembers.map(member => <div key={member.id} className={styles.memberCard}>
                   <div className={styles.memberInfo}>
                     <div className={styles.memberAvatar}>
-                      <Image src={mediaUrl(member.avatar)} alt={member.name} width={40} height={40} />
+                      <Avatar src={mediaUrl(member.avatar)}
+                              name={member.username || member.name} size={40} />
                     </div>
                     <div className={styles.memberDetails}>
                       <span className={styles.memberName}>
@@ -213,7 +216,8 @@ const EditTeamRosterModal = ({
                 {removedMembers.map(member => <div key={member.id} className={styles.memberCard}>
                     <div className={styles.memberInfo}>
                       <div className={styles.memberAvatar}>
-                        <Image src={mediaUrl(member.avatar)} alt={member.name} width={40} height={40} />
+                        <Avatar src={mediaUrl(member.avatar)}
+                                name={member.username || member.name} size={40} />
                       </div>
                       <div className={styles.memberDetails}>
                         <span className={styles.memberName}>{member.name}</span>

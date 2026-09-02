@@ -22,6 +22,8 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './search.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Avatar from '@/components/avatar/Avatar';
+import Banner from '@/components/banner/Banner';
 import UserChip from '@/components/user-chip/UserChip';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
@@ -959,8 +961,7 @@ const TeamCard = ({
   return <Link href={`/teams/${t.slug || t.id}`} className={styles.teamCard}>
     <div className={styles.teamHeader}>
       <div className={styles.teamLogo}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(t.logo)} alt={t.name} />
+        <Avatar src={mediaUrl(t.logo)} name={t.name} rounded={false} fill />
       </div>
       <div className={styles.teamHeaderText}>
         <h3 className={styles.teamName}>{t.name}</h3>
@@ -985,8 +986,7 @@ const UserCard = ({
   const tt = useT();
   return <Link href={`/u/${u.username || u.id}`} className={styles.userCard}>
     <div className={styles.userAvatar}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={mediaUrl(u.avatar)} alt={u.full_name} />
+      <Avatar src={mediaUrl(u.avatar)} name={u.username || u.full_name} fill />
     </div>
     <div className={styles.userBody}>
       <UserChip user={u} size={0} secondary link={false}
@@ -1031,8 +1031,8 @@ const ListingCard = ({
         <span className={styles.listingPriceUnit}>VC</span>
       </div>
       <div className={styles.listingSeller}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(l.seller?.avatar)} alt={l.seller?.username} className={styles.sellerAvatar} />
+        <Avatar src={mediaUrl(l.seller?.avatar)} name={l.seller?.username}
+                className={styles.sellerAvatar} fill />
         <span className={styles.sellerHandle}>@{l.seller?.username}</span>
         <span className={styles.sellerRating}><FaStar /> {Number(l.seller?.rating || 0).toFixed(1)}</span>
       </div>
@@ -1078,8 +1078,8 @@ const ThreadCard = ({
     </div>
     <h3 className={styles.threadTitle}>{tx(t.title)}</h3>
     <div className={styles.threadAuthor}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={mediaUrl(t.author?.avatar)} alt={t.author?.username} className={styles.threadAvatar} />
+      <Avatar src={mediaUrl(t.author?.avatar)} name={t.author?.username}
+              className={styles.threadAvatar} fill />
       <span className={styles.threadAuthorName}>@{t.author?.username}</span>
       <span className={styles.threadDate}>{fmtDate(t.created_at)}</span>
     </div>
@@ -1112,8 +1112,7 @@ const MangaCard = ({
   const tt = useT();
   return <Link href={`/anime/reader?id=${m.id}`} className={styles.mangaCard}>
     <div className={styles.mangaCoverWrap}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={mediaUrl(m.cover)} alt={tx(m.title)} className={styles.mangaCover} />
+      <Banner src={mediaUrl(m.cover)} alt={tx(m.title)} className={styles.mangaCover} />
       <span className={styles.mangaStatus}>{m.status}</span>
     </div>
     <div className={styles.mangaBody}>
@@ -1158,8 +1157,8 @@ const OrgCard = ({
       backgroundImage: `url(${o.banner})`
     }}>
       <div className={styles.orgLogoWrap}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(o.logo)} alt={o.name} className={styles.orgLogo} />
+        <Avatar src={mediaUrl(o.logo)} name={o.name} rounded={false}
+                className={styles.orgLogo} fill />
       </div>
       {o.verified && <span className={styles.orgVerified}>{tt("ui.verified.aed3", "Verified")}</span>}
     </div>

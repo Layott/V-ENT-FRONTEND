@@ -20,10 +20,22 @@ const initialsOf = (name = '') =>
     .join('')
     .toUpperCase() || '?';
 
-const Avatar = ({ src, name, size = 40, className = '', rounded = true }) => {
-  const style = { width: size, height: size, borderRadius: rounded ? '50%' : '10px' };
+/**
+ * @param fill  size and radius come from `className` instead of inline style.
+ *              A crest inside a card is sized by the card, and an inline
+ *              width fights the stylesheet. next/image needs a width and a
+ *              height it can reason about, so a filled avatar is a plain img.
+ */
+const Avatar = ({ src, name, size = 40, className = '', rounded = true, fill = false }) => {
+  const style = fill
+    ? undefined
+    : { width: size, height: size, borderRadius: rounded ? '50%' : '10px' };
 
   if (src) {
+    if (fill) {
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img src={src} alt={name || ''} className={`${styles.img} ${className}`} />;
+    }
     return (
       <Image
         src={src}
@@ -40,7 +52,7 @@ const Avatar = ({ src, name, size = 40, className = '', rounded = true }) => {
   return (
     <span
       className={`${styles.fallback} ${className}`}
-      style={{ ...style, fontSize: Math.max(11, Math.round(size * 0.38)) }}
+      style={fill ? undefined : { ...style, fontSize: Math.max(11, Math.round(size * 0.38)) }}
       aria-label={name || ''}
     >
       {initialsOf(name)}
