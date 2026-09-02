@@ -331,7 +331,7 @@ const PartnersPage = () => {
                               {k.revoked_at ? 'revoked' : `${k.rate_limit_per_minute}/min`}
                             </p>
                           </div>
-                          {!k.revoked_at && <button type="button" className={styles.ghostBtn} onClick={() => revokeKey(k.id)} disabled={saving}>
+                          {!k.revoked_at && status === 'authenticated' && <button type="button" className={styles.ghostBtn} onClick={() => revokeKey(k.id)} disabled={saving}>
                               {tt("ui.revoke.0be7", "Revoke")}
                             </button>}
                         </div>)}

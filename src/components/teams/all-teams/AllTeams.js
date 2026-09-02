@@ -18,7 +18,7 @@ import styles from './all-teams.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { sameUser, usernameOf } from '@/lib/gating';
+import { sameUser, signInHref, useViewer, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -52,6 +52,7 @@ const AllTeams = () => {
   // Invitations addressed to the person looking. The Invited tab used to be
   // a tab over an empty list, because the server answered it with `none()`
   // and a comment saying the model was not built. It is built now.
+  const viewer = useViewer();
   const [invites, setInvites] = useState([]);
   const [inviteBusy, setInviteBusy] = useState(false);
 
@@ -231,15 +232,20 @@ const AllTeams = () => {
           <p className={styles.pageSub}>{tt("ui.browse.join.manage.competitive.1fc5", "Browse, join and manage competitive squads.")}</p>
         </div>
         <div className={styles.headerActions}>
-          <Link href="/teams/create-team" className={`${styles.createTeamBTN}`}>
+          <Link
+            href={viewer.signedIn ? '/teams/create-team' : signInHref('/teams/create-team')}
+            className={`${styles.createTeamBTN}`}
+          >
             <FiPlus className={styles.plusIcon} />
-            {tt("ui.create.team.8d82", "Create team")}
+            {viewer.signedIn
+              ? tt("ui.create.team.8d82", "Create team")
+              : tt('team.signInToCreate', 'Sign in to create one')}
           </Link>
         </div>
       </div>
 
       <div className={styles.tabsRow}>
-        {TABS.map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
+        {TABS.filter(t => viewer.signedIn || !PERSONAL_TABS.includes(t.id)).map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
             {tx(t.label)}
           </button>)}
       </div>
@@ -295,7 +301,7 @@ const AllTeams = () => {
 
       {!loading && error && <p className={styles.errorText}>{error}</p>}
 
-      {activeTab === 'invited' && (
+      {activeTab === 'invited' && viewer.signedIn && (
         invites.length === 0
           ? <div className={styles.emptyState}>
               <p>{tt('team.noInvites', 'Nobody has invited you to a team yet.')}</p>
@@ -311,16 +317,16 @@ const AllTeams = () => {
                     </span>
                     {inv.message && <span className={styles.inviteMessage}>{inv.message}</span>}
                   </div>
-                  <div className={styles.inviteActions}>
+                  {viewer.signedIn && <div className={styles.inviteActions}>
                     <button type="button" className={styles.inviteAccept} disabled={inviteBusy}
                             onClick={() => answerInvite(inv, true)}>
                       {tt('team.acceptInvite', 'Join')}
                     </button>
-                    <button type="button" className={styles.inviteDecline} disabled={inviteBusy}
+                    {viewer.signedIn && <button type="button" className={styles.inviteDecline} disabled={inviteBusy}
                             onClick={() => answerInvite(inv, false)}>
                       {tt('team.declineInvite', 'No thanks')}
-                    </button>
-                  </div>
+                    </button>}
+                  </div>}
                 </div>
               ))}
             </div>
@@ -404,9 +410,11 @@ const AllTeams = () => {
                   <div className={styles.cardActions}>
                     {owned || reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
                         {owned ? tx("Manage") : tx("Pending request")}
-                      </button> : open ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
+                      </button> : open && viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
                         {reqState === 'loading' ? tx("Requesting…") : tx("Request to join")}
-                      </button> : <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
+                      </button> : open ? <Link href={signInHref(`/teams/${teamId}`)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                        {tt('team.signInToJoin', 'Sign in to join')}
+                      </Link> : <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
                         {tt("ui.view.69bd", "View")}
                       </Link>}
 

@@ -20,7 +20,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './organizations.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { sameUser, usernameOf } from '@/lib/gating';
+import { sameUser, signInHref, useViewer, usernameOf } from '@/lib/gating';
 import { appLocale } from '@/lib/appLocale';
 // Through `appLocale()`, never `undefined`. `toLocaleDateString(undefined)`
 // means the BROWSER's language, so a French reader on an English machine gets
@@ -29,6 +29,9 @@ const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric', month: 'short', year: 'numeric',
 }) : '';
 
+// `needsAccount` tabs are hidden from a signed-out visitor. Both filter on
+// something only an account has, so to a stranger they read as a platform
+// where nobody follows anything and nobody runs an organisation.
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -37,10 +40,12 @@ const TABS = [{
   label: 'Verified'
 }, {
   id: 'following',
-  label: 'Following'
+  label: 'Following',
+  needsAccount: true
 }, {
   id: 'mine',
-  label: 'My Orgs'
+  label: 'My Orgs',
+  needsAccount: true
 }];
 const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'All Africa'];
 const FOCUS_OPTIONS = [{
@@ -157,6 +162,7 @@ const OrganizationsContent = () => {
   // Who this person follows, and what those organisations have coming up.
   // A follow that changes nothing about what you are shown is a counter rather
   // than a subscription, and the person who pressed it cannot tell.
+  const viewer = useViewer();
   const [followingIds, setFollowingIds] = useState(new Set());
   const [feed, setFeed] = useState([]);
 
@@ -249,13 +255,22 @@ const OrganizationsContent = () => {
                 {tt("ui.pro.esports.orgs.event.a6a9", "Pro esports orgs, event companies, streamers and agencies running competitive gaming across Africa.")}
               </p>
             </div>
-            <Link href={'/organizations/create'} className={styles.createBtn}>
-              <FiPlus className={styles.plusIcon} /> {tt("ui.create.organization.a194", "Create Organization")}
+            <Link
+              href={viewer.signedIn
+                ? '/organizations/create'
+                : signInHref('/organizations/create')}
+              className={styles.createBtn}
+            >
+              <FiPlus className={styles.plusIcon} />
+              {' '}
+              {viewer.signedIn
+                ? tt("ui.create.organization.a194", "Create Organization")
+                : tt('org.signInToCreate', 'Sign in to create one')}
             </Link>
           </div>
 
           <div className={styles.tabsRow}>
-            {TABS.map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
+            {TABS.filter(t => !t.needsAccount || viewer.signedIn).map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
                 {tx(t.label)}
               </button>)}
           </div>
@@ -409,9 +424,11 @@ const OrganizationsContent = () => {
                             {tt("ui.member.6853", "Member")}
                           </span> : reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
                             {tt("ui.pending.96f6", "Pending")}
-                          </button> : <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
-                            {reqState === 'loading' ? tx("Sending...") : 'Join'}
-                          </button>}
+                          </button> : viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
+                            {reqState === 'loading' ? tx("Sending...") : tt('org.join', 'Join')}
+                          </button> : <Link href={signInHref(`/organizations/${orgId}`)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                            {tt('org.signInToJoin', 'Sign in to join')}
+                          </Link>}
                       </div>
                     </div>
                   </div>;
