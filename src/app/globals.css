@@ -308,3 +308,23 @@ body {
   font: inherit;
   color: inherit;
 }
+
+
+/* An image with nothing to show shows nothing.
+ *
+ * `lib/mediaUrl.js` returns null when there is nothing to load, so the caller
+ * can draw its own fallback. Sixty-three render sites pass that null straight
+ * to <img>, and React then omits the attribute entirely, which Chrome draws as
+ * a broken-image glyph with the alt text beside it. On a club with no artwork
+ * that was a broken image across the whole hero.
+ *
+ * The right fix at each site is a real fallback: initials for a face, a filled
+ * surface for a banner. `scripts/check-null-images.mjs` lists the sites so that
+ * can happen properly. This is the floor underneath it: until then, an image
+ * with no source is absent rather than broken, everywhere, at once.
+ *
+ * Deliberately `:not([src])` and not `[src=""]`: an empty string is a request
+ * for the current page and a real bug worth still seeing. */
+img:not([src]) {
+  display: none;
+}

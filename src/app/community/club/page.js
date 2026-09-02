@@ -409,13 +409,28 @@ const ClubInner = ({ slug: slugFromPath }) => {
   return shell(
     <>
       <section className={styles.hero}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(club.banner)} alt={`${club.name} banner`} className={styles.heroBanner} />
+        {/* `mediaUrl` returns null when there is nothing to load, and says in
+            its own comment that the caller should draw its own fallback rather
+            than render a broken image. This passed the null straight to <img>,
+            so a club with no artwork - which is every club on the day it is
+            made - showed two broken-image glyphs with the alt text beside
+            them, one of them across the whole hero. */}
+        {mediaUrl(club.banner) && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={mediaUrl(club.banner)} alt={`${club.name} banner`} className={styles.heroBanner} />
+        )}
         <div className={styles.heroOverlay} />
         <div className={styles.heroBody}>
           <div className={styles.heroLogoWrap}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={mediaUrl(club.logo)} alt={`${club.name} logo`} className={styles.heroLogo} />
+            {mediaUrl(club.logo) ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={mediaUrl(club.logo)} alt={`${club.name} logo`} className={styles.heroLogo} />
+            ) : (
+              <span className={styles.heroInitials} aria-hidden="true">
+                {(club.name || '?').trim().split(/\s+/).slice(0, 2)
+                  .map((w) => w[0]).join('').toUpperCase()}
+              </span>
+            )}
           </div>
           <div className={styles.heroInfo}>
             <div className={styles.heroTitleRow}>

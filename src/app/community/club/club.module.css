@@ -1113,3 +1113,20 @@
   .settingsSave,
   .deleteBtn { align-self: stretch; text-align: center; }
 }
+
+/* A club with no logo, which is every club on the day it is made. Initials on
+   a filled circle, the way a person with no picture is drawn everywhere else,
+   rather than a broken-image glyph with the alt text beside it. */
+.heroInitials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #303136;
+  color: rgba(255, 255, 255, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+}
