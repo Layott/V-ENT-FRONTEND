@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { imagePlaceholder, mediaIn } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -46,7 +47,7 @@ const TournamentsByGame = ({
         }
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
         setLoading(false);
       }
     };

@@ -68,11 +68,16 @@ export class ApiError extends Error {
     this.data = data;
   }
 
-  // True when the endpoint itself is missing on the backend (BE-GAP not yet
-  // deployed). Callers show the spec'd "Pending BE deploy" banner.
-  get isPendingBackend() {
-    return this.status === 404 || this.status === 501;
-  }
+  // There is no "not deployed yet" any more.
+  //
+  // This used to be true for any 404, and callers rendered "Pending BE deploy -
+  // this action activates once the backend endpoint ships". The CEO was shown
+  // it for Cancel & Refund on 2 September, on an endpoint that had existed for
+  // months: the console addresses a tournament by SLUG and the route took
+  // `<int:tournament_id>`, so Django answered 404 and the app blamed a deploy.
+  //
+  // A 404 means the thing is not there. That is an error like any other and
+  // gets an error a person can act on, in their own language.
 }
 
 const buildUrl = (path) => {

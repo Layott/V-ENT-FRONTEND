@@ -143,7 +143,7 @@ const AllTeams = () => {
       const list = data?.data?.teams ?? data?.data ?? data ?? [];
       setTeams(Array.isArray(list) ? list : []);
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       setTeams([]);
     } finally {
       setLoading(false);

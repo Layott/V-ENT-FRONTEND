@@ -92,7 +92,7 @@ export const TeamProfileContent = ({
       if (!t) throw new Error('Team not found');
       setTeam(t);
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }

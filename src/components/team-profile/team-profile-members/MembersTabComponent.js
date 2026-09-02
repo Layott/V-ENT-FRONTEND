@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -50,7 +51,7 @@ const MembersTabComponent = ({
         const memberList = data?.data?.members ?? data?.members ?? [];
         setMembers(Array.isArray(memberList) ? memberList : []);
       } catch (err) {
-        setError(err.message);
+        setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       } finally {
         setLoading(false);
       }

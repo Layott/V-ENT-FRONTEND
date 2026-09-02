@@ -66,13 +66,38 @@ const fill = (text, body) => {
  * @param key       dictionary key for this call site's generic message
  * @param english   the English of that generic, as the in-code fallback
  */
+/** Words that mean the sentence was written for a log, not for a person. */
+const MACHINE = new RegExp([
+  'Authorization header',
+  'Bearer token',
+  'HTTP [0-9]{3}',
+  'traceback',
+  'stack ?trace',
+  '(^|[^a-z])null([^a-z]|$)',
+  '(^|[^a-z])undefined([^a-z]|$)',
+  'Cannot read propert',
+  'endpoint',
+  'DoesNotExist',
+  'IntegrityError',
+].join('|'), 'i');
+
 export const apiMessage = (t, data, key, english) => {
   const code = data?.code;
   if (code) {
     const translated = fill(t(`api.${code}`, ''), data);
     if (translated) return translated;
   }
-  if (data?.message) return data.message;
+  // The server's own sentence, but only when it was written for a person.
+  //
+  // The CEO was shown "Authorization header with a Bearer token is required"
+  // by this line. That is a sentence for whoever is reading the log: it names
+  // an HTTP header, it is only ever in English, and there is nothing in it
+  // somebody can act on. A code with no translation should fall through to the
+  // sentence the app owns rather than leak the one the machine wrote.
+  //
+  // Deliberately a small list of machine words rather than a judgement about
+  // tone. `scripts/check-error-ui.mjs` uses the same idea at the call sites.
+  if (data?.message && !MACHINE.test(data.message)) return data.message;
   return t(key, english);
 };
 

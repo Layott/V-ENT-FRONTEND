@@ -176,7 +176,7 @@ const ManageOrgContent = ({
         mission: o.mission || ''
       });
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }

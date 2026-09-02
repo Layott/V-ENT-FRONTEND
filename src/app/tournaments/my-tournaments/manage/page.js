@@ -90,7 +90,6 @@ const ManageContent = ({
   const [error, setError] = useState(null);
   const [retryKey, setRetryKey] = useState(0);
   const [toast, setToast] = useState(null);
-  const [pendingBackend, setPendingBackend] = useState(() => new Set());
   const [busyAction, setBusyAction] = useState(null); // 'bracket' | 'cancel' | null
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
@@ -192,18 +191,10 @@ const ManageContent = ({
           manual_order: manualOrder
         }
       });
-      setPendingBackend(s => {
-        const n = new Set(s);
-        n.delete('bracket');
-        return n;
-      });
       showToast(tt("msg.bracketGeneratedRegistrationClosed", "Bracket generated - registration closed."));
       setRetryKey(k => k + 1);
     } catch (err) {
-      if (err?.isPendingBackend) {
-        setPendingBackend(s => new Set(s).add('bracket'));
-        showToast(tt("msg.bracketGenerationIsQueuedFor", "Bracket generation is queued for the next backend deploy."));
-      } else {
+      {
         showToast(apiMessage(tt, err, "api.couldNotGenerateTheBracket", "Could not generate the bracket."));
       }
     } finally {
@@ -225,20 +216,11 @@ const ManageContent = ({
           reason: cancelReason.trim()
         }
       });
-      setPendingBackend(s => {
-        const n = new Set(s);
-        n.delete('cancel');
-        return n;
-      });
       showToast(tt("msg.tournamentCancelledRefundsInitiated", "Tournament cancelled - refunds initiated."));
       setCancelOpen(false);
       setRetryKey(k => k + 1);
     } catch (err) {
-      if (err?.isPendingBackend) {
-        setPendingBackend(s => new Set(s).add('cancel'));
-        setCancelOpen(false);
-        showToast(tt("msg.cancellationIsQueuedForThe", "Cancellation is queued for the next backend deploy."));
-      } else {
+      {
         showToast(apiMessage(tt, err, "api.couldNotCancelThisTournament", "Could not cancel this tournament."));
       }
     } finally {
@@ -253,18 +235,10 @@ const ManageContent = ({
         method: 'POST',
         token
       });
-      setPendingBackend(s => {
-        const n = new Set(s);
-        n.delete('prizes');
-        return n;
-      });
       showToast(tt("msg.prizesDistributedToWinners", "Prizes distributed to winners."));
       setRetryKey(k => k + 1);
     } catch (err) {
-      if (err?.isPendingBackend) {
-        setPendingBackend(s => new Set(s).add('prizes'));
-        showToast(tt("msg.prizeDistributionIsQueuedFor", "Prize distribution is queued for the next backend deploy."));
-      } else if (err?.code === 'ALREADY_DISTRIBUTED') {
+      if (err?.code === 'ALREADY_DISTRIBUTED') {
         showToast(tt("msg.prizesHaveAlreadyBeenDistributed", "Prizes have already been distributed for this tournament."));
       } else if (err?.code === 'STATE_CONFLICT') {
         showToast(apiMessage(tt, err, "api.prizesCanOnlyBeDistributed", "Prizes can only be distributed once the tournament is completed."));
@@ -326,15 +300,6 @@ const ManageContent = ({
               <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : <>
-              {pendingBackend.has('bracket') && <div className={styles.pendingBanner}>
-                  <LuTriangleAlert /> {tt("ui.pending.be.deploy.this.cfde", "Pending BE deploy - this action activates once the backend endpoint ships. (Close Registration & Generate Bracket)")}
-                </div>}
-              {pendingBackend.has('cancel') && <div className={styles.pendingBanner}>
-                  <LuTriangleAlert /> {tt("ui.pending.be.deploy.this.505b", "Pending BE deploy - this action activates once the backend endpoint ships. (Cancel & Refund)")}
-                </div>}
-              {pendingBackend.has('prizes') && <div className={styles.pendingBanner}>
-                  <LuTriangleAlert /> {tt("ui.pending.deploy.action.activates.9f38", "Pending BE deploy - this action activates once the backend endpoint ships. (Distribute Prizes)")}
-                </div>}
 
               {/* Summary card */}
               <div className={styles.summaryCard}>

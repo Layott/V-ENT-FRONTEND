@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -38,7 +39,7 @@ const MembersRequestsTabComponent = ({
         const list = data?.data?.requests ?? data?.data ?? data ?? [];
         setRequests(Array.isArray(list) ? list : []);
       } catch (err) {
-        setError(err.message);
+        setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       } finally {
         setLoading(false);
       }
