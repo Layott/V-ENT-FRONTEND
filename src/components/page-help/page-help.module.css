@@ -5,13 +5,20 @@
  * the moment somebody wants it and should not compete with the page. */
 
 .trigger {
+  /* Not on a phone. A fixed 44px circle at the right edge sits on top of
+     whatever full-width control happens to be at that height, and on the
+     tickets tab of an event that was the Buy ticket button: measured with
+     elementsFromPoint, the trigger was directly over `tierBuyBtn`, so a tap
+     there opened help instead of buying a ticket.
+     A floating launcher over a full-bleed list will always cover something,
+     so on a phone it moves into the menu instead, where it covers nothing. */
+  display: none;
+
   position: fixed;
   right: 1rem;
-  /* Clears the 70px bottom bar on a phone, plus a thumb's worth of room. */
   bottom: 88px;
   z-index: 900;
 
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -39,6 +46,7 @@
 
 @media (min-width: 900px) {
   .trigger {
+    display: inline-flex;
     bottom: 1.5rem;
   }
 }

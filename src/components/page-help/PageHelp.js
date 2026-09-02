@@ -42,6 +42,16 @@ export default function PageHelp() {
     if (e.key === 'Escape') setOpen(false);
   }, []);
 
+  // The mobile menu opens this, because on a phone the floating trigger is
+  // gone. An event rather than a context: PageHelp and the sidebar sit in
+  // different parts of the tree, and a provider wrapping both would have to
+  // exist above a layout neither of them owns.
+  useEffect(() => {
+    const ask = () => setOpen(true);
+    window.addEventListener('vent:help', ask);
+    return () => window.removeEventListener('vent:help', ask);
+  }, []);
+
   useEffect(() => {
     if (!open) return undefined;
     document.addEventListener('keydown', onKey);
