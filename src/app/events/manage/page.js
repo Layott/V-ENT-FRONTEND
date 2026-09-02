@@ -48,7 +48,26 @@ export const ManageEventContent = ({
   } = useSession();
   const token = session?.user?.sessionToken;
   const eventRef = slugFromPath || searchParams.get('id');
-  const [tab, setTab] = useState('tickets');
+  // The tab comes from the address, so a link can open the console on the part
+  // it is about: /events/<slug>/manage?tab=promos. Without this the eleven tabs
+  // were reachable only by pressing them, which is why the whole console was
+  // hiding behind a button labelled "Influencers and promo codes".
+  const [tab, setTab] = useState(() => {
+    const asked = searchParams.get('tab');
+    return TABS.includes(asked) ? asked : 'tickets';
+  });
+
+  // And written back, built from the route this page is ON rather than a
+  // literal. A tab that rewrites the URL from a literal throws away whose page
+  // it is: /events/<slug>/manage became /events/manage and the event was lost.
+  const openTab = useCallback((next) => {
+    setTab(next);
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (next === 'tickets') url.searchParams.delete('tab');
+    else url.searchParams.set('tab', next);
+    window.history.replaceState(null, '', url.toString());
+  }, []);
   const [tiers, setTiers] = useState([]);
   const [money, setMoney] = useState(null);
   const [holds, setHolds] = useState([]);
@@ -633,7 +652,7 @@ export const ManageEventContent = ({
           </p>
 
           <div className={styles.tabRow}>
-            {TABS.map(key => <button key={key} type="button" className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`} onClick={() => setTab(key)}>
+            {TABS.map(key => <button key={key} type="button" className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`} onClick={() => openTab(key)}>
                 {tabLabel(key)}
               </button>)}
           </div>

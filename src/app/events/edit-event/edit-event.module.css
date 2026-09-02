@@ -278,3 +278,66 @@
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.8rem;
 }
+
+/* Everything about this event, in one place.
+
+   CEO: "they click edit event and have several options to manage the event
+   from." Before this, eleven tabs of console lived behind a single button
+   labelled "Influencers and promo codes", so nobody looking for the door list
+   or the money had any reason to press it.
+
+   Filled cards on a surface step, no strokes, no glow. Named for what each one
+   opens, because the label is the whole fix. */
+
+.hub {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  margin-bottom: 1.5rem;
+  min-width: 0;
+  padding: 1.15rem 1.2rem;
+}
+
+.hubTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.85rem;
+}
+
+/* Not three-in-a-row: it fits what is there at whatever width, and there are
+   twelve of them. */
+.hubGrid {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.hubCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.8rem 0.95rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.hubCard:hover { background: rgba(255, 255, 255, 0.1); }
+
+.hubCard:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.hubName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.hubSub {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}

@@ -213,6 +213,72 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 {tt('eventEdit.sub', 'Change what needs changing. Only what you touch is sent, so nothing else on the event moves.')}
               </p>
             </div>
+            {/* Everything about this event, in one place.
+
+                CEO, 1 September: "The edit event button should have all options
+                about editing anything related to that event on that place, so
+                they click edit event and have several options to manage the
+                event from."
+
+                Before this, the console's eleven tabs were reachable only
+                through a button labelled "Influencers and promo codes", so
+                somebody looking for the door list, the money or the messages
+                had no reason to press it. Each destination is now named for
+                what it opens, and each one deep-links to its own tab. */}
+            {ref && <div className={styles.hub}>
+                <p className={styles.hubTitle}>{tt('eventEdit.hubTitle', 'Manage this event')}</p>
+                <div className={styles.hubGrid}>
+                  <Link href={`/events/${ref}/manage`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubTickets', 'Tickets and pricing')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubTicketsSub', 'Types, prices, how many, limits per email address')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/attendees`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubDoor', 'Door list and check-in')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubDoorSub', 'Who is coming, and the scanner for the day')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=money`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubMoney', 'Money')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubMoneySub', 'What has sold and what it is worth')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=numbers`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubNumbers', 'Sales and attendance')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubNumbersSub', 'Registrations, where people came from, export')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=messages`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubMessages', 'Messages and announcements')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubMessagesSub', 'Write to everybody holding a ticket')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=polls`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubPolls', 'Polls')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubPollsSub', 'Ask attendees something')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=programme`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubProgramme', 'Programme')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubProgrammeSub', 'What happens when, and where in the venue')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=holds`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubHolds', 'Holds and comps')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubHoldsSub', 'Set tickets aside, or give one away')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=queue`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubQueue', 'Waiting list')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubQueueSub', 'Who is waiting for a ticket to come back')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=influencers`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubInfluencers', 'Influencers')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubInfluencersSub', 'Links that credit whoever brought the sale')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=promos`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubPromos', 'Promo codes')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubPromosSub', 'Discounts, and who may spend them')}</span>
+                  </Link>
+                  <Link href={`/events/${ref}/manage?tab=team`} className={styles.hubCard}>
+                    <span className={styles.hubName}>{tt('eventEdit.hubTeam', 'Who can help run it')}</span>
+                    <span className={styles.hubSub}>{tt('eventEdit.hubTeamSub', 'Managers, and what each of them may do')}</span>
+                  </Link>
+                </div>
+              </div>}
+
             {ref && <Link href={`/events/${ref}`} className={styles.ghostBtn}>
               {tt('eventEdit.view', 'View the public page')}
             </Link>}
@@ -416,12 +482,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                       ? tt('eventEdit.noChanges', 'Nothing changed yet')
                       : tt('eventEdit.save', 'Save changes')}
                 </button>
-                {ref && <Link href={`/events/${ref}/manage`} className={styles.ghostBtn}>
-                  {tt('eventEdit.promos', 'Influencers and promo codes')}
-                </Link>}
-                {ref && <Link href={`/events/${ref}/attendees`} className={styles.ghostBtn}>
-                  {tt('eventEdit.door', 'Door list')}
-                </Link>}
+
               </div>
             </div>
           )}
