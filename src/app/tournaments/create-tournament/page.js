@@ -43,8 +43,17 @@ const mapTournamentToFormData = t => {
     entry_fee: t.entry_fee ?? t.entry_fee_price ?? '',
     tournament_access: t.tournament_access ?? '',
     team_size: t.team_size ?? '',
-    min_number_of_participants: t.min_number_of_participants ?? '',
-    max_number_of_participants: t.max_number_of_participants ?? '',
+    // The wizard says *_participants; the API answers *_teams, and there is
+    // no *_participants key on the payload at all. Reading only the wizard's
+    // own name meant re-opening a draft found nothing, drew an empty box, and
+    // sent the default 32 back - which is why a tournament set to 5 teams
+    // went on reporting 0/32.
+    min_number_of_participants:
+      t.min_number_of_participants ?? t.min_number_of_teams ?? '',
+    max_number_of_participants:
+      t.max_number_of_participants ?? t.max_number_of_teams ?? t.player_size ?? '',
+    number_of_teams:
+      t.max_number_of_participants ?? t.max_number_of_teams ?? t.player_size ?? '',
     bracket_type: t.bracket_type ?? '',
     tournament_rules: t.tournament_rules ?? t.rules ?? '',
     prize_distribution_type: t.prize_type ?? t.prize_distribution_type ?? '',
