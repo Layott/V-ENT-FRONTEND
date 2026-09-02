@@ -58,8 +58,14 @@ const Sponsors = ({
     setFields(updatedFields);
     updateFormData('sponsors', updatedFields); // Update parent formData
   };
+  // The input is hidden and the visible box forwards the click to it, so the
+  // ref is the only thing connecting the two. Without `ref` on the input,
+  // fileInputs.current[index] is undefined and this throws, which is why the
+  // Upload Logo box did nothing at all: no picker, no error on screen, just a
+  // TypeError in a console nobody has open.
   const triggerFileInput = index => {
-    fileInputs.current[index].click();
+    const input = fileInputs.current[index];
+    if (input) input.click();
   };
   return <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
@@ -98,7 +104,10 @@ const Sponsors = ({
                         {tt("ui.upload.logo.8a04", "Upload Logo")}
                       </span>
                     </div>}
-                  <input id={`logoUpload-${index}`} type="file" accept="image/*" onChange={e => handleLogoUpload(index, e)} className={styles.hiddenInput} />
+                  <input id={`logoUpload-${index}`} type="file" accept="image/*"
+                         ref={el => { fileInputs.current[index] = el; }}
+                         onChange={e => handleLogoUpload(index, e)}
+                         className={styles.hiddenInput} />
                   <p className={styles.uploadHintLine}>{uploadHint(tt, 'sponsorLogo')}</p>
                 </div>
               </div>
