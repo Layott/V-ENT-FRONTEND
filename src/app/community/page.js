@@ -120,6 +120,27 @@ const CommunityInner = () => {
   const resolvedTab = TAB_ALIASES[tabParam] || tabParam;
   const initialTab = TABS.find(t => t.id === resolvedTab) ? resolvedTab : 'feed';
   const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Share was a button with a count beside it and no handler at all, on both
+  // the feed and the post page. There is no share endpoint, so what it does is
+  // hand over the address: the native sheet where a browser has one, the
+  // clipboard where it does not.
+  const [shareNote, setShareNote] = useState('');
+  const sharePost = async (post) => {
+    const url = `${window.location.origin}/community/post/${post.slug || post.id}`;
+    const title = post.title || tt('community.aPost', 'A post on V-ENT');
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setShareNote(tt('community.linkCopied', 'Link copied.'));
+      setTimeout(() => setShareNote(''), 2000);
+    } catch {
+      // Cancelling the sheet lands here, and is not a failure.
+    }
+  };
   const [me, setMe] = useState({
     username: 'you',
     full_name: 'You',
@@ -758,7 +779,7 @@ const CommunityInner = () => {
                         <FaRegComment className={styles.reactIcon} />
                         <span>{post.comments_count}</span>
                       </Link>
-                      <button className={styles.reactBtn} aria-label={tt("ui.share.aab9", "share")}>
+                      <button type="button" className={styles.reactBtn} aria-label={tt("ui.share.aab9", "share")} onClick={() => sharePost(post)}>
                         <FaShare className={styles.reactIcon} />
                         <span>{post.shares}</span>
                       </button>
@@ -1121,6 +1142,8 @@ const CommunityInner = () => {
       </main>
 
       <BottomMenu />
+
+      {shareNote && <div className={styles.shareNote} role="status">{shareNote}</div>}
     </div>;
 };
 const Community = () => <Suspense fallback={<div style={{

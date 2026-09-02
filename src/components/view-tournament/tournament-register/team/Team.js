@@ -2,6 +2,7 @@
 // GET /team/my-teams/ endpoint (Bearer). The BE serializer emits every
 // field-name variant the FE reads (id, name, team_logo/logo, member_count/
 // members, game/core_game), so we normalise defensively below.
+import Link from 'next/link';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo } from 'react';
@@ -110,9 +111,9 @@ const ChooseTeamModal = ({
 
           <div className={styles.teamsHeader}>
             <span className={styles.teamsCount}>{teams.length} {tt("ui.team.d251", "team")}{teams.length !== 1 ? 's' : ''}</span>
-            <button className={styles.newTeamButton}>
+            <Link href="/teams/create-team" className={styles.newTeamButton}>
               <span className={styles.plusIcon}>+</span> {tt("ui.new.team.235b", "New Team")}
-            </button>
+            </Link>
           </div>
 
           <div className={styles.searchContainer}>

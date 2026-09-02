@@ -381,3 +381,20 @@
   margin: 0;
   word-wrap: break-word;
 }
+
+/* Confirmation that a link went to the clipboard. A copy with no feedback
+   reads as a button that did nothing, which is where the share button
+   started. */
+.shareNote {
+  position: fixed;
+  left: 50%;
+  bottom: 5.5rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  background-color: #2a2b30;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.92rem;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}

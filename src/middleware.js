@@ -54,6 +54,9 @@ const protectedRoutes = [
 const protectedPatterns = [
   /^\/events\/[^/]+\/(edit|manage|attendees)$/,
   /^\/tournaments\/[^/]+\/manage$/,
+  // Registering IS the action. Signed out, this handed somebody the whole
+  // wizard and refused them at the end, after they had chosen an entry type.
+  /^\/tournaments\/[^/]+\/register$/,
 ];
 
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];

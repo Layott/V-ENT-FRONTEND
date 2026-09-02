@@ -56,6 +56,27 @@ const PostInner = ({
   const id = slugFromPath || searchParams.get('id');
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const [post, setPost] = useState(null);
+
+  // Share was a button with a count beside it and no handler at all, on both
+  // the feed and the post page. There is no share endpoint, so what it does is
+  // hand over the address: the native sheet where a browser has one, the
+  // clipboard where it does not.
+  const [shareNote, setShareNote] = useState('');
+  const sharePost = async (post) => {
+    const url = `${window.location.origin}/community/post/${post.slug || post.id}`;
+    const title = post.title || tt('community.aPost', 'A post on V-ENT');
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setShareNote(tt('community.linkCopied', 'Link copied.'));
+      setTimeout(() => setShareNote(''), 2000);
+    } catch {
+      // Cancelling the sheet lands here, and is not a failure.
+    }
+  };
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
@@ -240,7 +261,7 @@ const PostInner = ({
                     <span className={styles.reactBtn}>
                       <span>{post.comments_count} {tt("ui.comments.5b17", "comments")}</span>
                     </span>
-                    <button className={styles.reactBtn} aria-label={tt("ui.share.aab9", "share")}>
+                    <button type="button" className={styles.reactBtn} aria-label={tt("ui.share.aab9", "share")} onClick={() => sharePost(post)}>
                       <FaShare />
                       <span>{post.shares}</span>
                     </button>
@@ -290,6 +311,8 @@ const PostInner = ({
       </main>
 
       <BottomMenu />
+
+      {shareNote && <div className={styles.shareNote} role="status">{shareNote}</div>}
     </div>;
 };
 const PostPage = () => <Suspense fallback={<div style={{

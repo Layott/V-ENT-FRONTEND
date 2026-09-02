@@ -209,7 +209,7 @@ const ManageContent = ({ slug }) => {
               opacity: 0.45,
               cursor: 'default'
             }}>
-                <button className={`${styles.btn} goldBTN`}><LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}</button>
+                <button type="button" disabled className={`${styles.btn} goldBTN`}><LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}</button>
               </span>
             </div>
           </div>

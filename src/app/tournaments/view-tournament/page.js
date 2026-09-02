@@ -556,6 +556,7 @@ const OverviewPanel = ({
 }) => {
   const tt = useT();
   const organizer = getOrganizer(tournament);
+  const organizerHandle = organizer?.username || organizer?.handle || '';
   const sponsors = Array.isArray(tournament?.sponsors) ? tournament.sponsors : [];
   const startDate = pick(tournament?.start_date, tournament?.start_date_and_time);
   const endDate = pick(tournament?.end_date, tournament?.end_date_and_time);
@@ -672,10 +673,18 @@ const OverviewPanel = ({
                   <span className={styles.ownerArrow} aria-hidden="true">→</span>
                 </Link>
               </div>}
-            {!isOrganizer && <button className={styles.outlineBtn} style={{
-          marginTop: '0.75rem',
-          width: '100%'
-        }}>{tt("ui.follow.organizer.5a61", "Follow Organizer")}</button>}
+            {/* This was a button with no onClick: inert for everybody, signed
+                in or out, since the day it was written. There is no endpoint
+                for following a person - the only follow the platform has is of
+                an organisation - so rather than wire a promise to nothing, it
+                does the thing it can actually do. */}
+            {!isOrganizer && organizerHandle && <Link
+              href={`/u/${organizerHandle}`}
+              className={styles.outlineBtn}
+              style={{ marginTop: '0.75rem', width: '100%', display: 'block', textAlign: 'center' }}
+            >
+              {tt('tournament.viewOrganizer', 'View organiser')}
+            </Link>}
           </section>}
 
         {socials.length > 0 && <section className={styles.section}>
