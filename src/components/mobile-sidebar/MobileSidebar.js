@@ -14,13 +14,16 @@ import { MdOutlineSettings, MdBusiness } from "react-icons/md";
 import { LuDices, LuCode, LuShield } from "react-icons/lu";
 import { useSession } from 'next-auth/react';
 import { LuGamepad2 } from "react-icons/lu";
+import { LuCircleHelp } from 'react-icons/lu';
+import { guideFor } from '@/components/page-help/pageGuides';
 import { MdLogout } from "react-icons/md";
 import styles from './mobile-sidebar.module.css';
 import { PiUserCircle } from "react-icons/pi";
 import { useT } from '@/i18n/LanguageProvider';
 import { logOut } from '@/lib/logout';
 const MobileSidebar = ({
-  isOpen
+  isOpen,
+  closeSidebar
 }) => {
   // Reads the console's module switches, falling back to the built-in list
   // until they arrive.
@@ -36,6 +39,9 @@ const MobileSidebar = ({
   const signedOut = status === 'unauthenticated';
   const t = useT();
   const pathname = usePathname(); // Gets the current pathname
+  // Help is only offered where there is something to say. A menu item that
+  // opens an empty panel is worse than no menu item.
+  const hasGuide = Boolean(guideFor(pathname || '/'));
 
   // Which groups are open. CEO, 31 August: the things you run - my tickets, my
   // events, my tournaments - were top-level rows, which made the menu long and
@@ -82,6 +88,27 @@ const MobileSidebar = ({
                     <Link href={'/signup'} className={styles.iconTextLink}>
                         {tt("ui.create.account.3c19", "Create an account")} <PiUserCircle className={styles.sidebarIcon} />
                     </Link>
+                </li>}
+
+                {/* Help lives here on a phone rather than in a bubble floating
+                    over the page. The bubble sat on top of whatever full-width
+                    control was at its height, and on an event's tickets tab
+                    that was the Buy ticket button.
+
+                    Only when this page HAS a guide. A menu item that opens
+                    nothing is worse than no menu item, and scripts/check-inert-
+                    controls.mjs exists because of exactly that. */}
+                {hasGuide && <li className={styles.sidebarItem}>
+                    <button
+                      type="button"
+                      className={styles.iconTextLink}
+                      onClick={() => {
+                        closeSidebar?.();
+                        window.dispatchEvent(new CustomEvent('vent:help'));
+                      }}
+                    >
+                        {tt('help.button', 'What is this page?')} <LuCircleHelp className={styles.sidebarIcon} />
+                    </button>
                 </li>}
 
                 {/* Three sections, each holding the things you browse and

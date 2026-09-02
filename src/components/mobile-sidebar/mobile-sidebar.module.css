@@ -102,7 +102,17 @@
 
 }
 
+/* Every row here is a Link except Help, which opens a panel rather than
+   navigating. A <button> brings its own font, colour and border from the
+   user agent, so those are reset here rather than in a second class that
+   would drift from this one. */
 .iconTextLink {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-end;

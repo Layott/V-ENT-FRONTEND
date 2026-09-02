@@ -240,7 +240,7 @@ const MobileHeader = ({
           </div>
         </div>
 
-        <MobileSidebar isOpen={isMobileMenuOpen} />
+        <MobileSidebar isOpen={isMobileMenuOpen} closeSidebar={() => setIsMobileMenuOpen(false)} />
 
       </div>
     </div>;
