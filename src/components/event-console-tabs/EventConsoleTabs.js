@@ -35,7 +35,9 @@ export const CONSOLE_TABS = [
   ['queue', 'console.tabQueue', 'Waiting list'],
   ['influencers', 'console.tabInfluencers', 'Influencers'],
   ['promos', 'console.tabPromos', 'Promo codes'],
-  ['overlays', 'console.tabOverlays', 'Stream overlays'],
+  // Was 'overlays', "Stream overlays". The studio now lives here too, so the
+  // tab is production; the console still answers to ?tab=overlays.
+  ['production', 'console.tabProduction', 'Production'],
   ['team', 'console.tabTeam', 'Team'],
 ];
 
