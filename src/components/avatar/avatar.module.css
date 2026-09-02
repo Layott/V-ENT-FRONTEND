@@ -15,4 +15,8 @@
   letter-spacing: 0.02em;
   flex-shrink: 0;
   line-height: 1;
+  /* A base for `fill` mode, where there is no inline font-size because the
+     page's own class owns the size. Overridden by the inline style whenever
+     Avatar is given a pixel size. */
+  font-size: 0.95rem;
 }

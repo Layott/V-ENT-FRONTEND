@@ -1,0 +1,32 @@
+/* The empty state of a wide picture.
+ *
+ * A filled surface one step off the page, which is what the design rules say
+ * to build with: surface and space, never a stroke, never a dashed box. No
+ * icon and no "no image" text, because a banner nobody uploaded is not an
+ * error and should not announce itself.
+ *
+ * The page's own class supplies size and radius, so this only supplies the
+ * fill and the centring for an optional label. */
+
+.empty {
+  background-color: #26272b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding: 0 0.8rem;
+  text-align: center;
+  /* One line. A long event name in a card-sized box should trail off rather
+     than push the surface out of shape. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

@@ -236,6 +236,7 @@ export default function StudioElement({ params }) {
   const kind = String(params?.kind || '');
 
   const [feed, setFeed] = useState(null);
+  const [retired, setRetired] = useState(false);
   const version = useRef('');
 
   // Transparent, and nothing else on the page. Set on the document rather than
@@ -260,6 +261,11 @@ export default function StudioElement({ params }) {
       if (body.data.version === version.current) return;
       version.current = body.data.version;
       setFeed(body.data);
+      // The broadcast is over. Everything is already inactive in this payload,
+      // so the graphic clears on this render, and then there is nothing left
+      // to ask about. Stopping is what makes the console's promise true: the
+      // URL keeps answering, and this page will never draw from it again.
+      if (body.data.retired) setRetired(true);
     } catch {
       // Keep the last good frame. A graphic that flickers to an error
       // mid-match is worse than one that is a few seconds stale, and the next
@@ -268,12 +274,13 @@ export default function StudioElement({ params }) {
   }, [token]);
 
   useEffect(() => {
+    if (retired) return undefined;
     read();
     const timer = setInterval(read, POLL_MS);
     return () => clearInterval(timer);
-  }, [read]);
+  }, [read, retired]);
 
-  if (!feed) return null;
+  if (!feed || retired) return null;
 
   const element = feed.elements?.[kind];
   if (!element?.active) return null;
