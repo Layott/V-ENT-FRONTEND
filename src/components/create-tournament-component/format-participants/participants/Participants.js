@@ -131,7 +131,14 @@ const Participants = ({
                   <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                 </span> <InfoTip id="numberOfTeams" /></span>
               </label>
-              <input id="numberOfTeams" type="text" className={createTournamentStyles.inputText} placeholder={tt("ui.enter.number.teams.3cb8", "Enter number of teams")} onChange={e => {
+              <input id="numberOfTeams" type="text" className={createTournamentStyles.inputText}
+                     placeholder={tt("ui.enter.number.teams.3cb8", "Enter number of teams")}
+                     /* Controlled, so re-opening a draft shows the number
+                        already chosen. Uncontrolled, the box came up empty
+                        however many teams the draft was saved with, and an
+                        empty box submits the default. */
+                     value={formData.number_of_teams ?? formData.max_number_of_participants ?? ''}
+                     onChange={e => {
             const value = e.target.value;
             if (value === '' || /^[0-9]+$/.test(value)) {
               // This field is the tournament's slot count. It only ever
