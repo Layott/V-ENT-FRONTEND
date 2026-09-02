@@ -1,0 +1,61 @@
+/* Filled chips, no rings. Selected is a stronger fill and a brighter label,
+   never an outline. */
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+}
+
+.tab {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  display: inline-block;
+  font-family: inherit;
+  font-size: 0.86rem;
+  padding: 0.48rem 0.95rem;
+  text-decoration: none;
+  transition: background-color 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.11);
+  color: #fff;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.tabOn {
+  background: #d6a94a;
+  color: #16160f;
+  font-weight: 600;
+}
+
+.tabOn:hover {
+  background: #e0b559;
+  color: #16160f;
+}
+
+/* On a phone the strip scrolls sideways rather than stacking into four rows
+   and pushing the content off the screen. */
+@media (max-width: 640px) {
+  .strip {
+    flex-wrap: nowrap;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    overflow-x: auto;
+    padding: 0 1rem 0.35rem;
+    scrollbar-width: none;
+  }
+
+  .strip::-webkit-scrollbar { display: none; }
+
+  .tab { flex: 0 0 auto; }
+}

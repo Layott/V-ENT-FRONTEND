@@ -139,6 +139,43 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
     );
   }
 
+  // --------------------------------------------------------- nothing to sell
+
+  // CEO, 2 September: "i also did not like how people had to input their
+  // deails to find out tickets were sold out."
+  //
+  // They filled in an email, a quantity, a WhatsApp number and a name on the
+  // ticket, pressed the button, and were told the event was sold out. That is
+  // the same fault as a compose box that answers 401 after somebody has typed:
+  // tell them what they need BEFORE they spend the effort, never after.
+  //
+  // So when nothing can be bought the form is not drawn at all. What is drawn
+  // says which ceiling was hit, because "sold out" beside a type showing
+  // thousands unsold reads as a broken site rather than a full room.
+  const soldOut = tier?.sold_out
+    || (tier?.remaining != null && Number(tier.remaining) <= 0);
+  if (soldOut) {
+    const venueFull = tier?.unavailable_reason === 'venue_full';
+    return (
+      <div className={styles.wrap}>
+        <p className={styles.soldOutTitle}>
+          {venueFull
+            ? tt('guest.venueFull', 'This day is full.')
+            : tt('guest.tierSoldOut', '{tier} has sold out.')
+                .replace('{tier}', tier?.name || tt('guest.thisTicket', 'This ticket'))}
+        </p>
+        <p className={styles.help}>
+          {venueFull
+            ? tt('guest.venueFullBody', 'Every place for this date has gone. Another date may still have room.')
+            : tt('guest.tierSoldOutBody', 'Join the waiting list and you will be offered a place if one comes back.')}
+        </p>
+        {onClose && <button type="button" className={styles.buy} onClick={onClose}>
+          {tt('guest.backToTickets', 'See the other tickets')}
+        </button>}
+      </div>
+    );
+  }
+
   // ------------------------------------------------------------------ form
 
   return (
