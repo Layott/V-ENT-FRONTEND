@@ -49,7 +49,7 @@ const fieldsFor = (tt) => ({
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Nigeria, seat 1' },
   ],
   player_card: [
-    { key: 'player', label: tt('studio.f.player', 'Player'), placeholder: 'username or name' },
+    { key: 'player', label: tt('studio.f.player', 'Player'), placeholder: 'demo_zainab' },
   ],
   ticker: [],
   bracket: [],

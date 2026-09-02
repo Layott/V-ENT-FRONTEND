@@ -132,23 +132,30 @@ function LowerThird({ payload }) {
 }
 
 function PlayerCard({ payload, data }) {
+  // The feed sends `ign`, `id` and `img` for a player. This read `username`,
+  // `name` and `avatar`, none of which exist on that row, so the match never
+  // found anybody and the card never drew - for every operator, on every
+  // tournament, since it was written. Nothing reported it: an element that
+  // returns null looks exactly like an element that is switched off.
   const teams = data.teams || [];
+  const wanted = String(payload.player || '').trim().toLowerCase();
   let player = null;
   let team = null;
   for (const t of teams) {
     const hit = (t.players || []).find(
-      (p) => p.username === payload.player || p.name === payload.player);
+      (p) => String(p.ign || '').toLowerCase() === wanted
+        || String(p.id || '') === wanted);
     if (hit) { player = hit; team = t; break; }
   }
   if (!player) return null;
 
   return (
     <div className={styles.card}>
-      {player.avatar && (
-        <img className={styles.cardFace} src={player.avatar} alt="" />
+      {player.img && (
+        <img className={styles.cardFace} src={player.img} alt="" />
       )}
       <div className={styles.cardBody}>
-        <div className={styles.cardName}>{player.name || player.username}</div>
+        <div className={styles.cardName}>{player.ign}</div>
         {team && <div className={styles.cardTeam}>{team.name}</div>}
         {team && (
           <div className={styles.cardStat}>
