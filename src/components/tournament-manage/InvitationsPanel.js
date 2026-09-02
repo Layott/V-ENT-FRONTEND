@@ -14,6 +14,7 @@
 // said. The list is the answer to "who have I asked and what came back", which
 // is the question an organiser actually has.
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './invitations-panel.module.css';
@@ -60,7 +61,7 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
       });
       const data = await res.json().catch(() => ({}));
       if (data?.status !== 'success') {
-        setError(data?.message || tt('invite.failed', 'That did not go through.'));
+        setError(apiMessage(tt, data, 'invite.failed', 'That did not go through.'));
         return;
       }
       setWho('');

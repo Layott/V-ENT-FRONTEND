@@ -1,3 +1,4 @@
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -45,7 +46,7 @@ const TeamProfileTournamentsHistory = ({
         const list = data?.data?.tournaments ?? data?.data ?? data ?? [];
         setTournaments(Array.isArray(list) ? list : []);
       } catch (err) {
-        setError(err.message);
+        setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       } finally {
         setLoading(false);
       }

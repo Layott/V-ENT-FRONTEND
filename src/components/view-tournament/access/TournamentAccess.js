@@ -86,7 +86,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       });
       const payload = await res.json().catch(() => ({}));
       if (res.ok && payload.status === 'success') {
-        setNotice(payload.message || tt('access.done', 'Done.'));
+        setNotice(apiMessage(tt, payload, 'access.done', 'Done.'));
         load();
         return true;
       }

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -71,7 +72,7 @@ const EditTeamProfileContent = ({
       if (!t) throw new Error('Team not found');
       setTeam(t);
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }

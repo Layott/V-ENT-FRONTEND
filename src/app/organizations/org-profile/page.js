@@ -165,7 +165,7 @@ const OrgProfileContent = ({
       const clubData = await clubRes.json().catch(() => null);
       setClubs(clubData?.data?.clubs || []);
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }

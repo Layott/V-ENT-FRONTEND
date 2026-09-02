@@ -19,6 +19,7 @@
 // send produces an overlay that fills with blanks on air and reports nothing.
 // One list, on the server, next to the feed that has to satisfy it.
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './overlays-panel.module.css';
@@ -57,7 +58,7 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
         setRepeatHelp(data.data?.repeat_help || []);
         setTemplates(data.data?.templates || []);
       } else {
-        setError(data?.message || tt('overlay.loadFailed', 'Could not load your overlays.'));
+        setError(apiMessage(tt, data, 'overlay.loadFailed', 'Could not load your overlays.'));
       }
     } catch {
       setError(tt('overlay.loadFailed', 'Could not load your overlays.'));
@@ -85,7 +86,7 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
       });
       const data = await res.json().catch(() => ({}));
       if (data?.status !== 'success') {
-        setError(data?.message || tt('overlay.failed', 'That did not upload.'));
+        setError(apiMessage(tt, data, 'overlay.failed', 'That did not upload.'));
         return;
       }
       // Said here, at upload, rather than found on air.
@@ -138,7 +139,7 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
       });
       const data = await res.json().catch(() => ({}));
       if (data?.status !== 'success') {
-        setError(data?.message || tt('overlay.templateFailed', 'That template did not load.'));
+        setError(apiMessage(tt, data, 'overlay.templateFailed', 'That template did not load.'));
         return;
       }
       setWarnings(data.data?.warnings || []);

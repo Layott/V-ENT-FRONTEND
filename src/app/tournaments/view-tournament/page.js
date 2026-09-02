@@ -852,7 +852,6 @@ const BracketPanel = ({
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
   const [saving, setSaving] = useState(false);
-  const [pendingBanner, setPendingBanner] = useState(false);
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [disputeText, setDisputeText] = useState('');
   const [disputeSubmitting, setDisputeSubmitting] = useState(false);
@@ -941,10 +940,6 @@ const BracketPanel = ({
   } = participantInfo;
   const participantFlowEnabled = scoreMode === 'organizer_only' ? false : scoreMode === 'two_player' || scoreMode === 'screenshot_required' || isParticipant;
   const handleActionError = (err, fallbackMsg) => {
-    if (err?.isPendingBackend) {
-      setPendingBanner(true);
-      return;
-    }
     if (err?.code === 'ORGANIZER_ONLY_MODE') {
       showToast(tt("msg.onlyTheOrganizerCanSet", "Only the organizer can set scores in this tournament."));
       return;
@@ -1174,7 +1169,6 @@ const BracketPanel = ({
       <div className={styles.bracketHeader}>
         <p className={styles.bracketSub}>{formatLabel(bracketType)}{teamsCount ? ` · ${teamsCount} ${entrantWord}` : ''}</p>
         <p className={styles.bracketHint}>{tt("ui.click.any.match.view.6a64", "Click any match to view details")}{isOrganizer ? tx(" or edit score") : ''}.</p>
-        {pendingBanner && <p className={styles.pendingBanner}><LuTriangleAlert /> {tt("ui.pending.be.deploy.score.1361", "Pending BE deploy - score changes aren't saved server-side yet.")}</p>}
       </div>
 
       <div className={styles.bracketScroll}>

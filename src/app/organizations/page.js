@@ -107,7 +107,7 @@ const OrganizationsContent = () => {
       const list = data?.data?.organizations ?? data?.data ?? data ?? [];
       setOrganizations(Array.isArray(list) ? list : []);
     } catch (err) {
-      setError(err.message);
+      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
       setOrganizations([]);
     } finally {
       setLoading(false);

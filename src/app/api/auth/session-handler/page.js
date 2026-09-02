@@ -1,5 +1,6 @@
 'use client';
 
+import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -74,7 +75,7 @@ export default function SessionHandler() {
       } catch (error) {
         console.error('Session creation error:', error);
         setStatus('Authentication failed');
-        setError(error.message);
+        setError(apiMessage(tt, error, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
 
         // Redirect to login page after a delay
         setTimeout(() => {
