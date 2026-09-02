@@ -29,6 +29,7 @@ import DateField from '@/components/date-field/DateField';
 import SponsorEditor from '@/components/sponsor-editor/SponsorEditor';
 import styles from './edit-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -217,6 +218,12 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
               {tt('eventEdit.view', 'View the public page')}
             </Link>}
           </div>
+
+          {/* One strip across both screens, Details active here. It replaces
+              the twelve-card grid: cards that jumped to a differently shaped
+              page are exactly what made this feel like two places, and the
+              strip is still on screen after you press one. */}
+          <EventConsoleTabs eventRef={ref} active="details" />
 
           {/* Everything about this event, in one place.
 

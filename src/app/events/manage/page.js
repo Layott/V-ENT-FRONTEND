@@ -27,6 +27,7 @@ import DateField from '@/components/date-field/DateField';
 import { appLocale } from '@/lib/appLocale';
 import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
 import UserChip from '@/components/user-chip/UserChip';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -90,6 +91,9 @@ export const ManageEventContent = ({
   // which silently wins when it is lower and was shown nowhere on this screen.
   const [capacity, setCapacity] = useState(null);
   const [capacityDraft, setCapacityDraft] = useState('');
+  // What that number counts. Never inferred: guess "total" and half the
+  // tickets never go on sale, guess "per day" and the room is oversold.
+  const [capacityModeDraft, setCapacityModeDraft] = useState('per_day');
   const [savingCapacity, setSavingCapacity] = useState(false);
   const [limits, setLimits] = useState(null);
   // What is typed but not yet saved, keyed the way the API takes it, so
@@ -232,6 +236,7 @@ export const ManageEventContent = ({
     const cap = ti.body?.data?.capacity || null;
     setCapacity(cap);
     setCapacityDraft(cap?.capacity != null ? String(cap.capacity) : '');
+    setCapacityModeDraft(cap?.mode || 'per_day');
     setMoney(mo.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
@@ -540,7 +545,10 @@ export const ManageEventContent = ({
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       // Empty means "no limit", which is a real setting and not the same as
       // leaving it alone, so it is sent as null rather than skipped.
-      body: JSON.stringify({ capacity: raw === '' ? null : Number(raw) }),
+      body: JSON.stringify({
+        capacity: raw === '' ? null : Number(raw),
+        capacity_mode: capacityModeDraft,
+      }),
     });
     const body = await res.json().catch(() => ({}));
     setSavingCapacity(false);
@@ -676,7 +684,7 @@ export const ManageEventContent = ({
             {tt('manage.backToEvent', '← Back to the event')}
           </Link>
           <div className={styles.rowBetween}>
-            <h1 className={styles.pageTitle}>{tt('manage.title', 'Run this event')}</h1>
+            <h1 className={styles.pageTitle}>{tt('manage.title', 'Manage this event')}</h1>
             <Link href={`/events/scan?event=${eventRef}&gate=Main`} className={styles.primaryBtn}>
               {tt('manage.openDoor', 'Open the door scanner')}
             </Link>
@@ -685,11 +693,10 @@ export const ManageEventContent = ({
             {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
           </p>
 
-          <div className={styles.tabRow}>
-            {TABS.map(key => <button key={key} type="button" className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`} onClick={() => openTab(key)}>
-                {tabLabel(key)}
-              </button>)}
-          </div>
+          {/* The same strip the edit page draws, with Details as its first
+              tab. Two screens that manage one event should not look like two
+              places, and nothing here led back to the details form. */}
+          <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />
 
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
@@ -728,7 +735,7 @@ export const ManageEventContent = ({
                       {tt('manage.capacityTitle', 'How many the venue will take')}
                     </p>
                     <p className={styles.cardHint}>
-                      {tt('manage.capacityHint', 'This is a second limit on top of each ticket type. Whichever is smaller is what somebody can actually buy, so a type set to 5000 sells nothing once the venue is full.')}
+                      {tt('manage.capacityHint', 'How many people the room holds. It is a second limit on top of each ticket type, and the smaller of the two is what somebody can actually buy.')}
                     </p>
                     <div className={styles.capacityRow}>
                       <label className={styles.capacityField}>
@@ -738,12 +745,29 @@ export const ManageEventContent = ({
                                placeholder={tt('manage.capacityNone', 'No limit')}
                                onChange={e => setCapacityDraft(e.target.value)} />
                       </label>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.capacityMode', 'And that number is')}</span>
+                        <select className={styles.input} value={capacityModeDraft}
+                                onChange={e => setCapacityModeDraft(e.target.value)}>
+                          <option value="per_day">{tt('manage.capacityPerDay', 'How many each day holds')}</option>
+                          <option value="total">{tt('manage.capacityTotal', 'How many the whole event holds')}</option>
+                        </select>
+                      </label>
                       <button type="button" className={`${styles.primaryBtn} goldBTN`}
                               disabled={savingCapacity}
                               onClick={saveCapacity}>
                         {savingCapacity ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
                       </button>
                     </div>
+                    {(capacity.day_count || 0) > 1 && <p className={styles.capacityLine}>
+                      {capacityModeDraft === 'per_day'
+                        ? tt('manage.capacityPerDayNote', 'Each day starts afresh: the same room fills again with different people, so {days} days at {cap} sells {total} tickets in all.')
+                            .replace('{days}', String(capacity.day_count))
+                            .replace('{cap}', String(capacity.capacity ?? ''))
+                            .replace('{total}', String((capacity.capacity || 0) * (capacity.day_count || 1)))
+                        : tt('manage.capacityTotalNote', 'Counted across the whole event: the same people stay, so once {cap} are in nothing more sells on any day.')
+                            .replace('{cap}', String(capacity.capacity ?? ''))}
+                    </p>}
                     <p className={styles.capacityLine}>
                       {tt('manage.capacityState', '{sold} sold, {held} held, {room} left')
                         .replace('{sold}', String(capacity.sold ?? 0))
@@ -753,9 +777,16 @@ export const ManageEventContent = ({
                           : String(capacity.room))}
                     </p>
                     {capacity.over_capacity && <p className={styles.capacityAlert}>
-                      {tt('manage.capacityOver', 'Your ticket types offer {offered} tickets but the venue is set to {cap}. Buyers are refused once {cap} are gone, whatever the types say.')
-                        .replace('{offered}', String(capacity.offered_by_tiers))
-                        .replaceAll('{cap}', String(capacity.capacity))}
+                      {/* Judged the way THIS event counts. Two days of 5000
+                          against a 5000 room is correct, and calling that an
+                          error taught people to ignore the warning. */}
+                      {capacity.mode === 'per_day'
+                        ? tt('manage.capacityOverDay', 'On its busiest day your ticket types offer {worst} places but the room holds {cap}. Buyers are refused once {cap} are in on that day.')
+                            .replace('{worst}', String(capacity.offered_worst_day))
+                            .replaceAll('{cap}', String(capacity.capacity))
+                        : tt('manage.capacityOverTotal', 'Your ticket types offer {offered} tickets but the event is capped at {cap} across all days. Buyers are refused once {cap} are gone.')
+                            .replace('{offered}', String(capacity.offered_by_tiers))
+                            .replaceAll('{cap}', String(capacity.capacity))}
                     </p>}
                   </div>}
 

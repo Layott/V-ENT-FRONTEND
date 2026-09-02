@@ -198,3 +198,12 @@
 
 .done_close:hover { background-color: rgba(255, 255, 255, 0.16); }
 .done_close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Nothing to sell. Stated before anybody types, not after. */
+.soldOutTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
