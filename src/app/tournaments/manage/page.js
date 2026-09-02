@@ -16,7 +16,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 // than a second screen at another address.
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
-import OverlaysPanel from '@/components/tournament-manage/OverlaysPanel';
+import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -234,7 +234,7 @@ const ManageContent = ({ slug }) => {
               {/* Uploading an overlay, the URL for OBS, and the prompt that
                   converts a design into one. On this tab because this is
                   where somebody is already setting up their stream. */}
-              <OverlaysPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
+              <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
             {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
             {tab === 'stats' && <>
