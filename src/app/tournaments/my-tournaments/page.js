@@ -231,14 +231,23 @@ const MyTournaments = () => {
                         <span>·</span>
                         <span><LuUsers /> {current}/{max}</span>
                         <span>·</span>
-                        <span><LuTrophy /> {prize.toLocaleString()} VC</span>
+                        <span><LuTrophy /> {prize.toLocaleString(appLocale())} VC</span>
                       </p>
                     </div>
                     <div className={styles.rowActions}>
                       <Link href={`/tournaments/${t?.slug || t?.id || ''}`}>
                         <button className={styles.actionBtn}>{tt("ui.view.69bd", "View")}</button>
                       </Link>
-                      {status !== 'completed' && <Link href={`/tournaments/${t?.id ?? ''}/manage`}>
+                      {/* Edit was reachable from nowhere at all, which is the
+                          same as a tournament being uneditable. It is first
+                          because correcting the name, game or artwork is the
+                          commonest reason to come back to one. */}
+                      <Link href={`/tournaments/${t?.slug || t?.id || ''}/edit`}>
+                        <button className={styles.actionBtn}><LuPencil /> {tt('tEdit.edit', 'Edit')}</button>
+                      </Link>
+                      {/* By slug, not by id: a number in an address somebody
+                          can see is the one thing the slug rule forbids. */}
+                      {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`}>
                           <button className={`${styles.actionBtn} ${styles.manageBtn}`}><LuSettings /> {tt("ui.manage.bf58", "Manage")}</button>
                         </Link>}
                     </div>

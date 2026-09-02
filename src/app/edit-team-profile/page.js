@@ -15,6 +15,7 @@ import EditTeamProfileMembershipNew from '@/components/edit-team-profile/EditTea
 import styles from './edit-team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'profile-info',
   label: 'Profile Info'
@@ -83,7 +84,12 @@ const EditTeamProfileContent = ({
   // predates `viewer_is_owner`, and it has to be three-way because
   // `session.user.id` is the username whenever the login response carried no
   // user_id.
-  const isOwner = !!team && (team?.viewer_is_owner ?? (team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username || team?.owner?.user_id === session?.user?.id));
+  // Every comparison here was `a?.b === c?.d`, true for a signed-out visitor
+  // because both sides are undefined. `sameUser` refuses an absent side.
+  const isOwner = !!team && (team?.viewer_is_owner ?? (
+    sameUser(team?.owner?.id, session?.user?.id)
+    || sameUser(usernameOf(team?.owner), session?.user?.username)
+    || sameUser(team?.owner?.user_id, session?.user?.id)));
   const showToast = msg => {
     setToast(msg);
     window.setTimeout(() => setToast(''), 2200);

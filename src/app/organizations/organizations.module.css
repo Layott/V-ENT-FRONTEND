@@ -627,3 +627,88 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* What the organisations you follow are doing. Filled rows on a surface step,
+   no strokes, no glow. Every class here is written before it is used: the
+   checker exists because `styles.x` for a class nobody defined renders
+   class="undefined" and looks like missing data. */
+
+.followFeed {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  margin-bottom: 1.5rem;
+  min-width: 0;
+  padding: 1.1rem 1.2rem;
+}
+
+.followFeedTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.8rem;
+}
+
+.followFeedRows { display: flex; flex-direction: column; gap: 0.45rem; }
+
+.followItem {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.9rem;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.followItem:hover { background: rgba(255, 255, 255, 0.08); }
+
+.followItem:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.followKind {
+  background: rgba(229, 185, 78, 0.18);
+  border-radius: 5px;
+  color: #E5B94E;
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  padding: 0.16rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.followItemTitle {
+  color: #fff;
+  flex: 1 1 12rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.followItemOrg {
+  color: rgba(255, 255, 255, 0.55);
+  flex: 0 1 auto;
+  font-size: 0.83rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.followItemWhen {
+  color: rgba(255, 255, 255, 0.45);
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .followItemTitle { flex: 1 1 100%; }
+}

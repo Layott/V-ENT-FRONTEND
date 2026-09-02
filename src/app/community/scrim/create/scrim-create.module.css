@@ -340,3 +340,13 @@
 }
 
 .countryChipOn:hover { background-color: #d9b02b; }
+
+/* A field that was rejected. Undefined, so the only feedback was the message
+   and nothing pointed at which box was wrong. A filled wash, not a red ring. */
+
+.inputError {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff8a8a;
+}
+
+.inputError::placeholder { color: rgba(255, 138, 138, 0.55); }

@@ -10,6 +10,7 @@ export const KIND_LABELS = {
   verified_email: ['req.kind.verifiedEmail', 'Have a verified email address'],
   verified_identity: ['req.kind.verifiedIdentity', 'Have a verified identity'],
   profile_image: ['req.kind.profileImage', 'Have a profile picture'],
+  esports_image: ['req.kind.esportsImage', 'Have released an esports picture'],
   game_account: ['req.kind.gameAccount', 'Have connected an account for this game'],
   game_details: ['req.kind.gameDetails', 'Have filled in their in-game name or UID'],
   team_logo: ['req.kind.teamLogo', 'The team has a logo'],

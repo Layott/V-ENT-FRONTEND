@@ -94,7 +94,22 @@ const ManageContent = ({ slug }) => {
   const [error, setError] = useState(null);
   // Opens on Actions, because that is the screen every organiser link used
   // to reach and the one they will look for.
-  const [tab, setTab] = useState('actions');
+  // Seeded from the address, and written back to it. Without this the console
+  // could not be linked into: every card on the edit hub would have landed on
+  // Actions whatever it said, and a reload lost the tab you were on.
+  const [tab, setTab] = useState(() => {
+    const asked = searchParams.get('tab');
+    return TABS.some(t => t.id === asked) ? asked : 'actions';
+  });
+  const openTab = useCallback((next) => {
+    setTab(next);
+    if (typeof window === 'undefined') return;
+    // Built from the current address rather than a literal, so the two routes
+    // this page answers on do not diverge.
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', next);
+    window.history.replaceState(null, '', url.toString());
+  }, []);
   const [toast, setToast] = useState(null);
   const showToast = msg => {
     setToast(msg);
@@ -200,7 +215,7 @@ const ManageContent = ({ slug }) => {
 
           {/* Sub-tab nav */}
           <div className={styles.tabBar}>
-            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setTab(t.id)}>{tx(t.label)}</button>)}
+            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
           <div className={styles.panelArea}>

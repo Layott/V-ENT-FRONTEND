@@ -18,6 +18,7 @@ import styles from './all-teams.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -213,7 +214,9 @@ const AllTeams = () => {
     }
   };
   const getImageUrl = (path) => mediaUrl(path);
-  const isOwner = team => team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username;
+  // Same fault as the organisations list: both sides undefined when signed out.
+  const isOwner = team => sameUser(team?.owner?.id, session?.user?.id)
+    || sameUser(usernameOf(team?.owner), session?.user?.username);
   // Real win rate only. This used to add a flat +30 and clamp to 8-95, so a
   // team that had never played a match still advertised "30%".
   const winRate = team => {

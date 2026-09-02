@@ -48,7 +48,26 @@ export const ManageEventContent = ({
   } = useSession();
   const token = session?.user?.sessionToken;
   const eventRef = slugFromPath || searchParams.get('id');
-  const [tab, setTab] = useState('tickets');
+  // The tab comes from the address, so a link can open the console on the part
+  // it is about: /events/<slug>/manage?tab=promos. Without this the eleven tabs
+  // were reachable only by pressing them, which is why the whole console was
+  // hiding behind a button labelled "Influencers and promo codes".
+  const [tab, setTab] = useState(() => {
+    const asked = searchParams.get('tab');
+    return TABS.includes(asked) ? asked : 'tickets';
+  });
+
+  // And written back, built from the route this page is ON rather than a
+  // literal. A tab that rewrites the URL from a literal throws away whose page
+  // it is: /events/<slug>/manage became /events/manage and the event was lost.
+  const openTab = useCallback((next) => {
+    setTab(next);
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (next === 'tickets') url.searchParams.delete('tab');
+    else url.searchParams.set('tab', next);
+    window.history.replaceState(null, '', url.toString());
+  }, []);
   const [tiers, setTiers] = useState([]);
   const [money, setMoney] = useState(null);
   const [holds, setHolds] = useState([]);
@@ -67,6 +86,11 @@ export const ManageEventContent = ({
   // here, so this screen and the creation wizard cannot disagree about how many
   // days an event has.
   const [eventDays, setEventDays] = useState([]);
+  // The venue ceiling. A second limit on top of each type's own quantity,
+  // which silently wins when it is lower and was shown nowhere on this screen.
+  const [capacity, setCapacity] = useState(null);
+  const [capacityDraft, setCapacityDraft] = useState('');
+  const [savingCapacity, setSavingCapacity] = useState(false);
   const [limits, setLimits] = useState(null);
   // What is typed but not yet saved, keyed the way the API takes it, so
   // pressing Save sends exactly what changed and nothing else.
@@ -205,7 +229,9 @@ export const ManageEventContent = ({
     }
     setTiers(ti.body?.data?.tiers || []);
     setEventDays(ti.body?.data?.days || []);
-    setEventDays(ti.body?.data?.days || []);
+    const cap = ti.body?.data?.capacity || null;
+    setCapacity(cap);
+    setCapacityDraft(cap?.capacity != null ? String(cap.capacity) : '');
     setMoney(mo.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
@@ -499,6 +525,33 @@ export const ManageEventContent = ({
   // Only what was touched is sent. A payload carrying every scope would rewrite
   // rules the organiser never opened, and clearing one by not mentioning it is
   // exactly the accident this avoids.
+  // The venue ceiling goes through the ordinary event edit endpoint, because
+  // capacity is a property of the event and not of its ticketing. One model
+  // per thing: a second capacity column owned by this screen is how two
+  // numbers start disagreeing.
+  const saveCapacity = async () => {
+    if (savingCapacity) return;
+    setSavingCapacity(true);
+    setNotice('');
+    setError('');
+    const raw = capacityDraft.trim();
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      // Empty means "no limit", which is a real setting and not the same as
+      // leaving it alone, so it is sent as null rather than skipped.
+      body: JSON.stringify({ capacity: raw === '' ? null : Number(raw) }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingCapacity(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(tt('manage.capacitySaved', 'Venue capacity saved.'));
+    await load();
+  };
+
   const saveLimits = () => {
     const payload = {};
     const tiersPatch = {};
@@ -633,7 +686,7 @@ export const ManageEventContent = ({
           </p>
 
           <div className={styles.tabRow}>
-            {TABS.map(key => <button key={key} type="button" className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`} onClick={() => setTab(key)}>
+            {TABS.map(key => <button key={key} type="button" className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`} onClick={() => openTab(key)}>
                 {tabLabel(key)}
               </button>)}
           </div>
@@ -669,6 +722,43 @@ export const ManageEventContent = ({
                     {tt('manage.tierHint', 'What people can buy. Add a type at any time, correct a price, or open more when one sells out. How many are sold is counted from the tickets themselves and cannot be typed.')}
                   </p>
 
+                  {capacity && <div className={capacity.over_capacity
+                      ? styles.capacityWarn : styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.capacityTitle', 'How many the venue will take')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {tt('manage.capacityHint', 'This is a second limit on top of each ticket type. Whichever is smaller is what somebody can actually buy, so a type set to 5000 sells nothing once the venue is full.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.capacityField', 'Venue capacity')}</span>
+                        <input className={styles.input} type="number" min="0"
+                               value={capacityDraft}
+                               placeholder={tt('manage.capacityNone', 'No limit')}
+                               onChange={e => setCapacityDraft(e.target.value)} />
+                      </label>
+                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                              disabled={savingCapacity}
+                              onClick={saveCapacity}>
+                        {savingCapacity ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                      </button>
+                    </div>
+                    <p className={styles.capacityLine}>
+                      {tt('manage.capacityState', '{sold} sold, {held} held, {room} left')
+                        .replace('{sold}', String(capacity.sold ?? 0))
+                        .replace('{held}', String(capacity.held ?? 0))
+                        .replace('{room}', capacity.room == null
+                          ? tt('manage.capacityNoLimit', 'no limit')
+                          : String(capacity.room))}
+                    </p>
+                    {capacity.over_capacity && <p className={styles.capacityAlert}>
+                      {tt('manage.capacityOver', 'Your ticket types offer {offered} tickets but the venue is set to {cap}. Buyers are refused once {cap} are gone, whatever the types say.')
+                        .replace('{offered}', String(capacity.offered_by_tiers))
+                        .replaceAll('{cap}', String(capacity.capacity))}
+                    </p>}
+                  </div>}
+
                   {tiers.length === 0 ? <p className={styles.muted}>
                       {tt('manage.noTiers', 'No ticket types yet, so nobody can buy anything for this event.')}
                     </p> : <div className={styles.rows}>
@@ -697,7 +787,7 @@ export const ManageEventContent = ({
                                   : ''}
                             </span>
                             {!row.day && eventDays.length > 1
-                              && /(day|jour|dia)\s*\d/i.test(row.name)
+                              && /\b(day|jour|dia)\s*\d/i.test(row.name)
                               && <span className={styles.warnBadge}>
                                 {tt('manage.tierNoDate', 'No date set')}
                               </span>}

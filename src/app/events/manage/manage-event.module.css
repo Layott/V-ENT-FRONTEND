@@ -684,3 +684,63 @@
   color: rgba(26, 26, 26, 0.55);
   cursor: default;
 }
+
+/* The venue ceiling. A second limit on top of each ticket type, which wins
+   when it is lower, and which used to appear nowhere on this screen. */
+
+.capacityBox,
+.capacityWarn {
+  border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+  padding: 1rem 1.1rem;
+}
+
+.capacityBox { background: rgba(255, 255, 255, 0.04); }
+
+/* A filled amber surface, not an outline: the weight comes from the fill. */
+.capacityWarn { background: rgba(214, 158, 46, 0.13); }
+
+.capacityTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.capacityRow {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.capacityField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 14rem;
+  min-width: 0;
+}
+
+.capacityLine {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.capacityAlert {
+  color: #f0c674;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 62ch;
+}
+
+@media (max-width: 560px) {
+  .capacityField { max-width: none; width: 100%; }
+  .capacityRow > button { width: 100%; }
+}

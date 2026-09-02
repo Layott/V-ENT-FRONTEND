@@ -31,15 +31,36 @@ const files = process.argv.slice(2).length ? process.argv.slice(2) : walk('src')
 // double-quoted, and that is precisely the one that got missed.
 const CALL = /\b(?:tt|t)\(\s*(?:"([^"]+)"|'([^']+)')/g;
 
+// A key written inside a comment is documentation, not a call. Without this
+// the checker reports its own examples as missing translations, which is how a
+// checker teaches people to ignore it.
+const stripComments = (src) => src
+  .split('\n')
+  .map((line) => {
+    const at = line.indexOf('//');
+    if (at === -1) return line;
+    if (at > 0 && line[at - 1] === ':') return line;   // a URL, not a comment
+    return line.slice(0, at);
+  })
+  .join('\n')
+  .replace(/\/\*[\s\S]*?\*\//g, '');
+
 let gaps = 0;
 let checked = 0;
 for (const file of files) {
-  const src = fs.readFileSync(file, 'utf8');
+  const src = stripComments(fs.readFileSync(file, 'utf8'));
   for (const m of src.matchAll(CALL)) {
     const key = m[1] ?? m[2];
-    // Keys look like `ui.x.y`, `msg.x` or `api.CODE`. A sentence caught by the
-    // regex is some other function called `t`, not a translation.
-    if (!/^(ui|msg|api|scrim|settings|admin|event|team|tournament|wallet|community|partner)\./.test(key)) continue;
+    // A key is a dotted identifier with no whitespace: `ui.x.y`, `api.CODE`,
+    // `tEdit.name`. A sentence caught by the regex is some other function
+    // called `t`, and every sentence has a space in it.
+    //
+    // This was a prefix allowlist, which is why it reported 0 missing while
+    // skipping every namespace nobody had thought to add: tEdit, club,
+    // eventEdit, org, safety, req, needsAccount. An allowlist of prefixes
+    // silently stops covering the code the moment somebody names a new one,
+    // and the check that says "0 missing" is the one nobody re-reads.
+    if (!/^[A-Za-z][\w-]*(\.[\w-]+)+$/.test(key)) continue;
     checked += 1;
     const missing = LANGS.filter(l => !dictionaries[l][key]);
     if (missing.length) {

@@ -32,6 +32,7 @@ const REASONS = {
   verified_email: ['req.why.verifiedEmail', 'Verify your email address first.'],
   verified_identity: ['req.why.verifiedIdentity', 'This tournament needs a verified identity.'],
   profile_image: ['req.why.profileImage', 'Add a picture to your profile first.'],
+  esports_image: ['req.why.esportsImage', 'Upload an esports picture and release it for organisers, from your profile gallery.'],
   game_account: ['req.why.gameAccount', 'Connect your {game} account on your profile first.'],
   game_details: ['req.why.gameDetails', 'Add your in-game name for {game} on your profile first.'],
   team_logo: ['req.why.teamLogo', 'Your team needs a logo before it can enter.'],

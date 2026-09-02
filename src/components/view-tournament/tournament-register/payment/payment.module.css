@@ -526,3 +526,24 @@
     font-size: 20px;
   }
 }
+/* Two classes the component referenced and this file never defined.
+   `confirmButton` was never actually invisible - the element also carries the
+   global `goldBTN`, which styles it - so this only adds the layout the module
+   was meant to contribute. `pinDigitError` genuinely did nothing: a wrong PIN
+   got no highlight, so the only feedback was the message. */
+
+.confirmButton {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.45rem;
+  justify-content: center;
+  min-height: 46px;
+  min-width: 9rem;
+}
+
+/* A filled wash rather than a red outline: structure and state come from
+   surface here as everywhere else. */
+.pinDigitError {
+  background-color: rgba(237, 28, 36, 0.16);
+  color: #ff8a8a;
+}

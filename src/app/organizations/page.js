@@ -20,12 +20,24 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './organizations.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { sameUser, usernameOf } from '@/lib/gating';
+import { appLocale } from '@/lib/appLocale';
+// Through `appLocale()`, never `undefined`. `toLocaleDateString(undefined)`
+// means the BROWSER's language, so a French reader on an English machine gets
+// English dates on an otherwise French page, and grep never finds it.
+const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
+  day: 'numeric', month: 'short', year: 'numeric',
+}) : '';
+
 const TABS = [{
   id: 'all',
   label: 'All'
 }, {
   id: 'verified',
   label: 'Verified'
+}, {
+  id: 'following',
+  label: 'Following'
 }, {
   id: 'mine',
   label: 'My Orgs'
@@ -50,7 +62,8 @@ const OrganizationsContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const {
-    data: session
+    data: session,
+    status
   } = useSession();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
   const [region, setRegion] = useState(searchParams.get('region') || '');
@@ -132,11 +145,55 @@ const OrganizationsContent = () => {
 
   // The API answers with my_role for the signed-in viewer; owner beats
   // everything else because owners manage rather than join.
-  const isMine = org => org?.my_role === 'owner' || org?.owner === session?.user?.username || org?.owner?.username === session?.user?.username;
+  // `sameUser` is false unless BOTH sides exist. The previous version compared
+  // `org?.owner?.username === session?.user?.username`; signed out, `owner` is
+  // a string so `.username` is undefined, the session side is undefined, and
+  // `undefined === undefined` made every organisation look like the viewer's
+  // own. A stranger was offered Manage on every card.
+  const isMine = org => Boolean(status === 'authenticated')
+    && (org?.my_role === 'owner'
+        || sameUser(usernameOf(org?.owner), session?.user?.username));
   const isMember = org => ['member', 'manager', 'admin'].includes(org?.my_role);
+  // Who this person follows, and what those organisations have coming up.
+  // A follow that changes nothing about what you are shown is a counter rather
+  // than a subscription, and the person who pressed it cannot tell.
+  const [followingIds, setFollowingIds] = useState(new Set());
+  const [feed, setFeed] = useState([]);
+
+  useEffect(() => {
+    const token = session?.user?.sessionToken;
+    if (status !== 'authenticated' || !token) {
+      setFollowingIds(new Set());
+      setFeed([]);
+      return;
+    }
+    const auth = { Authorization: `Bearer ${token}` };
+    (async () => {
+      try {
+        const [mine, activity] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/following/`, { headers: auth }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/following/feed/`, { headers: auth }),
+        ]);
+        const m = await mine.json().catch(() => null);
+        const a = await activity.json().catch(() => null);
+        if (m?.status === 'success') {
+          setFollowingIds(new Set((m.data.organizations || [])
+            .map(o => String(o.org_id ?? o.id))));
+        }
+        if (a?.status === 'success') setFeed(a.data.items || []);
+      } catch {
+        // The tab still lists the organisations; only the activity is missing.
+      }
+    })();
+  }, [status, session?.user?.sessionToken]);
+
   const filteredByTab = organizations.filter(org => {
     if (activeTab === 'verified') return org.verified;
     if (activeTab === 'mine') return isMine(org);
+    // Read from the follow list rather than from a flag on the row, because the
+    // list endpoint does not carry `is_following` for every organisation and a
+    // missing flag would quietly read as "not following".
+    if (activeTab === 'following') return followingIds.has(String(org.org_id ?? org.id));
     return true;
   });
   const handleApply = async orgId => {
@@ -253,6 +310,31 @@ const OrganizationsContent = () => {
             </div>}
 
           {!loading && error && <p className={styles.errorText}>{error}</p>}
+
+          {/* What the organisations you follow are doing. This is the
+              point of following: CEO, 2 September, "that particular orgs
+              events, tournaments and anything about that org should show
+              constantly." Above the list, because it is the answer to why
+              somebody opened this tab. */}
+          {activeTab === 'following' && feed.length > 0 && <div className={styles.followFeed}>
+              <h2 className={styles.followFeedTitle}>
+                {tt('org.feedTitle', 'From the organizations you follow')}
+              </h2>
+              <div className={styles.followFeedRows}>
+                {feed.slice(0, 12).map(item => <Link key={`${item.kind}-${item.id}`} href={item.url} className={styles.followItem}>
+                    <span className={styles.followKind}>
+                      {item.kind === 'event'
+                        ? tt('org.feedEvent', 'Event')
+                        : tt('org.feedTournament', 'Tournament')}
+                    </span>
+                    <span className={styles.followItemTitle}>{item.title}</span>
+                    <span className={styles.followItemOrg}>{item.organization?.name}</span>
+                    <span className={styles.followItemWhen}>
+                      {item.starts_at ? formatDate(item.starts_at) : ''}
+                    </span>
+                  </Link>)}
+              </div>
+            </div>}
 
           {!loading && !error && filteredByTab.length === 0 && <div className={styles.emptyState}>
               <p className={styles.emptyTitle}>{tt("ui.no.organizations.found.d94f", "No organizations found")}</p>

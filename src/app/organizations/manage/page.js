@@ -20,6 +20,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
+import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'members',
   label: 'Members'
@@ -226,7 +227,7 @@ const ManageOrgContent = ({
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setMembers(prev => prev.map(x => x.user?.id === m.user?.id
+        setMembers(prev => prev.map(x => sameUser(x.user?.id, m.user?.id)
           ? (data.data?.member || { ...x, role: String(role).toLowerCase() })
           : x));
         showToast(`${m.user?.full_name || m.user?.username} → ${role}`);
@@ -315,7 +316,7 @@ const ManageOrgContent = ({
       scopes
     });
     if (data) {
-      setMembers(prev => prev.map(x => x.user?.id === m.user?.id ? data.member : x));
+      setMembers(prev => prev.map(x => sameUser(x.user?.id, m.user?.id) ? data.member : x));
       showToast(tt("msg.areasUpdated", "Areas updated."));
     }
   };

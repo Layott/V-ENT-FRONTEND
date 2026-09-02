@@ -10,8 +10,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { FiArrowLeft } from 'react-icons/fi';
 import {
   FaUsers, FaInfoCircle, FaCommentDots, FaCrown, FaShieldAlt,
-  FaLock, FaPlus, FaTrash, FaVolumeMute, FaUserSlash, FaPen, FaPaperPlane,
-} from 'react-icons/fa';
+  FaLock, FaPlus, FaTrash, FaVolumeMute, FaUserSlash, FaPen, FaPaperPlane, FaCog } from 'react-icons/fa';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -19,6 +18,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './club.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import { sameUser } from '@/lib/gating';
 
 // How often the open topic asks for anything said since the last message it
 // holds. `after` returns only what is new, so this is a small request rather
@@ -203,6 +203,53 @@ const ClubInner = ({ slug: slugFromPath }) => {
     return payload.data;
   }, [apiUrl, club, authHeaders, tt]);
 
+  // -- running the club ---------------------------------------------------
+
+  const [clubDraft, setClubDraft] = useState({ name: '', description: '', is_private: false });
+  const [savingClub, setSavingClub] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [confirmName, setConfirmName] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  // Seeded from the club rather than held as one source, so opening the tab
+  // always shows what is actually stored rather than a stale edit.
+  useEffect(() => {
+    if (!club) return;
+    setClubDraft({
+      name: club.name || '',
+      description: club.description || '',
+      is_private: !!club.is_private,
+    });
+  }, [club]);
+
+  const handleSaveClub = async () => {
+    if (savingClub) return;
+    setSavingClub(true);
+    setSaved(false);
+    const data = await act('/update/', {
+      name: clubDraft.name.trim(),
+      description: clubDraft.description.trim(),
+      is_private: clubDraft.is_private,
+    });
+    setSavingClub(false);
+    if (!data) return;
+    setSaved(true);
+    // A rename moves the address. Staying on the old one leaves the page
+    // showing a club at a URL that now only redirects.
+    const next = data.url || (data.club?.slug ? `/community/club/${data.club.slug}` : null);
+    if (next && data.club?.slug && data.club.slug !== club.slug) router.replace(next);
+    else await loadOverview();
+  };
+
+  const handleDeleteClub = async () => {
+    if (deleting) return;
+    setDeleting(true);
+    const data = await act('/delete/', { confirm_name: confirmName.trim() });
+    setDeleting(false);
+    if (!data) return;
+    router.push('/community?tab=clubs');
+  };
+
   const handleJoin = async () => {
     if (!token) { router.push('/login'); return; }
     const data = await act('/join/');
@@ -295,6 +342,10 @@ const ClubInner = ({ slug: slugFromPath }) => {
   const myRank = ROLE_ORDER[me?.role] ?? -1;
   const canManageTopics = !!me?.can_manage_topics;
   const canModerate = !!me?.can_moderate;
+  // Renaming changes the address, so it is an admin power. Deleting is the
+  // owner's alone: an admin was appointed to help run the club, not end it.
+  const canEditClub = !!me?.can_edit_club;
+  const canDeleteClub = !!me?.can_delete_club;
   const topic = topics.find(t => t.id === openTopic) || null;
 
   // -- render -------------------------------------------------------------
@@ -402,6 +453,9 @@ const ClubInner = ({ slug: slugFromPath }) => {
           { id: 'chat', label: tt('ui.club.tab.chat.b104', 'Chat'), icon: <FaCommentDots /> },
           { id: 'members', label: tt('ui.club.tab.members.c22e', 'Members'), icon: <FaUsers /> },
           { id: 'about', label: tt('ui.club.tab.about.f0a9', 'About'), icon: <FaInfoCircle /> },
+          ...(canEditClub
+            ? [{ id: 'settings', label: tt('club.tabSettings', 'Settings'), icon: <FaCog /> }]
+            : []),
         ].map(t => (
           <button key={t.id} role="tab" aria-selected={activeTab === t.id}
                   className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabActive : ''}`}
@@ -504,7 +558,7 @@ const ClubInner = ({ slug: slugFromPath }) => {
                         : <span className={styles.msgAuthor}>{tt('ui.club.someone.0f8e', 'Someone')}</span>}
                       <span className={styles.msgTime}>{relativeTime(m.created_at)}</span>
                       {!m.deleted
-                        && (canModerate || m.author?.username === session?.user?.username) && (
+                        && (canModerate || sameUser(m.author?.username, session?.user?.username)) && (
                         <button className={styles.msgDelete}
                                 aria-label={tt('ui.club.remove.message.b8c7', 'Remove message')}
                                 onClick={() => handleDeleteMessage(m.id)}>
@@ -661,6 +715,55 @@ const ClubInner = ({ slug: slugFromPath }) => {
               </span>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'settings' && canEditClub && (
+        <div className={styles.settingsPanel}>
+          <div className={styles.settingsCard}>
+            <p className={styles.settingsTitle}>{tt('club.settingsTitle', 'About this club')}</p>
+            <p className={styles.settingsHint}>
+              {tt('club.renameHint', 'Renaming changes the address. Every link already shared keeps working.')}
+            </p>
+            <label className={styles.settingsField}>
+              <span className={styles.settingsLabel}>{tt('club.name', 'Name')}</span>
+              <input className={styles.settingsInput} value={clubDraft.name} maxLength={120}
+                     onChange={e => setClubDraft(d => ({ ...d, name: e.target.value }))} />
+            </label>
+            <label className={styles.settingsField}>
+              <span className={styles.settingsLabel}>{tt('club.description', 'Description')}</span>
+              <textarea className={styles.settingsArea} rows={3} value={clubDraft.description}
+                        onChange={e => setClubDraft(d => ({ ...d, description: e.target.value }))} />
+            </label>
+            <label className={styles.settingsCheck}>
+              <input type="checkbox" checked={clubDraft.is_private}
+                     onChange={e => setClubDraft(d => ({ ...d, is_private: e.target.checked }))} />
+              <span>{tt('community.clubPrivate', 'Private: only members can read it')}</span>
+            </label>
+            <button type="button" className={`${styles.settingsSave} goldBTN`}
+                    onClick={handleSaveClub} disabled={savingClub}>
+              {savingClub ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+            </button>
+            {saved && <span className={styles.settingsSaved}>{tt('ui.saved', 'Saved')}</span>}
+          </div>
+
+          {canDeleteClub && (
+            <div className={styles.dangerCard}>
+              <p className={styles.settingsTitle}>{tt('club.deleteTitle', 'Delete this club')}</p>
+              <p className={styles.settingsHint}>
+                {tt('club.deleteHint', 'Every topic and message goes with it, and it cannot be undone. Type the name to confirm.')}
+              </p>
+              <input className={styles.settingsInput} value={confirmName}
+                     placeholder={club.name}
+                     onChange={e => setConfirmName(e.target.value)} />
+              <button type="button" className={`${styles.deleteBtn} redBTN`}
+                      onClick={handleDeleteClub}
+                      disabled={deleting
+                        || confirmName.trim().toLowerCase() !== (club.name || '').trim().toLowerCase()}>
+                {deleting ? tt('club.deleting', 'Deleting...') : tt('club.deleteAction', 'Delete this club')}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </>,
