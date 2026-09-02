@@ -380,3 +380,38 @@
   font-size: 0.92rem;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
+
+/* On a phone the row stacks.
+ *
+ * It was a flex row with the info and the actions side by side, which worked
+ * while there was one action. A second and a third squeezed the info into a
+ * column narrow enough to break "V-ENT TEST 1" and "Free Fire" one word per
+ * line. The name of the thing is the most important text on the row and it was
+ * the first thing to lose space.
+ *
+ * `min-width: 0` on the info because a flex child refuses to shrink below its
+ * content by default, which is what let the actions win the argument. */
+@media (max-width: 700px) {
+  .tournamentRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .tournamentInfo {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .rowActions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .rowActions > * { flex: 1 1 auto; }
+
+  .actionBtn {
+    justify-content: center;
+    /* A comfortable target on a phone, per the mobile rules. */
+    min-height: 44px;
+  }
+}
