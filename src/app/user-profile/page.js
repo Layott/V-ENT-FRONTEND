@@ -22,6 +22,7 @@ import styles from './user-profile.module.css';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -96,6 +97,37 @@ const UserProfileContent = ({
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('overview');
   const [showMore, setShowMore] = useState(false);
+
+  // Block, mute and report. Read once so the menu is right on first paint:
+  // a menu that says Block and flips to Unblock a second later reads as a bug.
+  const [safety, setSafety] = useState({
+    blocked: false, muted: false, reported: false, reasons: [],
+  });
+  const [safetyBusy, setSafetyBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('harassment');
+  const [reportDetail, setReportDetail] = useState('');
+
+  // Optional: `profileData` is null until the fetch lands, and this sits
+  // above the early returns so it runs on the very first render.
+  const safetyTarget = profileData?.username || null;
+
+  useEffect(() => {
+    const token = session?.user?.sessionToken;
+    if (!safetyTarget || isOwner || status !== 'authenticated' || !token) return;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/user/${encodeURIComponent(safetyTarget)}/safety/`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json();
+        if (body?.status === 'success') setSafety(body.data);
+      } catch {
+        // The menu still works; it just opens showing the default labels.
+      }
+    })();
+  }, [safetyTarget, isOwner, status, session?.user?.sessionToken]);
+
   const [following, setFollowing] = useState(false);
   const [toast, setToast] = useState('');
   const moreMenuRef = useRef(null);
@@ -363,6 +395,48 @@ const UserProfileContent = ({
   }
   const fullName = profileData.full_name || profileData.fullname || profileData.username || 'Unknown';
   const username = profileData.username || 'username';
+
+  // One handler for all three, because they are the same request with a
+  // different noun and three copies would drift.
+  const runSafety = async (what, on, extra = {}) => {
+    const token = session?.user?.sessionToken;
+    if (!token || !safetyTarget) {
+      router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    setSafetyBusy(true);
+    setShowMore(false);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/${encodeURIComponent(safetyTarget)}/${what}/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ [what]: on, ...extra }),
+        });
+      const body = await res.json();
+      if (body?.status === 'success') {
+        setSafety(s => ({
+          ...s,
+          blocked: what === 'block' ? on : s.blocked,
+          muted: what === 'mute' ? on : s.muted,
+          reported: what === 'report' ? true : s.reported,
+        }));
+        showToast(body.message || 'Done.');
+        setReportOpen(false);
+      } else {
+        showToast(apiMessage(tt, body, 'api.failed', 'That did not work.'), 'error');
+      }
+    } catch {
+      showToast(tt('api.NETWORK_UNREACHABLE',
+        'Could not reach the server. Check the connection and try again.'), 'error');
+    } finally {
+      setSafetyBusy(false);
+    }
+  };
   const bio = profileData.description || profileData.bio || '';
   // "Lagos, Nigeria" when both halves are known, otherwise whichever half is.
   // Both come from the daily location refresh at sign-in.
@@ -490,22 +564,63 @@ const UserProfileContent = ({
                       <button type="button" className={styles.heroIconBtn} onClick={() => setShowMore(s => !s)} aria-label={tt("ui.more.4bab", "More")}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="1.5" fill="currentColor" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /><circle cx="12" cy="19" r="1.5" fill="currentColor" /></svg>
                       </button>
+                      {/* Real, as of 2 September 2026. All three used to show
+                          a toast and make no request, so somebody who blocked a
+                          harasser was told it worked. The label now reflects
+                          what is actually true for this viewer, read once from
+                          /user/<name>/safety/ so the menu is right on first
+                          paint rather than flipping a moment later. */}
                       {showMore && <div className={styles.moreMenu}>
-                          <button type="button" onClick={() => {
-                      setShowMore(false);
-                      showToast(tt("msg.userMuted", "User muted"));
-                    }}>{tt("ui.mute.user.bd03", "Mute User")}</button>
-                          <button type="button" className={styles.danger} onClick={() => {
-                      setShowMore(false);
-                      showToast(tt("msg.blockRequested", "Block requested"));
-                    }}>{tt("ui.block.user.57fd", "Block User")}</button>
-                          <button type="button" className={styles.danger} onClick={() => {
-                      setShowMore(false);
-                      showToast(tt("msg.reportSubmitted", "Report submitted"));
-                    }}>{tt("ui.report.user.f534", "Report User")}</button>
+                          <button type="button" disabled={safetyBusy} onClick={() => runSafety('mute', !safety.muted)}>
+                            {safety.muted
+                              ? tt('safety.unmute', 'Unmute')
+                              : tt('safety.mute', 'Mute')}
+                          </button>
+                          <button type="button" className={styles.danger} disabled={safetyBusy} onClick={() => runSafety('block', !safety.blocked)}>
+                            {safety.blocked
+                              ? tt('safety.unblock', 'Unblock')
+                              : tt('safety.block', 'Block')}
+                          </button>
+                          <button type="button" className={styles.danger} disabled={safetyBusy || safety.reported} onClick={() => { setShowMore(false); setReportOpen(true); }}>
+                            {safety.reported
+                              ? tt('safety.reported', 'Reported')
+                              : tt('safety.report', 'Report')}
+                          </button>
                         </div>}
                     </div>
                   </>}
+
+                {/* Report asks why. A report with no reason and no location is
+                    a report nobody can action, and the queue fills with rows a
+                    moderator has to go and investigate from scratch. */}
+                {reportOpen && <div className={styles.reportOverlay} onClick={e => { if (e.target === e.currentTarget) setReportOpen(false); }}>
+                    <div className={styles.reportPanel} role="dialog" aria-modal="true">
+                      <p className={styles.reportTitle}>
+                        {tt('safety.reportTitle', 'Report @{name}').replace('{name}', username)}
+                      </p>
+                      <p className={styles.reportHint}>
+                        {tt('safety.reportHint', 'A moderator reads every report. They are not told who reported them.')}
+                      </p>
+                      <label className={styles.reportLabel}>
+                        {tt('safety.reportReason', 'What is the problem?')}
+                        <select className={styles.reportSelect} value={reportReason} onChange={e => setReportReason(e.target.value)}>
+                          {(safety.reasons || []).map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+                        </select>
+                      </label>
+                      <label className={styles.reportLabel}>
+                        {tt('safety.reportDetail', 'Anything else that would help')}
+                        <textarea className={styles.reportText} rows={4} value={reportDetail} onChange={e => setReportDetail(e.target.value)} placeholder={tt('safety.reportPlaceholder', 'What happened, and where')} />
+                      </label>
+                      <div className={styles.reportActions}>
+                        <button type="button" className={styles.reportSend} disabled={safetyBusy} onClick={() => runSafety('report', true, { reason: reportReason, detail: reportDetail, context: 'profile' })}>
+                          {tt('safety.reportSend', 'Send report')}
+                        </button>
+                        <button type="button" className={styles.reportCancel} onClick={() => setReportOpen(false)}>
+                          {tt('ui.cancel.77df', 'Cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>}
               </div>
             </div>
 

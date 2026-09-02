@@ -41,8 +41,13 @@
   background-color: var(--overlay-gray);
 
   border-radius: 12px;
-  overflow: hidden;
   margin-bottom: 1.5rem;
+  /* NOT `overflow: hidden`. It was here to keep the banner inside the card's
+     rounded corners, and it also clipped the more-menu, which is absolutely
+     positioned inside this card: the third item was simply cut off, so Report
+     User could be seen but never pressed.
+
+     The clipping moved to the banner, which is the only child that needs it. */
 }
 
 .heroBanner {
@@ -52,6 +57,9 @@
   background-color: #303136;
   background-size: cover;
   background-position: center;
+  /* The rounded top the card used to give it. */
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
 }
 
 .heroBanner::after {
@@ -490,4 +498,95 @@
   font: inherit;
   color: inherit;
   margin: 0;
+}
+
+/* Reporting somebody. Filled surfaces, no strokes, no glow. */
+
+.reportOverlay {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 1200;
+}
+
+.reportPanel {
+  background: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 30rem;
+  min-width: 0;
+  padding: 1.4rem;
+  width: 100%;
+}
+
+.reportTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.reportHint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.reportLabel {
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.reportSelect, .reportText {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  min-width: 0;
+  padding: 10px 12px;
+  resize: vertical;
+  width: 100%;
+}
+
+.reportSelect:focus, .reportText:focus { background: rgba(255, 255, 255, 0.1); }
+
+.reportActions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.25rem; }
+
+.reportSend, .reportCancel {
+  align-items: center;
+  border-radius: 9px;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1.1rem;
+  transition: background-color 0.12s;
+}
+
+.reportSend { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.reportSend:hover { background: #c9161d; }
+.reportSend:disabled { background: rgba(237, 28, 36, 0.4); cursor: default; }
+
+.reportCancel { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.reportCancel:hover { background: rgba(255, 255, 255, 0.17); }
+
+.reportSend:focus-visible, .reportCancel:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }

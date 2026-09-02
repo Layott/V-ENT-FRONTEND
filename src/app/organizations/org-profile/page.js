@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FaCheckCircle, FaUsers, FaTrophy, FaCoins, FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook, FaGlobe, FaEnvelope } from 'react-icons/fa';
 import { AiOutlineTeam } from 'react-icons/ai';
-import { LuMapPin, LuUserPlus, LuMessageCircle } from 'react-icons/lu';
+import { LuMapPin, LuUserPlus } from 'react-icons/lu';
 import { MdBusiness, MdOutlineEvent } from 'react-icons/md';
 import { FiEdit3, FiCalendar } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
@@ -22,6 +22,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
+import { sameUser, usernameOf } from '@/lib/gating';
+import NeedsAccount from '@/components/needs-account/NeedsAccount';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -271,7 +273,7 @@ const OrgProfileContent = ({
       });
       const data = await res.json();
       if (data?.status === 'success') {
-        setMembers(prev => prev.map(x => x.user?.id === m.user?.id ? {
+        setMembers(prev => prev.map(x => sameUser(x.user?.id, m.user?.id) ? {
           ...x,
           role
         } : x));
@@ -384,21 +386,31 @@ const OrgProfileContent = ({
                 <p className={styles.orgBio}>{org.bio}</p>
               </div>
 
+              {/* Manage belongs to the owner. Apply and Follow need an
+                  account, so a stranger is told that instead of being handed a
+                  button that answers 401. Message is gone entirely: CEO,
+                  2 September, "There is no need for the option to message an
+                  org." An organisation is not a person and a DM to its owner
+                  was never the right shape. */}
               <div className={styles.heroActions}>
-                {isOwner ? <Link href={`/organizations/${orgId}/manage`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
+                {isOwner && <Link href={`/organizations/${orgId}/manage`} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
                     <FiEdit3 /> {tt("ui.manage.bf58", "Manage")}
-                  </Link> : <>
-                    {!isMember && <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} onClick={handleApply} disabled={applyState === 'loading' || applyState === 'pending'}>
+                  </Link>}
+
+                {!isOwner && !isMember && <NeedsAccount compact action={tt('org.applyAction', 'apply to an organisation')}>
+                    <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} onClick={handleApply} disabled={applyState === 'loading' || applyState === 'pending'}>
                       <LuUserPlus />
                       {applyState === 'pending' ? 'Pending' : applyState === 'loading' ? tx("Sending…") : 'Apply'}
-                    </button>}
-                    <button type="button" className={`${styles.heroBtn} ${styles.heroBtnGhost}`} onClick={() => router.push(`/community?tab=dms&to=${org.owner}`)}>
-                      <LuMessageCircle /> {tt("ui.message.68f4", "Message")}
                     </button>
-                  </>}
-                <button type="button" className={`${styles.heroBtn} ${following ? styles.heroBtnGhost : styles.heroBtnGhost}`} onClick={handleFollow}>
-                  {following ? 'Following' : 'Follow'}
-                </button>
+                  </NeedsAccount>}
+
+                <NeedsAccount compact action={tt('org.followAction', 'follow an organisation')}>
+                  <button type="button" className={`${styles.heroBtn} ${styles.heroBtnGhost}`} onClick={handleFollow}>
+                    {following
+                      ? tt('org.following', 'Following')
+                      : tt('org.follow', 'Follow')}
+                  </button>
+                </NeedsAccount>
               </div>
             </div>
           </section>

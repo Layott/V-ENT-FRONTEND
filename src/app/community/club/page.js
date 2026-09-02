@@ -19,6 +19,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './club.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import { sameUser } from '@/lib/gating';
 
 // How often the open topic asks for anything said since the last message it
 // holds. `after` returns only what is new, so this is a small request rather
@@ -504,7 +505,7 @@ const ClubInner = ({ slug: slugFromPath }) => {
                         : <span className={styles.msgAuthor}>{tt('ui.club.someone.0f8e', 'Someone')}</span>}
                       <span className={styles.msgTime}>{relativeTime(m.created_at)}</span>
                       {!m.deleted
-                        && (canModerate || m.author?.username === session?.user?.username) && (
+                        && (canModerate || sameUser(m.author?.username, session?.user?.username)) && (
                         <button className={styles.msgDelete}
                                 aria-label={tt('ui.club.remove.message.b8c7', 'Remove message')}
                                 onClick={() => handleDeleteMessage(m.id)}>

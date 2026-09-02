@@ -1,0 +1,67 @@
+/* Shown where a member would see a control. Filled surface, no stroke, no glow.
+   Quiet: it sits inside pages that are otherwise readable, and it is an
+   explanation rather than an interruption. */
+
+.wrap {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+}
+
+.text {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 52ch;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+
+.primary, .ghost {
+  align-items: center;
+  border-radius: 9px;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1.05rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.primary { background: var(--v-ent-red, #ED1C24); color: #fff; }
+.primary:hover { background: #c9161d; }
+
+.ghost { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.ghost:hover { background: rgba(255, 255, 255, 0.17); }
+
+.compact {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1rem;
+  text-decoration: none;
+  transition: background-color 0.12s;
+}
+
+.compact:hover { background: rgba(255, 255, 255, 0.14); }
+
+.primary:focus-visible, .ghost:focus-visible, .compact:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

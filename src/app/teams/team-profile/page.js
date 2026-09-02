@@ -19,6 +19,7 @@ import TeamProfileRequests from '@/components/team-profile/TeamProfileRequests';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { sameUser, usernameOf } from '@/lib/gating';
 const ALL_TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -106,7 +107,12 @@ export const TeamProfileContent = ({
 
   // The server settles this now. The three-way comparison below it stays as a
   // fallback for a payload that predates viewer_is_owner.
-  const isOwner = !!team && (team?.viewer_is_owner ?? (team?.owner?.id === session?.user?.id || team?.owner?.username === session?.user?.username || team?.owner?.user_id === session?.user?.id));
+  // Every comparison here was `a?.b === c?.d`, true for a signed-out visitor
+  // because both sides are undefined. `sameUser` refuses an absent side.
+  const isOwner = !!team && (team?.viewer_is_owner ?? (
+    sameUser(team?.owner?.id, session?.user?.id)
+    || sameUser(usernameOf(team?.owner), session?.user?.username)
+    || sameUser(team?.owner?.user_id, session?.user?.id)));
 
   // Share used to be a Link back to the page you were already on. It copies a
   // link to this team, and says what the link is if the clipboard is refused.
