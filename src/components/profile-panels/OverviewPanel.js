@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './OverviewPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -55,7 +57,11 @@ const OverviewPanel = ({
 }) => {
   const tx = useTx();
   const tt = useT();
-  const visibleInterests = interests.slice(0, 9);
+  // Both "See more" buttons were inert since they were written. The lists are
+  // already here, so they expand in place rather than going anywhere.
+  const [allInterests, setAllInterests] = useState(false);
+  const [allAccounts, setAllAccounts] = useState(false);
+  const visibleInterests = allInterests ? interests : interests.slice(0, 9);
   const remainingInterests = Math.max(0, interests.length - visibleInterests.length);
   const visibleGames = favoriteGames.slice(0, isOwner ? 5 : 6);
   return <div className={styles.overviewGrid}>
@@ -74,7 +80,8 @@ const OverviewPanel = ({
               {tt("ui.no.interests.added.yet.2b2d", "No interests added yet.")}
             </p> : <div className={styles.chipRow}>
               {visibleInterests.map((it, idx) => <span key={idx} className={styles.chip}>{it}</span>)}
-              {remainingInterests > 0 && <button type="button" className={styles.chipMore}>{tt("ui.see.more.2acf", "See more · +")}{remainingInterests}</button>}
+              {remainingInterests > 0 && <button type="button" className={styles.chipMore}
+                onClick={() => setAllInterests(true)}>{tt("ui.see.more.2acf", "See more · +")}{remainingInterests}</button>}
             </div>}
         </div>
 
@@ -90,7 +97,7 @@ const OverviewPanel = ({
         }}>
               {tt("ui.no.gaming.accounts.linked.0ee8", "No gaming accounts linked.")}
             </p> : <div className={styles.acctList}>
-              {gamingAccounts.slice(0, 4).map((a, idx) => {
+              {(allAccounts ? gamingAccounts : gamingAccounts.slice(0, 4)).map((a, idx) => {
             const initials = (a.platform || a.name || '?').slice(0, 2).toUpperCase();
             return <div className={styles.acctRow} key={idx}>
                     <div className={styles.acctLogo} style={a.color ? {
@@ -104,7 +111,8 @@ const OverviewPanel = ({
                     </div>
                   </div>;
           })}
-              {gamingAccounts.length > 4 && <button type="button" className={styles.chipMore}>{tt("ui.see.more.2acf", "See more · +")}{gamingAccounts.length - 4}</button>}
+              {gamingAccounts.length > 4 && !allAccounts && <button type="button" className={styles.chipMore}
+                onClick={() => setAllAccounts(true)}>{tt("ui.see.more.2acf", "See more · +")}{gamingAccounts.length - 4}</button>}
             </div>}
         </div>
 
@@ -165,7 +173,7 @@ const OverviewPanel = ({
             <div className={styles.statCell}>
               <div className={styles.statCellHead}>
                 <span className={styles.statCellLabel}>{tt("ui.ranking.3937", "Ranking")}</span>
-                <button type="button" className={styles.statCellLink}>{tt("ui.view.table.fed8", "View Table")}</button>
+                <Link href="/rankings" className={styles.statCellLink}>{tt("ui.view.table.fed8", "View Table")}</Link>
               </div>
               <div className={styles.statCellValue}>{rank ? `#${rank}` : '-'}</div>
             </div>
@@ -228,7 +236,8 @@ const OverviewPanel = ({
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M21 5h-3v3a3 3 0 0 0 3-3zM3 5h3v3a3 3 0 0 1-3-3z" /></svg>
               {tt("ui.achievements.7d7c", "Achievements (")}{achievements.length})
             </h3>
-            {achievements.length > 0 && <button type="button" className={styles.cardLink}>
+            {achievements.length > 0 && <button type="button" className={styles.cardLink}
+              onClick={onSeeAll}>
                 {tt("ui.see.more.c510", "See more")}
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
               </button>}

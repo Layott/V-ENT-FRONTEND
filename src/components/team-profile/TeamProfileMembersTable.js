@@ -5,11 +5,9 @@ import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { CiSearch } from 'react-icons/ci';
 import { BsThreeDots, BsChevronDown, BsChevronUp } from 'react-icons/bs';
-import { LuUserPlus } from 'react-icons/lu';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
@@ -113,9 +111,11 @@ const TeamProfileMembersTable = ({
             <CiSearch className={styles.searchIcon} />
             <input type="text" placeholder={tt("ui.search.members.bdad", "Search members…")} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
           </div>
-          {isOwner && <button type="button" className={`${styles.headerCta} redBTN`}>
-              <LuUserPlus /> {tt("ui.invite.member.645d", "Invite member")}
-            </button>}
+          {/* There was an "Invite member" button here with no onClick. It is
+              not wired now either, because it should not exist: TeamRosterManager
+              renders directly above this table on the same tab and already does
+              invites, the join link and roles. A second entry point to the same
+              job, three inches higher, is how one of them ends up stale. */}
         </div>
       </div>
 
