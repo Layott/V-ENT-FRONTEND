@@ -6,9 +6,35 @@ import BasicInfo from './basic-info/BasicInfo';
 import FormatParticipants from './format-participants/FormatParticipants';
 import PrizeDistribution from './prize-distribution/PrizeDistribution';
 import SponsorsLinks from './sponsors-links/SponsorsLinks';
+import Tickets from './tickets/Tickets';
 import Review from './review/Review';
 import styles from './create-tournament-component.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+
+/** The configuring rules, appended the same way on both request paths.
+ *
+ * There are two: a primary one and a fallback with different field names. They
+ * had drifted before, which is how a field ends up saved on one path and lost
+ * on the other depending on which one the server happened to accept. */
+const appendEventRules = (body, formData) => {
+  if (formData.capacity !== '' && formData.capacity != null) {
+    body.append('capacity', String(formData.capacity));
+  }
+  body.append('capacity_mode', formData.capacity_mode || 'per_day');
+
+  const tiers = (formData.ticket_types || [])
+    .filter((t) => (t.name || '').trim())
+    .map((t) => ({
+      name: (t.name || '').trim(),
+      price: t.price || 0,
+      quantity: t.quantity || 0,
+      perks: (t.perks || '').trim(),
+      day: t.day || '',
+      day_label: (t.day_label || '').trim(),
+    }));
+  body.append('ticket_types', JSON.stringify(tiers));
+};
+
 const CreateEventComponent = () => {
   const tt = useT();
   const {
@@ -226,6 +252,10 @@ const CreateEventComponent = () => {
       formDataObj.append('sponsor_logos', JSON.stringify([]));
       formDataObj.append('social_links', JSON.stringify([]));
       formDataObj.append('social_urls', JSON.stringify([]));
+      // The rules that configure the event, set on the Tickets step. The
+      // endpoint has accepted these all along and the wizard sent none of
+      // them, so every event was created with nothing on sale.
+      appendEventRules(formDataObj, formData);
 
       // DEBUG: Log the form data being sent
       console.log('Submitting form data:');
@@ -292,6 +322,7 @@ const CreateEventComponent = () => {
           altFormDataObj.append('sponsor_logos', JSON.stringify([]));
           altFormDataObj.append('social_links', JSON.stringify([]));
           altFormDataObj.append('social_urls', JSON.stringify([]));
+          appendEventRules(altFormDataObj, formData);
           console.log('Alternative form data:');
           for (let [key, value] of altFormDataObj.entries()) {
             console.log(`${key}:`, value);
@@ -336,8 +367,10 @@ const CreateEventComponent = () => {
       case 3:
         return <PrizeDistribution formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 4:
-        return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+        return <Tickets formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
       case 5:
+        return <SponsorsLinks formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} />;
+      case 6:
         return <Review formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} setSelectedTab={setSelectedTab} />;
       default:
         return <BasicInfo formData={formData} setFormData={setFormData} setSelectedTab={setSelectedTab} updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />;
