@@ -198,13 +198,19 @@ function Titlecard({ payload, data, variant }) {
 function Bracket({ data }) {
   const live = data.live || [];
   if (!live.length) return null;
+  // This drew the round and the score and nothing else, so on air it read
+  // "R2  0 - 0" and named nobody. The feed now carries who is playing.
   return (
     <div className={styles.bracket}>
       {live.map((m, i) => (
         <div key={i} className={styles.bracketRow}>
           <span className={styles.bracketRound}>R{m.round}</span>
+          <span className={styles.bracketSide}>{m.home || '-'}</span>
           <span className={styles.bracketScore}>
             {m.score[0]} - {m.score[1]}
+          </span>
+          <span className={`${styles.bracketSide} ${styles.bracketAway}`}>
+            {m.away || '-'}
           </span>
         </div>
       ))}

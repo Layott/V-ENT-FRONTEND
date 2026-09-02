@@ -321,4 +321,22 @@
 
 .bracketRound { color: rgba(255, 255, 255, 0.55); font-size: 15px; }
 
-.bracketScore { font-variant-numeric: tabular-nums; font-weight: 650; }
+.bracketScore {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  min-width: 76px;
+  text-align: center;
+}
+
+/* Who is playing. The row used to be the round and the score, so on air it
+   read "R2  0 - 0" and named nobody. Fixed widths so a long club name and a
+   short one do not make the scores dance from row to row, which is the sort
+   of thing an audience notices and a designer never sees in a mock. */
+.bracketSide {
+  min-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bracketAway { text-align: right; }
