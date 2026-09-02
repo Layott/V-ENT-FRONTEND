@@ -354,3 +354,29 @@
 
 .regBadge { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
 .disputeBadge { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
+
+/* Deleting a draft. The destructive half of the pair reads as destructive,
+   by fill and colour rather than by an outline. */
+.dangerBtn {
+  background-color: #4a1a1c;
+  color: #ff8a8a;
+}
+
+.dangerBtn:hover:enabled { background-color: #5c2023; color: #fff; }
+.dangerBtn:disabled { color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+/* What just happened. A draft vanishing off the list with no word for it
+   reads as a glitch. */
+.note {
+  position: fixed;
+  left: 50%;
+  bottom: 5.5rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  background-color: #2a2b30;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.92rem;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}

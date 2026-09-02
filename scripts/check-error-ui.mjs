@@ -75,6 +75,18 @@ const INSIDE = [
   /\bBearer token\b/i,
 ];
 
+// Fault 3: a native browser dialog.
+//
+// `window.confirm('Delete this draft? This cannot be undone.')` is the same
+// family as the pending-deploy banner: it is a message with no interface. The
+// browser draws it, so it carries none of the product's type, colour or
+// spacing; the text cannot go through tt() in any useful way, so it is English
+// for everybody; and it blocks the whole tab while it is up. On a phone it is
+// a system sheet that looks like it came from somewhere else entirely.
+//
+// Confirm in place, with the product's own controls.
+const NATIVE_DIALOG = /(?:^|[^.\w])(?:window\.)?(?:confirm|alert|prompt)\s*\(/;
+
 // `.message` straight out of a response, put where a person will read it.
 // Any `setSomething(...)`, not a list of six names I happened to think of.
 // `setFeedback(err.message)` slipped straight through the list version, and
@@ -114,6 +126,16 @@ for (const file of files) {
       line: src.slice(0, m.index).split('\n').length,
       kind: 'developer vocabulary',
       detail: text.slice(0, 90),
+    });
+  }
+
+  // Fault 3.
+  for (const m of src.matchAll(new RegExp(NATIVE_DIALOG, 'g'))) {
+    findings.push({
+      rel,
+      line: src.slice(0, m.index).split('\n').length,
+      kind: 'native browser dialog',
+      detail: src.slice(m.index, m.index + 60).split('\n')[0].trim(),
     });
   }
 
@@ -158,6 +180,16 @@ const FIXTURES = [
     src: `setFeedback(err.message);`,
   },
   {
+    name: 'a native confirm, which has no interface at all',
+    shouldFlag: true,
+    src: `if (!window.confirm('Delete this draft? This cannot be undone.')) return;`,
+  },
+  {
+    name: 'a method that merely ends in confirm',
+    shouldFlag: false,
+    src: `await api.confirmBooking(id);`,
+  },
+  {
     name: 'a plain sentence somebody can act on',
     shouldFlag: false,
     src: `tt('org.signInToJoin', 'Sign in to join')`,
@@ -180,6 +212,7 @@ const flagsIn = (text) => {
     if (INSIDE.some((re) => re.test(m[2]))) n += 1;
   }
   for (const _m of text.matchAll(new RegExp(RAW_MESSAGE, 'g'))) n += 1;
+  for (const _m of text.matchAll(new RegExp(NATIVE_DIALOG, 'g'))) n += 1;
   return n;
 };
 
@@ -206,8 +239,11 @@ for (const f of findings) {
   console.log(f.kind === 'raw server string'
     ? '  The API message is written for the log and is only ever in English.'
       + ' Use apiMessage(tt, err, key, fallback).'
-    : '  A person cannot act on this. Say what happened and what they can do,'
-      + ' through tt(), in all three languages.');
+    : f.kind === 'native browser dialog'
+      ? '  The browser draws this one, so it carries none of the product and'
+        + ' cannot be translated. Confirm in place, with our own controls.'
+      : '  A person cannot act on this. Say what happened and what they can do,'
+        + ' through tt(), in all three languages.');
   console.log('');
 }
 

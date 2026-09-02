@@ -41,6 +41,8 @@ const VendorShopContent = ({
   // Cart state - local to vendor-shop session, persisted in localStorage per event.
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+  // What just happened, on the page rather than in a browser alert.
+  const [reserved, setReserved] = useState('');
 
   // Featured product modal
   const [activeProduct, setActiveProduct] = useState(null);
@@ -311,6 +313,8 @@ const VendorShopContent = ({
         </div>
       </main>
 
+      {reserved && <div className={styles.reservedNote} role="status">{reserved}</div>}
+
       <BottomMenu />
 
       {/* Product modal */}
@@ -398,7 +402,8 @@ const VendorShopContent = ({
                 <strong>{cartTotal.toLocaleString()} VC</strong>
               </div>
               <button className={`${styles.checkoutBtn} redBTN`} disabled={cart.length === 0} onClick={() => {
-            alert(tt("msg.checkoutReserved", "Items reserved at the vendor booths. Pay on pickup with your V-ENT wallet."));
+            setReserved(tt("msg.checkoutReserved", "Items reserved at the vendor booths. Pay on pickup with your V-ENT wallet."));
+            setTimeout(() => setReserved(''), 5000);
             clearCart();
             setCartOpen(false);
           }} type="button">

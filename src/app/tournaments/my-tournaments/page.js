@@ -5,7 +5,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert } from 'react-icons/lu';
+import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert, LuTrash2 } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -72,6 +72,29 @@ const MyTournaments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryKey, setRetryKey] = useState(0);
+  // Deleting a draft. `confirmId` is the row that has been asked and is waiting
+  // for a second press: an inline question rather than window.confirm, which is
+  // untranslatable, unstyled, and blocks the whole tab.
+  const [confirmId, setConfirmId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [note, setNote] = useState('');
+
+  const deleteDraft = async (draft) => {
+    if (deletingId) return;
+    setDeletingId(draft.id);
+    try {
+      await ventFetch(API.TOURNAMENT.DELETE_DRAFT(draft.id), { method: 'DELETE', token });
+      setDrafts((all) => all.filter((x) => x.id !== draft.id));
+      setNote(tt('msg.draftDeleted', 'Draft deleted'));
+      setTimeout(() => setNote(''), 2500);
+    } catch (err) {
+      setNote(apiMessage(tt, err, 'api.couldNotDeleteThisDraft', 'Could not delete this draft.'));
+      setTimeout(() => setNote(''), 4000);
+    } finally {
+      setDeletingId(null);
+      setConfirmId(null);
+    }
+  };
 
   // Primary data for this page - organizer's own tournaments. Drives the
   // loading/error state; the drafts fetch below is best-effort/secondary.
@@ -191,6 +214,26 @@ const MyTournaments = () => {
                       <Link href={`/tournaments/create-tournament?draft_id=${d.id}`}>
                         <button className={styles.actionBtn}><LuPencil /> {tt("ui.resume.b3bd", "Resume")}</button>
                       </Link>
+                      {/* Asked once, in place. A draft is somebody's unfinished
+                          work and there is no undo, so it takes two presses -
+                          but it is not worth typing a name for, the way a club
+                          with a year of messages in it is. */}
+                      {confirmId === d.id ? <>
+                        <button type="button" className={`${styles.actionBtn} ${styles.dangerBtn}`}
+                                disabled={deletingId === d.id}
+                                onClick={() => deleteDraft(d)}>
+                          <LuTrash2 /> {deletingId === d.id
+                            ? tt('draft.deleting', 'Deleting...')
+                            : tt('draft.confirmDelete', 'Delete for good')}
+                        </button>
+                        <button type="button" className={styles.actionBtn}
+                                onClick={() => setConfirmId(null)}>
+                          {tt('ui.cancel.77df', 'Cancel')}
+                        </button>
+                      </> : <button type="button" className={styles.actionBtn}
+                                    onClick={() => setConfirmId(d.id)}>
+                        <LuTrash2 /> {tt('draft.delete', 'Delete')}
+                      </button>}
                     </div>
                   </div>)}
               </div> : filtered.length === 0 ? <div className={styles.emptyState}>
@@ -256,6 +299,8 @@ const MyTournaments = () => {
             </div>}
         </div>
       </main>
+
+      {note && <div className={styles.note} role="status">{note}</div>}
 
       <BottomMenu />
     </div>;
