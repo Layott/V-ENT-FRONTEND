@@ -108,8 +108,25 @@ const UserProfileContent = ({
   const [reportReason, setReportReason] = useState('harassment');
   const [reportDetail, setReportDetail] = useState('');
 
-  // Optional: `profileData` is null until the fetch lands, and this sits
-  // above the early returns so it runs on the very first render.
+  const [following, setFollowing] = useState(false);
+  const [toast, setToast] = useState('');
+  const moreMenuRef = useRef(null);
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+  const profileId = slugFromPath || searchParams.get('id');
+  const sessionUserId = session?.user?.id || null;
+  const isOwner = !profileId || profileId === sessionUserId;
+
+  // Block, mute and report, read once so the menu is right on first paint: a
+  // menu that says Block and flips to Unblock a second later reads as a bug.
+  //
+  // This sits BELOW `isOwner` on purpose. It was above, and `isOwner` is a
+  // `const` declared here, so naming it in the dependency array read it before
+  // its initialiser had run - a temporal dead zone, which React reports as
+  // "Cannot access 'eP' before initialization" from a minified bundle and
+  // which white-screened every profile page on the site.
+  //
+  // Nothing caught it: the build compiles it, the linter allows it, and the
+  // page it broke is not one the walk happened to open.
   const safetyTarget = profileData?.username || null;
 
   useEffect(() => {
@@ -127,14 +144,6 @@ const UserProfileContent = ({
       }
     })();
   }, [safetyTarget, isOwner, status, session?.user?.sessionToken]);
-
-  const [following, setFollowing] = useState(false);
-  const [toast, setToast] = useState('');
-  const moreMenuRef = useRef(null);
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-  const profileId = slugFromPath || searchParams.get('id');
-  const sessionUserId = session?.user?.id || null;
-  const isOwner = !profileId || profileId === sessionUserId;
 
   // A named profile - /u/temi, or ?id= - is public, and it is the most
   // linkable page the platform has: somebody searching a gamertag should land
