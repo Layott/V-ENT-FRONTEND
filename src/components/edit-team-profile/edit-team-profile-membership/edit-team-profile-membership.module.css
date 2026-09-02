@@ -80,3 +80,10 @@
 .sliderSwitch.on .sliderThumb {
   transform: translateX(12px);
 }
+/* The "off" half of a toggle. Undefined, so both states looked identical and
+   there was no way to tell what the switch was set to. */
+
+.off {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.55);
+}

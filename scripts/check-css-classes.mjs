@@ -27,6 +27,7 @@ const walk = (dir) => {
 roots.forEach((r) => fs.existsSync(r) && walk(r));
 
 let problems = 0;
+let severeCount = 0;
 const report = [];
 
 for (const file of files) {
@@ -45,18 +46,49 @@ for (const file of files) {
   const used = new Set([...src.matchAll(/styles\.([a-zA-Z]\w*)/g)].map((m) => m[1]));
 
   const missing = [...used].filter((c) => !defined.has(c)).sort();
-  if (missing.length) {
-    problems += missing.length;
-    report.push({ file: file.split(path.sep).join('/'), css: imp[1], missing });
+  if (!missing.length) continue;
+
+  // Not every undefined class breaks a control. `${styles.confirmButton}
+  // goldBTN` still renders as a button, because a global class carries the
+  // look. The dangerous kind is an undefined class on an INTERACTIVE element
+  // with nothing else to style it: that control is invisible, and nobody
+  // presses what they cannot see. That was the event console's Save.
+  //
+  // Without this split the count reads as 221 alarming problems, so it gets
+  // ignored, and the few that genuinely break something are lost inside it.
+  const severe = [];
+  const cosmetic = [];
+  for (const c of missing) {
+    const onControl = new RegExp(
+      `<(button|a|input|select|textarea)[^>]*styles\\.${c}\\b`).test(src);
+    const alsoGlobalClass = new RegExp(
+      `styles\\.${c}\\}[^\`"']*\\s[a-zA-Z]`).test(src);
+    if (onControl && !alsoGlobalClass) severe.push(c);
+    else cosmetic.push(c);
   }
+
+  problems += missing.length;
+  severeCount += severe.length;
+  report.push({
+    file: file.split(path.sep).join('/'), css: imp[1], missing, severe, cosmetic,
+  });
 }
 
-report.sort((a, b) => b.missing.length - a.missing.length);
+// Severe first: those leave a control unstyled and therefore unpressable.
+report.sort((a, b) => b.severe.length - a.severe.length
+  || b.missing.length - a.missing.length);
+
 for (const r of report) {
-  console.log(`${r.file}`);
-  console.log(`  -> ${r.css} is missing: ${r.missing.join(', ')}`);
+  if (!r.severe.length) continue;
+  console.log(`SEVERE  ${r.file}`);
+  console.log(`  -> interactive element with no styling: ${r.severe.join(', ')}`);
+}
+for (const r of report) {
+  if (!r.cosmetic.length) continue;
+  console.log(`        ${r.file}: ${r.cosmetic.slice(0, 8).join(', ')}`);
 }
 
 console.log('');
+console.log(`${severeCount} undefined class(es) on an interactive element  <-- these break something`);
 console.log(`${problems} undefined class reference(s) across ${report.length} file(s)`);
-process.exit(problems ? 1 : 0);
+process.exit(severeCount ? 1 : 0);

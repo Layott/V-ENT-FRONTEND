@@ -609,3 +609,30 @@
     display: grid;
   }
 }
+/* Tab buttons the component referenced and this file never defined, so they
+   rendered class="undefined": no fill, no padding, bare text. A tab strip that
+   does not look like tabs is a control nobody presses. Filled chip, stronger
+   fill when selected, never a ring. */
+
+.eventBTN, .tournamentBTN {
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 1.05rem;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.eventBTN:hover, .tournamentBTN:hover { background-color: rgba(255, 255, 255, 0.12); }
+
+.eventBTN:focus-visible, .tournamentBTN:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

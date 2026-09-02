@@ -191,3 +191,26 @@
     width: 260px;
   }
 }
+/* The delete control on an avatar. Referenced and never defined, so it was
+   bare text sitting on the image. */
+
+.deleteBTN {
+  align-items: center;
+  background-color: rgba(237, 28, 36, 0.85);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 0.8rem;
+  transition: background-color 0.12s;
+}
+
+.deleteBTN:hover { background-color: #c9161d; }
+
+.deleteBTN:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
