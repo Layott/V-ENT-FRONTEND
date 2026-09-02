@@ -5,6 +5,7 @@ import { withLocalDatesAsISO } from '@/lib/datetime';
 import { useCurrency } from '@/lib/money';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
+import OrganizationPicker from '@/components/organization-picker/OrganizationPicker';
 import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -53,6 +54,13 @@ const emptyForm = {
   location: '',
   virtual_link: '',
   capacity: 500,
+  // What that capacity counts. The CEO asked for the choice by name: "IF I SET
+  // 5000, AND I AM SETTING TICKETS FRO DIFFERENT DAYS, I SHOULD BE ABLE TO PICK
+  // IF THAT DAY MEANS STARTING AFRESH OR IT KEEPS CPUNTING". It was settable in
+  // the console and not here, so every event started on the default.
+  capacity_mode: 'per_day',
+  // Whose name it runs in. Empty means the organiser's own.
+  organization: '',
   // Step 3 - Tickets
   ticket_types: [{
     id: 'ga',
@@ -545,6 +553,14 @@ const CreateEventPage = () => {
                     </select>
                   </label>
                 </div>
+              {/* Whose name it runs in. Draws nothing for somebody who runs no
+                  organisation, which is almost everybody. */}
+              <OrganizationPicker
+                kind="event"
+                value={formData.organization}
+                onChange={(next) => update('organization', next)}
+              />
+
               </div>}
 
             {/* STEP 2 */}
@@ -606,6 +622,17 @@ const CreateEventPage = () => {
                   <span className="fieldLabelRow">{tt("ui.capacity.max.attendees.dd53", "Capacity (max attendees)")} <InfoTip id="eventCapacity" /></span>
                   <input type="number" className={styles.input} value={formData.capacity} onChange={e => update('capacity', Number(e.target.value))} min={1} />
                   {errors.capacity && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.capacity}</span>}
+                </label>
+                <label className={styles.field}>
+                  <span className="fieldLabelRow">{tt('createEvent.capacityMode', 'And that number is')}</span>
+                  <select className={styles.input} value={formData.capacity_mode}
+                          onChange={e => update('capacity_mode', e.target.value)}>
+                    <option value="per_day">{tt('createEvent.capacityPerDay', 'How many each day holds')}</option>
+                    <option value="total">{tt('createEvent.capacityTotal', 'How many the whole event holds')}</option>
+                  </select>
+                  <span className={styles.freeEntryHint}>
+                    {tt('createEvent.capacityModeHint', 'On a two-day event, "each day" means the number starts again on day two. "The whole event" means the two days share it.')}
+                  </span>
                 </label>
               </div>}
 
