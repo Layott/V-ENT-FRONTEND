@@ -205,7 +205,7 @@ const ClubInner = ({ slug: slugFromPath }) => {
 
   // -- running the club ---------------------------------------------------
 
-  const [draft, setDraft] = useState({ name: '', description: '', is_private: false });
+  const [clubDraft, setClubDraft] = useState({ name: '', description: '', is_private: false });
   const [savingClub, setSavingClub] = useState(false);
   const [saved, setSaved] = useState(false);
   const [confirmName, setConfirmName] = useState('');
@@ -215,7 +215,7 @@ const ClubInner = ({ slug: slugFromPath }) => {
   // always shows what is actually stored rather than a stale edit.
   useEffect(() => {
     if (!club) return;
-    setDraft({
+    setClubDraft({
       name: club.name || '',
       description: club.description || '',
       is_private: !!club.is_private,
@@ -227,9 +227,9 @@ const ClubInner = ({ slug: slugFromPath }) => {
     setSavingClub(true);
     setSaved(false);
     const data = await act('/update/', {
-      name: draft.name.trim(),
-      description: draft.description.trim(),
-      is_private: draft.is_private,
+      name: clubDraft.name.trim(),
+      description: clubDraft.description.trim(),
+      is_private: clubDraft.is_private,
     });
     setSavingClub(false);
     if (!data) return;
@@ -727,17 +727,17 @@ const ClubInner = ({ slug: slugFromPath }) => {
             </p>
             <label className={styles.settingsField}>
               <span className={styles.settingsLabel}>{tt('club.name', 'Name')}</span>
-              <input className={styles.settingsInput} value={draft.name} maxLength={120}
-                     onChange={e => setDraft(d => ({ ...d, name: e.target.value }))} />
+              <input className={styles.settingsInput} value={clubDraft.name} maxLength={120}
+                     onChange={e => setClubDraft(d => ({ ...d, name: e.target.value }))} />
             </label>
             <label className={styles.settingsField}>
               <span className={styles.settingsLabel}>{tt('club.description', 'Description')}</span>
-              <textarea className={styles.settingsArea} rows={3} value={draft.description}
-                        onChange={e => setDraft(d => ({ ...d, description: e.target.value }))} />
+              <textarea className={styles.settingsArea} rows={3} value={clubDraft.description}
+                        onChange={e => setClubDraft(d => ({ ...d, description: e.target.value }))} />
             </label>
             <label className={styles.settingsCheck}>
-              <input type="checkbox" checked={draft.is_private}
-                     onChange={e => setDraft(d => ({ ...d, is_private: e.target.checked }))} />
+              <input type="checkbox" checked={clubDraft.is_private}
+                     onChange={e => setClubDraft(d => ({ ...d, is_private: e.target.checked }))} />
               <span>{tt('community.clubPrivate', 'Private: only members can read it')}</span>
             </label>
             <button type="button" className={`${styles.settingsSave} goldBTN`}
