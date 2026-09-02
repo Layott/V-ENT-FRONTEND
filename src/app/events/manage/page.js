@@ -224,7 +224,6 @@ export const ManageEventContent = ({
     }
     setTiers(ti.body?.data?.tiers || []);
     setEventDays(ti.body?.data?.days || []);
-    setEventDays(ti.body?.data?.days || []);
     setMoney(mo.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
@@ -716,7 +715,7 @@ export const ManageEventContent = ({
                                   : ''}
                             </span>
                             {!row.day && eventDays.length > 1
-                              && /(day|jour|dia)\s*\d/i.test(row.name)
+                              && /\b(day|jour|dia)\s*\d/i.test(row.name)
                               && <span className={styles.warnBadge}>
                                 {tt('manage.tierNoDate', 'No date set')}
                               </span>}

@@ -87,7 +87,7 @@ const formatLabel = f => {
     double_elimination: 'Double Elim',
     round_robin: 'Round Robin',
     swiss: 'Swiss'
-  }[slug] || (f ? String(f).replace(/[_-]+/g, ' ').replace(/\w/g, c => c.toUpperCase()) : '-');
+  }[slug] || (f ? String(f).replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-');
 };
 const TournamentsContent = () => {
   const tx = useTx();
