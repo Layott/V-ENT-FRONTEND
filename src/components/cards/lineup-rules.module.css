@@ -142,9 +142,17 @@
 }
 
 .input {
-  flex: 1 1 14rem;
+  /* Width, not flex.
+     This stylesheet began as a copy of the picker's, where `.input` sits in a
+     horizontal row and `flex: 1 1 14rem` means "about 14rem wide". Here it
+     sits in a COLUMN under its label, so the same rule meant a flex-basis of
+     14rem in the vertical direction: every date and time field came out 224px
+     tall. A rule copied between two layouts can keep its words and lose its
+     meaning. */
+  width: 100%;
   min-width: 0;
   min-height: 48px;
+  max-height: 48px;
   padding: 0.7rem 0.95rem;
   border: none;
   border-radius: 10px;
@@ -248,3 +256,18 @@
 @media (max-width: 720px) {
   .primary, .secondary, .ghost { flex: 1 1 100%; }
 }
+
+/* `select` is an `.input` too, and browsers draw their own arrow inside it. */
+select.input {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.5) 50%),
+                    linear-gradient(135deg, rgba(255,255,255,0.5) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 21px, calc(100% - 14px) 21px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.4rem;
+}
+
+/* The field itself stops stretching to the tallest thing in its row. */
+.field { align-self: flex-start; }
+.grid { align-items: flex-start; }
