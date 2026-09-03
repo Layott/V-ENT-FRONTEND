@@ -26,6 +26,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
 import styles from './studio-panel.module.css';
 
@@ -390,12 +391,9 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       software when loaded in." `preview=1` draws it whether or
                       not it is on air; `every` keeps eight of these cheaper
                       than one on-air source. */}
-                  <div className={styles.preview}>
-                    <iframe key={`${elementKind}-${replay}`}
-                            className={styles.previewFrame} title={LABELS[elementKind] || elementKind}
-                            src={`${live.urls[elementKind]}?preview=1&every=4000&vent_replay=${replay}`}
-                            loading="lazy" scrolling="no" />
-                  </div>
+                  <OverlayPreview url={live.urls[elementKind]}
+                                  title={LABELS[elementKind] || elementKind}
+                                  replay={replay} extraQuery="preview=1&every=4000" />
 
                   {fields.length === 0 && AUTO[elementKind] && (
                     <p className={styles.hint}>{AUTO[elementKind]}</p>
