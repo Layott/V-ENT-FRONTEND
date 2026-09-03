@@ -2,6 +2,7 @@
 
 import { uploadHint } from '@/lib/uploadSpecs';
 import InfoTip from '@/components/info-tip/InfoTip';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import shared from './editProfileShared.module.css';
 import styles from './ProfileInfoPanel.module.css';
@@ -163,6 +164,30 @@ const ProfileInfoPanel = ({
         <div className={shared.formGroup}>
           <label className={shared.formLabel} htmlFor="username"><span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="username" /></span></label>
           <input className={shared.formInput} id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder={tt("ui.username.4237", "@username")} />
+        </div>
+
+        {/* The address on the account. CEO, 3 September 2026: "users should
+            be able to change the mails linked to their account in their
+            profile". The change itself already existed and worked, on
+            Settings, behind a six digit code sent to the NEW address. That
+            gate is the point: an email change without proof of the new mailbox
+            is an account takeover, so this shows the address where people look
+            for it and sends them to the one flow that can change it, rather
+            than growing a second one here. */}
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel} htmlFor="account-email">
+            {tt('profile.emailLabel', 'Email address')}
+          </label>
+          <input className={shared.formInput} id="account-email" type="email"
+                 value={initialData.email || ''} readOnly
+                 aria-describedby="account-email-note" />
+          <p id="account-email-note" className={shared.fieldHelper}>
+            {tt('profile.emailNote', 'Changing this needs a code sent to the new address.')}
+            {' '}
+            <Link className={styles.emailLink} href="/settings?panel=account">
+              {tt('profile.emailChange', 'Change it in Settings')}
+            </Link>
+          </p>
         </div>
 
         <div className={shared.formGroup}>
