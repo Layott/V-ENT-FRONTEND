@@ -23,6 +23,52 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 const mb = (bytes) => `${Math.round((Number(bytes) || 0) / (1024 * 1024))} MB`;
 
+//: How long to wait for a browser to tell us how long a clip is.
+const PROBE_TIMEOUT_MS = 5000;
+
+/** How many seconds a clip runs, or 0 if the browser will not say.
+ *
+ * This was a `new Promise` resolved only by `onloadedmetadata` and `onerror`,
+ * and on 3 September 2026 it turned out that on a DETACHED video element with
+ * `preload="metadata"` Chrome fires NEITHER. The promise never settled, so
+ * every video upload hung for ever with the button disabled and no message on
+ * screen. Pictures were fine, because a picture skips this, which is why it
+ * survived the tests and a walk of the console.
+ *
+ * Two changes, and the second is the one that matters:
+ *
+ *   The element goes into the document, which is what actually makes a browser
+ *   load it. Off screen, muted, removed in a `finally`.
+ *
+ *   It races a timer. A duration is a nicety - it lets a finished clip take
+ *   itself off air - and a nicety must never be able to stop the upload it is
+ *   decorating. Anything waiting on an event that a browser is not obliged to
+ *   send needs a deadline.
+ */
+function clipSeconds(file) {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (value) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try { probe.remove(); URL.revokeObjectURL(probe.src); } catch { /* already gone */ }
+      resolve(value);
+    };
+
+    const timer = setTimeout(() => finish(0), PROBE_TIMEOUT_MS);
+    const probe = document.createElement('video');
+    probe.preload = 'metadata';
+    probe.muted = true;
+    probe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px';
+    probe.onloadedmetadata = () => finish(Number.isFinite(probe.duration) ? probe.duration : 0);
+    probe.onerror = () => finish(0);
+    probe.src = URL.createObjectURL(file);
+    document.body.appendChild(probe);
+    probe.load();
+  });
+}
+
 export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPlay, live }) {
   const tt = useT();
   const fileRef = useRef(null);
@@ -81,13 +127,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
       // already has the file, and the console uses it to take a finished clip
       // off air by itself.
       if (file.type.startsWith('video/')) {
-        const seconds = await new Promise((resolve) => {
-          const probe = document.createElement('video');
-          probe.preload = 'metadata';
-          probe.onloadedmetadata = () => resolve(probe.duration || 0);
-          probe.onerror = () => resolve(0);
-          probe.src = URL.createObjectURL(file);
-        });
+        const seconds = await clipSeconds(file);
         if (seconds) form.append('duration_ms', String(Math.round(seconds * 1000)));
       }
       const res = await fetch(base, {
