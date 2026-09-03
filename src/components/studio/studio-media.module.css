@@ -1,0 +1,130 @@
+/* The studio's media library. Surfaces and space, no strokes, nothing loops. */
+
+.wrap {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem 1.3rem;
+  margin-top: 1.2rem;
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.sub {
+  margin: 0 0 1rem;
+  max-width: 66ch;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+}
+
+.muted { color: rgba(255, 255, 255, 0.55); margin: 0; }
+
+.note {
+  margin: 0 0 0.8rem;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.error {
+  margin: 0 0 0.8rem;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ffb4b7;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.rows { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.1rem; }
+
+.row {
+  align-items: center;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  display: flex;
+  gap: 0.85rem;
+  padding: 0.7rem 0.9rem;
+}
+
+/* A still of the clip, so an operator recognises it rather than reading it. */
+.thumb {
+  background-color: #17171a;
+  border-radius: 8px;
+  flex: none;
+  height: 48px;
+  overflow: hidden;
+  width: 84px;
+}
+
+.thumbMedia { height: 100%; object-fit: cover; width: 100%; }
+
+.rowMain { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+
+.rowName {
+  color: var(--primary-bg);
+  font-weight: var(--fw-bold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowMeta {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add { background-color: #1b1c1f; border-radius: 12px; padding: 0.9rem 1rem; }
+
+.fields {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-bottom: 0.8rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.label {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.82rem;
+}
+
+.input {
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 10px;
+  color: var(--primary-bg);
+  font: inherit;
+  padding: 0.55rem 0.8rem;
+}
+
+.addRow { align-items: center; display: flex; flex-wrap: wrap; gap: 0.8rem; }
+
+.file { color: rgba(255, 255, 255, 0.72); font: inherit; }
+
+.primary,
+.ghost {
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  padding: 0.55rem 0.9rem;
+}
+
+.primary { background-color: var(--v-ent-red, #ED1C24); color: #fff; }
+.ghost { background-color: #35363c; color: var(--primary-bg); }
+.primary:disabled, .ghost:disabled { opacity: 0.45; cursor: default; }
+
+@media (max-width: 720px) {
+  .row { flex-wrap: wrap; }
+  .rowMain { flex-basis: 100%; order: 3; }
+}

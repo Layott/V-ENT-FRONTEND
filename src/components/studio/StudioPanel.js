@@ -26,6 +26,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import StudioMedia from './StudioMedia';
 import styles from './studio-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -64,6 +65,9 @@ const fieldsFor = (tt) => ({
     { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Today' },
     { key: 'limit', label: tt('studio.f.rows', 'How many rows'), placeholder: '6', numeric: true },
   ],
+  media: [
+    { key: 'tag', label: tt('studio.f.mediaTag', 'Or a word to find it by'), placeholder: 'walkon' },
+  ],
   now_next: [],
   doors: [],
   ticker: [],
@@ -91,6 +95,25 @@ const labelsFor = (tt) => ({
   now_next: tt('studio.kind.nowNext', 'Now and next'),
   programme: tt('studio.kind.programme', 'Programme'),
   doors: tt('studio.kind.doors', 'Doors'),
+  media: tt('studio.kind.media', 'Clip or picture'),
+});
+
+// How a graphic arrives and leaves. The server owns the list; these are its
+// words said in the reader's language.
+const entryLabels = (tt) => ({
+  rise: tt('studio.entry.rise', 'Rises in'),
+  fade: tt('studio.entry.fade', 'Fades in'),
+  slide_left: tt('studio.entry.slideLeft', 'Slides in from the left'),
+  slide_right: tt('studio.entry.slideRight', 'Slides in from the right'),
+  none: tt('studio.entry.none', 'Just appears'),
+});
+
+const exitLabels = (tt) => ({
+  fade: tt('studio.exit.fade', 'Fades out'),
+  drop: tt('studio.exit.drop', 'Drops away'),
+  slide_left: tt('studio.exit.slideLeft', 'Slides out left'),
+  slide_right: tt('studio.exit.slideRight', 'Slides out right'),
+  none: tt('studio.exit.none', 'Just goes'),
 });
 
 // What each graphic draws from when it has no fields, so the operator knows
@@ -123,6 +146,8 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const FIELDS = fieldsFor(tt);
   const LABELS = labelsFor(tt);
   const AUTO = autoFor(tt);
+  const ENTRY = entryLabels(tt);
+  const EXIT = exitLabels(tt);
 
   // One refresh in flight at a time, and a pause after a refusal. The console
   // asks every five seconds for the whole broadcast; on a venue connection
@@ -216,6 +241,20 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     `/sessions/${live.id}/element/${elementKind}/`,
     { method: 'POST', body: JSON.stringify(patch) },
   ));
+
+  // The broadcast's house style. Any one graphic may still differ.
+  const setDefaults = (patch) => run(() => call(`/sessions/${live.id}/`, {
+    method: 'POST',
+    body: JSON.stringify({ defaults: { ...(live.defaults || {}), ...patch } }),
+  }));
+
+  // One press from the media library: point the clip graphic at this asset and
+  // put it on air. A clip takes itself off when it ends, so the operator is
+  // not left with a frozen last frame.
+  const playAsset = (asset) => push('media', {
+    active: true,
+    payload: { asset_id: String(asset.id), tag: '' },
+  });
 
   const copy = async (elementKind, url) => {
     try {
@@ -312,6 +351,20 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
 
                   <p className={styles.elUrl}>{live.urls[elementKind]}</p>
 
+                  {/* What it looks like right now, at the size it will be on
+                      air, over a checkerboard so transparency is visible
+                      rather than assumed. CEO, 3 September: "the overlays in
+                      the studio should always autoplays in small boxes ... so
+                      we can see how they'll look inside the streaming
+                      software when loaded in." `preview=1` draws it whether or
+                      not it is on air; `every` keeps eight of these cheaper
+                      than one on-air source. */}
+                  <div className={styles.preview}>
+                    <iframe className={styles.previewFrame} title={LABELS[elementKind] || elementKind}
+                            src={`${live.urls[elementKind]}?preview=1&every=4000`}
+                            loading="lazy" scrolling="no" />
+                  </div>
+
                   {fields.length === 0 && AUTO[elementKind] && (
                     <p className={styles.hint}>{AUTO[elementKind]}</p>
                   )}
@@ -351,12 +404,84 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       </div>
                     </div>
                   )}
+
+                  {/* How this one arrives and leaves. Starts from the
+                      broadcast's house style below, and overrides it. */}
+                  <div className={styles.look}>
+                    <label className={styles.lookField}>
+                      <span className={styles.fieldLabel}>{tt('studio.entry', 'Arrives')}</span>
+                      <select className={styles.select} value={el.presentation?.entry || 'rise'}
+                              onChange={(e) => push(elementKind, {
+                                payload: { options: { ...(el.payload?.options || {}), entry: e.target.value } },
+                              })}>
+                        {Object.entries(ENTRY).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className={styles.lookField}>
+                      <span className={styles.fieldLabel}>{tt('studio.exit', 'Leaves')}</span>
+                      <select className={styles.select} value={el.presentation?.exit || 'fade'}
+                              onChange={(e) => push(elementKind, {
+                                payload: { options: { ...(el.payload?.options || {}), exit: e.target.value } },
+                              })}>
+                        {Object.entries(EXIT).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className={styles.lookCheck}>
+                      <input type="checkbox" checked={Boolean(el.presentation?.hold)}
+                             onChange={(e) => push(elementKind, {
+                               payload: { options: { ...(el.payload?.options || {}), hold: e.target.checked } },
+                             })} />
+                      <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
+                    </label>
+                  </div>
                 </div>
               );
             })}
           </div>
+
+          {/* The house style, set once for the whole broadcast. */}
+          <div className={styles.defaults}>
+            <h3 className={styles.section}>{tt('studio.house', 'How graphics behave by default')}</h3>
+            <p className={styles.hint}>
+              {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
+            </p>
+            <div className={styles.look}>
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.entry', 'Arrives')}</span>
+                <select className={styles.select} value={live.defaults?.entry || 'rise'}
+                        onChange={(e) => setDefaults({ entry: e.target.value })}>
+                  {Object.entries(ENTRY).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.exit', 'Leaves')}</span>
+                <select className={styles.select} value={live.defaults?.exit || 'fade'}
+                        onChange={(e) => setDefaults({ exit: e.target.value })}>
+                  {Object.entries(EXIT).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.lookCheck}>
+                <input type="checkbox" checked={Boolean(live.defaults?.hold)}
+                       onChange={(e) => setDefaults({ hold: e.target.checked })} />
+                <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
+              </label>
+            </div>
+          </div>
         </>
       )}
+
+      {/* Clips and pictures live with the studio rather than with one
+          broadcast, so this shows whether or not one is running. */}
+      <StudioMedia kind={kind} ownerRef={ref} token={token}
+                   live={Boolean(live)} onPlay={playAsset} />
 
       {past.length > 0 && (
         <>

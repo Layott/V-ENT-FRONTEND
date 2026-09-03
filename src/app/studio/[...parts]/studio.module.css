@@ -469,3 +469,63 @@
 
 .doorsNum { font-size: 54px; font-weight: 800; line-height: 1; }
 .doorsLabel { font-size: 20px; opacity: 0.7; }
+
+/* ------------------------------------------------- how a graphic arrives */
+/* One pass, never a loop. A graphic that breathes on air is a graphic the
+   viewer looks at instead of the match. Respects prefers-reduced-motion. */
+
+@keyframes st_rise { from { opacity: 0; transform: translateY(22px); }
+                     to   { opacity: 1; transform: none; } }
+@keyframes st_fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes st_slide_left  { from { opacity: 0; transform: translateX(-40px); }
+                            to   { opacity: 1; transform: none; } }
+@keyframes st_slide_right { from { opacity: 0; transform: translateX(40px); }
+                            to   { opacity: 1; transform: none; } }
+@keyframes st_out_fade  { from { opacity: 1; } to { opacity: 0; } }
+@keyframes st_out_drop  { from { opacity: 1; transform: none; }
+                          to   { opacity: 0; transform: translateY(22px); } }
+@keyframes st_out_left  { from { opacity: 1; transform: none; }
+                          to   { opacity: 0; transform: translateX(-40px); } }
+@keyframes st_out_right { from { opacity: 1; transform: none; }
+                          to   { opacity: 0; transform: translateX(40px); } }
+
+.in_rise        { animation: st_rise .34s cubic-bezier(.2,.7,.3,1) both; }
+.in_fade        { animation: st_fade .28s ease both; }
+.in_slide_left  { animation: st_slide_left .34s cubic-bezier(.2,.7,.3,1) both; }
+.in_slide_right { animation: st_slide_right .34s cubic-bezier(.2,.7,.3,1) both; }
+
+.out_fade        { animation: st_out_fade .38s ease both; }
+.out_drop        { animation: st_out_drop .38s cubic-bezier(.4,0,.7,.3) both; }
+.out_slide_left  { animation: st_out_left .38s cubic-bezier(.4,0,.7,.3) both; }
+.out_slide_right { animation: st_out_right .38s cubic-bezier(.4,0,.7,.3) both; }
+
+/* The surface stays, the content goes. */
+.held { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .in_rise, .in_fade, .in_slide_left, .in_slide_right,
+  .out_fade, .out_drop, .out_slide_left, .out_slide_right { animation: none; }
+}
+
+/* --------------------------------------------------- a clip or a picture */
+/* Full frame, because footage is composited as its own scene rather than as
+   a badge in a corner. `contain` so nothing is cropped by a mismatched
+   aspect: an organiser's phone clip is 9:16 and the canvas is 16:9. */
+
+.media {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.mediaVideo,
+.mediaImage {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
