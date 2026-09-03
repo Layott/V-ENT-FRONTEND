@@ -250,3 +250,12 @@
 .cityOffer:hover { background-color: #34353b; color: #fff; }
 .cityOffer strong { color: #fff; }
 .cityOfferAction { color: var(--v-ent-success, #4caf50); font-weight: 600; }
+
+/* The way from the profile to the one place an email can actually be changed.
+   A link, not a button: it goes somewhere. */
+.emailLink {
+  color: var(--v-ent-gold, #D4AF37);
+  text-decoration: underline;
+}
+
+.emailLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
