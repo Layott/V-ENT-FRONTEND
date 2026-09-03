@@ -22,6 +22,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
+import OverlayPreview from '@/components/studio/OverlayPreview';
 import styles from './overlays-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -31,13 +32,6 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 //: changed a picture sees it without wondering whether it worked.
 const PREVIEW_REPLAY_MS = 10000;
 
-//: The overlay's own address plus a number that changes, so the frame really
-//: reloads rather than being handed the page it already has. Kept off the
-//: names an overlay uses for itself: `?t=TAG` is the convention every pack
-//: uses to say which team it is about, and this must not disturb it.
-function replayUrl(url, n) {
-  return `${url}${url.includes('?') ? '&' : '?'}vent_replay=${n}`;
-}
 
 export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, showToast }) {
   const tt = useT();
@@ -372,18 +366,7 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
 
                       It is the real overlay URL in an iframe, so it polls the
                       feed and fills itself exactly as OBS will. */}
-                  <div className={styles.preview}>
-                    {/* No sandbox. `allow-scripts` alone puts the frame on an
-                        opaque origin, its request for the feed goes out as
-                        Origin: null, and the preview shows the raw file with
-                        every value still on its placeholder. Which is worse
-                        than no preview, because it looks like the overlay is
-                        broken. The page is served from our own API host and
-                        gets no more here than when OBS opens it directly. */}
-                    <iframe key={`${row.id}-${replay}`}
-                            className={styles.previewFrame} title={row.name}
-                            src={replayUrl(row.url, replay)} loading="lazy" />
-                  </div>
+                  <OverlayPreview url={row.url} title={row.name} replay={replay} />
                   <code className={styles.url}>{row.url}</code>
                   <div className={styles.rowActions}>
                     <button type="button" className={styles.copySmall}

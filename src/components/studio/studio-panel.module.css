@@ -223,41 +223,6 @@
   .fieldActions { flex: 1 1 100%; }
   .elName { flex: 1 1 100%; }
 }
-
-/* ---------------------------------------------------------- live preview */
-/* What the graphic looks like right now, at the size it will be on air.
-   A 1920x1080 page scaled into a small box, over a checkerboard so the
-   transparency a browser source depends on is visible rather than assumed. */
-
-.preview {
-  background-color: #2a2b30;
-  background-image:
-    linear-gradient(45deg, #34353b 25%, transparent 25%),
-    linear-gradient(-45deg, #34353b 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #34353b 75%),
-    linear-gradient(-45deg, transparent 75%, #34353b 75%);
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-  background-size: 16px 16px;
-  border-radius: 10px;
-  height: 158px;
-  margin: 0.7rem 0;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
-.previewFrame {
-  border: 0;
-  height: 1080px;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transform: scale(0.1464);
-  transform-origin: 0 0;
-  width: 1920px;
-}
-
 /* --------------------------------------------------- how a graphic behaves */
 
 .look {
@@ -292,9 +257,4 @@
   border-radius: 12px;
   margin-top: 1.1rem;
   padding: 1rem 1.1rem;
-}
-
-@media (max-width: 720px) {
-  .preview { height: 118px; }
-  .previewFrame { transform: scale(0.1093); }
 }

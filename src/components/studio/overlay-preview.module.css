@@ -1,0 +1,55 @@
+/* The preview box, shared by the studio's own graphics and uploaded overlays.
+   A 1920x1080 page scaled into a small box, over a checkerboard so the
+   transparency a browser source depends on is visible rather than assumed. */
+
+.preview {
+  align-items: center;
+  background-color: #2a2b30;
+  background-image:
+    linear-gradient(45deg, #34353b 25%, transparent 25%),
+    linear-gradient(-45deg, #34353b 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #34353b 75%),
+    linear-gradient(-45deg, transparent 75%, #34353b 75%);
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-size: 16px 16px;
+  border-radius: 10px;
+  display: flex;
+  height: 158px;
+  justify-content: center;
+  margin: 0.7rem 0;
+  overflow: hidden;
+  position: relative;
+  width: 281px;
+}
+
+.frame {
+  border: 0;
+  height: 1080px;
+  left: 0;
+  /* Not clickable: this is a picture of the overlay, and a stray click inside
+     a browser source is never what anybody meant. */
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: scale(0.1464);
+  transform-origin: 0 0;
+  width: 1920px;
+}
+
+/* What is there before anybody scrolls to it. Says why it is not playing,
+   rather than leaving an empty checkerboard that reads as a broken overlay. */
+.resting {
+  color: #8a8a8f;
+  font-size: 0.78rem;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+/* On a phone the panel is one column, so the box comes down with it and the
+   page keeps its scale. Carried over from the studio panel when this became a
+   shared component: dropping it would have left an organiser checking a
+   graphic on their phone with a preview wider than the screen. */
+@media (max-width: 720px) {
+  .preview { height: 118px; width: 210px; }
+  .frame { transform: scale(0.1093); }
+}
