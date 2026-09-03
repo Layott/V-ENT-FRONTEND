@@ -74,6 +74,9 @@ const fieldsFor = (tt) => ({
   media: [
     { key: 'tag', label: tt('studio.f.mediaTag', 'Or a word to find it by'), placeholder: 'walkon' },
   ],
+  squad_depth: [
+    { key: 'player', label: tt('studio.f.whosSquad', 'Whose squad'), placeholder: 'demo_zainab' },
+  ],
   now_next: [],
   doors: [],
   ticker: [],
@@ -89,6 +92,7 @@ const fieldsFor = (tt) => ({
 });
 
 const labelsFor = (tt) => ({
+  squad_depth: tt('studio.l.squadDepth', 'Squad depth'),
   scorebar: tt('studio.kind.scorebar', 'Score bar'),
   standings: tt('studio.kind.standings', 'Standings'),
   lower_third: tt('studio.kind.lowerThird', 'Lower third'),

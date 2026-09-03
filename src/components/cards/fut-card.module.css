@@ -1,0 +1,151 @@
+/* One EAFC card: the Futbin frame, the portrait, and the numbers over both.
+
+   Filled surfaces and no strokes. The bands below are what a card falls back
+   to when its art will not load, and they are chosen so a card is still
+   readable at 64px on a stream: a flat fill, dark text on the light bands and
+   light text on the dark ones. No glow, no ring, nothing that pulses. */
+
+.card {
+  position: relative;
+  display: block;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  padding: 0;
+  cursor: default;
+  outline: none;
+}
+
+button.card { cursor: pointer; }
+.card:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.sm { width: 64px; height: 84px; }
+.md { width: 108px; height: 142px; }
+.lg { width: 156px; height: 206px; }
+
+/* The two layers from Futbin. The frame is the card art, the portrait sits on
+   it. Both are `object-fit: contain` so a file at an unexpected size is
+   letterboxed rather than stretched. */
+.frame,
+.face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.face {
+  /* The portrait is drawn inside the frame, not over its edges. */
+  padding: 14% 12% 26%;
+}
+
+/* ------------------------------------------------------- the fallback bands */
+/* Only applied when the frame image is absent or failed. A flat fill each,
+   never a gradient: a card that has lost its art should look deliberate. */
+
+.gold   { background-color: #b8912f; color: #1d1707; }
+.silver { background-color: #9ba0a6; color: #16181a; }
+.bronze { background-color: #9a6b43; color: #1c1108; }
+.icon   { background-color: #e9dcb4; color: #201b0c; }
+.hero   { background-color: #7d3fa0; color: #fff; }
+.special{ background-color: #23252b; color: #fff; }
+
+.rating {
+  position: absolute;
+  top: 8%;
+  left: 10%;
+  font-size: 1.05em;
+  font-weight: var(--fw-bold, 700);
+  line-height: 1;
+}
+
+.sm .rating { font-size: 0.82rem; }
+.md .rating { font-size: 1.05rem; }
+.lg .rating { font-size: 1.45rem; }
+
+.position {
+  position: absolute;
+  top: 8%;
+  right: 10%;
+  font-size: 0.62em;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.sm .position { font-size: 0.55rem; }
+.md .position { font-size: 0.66rem; }
+.lg .position { font-size: 0.8rem; }
+
+.name {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 22%;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: var(--fw-semi-bold, 600);
+  line-height: 1.15;
+  /* Two lines at most: a long name must not push the numbers off the card. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sm .name { font-size: 0.5rem; bottom: 8%; }
+.lg .name { font-size: 0.78rem; }
+
+.stats {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.46rem;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+.lg .stats { font-size: 0.58rem; }
+.stat b { font-weight: var(--fw-bold, 700); margin-right: 0.12em; }
+
+/* ------------------------------------------------------------ an empty slot */
+/* Filled surface with the position written in it, never a dashed outline. */
+
+.empty {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty:hover { background-color: #3d3e45; color: rgba(255, 255, 255, 0.7); }
+
+.emptySlot {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+
+.remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.remove:hover { background-color: var(--v-ent-red, #ED1C24); }
+.remove:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

@@ -417,6 +417,76 @@ function Doors({ data }) {
   );
 }
 
+/**
+ * The squad depth graphic: one player's EAFC lineup, on air.
+ *
+ * CEO, 3 September 2026: "what they picked and formation they selected was
+ * shown inside the player squad depth overlay design, updated automatically
+ * for each player."
+ *
+ * Automatic is the ask, and it is why nothing is fetched here: the feed this
+ * page already polls carries the lineup and the formation's own coordinates,
+ * so a lineup saved at 8pm is on screen within one poll with nobody pressing
+ * anything.
+ *
+ * A card draws its Futbin art when it has it and a readable band when it does
+ * not, because a broken image on a broadcast is the one outcome that must be
+ * impossible.
+ */
+function SquadDepth({ element }) {
+  const lineup = element?.lineup;
+  const shape = element?.formation_slots || [];
+  if (!lineup) return null;
+
+  const bySlot = {};
+  for (const slot of lineup.slots || []) bySlot[slot.slot_index] = slot;
+  const bench = (lineup.slots || []).filter((s) => s.slot_index >= 11);
+
+  const band = (card) => {
+    const kind = String(card?.item_type || '').toLowerCase();
+    return styles[`sq_${kind}`] || styles.sq_gold;
+  };
+
+  const card = (slot, key) => (
+    <div key={key} className={styles.sqCard}>
+      {slot?.frame_url
+        ? <img className={styles.sqFrame} src={slot.frame_url} alt="" />
+        : <span className={`${styles.sqFrame} ${band(slot)}`} />}
+      {slot?.image_url && (
+        <img className={styles.sqFace} src={slot.image_url} alt="" />
+      )}
+      <span className={styles.sqRating}>{slot?.rating}</span>
+      <span className={styles.sqName}>{slot?.name}</span>
+    </div>
+  );
+
+  return (
+    <div className={styles.squad}>
+      <div className={styles.sqHead}>
+        <span className={styles.sqPlayer}>{lineup.player}</span>
+        <span className={styles.sqFormation}>{lineup.formation}</span>
+      </div>
+      <div className={styles.sqPitch}>
+        {shape.map((spot) => {
+          const slot = bySlot[spot.index];
+          if (!slot) return null;
+          return (
+            <div key={spot.index} className={styles.sqSpot}
+                 style={{ left: `${spot.x}%`, bottom: `${spot.y}%` }}>
+              {card(slot, spot.index)}
+            </div>
+          );
+        })}
+      </div>
+      {bench.length > 0 && (
+        <div className={styles.sqBench}>
+          {bench.map((slot) => card(slot, slot.slot_index))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const ELEMENTS = {
   scorebar: Scorebar,
   standings: Standings,
@@ -425,6 +495,7 @@ const ELEMENTS = {
   bracket: Bracket,
   sponsors: SponsorWall,
   media: Media,
+  squad_depth: SquadDepth,
   ticker: Ticker,
   intro: (p) => <Titlecard {...p} variant="intro" />,
   outro: (p) => <Titlecard {...p} variant="outro" />,
