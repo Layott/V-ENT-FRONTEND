@@ -1,0 +1,221 @@
+/* Squads and direct entrants. Same surfaces, radii and chip treatment as the
+   invitations panel next to it: they sit on one screen and an organiser moves
+   between them, so a different look would read as a different product.
+
+   Filled surfaces, no strokes. A squad is a step darker than the panel, and a
+   member a step darker again, which is how the nesting is shown. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin-top: 1.6rem;
+}
+
+.title:first-child { margin-top: 0; }
+
+.hint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+.error {
+  margin-top: 0.6rem;
+  color: #FF6B6B;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.kindRow {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.kindChip {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.kindChip:hover { background-color: #33343a; color: #fff; }
+.kindChip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.kindChipOn {
+  background-color: var(--v-ent-gold, #D4AF37);
+  color: #131316;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+}
+
+.input {
+  /* Grows, but never wider than its row: a flex child with no minimum sizes
+     past the viewport and clips the container silently. */
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.7rem 0.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.inputShort {
+  composes: input;
+  flex: 0 0 6rem;
+}
+
+.input::placeholder, .inputShort::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input:focus-visible, .inputShort:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.primary {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.94rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.primary:hover:enabled { background-color: #ff2229; }
+.primary:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.primary:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+.secondary {
+  composes: primary;
+  background-color: #33343a;
+}
+
+.secondary:hover:enabled { background-color: #3d3e45; }
+
+.ghost {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 9px;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.ghost:hover:enabled { color: #fff; background-color: #33343a; }
+.ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.ghost:disabled { color: rgba(255, 255, 255, 0.28); cursor: default; }
+
+.squad {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin-top: 0.7rem;
+}
+
+.squadHead {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.squadName {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.02rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+/* The short form a broadcast uses. A filled chip, never a ring. */
+.tag {
+  flex: 0 0 auto;
+  background-color: #3d3e45;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.5rem;
+}
+
+.in {
+  flex: 0 0 auto;
+  color: var(--v-ent-success, #4caf50);
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  background-color: #33343a;
+  border-radius: 9px;
+  padding: 0.55rem 0.8rem;
+  margin-top: 0.45rem;
+  min-height: 48px;
+}
+
+.memberName {
+  flex: 1 1 10rem;
+  min-width: 0;
+  color: #fff;
+  font-size: 0.94rem;
+}
+
+/* Who this player actually plays for. The reason a squad exists, so it is
+   stated in words on the row rather than being a badge somebody has to hover. */
+.represents {
+  flex: 1 1 12rem;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .primary, .secondary { flex: 1 1 100%; }
+}
