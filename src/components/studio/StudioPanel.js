@@ -31,6 +31,11 @@ import styles from './studio-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+//: How often a preview plays its load-in again. Matches the uploaded overlays
+//: deliberately: two panels on one screen replaying at different rates reads
+//: as one of them being broken.
+const PREVIEW_REPLAY_MS = 10000;
+
 // What each element asks the operator for. Kept here rather than on the server
 // because it is a property of the graphic, and the server should not be
 // deciding what a form looks like. A kind with no fields draws itself from the
@@ -139,6 +144,12 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
+
+  // The preview loop. Same rule as the uploaded overlays: the feed keeps the
+  // numbers live by itself, but the load-in only happens on a load, and how a
+  // graphic ARRIVES is most of what an operator is judging. CEO, 3 September:
+  // "IT SHOULD SHOW HOW IT'LL LOAD ON THE LIVE."
+  const [replay, setReplay] = useState(0);
   // Typed but not yet sent, per element. Held apart from what is on air so the
   // panel never shows a value the audience is not seeing.
   const [draft, setDraft] = useState({});
@@ -205,6 +216,26 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   }, [call, token, ref]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+
+  // The loop, paused behind a background tab so eight frames are not reloading
+  // for nobody.
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!document.hidden) setReplay((n) => n + 1);
+    }, PREVIEW_REPLAY_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  // And immediately when an element changes, so somebody who just edited the
+  // wording sees it arrive rather than waiting out the rest of the cycle.
+  // The element states themselves, not a version field: the session payload
+  // does not carry one, and `live?.version` would have been undefined for ever
+  // and this effect would have run exactly once. A dependency that is always
+  // undefined is the quiet way an effect stops existing.
+  const elementSignature = JSON.stringify(live?.elements ?? null);
+  useEffect(() => {
+    setReplay((n) => n + 1);
+  }, [elementSignature]);
 
   // While a broadcast is live the panel refreshes itself, so a second operator
   // on another machine is not looking at a stale board.
@@ -360,8 +391,9 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       not it is on air; `every` keeps eight of these cheaper
                       than one on-air source. */}
                   <div className={styles.preview}>
-                    <iframe className={styles.previewFrame} title={LABELS[elementKind] || elementKind}
-                            src={`${live.urls[elementKind]}?preview=1&every=4000`}
+                    <iframe key={`${elementKind}-${replay}`}
+                            className={styles.previewFrame} title={LABELS[elementKind] || elementKind}
+                            src={`${live.urls[elementKind]}?preview=1&every=4000&vent_replay=${replay}`}
                             loading="lazy" scrolling="no" />
                   </div>
 
