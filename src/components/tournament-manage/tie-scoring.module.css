@@ -1,0 +1,104 @@
+/* A league tie, seat by seat. Surfaces and space, no strokes, nothing moves. */
+
+.wrap { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.head { margin: 0; }
+
+.title {
+  margin: 0 0 0.3rem;
+  font-size: 1.1rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.sub { margin: 0; color: rgba(255, 255, 255, 0.62); line-height: 1.5; max-width: 62ch; }
+
+.aggregate {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #26272b;
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+}
+
+.aggLabel { color: rgba(255, 255, 255, 0.62); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; }
+.aggScore { font-size: 1.6rem; font-weight: var(--fw-extra-bold); color: var(--primary-bg); display: inline-flex; align-items: center; gap: 0.5rem; }
+.aggDash { display: inline-block; width: 14px; height: 4px; background-color: rgba(255, 255, 255, 0.5); border-radius: 2px; }
+
+.status {
+  margin-left: auto;
+  background-color: #35363c;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.statusDone { background-color: var(--v-ent-success, #2e7d32); color: #fff; }
+
+.error {
+  margin: 0;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ffb4b7;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.seats { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.seat {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+.seatDone { background-color: #232a24; }
+
+.seatHead { display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
+.seatLabel { font-weight: var(--fw-bold); color: var(--primary-bg); }
+.seatStatus { color: rgba(255, 255, 255, 0.55); font-size: 0.85rem; }
+
+.seatRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px 20px 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.player { color: var(--primary-bg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.playerAway { text-align: right; }
+
+.goals {
+  width: 64px;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.4rem;
+  text-align: center;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: var(--fw-bold);
+}
+
+.dash { display: inline-block; width: 12px; height: 3px; background-color: rgba(255, 255, 255, 0.4); border-radius: 2px; justify-self: center; }
+
+.seatActions { margin-top: 0.7rem; display: flex; justify-content: flex-end; }
+
+.primary {
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+}
+.primary:disabled { opacity: 0.45; cursor: default; }
+
+@media (max-width: 720px) {
+  .seatRow { grid-template-columns: 1fr 56px 14px 56px 1fr; gap: 0.4rem; }
+  .goals { width: 56px; }
+}

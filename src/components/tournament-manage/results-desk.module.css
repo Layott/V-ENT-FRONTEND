@@ -1,0 +1,97 @@
+/* Who may enter results. Surfaces and space, no strokes, nothing moves. */
+
+.desk {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1.2rem;
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.sub {
+  margin: 0 0 1rem;
+  max-width: 64ch;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+}
+
+.muted { color: rgba(255, 255, 255, 0.55); margin: 0 0 0.6rem; }
+
+.note {
+  margin: 0 0 0.8rem;
+  color: var(--primary-bg);
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.error {
+  margin: 0 0 0.8rem;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ffb4b7;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.rows { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+}
+
+.rowMain { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.rowName { color: var(--primary-bg); font-weight: var(--fw-bold); }
+.rowMeta { color: rgba(255, 255, 255, 0.55); font-size: 0.88rem; }
+
+.roleTag {
+  background-color: #35363c;
+  color: rgba(255, 255, 255, 0.78);
+  border-radius: 8px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.addRow { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+.input {
+  flex: 1;
+  min-width: 220px;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+}
+
+.primary,
+.ghost {
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.primary { background-color: var(--v-ent-red, #ED1C24); color: #fff; }
+.primary:disabled { opacity: 0.45; cursor: default; }
+.ghost { background-color: #35363c; color: var(--primary-bg); }
+.ghost:disabled { opacity: 0.45; cursor: default; }
+
+@media (max-width: 720px) {
+  .row { flex-wrap: wrap; }
+}

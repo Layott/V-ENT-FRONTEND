@@ -22,7 +22,7 @@
 // under time pressure, and hunting for them while a stream is starting is the
 // worst minute of the day.
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -124,6 +124,15 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const LABELS = labelsFor(tt);
   const AUTO = autoFor(tt);
 
+  // One refresh in flight at a time, and a pause after a refusal. The console
+  // asks every five seconds for the whole broadcast; on a venue connection
+  // that is where a stack builds, and a 429 answered by asking again at the
+  // same rate is how the admin console once reported itself as "connection
+  // lost" (29 August) and the overlay feed starved this address (3 September).
+  const inFlight = useRef(false);
+  const pausedUntil = useRef(0);
+  const failures = useRef(0);
+
   const call = useCallback(async (path, options = {}) => {
     const res = await fetch(`${API}/${kind}/${ref}/studio${path}`, {
       ...options,
@@ -144,9 +153,19 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   // broadcast.
   const load = useCallback(async (quiet = false) => {
     if (!token || !ref) { setLoading(false); return; }
+    if (quiet && (inFlight.current || Date.now() < pausedUntil.current)) return;
     if (!quiet) setLoading(true);
+    inFlight.current = true;
     const { ok, body } = await call('/sessions/');
+    inFlight.current = false;
+    if (!ok && (body?.status === undefined || body?.code === 'THROTTLED')) {
+      // Refused or unreachable: wait longer each time, up to a minute, and
+      // keep the board that is on screen rather than blanking it mid-show.
+      failures.current += 1;
+      pausedUntil.current = Date.now() + Math.min(60000, 5000 * (2 ** failures.current));
+    }
     if (ok) {
+      failures.current = 0;
       const rows = body.data.sessions || [];
       setLive(rows.find((s) => s.is_live) || null);
       setPast(rows.filter((s) => !s.is_live).slice(0, 5));
