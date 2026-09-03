@@ -20,6 +20,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 // than a second screen at another address.
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
+import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import styles from './manage.module.css';
@@ -303,7 +304,13 @@ const ManageContent = ({ slug }) => {
               )}
             </>}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
-            {tab === 'invitations' && <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />}
+            {tab === 'invitations' && <>
+              <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
+              {/* Putting somebody in directly, and squads made of players from
+                  several clubs. On this tab because it is the same job: an
+                  organiser deciding who is in. */}
+              <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
+            </>}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
             {tab === 'production' && <>
               {/* The studio. V-ENT's own graphics, bound to this tournament,

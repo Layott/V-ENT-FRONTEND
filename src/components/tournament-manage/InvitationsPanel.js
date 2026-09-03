@@ -25,7 +25,10 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
   const tt = useT();
   const [rows, setRows] = useState([]);
   const [who, setWho] = useState('');
-  const [asTeam, setAsTeam] = useState(false);
+  // 'player', 'team' or 'email'. CEO, 3 September 2026: "lets be able to
+  // invite through email also". An organiser's list of who they want is a
+  // list of addresses, and half those people have never heard of V-ENT.
+  const [kind, setKind] = useState('player');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -55,7 +58,9 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          ...(asTeam ? { team: name } : { username: name }),
+          ...(kind === 'team' ? { team: name }
+            : kind === 'email' ? { email: name }
+              : { username: name }),
           message: message.trim(),
         }),
       });
@@ -97,6 +102,12 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
     withdrawn: tt('invite.withdrawn', 'Withdrawn'),
   };
 
+  const placeholder = kind === 'team'
+    ? tt('invite.teamName', 'Team name')
+    : kind === 'email'
+      ? tt('invite.emailAddress', 'Email address')
+      : tt('invite.username', 'Username');
+
   return (
     <div className={styles.panel}>
       <h3 className={styles.title}>{tt('invite.title', 'Invite players and teams')}</h3>
@@ -110,28 +121,31 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
       <div className={styles.kindRow}>
         <button
           type="button"
-          className={`${styles.kindChip} ${!asTeam ? styles.kindChipOn : ''}`}
-          aria-pressed={!asTeam}
-          onClick={() => setAsTeam(false)}
+          className={`${styles.kindChip} ${kind === 'player' ? styles.kindChipOn : ''}`}
+          aria-pressed={kind === 'player'}
+          onClick={() => setKind('player')}
         >{tt('invite.aPlayer', 'A player')}</button>
         <button
           type="button"
-          className={`${styles.kindChip} ${asTeam ? styles.kindChipOn : ''}`}
-          aria-pressed={asTeam}
-          onClick={() => setAsTeam(true)}
+          className={`${styles.kindChip} ${kind === 'team' ? styles.kindChipOn : ''}`}
+          aria-pressed={kind === 'team'}
+          onClick={() => setKind('team')}
         >{tt('invite.aTeam', 'A team')}</button>
+        <button
+          type="button"
+          className={`${styles.kindChip} ${kind === 'email' ? styles.kindChipOn : ''}`}
+          aria-pressed={kind === 'email'}
+          onClick={() => setKind('email')}
+        >{tt('invite.anEmail', 'An email address')}</button>
       </div>
 
       <input
         className={styles.input}
         value={who}
         onChange={(e) => setWho(e.target.value)}
-        placeholder={asTeam
-          ? tt('invite.teamName', 'Team name')
-          : tt('invite.username', 'Username')}
-        aria-label={asTeam
-          ? tt('invite.teamName', 'Team name')
-          : tt('invite.username', 'Username')}
+        type={kind === 'email' ? 'email' : 'text'}
+        placeholder={placeholder}
+        aria-label={placeholder}
       />
       <input
         className={styles.input}
@@ -158,7 +172,9 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
             {rows.map((row) => (
               <div key={row.id} className={styles.row}>
                 <span className={styles.name}>
-                  {row.team ? row.team.name : `@${row.player?.username}`}
+                  {row.team ? row.team.name
+                    : row.player ? `@${row.player.username}`
+                    : row.email}
                 </span>
                 <span className={`${styles.status} ${styles[`status_${row.status}`] || ''}`}>
                   {label[row.status] || row.status}
