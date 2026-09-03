@@ -317,6 +317,22 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                       {row.bound_fields.join(', ')}
                     </p>
                   )}
+                  {/* What this overlay looks like right now, playing, at the
+                      size it will be on air. CEO, 3 September 2026: "the
+                      overlays in the studio should always autoplays in small
+                      boxes... so we can see how they'll look inside the
+                      streaming software when loaded in." The built-in graphics
+                      had this and the ones people upload did not, which is the
+                      half that matters most: a file somebody wrote themselves
+                      is the one they cannot picture.
+
+                      It is the real overlay URL in an iframe, so it polls the
+                      feed and fills itself exactly as OBS will. */}
+                  <div className={styles.preview}>
+                    <iframe className={styles.previewFrame} title={row.name}
+                            src={row.url} loading="lazy"
+                            sandbox="allow-scripts" />
+                  </div>
                   <code className={styles.url}>{row.url}</code>
                   <div className={styles.rowActions}>
                     <button type="button" className={styles.copySmall}

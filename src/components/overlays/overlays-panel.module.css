@@ -215,3 +215,43 @@
   line-height: 1.5;
   word-break: break-word;
 }
+
+/* ---------------------------------------------------------- live preview */
+/* The uploaded overlay, playing, at the size it will be on air. A 1920x1080
+   page scaled into a small box, over a checkerboard so the transparency a
+   browser source depends on is visible rather than assumed.
+
+   Matches the preview on the built-in graphics deliberately: an organiser
+   comparing their own file against one of ours should be comparing the
+   overlays, not two different boxes. */
+
+.preview {
+  background-color: #2a2b30;
+  background-image:
+    linear-gradient(45deg, #34353b 25%, transparent 25%),
+    linear-gradient(-45deg, #34353b 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #34353b 75%),
+    linear-gradient(-45deg, transparent 75%, #34353b 75%);
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-size: 16px 16px;
+  border-radius: 10px;
+  height: 158px;
+  margin: 0.7rem 0;
+  overflow: hidden;
+  position: relative;
+  width: 281px;
+}
+
+.previewFrame {
+  border: 0;
+  height: 1080px;
+  left: 0;
+  /* Not clickable: this is a picture of the overlay, and a stray click inside
+     a browser source is never what somebody meant. */
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: scale(0.1464);
+  transform-origin: 0 0;
+  width: 1920px;
+}
