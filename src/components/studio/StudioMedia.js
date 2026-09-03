@@ -35,7 +35,9 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
-  const [draft, setDraft] = useState({ name: '', tags: '', team_tag: '', player: '' });
+  const [draft, setDraft] = useState({
+    name: '', slot: '', tags: '', team_tag: '', player: '',
+  });
 
   const base = `${API}/${kind}/${ownerRef}/studio/assets/`;
 
@@ -71,6 +73,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
       const form = new FormData();
       form.append('file', file);
       form.append('name', draft.name.trim() || file.name);
+      if (draft.slot.trim()) form.append('slot', draft.slot.trim());
       if (draft.tags.trim()) form.append('tags', draft.tags.trim());
       if (draft.team_tag.trim()) form.append('team_tag', draft.team_tag.trim());
       if (draft.player.trim()) form.append('player', draft.player.trim());
@@ -95,7 +98,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         take(body);
-        setDraft({ name: '', tags: '', team_tag: '', player: '' });
+        setDraft({ name: '', slot: '', tags: '', team_tag: '', player: '' });
         if (fileRef.current) fileRef.current.value = '';
         setNote(tt('media.added', 'Added. Press Play to put it on air.'));
       } else {
@@ -136,6 +139,9 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
       <p className={styles.sub}>
         {tt('media.sub', 'Upload a player b-roll, a walk-on, a highlight or a still once, and put it on air whenever you need it. Give it words you will reach for in a hurry: a team tag, a player, or anything you will remember.')}
       </p>
+      <p className={styles.sub}>
+        {tt('media.slotHint', 'Give it a name and your own uploaded overlays can pull it in: a designer writes data-vent-src="asset.hero" and whatever you name hero appears there. A picture of a player also shows up on that player, alongside their profile photo.')}
+      </p>
 
       {error && <p className={styles.error}>{error}</p>}
       {note && <p className={styles.note}>{note}</p>}
@@ -163,6 +169,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
                     {[a.kind === 'video' ? tt('media.clip', 'Clip') : tt('media.picture', 'Picture'),
                       mb(a.size_bytes),
                       a.duration_ms ? `${Math.round(a.duration_ms / 1000)}s` : null,
+                      a.slot ? `asset.${a.slot}` : null,
                       a.team_tag || null,
                       a.player ? `@${a.player}` : null,
                       ...(a.tags || []),
@@ -189,6 +196,15 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
                 <input className={styles.input} value={draft.name}
                        placeholder={tt('media.namePlaceholder', 'Zainab walk-on')}
                        onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} />
+              </label>
+              {/* The name this fills inside an uploaded overlay. A designer
+                  writes data-vent-src="asset.hero" without knowing what hero
+                  will be, and this is where the organiser decides. */}
+              <label className={styles.field}>
+                <span className={styles.label}>{tt('media.slot', 'Fills which name in your overlays')}</span>
+                <input className={styles.input} value={draft.slot}
+                       placeholder="hero"
+                       onChange={(e) => setDraft((d) => ({ ...d, slot: e.target.value }))} />
               </label>
               <label className={styles.field}>
                 <span className={styles.label}>{tt('media.tags', 'Words to find it by')}</span>
