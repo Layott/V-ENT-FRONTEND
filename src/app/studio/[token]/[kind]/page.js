@@ -333,6 +333,14 @@ export default function StudioElement({ params }) {
   const [feed, setFeed] = useState(null);
   const [retired, setRetired] = useState(false);
   const version = useRef('');
+  // One request in flight at a time, and a pause after a refusal. An overlay
+  // in OBS once asked the API twenty-five times a second (3 September 2026),
+  // and every request counted against the organiser's own address. Eight of
+  // these pages at 1.2 s is already close to seven a second; they must never
+  // stack, and on a 429 they wait longer each time, up to a minute.
+  const inFlight = useRef(false);
+  const pausedUntil = useRef(0);
+  const failures = useRef(0);
 
   // Transparent, and nothing else on the page. Set on the document rather than
   // in CSS alone because the browser paints the canvas white before any
@@ -345,12 +353,21 @@ export default function StudioElement({ params }) {
   }, []);
 
   const read = useCallback(async () => {
+    if (inFlight.current || Date.now() < pausedUntil.current) return;
+    inFlight.current = true;
     try {
       const res = await fetch(`${API}/studio/${encodeURIComponent(token)}/feed/`,
         { cache: 'no-store' });
+      if (res.status === 429 || res.status >= 500) {
+        failures.current += 1;
+        pausedUntil.current = Date.now()
+          + Math.min(60000, POLL_MS * (2 ** failures.current));
+        return;
+      }
       if (!res.ok) return;
       const body = await res.json();
       if (body?.status !== 'success') return;
+      failures.current = 0;
       // Only redraw when something actually moved. An element sitting on air
       // for six hours should cost one comparison a second, not a re-render.
       if (body.data.version === version.current) return;
@@ -364,6 +381,11 @@ export default function StudioElement({ params }) {
       // Keep the last good frame. A graphic that flickers to an error
       // mid-match is worse than one that is a few seconds stale, and the next
       // poll is a second away.
+      failures.current += 1;
+      pausedUntil.current = Date.now()
+        + Math.min(60000, POLL_MS * (2 ** failures.current));
+    } finally {
+      inFlight.current = false;
     }
   }, [token]);
 
