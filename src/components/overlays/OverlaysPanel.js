@@ -329,9 +329,15 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                       It is the real overlay URL in an iframe, so it polls the
                       feed and fills itself exactly as OBS will. */}
                   <div className={styles.preview}>
+                    {/* No sandbox. `allow-scripts` alone puts the frame on an
+                        opaque origin, its request for the feed goes out as
+                        Origin: null, and the preview shows the raw file with
+                        every value still on its placeholder. Which is worse
+                        than no preview, because it looks like the overlay is
+                        broken. The page is served from our own API host and
+                        gets no more here than when OBS opens it directly. */}
                     <iframe className={styles.previewFrame} title={row.name}
-                            src={row.url} loading="lazy"
-                            sandbox="allow-scripts" />
+                            src={row.url} loading="lazy" />
                   </div>
                   <code className={styles.url}>{row.url}</code>
                   <div className={styles.rowActions}>
