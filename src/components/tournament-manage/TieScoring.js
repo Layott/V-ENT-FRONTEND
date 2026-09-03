@@ -50,11 +50,30 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
     reload();
   }, [tie, reload]);
 
-  const record = async (slot) => {
-    const d = draft[slot] || {};
-    const one = Number(d.goals_1);
-    const two = Number(d.goals_2);
-    if (!Number.isInteger(one) || !Number.isInteger(two) || one < 0 || two < 0) {
+  /** What a seat's boxes show: what has been typed, else what is recorded. */
+  const shown = (f) => {
+    const d = draft[f.slot] || {};
+    const done = f.status === 'completed';
+    return {
+      goals_1: d.goals_1 ?? (done ? String(f.goals_1) : ''),
+      goals_2: d.goals_2 ?? (done ? String(f.goals_2) : ''),
+    };
+  };
+
+  const record = async (f) => {
+    const slot = f.slot;
+    // What is on screen, which after a seat is recorded is what is stored.
+    // Reading the draft alone left "Correct this seat" permanently disabled
+    // once a seat was in: recording clears that seat's draft to an empty
+    // object, so both numbers read as untyped and the button could only be
+    // woken by retyping BOTH. Found by correcting a seat on production,
+    // 3 September; an operator fixing one mistyped score is the whole point
+    // of the button.
+    const v = shown(f);
+    const one = Number(v.goals_1);
+    const two = Number(v.goals_2);
+    if (v.goals_1 === '' || v.goals_2 === ''
+      || !Number.isInteger(one) || !Number.isInteger(two) || one < 0 || two < 0) {
       setError(tt('tie.wholeNumbers', 'Goals are whole numbers, zero or more.'));
       return;
     }
@@ -115,10 +134,12 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
 
       <div className={styles.seats}>
         {(detail.fixtures || []).map((f) => {
-          const d = draft[f.slot] || {};
           const done = f.status === 'completed';
-          const v1 = d.goals_1 ?? (done ? f.goals_1 : '');
-          const v2 = d.goals_2 ?? (done ? f.goals_2 : '');
+          const { goals_1: v1, goals_2: v2 } = shown(f);
+          // Sendable when both boxes hold something, whether typed now or
+          // recorded earlier. A correction that changes one number is the
+          // common one, and it must not need the other retyped.
+          const sendable = v1 !== '' && v2 !== '';
           return (
             <div key={f.slot} className={`${styles.seat} ${done ? styles.seatDone : ''}`}>
               <div className={styles.seatHead}>
@@ -136,8 +157,8 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
               </div>
               <div className={styles.seatActions}>
                 <button type="button" className={styles.primary}
-                        disabled={busySlot === f.slot || d.goals_1 === undefined || d.goals_2 === undefined}
-                        onClick={() => record(f.slot)}>
+                        disabled={busySlot === f.slot || !sendable}
+                        onClick={() => record(f)}>
                   {busySlot === f.slot
                     ? tt('ui.saving', 'Saving...')
                     : (done ? tt('tie.correct', 'Correct this seat') : tt('tie.record', 'Record this seat'))}
