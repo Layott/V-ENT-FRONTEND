@@ -77,8 +77,30 @@ function Scorebar({ payload, data }) {
   const find = (tag) => teams.find(
     (t) => t.tag === tag || t.name === tag) || null;
 
-  const home = find(payload.home) || teams[0] || null;
-  const away = find(payload.away) || teams[1] || null;
+  // A name the operator typed that matches nothing is used AS the label, and
+  // never replaced by a different team.
+  //
+  // Found on production, 3 September 2026: with `home: 'Nigeria'` and
+  // `away: 'Ghana'` on a tournament with no Ghana in it, the away side fell
+  // back to `teams[1]`, which was Nigeria, and the scorebar read
+  // "Nigeria 2 - 1 Nigeria" on air with nothing to say it had substituted
+  // anybody. A positional fallback is right when the operator has said
+  // nothing; it is very wrong when they have said something, because a typo
+  // then becomes a different team's name in front of an audience. An
+  // exhibition against a side that is not registered is also perfectly
+  // ordinary, and typing the name should just work.
+  const side = (typed, fallback) => {
+    const name = String(typed || '').trim();
+    if (!name) return fallback;
+    return find(name) || { name, logo: null };
+  };
+
+  const home = side(payload.home, teams[0] || null);
+  let away = side(payload.away, teams[1] || null);
+  // And the two sides are never the same entrant, which is not a scoreline.
+  if (home && away && home === away) {
+    away = teams.find((t) => t !== home) || null;
+  }
   if (!home || !away) return null;
 
   // The aggregate is the operator's, because it is the running score of a tie
