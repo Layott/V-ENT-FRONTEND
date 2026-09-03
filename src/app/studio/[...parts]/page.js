@@ -318,24 +318,87 @@ function SponsorWall({ payload, data }) {
 // The feed resolves which asset this is, so the page never looks anything up:
 // a browser source gets one request, and a second round trip to turn a tag
 // into a URL is a second chance to fail with a clip half on screen.
-function Media({ element }) {
+/** One value out of the feed, by its dotted name. The runtime's rule, in React.
+ *
+ * `team.name`, `tournament.title`, `asset.hero`. Used by the media graphic so
+ * an organiser can put live data on top of a picture they uploaded, rather than
+ * having to bake the text into the image and upload it again every time the
+ * number changes.
+ */
+function readFeed(path, data) {
+  const parts = String(path || '').trim().split('.');
+  if (!parts[0]) return '';
+  let root = data;
+  if (parts[0] === 'tournament') { root = data.tournament; parts.shift(); }
+  else if (parts[0] === 'event') { root = data.event; parts.shift(); }
+  else if (parts[0] === 'team') { root = (data.teams || [])[0]; parts.shift(); }
+  else if (parts[0] === 'asset') { root = data.asset; parts.shift(); }
+  let value = root;
+  for (const part of parts) {
+    if (value === null || value === undefined) return '';
+    value = value[part];
+  }
+  return value === null || value === undefined ? '' : String(value);
+}
+
+function Media({ element, data }) {
   const asset = element?.asset;
+  const payload = element?.payload || {};
+  const look = element?.presentation || {};
   const videoRef = useRef(null);
   const [ended, setEnded] = useState(false);
+  const [captionUp, setCaptionUp] = useState(false);
+  const [broken, setBroken] = useState(false);
 
   // A new clip starts from the beginning, even if the same element was
   // showing a different one a moment ago.
   useEffect(() => {
     setEnded(false);
+    setBroken(false);
     const node = videoRef.current;
     if (node) {
       try { node.currentTime = 0; node.play().catch(() => {}); } catch { /* it is muted */ }
     }
   }, [asset?.id, asset?.url]);
 
+  // How long it stays.
+  //
+  // CEO, 3 September 2026: "what animation those videos will load in as an the
+  // timing." A clip ends by itself; a PICTURE never does, so without this an
+  // image put on air stays there until somebody remembers to take it off. That
+  // is the state a picture is most often left in by accident.
+  const holdFor = Number(look.duration_ms) || 0;
+  useEffect(() => {
+    setEnded(false);
+    if (!holdFor) return undefined;
+    const timer = setTimeout(() => setEnded(true), holdFor);
+    return () => clearTimeout(timer);
+  }, [holdFor, asset?.id]);
+
+  // When the words arrive on top of it.
+  //
+  // CEO: "if an image is uploaded, there should be a way to set what data
+  // should show on it and when."
+  const captionAfter = Number(payload.caption_after_ms) || 0;
+  useEffect(() => {
+    setCaptionUp(!captionAfter);
+    if (!captionAfter) return undefined;
+    const timer = setTimeout(() => setCaptionUp(true), captionAfter);
+    return () => clearTimeout(timer);
+  }, [captionAfter, asset?.id]);
+
   if (!asset || !asset.url || ended) return null;
 
-  if (asset.kind === 'video') {
+  // The words on the picture: something typed, or something read live out of
+  // the feed, so a caption can be a score that keeps up with the match.
+  const live = payload.caption_from ? readFeed(payload.caption_from, data) : '';
+  const caption = [payload.caption, live].filter(Boolean).join(' ');
+
+  const overlayText = caption && captionUp ? (
+    <span className={styles.mediaCaption}>{caption}</span>
+  ) : null;
+
+  if (asset.kind === 'video' && !broken) {
     return (
       <div className={styles.media}>
         <video
@@ -348,13 +411,18 @@ function Media({ element }) {
           autoPlay
           playsInline
           onEnded={() => setEnded(true)}
+          onError={() => setBroken(true)}
         />
+        {overlayText}
       </div>
     );
   }
+  if (broken) return null;
   return (
     <div className={styles.media}>
-      <img className={styles.mediaImage} src={asset.url} alt="" />
+      <img className={styles.mediaImage} src={asset.url} alt=""
+           onError={() => setBroken(true)} />
+      {overlayText}
     </div>
   );
 }

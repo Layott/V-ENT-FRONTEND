@@ -73,6 +73,9 @@ const fieldsFor = (tt) => ({
   ],
   media: [
     { key: 'tag', label: tt('studio.f.mediaTag', 'Or a word to find it by'), placeholder: 'walkon' },
+    { key: 'caption', label: tt('studio.f.caption', 'Words on top of it'), placeholder: 'Goal of the week' },
+    { key: 'caption_from', label: tt('studio.f.captionFrom', 'Or a live value'), placeholder: 'team.name' },
+    { key: 'caption_after_ms', label: tt('studio.f.captionAfter', 'Words appear after (ms)'), placeholder: '0', numeric: true },
   ],
   squad_depth: [
     { key: 'player', label: tt('studio.f.whosSquad', 'Whose squad'), placeholder: 'demo_zainab' },
