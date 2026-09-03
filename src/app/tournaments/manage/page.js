@@ -8,6 +8,9 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
+import ResultsDesk from '@/components/tournament-manage/ResultsDesk';
+import TieScoring from '@/components/tournament-manage/TieScoring';
+import { formatKey } from '@/lib/formatLabel';
 import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -158,6 +161,28 @@ const ManageContent = ({ slug }) => {
   }, [viewer.loading, load]);
   const matches = useMemo(() => flattenMatches(rounds), [rounds]);
 
+  // What this viewer may do here, from the server. One code path for the
+  // organiser, a scorekeeper they named, an admin and a stranger; the API
+  // answers 200 to everybody with every flag false for a stranger.
+  const [access, setAccess] = useState(null);
+  useEffect(() => {
+    if (!id || viewer.loading) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/tournament/${id}/access/`, {
+          headers: viewer.token ? { Authorization: `Bearer ${viewer.token}` } : {},
+        });
+        const body = await res.json();
+        if (!cancelled && body?.status === 'success') setAccess(body.data);
+        else if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false });
+      } catch {
+        if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [id, viewer.loading, viewer.token]);
+
   // Whether the viewer runs this tournament. Compared both ways because
   // session.user.id can be a username on some accounts, and never with
   // optional chaining on both sides: undefined === undefined is true.
@@ -168,7 +193,12 @@ const ManageContent = ({ slug }) => {
     || sameUser(viewer.id, usernameOf(creator))
     || caps?.permissions?.manage_tournaments === true
   );
-  const decided = !viewer.loading && (!viewer.signedIn || !!viewer.username) && caps !== null;
+  const decided = !viewer.loading && (!viewer.signedIn || !!viewer.username)
+    && caps !== null && access !== null;
+  // A scorekeeper opens the console and sees the one tab they may use.
+  const keepsScore = access?.can_record_results && !access?.can_manage;
+  const isLeague = ['round_robin', 'aggregate_2v2', 'ladder']
+    .includes(formatKey(tournament?.bracket_type || tournament?.format));
   if (loading) {
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -201,7 +231,7 @@ const ManageContent = ({ slug }) => {
   // exists to stop, one step in. Decided only once the session and the admin
   // capabilities have answered, so the organiser is never refused their own
   // console for a moment while those load.
-  if (decided && !runsIt) {
+  if (decided && !runsIt && !keepsScore) {
     const ref = tournament.slug || tournament.tournament_id;
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -253,14 +283,25 @@ const ManageContent = ({ slug }) => {
             </div>
           </div>
 
-          {/* Sub-tab nav */}
+          {/* Sub-tab nav. A scorekeeper sees the one tab they may use: a tab
+              they cannot use is a control the API would refuse. */}
           <div className={styles.tabBar}>
-            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
+            {(keepsScore ? TABS.filter(t => t.id === 'match-control') : TABS)
+              .map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
           <div className={styles.panelArea}>
             {tab === 'actions' && <ActionsPanel slug={slug} embedded />}
-            {tab === 'match-control' && <MatchControlPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} />}
+            {tab === 'match-control' && <>
+              {/* Entering results, and who may. A league tie is one game per
+                  seat and is decided on total goals, so it gets its own
+                  screen; a knockout match is one score. Both are here, and a
+                  scorekeeper the organiser named sees this tab and no other. */}
+              <MatchControlPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague} />
+              {access?.can_manage && (
+                <ResultsDesk tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
+              )}
+            </>}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'invitations' && <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
@@ -821,7 +862,8 @@ const MatchControlPanel = ({
   matches,
   token,
   showToast,
-  onSaved
+  onSaved,
+  isLeague = false
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -902,6 +944,15 @@ const MatchControlPanel = ({
           </button>)}
       </div>
 
+      {/* A league tie is one game per seat, decided on total goals across
+          them. Scoring it as a single number would throw away the seats and
+          give the wrong winner, so it gets its own screen. */}
+      {isLeague ? (
+        <div className={styles.scoreboardWrap}>
+          <TieScoring tie={{ tie_id: live.id }} token={token}
+                      showToast={showToast} onRecorded={onSaved} />
+        </div>
+      ) : (
       <div className={styles.scoreboardWrap}>
         <h2 className={styles.panelTitle}>{tt("ui.live.scoring.e82b", "Live Scoring")}</h2>
         <div className={styles.scoreboardCard}>
@@ -944,6 +995,7 @@ const MatchControlPanel = ({
             </p>}
         </div>
       </div>
+      )}
     </div>;
 };
 
