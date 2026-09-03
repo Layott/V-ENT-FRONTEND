@@ -5,28 +5,37 @@
 // CEO, 1 September 2026: "each element can be copied and pasted into your
 // streaming software as browser sources and it updates in realtime."
 //
+// ## The address
+//
+// Two shapes, both for ever:
+//
+//     /studio/<slug>/<graphic>/<token>    what the console gives out now
+//     /studio/<token>/<graphic>           what it gave out before
+//
+// CEO, 3 September 2026: "can the urls for the overlays posses thenames of
+// the overlays, depending on the project or event or tournament the studio is
+// working with, so slugs for the urls also." An operator pastes eight of these
+// into OBS and then reads them back in a list of browser sources, where
+// `/studio/e8fE8euWe.../now_next` says nothing about which broadcast it is.
+// The token stays in the address because the token is the credential; the slug
+// is a label, and a wrong slug with a right token still resolves.
+//
+// One catch-all route rather than two, because Next cannot have `[token]` and
+// `[slug]` as the same path segment, and because there is only one page here.
+//
 // ## The three rules this page is built around
 //
 // **It holds no state.** Everything on screen comes from the feed, every time.
-// That is what makes a broadcast survivable: OBS can be restarted mid-show, the
-// machine can be swapped, a second operator can open the same URL on another
-// laptop, and the graphic comes back exactly as it was. A page that remembered
-// anything would lose the broadcast with the tab, at the moment nobody has time
-// to rebuild it.
+// OBS can be restarted mid-show, the machine can be swapped, a second operator
+// can open the same URL on another laptop, and the graphic comes back exactly
+// as it was.
 //
 // **It is transparent.** The streaming software composites this onto video, so
-// the page paints nothing of its own. Not a dark background, not white:
-// nothing. Every surface belongs to an element.
+// the page paints nothing of its own. Every surface belongs to an element.
 //
 // **It never shows a spinner, an error or a placeholder.** Anything this page
 // draws is going out on air. A connection that drops keeps the last good frame
-// on screen and retries quietly, because a graphic that flickers to "Loading"
-// mid-match is worse than a graphic that is a few seconds stale.
-//
-// The feed says what the broadcast is of (`kind`): a tournament sends teams,
-// live matches and sponsors; an event sends what is on now, the programme, the
-// door count and sponsors. Each element reads the part it needs and returns
-// null for the rest, and the same page serves both.
+// and retries quietly.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './studio.module.css';
@@ -35,6 +44,9 @@ import styles from './studio.module.css';
 // that six hours on a venue hotspot is not a problem. The feed answers every
 // element in one request, so this is the only timer in the whole studio.
 const POLL_MS = 1200;
+// A preview in the console is not on air. It may be slower, and eight of them
+// must not cost more than one on-air source.
+const PREVIEW_MS = 4000;
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -148,8 +160,7 @@ function LowerThird({ payload }) {
 function PlayerCard({ payload, data }) {
   // The feed sends `ign`, `id` and `img` for a player. This once read
   // `username`, `name` and `avatar`, none of which exist on that row, so the
-  // match never found anybody and the card never drew. An element that
-  // returns null looks exactly like an element that is switched off.
+  // match never found anybody and the card never drew.
   const teams = data.teams || [];
   const wanted = String(payload.player || '').trim().toLowerCase();
   let player = null;
@@ -251,6 +262,56 @@ function SponsorWall({ payload, data }) {
   );
 }
 
+// A clip or a picture the organiser uploaded, called on by name or by tag.
+//
+// CEO, 3 September: "player brolls ... uploaded to a place in the studio and
+// then can be called on whenever ... then when those things are needed, can be
+// triggered into a live overlay."
+//
+// The feed resolves which asset this is, so the page never looks anything up:
+// a browser source gets one request, and a second round trip to turn a tag
+// into a URL is a second chance to fail with a clip half on screen.
+function Media({ element }) {
+  const asset = element?.asset;
+  const videoRef = useRef(null);
+  const [ended, setEnded] = useState(false);
+
+  // A new clip starts from the beginning, even if the same element was
+  // showing a different one a moment ago.
+  useEffect(() => {
+    setEnded(false);
+    const node = videoRef.current;
+    if (node) {
+      try { node.currentTime = 0; node.play().catch(() => {}); } catch { /* it is muted */ }
+    }
+  }, [asset?.id, asset?.url]);
+
+  if (!asset || !asset.url || ended) return null;
+
+  if (asset.kind === 'video') {
+    return (
+      <div className={styles.media}>
+        <video
+          ref={videoRef}
+          className={styles.mediaVideo}
+          src={asset.url}
+          // Muted, because a browser will not autoplay anything else, and the
+          // sound on a broadcast belongs to the mixer rather than the page.
+          muted
+          autoPlay
+          playsInline
+          onEnded={() => setEnded(true)}
+        />
+      </div>
+    );
+  }
+  return (
+    <div className={styles.media}>
+      <img className={styles.mediaImage} src={asset.url} alt="" />
+    </div>
+  );
+}
+
 // What is on, and what follows it, read from the programme. Nothing to type.
 function NowNext({ data }) {
   const ev = data.event || {};
@@ -316,6 +377,7 @@ const ELEMENTS = {
   player_card: PlayerCard,
   bracket: Bracket,
   sponsors: SponsorWall,
+  media: Media,
   ticker: Ticker,
   intro: (p) => <Titlecard {...p} variant="intro" />,
   outro: (p) => <Titlecard {...p} variant="outro" />,
@@ -326,21 +388,40 @@ const ELEMENTS = {
 
 // ------------------------------------------------------------------- page
 
+/** Which graphic, which broadcast, from either address shape. */
+export function readAddress(parts) {
+  const bits = (parts || []).filter(Boolean).map(String);
+  if (bits.length >= 3) return { token: bits[2], kind: bits[1], slug: bits[0] };
+  if (bits.length === 2) return { token: bits[0], kind: bits[1], slug: null };
+  return { token: '', kind: '', slug: null };
+}
+
 export default function StudioElement({ params }) {
-  const token = String(params?.token || '');
-  const kind = String(params?.kind || '');
+  const { token, kind } = readAddress(params?.parts);
 
   const [feed, setFeed] = useState(null);
   const [retired, setRetired] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const version = useRef('');
   // One request in flight at a time, and a pause after a refusal. An overlay
   // in OBS once asked the API twenty-five times a second (3 September 2026),
-  // and every request counted against the organiser's own address. Eight of
-  // these pages at 1.2 s is already close to seven a second; they must never
-  // stack, and on a 429 they wait longer each time, up to a minute.
+  // and every request counted against the organiser's own address.
   const inFlight = useRef(false);
   const pausedUntil = useRef(0);
   const failures = useRef(0);
+
+  // A preview in the console draws from the current payload whether or not the
+  // graphic is on air, and asks less often. Read once: a browser source never
+  // changes its own address.
+  const [mode] = useState(() => {
+    if (typeof window === 'undefined') return { preview: false, every: POLL_MS };
+    const q = new URLSearchParams(window.location.search);
+    const asked = Number(q.get('every'));
+    return {
+      preview: q.get('preview') === '1',
+      every: Number.isFinite(asked) && asked >= 1000 ? asked : POLL_MS,
+    };
+  });
 
   // Transparent, and nothing else on the page. Set on the document rather than
   // in CSS alone because the browser paints the canvas white before any
@@ -361,7 +442,7 @@ export default function StudioElement({ params }) {
       if (res.status === 429 || res.status >= 500) {
         failures.current += 1;
         pausedUntil.current = Date.now()
-          + Math.min(60000, POLL_MS * (2 ** failures.current));
+          + Math.min(60000, mode.every * (2 ** failures.current));
         return;
       }
       if (!res.ok) return;
@@ -373,40 +454,61 @@ export default function StudioElement({ params }) {
       if (body.data.version === version.current) return;
       version.current = body.data.version;
       setFeed(body.data);
-      // The broadcast is over. Everything is already inactive in this payload,
-      // so the graphic clears on this render, and then there is nothing left
-      // to ask about.
       if (body.data.retired) setRetired(true);
     } catch {
       // Keep the last good frame. A graphic that flickers to an error
-      // mid-match is worse than one that is a few seconds stale, and the next
-      // poll is a second away.
+      // mid-match is worse than one that is a few seconds stale.
       failures.current += 1;
       pausedUntil.current = Date.now()
-        + Math.min(60000, POLL_MS * (2 ** failures.current));
+        + Math.min(60000, mode.every * (2 ** failures.current));
     } finally {
       inFlight.current = false;
     }
-  }, [token]);
+  }, [token, mode.every]);
 
   useEffect(() => {
     if (retired) return undefined;
     read();
-    const timer = setInterval(read, POLL_MS);
+    const timer = setInterval(read, mode.every);
     return () => clearInterval(timer);
-  }, [read, retired]);
+  }, [read, retired, mode.every]);
+
+  const element = feed?.elements?.[kind];
+  const show = mode.preview ? Boolean(element) : Boolean(element?.active);
+  const look = element?.presentation || {};
+
+  // Taken off air: play the exit, then stop drawing. Without this the graphic
+  // vanishes between two frames, which on a broadcast reads as a fault.
+  useEffect(() => {
+    if (show) { setLeaving(false); return undefined; }
+    if (!feed || mode.preview) return undefined;
+    setLeaving(true);
+    const timer = setTimeout(() => setLeaving(false), 420);
+    return () => clearTimeout(timer);
+  }, [show, feed, mode.preview]);
 
   if (!feed || retired) return null;
-
-  const element = feed.elements?.[kind];
-  if (!element?.active) return null;
-
   const Component = ELEMENTS[kind];
   if (!Component) return null;
 
+  // `hold` keeps the surface on screen and takes only the content away, for a
+  // plate that should not flash on every change. CEO, 3 September: "if the bg
+  // of that overlay should not leave or load in and just be present".
+  if (!show && !leaving && !look.hold) return null;
+
+  const entry = look.entry && look.entry !== 'none' ? styles[`in_${look.entry}`] : '';
+  const exitClass = look.exit && look.exit !== 'none' ? styles[`out_${look.exit}`] : '';
+  const stage = [
+    styles.stage,
+    show ? entry : (leaving ? exitClass : ''),
+    !show && look.hold ? styles.held : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <main className={styles.stage}>
-      <Component payload={element.payload || {}} data={feed} />
+    <main className={stage}>
+      {(show || leaving) && (
+        <Component payload={element.payload || {}} data={feed} element={element} />
+      )}
     </main>
   );
 }
