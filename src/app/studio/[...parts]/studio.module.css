@@ -651,3 +651,24 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+
+/* Words on top of a picture or a clip.
+   CEO, 3 September 2026: "if an image is uploaded, there should be a way to set
+   what data should show on it and when." A filled plate rather than a stroke or
+   a shadow, because text over arbitrary artwork has to stay readable whatever
+   is behind it. */
+.mediaCaption {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 8%;
+  padding: 0.7rem 1.1rem;
+  border-radius: 12px;
+  background-color: rgba(19, 19, 22, 0.82);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
