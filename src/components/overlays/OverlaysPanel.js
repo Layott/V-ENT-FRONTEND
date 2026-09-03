@@ -26,6 +26,19 @@ import styles from './overlays-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+//: How often a preview plays its load-in again. Long enough to watch an entry
+//: animation finish and read the graphic, short enough that somebody who just
+//: changed a picture sees it without wondering whether it worked.
+const PREVIEW_REPLAY_MS = 10000;
+
+//: The overlay's own address plus a number that changes, so the frame really
+//: reloads rather than being handed the page it already has. Kept off the
+//: names an overlay uses for itself: `?t=TAG` is the convention every pack
+//: uses to say which team it is about, and this must not disturb it.
+function replayUrl(url, n) {
+  return `${url}${url.includes('?') ? '&' : '?'}vent_replay=${n}`;
+}
+
 export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, showToast }) {
   const tt = useT();
   const [rows, setRows] = useState([]);
@@ -38,6 +51,20 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
+
+  // How many times the previews have replayed.
+  //
+  // CEO, 3 September 2026: "THE PREVIEW SHOULD BE REPLAYING IN A LOOP AND ONCE
+  // SOMETHING IS EDITED THE PREVIEW UPDATES WITH IT AND CONTINUES PREVIEWING IN
+  // A LOOP. IT SHOULD SHOW HOW IT'LL LOAD ON THE LIVE."
+  //
+  // The overlay polls the feed by itself, so its NUMBERS were already live in
+  // the preview. What that does not show is the thing an operator actually
+  // wants to judge: how it arrives. A browser source loads the page once and
+  // the entry animation plays once, so the only way to see the load-in again
+  // is to load it again. Bumping this remounts every frame, which is a real
+  // page load and therefore a real rehearsal.
+  const [replay, setReplay] = useState(0);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showFields, setShowFields] = useState(false);
   const picker = useRef(null);
@@ -69,6 +96,23 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
   }, [kind, ownerRef, token, tt]);
 
   useEffect(() => { load(); }, [load]);
+
+  // The loop. Paused while the tab is in the background, because a stack of
+  // overlays reloading behind a tab nobody is looking at is a laptop fan and
+  // an organiser's data allowance.
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!document.hidden) setReplay((n) => n + 1);
+    }, PREVIEW_REPLAY_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  // "once something is edited the preview updates with it": an upload, a
+  // re-upload or a removal changes this list, and the previews start again
+  // from the new file rather than waiting out the rest of the cycle.
+  useEffect(() => {
+    setReplay((n) => n + 1);
+  }, [rows.map((r) => `${r.id}:${r.url}`).join('|')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const upload = async (file) => {
     if (!file) return;
@@ -336,8 +380,9 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                         than no preview, because it looks like the overlay is
                         broken. The page is served from our own API host and
                         gets no more here than when OBS opens it directly. */}
-                    <iframe className={styles.previewFrame} title={row.name}
-                            src={row.url} loading="lazy" />
+                    <iframe key={`${row.id}-${replay}`}
+                            className={styles.previewFrame} title={row.name}
+                            src={replayUrl(row.url, replay)} loading="lazy" />
                   </div>
                   <code className={styles.url}>{row.url}</code>
                   <div className={styles.rowActions}>
