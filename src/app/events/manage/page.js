@@ -34,6 +34,7 @@ import UserChip from '@/components/user-chip/UserChip';
 // screen behind a stage, and a second copy of this would have drifted.
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
+import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -1870,6 +1871,14 @@ export const ManageEventContent = ({
                 />
               </section>}
 
+              {/* The way into the tournament running inside this event, where
+                  entrants, mixed squads and putting a team straight in live.
+                  An event has ticket holders; it has no competitors of its
+                  own. Without this an organiser looking for "add a team" on
+                  the event console has nowhere to go. */}
+              {tab === 'team' && (
+                <EventTournamentsPanel eventRef={eventRef} token={token} canManage />
+              )}
               {tab === 'team' && <section className={styles.card}>
                   {!canAddManagers ? <p className={styles.muted}>
                       {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with other people. Move it to an organisation to give somebody else the door list and the codes.')}
