@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from './edit-user-profile-details.module.css';
 import { COUNTRIES, isKnownCountry } from '@/constants/countries';
 import { useT } from '@/i18n/LanguageProvider';
 
-const EditUserProfileDetails = ({ fullname, username, description, state, country, countryIsGuess = false, handleInputChange }) => {
+const EditUserProfileDetails = ({ fullname, username, email, description, state, country, countryIsGuess = false, handleInputChange }) => {
   const tt = useT();
 
 
@@ -21,6 +22,35 @@ const EditUserProfileDetails = ({ fullname, username, description, state, countr
             value={username}
             onChange={handleInputChange}
           />
+        </div>
+
+        {/* The address on the account. CEO, 3 September 2026: "users should be
+            able to change the mails linked to their account in their profile".
+            The change itself already existed and worked, on Settings, behind a
+            six digit code sent to the NEW address, which is the part that must
+            not be duplicated: an email change with no proof of the new mailbox
+            is an account takeover. So this shows the address where people look
+            for it and sends them to the one flow that can change it, rather
+            than growing a second one here. */}
+        <div className={styles.inputGroup}>
+          <label htmlFor="account-email">
+            {tt('profile.emailLabel', 'Email address')}
+          </label>
+          <input
+            id="account-email"
+            type="email"
+            name="account-email"
+            value={email || ''}
+            readOnly
+            aria-describedby="account-email-note"
+          />
+          <p id="account-email-note" className={profileStyles.instructionText}>
+            {tt('profile.emailNote', 'Changing this needs a code sent to the new address.')}
+            {' '}
+            <Link className={styles.emailLink} href="/settings?panel=account">
+              {tt('profile.emailChange', 'Change it in Settings')}
+            </Link>
+          </p>
         </div>
 
         <div className={styles.inputGroup}>

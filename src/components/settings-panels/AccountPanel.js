@@ -95,10 +95,12 @@ const AccountPanel = ({
         username: value
       });
       const data = await res.json();
-      showToast?.(data.message || (res.ok ? 'Username updated' : 'Could not update username'));
+      showToast?.(res.ok
+        ? tt('account.usernameSaved', 'Username updated.')
+        : apiMessage(tt, data, 'account.usernameFailed', 'That username was not saved.'));
       if (res.ok) await loadAccount();
     } catch {
-      showToast?.('Could not update username');
+      showToast?.(tt('account.usernameFailed', 'That username was not saved.'));
     } finally {
       setSavingField(null);
     }
@@ -112,12 +114,15 @@ const AccountPanel = ({
       const data = await res.json();
       if (res.ok) {
         setPendingEmail(value);
-        showToast?.(`We sent a six-digit code to ${value}.`);
+        showToast?.(tt('account.codeSent', 'We sent a six-digit code to {email}.')
+          .replace('{email}', value));
       } else {
-        showToast?.(data.message || data.error || 'Could not send the code');
+        // Never `data.message`: the server answers this one with
+        // "Verification token sent to email", which is an engineer's sentence.
+        showToast?.(apiMessage(tt, data, 'account.codeFailed', 'That code was not sent.'));
       }
     } catch {
-      showToast?.('Could not send the code');
+      showToast?.(tt('account.codeFailed', 'That code was not sent.'));
     } finally {
       setSavingField(null);
     }
@@ -133,13 +138,13 @@ const AccountPanel = ({
       if (res.ok) {
         setPendingEmail('');
         setEmailCode('');
-        showToast?.('Email address updated');
+        showToast?.(tt('account.emailSaved', 'Email address updated.'));
         await loadAccount();
       } else {
-        showToast?.(data.message || data.error || 'That code did not match');
+        showToast?.(apiMessage(tt, data, 'account.codeWrong', 'That code did not match.'));
       }
     } catch {
-      showToast?.('That code did not match');
+      showToast?.(tt('account.codeWrong', 'That code did not match.'));
     } finally {
       setSavingField(null);
     }

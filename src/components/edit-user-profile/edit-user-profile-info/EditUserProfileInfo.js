@@ -256,6 +256,9 @@ const EditUserProfileInfo = () => {
             profile_pic: processedData.profile_pic || processedData.profile_picture || null,
             banner: processedData.banner || null,
             username: processedData.username || '',
+            // Shown on the profile, read only: the change itself needs a code
+            // sent to the new address and lives on Settings.
+            email: processedData.email || '',
             fullname: processedData.full_name || processedData.fullname || '',
             description: processedData.description || '',
             country: processedData.country || '',
@@ -303,6 +306,7 @@ const EditUserProfileInfo = () => {
             profile_pic: parsedData.profile_pic || parsedData.profile_picture || null,
             banner: parsedData.banner || null,
             username: parsedData.username || '',
+            email: parsedData.email || '',
             fullname: parsedData.full_name || parsedData.fullname || '',
             description: parsedData.description || '',
             country: parsedData.country || '',
@@ -473,7 +477,7 @@ const EditUserProfileInfo = () => {
             <EditProfileBanner onChange={handleBannerChange} currentBanner={profileData.banner} />
           </div>
         </div>
-        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} description={tx(profileData.description)} country={profileData.country} state={profileData.state} countryIsGuess={!!profileData.country_is_guess} handleInputChange={handleInputChange} />
+        <EditUserProfileDetails fullname={profileData.fullname} username={profileData.username} email={profileData.email} description={tx(profileData.description)} country={profileData.country} state={profileData.state} countryIsGuess={!!profileData.country_is_guess} handleInputChange={handleInputChange} />
         <EditInterests selectedInterests={profileData.interests} handleInterestsChange={handleInterestsChange} />
         <div className={styles.buttonContainer}>
           <button className={`btn redBTN ${styles.saveChangesBTN}`} type="submit" disabled={loading}>
