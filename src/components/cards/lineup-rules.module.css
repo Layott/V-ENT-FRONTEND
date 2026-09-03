@@ -1,0 +1,250 @@
+/* Picking an EAFC squad. Filled surfaces, no strokes, nothing that pulses.
+
+   The pitch is a filled surface a step off the panel with the halfway line and
+   the centre circle drawn as fills rather than as 1px strokes, so it reads as a
+   pitch without a single hairline. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.subTitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-top: 1.4rem;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}
+
+.deadline {
+  color: var(--v-ent-gold, #D4AF37);
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+.error {
+  color: #FF6B6B;
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+.formations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.chip:hover:enabled { background-color: #33343a; color: #fff; }
+.chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.chip:disabled { color: rgba(255, 255, 255, 0.35); cursor: default; }
+
+.chipOn {
+  background-color: var(--v-ent-gold, #D4AF37);
+  color: #131316;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+/* ------------------------------------------------------------- the form */
+
+.bench {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 1.4rem;
+}
+
+.count {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.92rem;
+}
+
+.save {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.94rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.save:hover:enabled { background-color: #ff2229; }
+.save:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.save:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+/* ----------------------------------------------------------------- search */
+
+.search {
+  margin-top: 1.2rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.searchHead {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.7rem 0.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ghost {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.ghost:hover { color: #fff; background-color: #3d3e45; }
+.ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .save { flex: 1 1 100%; }
+  .pitch { max-width: 100%; }
+}
+
+.state {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.94rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.field {
+  flex: 1 1 15rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.3rem;
+}
+
+.primary {
+  composes: save;
+}
+
+.secondary {
+  composes: save;
+  background-color: #33343a;
+}
+
+.secondary:hover:enabled { background-color: #3d3e45; }
+
+@media (max-width: 720px) {
+  .primary, .secondary, .ghost { flex: 1 1 100%; }
+}

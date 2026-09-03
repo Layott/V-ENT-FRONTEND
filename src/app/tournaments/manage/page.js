@@ -21,6 +21,8 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
+import LineupPicker from '@/components/cards/LineupPicker';
+import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import styles from './manage.module.css';
@@ -39,6 +41,12 @@ const TABS = [{
 }, {
   id: 'participants',
   label: 'Participants'
+}, {
+  // A player's EAFC squad for this tournament. Its own tab because it is the
+  // one thing on this console a PLAYER does rather than an organiser, and the
+  // deadline that governs it is set here too.
+  id: 'lineup',
+  label: 'Lineup'
 }, {
   // Asking named players and teams, as opposed to the invite codes on the
   // Actions tab which anybody holding one can spend.
@@ -302,6 +310,16 @@ const ManageContent = ({ slug }) => {
               {access?.can_manage && (
                 <ResultsDesk tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
               )}
+            </>}
+            {tab === 'lineup' && <>
+              {/* The organiser's half: when lineups open and close. Above the
+                  picker because the deadline governs it. */}
+              {access?.can_manage && (
+                <LineupRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
+                                  token={token} showToast={showToast} />
+              )}
+              <LineupPicker tournamentRef={tournament.slug || tournament.tournament_id}
+                            token={token} showToast={showToast} />
             </>}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'invitations' && <>
