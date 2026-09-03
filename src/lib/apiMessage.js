@@ -81,12 +81,36 @@ const MACHINE = new RegExp([
   'IntegrityError',
 ].join('|'), 'i');
 
+/** Whether `.message` on this object was written by the API for a person.
+ *
+ *  27 call sites hand this function a CAUGHT ERROR rather than a parsed body:
+ *
+ *      catch (err) { setError(apiMessage(tt, err, key, english)); }
+ *
+ *  A browser's own failure carries `message` too, and it is not a sentence
+ *  anybody wrote: "Failed to fetch" in Chrome, "NetworkError when attempting
+ *  to fetch resource" in Firefox, "Load failed" in Safari. None names anything
+ *  a reader can act on, all are English on a page that may be French, and none
+ *  contains a word the machine-text list looks for. So the console showed the
+ *  CEO "Failed to fetch" during a deploy, on 3 September.
+ *
+ *  An API envelope always carries `status`. An `ApiError` is trusted because it
+ *  was built FROM an envelope and carries the server's own code and message; a
+ *  bare `Error` is not.
+ */
+const wroteItForAPerson = (data) => {
+  if (!data || typeof data !== 'object') return false;
+  if (data instanceof Error) return data.name === 'ApiError';
+  return typeof data.status === 'string' || 'code' in data;
+};
+
 export const apiMessage = (t, data, key, english) => {
   const code = data?.code;
   if (code) {
     const translated = fill(t(`api.${code}`, ''), data);
     if (translated) return translated;
   }
+  if (!wroteItForAPerson(data)) return t(key, english);
   // The server's own sentence, but only when it was written for a person.
   //
   // The CEO was shown "Authorization header with a Bearer token is required"

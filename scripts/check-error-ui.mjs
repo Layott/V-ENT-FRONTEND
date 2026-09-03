@@ -227,6 +227,53 @@ for (const f of FIXTURES) {
       + ` got ${found ? 'a report' : 'silence'})`);
   }
 }
+// apiMessage is the fix every call site is pointed at, so what it does with a
+// BROWSER failure decides whether any of them are safe. 27 call sites hand it
+// a caught error, and a browser's own message carries no word this checker
+// looks for: on 3 September the console showed the CEO "Failed to fetch"
+// during a deploy. Run the real function against the real shapes.
+{
+  const src = fs.readFileSync(path.join('src', 'lib', 'apiMessage.js'), 'utf8')
+    .replace(/^export const /mg, 'const ')
+    .replace(/^export default.*/mg, '');
+  // eslint-disable-next-line no-new-func
+  const apiMessage = new Function(`${src}; return apiMessage;`)();
+  const t = (key, english) => (key === 'api.TOO_LATE' ? 'Too late.' : english);
+  class ApiError extends Error {
+    constructor(message, opts = {}) {
+      super(message);
+      this.name = 'ApiError';
+      this.code = opts.code;
+      this.status = opts.status;
+    }
+  }
+  const GENERIC = 'Could not load that.';
+  const cases = [
+    ['chrome', new TypeError('Failed to fetch'), GENERIC],
+    ['firefox', new TypeError('NetworkError when attempting to fetch resource.'), GENERIC],
+    ['safari', new TypeError('Load failed'), GENERIC],
+    ['a parse error', new Error('Unexpected token < in JSON at position 0'), GENERIC],
+    ['nothing at all', null, GENERIC],
+    // And the two it must still let through, or the fix would have cost the
+    // specific errors worth reading.
+    ['a translated code', { status: 'error', code: 'TOO_LATE' }, 'Too late.'],
+    ['the server, specific', { status: 'error', code: 'X', message: 'All 64 places have been taken' },
+      'All 64 places have been taken'],
+    ['an ApiError from a body', new ApiError('All 64 places have been taken', { code: 'FULL' }),
+      'All 64 places have been taken'],
+  ];
+  for (const [name, input, expected] of cases) {
+    const got = apiMessage(t, input, 'api.generic', GENERIC);
+    if (got !== expected) {
+      selfTestFailures += 1;
+      console.log(`BAD  apiMessage: ${name} gave ${JSON.stringify(got)},`
+        + ` expected ${JSON.stringify(expected)}`);
+    } else if (process.argv.includes('--self-test')) {
+      console.log(`ok   apiMessage: ${name}`);
+    }
+  }
+}
+
 if (selfTestFailures) {
   console.log('');
   console.log(`${selfTestFailures} self-test(s) failed: fix the checker before`
