@@ -202,8 +202,33 @@ function PlayerCard({ payload, data }) {
       )}
       <div className={styles.cardBody}>
         <div className={styles.cardName}>{player.ign}</div>
-        {team && <div className={styles.cardTeam}>{team.name}</div>}
+        {/* Who they are here, and who they actually play for when the side is
+            a squad assembled for this tournament: "Nigeria, Lagos Lions". */}
         {team && (
+          <div className={styles.cardTeam}>
+            {team.name}
+            {player.represents && player.represents !== team.name
+              ? `, ${player.represents}` : ''}
+          </div>
+        )}
+        {/* THEIR record, not their side's.
+
+            CEO's rule for the Rivalry Series: a player can win their own match
+            while their country loses the fixture, and both must be recorded.
+            This card used to draw the side's record under the player's name,
+            so on production it read "Layott 0W 1L" on the day Layott won 2-0
+            and Nigeria lost the tie 2-3. That is precisely the thing the two
+            tables exist to keep apart.
+
+            A tournament that is not a league gives a player no record of their
+            own, and then the side's is the only one there is. */}
+        {player.record?.played > 0 ? (
+          <div className={styles.cardStat}>
+            {player.record.won}W {player.record.lost}L
+            {' '}&middot;{' '}
+            {player.record.goals_for}-{player.record.goals_against}
+          </div>
+        ) : team && (
           <div className={styles.cardStat}>
             {place(team.place)} &middot; {team.won}W {team.lost}L
           </div>
