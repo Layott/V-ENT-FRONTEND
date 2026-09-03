@@ -433,6 +433,40 @@ function Doors({ data }) {
  * not, because a broken image on a broadcast is the one outcome that must be
  * impossible.
  */
+/** One card inside the squad depth graphic.
+ *
+ * Its own component because it needs its own state: the frame and the portrait
+ * come from Futbin's CDN and fail SEPARATELY, and a card that has lost one of
+ * them must still draw. Written flat first, which meant a failed image left the
+ * browser's broken-glyph on a graphic that was on air. That is the one outcome
+ * the fallback exists to prevent, and the picker's FutCard already prevented
+ * it, so this was the same component twice with only one of them right.
+ */
+function SquadCard({ slot }) {
+  const [frameBroken, setFrameBroken] = useState(false);
+  const [faceBroken, setFaceBroken] = useState(false);
+
+  const kind = String(slot?.item_type || '').toLowerCase();
+  const band = styles[`sq_${kind}`] || styles.sq_gold;
+  const showFrame = slot?.frame_url && !frameBroken;
+  const showFace = slot?.image_url && !faceBroken;
+
+  return (
+    <div className={`${styles.sqCard} ${showFrame ? '' : band}`}>
+      {showFrame && (
+        <img className={styles.sqFrame} src={slot.frame_url} alt=""
+             onError={() => setFrameBroken(true)} />
+      )}
+      {showFace && (
+        <img className={styles.sqFace} src={slot.image_url} alt=""
+             onError={() => setFaceBroken(true)} />
+      )}
+      <span className={styles.sqRating}>{slot?.rating}</span>
+      <span className={styles.sqName}>{slot?.name}</span>
+    </div>
+  );
+}
+
 function SquadDepth({ element }) {
   const lineup = element?.lineup;
   const shape = element?.formation_slots || [];
@@ -442,23 +476,7 @@ function SquadDepth({ element }) {
   for (const slot of lineup.slots || []) bySlot[slot.slot_index] = slot;
   const bench = (lineup.slots || []).filter((s) => s.slot_index >= 11);
 
-  const band = (card) => {
-    const kind = String(card?.item_type || '').toLowerCase();
-    return styles[`sq_${kind}`] || styles.sq_gold;
-  };
-
-  const card = (slot, key) => (
-    <div key={key} className={styles.sqCard}>
-      {slot?.frame_url
-        ? <img className={styles.sqFrame} src={slot.frame_url} alt="" />
-        : <span className={`${styles.sqFrame} ${band(slot)}`} />}
-      {slot?.image_url && (
-        <img className={styles.sqFace} src={slot.image_url} alt="" />
-      )}
-      <span className={styles.sqRating}>{slot?.rating}</span>
-      <span className={styles.sqName}>{slot?.name}</span>
-    </div>
-  );
+  const card = (slot, key) => <SquadCard key={key} slot={slot} />;
 
   return (
     <div className={styles.squad}>
