@@ -127,6 +127,13 @@ export const ManageEventContent = ({
   const [myOrgs, setMyOrgs] = useState([]);
   const [eventOrg, setEventOrg] = useState(null);
   const [savingOrg, setSavingOrg] = useState(false);
+  // Where the event actually is. The map on the public page says "the
+  // organiser has not pinned this venue" when there is no coordinate, and
+  // until now there was nowhere to pin one: the edit endpoint has taken
+  // `map_link` all along and no screen sent it.
+  const [venueDraft, setVenueDraft] = useState({ venue_name: '', map_link: '', directions: '' });
+  const [venueLoaded, setVenueLoaded] = useState(null);
+  const [savingVenue, setSavingVenue] = useState(false);
   const [metrics, setMetrics] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [audience, setAudience] = useState(null);
@@ -265,6 +272,27 @@ export const ManageEventContent = ({
     setManagers(m.body?.data?.results || []);
     setCanAddManagers(!!m.body?.data?.can_add);
     setEventOrg(m.body?.data?.organization || null);
+
+    // The venue, read from the event itself. The console asks fourteen
+    // endpoints about the tickets and none of them about where the thing is.
+    fetch(`${API}/event/view-event/${eventRef}/`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(res => res.json())
+      .then(body => {
+        const ev = body?.data?.event || body?.data || {};
+        setVenueLoaded({
+          latitude: ev.latitude ?? null,
+          longitude: ev.longitude ?? null,
+          location: ev.location || '',
+        });
+        setVenueDraft({
+          venue_name: ev.venue_name || '',
+          map_link: ev.map_link || '',
+          directions: ev.directions || '',
+        });
+      })
+      .catch(() => setVenueLoaded(null));
 
     // The organisations this person may put an event under. A separate request
     // because it is not about this event: it is about them, and it is the same
@@ -591,6 +619,39 @@ export const ManageEventContent = ({
     await load();
   };
 
+  // Where the event is, and the pin the public map needs.
+  //
+  // CEO, 4 September 2026: "what does it also mean by organizer has not
+  // pinned?" It means latitude and longitude are unset, which nobody could do
+  // anything about: `map_link` has been accepted by the edit endpoint the
+  // whole time and no screen ever sent it. Pasting the link is the whole
+  // interaction, because `Event.save()` reads the coordinate out of it. Typing
+  // two numbers by hand is the step where a venue ends up in the Gulf of
+  // Guinea, so this asks for the link instead.
+  const saveVenue = async () => {
+    if (savingVenue) return;
+    setSavingVenue(true);
+    setNotice('');
+    setError('');
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        venue_name: venueDraft.venue_name,
+        map_link: venueDraft.map_link,
+        directions: venueDraft.directions,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingVenue(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(tt('manage.venueSaved', 'Venue saved.'));
+    await load();
+  };
+
   // Move this event into an organisation.
   //
   // CEO, 4 September 2026: "there is no way to add events to an organization",
@@ -793,6 +854,44 @@ export const ManageEventContent = ({
                   <p className={styles.cardHint}>
                     {tt('manage.tierHint', 'What people can buy. Add a type at any time, correct a price, or open more when one sells out. How many are sold is counted from the tickets themselves and cannot be typed.')}
                   </p>
+
+                  {/* Where it is, and the pin the public map needs.
+                      CEO, 4 September 2026: "what does it also mean by
+                      organizer has not pinned?" */}
+                  {venueLoaded && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.venueTitle', 'Where it is')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {venueLoaded.latitude != null && venueLoaded.longitude != null
+                        ? tt('manage.venuePinned', 'This venue is pinned, so the event page draws a map of it.')
+                        : tt('manage.venueNotPinned', 'The event page cannot draw a map yet. Paste the venue link from Google Maps below and the pin is taken from it, so nobody has to type coordinates.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.venueName', 'Venue name')}</span>
+                        <input className={styles.input} value={venueDraft.venue_name}
+                               placeholder={venueLoaded.location || tt('manage.venueNamePlaceholder', 'The Celebr8 Centre')}
+                               onChange={e => setVenueDraft(v => ({ ...v, venue_name: e.target.value }))} />
+                      </label>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.venueMapLink', 'Google Maps link')}</span>
+                        <input className={styles.input} value={venueDraft.map_link}
+                               placeholder="https://maps.app.goo.gl/..."
+                               onChange={e => setVenueDraft(v => ({ ...v, map_link: e.target.value }))} />
+                      </label>
+                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                              disabled={savingVenue} onClick={saveVenue}>
+                        {savingVenue ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                      </button>
+                    </div>
+                    <label className={styles.capacityField}>
+                      <span className={styles.label}>{tt('manage.venueDirections', 'How to find it')}</span>
+                      <input className={styles.input} value={venueDraft.directions}
+                             placeholder={tt('manage.venueDirectionsPlaceholder', 'Second gate on Vori Close, parking behind the hall')}
+                             onChange={e => setVenueDraft(v => ({ ...v, directions: e.target.value }))} />
+                    </label>
+                  </div>}
 
                   {capacity && <div className={capacity.over_capacity
                       ? styles.capacityWarn : styles.capacityBox}>
