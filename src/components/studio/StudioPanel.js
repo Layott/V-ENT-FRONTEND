@@ -121,6 +121,37 @@ const entryLabels = (tt) => ({
   none: tt('studio.entry.none', 'Just appears'),
 });
 
+// Where on the frame a graphic sits. The LIST comes from the server's own
+// catalogue; only the words are here, and a name with no word falls back to the
+// name. A second list in the console is a position an operator can pick and the
+// server then refuses.
+//
+// CEO, 4 September 2026: "SHould also be able to move the position of
+// overlays... this mostly affect lower thirds."
+/** A pixel nudge from a text box, kept a number the API will accept.
+ *
+ *  Empty means zero rather than nothing: an operator clearing the box is
+ *  saying "no nudge", and sending '' would be refused as not a number.
+ */
+const numberFrom = (text) => {
+  const cleaned = String(text).replace(/[^0-9-]/g, '').replace(/(?!^)-/g, '');
+  if (cleaned === '' || cleaned === '-') return 0;
+  return Math.max(-800, Math.min(800, Number(cleaned)));
+};
+
+const positionLabels = (tt) => ({
+  as_designed: tt('studio.pos.asDesigned', 'Where the design puts it'),
+  top_left: tt('studio.pos.topLeft', 'Top left'),
+  top_centre: tt('studio.pos.topCentre', 'Top centre'),
+  top_right: tt('studio.pos.topRight', 'Top right'),
+  middle_left: tt('studio.pos.middleLeft', 'Middle left'),
+  centre: tt('studio.pos.centre', 'Middle'),
+  middle_right: tt('studio.pos.middleRight', 'Middle right'),
+  bottom_left: tt('studio.pos.bottomLeft', 'Bottom left'),
+  bottom_centre: tt('studio.pos.bottomCentre', 'Bottom centre'),
+  bottom_right: tt('studio.pos.bottomRight', 'Bottom right'),
+});
+
 const exitLabels = (tt) => ({
   fade: tt('studio.exit.fade', 'Fades out'),
   drop: tt('studio.exit.drop', 'Drops away'),
@@ -167,6 +198,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const AUTO = autoFor(tt);
   const ENTRY = entryLabels(tt);
   const EXIT = exitLabels(tt);
+  const PLACE = positionLabels(tt);
 
   // One refresh in flight at a time, and a pause after a refusal. The console
   // asks every five seconds for the whole broadcast; on a venue connection
@@ -467,6 +499,42 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                         ))}
                       </select>
                     </label>
+                    <label className={styles.lookField}>
+                      <span className={styles.fieldLabel}>{tt('studio.position', 'Sits')}</span>
+                      <select className={styles.select}
+                              value={el.presentation?.position || 'as_designed'}
+                              onChange={(e) => push(elementKind, {
+                                payload: { options: { ...(el.payload?.options || {}), position: e.target.value } },
+                              })}>
+                        {(live.presentation_options?.positions || []).map((value) => (
+                          <option key={value} value={value}>{PLACE[value] || value}</option>
+                        ))}
+                      </select>
+                    </label>
+                    {/* Only once it has been moved. A nudge on a graphic
+                        sitting where its design put it does nothing, and a
+                        control that does nothing is worse than none. */}
+                    {el.presentation?.position && el.presentation.position !== 'as_designed' && (
+                      <label className={styles.lookField}>
+                        <span className={styles.fieldLabel}>
+                          {tt('studio.nudge', 'Nudge, in pixels')}
+                        </span>
+                        <span className={styles.nudge}>
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('studio.nudgeX', 'Across')}
+                                 value={el.presentation?.offset_x ?? 0}
+                                 onChange={(e) => push(elementKind, {
+                                   payload: { options: { ...(el.payload?.options || {}), offset_x: numberFrom(e.target.value) } },
+                                 })} />
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('studio.nudgeY', 'Down')}
+                                 value={el.presentation?.offset_y ?? 0}
+                                 onChange={(e) => push(elementKind, {
+                                   payload: { options: { ...(el.payload?.options || {}), offset_y: numberFrom(e.target.value) } },
+                                 })} />
+                        </span>
+                      </label>
+                    )}
                     <label className={styles.lookCheck}>
                       <input type="checkbox" checked={Boolean(el.presentation?.hold)}
                              onChange={(e) => push(elementKind, {
@@ -505,6 +573,33 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   ))}
                 </select>
               </label>
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.position', 'Sits')}</span>
+                <select className={styles.select}
+                        value={live.defaults?.position || 'as_designed'}
+                        onChange={(e) => setDefaults({ position: e.target.value })}>
+                  {(live.presentation_options?.positions || []).map((value) => (
+                    <option key={value} value={value}>{PLACE[value] || value}</option>
+                  ))}
+                </select>
+              </label>
+              {live.defaults?.position && live.defaults.position !== 'as_designed' && (
+                <label className={styles.lookField}>
+                  <span className={styles.fieldLabel}>
+                    {tt('studio.nudge', 'Nudge, in pixels')}
+                  </span>
+                  <span className={styles.nudge}>
+                    <input className={styles.nudgeInput} inputMode="numeric"
+                           aria-label={tt('studio.nudgeX', 'Across')}
+                           value={live.defaults?.offset_x ?? 0}
+                           onChange={(e) => setDefaults({ offset_x: numberFrom(e.target.value) })} />
+                    <input className={styles.nudgeInput} inputMode="numeric"
+                           aria-label={tt('studio.nudgeY', 'Down')}
+                           value={live.defaults?.offset_y ?? 0}
+                           onChange={(e) => setDefaults({ offset_y: numberFrom(e.target.value) })} />
+                  </span>
+                </label>
+              )}
               <label className={styles.lookCheck}>
                 <input type="checkbox" checked={Boolean(live.defaults?.hold)}
                        onChange={(e) => setDefaults({ hold: e.target.checked })} />

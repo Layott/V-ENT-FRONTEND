@@ -672,3 +672,99 @@
   line-height: 1.2;
   text-align: center;
 }
+
+/* ====================================================================
+   WHERE A GRAPHIC SITS ON THE FRAME
+
+   CEO, 4 September 2026: "SHould also be able to move the position of
+   overlays, whether they load in at the centre bottom or center top, or top
+   right or top left or middle or middle right, etc. this mostly affect lower
+   thirds."
+
+   These rules are LAST in this file on purpose. Every element above anchors
+   itself with its own `position: absolute` and its own left/top, and CSS
+   Modules keep file order, so a later rule of equal specificity wins. That is
+   what lets one pair of rules move any element without editing twenty of them
+   and without a single `!important`.
+
+   `as_designed` adds no class at all, so a graphic that has not been moved is
+   drawn by exactly the rules it always was. That is the default, and it is why
+   shipping this could not move anything already on air.
+
+   The safe area is 5% of the frame, which is 96px across and 54px down at
+   1920x1080. Broadcasters cut into the edges and a lower third flush to the
+   bottom is a lower third with its descenders shaved off.
+   ==================================================================== */
+
+.positioned {
+  --vent-safe-x: 5%;
+  --vent-safe-y: 5%;
+  /* The nudge, set inline from `offset_x` and `offset_y`. Zero unless an
+     operator has moved it. */
+  --vent-dx: 0px;
+  --vent-dy: 0px;
+}
+
+/* The anchoring is done on the direct child, because the child IS the graphic:
+   the stage is the whole 1920x1080 frame. Everything is cleared first so an
+   element that anchored itself with `right` or `bottom` cannot fight the new
+   anchor and end up stretched across the frame. */
+.positioned > * {
+  bottom: auto;
+  left: auto;
+  margin: 0;
+  position: absolute;
+  right: auto;
+  top: auto;
+}
+
+/* Top row */
+.at_top_left > * {
+  left: var(--vent-safe-x);
+  top: var(--vent-safe-y);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+.at_top_centre > * {
+  left: 50%;
+  top: var(--vent-safe-y);
+  transform: translate(calc(-50% + var(--vent-dx)), var(--vent-dy));
+}
+.at_top_right > * {
+  right: var(--vent-safe-x);
+  top: var(--vent-safe-y);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+
+/* Middle row */
+.at_middle_left > * {
+  left: var(--vent-safe-x);
+  top: 50%;
+  transform: translate(var(--vent-dx), calc(-50% + var(--vent-dy)));
+}
+.at_centre > * {
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + var(--vent-dx)), calc(-50% + var(--vent-dy)));
+}
+.at_middle_right > * {
+  right: var(--vent-safe-x);
+  top: 50%;
+  transform: translate(var(--vent-dx), calc(-50% + var(--vent-dy)));
+}
+
+/* Bottom row, which is where a lower third lives */
+.at_bottom_left > * {
+  bottom: var(--vent-safe-y);
+  left: var(--vent-safe-x);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+.at_bottom_centre > * {
+  bottom: var(--vent-safe-y);
+  left: 50%;
+  transform: translate(calc(-50% + var(--vent-dx)), var(--vent-dy));
+}
+.at_bottom_right > * {
+  bottom: var(--vent-safe-y);
+  right: var(--vent-safe-x);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}

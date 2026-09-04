@@ -702,14 +702,33 @@ export default function StudioElement({ params }) {
 
   const entry = look.entry && look.entry !== 'none' ? styles[`in_${look.entry}`] : '';
   const exitClass = look.exit && look.exit !== 'none' ? styles[`out_${look.exit}`] : '';
+
+  // Where on the frame this sits, and a nudge off that anchor.
+  //
+  // CEO, 4 September 2026: "SHould also be able to move the position of
+  // overlays... this mostly affect lower thirds."
+  //
+  // `as_designed` adds NO class, so a graphic sits where its own CSS put it.
+  // That is the default and it is the whole safety of this: any other default
+  // would have moved every graphic already on air the day it shipped.
+  const place = look.position && look.position !== 'as_designed'
+    ? `${styles.positioned} ${styles[`at_${look.position}`] || ''}` : '';
+  const nudge = (Number(look.offset_x) || Number(look.offset_y))
+    ? {
+      '--vent-dx': `${Number(look.offset_x) || 0}px`,
+      '--vent-dy': `${Number(look.offset_y) || 0}px`,
+    }
+    : undefined;
+
   const stage = [
     styles.stage,
+    place,
     show ? entry : (leaving ? exitClass : ''),
     !show && look.hold ? styles.held : '',
   ].filter(Boolean).join(' ');
 
   return (
-    <main className={stage}>
+    <main className={stage} style={nudge}>
       {(show || leaving) && (
         <Component payload={element.payload || {}} data={feed} element={element} />
       )}
