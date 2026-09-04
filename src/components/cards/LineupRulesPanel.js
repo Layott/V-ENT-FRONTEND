@@ -39,7 +39,8 @@ function forInput(value) {
   } catch { return ''; }
 }
 
-export default function LineupRulesPanel({ tournamentRef, token, showToast }) {
+export default function LineupRulesPanel({ tournamentRef, token, showToast,
+                                          onChanged }) {
   const tt = useT();
   const [rules, setRules] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -110,6 +111,11 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast }) {
       }
       showToast?.(tt('rules.saved', 'Saved.'));
       await load();
+      // The picker sits underneath and loaded its window once, on mount. Turn
+      // lineups on here and it still read "This tournament is not using
+      // lineups" until the page was reloaded, which is a control that looks
+      // like it did nothing. Seen in a Chrome walk on 4 September 2026.
+      onChanged?.();
     } catch (err) {
       setError(apiMessage(tt, err, 'rules.saveFailed', 'That was not saved.'));
     } finally {
