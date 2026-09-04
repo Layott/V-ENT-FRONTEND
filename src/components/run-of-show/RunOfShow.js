@@ -340,7 +340,6 @@ export default function RunOfShow({ sheet, compact = false }) {
               key={d.id}
               type="button"
               role="tab"
-              aria-pressed={index === dayIndex}
               aria-selected={index === dayIndex}
               className={`${styles.dayChip} ${index === dayIndex ? styles.dayChipOn : ''}`}
               onClick={() => { setPickedDay(true); setDayIndex(index); }}
