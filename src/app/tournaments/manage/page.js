@@ -23,6 +23,7 @@ import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
+import SquadReviewPanel from '@/components/cards/SquadReviewPanel';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import styles from './manage.module.css';
@@ -128,6 +129,9 @@ const ManageContent = ({ slug }) => {
     window.history.replaceState(null, '', url.toString());
   }, []);
   const [toast, setToast] = useState(null);
+  // Bumped when the organiser changes the lineup deadline, so the picker below
+  // remounts and reads the new window instead of the one it loaded on mount.
+  const [lineupEpoch, setLineupEpoch] = useState(0);
   const showToast = msg => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
@@ -316,10 +320,25 @@ const ManageContent = ({ slug }) => {
                   picker because the deadline governs it. */}
               {access?.can_manage && (
                 <LineupRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
-                                  token={token} showToast={showToast} />
+                                  token={token} showToast={showToast}
+                                  onChanged={() => setLineupEpoch((n) => n + 1)} />
               )}
-              <LineupPicker tournamentRef={tournament.slug || tournament.tournament_id}
-                            token={token} showToast={showToast} />
+              {/* The other half of the organiser's job: the rules a squad has
+                  to satisfy, and accepting or sending back what comes in.
+                  Both endpoints existed with no screen until 4 September. */}
+              {access?.can_manage && (
+                <SquadReviewPanel key={`squads-${lineupEpoch}`}
+                                  tournamentRef={tournament.slug || tournament.tournament_id}
+                                  token={token} showToast={showToast}
+                                  onDecided={() => setLineupEpoch((n) => n + 1)} />
+              )}
+              {/* `key` so turning lineups on above genuinely reopens this,
+                  rather than leaving a picker that says the tournament is not
+                  using lineups next to the switch that just enabled them. */}
+              <LineupPicker key={`lineup-${lineupEpoch}`}
+                            tournamentRef={tournament.slug || tournament.tournament_id}
+                            token={token} showToast={showToast}
+                            onSubmitted={() => setLineupEpoch((n) => n + 1)} />
             </>}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'invitations' && <>

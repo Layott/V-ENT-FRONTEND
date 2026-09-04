@@ -53,11 +53,27 @@
   line-height: 1.5;
 }
 
+/* Twenty-eight formations, in three bands. A player who plays a back three
+   should not have to read the eighteen names beginning with a four, and
+   twenty-eight loose chips is a wall rather than a choice. The label is the
+   only thing separating them: a heading and space, never a line. */
+
+.formationGroup { margin-top: 1rem; }
+
+.groupLabel {
+  display: block;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
 .formations {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
-  margin-top: 1rem;
 }
 
 .chip {
@@ -86,13 +102,20 @@
 /* ------------------------------------------------------------------ pitch */
 
 .pitch {
+  /* The card width for everything on the pitch. FutCard scales its whole
+     layout from this one number, so a phone gets smaller cards rather than a
+     second set of rules that can drift from the first. */
+  /* 80px, not 92: a card is 1.4x its width, and at 92 the goalkeeper's card
+     ran into the centre backs. Seen on 4 September 2026. */
+  --fut-w: clamp(54px, 11vw, 80px);
   position: relative;
   margin-top: 1rem;
   width: 100%;
   max-width: 640px;
   /* Taller than wide: a pitch seen from behind the goal, which is how every
      squad screen in this genre draws it. */
-  aspect-ratio: 3 / 4;
+  /* Taller than 3/4 so eleven cards have room between the lines. */
+  aspect-ratio: 5 / 7;
   border-radius: 14px;
   background-color: #1d3a26;
   overflow: hidden;
@@ -130,6 +153,7 @@
 /* --------------------------------------------------------- bench and footer */
 
 .bench {
+  --fut-w: clamp(58px, 12vw, 92px);
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -169,6 +193,42 @@
 .save:hover:enabled { background-color: #ff2229; }
 .save:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .save:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+/* Handing it in. A different act from saving, so a different control, and the
+   one that carries the platform's committing colour. */
+.submit {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-success, #4caf50);
+  color: #0d1a0f;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.94rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.submit:hover:enabled { background-color: #59bd5d; }
+.submit:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.submit:disabled {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: default;
+}
+
+.unsaved { color: var(--v-ent-gold, #D4AF37); }
+
+/* Why a disabled control is disabled, next to the control. A button that is
+   merely greyed out tells nobody anything. */
+.whyNot {
+  margin-top: 0.6rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
 
 /* ----------------------------------------------------------------- search */
 
@@ -220,6 +280,8 @@
 .ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .results {
+  /* Read rather than glanced at, so bigger than the pitch cards. */
+  --fut-w: 104px;
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
@@ -230,6 +292,11 @@
 
 @media (max-width: 720px) {
   .panel { padding: 1rem; }
-  .save { flex: 1 1 100%; }
+  .save,
+  .submit { flex: 1 1 100%; }
   .pitch { max-width: 100%; }
+  /* The results grid is the one place cards are read rather than glanced at,
+     so they stay legible on a phone rather than shrinking with everything
+     else. Four per row at 390px. */
+  .results { --fut-w: 84px; }
 }

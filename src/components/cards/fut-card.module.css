@@ -1,15 +1,27 @@
-/* One EAFC card: the Futbin frame, the portrait, and the numbers over both.
+/* One EAFC card, drawn from the data.
 
-   Filled surfaces and no strokes. The bands below are what a card falls back
-   to when its art will not load, and they are chosen so a card is still
-   readable at 64px on a stream: a flat fill, dark text on the light bands and
-   light text on the dark ones. No glow, no ring, nothing that pulses. */
+   The card is a real design here rather than a label over somebody else's
+   picture. It carries the rating, the position, the nation, the portrait, the
+   name, the club and all six stats, and it carries them with no network at
+   all: Futbin's frame art is a layer on top when it loads and nothing when it
+   does not.
+
+   ONE LAYOUT, EVERY SIZE. `--fut-w` is the width; the font size is derived
+   from it and every measurement below is in `em`. A 76px card on a phone pitch
+   and a 156px card in a search result are the same rules, so they cannot drift
+   apart the way two sets of pixel values do.
+
+   Filled surfaces and no strokes. No glow, no ring, nothing that pulses. */
 
 .card {
   position: relative;
   display: block;
+  width: var(--fut-w, 108px);
+  height: calc(var(--fut-w, 108px) * 1.4);
+  /* Everything inside is em, so this one line scales the whole card. */
+  font-size: calc(var(--fut-w, 108px) / 9);
   border: none;
-  border-radius: 10px;
+  border-radius: calc(var(--fut-w, 108px) / 9);
   overflow: hidden;
   background-color: #2a2b30;
   color: #fff;
@@ -17,108 +29,216 @@
   padding: 0;
   cursor: default;
   outline: none;
+  text-align: left;
 }
 
 button.card { cursor: pointer; }
 .card:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
-.sm { width: 64px; height: 84px; }
-.md { width: 108px; height: 142px; }
-.lg { width: 156px; height: 206px; }
+/* Sizes set the one variable and nothing else. `fit` sets none of them, so it
+   takes whatever the pitch or the bench has put on `--fut-w`, which is how the
+   pitch stays responsive without a second layout. */
+.sm { --fut-w: 76px; }
+.md { --fut-w: 108px; }
+.lg { --fut-w: 156px; }
+.fit { /* inherits --fut-w from its container */ }
 
-/* The two layers from Futbin. The frame is the card art, the portrait sits on
-   it. Both are `object-fit: contain` so a file at an unexpected size is
-   letterboxed rather than stretched. */
-.frame,
-.face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.face {
-  /* The portrait is drawn inside the frame, not over its edges. */
-  padding: 14% 12% 26%;
-}
-
-/* ------------------------------------------------------- the fallback bands */
-/* Only applied when the frame image is absent or failed. A flat fill each,
-   never a gradient: a card that has lost its art should look deliberate. */
+/* ------------------------------------------------------------- the surfaces */
+/* One flat fill each, no gradient anywhere. The face of the card comes from
+   the layout and the flat panel behind the stats, which is surface and space,
+   the way the design rules ask for. A metallic sweep would read as the kind of
+   decorative wash those rules ban, and at 76px on a pitch it would read as
+   mud. */
 
 .gold   { background-color: #b8912f; color: #1d1707; }
 .silver { background-color: #9ba0a6; color: #16181a; }
 .bronze { background-color: #9a6b43; color: #1c1108; }
-.icon   { background-color: #e9dcb4; color: #201b0c; }
+.icon   { background-color: #e0cf9c; color: #201b0c; }
 .hero   { background-color: #7d3fa0; color: #fff; }
 .special{ background-color: #23252b; color: #fff; }
 
-.rating {
+/* Futbin's card art, when it answers. Behind everything the card says. */
+.frame {
   position: absolute;
-  top: 8%;
-  left: 10%;
-  font-size: 1.05em;
-  font-weight: var(--fw-bold, 700);
-  line-height: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
-.sm .rating { font-size: 0.82rem; }
-.md .rating { font-size: 1.05rem; }
-.lg .rating { font-size: 1.45rem; }
+/* With real art behind it, the text needs its own footing rather than the
+   band's. A flat panel, never a blur. */
+.hasArt .head,
+.hasArt .name,
+.hasArt .club,
+.hasArt .stats {
+  background-color: rgba(12, 12, 14, 0.62);
+  border-radius: 0.25em;
+}
+
+/* ------------------------------------------------------- the top left column */
+
+.head {
+  position: absolute;
+  top: 0.55em;
+  left: 0.6em;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  padding: 0.1em 0.2em;
+}
+
+.rating {
+  font-size: 1.55em;
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: -0.02em;
+}
 
 .position {
-  position: absolute;
-  top: 8%;
-  right: 10%;
-  font-size: 0.62em;
-  letter-spacing: 0.04em;
-  opacity: 0.85;
+  font-size: 0.72em;
+  font-weight: var(--fw-semi-bold, 600);
+  letter-spacing: 0.06em;
+  margin-top: 0.15em;
 }
 
-.sm .position { font-size: 0.55rem; }
-.md .position { font-size: 0.66rem; }
-.lg .position { font-size: 0.8rem; }
+.nation {
+  font-size: 0.6em;
+  letter-spacing: 0.08em;
+  opacity: 0.78;
+  margin-top: 0.25em;
+}
+
+/* ---------------------------------------------------------------- the player */
+
+.face {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  top: 0.2em;
+  width: 68%;
+  height: 52%;
+  object-fit: contain;
+  object-position: bottom right;
+}
+
+/* What is drawn when there is no portrait. Initials on the band, never the
+   browser's broken-image glyph, for the same reason Avatar and Banner draw a
+   filled surface. */
+.faceless {
+  position: absolute;
+  z-index: 1;
+  right: 0.5em;
+  top: 0.9em;
+  width: 2.4em;
+  height: 2.4em;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  font-weight: var(--fw-bold, 700);
+  opacity: 0.72;
+}
+
+/* ------------------------------------------------------- the name and stats */
 
 .name {
   position: absolute;
-  left: 6%;
-  right: 6%;
-  bottom: 22%;
+  z-index: 2;
+  left: 0.35em;
+  right: 0.35em;
+  bottom: 3.05em;
   text-align: center;
-  font-size: 0.62rem;
+  font-size: 0.82em;
   font-weight: var(--fw-semi-bold, 600);
-  line-height: 1.15;
-  /* Two lines at most: a long name must not push the numbers off the card. */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  padding: 0.12em 0.1em;
+  /* One line: a wrapped name pushes the numbers off the card. */
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.sm .name { font-size: 0.5rem; bottom: 8%; }
-.lg .name { font-size: 0.78rem; }
+.club {
+  position: absolute;
+  z-index: 2;
+  left: 0.35em;
+  right: 0.35em;
+  bottom: 2.45em;
+  text-align: center;
+  font-size: 0.58em;
+  opacity: 0.72;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.1em;
+}
 
+/* Two rows of three, the way the game lays them out, on a flat panel one step
+   darker than the card. The panel is what separates the numbers from the band
+   without a rule between them. */
 .stats {
   position: absolute;
-  left: 5%;
-  right: 5%;
-  bottom: 5%;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.46rem;
-  letter-spacing: 0.02em;
-  opacity: 0.9;
+  z-index: 2;
+  left: 0.35em;
+  right: 0.35em;
+  bottom: 0.35em;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.05em 0.1em;
+  padding: 0.22em 0.1em;
+  border-radius: 0.3em;
+  background-color: rgba(0, 0, 0, 0.17);
 }
 
-.lg .stats { font-size: 0.58rem; }
-.stat b { font-weight: var(--fw-bold, 700); margin-right: 0.12em; }
+.stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.16em;
+  line-height: 1.15;
+  /* A grid child sizes to its content and pushes the row wide unless told
+     otherwise. This is the fault that clipped the bottom navigation. */
+  min-width: 0;
+}
+
+.stat b {
+  font-size: 0.66em;
+  font-weight: var(--fw-bold, 700);
+}
+
+.stat i {
+  font-size: 0.5em;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  opacity: 0.72;
+}
+
+/* Whose slot this is, under the card, for a pitch that is already full. */
+.caption {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 0.05em;
+  text-align: center;
+  font-size: 0.55em;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+}
 
 /* ------------------------------------------------------------ an empty slot */
 /* Filled surface with the position written in it, never a dashed outline. */
 
 .empty {
   background-color: #33343a;
+  background-image: none;
   color: rgba(255, 255, 255, 0.45);
   display: flex;
   align-items: center;
@@ -128,21 +248,23 @@ button.card { cursor: pointer; }
 .empty:hover { background-color: #3d3e45; color: rgba(255, 255, 255, 0.7); }
 
 .emptySlot {
-  font-size: 0.66rem;
+  font-size: 0.78em;
+  font-weight: var(--fw-semi-bold, 600);
   letter-spacing: 0.06em;
 }
 
 .remove {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  z-index: 3;
+  top: 0.25em;
+  right: 0.25em;
+  width: 1.4em;
+  height: 1.4em;
+  border-radius: 0.4em;
   background-color: rgba(0, 0, 0, 0.55);
   color: #fff;
-  font-size: 0.8rem;
-  line-height: 20px;
+  font-size: 0.85em;
+  line-height: 1.4em;
   text-align: center;
   cursor: pointer;
 }

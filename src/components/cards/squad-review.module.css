@@ -1,0 +1,288 @@
+/* The organiser's squad screen: the rules, then the queue.
+
+   Same surfaces and spacing as the lineup panel beside it, because they are two
+   halves of one job and an organiser moves between them. Filled surfaces one
+   step off the panel, no strokes, no glow. Status is a word and a colour. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.subTitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-top: 1.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}
+
+.smallHint {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.82rem;
+  margin-top: 0.45rem;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+.warn {
+  color: var(--v-ent-gold, #D4AF37);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 0.8rem;
+  max-width: 68ch;
+}
+
+.error {
+  color: #FF6B6B;
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+.waiting {
+  color: var(--v-ent-gold, #D4AF37);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ------------------------------------------------------------- the rules */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  /* A grid child sizes to its content and pushes the row past the viewport
+     unless told otherwise. */
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.84rem;
+  margin-bottom: 0.35rem;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.7rem 0.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.2rem 0 1rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  cursor: pointer;
+  outline: none;
+}
+
+.chip:hover { background-color: #33343a; color: #fff; }
+.chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Selected means BANNED here, so it takes the refusing colour rather than the
+   platform's accent. A chip that means "not allowed" should not look chosen. */
+.chipOn {
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.save {
+  min-height: 46px;
+  margin-top: 0.9rem;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.94rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.save:hover:enabled { background-color: #ff2229; }
+.save:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.save:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+/* ------------------------------------------------------------- the queue */
+
+.row {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.player {
+  flex: 1 1 8rem;
+  min-width: 0;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.state {
+  flex: 0 0 auto;
+  font-size: 0.86rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.draft { color: rgba(255, 255, 255, 0.45); }
+.submitted { color: var(--v-ent-gold, #D4AF37); }
+.accepted { color: var(--v-ent-success, #4caf50); }
+.rejected { color: var(--v-ent-red, #ED1C24); }
+
+.formation {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.86rem;
+}
+
+.ghost {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.ghost:hover { color: #fff; background-color: #3d3e45; }
+.ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.note {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #e0e1e5;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.cards {
+  --fut-w: clamp(64px, 11vw, 94px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.decide {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.decide .input { flex: 1 1 16rem; }
+
+.accept,
+.reject {
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 0 1.2rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+
+.accept { background-color: var(--v-ent-success, #4caf50); color: #0d1a0f; }
+.accept:hover:enabled { background-color: #59bd5d; }
+.reject { background-color: #3d3e45; color: #fff; }
+.reject:hover:enabled { background-color: var(--v-ent-red, #ED1C24); }
+
+.accept:focus-visible,
+.reject:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.accept:disabled,
+.reject:disabled {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: default;
+}
+
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .save,
+  .accept,
+  .reject { flex: 1 1 100%; }
+}
