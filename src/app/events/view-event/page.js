@@ -1240,6 +1240,17 @@ export const ViewEventContent = ({
             {activeTab === 'schedule' && <div className={styles.scheduleTab}>
                 <h2 className={styles.sectionTitle}>{tt("ui.event.schedule.1878", "Event schedule")}</h2>
                 <EventSchedule eventRef={id} />
+                {/* The run of show, when the organiser has published one. It
+                    is a different document to the schedule above: minute by
+                    minute, who owns each cue, what is on air right now. The
+                    link appears only when there is something behind it, and
+                    only when it is public - a link only sheet is unlisted by
+                    definition and must not be advertised by its own event. */}
+                {event?.has_run_of_show && (event?.slug || id) && <Link
+                  className={styles.runOfShowLink}
+                  href={`/events/${event?.slug || id}/run-of-show`}>
+                  {tt('ros.openFromEvent', 'Open the run of show, minute by minute')}
+                </Link>}
               </div>}
 
             {/* TICKETS */}

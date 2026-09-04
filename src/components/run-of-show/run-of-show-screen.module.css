@@ -1,0 +1,80 @@
+/* The shell around a run of show page.
+ *
+ * Copied from the event page rather than invented: same page background, same
+ * 60px header offset, same 180px and 250px sidebar steps. A page that sits
+ * one sidebar width off from every other page is the thing design parity is
+ * actually about.
+ */
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.main {
+  width: 100%;
+}
+
+.pane {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 0.5rem 0 5rem;
+}
+
+.shareRow {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  display: flex;
+}
+
+.waiting {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.skel {
+  display: block;
+  height: 64px;
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.signedOut {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.86rem;
+}
+
+.signInLink {
+  color: var(--v-ent-gold);
+  text-decoration: none;
+}
+
+.signInLink:hover {
+  color: var(--v-ent-light-gold);
+}
+
+@media only screen and (min-width: 768px) {
+  .pane {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 0.75rem 0.5rem 5rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .pane {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 1rem 1rem 5rem;
+  }
+}

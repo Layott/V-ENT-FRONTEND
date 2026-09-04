@@ -1,0 +1,346 @@
+/* The organiser's side of the run of show.
+ *
+ * Sections rather than one long scroll, because that is the complaint the CEO
+ * made about the production tab and it applies here first: bringing the sheet
+ * in, deciding who sees it, the days, one more cue, corrections, and the
+ * preview are six different jobs and each gets its own surface.
+ */
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.title {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.2rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  margin: 0;
+}
+
+.hint,
+.blockHint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 72ch;
+}
+
+.block {
+  background-color: #2a2b30;
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.blockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.blockName {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  margin: 0;
+}
+
+.error {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff9aa0;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.notice {
+  background-color: rgba(76, 175, 80, 0.14);
+  color: var(--v-ent-success-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+.actions,
+.modeRow,
+.switchRow,
+.shareRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.chip {
+  min-height: 40px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.chipOn {
+  /* Off-white, not #fff. Pure white is banned as a surface and at chip size
+     it also glares against the dark page. */
+  background-color: #ececef;
+  color: #131316;
+  font-weight: var(--fw-semi-bold);
+}
+
+.chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primaryBtn {
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  background-color: var(--v-ent-success);
+  color: #0e1a0f;
+  font-size: 0.87rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.primaryBtn:hover {
+  background-color: var(--v-ent-success-light);
+}
+
+.primaryBtn:disabled {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+}
+
+.ghostBtn {
+  min-height: 44px;
+  padding: 0.6rem 0.95rem;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.dangerBtn {
+  min-height: 40px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  background-color: rgba(237, 28, 36, 0.16);
+  color: #ff9aa0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.dangerBtn:hover {
+  background-color: rgba(237, 28, 36, 0.26);
+}
+
+.dangerBtn:disabled,
+.ghostBtn:disabled,
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* The file input itself is never seen: it cannot be styled to match anything
+   and every browser draws it differently. The button beside it opens it. */
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+}
+
+.input,
+.textarea {
+  background-color: #33343a;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.87rem;
+  padding: 0.6rem 0.7rem;
+  min-height: 44px;
+  min-width: 0;
+  width: 100%;
+  font-family: inherit;
+}
+
+.textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.pasteBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* -------------------------------------------------------------------- days */
+
+.dayList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dayRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto auto;
+  gap: 0.5rem;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.count {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------- cues */
+
+.cueForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.cueForm .input {
+  flex: 1 1 11rem;
+  width: auto;
+}
+
+.cueList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-height: 34rem;
+  overflow-y: auto;
+}
+
+.cueDay {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cueDayName {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0.3rem 0 0;
+}
+
+.cueRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  min-width: 0;
+}
+
+.cueTime {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.83rem;
+  color: rgba(255, 255, 255, 0.8);
+  flex: 0 0 3.4rem;
+}
+
+.cueName {
+  flex: 1 1 12rem;
+  min-width: 0;
+  color: #fff;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.cueOwner {
+  background-color: rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: 0.16rem 0.42rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.74rem;
+}
+
+/* ----------------------------------------------------------------- preview */
+
+.preview {
+  background-color: #1c1d21;
+  border-radius: 14px;
+  padding: 0.9rem;
+  min-width: 0;
+}
+
+.skelRow {
+  display: block;
+  height: 54px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 0.9rem;
+  }
+
+  .dayRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cueForm .input {
+    flex-basis: 100%;
+  }
+}

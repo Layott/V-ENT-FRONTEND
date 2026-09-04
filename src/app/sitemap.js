@@ -110,6 +110,26 @@ export default async function sitemap() {
       lastModified: e.last_updated || e.event_date,
     }));
 
+  // The run of show, where an organiser has published one. Its own address
+  // rather than a fragment of the event page, because it is a document people
+  // search for by name ("rivalry series run of show") and share on its own.
+  // Only `public` sheets carry the flag; a link only one is unlisted by
+  // definition and must never reach a sitemap.
+  const runOfShowPages = [
+    ...tournaments
+      .filter((t) => t?.slug && !t.is_draft && t.has_run_of_show)
+      .map((t) => entry(`/tournaments/${t.slug}/run-of-show`, {
+        changeFrequency: 'daily',
+        priority: 0.5,
+      })),
+    ...events
+      .filter((e) => e?.slug && e.is_active !== false && e.has_run_of_show)
+      .map((e) => entry(`/events/${e.slug}/run-of-show`, {
+        changeFrequency: 'daily',
+        priority: 0.5,
+      })),
+  ];
+
   const teamPages = teams
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
@@ -131,6 +151,6 @@ export default async function sitemap() {
     }));
 
   // entry() returns one row per language, so the lists arrive nested.
-  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages,
-          ...clubPages, ...orgPages].flat();
+  return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
+          ...teamPages, ...clubPages, ...orgPages].flat();
 }

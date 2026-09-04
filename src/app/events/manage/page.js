@@ -35,6 +35,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
+import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -44,7 +45,8 @@ const formatDateTime = value => (value
   })
   : '');
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
-  'programme', 'queue', 'influencers', 'promos', 'production', 'team'];
+  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'production',
+  'team'];
 // The tab used to be called overlays, before the studio existed for events.
 // Links carrying the old name still open the right place.
 const TAB_ALIASES = { overlays: 'production' };
@@ -1858,6 +1860,13 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- team */}
+              {tab === 'run-of-show' && <RunOfShowPanel
+                kind="event"
+                ownerRef={eventRef}
+                token={token}
+                showToast={setNotice}
+              />}
+
               {tab === 'production' && <section className={styles.card}>
                 {/* The studio: V-ENT's own graphics for an event, bound to the
                     programme and the door, each with a URL for a browser

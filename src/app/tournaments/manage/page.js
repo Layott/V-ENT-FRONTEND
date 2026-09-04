@@ -25,6 +25,7 @@ import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
+import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -55,6 +56,12 @@ const TABS = [{
 }, {
   id: 'brackets',
   label: 'Brackets'
+}, {
+  // The minute by minute for the day. Beside Production because it is the
+  // document the gallery and the desk both read off, and the same panel an
+  // event console renders.
+  id: 'run-of-show',
+  label: 'Run of show'
 }, {
   id: 'production',
   label: 'Production'
@@ -330,6 +337,11 @@ const ManageContent = ({ slug }) => {
               <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
             </>}
             {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
+            {tab === 'run-of-show' && (
+              <RunOfShowPanel kind="tournament"
+                              ownerRef={tournament.slug || tournament.tournament_id}
+                              token={token} showToast={showToast} />
+            )}
             {tab === 'production' && <>
               {/* The studio. V-ENT's own graphics, bound to this tournament,
                   each with a URL for a browser source. Replaces a panel that

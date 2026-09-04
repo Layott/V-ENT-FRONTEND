@@ -46,6 +46,11 @@ export default function robots() {
           '/organizations/*/manage', // roles, invites, and the profile form
           '/studio/',         // broadcast graphics: transparent pages meant
                               // for a browser source, meaningless in search
+          '/run-of-show/',    // the share address for a run of show. The
+                              // public one lives on its event and is in the
+                              // sitemap; this token address is unlisted by
+                              // definition and indexing it would publish
+                              // every link only sheet anybody has shared
           '/s/',              // a shortened link is a second address for a page
                               // that already has one; indexing it splits the
                               // ranking between the two
@@ -58,7 +63,8 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
-                   '/events/check-in/', '/s/', '/studio/', '/production'],
+                   '/events/check-in/', '/s/', '/studio/', '/production',
+                   '/run-of-show/'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

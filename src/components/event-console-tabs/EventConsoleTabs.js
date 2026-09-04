@@ -32,6 +32,10 @@ export const CONSOLE_TABS = [
   ['polls', 'console.tabPolls', 'Polls'],
   ['holds', 'console.tabHolds', 'Holds'],
   ['programme', 'console.tabProgramme', 'Programme'],
+  // The minute by minute for the day: what happens, who owns it, how
+  // long it runs. Beside Programme rather than inside it, because the
+  // two answer different questions for different people.
+  ['run-of-show', 'console.tabRunOfShow', 'Run of show'],
   ['queue', 'console.tabQueue', 'Waiting list'],
   ['influencers', 'console.tabInfluencers', 'Influencers'],
   ['promos', 'console.tabPromos', 'Promo codes'],
