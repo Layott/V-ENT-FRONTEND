@@ -1,0 +1,136 @@
+/* Words on top of a broadcast graphic.
+ *
+ * Deliberately small. Everything about WHERE a layer sits and HOW it arrives
+ * belongs to `src/app/studio/[...parts]/studio.module.css`, which already owns
+ * the nine positions, the safe area and the one-shot entries and exits. This
+ * file only says what a run of words looks like once it has been put there.
+ *
+ * Two rules the frame's stylesheet imposes on everything here:
+ *
+ *   `.positioned > *` clears left, top, right, bottom and sets position on the
+ *   direct child, and `.at_<place> > *` then anchors it with a transform. So
+ *   nothing below may set position, inset or transform on `.box`. Those two
+ *   rules and this file have the same specificity, and the order two CSS
+ *   modules land in is not something either of them decides.
+ *
+ *   The raster is 1920x1080 and a browser source is that size, so a font size
+ *   in pixels lands where the operator asked for it.
+ */
+
+/* The pack's three faces.
+ *
+ * They are also declared in `elements/rivalry.module.css`, which is loaded only
+ * when a Rivalry graphic draws. A text layer can sit on any of the graphics, so
+ * a layer asking for the display face on a scorebar would otherwise silently
+ * get the fallback. The files are the same URLs, so a browser fetches each once
+ * however many stylesheets name it.
+ *
+ * Every one of the three weights the contract allows is mapped to a REAL file,
+ * including where a family has no cut at that exact number. A weight a font
+ * does not have is drawn synthetically by the browser, and a synthetic bold on
+ * a condensed face is visible on air. That is the whole reason the contract
+ * offers three weights rather than a free number. */
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerCondensed';
+  font-weight: 400;
+  src: url('/fonts/rivalry/BarlowCondensed-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerCondensed';
+  font-weight: 600;
+  src: url('/fonts/rivalry/BarlowCondensed-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerCondensed';
+  font-weight: 800;
+  src: url('/fonts/rivalry/BarlowCondensed-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerDisplay';
+  font-weight: 400;
+  src: url('/fonts/rivalry/monumentextended-regular.otf') format('opentype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerDisplay';
+  font-weight: 600;
+  src: url('/fonts/rivalry/monumentextended-regular.otf') format('opentype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerDisplay';
+  font-weight: 800;
+  src: url('/fonts/rivalry/monumentextended-ultrabold.otf') format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerAccent';
+  font-weight: 400;
+  src: url('/fonts/rivalry/Astronum-Medium.otf') format('opentype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerAccent';
+  font-weight: 600;
+  src: url('/fonts/rivalry/Astronum-Bold.otf') format('opentype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'VentLayerAccent';
+  font-weight: 800;
+  src: url('/fonts/rivalry/Astronum-Black.otf') format('opentype');
+}
+
+/* The four built in families, as stacks rather than as bare names, so a face
+   that has not finished loading still draws in the house font instead of in
+   whatever the browser keeps for an unnamed sans. The renderer picks one of
+   these by name; a font the organiser uploaded is put in front of the house
+   stack inline, because its family name only exists at run time. */
+.layers {
+  --vent-f-house: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  --vent-f-condensed: 'VentLayerCondensed', 'ClashGrotesk-Variable', system-ui, sans-serif;
+  --vent-f-display: 'VentLayerDisplay', 'ClashGrotesk-Variable', system-ui, sans-serif;
+  --vent-f-accent: 'VentLayerAccent', 'ClashGrotesk-Variable', system-ui, sans-serif;
+
+  /* Above every graphic, and deaf to the mouse. A browser source is not
+     clicked, and in the console preview the layers must not swallow a press
+     meant for the panel underneath. */
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* One layer's own frame. Absolute and full bleed, so the anchor rules in
+   studio.module.css resolve their percentages against the 1920x1080 raster
+   rather than against whatever the graphic happens to be the size of. */
+.spot {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* The words. No position, no inset, no transform: see the file header. */
+.box {
+  max-width: 82%;
+}
+
+.words {
+  /* Block, because the entry animations translate and a transform does nothing
+     to an inline box. */
+  display: block;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  /* A newline the operator typed is a newline on air. */
+  white-space: pre-wrap;
+  /* Neutral, downward, low opacity: the same separation every graphic on this
+     page uses. Text over live video needs it, and a coloured or centred bloom
+     is the banned kind. */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+}

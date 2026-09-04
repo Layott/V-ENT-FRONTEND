@@ -1,0 +1,50 @@
+/* C6 play area frame.
+ *
+ * The same plate as C3, because the pack draws both from one function. Every
+ * number is `desk_frame()`'s in `CLAUDE/VIDEOS/RIVALRY/stream_more.py`:
+ *
+ *   .plate  left 96px, bottom 104px, padding 26px 42px, gap 10px
+ *   .plk    Monument 800 at 38px, white
+ *   .pln    Barlow Condensed 600 at 24px, letter-spacing .24em, panel edge
+ *
+ * Square corners, deliberately. The pack's `.card` radius belongs to the cards
+ * and this slab is not one: shot beside the original on 4 September it was the
+ * one difference the parity pass found.
+ *
+ * Kept as its own file rather than shared with C3, because these two are the
+ * only place the pack's furniture appears and a shared fifth file would put a
+ * hop between the graphic and its measurements. If a third camera frame ever
+ * arrives, that is the moment to pull them together.
+ *
+ * Nothing in here paints the middle of the stage. The game is under it.
+ */
+
+.plate {
+  background: var(--panel);
+  bottom: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  left: 96px;
+  padding: 26px 42px;
+  position: absolute;
+}
+
+/* Uppercase in the rule rather than in the words, so a venue name typed in
+ * mixed case reads the way the pack's own line does. */
+.plk {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 38px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pln {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}

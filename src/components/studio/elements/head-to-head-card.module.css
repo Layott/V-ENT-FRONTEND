@@ -1,0 +1,330 @@
+/* B4, head to head. The client's own `Head_2_head.png`, animated.
+ *
+ * Every measurement here is copied from `RIVALRY/stream_client.py::head2head()`
+ * and its `CLIENT_CSS`, which is the pack's rebuild of that artwork and the
+ * version the client approved. Change it there first if it ever moves.
+ *
+ * The frame is 1920x1080 and every number is a pixel inside it, so an OBS
+ * browser source of that size lands them where the designer put them.
+ *
+ * Nothing paints behind it. Their shipped file has no ground and no `opaque`
+ * class, so the graphic stands on transparency and the operator lays whatever
+ * they want underneath. A filled page here would cover the video feed.
+ */
+
+.h2h {
+  /* The palette measured off their two PNGs rather than picked. These are the
+   * artwork's colours, not the engine's, so they are not in
+   * `rivalry.module.css`: that file carries what `stream.py` decides and this
+   * card is drawn from `stream_client.py`. Scoped to this element. */
+  --row: #30483C;      /* the row block and the stat box */
+  --deep: #183024;     /* the deeper box behind it on Head 2 Head */
+  --accent: #00CC18;   /* the accent green, and the lightning in the ground */
+  --pts: #00A032;      /* the points block, and their name plate */
+}
+
+/* ------------------------------------------------------------ the marks */
+
+.marks {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 40px;
+}
+
+.cade {
+  height: auto;
+  width: 104px;
+}
+
+.mark {
+  height: auto;
+  width: 212px;
+}
+
+/* ------------------------------------------------------------ the title */
+
+/* Their title: a vertical green gradient with a darker face under it, flat.
+ * No bloom, and their own artwork does not carry one either. */
+.title {
+  -webkit-background-clip: text;
+  animation: h2hDropIn 620ms cubic-bezier(0.16, 1, 0.3, 1) 340ms both;
+  background: linear-gradient(180deg, #5FE87A 0%, #12A94E 58%, #007033 100%);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--astro);
+  font-size: 140px;
+  font-weight: 900;
+  left: 0;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 282px;
+}
+
+/* --------------------------------------------------------- the portraits */
+
+/* Their frame is two portraits bleeding off the outside edges with everything
+ * else stacked down the middle.
+ *
+ * Theirs were a set of ten cut-outs built to one eye line, so the pack could
+ * give an exact box. A studio picture here is whatever the organiser uploaded,
+ * so the slot holds it bottom first and the picture is never drawn above its
+ * own resolution: `width:auto` under a ceiling means the browser draws the file
+ * at its own size until the box is the smaller of the two. That is the rule
+ * `portrait()` enforces in the pack, in the only form CSS can carry it.
+ */
+.fig {
+  align-items: flex-end;
+  bottom: -60px;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  width: 760px;
+}
+
+.figL {
+  animation: h2hSlideIn 700ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  left: -60px;
+}
+
+.figR {
+  animation: h2hSlideInR 700ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+  right: -60px;
+}
+
+.figImg {
+  display: block;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+}
+
+/* ------------------------------------------------------------- the rows */
+
+.rows {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 452px;
+}
+
+.row {
+  align-items: stretch;
+  animation: h2hGrowW 460ms cubic-bezier(0.7, 0, 0.2, 1) both;
+  display: flex;
+  height: 82px;
+  width: 812px;
+}
+
+/* Their four rows arrive 110ms apart and the plates follow the last one. */
+.row:nth-child(1) { animation-delay: 540ms; }
+.row:nth-child(2) { animation-delay: 650ms; }
+.row:nth-child(3) { animation-delay: 760ms; }
+.row:nth-child(4) { animation-delay: 870ms; }
+
+/* The client's boxes carry a green outline. It is drawn as a filled plate with
+ * an inset fill on top of it, so the structure is surface rather than a
+ * hairline, and it reads the same at broadcast size. */
+.val,
+.key {
+  background: var(--accent);
+  display: flex;
+  position: relative;
+}
+
+.val {
+  width: 274px;
+}
+
+.key {
+  flex: 1;
+}
+
+.valL {
+  clip-path: polygon(4% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.valR {
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
+}
+
+.valFill,
+.keyFill {
+  align-items: center;
+  display: flex;
+  font-family: var(--bc);
+  font-weight: 800;
+  inset: 2px;
+  justify-content: center;
+  position: absolute;
+}
+
+.valFill {
+  background: var(--deep);
+  color: #fff;
+  font-size: 46px;
+}
+
+.keyFill {
+  background: var(--row);
+  color: var(--accent);
+  font-size: 40px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.valL .valFill {
+  clip-path: polygon(4% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.valR .valFill {
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
+}
+
+/* ----------------------------------------------------- the empty figures */
+
+/* The row object with one sentence in it, in the place the figures would have
+ * taken. A blank frame reads to an operator as a dead browser source, and they
+ * spend the next minute reloading OBS instead of watching the match. */
+.tbc {
+  animation: h2hGrowW 460ms cubic-bezier(0.7, 0, 0.2, 1) 540ms both;
+  background: var(--accent);
+  display: flex;
+  height: 82px;
+  left: 554px;
+  position: absolute;
+  top: 452px;
+  width: 812px;
+}
+
+.tbcFill {
+  align-items: center;
+  background: var(--row);
+  color: var(--accent);
+  display: flex;
+  font-family: var(--bc);
+  font-size: 34px;
+  font-weight: 800;
+  inset: 2px;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  position: absolute;
+  text-align: center;
+}
+
+/* ------------------------------------------------------- the name plates */
+
+/* Their own plate is a white tab and a green name block. The tab is for the
+ * team logo, which Layo said in as many words on 4 September: it had the origin
+ * code in it, which put the country in the most prominent slot on the frame and
+ * left the org unnamed. */
+.plate {
+  align-items: stretch;
+  animation: h2hDropIn 520ms cubic-bezier(0.16, 1, 0.3, 1) 980ms both;
+  bottom: 66px;
+  display: flex;
+  height: 70px;
+  position: absolute;
+}
+
+.plateL {
+  left: 70px;
+}
+
+.plateR {
+  flex-direction: row-reverse;
+  right: 70px;
+}
+
+/* `scale-down` rather than `contain`: it fits the tile and stops at the file's
+ * own size, so a small mark is drawn small instead of enlarged. */
+.pw {
+  background: var(--paper);
+  display: block;
+  flex: none;
+  height: 70px;
+  object-fit: scale-down;
+  padding: 10px 12px;
+  width: 104px;
+}
+
+.pg {
+  align-items: baseline;
+  background: var(--pts);
+  display: flex;
+  gap: 16px;
+  padding: 0 30px;
+}
+
+.pgName {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 34px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pgNote {
+  color: #BFEFCF;
+  font-family: var(--bc);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.plateL .pg {
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+}
+
+.plateR .pg {
+  clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* ---------------------------------------------------------- the entrances */
+
+/* The pack's own three, at its own timings. Nothing loops. */
+@keyframes h2hSlideIn {
+  from { opacity: 0; transform: translateX(-46px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes h2hSlideInR {
+  from { opacity: 0; transform: translateX(46px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes h2hDropIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes h2hGrowW {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figL,
+  .figR,
+  .plate,
+  .row,
+  .tbc,
+  .title {
+    animation: none;
+  }
+}

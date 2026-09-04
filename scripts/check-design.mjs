@@ -107,19 +107,49 @@ const RULES = [
   },
 ];
 
+//: An exception written at the place it applies, with the reason attached:
+//
+//    /* design-allow pure-black-or-white: the white plate a client's badge is
+//       drawn on. A logo made for white disappears on a dark row. */
+//    background: #fff;
+//
+// Preferred over adding a pattern to ALLOWED, which widens the rule for the
+// whole codebase to excuse one line. The rule id is required and the reason is
+// required: an exception nobody can read is an exception nobody can review.
+const ALLOW_HERE = /design-allow\s+([a-z-]+)\s*:\s*(?!\*\/)\S/;
+
 export function findingsIn(source, file = '<source>') {
   const out = [];
   const lines = source.split(/\r?\n/);
+  // Which rule the comment above this line excuses, if any. Cleared by the
+  // first line that is not blank and not part of that comment, so an exception
+  // covers the one declaration it was written for and not the rest of the file.
+  let allowHere = '';
+  // A reason worth writing rarely fits on one line, so the exception is allowed
+  // to run over. Nothing between the marker and the closing `*\/` clears it.
+  let stillReading = false;
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
+    const asked = ALLOW_HERE.exec(line);
+    if (asked) {
+      allowHere = asked[1];
+      stillReading = !line.includes('*/');
+      continue;
+    }
+    if (stillReading) {
+      if (line.includes('*/')) stillReading = false;
+      continue;
+    }
     const excused = ALLOWED.some((ok) => ok.test(line));
     for (const rule of RULES) {
       if (excused && !NO_COMMENT_PASS.has(rule.id)) continue;
+      if (allowHere === rule.id) continue;
       if (rule.test.test(line)) {
         out.push({ file, line: i + 1, id: rule.id, why: rule.why,
                    text: line.trim().slice(0, 90) });
       }
     }
+    if (line.trim() && !line.trim().startsWith('*')) allowHere = '';
   }
   return out;
 }
@@ -159,6 +189,25 @@ const CASES = [
    '.spinner { animation: spin 0.7s linear infinite; }', 0],
   ['a spinner ring is how a spinner is drawn',
    '.spinner { border: 3px solid rgba(255,255,255,0.1); }', 0],
+  ['an exception written at the place it applies, with a reason',
+   '/* design-allow pure-black-or-white: the plate a badge is drawn on */\n'
+   + '  background: #fff;', 0],
+  ['and it covers one declaration, not the rest of the file',
+   '/* design-allow pure-black-or-white: the plate a badge is drawn on */\n'
+   + '  background: #fff;\n  color: #222;\n  background: #fff;', 1],
+  ['an exception naming a different rule does not excuse this one',
+   '/* design-allow hairline: something else entirely */\n'
+   + '  background: #fff;', 1],
+  ['an exception with no reason is not an exception',
+   '/* design-allow pure-black-or-white: */\n  background: #fff;', 1],
+  ['a reason that runs over several lines still excuses the line it is for',
+   '/* design-allow pure-black-or-white: the plate a badge is drawn on.\n'
+   + '   A logo drawn for white disappears on a dark row. */\n'
+   + '  background: #fff;', 0],
+  ['and it still stops at the declaration it was written for',
+   '/* design-allow pure-black-or-white: the plate a badge is drawn on.\n'
+   + '   A logo drawn for white disappears on a dark row. */\n'
+   + '  background: #fff;\n  color: #222;\n  background: #fff;', 1],
 ];
 
 if (process.argv.includes('--self-test')) {
@@ -218,7 +267,8 @@ if (fresh.length) {
     console.error(`      ${f.text}`);
   }
   console.error('\nThese are hard rules in CLAUDE.md. Fix them, or if one is a');
-  console.error('genuine exception, add it to ALLOWED with the reason.');
+  console.error('genuine exception, write a /* design-allow <rule>: why */');
+  console.error('comment on the line above it, or add it to ALLOWED.');
   process.exit(1);
 }
 

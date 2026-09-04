@@ -217,8 +217,42 @@ function countdown(secs) {
   return h ? `${h}:${two(m)}:${two(secs % 60)}` : `${m}:${two(secs % 60)}`;
 }
 
+/** A nation as the broadcast pack writes it: NG, GH, KN, SN, CIV.
+ *
+ * Two of these are not the ISO code. The pack uses KN for Kenya and SN for
+ * Senegal, and its boards, its lower thirds and its tables all agree with each
+ * other, so a graphic drawing KE beside four that draw KN would be the odd one
+ * out on air rather than the correct one.
+ *
+ * Written here rather than in a graphic because two of them had an identical
+ * copy within an hour of each other, which is how two boards start disagreeing
+ * about what to call Ivory Coast.
+ *
+ * Anything the map has never heard of is cut to three letters rather than given
+ * an invented code: a wrong code on air reads as a different country.
+ */
+const NATION_CODES = {
+  nigeria: 'NG',
+  ghana: 'GH',
+  kenya: 'KN',
+  senegal: 'SN',
+  ivorycoast: 'CIV',
+  cotedivoire: 'CIV',
+};
+
+const nationCode = (nation) => {
+  const said = String(nation || '').trim();
+  if (!said) return '';
+  // Folded to bare letters so "Cote d'Ivoire", "Ivory Coast" and an accented
+  // spelling all reach the same entry.
+  const key = said.toLowerCase().normalize('NFD').replace(/[^a-z]/g, '');
+  if (NATION_CODES[key]) return NATION_CODES[key];
+  return (said.length <= 3 ? said : said.slice(0, 3)).toUpperCase();
+};
+
 export {
   place, clock, rivalryOf, tagOf, count, optIn,
   pickFixture, pickLeg, findPlayer, readFeed,
   secondsUntil, countdown, Face,
+  nationCode,
 };

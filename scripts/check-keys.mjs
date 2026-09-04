@@ -31,6 +31,25 @@ const files = process.argv.slice(2).length ? process.argv.slice(2) : walk('src')
 // double-quoted, and that is precisely the one that got missed.
 const CALL = /\b(?:tt|t)\(\s*(?:"([^"]+)"|'([^']+)')/g;
 
+// A key held in a table rather than written at the call.
+//
+//   const ROWS = [
+//     { field: 'won', key: 'studio.rv.statWins', fallback: 'Wins' },
+//   ];
+//   ... tt(row.key, row.fallback)
+//
+// The call site says `tt(row.key, ...)`, which carries no literal, so CALL
+// above sees nothing and the checker reports clean while four labels are
+// English in French and Portuguese. That is the SECOND time a key has been
+// invisible to this checker: the first was a key containing an apostrophe,
+// which had to be double quoted. A shape that hides a key twice gets caught
+// rather than remembered.
+//
+// Deliberately narrow: a `key` naming a dotted identifier, with a `fallback`
+// beside it on the same line, which is the shape this codebase writes and not
+// a generic property called key.
+const TABLE = /\bkey:\s*(?:"([^"]+)"|'([^']+)')\s*,\s*fallback:/g;
+
 // A key written inside a comment is documentation, not a call. Without this
 // the checker reports its own examples as missing translations, which is how a
 // checker teaches people to ignore it.
@@ -49,7 +68,7 @@ let gaps = 0;
 let checked = 0;
 for (const file of files) {
   const src = stripComments(fs.readFileSync(file, 'utf8'));
-  for (const m of src.matchAll(CALL)) {
+  for (const m of [...src.matchAll(CALL), ...src.matchAll(TABLE)]) {
     const key = m[1] ?? m[2];
     // A key is a dotted identifier with no whitespace: `ui.x.y`, `api.CODE`,
     // `tEdit.name`. A sentence caught by the regex is some other function

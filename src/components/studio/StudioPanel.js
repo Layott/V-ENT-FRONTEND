@@ -28,6 +28,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
+import TextLayerEditor from './TextLayerEditor';
 import styles from './studio-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -137,6 +138,33 @@ const fieldsFor = (tt) => ({
   head_to_head: [
     { key: 'left', label: tt('studio.f.leftPlayer', 'Player on the left'), placeholder: 'demo_zainab' },
     { key: 'right', label: tt('studio.f.rightPlayer', 'Player on the right'), placeholder: 'demo_kwame' },
+  ],
+  // The four off the CEO's stream elements sheet, 4 September. The desk names a
+  // caster rather than a competitor, so the role comes first: on a desk the
+  // role is what identifies the person.
+  desk_lower_third: [
+    { key: 'role', label: tt('studio.f.role', 'Role'), placeholder: 'Analyst' },
+    { key: 'name', label: tt('studio.f.name', 'Name'), placeholder: 'Temi Adeyemi' },
+    { key: 'nation', label: tt('studio.f.nation', 'Where they are from'), placeholder: 'Nigeria' },
+  ],
+  matchday: [
+    { key: 'day', label: tt('studio.f.whichDay', 'Which day'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'results',
+      label: tt('studio.f.showResults', 'With the results'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
+    { key: 'rows', label: tt('studio.f.rows', 'How many rows'), placeholder: '5', numeric: true },
+  ],
+  analyst_desk: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'The desk' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Analysts' },
+  ],
+  play_area: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'Live play' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Seat 1' },
   ],
   break_screen: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
@@ -392,6 +420,13 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     body: JSON.stringify({ defaults: { ...(live.defaults || {}), ...patch } }),
   }));
 
+  // Which look the graphics are drawn in. One press, and every source already
+  // pasted into OBS redraws on its next poll: the look is part of the feed
+  // version, so nothing has to be reloaded at the machine.
+  const setTheme = (value) => run(() => call(`/sessions/${live.id}/`, {
+    method: 'POST', body: JSON.stringify({ theme: value }),
+  }));
+
   // One press from the media library: point the clip graphic at this asset and
   // put it on air. A clip takes itself off when it ends, so the operator is
   // not left with a frozen last frame.
@@ -634,6 +669,22 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
                     </label>
                   </div>
+
+                  {/* Words on top of this graphic. CEO, 4 September: "also
+                      should be able to add text, change the font size, color,
+                      position, animation of that text also on any overlay."
+                      The same control serves an uploaded overlay, in
+                      OverlaysPanel, because the two differ only in the
+                      address they save to. */}
+                  <TextLayerEditor
+                    ownerKind={kind}
+                    ownerRef={ref}
+                    sessionId={live.id}
+                    elementKind={elementKind}
+                    positions={live.presentation_options?.positions}
+                    entrances={live.presentation_options?.entrances}
+                    exits={live.presentation_options?.exits}
+                  />
                 </div>
               );
             })}
@@ -646,6 +697,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
             </p>
             <div className={styles.look}>
+              {/* Which design the graphics are drawn in. The list comes from
+                  the server, so a look added there appears here without a
+                  second change. */}
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.theme', 'Design')}</span>
+                <select className={styles.select} value={live.theme || 'vent'}
+                        onChange={(e) => setTheme(e.target.value)}>
+                  {(live.themes || []).map((row) => (
+                    <option key={row.value} value={row.value}>{row.label}</option>
+                  ))}
+                </select>
+              </label>
               <label className={styles.lookField}>
                 <span className={styles.fieldLabel}>{tt('studio.entry', 'Arrives')}</span>
                 <select className={styles.select} value={live.defaults?.entry || 'rise'}

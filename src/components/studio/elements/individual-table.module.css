@@ -1,0 +1,283 @@
+/* D2, the individual table.
+ *
+ * Every measurement here is copied out of `individual_table()` in
+ * `CLAUDE/VIDEOS/RIVALRY/stream.py` and checked against the approved render,
+ * `motion/stream/D2 individual table.html`. It is a broadcast raster: 1920x1080
+ * fixed pixels inside `.frame`, never a responsive page, because an OBS browser
+ * source is exactly that size and the numbers have to land where the designer
+ * put them.
+ *
+ * The colours, the fonts and the two entrance animations come from
+ * `rivalry.module.css`, which is the one place the pack's tokens live. The only
+ * raw values below are the ones the pack itself carries and no token holds:
+ * #6A7078 for the column labels, #fff and #141414 for the org tiles.
+ */
+
+/* Nothing behind the rows. The approved file has no ground layer and its frame
+ * carries no `opaque` class, so the graphic composites straight onto the video
+ * and the operator lays whatever background they want underneath. A first pass
+ * painted their chevron paper here, which would have covered the feed. */
+.d2 {
+  background: transparent;
+}
+
+/* The two marks, on the axis `ink_top()` put them on in the pack: 118px, by the
+ * coloured centre of mass rather than by the top of the file, because the series
+ * file is three quarters padding and the CADE lockup is edge to edge, so equal
+ * tops would land them on visibly different lines.
+ *
+ * Both numbers are the pack's own, verbatim, and they only work because the
+ * files served are now the pack's files: `rivalry-mark.png` is its 3000x3000
+ * canvas with the artwork inside x 6.8 to 93.5 per cent and y 23.8 to 68.6 per
+ * cent, and `cade.png` is the dark lockup its header uses. A tighter crop was
+ * served here until 4 September and these numbers drew it 15 per cent too
+ * large, 18px too far left and 62px too high, clipped against the top of the
+ * frame. If a mark ever looks wrong again, check the canvas before the CSS.
+ *
+ * Both files are far larger than the size they are drawn at, so neither is
+ * stretched. */
+.rmark {
+  top: -7.2px;
+  width: 260px;
+}
+
+.cade {
+  top: 89.4px;
+  width: 168px;
+}
+
+/* The headline. `.headline` in rivalry.module.css carries the face and the
+ * green gradient; this sets where it sits and how big it is. The duration and
+ * easing are the pack's own, which are slower than the shared default, so they
+ * are stated here rather than left to `.riseIn`. */
+.title {
+  animation-delay: 60ms;
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 96px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 78px;
+}
+
+/* One geometry for the labels and the rows, so a column head sits over its
+ * column. 1420 of the 1920 leaves the paper's chevrons breathing either side. */
+.head,
+.row {
+  align-items: center;
+  display: flex;
+  margin: 0 auto;
+  width: 1420px;
+}
+
+.head {
+  color: #6A7078;
+  font-family: var(--bc);
+  font-size: 24px;
+  font-weight: 600;
+  left: 0;
+  letter-spacing: 0.22em;
+  position: absolute;
+  right: 0;
+  text-transform: uppercase;
+  top: 236px;
+}
+
+.table {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 282px;
+}
+
+/* A filled card, never a ruled one, and 60 high with 8 between so ten rows end
+ * clear of the bottom of the frame. */
+.row {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+  background: var(--panel);
+  border-radius: 3px;
+  height: 60px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.pos {
+  color: #fff;
+  font-family: var(--bc);
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  width: 80px;
+}
+
+.head .pos {
+  color: #6A7078;
+  font-size: 24px;
+}
+
+/* The org is its mark, not its name. Layo, 4 September.
+ *
+ * On a white tile in its own colours, which is how their own fixture overlay
+ * carries these. Silhouetting them white was tried in the pack and lost the
+ * inside of every mark: OAS came out a plain rectangle, Phoenix a plain circle.
+ * A mark that is a filled disc with the logo knocked out of it has nothing left
+ * once it is one colour. */
+.orgmark {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 78px;
+}
+
+.tile {
+  align-items: center;
+  /* design-allow pure-black-or-white: the plate a club's badge is drawn on.
+     Every badge in the approved pack sits on white, because a logo drawn
+     for white disappears on a dark row. See team_white() and org_tile()
+     in CLAUDE/VIDEOS/RIVALRY/stream.py. */
+  background: #fff;
+  border-radius: 3px;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 56px;
+}
+
+.mark {
+  display: block;
+  height: auto;
+  max-height: 36px;
+  max-width: 48px;
+  width: auto;
+}
+
+.who {
+  align-items: baseline;
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  padding-left: 6px;
+}
+
+.pname {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* The country as a short code beside the name, which is the framing rule on
+ * this account: the org is the subject and the country is an origin note. */
+.pc {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.head .who {
+  font-size: 24px;
+}
+
+/* The figures block, in the gold their own standings board already uses. */
+.figs {
+  display: flex;
+  width: 420px;
+}
+
+.figs span {
+  color: var(--ink);
+  flex: 1;
+  font-family: var(--bc);
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.row .figs {
+  align-items: center;
+  align-self: stretch;
+  background: var(--gold);
+}
+
+.head .figs span {
+  color: #6A7078;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.pts {
+  align-self: stretch;
+  background: var(--green);
+  color: #fff;
+  font-family: var(--bc);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 60px;
+  text-align: center;
+  width: 120px;
+}
+
+.head .pts {
+  background: none;
+  color: #6A7078;
+  font-size: 24px;
+  line-height: normal;
+}
+
+/* ------------------------------------------------------- nothing to show yet
+ * A table cued before the numbers exist, which happens more often than anybody
+ * plans for. It draws the card, the marks and one filled panel carrying the
+ * heading and a sentence an audience can read. Never a spinner, never an error,
+ * never the word loading: this frame is on air. */
+.plate {
+  align-items: center;
+  bottom: 118px;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 236px;
+}
+
+.plateBox {
+  background: var(--panel);
+  border-radius: 4px;
+  padding: 44px 76px;
+  text-align: center;
+}
+
+.plateK {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.plateLine {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 34px;
+  font-weight: 400;
+  margin-top: 18px;
+}
+
+/* Stated here as well as in the shared file, so the graphic still honours the
+ * setting if it is ever drawn without the pack's entrance classes. */
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .row {
+    animation: none;
+  }
+}

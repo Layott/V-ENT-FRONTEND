@@ -45,6 +45,19 @@ import {
   pickFixture, pickLeg, findPlayer, readFeed,
   secondsUntil, countdown, Face,
 } from '@/components/studio/elements/lib';
+// The CADE Rivalry Series pack, ported graphic by graphic from the finished
+// broadcast set in CLAUDE/VIDEOS/RIVALRY/motion/stream/. A broadcast picks its
+// look; these draw when it has picked this one. Same props, same feed, same
+// empty states as the house versions: only the drawing differs.
+import AnalystDesk from '@/components/studio/elements/AnalystDesk';
+import DeskLowerThird from '@/components/studio/elements/DeskLowerThird';
+import HeadToHeadCard from '@/components/studio/elements/HeadToHeadCard';
+import IndividualTable from '@/components/studio/elements/IndividualTable';
+import MatchdayCard from '@/components/studio/elements/MatchdayCard';
+import NationsTable from '@/components/studio/elements/NationsTable';
+import NowNextBar from '@/components/studio/elements/NowNextBar';
+import PlayAreaFrame from '@/components/studio/elements/PlayAreaFrame';
+import TextLayers from '@/components/studio/TextLayers';
 
 // Fast enough that a score correction looks immediate to a viewer, slow enough
 // that six hours on a venue hotspot is not a problem. The feed answers every
@@ -1114,7 +1127,49 @@ const ELEMENTS = {
   break_screen: BreakScreen,
   award: Award,
   explainer: Explainer,
+  // Four graphics off the CEO's stream elements sheet that the studio had no
+  // kind for. They exist in the Rivalry look only for now: the drawing is the
+  // client's pack and a V-ENT house version of each is still to be made, so
+  // they are listed here as well rather than being dead under the house look.
+  // An operator who switches one on gets a working graphic either way, which
+  // is the thing that matters at a venue.
+  desk_lower_third: DeskLowerThird,
+  matchday: MatchdayCard,
+  analyst_desk: AnalystDesk,
+  play_area: PlayAreaFrame,
 };
+
+// The same kinds, drawn in the CADE Rivalry Series pack.
+//
+// A look, not a fork. Everything absent from this map falls through to the
+// house drawing above, so adding a graphic to the pack is one line here and
+// nothing else moves.
+//
+// `standings` is one kind and two tables, exactly as it is in the house look:
+// a player can win their own match while their nation loses the fixture, which
+// is the whole reason the format keeps two of them.
+const RIVALRY = {
+  standings: (props) => (props.payload?.table === 'players'
+    ? <IndividualTable {...props} />
+    : <NationsTable {...props} />),
+  head_to_head: HeadToHeadCard,
+  now_next: NowNextBar,
+  desk_lower_third: DeskLowerThird,
+  matchday: MatchdayCard,
+  analyst_desk: AnalystDesk,
+  play_area: PlayAreaFrame,
+};
+
+/** The component for this graphic in this broadcast's look.
+ *
+ * The house drawing is the fallback rather than an error: a look that has not
+ * been drawn for a kind yet must still put something on screen, because the
+ * alternative is a browser source that is black at the moment somebody cues it.
+ */
+function componentFor(kind, theme) {
+  if (theme === 'rivalry' && RIVALRY[kind]) return RIVALRY[kind];
+  return ELEMENTS[kind];
+}
 
 // ------------------------------------------------------------------- page
 
@@ -1218,7 +1273,7 @@ export default function StudioElement({ params }) {
   }, [show, feed, mode.preview]);
 
   if (!feed || retired) return null;
-  const Component = ELEMENTS[kind];
+  const Component = componentFor(kind, feed?.session?.theme);
   if (!Component) return null;
 
   // `hold` keeps the surface on screen and takes only the content away, for a
@@ -1257,6 +1312,12 @@ export default function StudioElement({ params }) {
     <main className={stage} style={nudge}>
       {(show || leaving) && (
         <Component payload={element.payload || {}} data={feed} element={element} />
+      )}
+      {/* Words the operator added on top of this graphic. Nothing is rendered
+          when there are none, not even a container: a graphic with no layers
+          is drawn exactly as it was. */}
+      {(show || leaving) && (
+        <TextLayers layers={element.layers} data={feed} />
       )}
     </main>
   );
