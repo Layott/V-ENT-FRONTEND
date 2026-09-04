@@ -121,6 +121,12 @@ export const ManageEventContent = ({
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
   const [canAddManagers, setCanAddManagers] = useState(false);
+  // The organisations this person may run something in the name of, and which
+  // one this event is in. Most people are in none, and then the control says
+  // so rather than showing an empty menu.
+  const [myOrgs, setMyOrgs] = useState([]);
+  const [eventOrg, setEventOrg] = useState(null);
+  const [savingOrg, setSavingOrg] = useState(false);
   const [metrics, setMetrics] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [audience, setAudience] = useState(null);
@@ -258,6 +264,19 @@ export const ManageEventContent = ({
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
     setCanAddManagers(!!m.body?.data?.can_add);
+    setEventOrg(m.body?.data?.organization || null);
+
+    // The organisations this person may put an event under. A separate request
+    // because it is not about this event: it is about them, and it is the same
+    // short list both wizards fill their picker from.
+    fetch(`${API}/organization/mine/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(body => setMyOrgs(body?.data?.organizations || []))
+      // A control that cannot list them draws its empty state and the rest of
+      // the console still loads. This is never the reason a console fails.
+      .catch(() => setMyOrgs([]));
     setMetrics(me.body?.data || null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
@@ -569,6 +588,39 @@ export const ManageEventContent = ({
       return;
     }
     setNotice(tt('manage.capacitySaved', 'Venue capacity saved.'));
+    await load();
+  };
+
+  // Move this event into an organisation.
+  //
+  // CEO, 4 September 2026: "there is no way to add events to an organization",
+  // and then "do a way to add events to an oganizatio and the whe ou add
+  // people to your organization you can then have them manage events ad they
+  // will see everyrthing". The backend has taken the field at create and at
+  // edit since organisations were built; no screen ever sent it, so an event
+  // that belonged to one person stayed that way and could be shared with
+  // nobody. That is the trap this control opens.
+  const saveOrganization = async value => {
+    if (savingOrg) return;
+    setSavingOrg(true);
+    setNotice('');
+    setError('');
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      // Blank means take it back out, which is a real choice and not the same
+      // as leaving it alone.
+      body: JSON.stringify({ organization: value || '' }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingOrg(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(value
+      ? tt('manage.orgSaved', 'This event now runs in your organisation, and you can share it below.')
+      : tt('manage.orgCleared', 'This event is yours again.'));
     await load();
   };
 
@@ -1889,9 +1941,39 @@ export const ManageEventContent = ({
               {tab === 'team' && (
                 <EventTournamentsPanel eventRef={eventRef} token={token} canManage />
               )}
+              {/* Whose name this event runs in.
+                  CEO, 4 September 2026: "there is no way to add events to an
+                  organization". The field has been on the model and accepted
+                  by the edit endpoint since organisations were built, and no
+                  screen ever sent it, so an event that belonged to one person
+                  stayed that way and could be shared with nobody. */}
+              {tab === 'team' && <section className={styles.card}>
+                  <h3 className={styles.cardTitle}>
+                    {tt('manage.orgTitle', 'Who runs this event')}
+                  </h3>
+                  {myOrgs.length === 0 ? <p className={styles.muted}>
+                      {tt('manage.noOrgsYet', 'This event is yours. Once you belong to an organisation you can move it there, and everybody in that organisation who runs events will see it.')}
+                    </p> : <>
+                      <p className={styles.cardHint}>
+                        {tt('manage.orgHint', 'An event in an organisation is run by everybody in it who handles events: they see it in their own list, work the door and read the numbers, with nothing to set up per person.')}
+                      </p>
+                      <div className={styles.newRow}>
+                        <select className={styles.input}
+                                value={eventOrg?.id || ''}
+                                disabled={savingOrg}
+                                onChange={e => saveOrganization(e.target.value)}>
+                          <option value="">{tt('manage.orgNone', 'Just me')}</option>
+                          {myOrgs.map(org => (
+                            <option key={org.id} value={org.id}>{org.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>}
+                </section>}
+
               {tab === 'team' && <section className={styles.card}>
                   {!canAddManagers ? <p className={styles.muted}>
-                      {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with other people. Move it to an organisation to give somebody else the door list and the codes.')}
+                      {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with one person at a time. Move it to an organisation above, then everybody there who runs events can help.')}
                     </p> : <p className={styles.cardHint}>
                       {tt('manage.teamHint', 'A manager can do everything here except delete the event or add more managers. Door staff can only check tickets in.')}
                     </p>}
