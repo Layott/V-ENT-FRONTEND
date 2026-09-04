@@ -34,6 +34,22 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 const PREVIEW_REPLAY_MS = 10000;
 
 
+//: The nine places, in the CEO's own words for them. The VALUES come from the
+//: server so this keeps no list of its own; these are only the labels, and a
+//: place the server adds later shows as its raw name rather than vanishing.
+const PLACE = {
+  as_designed: { key: 'overlay.placeAsDesigned', fallback: 'Where it was designed' },
+  top_left: { key: 'overlay.placeTopLeft', fallback: 'Top left' },
+  top_centre: { key: 'overlay.placeTopCentre', fallback: 'Top centre' },
+  top_right: { key: 'overlay.placeTopRight', fallback: 'Top right' },
+  middle_left: { key: 'overlay.placeMiddleLeft', fallback: 'Middle left' },
+  centre: { key: 'overlay.placeCentre', fallback: 'Centre' },
+  middle_right: { key: 'overlay.placeMiddleRight', fallback: 'Middle right' },
+  bottom_left: { key: 'overlay.placeBottomLeft', fallback: 'Bottom left' },
+  bottom_centre: { key: 'overlay.placeBottomCentre', fallback: 'Bottom centre' },
+  bottom_right: { key: 'overlay.placeBottomRight', fallback: 'Bottom right' },
+};
+
 export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, showToast }) {
   const tt = useT();
   const [rows, setRows] = useState([]);
@@ -157,6 +173,38 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
         method: what === 'rotate' ? 'POST' : 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Where an uploaded file sits on the frame.
+  //
+  // CEO, 4 September 2026: "should be able to change position even for the
+  // overlays you upload". The same nine places and the same nudge a V-ENT
+  // graphic uses, because they are the same list on the server.
+  //
+  // `as_designed` is the default and it means untouched: the file is served
+  // byte for byte as it was uploaded and the runtime never measures it. An
+  // overlay already pasted into a machine at a venue must not move because
+  // this control appeared.
+  const sit = async (row, patch) => {
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`${base}${row.id}/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          options: { ...(row.presentation || {}), ...patch },
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+        return;
+      }
       await load();
     } finally {
       setBusy(false);
@@ -384,6 +432,44 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                             onClick={() => act(row.id, 'delete')}>
                       {tt('overlay.remove', 'Remove')}
                     </button>
+                  </div>
+
+                  {/* Where it sits on the frame. Only the places, and only
+                      the nudge once it has been moved: a nudge on a file
+                      sitting where its designer put it does nothing, and a
+                      control that does nothing is worse than none. */}
+                  <div className={styles.sits}>
+                    <label className={styles.sitField}>
+                      <span className={styles.sitLabel}>{tt('overlay.sits', 'Sits')}</span>
+                      <select className={styles.select}
+                              value={row.presentation?.position || 'as_designed'}
+                              disabled={busy}
+                              onChange={(e) => sit(row, { position: e.target.value })}>
+                        {(row.presentation_options?.positions || []).map((value) => (
+                          <option key={value} value={value}>
+                            {PLACE[value] ? tt(PLACE[value].key, PLACE[value].fallback) : value}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {row.presentation?.position
+                      && row.presentation.position !== 'as_designed' && (
+                      <label className={styles.sitField}>
+                        <span className={styles.sitLabel}>
+                          {tt('overlay.nudge', 'Nudge, in pixels')}
+                        </span>
+                        <span className={styles.nudge}>
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('overlay.nudgeX', 'Across')}
+                                 defaultValue={row.presentation?.offset_x ?? 0}
+                                 onBlur={(e) => sit(row, { offset_x: Number(e.target.value) || 0 })} />
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('overlay.nudgeY', 'Down')}
+                                 defaultValue={row.presentation?.offset_y ?? 0}
+                                 onBlur={(e) => sit(row, { offset_y: Number(e.target.value) || 0 })} />
+                        </span>
+                      </label>
+                    )}
                   </div>
 
                   {/* Words on top of a file somebody designed themselves. The

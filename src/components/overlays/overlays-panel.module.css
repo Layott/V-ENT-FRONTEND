@@ -215,3 +215,57 @@
   line-height: 1.5;
   word-break: break-word;
 }
+
+/* ------------------------------------------------------ where the file sits
+
+   CEO, 4 September 2026: "should be able to change position even for the
+   overlays you upload". The same nine places a V-ENT graphic uses, on a file
+   somebody else designed. The nudge only appears once it has been moved: a
+   nudge on a file sitting where its designer put it does nothing. */
+
+.sits {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.6rem 0 0;
+}
+
+.sitField { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.sitLabel {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  min-height: 40px;
+  padding: 0 0.7rem;
+}
+
+.nudge { display: flex; gap: 0.35rem; }
+
+.nudgeInput {
+  background: rgba(255, 255, 255, 0.06);
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  min-height: 40px;
+  padding: 0 0.6rem;
+  width: 5rem;
+}
+
+.select:focus-visible, .nudgeInput:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
