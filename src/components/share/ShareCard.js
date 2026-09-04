@@ -181,10 +181,15 @@ export default function ShareCard({ url, title, text, label, compact = false,
 
   return (
     <>
+      {/* Compact draws the icon alone, so the name has to be carried by the
+          attribute instead. Without it a screen reader announces "button" and
+          nothing else, and a hover says nothing either. */}
       <button
         type="button"
         className={compact ? styles.triggerCompact : styles.trigger}
         onClick={() => setOpen(true)}
+        aria-label={compact ? (label || tt('share.button', 'Share')) : undefined}
+        title={compact ? (label || tt('share.button', 'Share')) : undefined}
       >
         <IoShareSocialOutline aria-hidden="true" />
         {!compact && <span>{label || tt('share.button', 'Share')}</span>}

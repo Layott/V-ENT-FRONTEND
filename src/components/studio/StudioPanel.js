@@ -28,6 +28,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
+import TextLayerEditor from './TextLayerEditor';
 import styles from './studio-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -52,8 +53,37 @@ const fieldsFor = (tt) => ({
     { key: 'home_score', label: tt('studio.f.homeScore', 'Home score'), placeholder: '0', numeric: true },
     { key: 'away_score', label: tt('studio.f.awayScore', 'Away score'), placeholder: '0', numeric: true },
     { key: 'caption', label: tt('studio.f.caption', 'Caption'), placeholder: 'Aggregate, leg 2' },
+    // The running aggregate beside the live score, and which of the two
+    // match-ups this is. Both are left blank by default and worked out from
+    // the fixture that is live, because during a fixture that is the answer
+    // the operator wants and typing it again every twenty minutes is how a
+    // wrong seat number ends up on air.
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+    { key: 'show_aggregate',
+      label: tt('studio.f.showAggregate', 'Show the aggregate'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
   ],
   standings: [
+    // Which of the two live tables. An aggregate format keeps a nations table
+    // and a players table at once and they are different shapes, so this is a
+    // choice rather than a text box: an operator mid-broadcast should not be
+    // able to mistype the name of a table.
+    { key: 'table',
+      label: tt('studio.f.whichTable', 'Which table'),
+      choices: [
+        { value: 'nations', label: tt('studio.opt.nations', 'Nations') },
+        { value: 'players', label: tt('studio.opt.players', 'Players') },
+      ] },
     { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Group standings' },
     { key: 'limit', label: tt('studio.f.rows', 'How many rows'), placeholder: '10', numeric: true },
   ],
@@ -84,6 +114,69 @@ const fieldsFor = (tt) => ({
   doors: [],
   ticker: [],
   bracket: [],
+  explainer: [],
+  // The Rivalry Series set. Every fixture field is optional on purpose: blank
+  // means the fixture that is live, which is what somebody with one hand on
+  // the mixer wants, and what the graphics work out for themselves.
+  fixture_card: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Matchday 3' },
+  ],
+  fixture_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+  ],
+  match_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+  ],
+  head_to_head: [
+    { key: 'left', label: tt('studio.f.leftPlayer', 'Player on the left'), placeholder: 'demo_zainab' },
+    { key: 'right', label: tt('studio.f.rightPlayer', 'Player on the right'), placeholder: 'demo_kwame' },
+  ],
+  // The four off the CEO's stream elements sheet, 4 September. The desk names a
+  // caster rather than a competitor, so the role comes first: on a desk the
+  // role is what identifies the person.
+  desk_lower_third: [
+    { key: 'role', label: tt('studio.f.role', 'Role'), placeholder: 'Analyst' },
+    { key: 'name', label: tt('studio.f.name', 'Name'), placeholder: 'Temi Adeyemi' },
+    { key: 'nation', label: tt('studio.f.nation', 'Where they are from'), placeholder: 'Nigeria' },
+  ],
+  matchday: [
+    { key: 'day', label: tt('studio.f.whichDay', 'Which day'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'results',
+      label: tt('studio.f.showResults', 'With the results'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
+    { key: 'rows', label: tt('studio.f.rows', 'How many rows'), placeholder: '5', numeric: true },
+  ],
+  analyst_desk: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'The desk' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Analysts' },
+  ],
+  play_area: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'Live play' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Seat 1' },
+  ],
+  break_screen: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
+    { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
+    { key: 'until', label: tt('studio.f.until', 'Counting down to'), placeholder: '2026-09-04T18:30' },
+  ],
+  award: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Player of the day' },
+    { key: 'name', label: tt('studio.f.awardName', 'Who won it'), placeholder: 'Temi Adeyemi' },
+    { key: 'detail', label: tt('studio.f.awardDetail', 'Why they won it'), placeholder: '7 goals, 3 wins' },
+    { key: 'picture', label: tt('studio.f.awardPicture', 'Picture address'), placeholder: 'https://' },
+  ],
   intro: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Rivalry Series' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Day 1' },
@@ -109,6 +202,13 @@ const labelsFor = (tt) => ({
   programme: tt('studio.kind.programme', 'Programme'),
   doors: tt('studio.kind.doors', 'Doors'),
   media: tt('studio.kind.media', 'Clip or picture'),
+  fixture_card: tt('studio.kind.fixtureCard', 'Fixture card'),
+  fixture_result: tt('studio.kind.fixtureResult', 'Fixture result'),
+  match_result: tt('studio.kind.matchResult', 'Match result'),
+  head_to_head: tt('studio.kind.headToHead', 'Head to head'),
+  break_screen: tt('studio.kind.breakScreen', 'Break screen'),
+  award: tt('studio.kind.award', 'Award'),
+  explainer: tt('studio.kind.explainer', 'Aggregate rule'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
@@ -119,6 +219,37 @@ const entryLabels = (tt) => ({
   slide_left: tt('studio.entry.slideLeft', 'Slides in from the left'),
   slide_right: tt('studio.entry.slideRight', 'Slides in from the right'),
   none: tt('studio.entry.none', 'Just appears'),
+});
+
+// Where on the frame a graphic sits. The LIST comes from the server's own
+// catalogue; only the words are here, and a name with no word falls back to the
+// name. A second list in the console is a position an operator can pick and the
+// server then refuses.
+//
+// CEO, 4 September 2026: "SHould also be able to move the position of
+// overlays... this mostly affect lower thirds."
+/** A pixel nudge from a text box, kept a number the API will accept.
+ *
+ *  Empty means zero rather than nothing: an operator clearing the box is
+ *  saying "no nudge", and sending '' would be refused as not a number.
+ */
+const numberFrom = (text) => {
+  const cleaned = String(text).replace(/[^0-9-]/g, '').replace(/(?!^)-/g, '');
+  if (cleaned === '' || cleaned === '-') return 0;
+  return Math.max(-800, Math.min(800, Number(cleaned)));
+};
+
+const positionLabels = (tt) => ({
+  as_designed: tt('studio.pos.asDesigned', 'Where the design puts it'),
+  top_left: tt('studio.pos.topLeft', 'Top left'),
+  top_centre: tt('studio.pos.topCentre', 'Top centre'),
+  top_right: tt('studio.pos.topRight', 'Top right'),
+  middle_left: tt('studio.pos.middleLeft', 'Middle left'),
+  centre: tt('studio.pos.centre', 'Middle'),
+  middle_right: tt('studio.pos.middleRight', 'Middle right'),
+  bottom_left: tt('studio.pos.bottomLeft', 'Bottom left'),
+  bottom_centre: tt('studio.pos.bottomCentre', 'Bottom centre'),
+  bottom_right: tt('studio.pos.bottomRight', 'Bottom right'),
 });
 
 const exitLabels = (tt) => ({
@@ -136,6 +267,7 @@ const autoFor = (tt) => ({
   doors: tt('studio.auto.doors', 'Reads the door: how many are in, how many the room holds.'),
   ticker: tt('studio.auto.ticker', 'Reads the table, or the programme.'),
   bracket: tt('studio.auto.bracket', 'Reads the matches in progress.'),
+  explainer: tt('studio.auto.explainer', 'Explains how a fixture is decided. Reads how many matches make one.'),
 });
 
 export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentRef }) {
@@ -167,6 +299,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const AUTO = autoFor(tt);
   const ENTRY = entryLabels(tt);
   const EXIT = exitLabels(tt);
+  const PLACE = positionLabels(tt);
 
   // One refresh in flight at a time, and a pause after a refusal. The console
   // asks every five seconds for the whole broadcast; on a venue connection
@@ -285,6 +418,13 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const setDefaults = (patch) => run(() => call(`/sessions/${live.id}/`, {
     method: 'POST',
     body: JSON.stringify({ defaults: { ...(live.defaults || {}), ...patch } }),
+  }));
+
+  // Which look the graphics are drawn in. One press, and every source already
+  // pasted into OBS redraws on its next poll: the look is part of the feed
+  // version, so nothing has to be reloaded at the machine.
+  const setTheme = (value) => run(() => call(`/sessions/${live.id}/`, {
+    method: 'POST', body: JSON.stringify({ theme: value }),
   }));
 
   // One press from the media library: point the clip graphic at this asset and
@@ -413,14 +553,32 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                           <span className={styles.fieldLabel}>
                             {f.label}
                           </span>
-                          <input className={styles.input}
-                                 inputMode={f.numeric ? 'numeric' : undefined}
-                                 placeholder={f.placeholder}
-                                 value={values[f.key] ?? ''}
-                                 onChange={(e) => setDraft((d) => ({
-                                   ...d,
-                                   [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
-                                 }))} />
+                          {/* A field with a fixed set of answers is a choice,
+                              not a text box. An operator mid-broadcast should
+                              not be able to put "playerz" in a payload and
+                              spend the next two minutes wondering why the
+                              graphic will not change. */}
+                          {f.choices ? (
+                            <select className={styles.select}
+                                    value={values[f.key] ?? ''}
+                                    onChange={(e) => setDraft((d) => ({
+                                      ...d,
+                                      [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                    }))}>
+                              {f.choices.map((c) => (
+                                <option key={c.value} value={c.value}>{c.label}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input className={styles.input}
+                                   inputMode={f.numeric ? 'numeric' : undefined}
+                                   placeholder={f.placeholder}
+                                   value={values[f.key] ?? ''}
+                                   onChange={(e) => setDraft((d) => ({
+                                     ...d,
+                                     [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                   }))} />
+                          )}
                         </label>
                       ))}
                       <div className={styles.fieldActions}>
@@ -467,6 +625,42 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                         ))}
                       </select>
                     </label>
+                    <label className={styles.lookField}>
+                      <span className={styles.fieldLabel}>{tt('studio.position', 'Sits')}</span>
+                      <select className={styles.select}
+                              value={el.presentation?.position || 'as_designed'}
+                              onChange={(e) => push(elementKind, {
+                                payload: { options: { ...(el.payload?.options || {}), position: e.target.value } },
+                              })}>
+                        {(live.presentation_options?.positions || []).map((value) => (
+                          <option key={value} value={value}>{PLACE[value] || value}</option>
+                        ))}
+                      </select>
+                    </label>
+                    {/* Only once it has been moved. A nudge on a graphic
+                        sitting where its design put it does nothing, and a
+                        control that does nothing is worse than none. */}
+                    {el.presentation?.position && el.presentation.position !== 'as_designed' && (
+                      <label className={styles.lookField}>
+                        <span className={styles.fieldLabel}>
+                          {tt('studio.nudge', 'Nudge, in pixels')}
+                        </span>
+                        <span className={styles.nudge}>
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('studio.nudgeX', 'Across')}
+                                 value={el.presentation?.offset_x ?? 0}
+                                 onChange={(e) => push(elementKind, {
+                                   payload: { options: { ...(el.payload?.options || {}), offset_x: numberFrom(e.target.value) } },
+                                 })} />
+                          <input className={styles.nudgeInput} inputMode="numeric"
+                                 aria-label={tt('studio.nudgeY', 'Down')}
+                                 value={el.presentation?.offset_y ?? 0}
+                                 onChange={(e) => push(elementKind, {
+                                   payload: { options: { ...(el.payload?.options || {}), offset_y: numberFrom(e.target.value) } },
+                                 })} />
+                        </span>
+                      </label>
+                    )}
                     <label className={styles.lookCheck}>
                       <input type="checkbox" checked={Boolean(el.presentation?.hold)}
                              onChange={(e) => push(elementKind, {
@@ -475,6 +669,22 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
                     </label>
                   </div>
+
+                  {/* Words on top of this graphic. CEO, 4 September: "also
+                      should be able to add text, change the font size, color,
+                      position, animation of that text also on any overlay."
+                      The same control serves an uploaded overlay, in
+                      OverlaysPanel, because the two differ only in the
+                      address they save to. */}
+                  <TextLayerEditor
+                    ownerKind={kind}
+                    ownerRef={ref}
+                    sessionId={live.id}
+                    elementKind={elementKind}
+                    positions={live.presentation_options?.positions}
+                    entrances={live.presentation_options?.entrances}
+                    exits={live.presentation_options?.exits}
+                  />
                 </div>
               );
             })}
@@ -487,6 +697,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
             </p>
             <div className={styles.look}>
+              {/* Which design the graphics are drawn in. The list comes from
+                  the server, so a look added there appears here without a
+                  second change. */}
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.theme', 'Design')}</span>
+                <select className={styles.select} value={live.theme || 'vent'}
+                        onChange={(e) => setTheme(e.target.value)}>
+                  {(live.themes || []).map((row) => (
+                    <option key={row.value} value={row.value}>{row.label}</option>
+                  ))}
+                </select>
+              </label>
               <label className={styles.lookField}>
                 <span className={styles.fieldLabel}>{tt('studio.entry', 'Arrives')}</span>
                 <select className={styles.select} value={live.defaults?.entry || 'rise'}
@@ -505,6 +727,33 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   ))}
                 </select>
               </label>
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.position', 'Sits')}</span>
+                <select className={styles.select}
+                        value={live.defaults?.position || 'as_designed'}
+                        onChange={(e) => setDefaults({ position: e.target.value })}>
+                  {(live.presentation_options?.positions || []).map((value) => (
+                    <option key={value} value={value}>{PLACE[value] || value}</option>
+                  ))}
+                </select>
+              </label>
+              {live.defaults?.position && live.defaults.position !== 'as_designed' && (
+                <label className={styles.lookField}>
+                  <span className={styles.fieldLabel}>
+                    {tt('studio.nudge', 'Nudge, in pixels')}
+                  </span>
+                  <span className={styles.nudge}>
+                    <input className={styles.nudgeInput} inputMode="numeric"
+                           aria-label={tt('studio.nudgeX', 'Across')}
+                           value={live.defaults?.offset_x ?? 0}
+                           onChange={(e) => setDefaults({ offset_x: numberFrom(e.target.value) })} />
+                    <input className={styles.nudgeInput} inputMode="numeric"
+                           aria-label={tt('studio.nudgeY', 'Down')}
+                           value={live.defaults?.offset_y ?? 0}
+                           onChange={(e) => setDefaults({ offset_y: numberFrom(e.target.value) })} />
+                  </span>
+                </label>
+              )}
               <label className={styles.lookCheck}>
                 <input type="checkbox" checked={Boolean(live.defaults?.hold)}
                        onChange={(e) => setDefaults({ hold: e.target.checked })} />

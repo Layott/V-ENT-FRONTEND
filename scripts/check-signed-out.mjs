@@ -182,7 +182,28 @@ const authedHandlers = (src) => {
         if (depth === 0) { end = k; break; }
       }
     }
-    if (/Authorization:\s*`Bearer/.test(src.slice(open, end))) names.add(m[1]);
+    const body = src.slice(open, end);
+    if (!/Authorization:\s*`Bearer/.test(body)) continue;
+    // A header sent ONLY WHEN there is a token is a request already written for
+    // a signed-out reader:
+    //
+    //   headers: token ? { Authorization: `Bearer ${token}` } : {}
+    //
+    // That shape cannot "fail on press after the person has committed", which
+    // is the harm this rule exists to stop; it is how a public page loads more
+    // when the viewer happens to be the organiser. Counting it made the checker
+    // report a read retry button on a public run of show as a write control,
+    // and a checker that reports things nobody can act on stops being read.
+    //
+    // An UNCONDITIONAL Bearer in the same body still counts, so a real write
+    // sitting beside a conditional read is not excused by its neighbour.
+    // Bounded and lazy, because the header's own value carries braces:
+    // `Bearer ${token}` closes one before the object does.
+    const conditional = /\?\s*\{[\s\S]{0,60}?Authorization:\s*`Bearer[\s\S]{0,80}?\}\s*:/;
+    const unconditional = body
+      .replace(new RegExp(conditional.source, 'g'), '')
+      .match(/Authorization:\s*`Bearer/);
+    if (unconditional) names.add(m[1]);
   }
   return names;
 };
@@ -337,6 +358,42 @@ const FIXTURES = [
         : reqState === 'pending' ? <button type="button" disabled>Pending</button>
         : <button type="button" onClick={() => handleApply(orgId)}>Join</button>}
     </div>
+  );`,
+  },
+  {
+    // 4 September 2026. A public run of show has a Try again button on its
+    // error state. Its loader sends the header ONLY when the reader happens to
+    // be the organiser, which is how a public page shows more to the person who
+    // owns it. Nothing here can fail on press for a stranger.
+    name: 'a read retry whose header is conditional',
+    shouldFlag: false,
+    src: `
+  const load = async () => {
+    const res = await fetch(url, {
+      headers: authToken ? { Authorization: \`Bearer \${authToken}\` } : {},
+    });
+  };
+  const view = () => (
+    <button type="button" onClick={() => load()}>Try again</button>
+  );`,
+  },
+  {
+    // And the same file with a real write beside it: still flagged, so the
+    // exception above cannot be used as cover.
+    name: 'a conditional read beside an unconditional write',
+    shouldFlag: true,
+    src: `
+  const save = async () => {
+    await fetch(url, {
+      headers: authToken ? { Authorization: \`Bearer \${authToken}\` } : {},
+    });
+    await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: \`Bearer \${authToken}\` },
+    });
+  };
+  const view = () => (
+    <button type="button" onClick={() => save()}>Save</button>
   );`,
   },
   {

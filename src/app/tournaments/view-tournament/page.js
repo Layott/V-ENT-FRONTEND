@@ -423,6 +423,16 @@ export const ViewTournamentContent = ({
                     text={tt('share.tournamentText', 'Brackets and entry for {name} on V-ENT.')
                       .replace('{name}', tournament?.name || tournament?.tournament_title || '')}
                   />
+                  {/* The run of show, when the organiser has published one.
+                      The event page carries the same link decided the same
+                      way, so the two cannot disagree about whether there is
+                      one. Only `public` counts; a link only sheet is unlisted
+                      by definition. */}
+                  {tournament?.has_run_of_show && <Link
+                    className={styles.runOfShowLink}
+                    href={`/tournaments/${tournament?.slug || id}/run-of-show`}>
+                    {tt('ros.openFromEvent', 'Open the run of show, minute by minute')}
+                  </Link>}
                   {isOrganizer ? <Link href={`/tournaments/${id}/manage`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.manage.bf58", "Manage")}</button>
                     </Link> : tournament.is_registered ?

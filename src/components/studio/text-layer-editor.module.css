@@ -1,0 +1,263 @@
+/* The operator's control for the words on a graphic.
+ *
+ * Read under time pressure, on a laptop beside a mixer, so it is built the same
+ * way the rest of the studio console is: filled surfaces one step off their
+ * background, space instead of lines, and nothing that moves on its own. The
+ * one shadow anywhere near here is the neutral downward one the graphics use;
+ * there is none in this file.
+ *
+ * The radius scale is the console's: 12px on the panel, 10px on a row, 8px on a
+ * control. One radius everywhere is a tell, and a row that reads as a control
+ * gets pressed by mistake at the wrong moment.
+ */
+
+.wrap {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  margin-top: 0.7rem;
+  min-width: 0;
+  padding: 0.85rem 1rem 0.95rem;
+}
+
+.title {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+}
+
+.sub {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 0 0 0.8rem;
+  max-width: 72ch;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  margin: 0.3rem 0 0;
+}
+
+.muted { color: rgba(255, 255, 255, 0.45); font-size: 0.85rem; margin: 0; }
+
+/* An empty list is a sentence on the panel's own surface. Never a box drawn
+   with a dashed line. */
+.empty {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  margin: 0 0 0.7rem;
+}
+
+.error {
+  background: rgba(237, 28, 36, 0.14);
+  border-radius: 8px;
+  color: #ff8a8a;
+  font-size: 0.82rem;
+  margin: 0 0 0.7rem;
+  padding: 0.6rem 0.8rem;
+}
+
+/* What just happened, said where it happened. An operator watching a match does
+   not go back to a form to check that a save took. */
+.note {
+  background: rgba(76, 175, 80, 0.16);
+  border-radius: 8px;
+  color: #bdf0c0;
+  font-size: 0.82rem;
+  margin: 0 0 0.7rem;
+  padding: 0.6rem 0.8rem;
+}
+
+/* ------------------------------------------------------------------ rows */
+
+.rows { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.7rem; }
+
+.row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+}
+
+/* Switched off, not deleted. Dimmed and labelled, because dimming alone reads
+   as a loading state. */
+.rowOff { opacity: 0.55; }
+
+/* The layer's own colour, which is the one value on this screen that is data
+   rather than a token: it is the client's brand, over live video, and the
+   operator is the person who knows what it is. */
+.swatch {
+  border-radius: 5px;
+  flex: 0 0 auto;
+  height: 20px;
+  width: 20px;
+}
+
+.rowMain { display: flex; flex: 1 1 12rem; flex-direction: column; gap: 0.15rem; min-width: 0; }
+
+.rowWords {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowMeta { color: rgba(255, 255, 255, 0.45); font-size: 0.74rem; }
+
+.tag {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  padding: 0.16rem 0.4rem;
+  text-transform: uppercase;
+}
+
+.rowActions { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 0.35rem; }
+
+/* -------------------------------------------------------------- the form */
+
+.form {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+  min-width: 0;
+  padding: 0.8rem 0.85rem;
+}
+
+.formHead {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.7rem;
+}
+
+.fields { display: flex; flex-wrap: wrap; gap: 0.6rem; min-width: 0; }
+
+/* min-width: 0 on every flex child, or a long value sizes the row past the
+   panel and the whole console scrolls sideways on a phone. */
+.field { display: flex; flex: 1 1 10rem; flex-direction: column; gap: 0.25rem; min-width: 0; }
+
+.wide { flex: 1 1 100%; }
+
+.label { color: rgba(255, 255, 255, 0.5); font-size: 0.76rem; }
+
+.input {
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px 11px;
+  width: 100%;
+}
+
+.input:focus { background: rgba(255, 255, 255, 0.11); }
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.select {
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  width: 100%;
+}
+
+.select:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* The picker and the hex box, side by side and holding the same value.
+   An operator who knows the sponsor's hex types it faster than they could hunt
+   for it in a picker, and an operator matching a shirt wants the picker. */
+.colourRow { display: flex; gap: 0.4rem; min-width: 0; }
+
+.colourInput {
+  background: none;
+  border: none;
+  border-radius: 8px;
+  flex: 0 0 52px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+
+.colourInput:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.hexInput {
+  flex: 1 1 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Across, then down. One measurement in two parts, so two boxes rather than
+   two labelled fields. */
+.nudge { display: flex; gap: 0.4rem; min-width: 0; }
+
+.nudgeInput { flex: 1 1 0; min-width: 0; text-align: center; }
+
+.formActions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+
+.addRow { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* ------------------------------------------------------------- buttons */
+
+.primary, .ghost, .danger {
+  align-items: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 0.95rem;
+  transition: background-color 0.12s;
+  white-space: nowrap;
+}
+
+.primary { background: #E5B94E; color: #1a1a1a; }
+.primary:hover { background: #f0c65f; }
+.primary:disabled { background: rgba(229, 185, 78, 0.32); color: rgba(26, 26, 26, 0.5); cursor: default; }
+
+.ghost { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.ghost:hover { background: rgba(255, 255, 255, 0.16); }
+.ghost:disabled { background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.35); cursor: default; }
+
+.danger { background: rgba(237, 28, 36, 0.22); color: #ffb3b6; }
+.danger:hover { background: rgba(237, 28, 36, 0.34); }
+.danger:disabled { background: rgba(237, 28, 36, 0.1); color: rgba(255, 179, 182, 0.4); cursor: default; }
+
+.primary:focus-visible, .ghost:focus-visible, .danger:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .field { flex: 1 1 100%; }
+  .rowActions { flex: 1 1 100%; }
+  .rowMain { flex: 1 1 100%; }
+}

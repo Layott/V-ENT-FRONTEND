@@ -1160,19 +1160,24 @@ export const ViewEventContent = ({
                       </Link>
                     </div>}
 
+                  {/* The organiser's own face and their founder badge, from
+                      UserChip, which is the one place a name is written.
+                      This drew a hardcoded crown in place of the picture and
+                      then wrote the handle out by hand underneath, with
+                      `size={0}` telling the chip not to draw an avatar at all.
+                      So the picture could never appear however good the
+                      payload was, and the badge had nowhere to sit. */}
                   <div className={styles.organizerRow}>
-                    <div className={styles.organizerAvatar}>
-                      <FaCrown />
-                    </div>
-                    <div>
-                      {event.organizer
-                        ? <UserChip user={event.organizer} size={0}
-                                    nameClassName={styles.organizerName} />
-                        : <p className={styles.organizerName}>{tx("V-ENT Live")}</p>}
-                      <p className={styles.organizerSub}>
-                        @{event.organizer?.username || 'v-ent'}
-                      </p>
-                    </div>
+                    {event.organizer
+                      ? <UserChip user={event.organizer} size={44} secondary
+                                  nameClassName={styles.organizerName}
+                                  handleClassName={styles.organizerSub} />
+                      : <>
+                        <div className={styles.organizerAvatar}>
+                          <FaCrown />
+                        </div>
+                        <p className={styles.organizerName}>{tx("V-ENT Live")}</p>
+                      </>}
                   </div>
 
                   {[{
@@ -1240,6 +1245,17 @@ export const ViewEventContent = ({
             {activeTab === 'schedule' && <div className={styles.scheduleTab}>
                 <h2 className={styles.sectionTitle}>{tt("ui.event.schedule.1878", "Event schedule")}</h2>
                 <EventSchedule eventRef={id} />
+                {/* The run of show, when the organiser has published one. It
+                    is a different document to the schedule above: minute by
+                    minute, who owns each cue, what is on air right now. The
+                    link appears only when there is something behind it, and
+                    only when it is public - a link only sheet is unlisted by
+                    definition and must not be advertised by its own event. */}
+                {event?.has_run_of_show && (event?.slug || id) && <Link
+                  className={styles.runOfShowLink}
+                  href={`/events/${event?.slug || id}/run-of-show`}>
+                  {tt('ros.openFromEvent', 'Open the run of show, minute by minute')}
+                </Link>}
               </div>}
 
             {/* TICKETS */}

@@ -23,6 +23,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import OverlayPreview from '@/components/studio/OverlayPreview';
+import TextLayerEditor from '@/components/studio/TextLayerEditor';
 import styles from './overlays-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -384,6 +385,15 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                       {tt('overlay.remove', 'Remove')}
                     </button>
                   </div>
+
+                  {/* Words on top of a file somebody designed themselves. The
+                      same control the studio graphics use: an uploaded overlay
+                      and a built in one differ only in the address a layer is
+                      saved to, and building this for one of them and not the
+                      other is the fault the parity checker exists for. A file
+                      with no layers has nothing injected into it at all. */}
+                  <TextLayerEditor ownerKind={kind} ownerRef={ownerRef}
+                                   overlayId={row.id} />
                 </div>
               ))}
             </div>}

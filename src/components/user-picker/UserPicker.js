@@ -10,19 +10,32 @@ import UserChip from '@/components/user-chip/UserChip';
 
 // Choosing a person, rather than spelling their handle from memory.
 //
-// The direct-message composer was a plain text box reading "Username, e.g.
-// playr". You had to know the exact handle, get the capitalisation right, and
-// you found out you were wrong only after writing the message and pressing
-// Send. There was no user search endpoint at all until now.
+// CEO, 4 September 2026, with a screenshot of the organisation invite form:
+// "it sould be showing people with usernames closest to that on the platform,
+// same for other places on the website that require you to input username and
+// their profile images."
 //
-// Three things this does that the text box could not:
+// It was written for the direct-message composer, which was a plain text box
+// reading "Username, e.g. playr": you had to know the exact handle, get the
+// capitalisation right, and found out you were wrong only after writing the
+// message and pressing Send. Every other username field on the platform is that
+// same text box, so this moved out of `community/` and became the field.
 //
-//   * shows the picture and the real name, so you can tell two similar handles
-//     apart before you write anything;
-//   * says up front when somebody does not accept messages, rather than
-//     letting the send fail with a 403 afterwards;
+// Three things it does that a text box cannot:
+//
+//   * shows the picture and the real name, so two similar handles can be told
+//     apart before anything is committed to;
+//   * says up front when somebody cannot be picked, rather than letting the
+//     action fail afterwards;
 //   * works from a partial name, because people remember what somebody is
 //     called more reliably than how they spell their handle.
+//
+// `purpose` is why the picker is open, and it decides one thing: whether a
+// person can be chosen at all. Messaging honours `allow_direct_messages`, so
+// somebody who has switched it off is listed and not selectable. Inviting
+// somebody to an organisation, naming a scorekeeper or adding a player has no
+// such rule, and applying the messaging one there would hide people from an
+// organiser for a reason that has nothing to do with them.
 //
 // Typing is debounced and every in-flight request is aborted when the next
 // keystroke arrives, so the list cannot arrive out of order and show results
@@ -31,7 +44,17 @@ import UserChip from '@/components/user-chip/UserChip';
 const DEBOUNCE_MS = 250;
 const MIN_QUERY = 2;
 
-const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFocus = false }) => {
+/**
+ * @param purpose      'message' honours allow_direct_messages; anything else
+ *                     lets any findable person be chosen
+ * @param placeholder  overrides the default, for a field whose label is
+ *                     already saying what the person is being picked FOR
+ */
+const UserPicker = ({
+  value, onChange, onSelect, token, disabled = false, autoFocus = false,
+  purpose = 'pick', placeholder, id, name,
+}) => {
+  const gated = purpose === 'message';
   const t = useT();
   const listId = useId();
   const [results, setResults] = useState([]);
@@ -90,7 +113,7 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
   }, []);
 
   const choose = (user) => {
-    if (!user.can_message) return;
+    if (gated && !user.can_message) return;
     setPicked(user);
     onChange(user.username);
     onSelect?.(user);
@@ -98,7 +121,7 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
   };
 
   const onKeyDown = (e) => {
-    const usable = results.filter((r) => r.can_message);
+    const usable = gated ? results.filter((r) => r.can_message) : results;
     if (!open || !usable.length) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -114,7 +137,7 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
     }
   };
 
-  const usable = results.filter((r) => r.can_message);
+  const usable = gated ? results.filter((r) => r.can_message) : results;
 
   return (
     <div className={styles.wrap} ref={wrapRef}>
@@ -128,7 +151,10 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
         autoComplete="off"
         autoFocus={autoFocus}
         disabled={disabled}
-        placeholder={t('dm.pickerPlaceholder', 'Search for someone by name or handle')}
+        id={id}
+        name={name}
+        placeholder={placeholder
+          || t('dm.pickerPlaceholder', 'Search for someone by name or handle')}
         value={value}
         onChange={(e) => {
           setPicked(null);
@@ -141,7 +167,9 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
 
       {picked && (
         <p className={styles.picked}>
-          {t('dm.sendingTo', 'Sending to {name}').replace('{name}', '')}
+          {gated
+            ? t('dm.sendingTo', 'Sending to {name}').replace('{name}', '')
+            : t('picker.chosen', 'Chosen:')}
           <UserChip user={picked} size={0} secondary link={false}
                     handleClassName={styles.pickedHandle} />
         </p>
@@ -165,8 +193,8 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
                   type="button"
                   role="option"
                   aria-selected={index >= 0 && index === highlight}
-                  className={`${styles.row} ${index >= 0 && index === highlight ? styles.rowOn : ''} ${user.can_message ? '' : styles.rowOff}`}
-                  disabled={!user.can_message}
+                  className={`${styles.row} ${index >= 0 && index === highlight ? styles.rowOn : ''} ${!gated || user.can_message ? '' : styles.rowOff}`}
+                  disabled={gated && !user.can_message}
                   onClick={() => choose(user)}
                 >
                   <span className={styles.avatar}>
@@ -178,7 +206,7 @@ const UserPicker = ({ value, onChange, onSelect, token, disabled = false, autoFo
                     <span className={styles.name}>{user.full_name}{user.founder_badge && <FounderBadge size="sm" />}</span>
                     <span className={styles.handle}>@{user.username}</span>
                   </span>
-                  {!user.can_message && (
+                  {gated && !user.can_message && (
                     <span className={styles.closed}>
                       {t('dm.notAccepting', 'Not accepting messages')}
                     </span>

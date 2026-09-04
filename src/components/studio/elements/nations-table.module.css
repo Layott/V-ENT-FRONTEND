@@ -1,0 +1,445 @@
+/* A3, the nations table.
+ *
+ * Every measurement here is copied out of `standings()` in
+ * `CLAUDE/VIDEOS/RIVALRY/stream_client.py` and checked against the approved
+ * render, `motion/stream/A3 standings.html`, which was itself rebuilt to the
+ * client's own finished board, `DATA/STREAM/Standings.png`. It is a broadcast
+ * raster: 1920x1080 fixed pixels inside `.frame`, never a responsive page,
+ * because an OBS browser source is exactly that size and the numbers have to
+ * land where the designer put them.
+ *
+ * The fonts and the paper come from `rivalry.module.css`, which is the one
+ * place the pack's shared tokens live. This card carries four colours of its
+ * own that no shared token holds, because they were measured off their PNG
+ * rather than picked, and they are a different set from the ones the individual
+ * table uses. They are declared once below and never repeated as raw hex.
+ *
+ * Their blocks carry a one pixel green outline on the PNG. That is not drawn
+ * here: the house ban on hairline structure outranks it, the shapes read the
+ * same at broadcast size without it, and the pack itself already made that
+ * call.
+ */
+
+.a3 {
+  --row: #30483C;    /* the row block */
+  --fig: #EFD82F;    /* the figures block */
+  --pts: #00A032;    /* the points tab */
+  --accent: #00CC18; /* their accent green, and the lightning in the ground */
+  --hdr: #636465;    /* the column labels */
+  --kick: #90000B;   /* the sponsor kicker, their own dark red */
+}
+
+/* The pack's own two entrances for this card. Neither is in the shared file:
+ * the rows come in from the left rather than wiping, which is what their board
+ * was animated with, and nothing loops. */
+@keyframes a3DropIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes a3SlideIn {
+  from { opacity: 0; transform: translateX(-46px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The card paints no ground of its own. `standings()` names one, but the
+ * approved file that shipped has no `<img class="bg">` in it and no `opaque` on
+ * its frame, so the ground never reached the graphic. It is right that way: an
+ * overlay is transparent where the game shows through, and a full bleed paper
+ * would cover the whole video feed. Every surface here belongs to a block.
+ *
+ * The marks stack in the top left on this card, CADE above the series mark,
+ * rather than sitting in opposite corners the way the individual table carries
+ * them.
+ *
+ * The pack stacks them in a flex column at 96,44 and draws the series file at
+ * 212 wide. That file is 3000x3000 and three quarters transparent padding, so
+ * 212 is the width of its BOX and the art inside it lands at 110.4,130.5 and
+ * 183.7 wide. The copy served here is the same art already trimmed, so these
+ * are the pack's own drawn coordinates rather than its box ones: same picture,
+ * same place, worked out rather than eyeballed. CADE's copy is a clean 4x
+ * reduction of the pack's lockup with no trim, so its 104 carries over as it
+ * is. Both files are far larger than the width they are drawn at, so neither is
+ * stretched. */
+.cade {
+  height: auto;
+  left: 150px;
+  position: absolute;
+  top: 44px;
+  width: 104px;
+}
+
+.rmk {
+  height: auto;
+  left: 110.4px;
+  position: absolute;
+  top: 130.5px;
+  width: 183.7px;
+}
+
+/* Their title. A three stop vertical ramp, which is a different gradient from
+ * `.headline` in the shared file: this one is lighter at the top and carries a
+ * darker face under it. Flat, no bloom, and their own artwork does not have one
+ * either. */
+.title {
+  -webkit-background-clip: text;
+  animation: a3DropIn 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  background: linear-gradient(180deg, #5FE87A 0%, #12A94E 58%, #007033 100%);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--astro);
+  font-size: 152px;
+  font-weight: 900;
+  left: 0;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  overflow: hidden;
+  /* 330 either side is the pack's own sponsor measure, and it is also what
+   * keeps a heading clear of the series mark, which ends at 294. */
+  padding: 0 330px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 150px;
+  white-space: nowrap;
+}
+
+/* An operator's own heading, which their board never had: it only ever said
+ * STANDINGS. Twenty characters is what 152px holds inside that 1260, so
+ * anything longer steps down rather than running under the mark. */
+.titleLong {
+  font-size: 104px;
+}
+
+/* One geometry for the labels and the rows, so a column head sits over its
+ * column. 1370 of the 1920 leaves the paper's chevrons breathing either side.
+ * `stretch` rather than `center`, because every block in the row is full
+ * height and two of them are cut on the diagonal. */
+.head,
+.row {
+  align-items: stretch;
+  display: flex;
+  margin: 0 auto;
+  width: 1370px;
+}
+
+.head {
+  animation: a3DropIn 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+  color: var(--hdr);
+  font-family: var(--bc);
+  font-size: 27px;
+  font-weight: 800;
+  height: 34px;
+  left: 0;
+  letter-spacing: 0.06em;
+  position: absolute;
+  right: 0;
+  text-transform: uppercase;
+  top: 348px;
+}
+
+.table {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 398px;
+}
+
+.row {
+  animation: a3SlideIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  height: 92px;
+  margin-bottom: 12px;
+}
+
+/* Their rank tab and points tab are the same parallelogram, mirrored. A filled
+ * shape cut on the diagonal, never a stroke. */
+.rank {
+  background: var(--row);
+  clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%);
+  flex: none;
+  position: relative;
+  width: 66px;
+}
+
+.rank span {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  font-family: var(--bc);
+  font-size: 42px;
+  font-weight: 800;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+.head .rank {
+  background: none;
+}
+
+/* The white tile carrying the side's mark, in its own colours, which is how
+ * their board carries these. Silhouetting them white was tried in the pack and
+ * lost the inside of every mark: a logo knocked out of a filled disc has
+ * nothing left once it is one colour. */
+.tile {
+  /* design-allow pure-black-or-white: the plate a club's badge is drawn on.
+     Every badge in the approved pack sits on white, because a logo drawn
+     for white disappears on a dark row. See team_white() and org_tile()
+     in CLAUDE/VIDEOS/RIVALRY/stream.py. */
+  background: #fff;
+  flex: none;
+  overflow: hidden;
+  position: relative;
+  width: 98px;
+}
+
+/* A side with no badge in a table where others have one. The block stays, in
+ * the row's own colour, so the bar reads as one continuous object rather than
+ * as a picture that failed to arrive. */
+.tileBare {
+  background: var(--row);
+}
+
+.head .tile {
+  align-items: center;
+  background: none;
+  display: flex;
+  justify-content: center;
+}
+
+.mark {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.markImg {
+  display: block;
+  height: auto;
+  max-height: 70px;
+  max-width: 78px;
+  width: auto;
+}
+
+/* The dark block: the code and, under it, who played. */
+.body {
+  align-items: center;
+  background: var(--row);
+  display: flex;
+  flex: 1;
+  gap: 34px;
+  padding-left: 26px;
+}
+
+.head .body {
+  background: none;
+}
+
+.cc {
+  color: #fff;
+  font-family: var(--astro);
+  font-size: 56px;
+  font-weight: 900;
+  white-space: nowrap;
+  width: 148px;
+}
+
+/* A side with no short tag falls back to its full name in that slot, which
+ * their five two and three letter codes never had to hold. Drawn smaller so it
+ * still fits the block rather than pushing the names off it. */
+.ccLong {
+  font-size: 30px;
+  letter-spacing: -0.01em;
+}
+
+.head .cc {
+  color: var(--hdr);
+  font-size: 27px;
+  margin: 0;
+  width: 148px;
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+}
+
+.names span {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.24;
+  text-transform: uppercase;
+}
+
+.head .names {
+  color: var(--hdr);
+  display: block;
+  font-size: 27px;
+}
+
+/* The figures block, in the gold their own board uses. */
+.figs {
+  align-items: center;
+  background: var(--fig);
+  display: flex;
+  flex: none;
+  width: 452px;
+}
+
+.figs span {
+  color: var(--ink);
+  flex: 1;
+  font-family: var(--bc);
+  font-size: 36px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.head .figs {
+  background: none;
+}
+
+.head .figs span {
+  color: var(--hdr);
+  font-size: 27px;
+  line-height: 34px;
+}
+
+/* The points tab, cut the other way from the rank tab. The 14px of padding is
+ * theirs: it puts the figure back on the optical centre of a block whose right
+ * edge leans in. */
+.pts {
+  background: var(--pts);
+  clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%);
+  flex: none;
+  position: relative;
+  width: 140px;
+}
+
+.pts span {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  font-family: var(--bc);
+  font-size: 40px;
+  font-weight: 800;
+  inset: 0;
+  justify-content: center;
+  padding-right: 14px;
+  position: absolute;
+}
+
+.head .pts {
+  background: none;
+}
+
+.head .pts span {
+  color: var(--hdr);
+  font-size: 27px;
+  line-height: 34px;
+}
+
+/* --------------------------------------------------------- the sponsor strip
+ * The people who paid for the banners, at the bottom of the card the way their
+ * board closes. The pack equalises its marks by inked area from a manifest that
+ * records each one's drawn size; an organiser's uploads carry no such
+ * measurement, so they are fitted to a common bar height instead and allowed to
+ * shrink inside their own box when there are many, which never wraps and never
+ * runs off the edge. */
+.spon {
+  align-items: center;
+  animation: a3DropIn 560ms cubic-bezier(0.16, 1, 0.3, 1) 860ms both;
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.sponK {
+  color: var(--kick);
+  font-family: var(--bc);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.sponsors {
+  align-items: center;
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  /* 1920 less the pack's own 330 of padding either side. */
+  max-width: 1260px;
+}
+
+.sp {
+  display: block;
+  flex: 0 1 auto;
+  height: 42px;
+  min-width: 0;
+  object-fit: contain;
+  width: auto;
+}
+
+/* ------------------------------------------------------- nothing to show yet
+ * A table cued before the numbers exist, which happens more often than anybody
+ * plans for. It draws the card, the marks and one filled panel carrying the
+ * heading and a sentence an audience can read. Never a spinner, never an error,
+ * never the word loading: this frame is on air. */
+.plate {
+  align-items: center;
+  bottom: 118px;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 348px;
+}
+
+.plateBox {
+  background: var(--row);
+  border-radius: 4px;
+  padding: 44px 76px;
+  text-align: center;
+}
+
+.plateK {
+  color: var(--accent);
+  font-family: var(--bc);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.plateLine {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 34px;
+  font-weight: 400;
+  margin-top: 18px;
+}
+
+/* Stated here as well as in the shared file, because these two entrances are
+ * this card's own and the shared block cannot know about them. */
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .head,
+  .row,
+  .spon {
+    animation: none;
+  }
+}

@@ -81,18 +81,97 @@
   width: 14px;
 }
 
+/* The name plate is a column now, because the seat marker lives under the
+   country and has to stay with it. Nothing changes for a broadcast with no
+   seats: the second line simply is not rendered. */
+.sbPlate {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sbPlateAway { align-items: flex-start; }
+
+/* Which of the two match-ups this is. Small, quiet and always there, so a
+   viewer arriving mid-fixture knows they are watching the second game rather
+   than a rerun of the first. */
+.sbSeat {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Everything that hangs off the bottom of the bar, in the order it is read:
+   the aggregate first because it decides the fixture, then the caption. Both
+   were absolutely positioned at top:100% before, which meant adding the second
+   one put it straight on top of the first. */
+.sbBelow {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  position: absolute;
+  top: 100%;
+  transform: translateX(-50%);
+}
+
+/* The running aggregate. Labelled with the fixture's own tags rather than the
+   sides the operator typed, because two unlabelled numbers under a scoreline
+   get attributed to the wrong country by every viewer at once. */
+.sbAgg {
+  align-items: center;
+  background: #0e0e10;
+  display: flex;
+  gap: 12px;
+  padding: 8px 22px;
+  white-space: nowrap;
+}
+
+/* With no caption under it, the aggregate is what the bar ends on. */
+.sbAgg:last-child { border-radius: 0 0 8px 8px; }
+
+.sbAggK {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sbAggSide {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sbAggNum {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Colour carrying meaning: who is ahead on the tie, which is not always who is
+   ahead in the match on screen above it. */
+.sbAggLead { color: var(--v-ent-success, #4caf50); }
+
 .sbCaption {
   background: #0e0e10;
   border-radius: 0 0 8px 8px;
   color: rgba(255, 255, 255, 0.72);
   font-size: 15px;
-  left: 50%;
   letter-spacing: 0.06em;
   padding: 6px 20px;
-  position: absolute;
   text-transform: uppercase;
-  top: 100%;
-  transform: translateX(-50%);
   white-space: nowrap;
 }
 
@@ -163,6 +242,40 @@
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
+
+/* The league tables carry eight numeric columns rather than four, so the panel
+   is wider. Two separate widths rather than one: a four column table stretched
+   to 760px is mostly empty space with the numbers floating away from the name
+   they belong to. */
+.stWide { min-width: 760px; }
+
+/* A player's row says who they are and who they are playing for, on two lines,
+   because "Temi Adeyemi" alone in a table of twelve tells a viewer nothing
+   about which country just went top. */
+.stWho {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.stWhoName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stWhoSub {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The column the table is ordered by. */
+.stPts { font-weight: 700; }
 
 /* ----------------------------------------------------------- lower third */
 
@@ -418,6 +531,16 @@
 .nnTitle { font-size: 34px; font-weight: 700; }
 .nnRoom { font-size: 20px; opacity: 0.75; }
 
+/* When the cue has a clock time. A run of show has one for every line; an
+   event's now-and-next often does not, so this is drawn only when it exists
+   rather than leaving a gap where a time would be. */
+.nnTime {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
 /* ------------------------------------------------------------- programme */
 /* The running order, a column on the right, for the break between stages. */
 
@@ -671,4 +794,800 @@
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
+}
+
+/* ==================================================== the Rivalry Series set
+ *
+ * Eight graphics for a format where the FIXTURE is the unit and a match is
+ * half of one. They are drawn as a family on purpose: the same red eyebrow
+ * chip, the same #17171a panel, the same zebra row, so that eight sources
+ * cutting between each other for four hours read as one broadcast package
+ * rather than eight separate designs.
+ *
+ * Three constraints shape all of it:
+ *
+ * - The safe area is 5 per cent, which is 96px across and 54px down at
+ *   1920x1080. Each of these is inset by that rather than by a pixel count,
+ *   so a browser source opened at 1280x720 stays inside it too.
+ * - Read at arm's length on a phone. Half this audience watches on one, so
+ *   the numbers are enormous and the labels are small, never both middling.
+ * - Nothing loops. Arrival and departure belong to the `stage` class.
+ */
+
+/* ------------------------------------------------------- the empty state */
+/* One shape for every element that has been cued before its data exists. A
+   heading and one sentence, on the same panel the real graphic uses, so it
+   reads as a graphic waiting rather than as a dead browser source. */
+
+.empty {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 12px;
+  left: 50%;
+  max-width: 80%;
+  padding: 36px 56px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.emptyK {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.emptyLine {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* ---------------------------------------------------------- fixture card */
+/* D3. Who is playing whom, and which player takes which seat, before a ball
+   is kicked. The seat rows are the whole point: a viewer who knows Temi is on
+   seat 1 knows what they are watching for the next twenty minutes. */
+
+.fx {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 28px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.fxK {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 10px 24px;
+  text-transform: uppercase;
+}
+
+.fxHeads {
+  align-items: center;
+  display: grid;
+  gap: 34px;
+  grid-template-columns: 1fr auto 1fr;
+  width: 100%;
+}
+
+.fxSide {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.fxSideAway { justify-content: flex-start; }
+
+.fxLogo { height: 124px; object-fit: contain; width: 124px; }
+
+.fxNation {
+  font-size: 66px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fxV {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 34px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Narrower than the frame on purpose. The two nations above hug the middle,
+   so a full width panel underneath left the seat label marooned on the left
+   with a third of the screen of nothing between it and the names. */
+.fxLegs {
+  background: #17171a;
+  border-radius: 14px;
+  max-width: 1180px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Five columns for four things. The empty one on the right is the same width
+   as the seat label on the left, which is what puts the versus in the middle
+   of the panel and under the versus in the heading above it. Without it the
+   whole row sat 75px right of centre, which is small enough to look like a
+   mistake rather than a choice. */
+.fxLeg {
+  align-items: center;
+  display: grid;
+  font-size: 30px;
+  gap: 20px;
+  grid-template-columns: 150px 1fr 56px 1fr 150px;
+  padding: 18px 28px;
+}
+
+.fxLeg::after { content: ''; }
+
+/* Zebra fill, never a rule between rows. */
+.fxLeg:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
+
+/* Inside a row the versus is a separator rather than a headline. */
+.fxLeg .fxV { font-size: 20px; text-align: center; }
+
+.fxSeat {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fxPlayer {
+  font-weight: 600;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fxPlayerAway { text-align: left; }
+
+.fxNote {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 26px;
+  padding: 28px;
+  text-align: center;
+}
+
+/* -------------------------------------------------------- fixture result */
+/* A2. The aggregate end card. The big pair of numbers is the TIE, not the
+   match, which is the distinction the whole format turns on. */
+
+.fr {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 22px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.frK {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 10px 24px;
+  text-transform: uppercase;
+}
+
+.frTop {
+  align-items: center;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr auto 1fr;
+  width: 100%;
+}
+
+.frSide {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.frSideAway { justify-content: flex-start; }
+
+.frLogo { height: 92px; object-fit: contain; width: 92px; }
+
+.frNation {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frScore {
+  align-items: center;
+  background: #0e0e10;
+  border-radius: 14px;
+  display: flex;
+  gap: 18px;
+  padding: 14px 30px;
+}
+
+.frNum {
+  font-size: 76px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1;
+  min-width: 58px;
+  text-align: center;
+}
+
+/* Who won the tie. Colour carrying meaning, which is the one job colour has. */
+.frLead { color: var(--v-ent-success, #4caf50); }
+
+/* Same width as the fixture card's legs, and for the same reason: the pair of
+   nations above it sits in the middle of the frame, so the rows have to as
+   well or the seat labels drift away from the names they belong to. */
+.frLegs {
+  background: #17171a;
+  border-radius: 14px;
+  max-width: 1180px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.frLeg {
+  align-items: center;
+  display: grid;
+  font-size: 26px;
+  gap: 18px;
+  grid-template-columns: 140px 1fr 140px 1fr 140px;
+  padding: 16px 28px;
+}
+
+/* The counterweight to the seat label, so the scoreline sits under the
+   aggregate above it rather than beside it. */
+.frLeg::after { content: ''; }
+
+.frLeg:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
+
+.frSeat {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.frPlayer {
+  font-weight: 600;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frPlayerAway { text-align: left; }
+
+.frLegScore {
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* What the tie was worth. Sits under the side it belongs to rather than in a
+   sentence, because a table moves on these and a viewer checks them against
+   the standings graphic a minute later. */
+.frPoints {
+  align-items: center;
+  background: #0e0e10;
+  border-radius: 12px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr auto 1fr;
+  max-width: 1180px;
+  padding: 14px 30px;
+  width: 100%;
+}
+
+.frPointsN {
+  font-size: 40px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  text-align: right;
+}
+
+.frPointsAway { text-align: left; }
+
+.frPointsK {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 18px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- match result */
+/* B7. One seat, one scoreline. The players are the headline here and their
+   countries are the small print, which is the opposite of the fixture card
+   and deliberate: this is the graphic that says who won a match. */
+
+.mr {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 26px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.mrK {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 10px 24px;
+  text-transform: uppercase;
+}
+
+.mrRow {
+  align-items: center;
+  display: grid;
+  gap: 30px;
+  grid-template-columns: 1fr auto 1fr;
+  width: 100%;
+}
+
+.mrSide {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mrSideAway { align-items: flex-start; }
+
+.mrPlayer {
+  font-size: 54px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mrNation {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mrScore {
+  align-items: center;
+  background: #0e0e10;
+  border-radius: 14px;
+  display: flex;
+  gap: 18px;
+  padding: 16px 32px;
+}
+
+.mrNum {
+  font-size: 82px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1;
+  min-width: 62px;
+  text-align: center;
+}
+
+.mrLead { color: var(--v-ent-success, #4caf50); }
+
+/* ---------------------------------------------------------- head to head */
+/* B4. Two players, their records, for the caster to talk over. Symmetric on
+   purpose: any asymmetry here reads as one of them being favoured. */
+
+.h2 {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 26px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.h2K {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 10px 24px;
+  text-transform: uppercase;
+}
+
+.h2Row {
+  align-items: stretch;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr auto 1fr;
+  width: 100%;
+}
+
+.h2Side {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 30px 26px;
+}
+
+.h2Face { border-radius: 12px; height: 176px; object-fit: cover; width: 176px; }
+
+.h2Name {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.h2Under {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.h2Stats {
+  display: flex;
+  gap: 26px;
+  margin-top: 10px;
+}
+
+.h2Stat {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.h2StatN {
+  font-size: 40px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.h2StatK {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.h2V {
+  align-self: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 34px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- break screen */
+/* B2 and C4. The only full-bleed graphic of the set, because a break screen
+   replaces the picture rather than sitting on it. The countdown is the one
+   number in the studio that moves without the feed moving. */
+
+.brk {
+  align-items: center;
+  background: #0e0e10;
+  color: #fff;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+.brkBody {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 5%;
+  text-align: center;
+}
+
+.brkTitle {
+  font-size: 94px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+
+.brkSub {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 34px;
+  font-weight: 500;
+  max-width: 1100px;
+}
+
+.brkClock {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  display: flex;
+  gap: 22px;
+  margin-top: 18px;
+  padding: 18px 34px;
+}
+
+.brkClockK {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.brkClockNum {
+  font-size: 62px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ----------------------------------------------------------------- award */
+/* D8. Player of the day, goal of the day, MVP. The face is optional and its
+   absence is silent: an award with no picture is a name on a panel, never a
+   broken image on air. */
+
+.aw {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 26px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.awK {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 12px 28px;
+  text-transform: uppercase;
+}
+
+.awBody {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  display: flex;
+  gap: 30px;
+  max-width: 88%;
+  padding: 28px 44px 28px 28px;
+}
+
+.awFace { border-radius: 12px; height: 196px; object-fit: cover; width: 196px; }
+
+.awWho {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.awName {
+  font-size: 62px;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  line-height: 1.05;
+}
+
+.awDetail {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* ------------------------------------------------------------- explainer */
+/* A5. Why a country that won both matches can still be behind. Three numbered
+   steps, left aligned, because this one is read rather than glanced at. */
+
+.ex {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 24px;
+  inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+.exTitle {
+  font-size: 62px;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+}
+
+.exList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  list-style: none;
+  margin: 0;
+  max-width: 1180px;
+  padding: 0;
+}
+
+.exItem {
+  align-items: center;
+  background: #17171a;
+  border-radius: 14px;
+  display: flex;
+  gap: 22px;
+  padding: 22px 26px;
+}
+
+.exNum {
+  align-items: center;
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 10px;
+  display: flex;
+  flex: none;
+  font-size: 28px;
+  font-weight: 700;
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.exText {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ====================================================================
+   WHERE A GRAPHIC SITS ON THE FRAME
+
+   CEO, 4 September 2026: "SHould also be able to move the position of
+   overlays, whether they load in at the centre bottom or center top, or top
+   right or top left or middle or middle right, etc. this mostly affect lower
+   thirds."
+
+   These rules are LAST in this file on purpose. Every element above anchors
+   itself with its own `position: absolute` and its own left/top, and CSS
+   Modules keep file order, so a later rule of equal specificity wins. That is
+   what lets one pair of rules move any element without editing twenty of them
+   and without a single `!important`.
+
+   `as_designed` adds no class at all, so a graphic that has not been moved is
+   drawn by exactly the rules it always was. That is the default, and it is why
+   shipping this could not move anything already on air.
+
+   The safe area is 5% of the frame, which is 96px across and 54px down at
+   1920x1080. Broadcasters cut into the edges and a lower third flush to the
+   bottom is a lower third with its descenders shaved off.
+   ==================================================================== */
+
+.positioned {
+  --vent-safe-x: 5%;
+  --vent-safe-y: 5%;
+  /* The nudge, set inline from `offset_x` and `offset_y`. Zero unless an
+     operator has moved it. */
+  --vent-dx: 0px;
+  --vent-dy: 0px;
+}
+
+/* The anchoring is done on the direct child, because the child IS the graphic:
+   the stage is the whole 1920x1080 frame. Everything is cleared first so an
+   element that anchored itself with `right` or `bottom` cannot fight the new
+   anchor and end up stretched across the frame. */
+.positioned > * {
+  bottom: auto;
+  left: auto;
+  margin: 0;
+  position: absolute;
+  right: auto;
+  top: auto;
+}
+
+/* Top row */
+.at_top_left > * {
+  left: var(--vent-safe-x);
+  top: var(--vent-safe-y);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+.at_top_centre > * {
+  left: 50%;
+  top: var(--vent-safe-y);
+  transform: translate(calc(-50% + var(--vent-dx)), var(--vent-dy));
+}
+.at_top_right > * {
+  right: var(--vent-safe-x);
+  top: var(--vent-safe-y);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+
+/* Middle row */
+.at_middle_left > * {
+  left: var(--vent-safe-x);
+  top: 50%;
+  transform: translate(var(--vent-dx), calc(-50% + var(--vent-dy)));
+}
+.at_centre > * {
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + var(--vent-dx)), calc(-50% + var(--vent-dy)));
+}
+.at_middle_right > * {
+  right: var(--vent-safe-x);
+  top: 50%;
+  transform: translate(var(--vent-dx), calc(-50% + var(--vent-dy)));
+}
+
+/* Bottom row, which is where a lower third lives */
+.at_bottom_left > * {
+  bottom: var(--vent-safe-y);
+  left: var(--vent-safe-x);
+  transform: translate(var(--vent-dx), var(--vent-dy));
+}
+.at_bottom_centre > * {
+  bottom: var(--vent-safe-y);
+  left: 50%;
+  transform: translate(calc(-50% + var(--vent-dx)), var(--vent-dy));
+}
+.at_bottom_right > * {
+  bottom: var(--vent-safe-y);
+  right: var(--vent-safe-x);
+  transform: translate(var(--vent-dx), var(--vent-dy));
 }

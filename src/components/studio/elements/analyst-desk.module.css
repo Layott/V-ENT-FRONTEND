@@ -1,0 +1,51 @@
+/* C3 analyst desk.
+ *
+ * Every number below is the pack's, copied off `desk_frame()` in
+ * `CLAUDE/VIDEOS/RIVALRY/stream_more.py`:
+ *
+ *   .plate  left 96px, bottom 104px, padding 26px 42px, gap 10px
+ *   .plk    Monument 800 at 38px, white
+ *   .pln    Barlow Condensed 600 at 24px, letter-spacing .24em, panel edge
+ *
+ * Square corners, deliberately. The pack's `.card` radius belongs to the cards
+ * and this slab is not one: shot beside the original on 4 September it was the
+ * one difference the parity pass found.
+ *
+ * The frame around it is empty on purpose. A camera fills 1920x1080 and this
+ * plate is the only thing over it, so there is no surface, no ring and no
+ * ground anywhere in this file.
+ *
+ * The entrance is the shared `wipeIn`, which the pack uses on this plate and
+ * which already answers `prefers-reduced-motion` in `rivalry.module.css`.
+ */
+
+.plate {
+  background: var(--panel);
+  bottom: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  left: 96px;
+  padding: 26px 42px;
+  position: absolute;
+}
+
+/* Uppercase in the rule rather than in the words, so a French or Portuguese
+ * label reads the way the pack's own English one does without three separate
+ * shouted strings in the dictionaries. */
+.plk {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 38px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pln {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
