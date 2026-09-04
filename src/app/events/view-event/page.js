@@ -1160,19 +1160,24 @@ export const ViewEventContent = ({
                       </Link>
                     </div>}
 
+                  {/* The organiser's own face and their founder badge, from
+                      UserChip, which is the one place a name is written.
+                      This drew a hardcoded crown in place of the picture and
+                      then wrote the handle out by hand underneath, with
+                      `size={0}` telling the chip not to draw an avatar at all.
+                      So the picture could never appear however good the
+                      payload was, and the badge had nowhere to sit. */}
                   <div className={styles.organizerRow}>
-                    <div className={styles.organizerAvatar}>
-                      <FaCrown />
-                    </div>
-                    <div>
-                      {event.organizer
-                        ? <UserChip user={event.organizer} size={0}
-                                    nameClassName={styles.organizerName} />
-                        : <p className={styles.organizerName}>{tx("V-ENT Live")}</p>}
-                      <p className={styles.organizerSub}>
-                        @{event.organizer?.username || 'v-ent'}
-                      </p>
-                    </div>
+                    {event.organizer
+                      ? <UserChip user={event.organizer} size={44} secondary
+                                  nameClassName={styles.organizerName}
+                                  handleClassName={styles.organizerSub} />
+                      : <>
+                        <div className={styles.organizerAvatar}>
+                          <FaCrown />
+                        </div>
+                        <p className={styles.organizerName}>{tx("V-ENT Live")}</p>
+                      </>}
                   </div>
 
                   {[{

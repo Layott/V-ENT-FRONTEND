@@ -32,6 +32,10 @@ const protectedRoutes = [
   "/events/my-events",
   "/events/my-tickets",
   "/events/attendees",
+  // The door. The whole page is an action: it downloads a ticket list and
+  // checks people in. Signed out it rendered a scanner that could do neither
+  // and said only "Could not load this event."
+  "/events/scan",
   "/events/register-event",
   "/tournaments/create-tournament",
   "/tournaments/drafts",

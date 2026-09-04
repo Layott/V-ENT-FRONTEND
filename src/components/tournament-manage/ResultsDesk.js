@@ -12,9 +12,9 @@
 // organiser sees this panel at all: a scorekeeper may not add another.
 
 import { useCallback, useEffect, useState } from 'react';
+import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
-import Avatar from '@/components/avatar/Avatar';
 import styles from './results-desk.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -107,13 +107,14 @@ export default function ResultsDesk({ tournamentRef, token }) {
           )}
           {rows.map((row) => (
             <div key={row.user_id ?? row.id} className={styles.row}>
-              <Avatar src={row.avatar} name={row.username} size={36} />
-              <div className={styles.rowMain}>
-                <span className={styles.rowName}>@{row.username}</span>
-                {row.full_name && row.full_name !== row.username && (
-                  <span className={styles.rowMeta}>{row.full_name}</span>
-                )}
-              </div>
+              {/* Through UserChip, which carries the founder mark and opens
+                  the person's profile. Written out by hand it did neither, and
+                  a scorekeeper is exactly somebody an organiser wants to be
+                  able to look up. */}
+              <UserChip user={row} size={36} secondary
+                        className={styles.rowMain}
+                        nameClassName={styles.rowName}
+                        handleClassName={styles.rowMeta} />
               <span className={styles.roleTag}>{tt('desk.scorekeeper', 'Scorekeeper')}</span>
               <button type="button" className={styles.ghost} disabled={busy}
                       onClick={() => remove(row)}>
