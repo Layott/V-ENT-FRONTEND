@@ -46,6 +46,19 @@ const PREVIEW_REPLAY_MS = 10000;
 // Every key here is a literal. `tt(`studio.field.${kind}.${f.key}`)` would be
 // invisible to `check-keys.mjs`, which is how a screen ends up permanently
 // English in French while every checker reports clean.
+//: The parts of the console, in the order somebody running a broadcast wants
+//: them. Graphics first: it is what the operator came for, and everything else
+//: is set up once at the start of the day.
+//: Written as `key` and `fallback` rather than a bare tuple so check-keys can
+//: see them. A label held in a table and read as `tt(row.key, row.fallback)`
+//: was invisible to it twice; that shape is the one it now understands.
+const SECTIONS = [
+  { id: 'graphics', key: 'studio.secGraphics', fallback: 'Graphics' },
+  { id: 'look', key: 'studio.secLook', fallback: 'Look' },
+  { id: 'media', key: 'studio.secMedia', fallback: 'Clips and pictures' },
+  { id: 'past', key: 'studio.secPast', fallback: 'Earlier' },
+];
+
 const fieldsFor = (tt) => ({
   scorebar: [
     { key: 'home', label: tt('studio.f.home', 'Home team'), placeholder: 'Nigeria' },
@@ -284,6 +297,24 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
+  // Which part of the console is showing.
+  //
+  // CEO, 4 September 2026: "right now its just a page that you scroll a lot to
+  // find anything you want, no sub categories or options for a page that has a
+  // lot to manage". It was 1300 lines of one column: every graphic with its
+  // URL, its preview, its fields, four presentation controls and its text
+  // layers, then the house style, then the media library, then the uploads.
+  //
+  // Graphics first because that is what somebody with one hand on the mixer
+  // came for.
+  const [section, setSection] = useState('graphics');
+  // Which graphic is open. One at a time: the operator is looking at a match,
+  // not at this page, and twenty three open cards is the thing being fixed.
+  // Opening one does not put it on air and closing one does not take it off.
+  const [openKind, setOpenKind] = useState('');
+  // Show only what is on air. Off by default, because setting a graphic up is
+  // done before it goes on and the list would be empty exactly then.
+  const [onlyOnAir, setOnlyOnAir] = useState(false);
 
   // The preview loop. Same rule as the uploaded overlays: the feed keeps the
   // numbers live by itself, but the load-in only happens on a load, and how a
@@ -491,17 +522,53 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             </button>
           </div>
 
-          <h3 className={styles.section}>{tt('studio.urls', 'Browser source URLs')}</h3>
+          {/* The sections. Filled chips with `aria-pressed`, the same shape
+              every other tab strip on this platform uses, rather than an
+              underline or a ring. */}
+          <div className={styles.sections} role="group"
+               aria-label={tt('studio.sections', 'Parts of the studio')}>
+            {SECTIONS.map((row) => (
+              <button key={row.id} type="button"
+                      className={section === row.id ? styles.sectionOn : styles.sectionOff}
+                      aria-pressed={section === row.id}
+                      onClick={() => setSection(row.id)}>
+                {tt(row.key, row.fallback)}
+              </button>
+            ))}
+          </div>
+
+          {section === 'graphics' && <>
           <p className={styles.hint}>
             {tt('studio.urlsHint', 'One per graphic. Add each as a browser source at 1920 by 1080 with a transparent background. They show nothing until you put that graphic on air below.')}
           </p>
 
+          {/* Everything, or only what a viewer is looking at right now. */}
+          <div className={styles.sections}>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOff : styles.sectionOn}
+                    aria-pressed={!onlyOnAir}
+                    onClick={() => setOnlyOnAir(false)}>
+              {tt('studio.allGraphics', 'All graphics')}
+            </button>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOn : styles.sectionOff}
+                    aria-pressed={onlyOnAir}
+                    onClick={() => setOnlyOnAir(true)}>
+              {tt('studio.onAirOnly', 'On air now')}
+            </button>
+          </div>
+
           <div className={styles.elements}>
-            {orderedKinds.map((elementKind) => {
+            {orderedKinds
+              .filter((k) => !onlyOnAir || live.elements?.[k]?.active)
+              .map((elementKind) => {
               const el = live.elements?.[elementKind] || {};
               const fields = FIELDS[elementKind] || [];
               const values = { ...(el.payload || {}), ...(draft[elementKind] || {}) };
               const dirty = Boolean(draft[elementKind] && Object.keys(draft[elementKind]).length);
+              // A graphic with something typed and not yet saved stays open, or
+              // pressing another one would look like it threw the typing away.
+              const open = openKind === elementKind || dirty;
 
               return (
                 <div key={elementKind} className={styles.element}>
@@ -526,8 +593,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                         ? tt('studio.take', 'Take off')
                         : tt('studio.put', 'Put on air')}
                     </button>
+                    <button type="button" className={styles.foldBtn}
+                            aria-expanded={open}
+                            onClick={() => setOpenKind(open ? '' : elementKind)}>
+                      {open ? tt('studio.close', 'Close') : tt('studio.open', 'Open')}
+                    </button>
                   </div>
 
+                  {open && <>
                   <p className={styles.elUrl}>{live.urls[elementKind]}</p>
 
                   {/* What it looks like right now, at the size it will be on
@@ -685,13 +758,21 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                     entrances={live.presentation_options?.entrances}
                     exits={live.presentation_options?.exits}
                   />
+                  </>}
                 </div>
               );
             })}
           </div>
 
+          {orderedKinds.filter((k) => !onlyOnAir || live.elements?.[k]?.active).length === 0 && (
+            <p className={styles.hint}>
+              {tt('studio.noneOnAir', 'Nothing is on air. Every graphic is still here under All graphics.')}
+            </p>
+          )}
+          </>}
+
           {/* The house style, set once for the whole broadcast. */}
-          <div className={styles.defaults}>
+          {section === 'look' && <div className={styles.defaults}>
             <h3 className={styles.section}>{tt('studio.house', 'How graphics behave by default')}</h3>
             <p className={styles.hint}>
               {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
@@ -760,16 +841,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                 <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
               </label>
             </div>
-          </div>
+          </div>}
         </>
       )}
 
       {/* Clips and pictures live with the studio rather than with one
           broadcast, so this shows whether or not one is running. */}
-      <StudioMedia kind={kind} ownerRef={ref} token={token}
-                   live={Boolean(live)} onPlay={playAsset} />
+      {(!live || section === 'media') && (
+        <StudioMedia kind={kind} ownerRef={ref} token={token}
+                     live={Boolean(live)} onPlay={playAsset} />
+      )}
 
-      {past.length > 0 && (
+      {past.length > 0 && (!live || section === 'past') && (
         <>
           <h3 className={styles.section}>{tt('studio.past', 'Earlier broadcasts')}</h3>
           <div className={styles.pastRows}>

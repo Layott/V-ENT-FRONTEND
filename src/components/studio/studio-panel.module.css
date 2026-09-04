@@ -164,7 +164,7 @@
 
 /* -------------------------------------------------------------- buttons */
 
-.primary, .ghost, .onBtn, .offBtn, .copyBtn {
+.primary, .ghost, .onBtn, .offBtn, .copyBtn, .sectionOn, .sectionOff, .foldBtn {
   align-items: center;
   border-radius: 8px;
   cursor: pointer;
@@ -196,10 +196,51 @@
 .copyBtn:hover { background: rgba(255, 255, 255, 0.14); }
 
 .primary:focus-visible, .ghost:focus-visible, .onBtn:focus-visible,
-.offBtn:focus-visible, .copyBtn:focus-visible {
+.offBtn:focus-visible, .copyBtn:focus-visible, .sectionOn:focus-visible,
+.sectionOff:focus-visible, .foldBtn:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* --------------------------------------------------------- the sections
+
+   CEO, 4 September 2026: "right now its just a page that you scroll a lot to
+   find anything you want, no sub categories or options for a page that has a
+   lot to manage".
+
+   Filled chips, the way every other tab strip here is built. The selected one
+   is a stronger fill and a brighter label, never a ring and never an
+   underline. They wrap rather than scroll sideways, because an operator on a
+   laptop at a venue should not have to find a control that is off the edge. */
+
+.sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.9rem;
+}
+
+.sectionOn {
+  background: #E5B94E;
+  color: #1a1a1a;
+}
+
+.sectionOff {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sectionOff:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Open one graphic at a time. Twenty three cards each carrying a preview, its
+   fields, four presentation controls and its text layers is the scroll the
+   sections alone would not have fixed. */
+.foldBtn {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.foldBtn:hover { background: rgba(255, 255, 255, 0.14); }
 
 /* ----------------------------------------------------------------- past */
 
