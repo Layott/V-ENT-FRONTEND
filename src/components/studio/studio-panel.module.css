@@ -258,3 +258,29 @@
   margin-top: 1.1rem;
   padding: 1rem 1.1rem;
 }
+
+/* A nudge off the chosen anchor: across, then down. Two boxes side by side
+   because they are one measurement in two parts, and separating them into two
+   labelled fields would read as two settings.
+
+   Only drawn once a graphic has been moved off its own design, so an operator
+   never sees a control that would do nothing. */
+.nudge {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.nudgeInput {
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 10px;
+  color: var(--primary-bg);
+  font: inherit;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+  width: 5rem;
+}
+
+.nudgeInput:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
