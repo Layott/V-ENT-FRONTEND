@@ -38,6 +38,7 @@
 // and retries quietly.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useT } from '@/i18n/LanguageProvider';
 import styles from './studio.module.css';
 
 // Fast enough that a score correction looks immediate to a viewer, slow enough
@@ -65,6 +66,130 @@ const clock = (iso) => {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
+// ------------------------------------------------------- the aggregate tie
+//
+// The Rivalry Series is a format where a fixture between two nations is TWO
+// matches, one per seat, and the tie is decided on total goals across both.
+// Everything below reads `data.rivalry`, which the feed sends only for a
+// tournament in that format. Absent for every other tournament, so each of
+// these helpers answers "nothing" rather than throwing, and each element that
+// uses them draws its own empty state.
+
+/** The aggregate branch of the feed, or null for a tournament that is not one. */
+const rivalryOf = (data) => (data?.rivalry?.enabled ? data.rivalry : null);
+
+/** A side's short label: the tag if it has one, its name otherwise. */
+const tagOf = (side) => side?.tag || side?.name || '';
+
+/** A number the feed sent, or null when it sent nothing usable.
+ *
+ * Deliberately not `?? 0`. A goal tally that has not been worked out yet and a
+ * goal tally of zero look identical once a fallback has been applied, and one
+ * of them is a claim this page cannot support.
+ */
+const count = (value) => {
+  if (value === null || value === undefined || value === '') return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+};
+
+/** A yes or no an operator typed.
+ *
+ * The console's payload fields are text boxes, so a setting arrives as the
+ * STRING "false", and `Boolean('false')` is true. Blank means the operator has
+ * not decided, which is not the same as no: the contract's rule is that blank
+ * means work it out from what is live, and the fallback is what does that.
+ */
+const optIn = (value, fallback) => {
+  if (typeof value === 'boolean') return value;
+  const said = String(value ?? '').trim().toLowerCase();
+  if (!said) return fallback;
+  return said === 'true' || said === '1' || said === 'yes' || said === 'on';
+};
+
+/** Which fixture a graphic is about.
+ *
+ * The operator names one, or leaves it blank and gets whatever is live, which
+ * is what they want with a match in front of them and one hand on the mixer.
+ *
+ * A fixture id that matches nothing resolves to NOTHING, never to a different
+ * fixture. Same rule as the scorebar's team names, and for the same reason: a
+ * typo that silently becomes another country's result is far worse on air than
+ * a card that draws its empty state.
+ */
+function pickFixture(riv, payload = {}, prefer = 'live') {
+  const list = riv?.fixtures || [];
+  if (!list.length) return null;
+
+  const named = String(payload.fixture_id || '').trim();
+  if (named) return list.find((f) => String(f.id) === named) || null;
+
+  if (prefer === 'decided') {
+    const done = list.filter((f) => f.decided || f.status === 'completed');
+    if (done.length) return done[done.length - 1];
+  }
+
+  const liveId = riv?.now?.fixture_id;
+  if (liveId) {
+    const hit = list.find((f) => String(f.id) === String(liveId));
+    if (hit) return hit;
+  }
+  return list.find((f) => f.status === 'in_progress')
+    || list.find((f) => f.status === 'scheduled')
+    || list[list.length - 1];
+}
+
+/** Which leg of a fixture, meaning which seat's match. */
+function pickLeg(fixture, riv, payload = {}) {
+  const legs = fixture?.legs || [];
+  if (!legs.length) return null;
+
+  const onThisFixture = String(riv?.now?.fixture_id || '') === String(fixture?.id || '');
+  const wanted = Number(payload.seat) || (onThisFixture ? Number(riv?.now?.seat) : 0);
+  if (wanted) return legs.find((l) => Number(l.seat) === wanted) || null;
+
+  return legs.find((l) => l.status === 'in_progress')
+    || [...legs].reverse().find((l) => l.status === 'completed')
+    || legs[0];
+}
+
+/** One player, as these graphics need them: name, nation, record and face.
+ *
+ * Two places hold half the answer each. The players table carries the record a
+ * league keeps for a person rather than for their side, and the entrant list
+ * carries the picture. Read both, because neither is complete on its own, and
+ * invent neither: a player nobody has a record for draws with no numbers under
+ * their name rather than with zeroes, which read as a record of nothing.
+ */
+function findPlayer(name, data) {
+  const wanted = String(name || '').trim().toLowerCase();
+  if (!wanted) return null;
+
+  const riv = rivalryOf(data);
+  const row = (riv?.table_players || []).find(
+    (p) => String(p.name || '').toLowerCase() === wanted) || null;
+
+  let face = null;
+  let side = '';
+  for (const team of data?.teams || []) {
+    const hit = (team.players || []).find(
+      (p) => String(p.ign || '').toLowerCase() === wanted);
+    if (hit) {
+      face = hit.img || null;
+      side = hit.represents || team.name || '';
+      if (!row && hit.record) {
+        return { ...hit.record, name: hit.ign, nation: side, img: face };
+      }
+      break;
+    }
+  }
+  if (row) return { ...row, nation: row.nation || side, img: face };
+  if (face || side) return { name, nation: side, img: face };
+  // A name typed for somebody the tournament has never heard of. Still drawn,
+  // because an exhibition guest is ordinary and typing their name should work.
+  return { name };
+}
+
 // ---------------------------------------------------------------- elements
 //
 // Each takes `{payload, data}`: what the operator typed, and what the bracket
@@ -72,7 +197,28 @@ const clock = (iso) => {
 // the tournament or the event, never from the operator, so a scorebar cannot
 // disagree with the standings and a doors count cannot disagree with the door.
 
+/** What an element draws when the thing it is about does not exist yet.
+ *
+ * A graphic goes on air before its data does more often than anybody plans
+ * for: a fixture card cued while the bracket is still being filled in, a
+ * result card taken up a second before the score is recorded. A blank frame
+ * reads to the operator as a dead browser source, and they spend the next
+ * minute reloading OBS instead of watching the match.
+ *
+ * So: one designed plate, a heading and one sentence an audience can read.
+ * Never a spinner, never an error, never the word "loading".
+ */
+function EmptyPlate({ eyebrow, line }) {
+  return (
+    <div className={styles.empty}>
+      <div className={styles.emptyK}>{eyebrow}</div>
+      <div className={styles.emptyLine}>{line}</div>
+    </div>
+  );
+}
+
 function Scorebar({ payload, data }) {
+  const tt = useT();
   const teams = data.teams || [];
   const find = (tag) => teams.find(
     (t) => t.tag === tag || t.name === tag) || null;
@@ -95,24 +241,62 @@ function Scorebar({ payload, data }) {
     return find(name) || { name, logo: null };
   };
 
-  const home = side(payload.home, teams[0] || null);
-  let away = side(payload.away, teams[1] || null);
+  // Which fixture the bar is about, when the tournament has fixtures at all.
+  // Needed before the sides are worked out, because on an aggregate format the
+  // right answer to "the operator typed nothing" is the two nations playing
+  // RIGHT NOW, not the first two entrants in the list. Seen on the demo
+  // broadcast, 4 September 2026: the bar read Senegal against Ghana while the
+  // live fixture was Nigeria against Kenya, because the payload was left over
+  // from an earlier test and the fallback had nothing to do with the match.
+  const riv = rivalryOf(data);
+  const fixture = riv ? pickFixture(riv, payload) : null;
+  const leg = fixture ? pickLeg(fixture, riv, payload) : null;
+
+  const home = side(payload.home, fixture?.home || teams[0] || null);
+  let away = side(payload.away, fixture?.away || teams[1] || null);
   // And the two sides are never the same entrant, which is not a scoreline.
   if (home && away && home === away) {
     away = teams.find((t) => t !== home) || null;
   }
   if (!home || !away) return null;
 
-  // The aggregate is the operator's, because it is the running score of a tie
-  // in progress and the bracket only learns it when the leg is recorded.
+  // The live match score is the operator's, because it moves faster than the
+  // bracket, which only learns a leg when it is recorded.
   const hs = payload.home_score;
   const as = payload.away_score;
+
+  // The fixture aggregate, which is the whole point of this bar at a Rivalry
+  // event. A viewer joining at the second match sees Ghana winning 2-0 and has
+  // no way to know Ghana are losing the tie 3-4 on total goals. That is the
+  // single most important thing on screen and it is not in the match score.
+  //
+  // It comes from the feed rather than being added up here, so the bar cannot
+  // disagree with the table the players are reading. And it is labelled with
+  // the FIXTURE'S OWN tags rather than with the sides the operator typed: if
+  // those two ever disagree, an unlabelled pair of numbers would be attributed
+  // to the wrong country by every viewer, silently.
+  const seat = Number(payload.seat) || Number(leg?.seat) || 0;
+
+  // A missing aggregate and an aggregate of nothing are different answers, and
+  // `Number(null)` is 0, so a fixture the server has not worked out yet would
+  // otherwise go on air reading 0 - 0 as though it knew.
+  const homeAgg = count(fixture?.home?.aggregate);
+  const awayAgg = count(fixture?.away?.aggregate);
+  const showAgg = optIn(payload.show_aggregate, true)
+    && homeAgg !== null && awayAgg !== null;
+
+  const seatLabel = seat
+    ? tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(seat))
+    : '';
 
   return (
     <div className={styles.scorebar}>
       <div className={styles.sbSide}>
         {home.logo && <img className={styles.sbLogo} src={home.logo} alt="" />}
-        <span className={styles.sbName}>{home.name}</span>
+        <span className={styles.sbPlate}>
+          <span className={styles.sbName}>{home.name}</span>
+          {seatLabel && <span className={styles.sbSeat}>{seatLabel}</span>}
+        </span>
       </div>
       <div className={styles.sbScore}>
         <span className={styles.sbNum}>{hs ?? 0}</span>
@@ -120,32 +304,140 @@ function Scorebar({ payload, data }) {
         <span className={styles.sbNum}>{as ?? 0}</span>
       </div>
       <div className={`${styles.sbSide} ${styles.sbAway}`}>
-        <span className={styles.sbName}>{away.name}</span>
+        <span className={`${styles.sbPlate} ${styles.sbPlateAway}`}>
+          <span className={styles.sbName}>{away.name}</span>
+          {seatLabel && <span className={styles.sbSeat}>{seatLabel}</span>}
+        </span>
         {away.logo && <img className={styles.sbLogo} src={away.logo} alt="" />}
       </div>
-      {payload.caption && (
-        <div className={styles.sbCaption}>{payload.caption}</div>
+      {(showAgg || payload.caption) && (
+        <div className={styles.sbBelow}>
+          {showAgg && (
+            <div className={styles.sbAgg}>
+              <span className={styles.sbAggK}>
+                {tt('studio.rv.aggregate', 'Aggregate')}
+              </span>
+              <span className={styles.sbAggSide}>{tagOf(fixture.home)}</span>
+              <span className={`${styles.sbAggNum} ${homeAgg > awayAgg ? styles.sbAggLead : ''}`}>
+                {homeAgg}
+              </span>
+              <span className={styles.sbDash} />
+              <span className={`${styles.sbAggNum} ${awayAgg > homeAgg ? styles.sbAggLead : ''}`}>
+                {awayAgg}
+              </span>
+              <span className={styles.sbAggSide}>{tagOf(fixture.away)}</span>
+            </div>
+          )}
+          {payload.caption && (
+            <div className={styles.sbCaption}>{payload.caption}</div>
+          )}
+        </div>
       )}
     </div>
   );
 }
 
+/** A goal difference, signed, so a table reads at a glance. */
+const signed = (n) => `${Number(n) > 0 ? '+' : ''}${Number(n) || 0}`;
+
+/**
+ * The table. One graphic, two tables, and they are not the same shape.
+ *
+ * `payload.table` is 'nations' or 'players'. The aggregate format keeps both
+ * live at once, because a player can win their own match while their nation
+ * loses the fixture, and one leaderboard cannot carry both without lying about
+ * one of them. Default 'nations', so a graphic already cued on air is exactly
+ * what it was before this existed.
+ *
+ * A tournament that is not an aggregate league has neither table and keeps the
+ * entrant standings this drew before, unchanged.
+ */
 function Standings({ payload, data }) {
-  const teams = (data.teams || []).slice(0, Number(payload.limit) || 10);
-  if (!teams.length) return null;
+  const tt = useT();
+  const riv = rivalryOf(data);
+  // The contract calls it `rows`; the console has always called it `limit`.
+  // Both, because an operator retyping a working field under time pressure is
+  // a bug report waiting to happen.
+  const many = Number(payload.rows) || Number(payload.limit) || 10;
+  const players = payload.table === 'players';
+
+  const league = (players ? riv?.table_players : riv?.table_nations) || [];
+  const rows = league.slice(0, many);
+
+  const heading = payload.title
+    || (players
+      ? tt('studio.rv.playerTable', 'Player standings')
+      : data.tournament?.title || tt('studio.rv.standings', 'Standings'));
+
+  if (rows.length) {
+    return (
+      <div className={`${styles.standings} ${styles.stWide}`}>
+        <div className={styles.stTitle}>{heading}</div>
+        <div className={styles.stHead}>
+          <span className={styles.stPos} />
+          <span className={styles.stTeam}>
+            {players ? tt('studio.rv.colPlayer', 'Player') : tt('studio.rv.colTeam', 'Team')}
+          </span>
+          <span className={styles.stNum}>{tt('studio.rv.colP', 'P')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colW', 'W')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colD', 'D')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colL', 'L')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colGF', 'GF')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colGA', 'GA')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colGD', 'GD')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colPts', 'PTS')}</span>
+        </div>
+        {rows.map((r, i) => (
+          <div key={`${r.name}-${r.seat ?? i}`} className={styles.stRow}>
+            <span className={styles.stPos}>{r.place ?? i + 1}</span>
+            <span className={styles.stTeam}>
+              {r.logo && <img className={styles.stLogo} src={r.logo} alt="" />}
+              <span className={styles.stWho}>
+                <span className={styles.stWhoName}>{r.name}</span>
+                {players && (r.nation || r.seat) && (
+                  <span className={styles.stWhoSub}>
+                    {[r.nation, r.seat
+                      ? tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(r.seat))
+                      : ''].filter(Boolean).join(' · ')}
+                  </span>
+                )}
+              </span>
+            </span>
+            <span className={styles.stNum}>{r.played}</span>
+            <span className={styles.stNum}>{r.won}</span>
+            <span className={styles.stNum}>{r.drawn}</span>
+            <span className={styles.stNum}>{r.lost}</span>
+            <span className={styles.stNum}>{r.goals_for}</span>
+            <span className={styles.stNum}>{r.goals_against}</span>
+            <span className={styles.stNum}>{signed(r.goal_difference)}</span>
+            <span className={`${styles.stNum} ${styles.stPts}`}>{r.points}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // A players table asked for on a tournament that keeps no player record is
+  // not the nations table with a different heading. Say so instead.
+  const teams = players ? [] : (data.teams || []).slice(0, many);
+  if (!teams.length) {
+    return (
+      <EmptyPlate
+        eyebrow={heading}
+        line={tt('studio.rv.tableTBC', 'The table is being confirmed.')} />
+    );
+  }
 
   return (
     <div className={styles.standings}>
-      <div className={styles.stTitle}>
-        {payload.title || data.tournament?.title || 'Standings'}
-      </div>
+      <div className={styles.stTitle}>{heading}</div>
       <div className={styles.stHead}>
         <span className={styles.stPos} />
-        <span className={styles.stTeam}>Team</span>
-        <span className={styles.stNum}>P</span>
-        <span className={styles.stNum}>W</span>
-        <span className={styles.stNum}>L</span>
-        <span className={styles.stNum}>+/-</span>
+        <span className={styles.stTeam}>{tt('studio.rv.colTeam', 'Team')}</span>
+        <span className={styles.stNum}>{tt('studio.rv.colP', 'P')}</span>
+        <span className={styles.stNum}>{tt('studio.rv.colW', 'W')}</span>
+        <span className={styles.stNum}>{tt('studio.rv.colL', 'L')}</span>
+        <span className={styles.stNum}>{tt('studio.rv.colDiff', '+/-')}</span>
       </div>
       {teams.map((t) => (
         <div key={t.tag || t.name} className={styles.stRow}>
@@ -158,8 +450,7 @@ function Standings({ payload, data }) {
           <span className={styles.stNum}>{t.won}</span>
           <span className={styles.stNum}>{t.lost}</span>
           <span className={styles.stNum}>
-            {t.points_for - t.points_against > 0 ? '+' : ''}
-            {t.points_for - t.points_against}
+            {signed(t.points_for - t.points_against)}
           </span>
         </div>
       ))}
@@ -427,26 +718,52 @@ function Media({ element, data }) {
   );
 }
 
-// What is on, and what follows it, read from the programme. Nothing to type.
+/**
+ * What is on, and what follows it. Nothing to type.
+ *
+ * Two sources, one graphic. An event has a programme of rooms and sessions; a
+ * production day has a run of show, the minute by minute the crew works to.
+ * They are the same document seen from two sides, so this reads the run sheet
+ * where there is one and the event's programme where there is not, rather than
+ * becoming a second element that drifts from this one inside a week.
+ *
+ * What it deliberately does NOT draw is `owner`. That column says which of the
+ * crew a cue belongs to, "Graphics", "Casters", "Floor", and it is internal.
+ * A viewer wants the match, not the rota.
+ */
 function NowNext({ data }) {
+  const tt = useT();
+  const ros = data.run_of_show || null;
   const ev = data.event || {};
-  if (!ev.now_on && !ev.next_on) return null;
+
+  const now = ros?.now
+    || (ev.now_on ? { activity: ev.now_on, match: ev.room } : null);
+  const next = ros?.next
+    || (ev.next_on ? { activity: ev.next_on, match: ev.next_room } : null);
+
+  if (!now && !next) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.next', 'Next')}
+        line={tt('studio.rv.runningOrderTBC', 'The running order is being confirmed.')} />
+    );
+  }
+
+  const row = (cue, label, className) => (
+    <div className={className}>
+      <span className={styles.nnLabel}>{label}</span>
+      {clock(cue.starts_at) && (
+        <span className={styles.nnTime}>{clock(cue.starts_at)}</span>
+      )}
+      <span className={styles.nnTitle}>{cue.activity}</span>
+      {cue.match && <span className={styles.nnRoom}>{cue.match}</span>}
+    </div>
+  );
+
   return (
     <div className={styles.nownext}>
-      {ev.now_on && (
-        <div className={styles.nnNow}>
-          <span className={styles.nnLabel}>Now</span>
-          <span className={styles.nnTitle}>{ev.now_on}</span>
-          {ev.room && <span className={styles.nnRoom}>{ev.room}</span>}
-        </div>
-      )}
-      {ev.next_on && (
-        <div className={styles.nnNext}>
-          <span className={styles.nnLabel}>Next</span>
-          <span className={styles.nnTitle}>{ev.next_on}</span>
-          {ev.next_room && <span className={styles.nnRoom}>{ev.next_room}</span>}
-        </div>
-      )}
+      {now && row(now, tt('studio.rv.now', 'Now'), styles.nnNow)}
+      {next && row(next, tt('studio.rv.next', 'Next'), styles.nnNext)}
     </div>
   );
 }
@@ -573,6 +890,402 @@ function SquadDepth({ element }) {
   );
 }
 
+// ------------------------------------------------- the Rivalry Series set
+//
+// Eight graphics for a format where the fixture is the unit and the match is
+// half of it. Every one of them reads `data.rivalry`, draws a designed empty
+// state when the fixture it is about does not exist yet, and does no
+// arithmetic: the aggregates, the points and the tables are computed where the
+// players read them, so a graphic cannot disagree with the standings page.
+
+/** A picture that must never leave a broken glyph on air.
+ *
+ * Its own component because the fallback is state, and a face that fails and a
+ * face that has not been uploaded have to look the same: absent. The squad
+ * card learned this the hard way, with the browser's broken-image icon on a
+ * graphic that was live.
+ */
+function Face({ src, className }) {
+  const [broken, setBroken] = useState(false);
+  if (!src || broken) return null;
+  return (
+    <img className={className} src={src} alt=""
+         onError={() => setBroken(true)} />
+  );
+}
+
+/** D3: the two nations of a fixture and both seat match-ups, before it starts. */
+function FixtureCard({ payload, data }) {
+  const tt = useT();
+  const riv = rivalryOf(data);
+  const fixture = pickFixture(riv, payload);
+
+  if (!fixture) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.fixture', 'Fixture')}
+        line={tt('studio.rv.fixtureTBC', 'The next fixture is being confirmed.')} />
+    );
+  }
+
+  const legs = fixture.legs || [];
+  const versus = tt('studio.rv.versus', 'v');
+
+  return (
+    <div className={styles.fx}>
+      <div className={styles.fxK}>
+        {payload.title || data.tournament?.title || tt('studio.rv.fixture', 'Fixture')}
+      </div>
+      <div className={styles.fxHeads}>
+        <div className={styles.fxSide}>
+          <Face src={fixture.home?.logo} className={styles.fxLogo} />
+          <span className={styles.fxNation}>{fixture.home?.name || '-'}</span>
+        </div>
+        <span className={styles.fxV}>{versus}</span>
+        <div className={`${styles.fxSide} ${styles.fxSideAway}`}>
+          <span className={styles.fxNation}>{fixture.away?.name || '-'}</span>
+          <Face src={fixture.away?.logo} className={styles.fxLogo} />
+        </div>
+      </div>
+      <div className={styles.fxLegs}>
+        {legs.length ? legs.map((leg) => (
+          <div key={leg.seat} className={styles.fxLeg}>
+            <span className={styles.fxSeat}>
+              {tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(leg.seat))}
+            </span>
+            <span className={styles.fxPlayer}>{leg.home_player || '-'}</span>
+            <span className={styles.fxV}>{versus}</span>
+            <span className={`${styles.fxPlayer} ${styles.fxPlayerAway}`}>
+              {leg.away_player || '-'}
+            </span>
+          </div>
+        )) : (
+          <div className={styles.fxNote}>
+            {tt('studio.rv.lineupsTBC', 'The line-ups are being confirmed.')}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** A2: the aggregate end card. Both legs, the totals, the points awarded. */
+function FixtureResult({ payload, data }) {
+  const tt = useT();
+  const riv = rivalryOf(data);
+  const fixture = pickFixture(riv, payload, 'decided');
+
+  if (!fixture) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.result', 'Result')}
+        line={tt('studio.rv.resultTBC', 'The result is not in yet.')} />
+    );
+  }
+
+  const home = fixture.home || {};
+  const away = fixture.away || {};
+  const legs = fixture.legs || [];
+  const points = fixture.points || null;
+  // A tie that is still being played says so. Calling an aggregate "full time"
+  // while the second match is running is the one caption a viewer would act on
+  // and be wrong about.
+  const settled = Boolean(fixture.decided || fixture.status === 'completed');
+
+  return (
+    <div className={styles.fr}>
+      <div className={styles.frK}>
+        {settled
+          ? tt('studio.rv.fixtureDecided', 'Fixture decided')
+          : tt('studio.rv.aggregateSoFar', 'Aggregate so far')}
+      </div>
+      <div className={styles.frTop}>
+        <div className={styles.frSide}>
+          <Face src={home.logo} className={styles.frLogo} />
+          <span className={styles.frNation}>{home.name || '-'}</span>
+        </div>
+        <div className={styles.frScore}>
+          <span className={`${styles.frNum} ${home.aggregate > away.aggregate ? styles.frLead : ''}`}>
+            {home.aggregate ?? 0}
+          </span>
+          <span className={styles.sbDash} />
+          <span className={`${styles.frNum} ${away.aggregate > home.aggregate ? styles.frLead : ''}`}>
+            {away.aggregate ?? 0}
+          </span>
+        </div>
+        <div className={`${styles.frSide} ${styles.frSideAway}`}>
+          <span className={styles.frNation}>{away.name || '-'}</span>
+          <Face src={away.logo} className={styles.frLogo} />
+        </div>
+      </div>
+      <div className={styles.frLegs}>
+        {legs.map((leg) => (
+          <div key={leg.seat} className={styles.frLeg}>
+            <span className={styles.frSeat}>
+              {tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(leg.seat))}
+            </span>
+            <span className={styles.frPlayer}>{leg.home_player || '-'}</span>
+            <span className={styles.frLegScore}>
+              {leg.home_score ?? 0} - {leg.away_score ?? 0}
+            </span>
+            <span className={`${styles.frPlayer} ${styles.frPlayerAway}`}>
+              {leg.away_player || '-'}
+            </span>
+          </div>
+        ))}
+      </div>
+      {points && (
+        <div className={styles.frPoints}>
+          <span className={styles.frPointsN}>{points.home}</span>
+          <span className={styles.frPointsK}>{tt('studio.rv.points', 'Points')}</span>
+          <span className={`${styles.frPointsN} ${styles.frPointsAway}`}>{points.away}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** B7: one match's result card. One seat, one scoreline. */
+function MatchResult({ payload, data }) {
+  const tt = useT();
+  const riv = rivalryOf(data);
+  const fixture = pickFixture(riv, payload);
+  const leg = fixture ? pickLeg(fixture, riv, payload) : null;
+
+  if (!leg) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.result', 'Result')}
+        line={tt('studio.rv.resultTBC', 'The result is not in yet.')} />
+    );
+  }
+
+  const eyebrow = [
+    tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(leg.seat)),
+    leg.status === 'completed' ? tt('studio.rv.fullTime', 'Full time') : '',
+  ].filter(Boolean).join(' · ');
+
+  return (
+    <div className={styles.mr}>
+      <div className={styles.mrK}>{eyebrow}</div>
+      <div className={styles.mrRow}>
+        <div className={styles.mrSide}>
+          <span className={styles.mrPlayer}>{leg.home_player || '-'}</span>
+          <span className={styles.mrNation}>{fixture?.home?.name || ''}</span>
+        </div>
+        <div className={styles.mrScore}>
+          <span className={`${styles.mrNum} ${leg.home_score > leg.away_score ? styles.mrLead : ''}`}>
+            {leg.home_score ?? 0}
+          </span>
+          <span className={styles.sbDash} />
+          <span className={`${styles.mrNum} ${leg.away_score > leg.home_score ? styles.mrLead : ''}`}>
+            {leg.away_score ?? 0}
+          </span>
+        </div>
+        <div className={`${styles.mrSide} ${styles.mrSideAway}`}>
+          <span className={styles.mrPlayer}>{leg.away_player || '-'}</span>
+          <span className={styles.mrNation}>{fixture?.away?.name || ''}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** B4: two players side by side with their records, for the caster. */
+function HeadToHead({ payload, data }) {
+  const tt = useT();
+  const riv = rivalryOf(data);
+  const fixture = riv ? pickFixture(riv, payload) : null;
+  const leg = fixture ? pickLeg(fixture, riv, payload) : null;
+
+  const left = findPlayer(payload.left || leg?.home_player, data);
+  const right = findPlayer(payload.right || leg?.away_player, data);
+
+  if (!left || !right) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.headToHead', 'Head to head')}
+        line={tt('studio.rv.playersTBC', 'The players are being confirmed.')} />
+    );
+  }
+
+  // Numbers only for somebody the tournament actually keeps a record for. A
+  // guest drawn with four zeroes reads as a record of four defeats.
+  const side = (p) => (
+    <div className={styles.h2Side}>
+      <Face src={p.img} className={styles.h2Face} />
+      <span className={styles.h2Name}>{p.name}</span>
+      {(p.nation || p.seat) && (
+        <span className={styles.h2Under}>
+          {[p.nation, p.seat
+            ? tt('studio.rv.seat', 'Seat {n}').replace('{n}', String(p.seat))
+            : ''].filter(Boolean).join(' · ')}
+        </span>
+      )}
+      {Number.isFinite(Number(p.played)) && (
+        <div className={styles.h2Stats}>
+          <div className={styles.h2Stat}>
+            <span className={styles.h2StatN}>{p.won ?? 0}</span>
+            <span className={styles.h2StatK}>{tt('studio.rv.colW', 'W')}</span>
+          </div>
+          <div className={styles.h2Stat}>
+            <span className={styles.h2StatN}>{p.drawn ?? 0}</span>
+            <span className={styles.h2StatK}>{tt('studio.rv.colD', 'D')}</span>
+          </div>
+          <div className={styles.h2Stat}>
+            <span className={styles.h2StatN}>{p.lost ?? 0}</span>
+            <span className={styles.h2StatK}>{tt('studio.rv.colL', 'L')}</span>
+          </div>
+          <div className={styles.h2Stat}>
+            <span className={styles.h2StatN}>{p.goals_for ?? 0}</span>
+            <span className={styles.h2StatK}>{tt('studio.rv.colGF', 'GF')}</span>
+          </div>
+          <div className={styles.h2Stat}>
+            <span className={styles.h2StatN}>{p.goals_against ?? 0}</span>
+            <span className={styles.h2StatK}>{tt('studio.rv.colGA', 'GA')}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className={styles.h2}>
+      <div className={styles.h2K}>{tt('studio.rv.headToHead', 'Head to head')}</div>
+      <div className={styles.h2Row}>
+        {side(left)}
+        <span className={styles.h2V}>{tt('studio.rv.versus', 'v')}</span>
+        {side(right)}
+      </div>
+    </div>
+  );
+}
+
+/** Seconds until an ISO time, or null when there is no usable one. */
+function secondsUntil(iso) {
+  if (!iso) return null;
+  const at = new Date(iso).getTime();
+  if (Number.isNaN(at)) return null;
+  return Math.max(0, Math.round((at - Date.now()) / 1000));
+}
+
+/** A countdown as a clock: 4:32, and 1:04:32 once it is over an hour. */
+function countdown(secs) {
+  const two = (n) => String(n).padStart(2, '0');
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return h ? `${h}:${two(m)}:${two(secs % 60)}` : `${m}:${two(secs % 60)}`;
+}
+
+/** B2 and C4: be right back, ending soon, offline, with a live countdown. */
+function BreakScreen({ payload }) {
+  const tt = useT();
+  const until = payload.until || '';
+  const [left, setLeft] = useState(() => secondsUntil(until));
+
+  // The one number in the whole studio that moves on its own, and it moves on
+  // local state alone. Counting down by asking the feed would be a request a
+  // second for the length of every break, against the organiser's own address,
+  // which is exactly how an overlay came to ask the API 25 times a second.
+  useEffect(() => {
+    setLeft(secondsUntil(until));
+    if (!until) return undefined;
+    const timer = setInterval(() => {
+      const secs = secondsUntil(until);
+      setLeft(secs);
+      if (secs === 0) clearInterval(timer);   // nothing left to count
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [until]);
+
+  return (
+    <div className={styles.brk}>
+      <div className={styles.brkBody}>
+        <div className={styles.brkTitle}>
+          {payload.title || tt('studio.rv.brb', 'Be right back')}
+        </div>
+        {payload.subtitle && (
+          <div className={styles.brkSub}>{payload.subtitle}</div>
+        )}
+        {left !== null && (
+          <div className={styles.brkClock}>
+            <span className={styles.brkClockK}>
+              {left > 0
+                ? tt('studio.rv.backIn', 'Back in')
+                : tt('studio.rv.startingNow', 'Starting now')}
+            </span>
+            {left > 0 && (
+              <span className={styles.brkClockNum}>{countdown(left)}</span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** D8: player of the day, goal of the day, MVP. The operator names it. */
+function Award({ payload }) {
+  const tt = useT();
+  const title = payload.title || tt('studio.rv.award', 'Award');
+
+  if (!payload.name) {
+    return (
+      <EmptyPlate
+        eyebrow={title}
+        line={tt('studio.rv.winnerTBC', 'The winner is being confirmed.')} />
+    );
+  }
+
+  return (
+    <div className={styles.aw}>
+      <div className={styles.awK}>{title}</div>
+      <div className={styles.awBody}>
+        <Face src={payload.picture} className={styles.awFace} />
+        <div className={styles.awWho}>
+          <div className={styles.awName}>{payload.name}</div>
+          {payload.detail && <div className={styles.awDetail}>{payload.detail}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** A5: the aggregate rule, in one screen.
+ *
+ * The most asked question in the chat at the last one of these was why a
+ * country that had won both matches was behind. Three lines, no numbers this
+ * page has not been sent: the points a win is worth belongs to the organiser's
+ * ruleset and is not in the feed, so it is not claimed here.
+ */
+function Explainer({ data }) {
+  const tt = useT();
+  const seats = Number(rivalryOf(data)?.seats) || 2;
+
+  const lines = [
+    tt('studio.rv.rule1', 'Every fixture is {n} matches, one for each seat.')
+      .replace('{n}', String(seats)),
+    tt('studio.rv.rule2', 'The fixture is decided on total goals across all of them, never on matches won.'),
+    tt('studio.rv.rule3', 'So a player can win their own match while their nation loses the fixture. Both are kept, in two tables.'),
+  ];
+
+  return (
+    <div className={styles.ex}>
+      <div className={styles.exTitle}>
+        {tt('studio.rv.howItWorks', 'How a fixture is won')}
+      </div>
+      <ol className={styles.exList}>
+        {lines.map((line, i) => (
+          <li key={line} className={styles.exItem}>
+            <span className={styles.exNum}>{i + 1}</span>
+            <span className={styles.exText}>{line}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 const ELEMENTS = {
   scorebar: Scorebar,
   standings: Standings,
@@ -588,6 +1301,13 @@ const ELEMENTS = {
   now_next: NowNext,
   programme: Programme,
   doors: Doors,
+  fixture_card: FixtureCard,
+  fixture_result: FixtureResult,
+  match_result: MatchResult,
+  head_to_head: HeadToHead,
+  break_screen: BreakScreen,
+  award: Award,
+  explainer: Explainer,
 };
 
 // ------------------------------------------------------------------- page

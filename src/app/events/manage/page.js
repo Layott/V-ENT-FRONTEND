@@ -36,6 +36,7 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import UserPicker from '@/components/user-picker/UserPicker';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -1913,10 +1914,15 @@ export const ManageEventContent = ({
                     </div>}
 
                   {canAddManagers && <div className={styles.newRow}>
-                      <input className={styles.input} placeholder={tt('manage.username', 'Username')} value={newManager.username} onChange={e => setNewManager(p => ({
-                  ...p,
-                  username: e.target.value
-                }))} />
+                      {/* Picked from the platform, with their picture. Door
+                          staff typed one letter wrong is somebody who cannot
+                          open the scanner on the morning of the show. */}
+                      <UserPicker
+                        value={newManager.username}
+                        onChange={value => setNewManager(p => ({ ...p, username: value }))}
+                        token={token}
+                        placeholder={tt('picker.findSomeone', 'Start typing a name or handle')}
+                      />
                       <select className={styles.input} value={newManager.role} onChange={e => setNewManager(p => ({
                   ...p,
                   role: e.target.value

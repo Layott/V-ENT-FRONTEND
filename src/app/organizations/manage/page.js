@@ -15,6 +15,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import UserPicker from '@/components/user-picker/UserPicker';
 import styles from './manage-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -750,11 +751,19 @@ const ManageOrgContent = ({
                       {tt("ui.invite.note.6b3c", "Pick the role now. Whoever you invite joins with it in one press, so there is nothing left for you to grade afterwards.")}
                     </p>
                     <form className={styles.inviteForm} onSubmit={sendInvite}>
-                      <label className={styles.formField}>
+                      <div className={styles.formField}>
                         <span className={styles.formLabel}>{tt("ui.username.9c30", "Username")}</span>
-                        <input className={styles.formInput} value={inviteName} placeholder="@player"
-                               onChange={e => setInviteName(e.target.value)} />
-                      </label>
+                        {/* Somebody is picked from the platform, with their
+                            picture, rather than spelled from memory. An invite
+                            typed one letter wrong is an invite that goes
+                            nowhere and is never chased. */}
+                        <UserPicker
+                          value={inviteName}
+                          onChange={setInviteName}
+                          token={session?.user?.sessionToken}
+                          placeholder={tt('picker.findSomeone', 'Start typing a name or handle')}
+                        />
+                      </div>
                       <label className={styles.formField}>
                         <span className={styles.formLabel}>{tt("ui.role.c3f1", "Role")}</span>
                         <select className={styles.formInput} value={inviteRole}

@@ -52,8 +52,37 @@ const fieldsFor = (tt) => ({
     { key: 'home_score', label: tt('studio.f.homeScore', 'Home score'), placeholder: '0', numeric: true },
     { key: 'away_score', label: tt('studio.f.awayScore', 'Away score'), placeholder: '0', numeric: true },
     { key: 'caption', label: tt('studio.f.caption', 'Caption'), placeholder: 'Aggregate, leg 2' },
+    // The running aggregate beside the live score, and which of the two
+    // match-ups this is. Both are left blank by default and worked out from
+    // the fixture that is live, because during a fixture that is the answer
+    // the operator wants and typing it again every twenty minutes is how a
+    // wrong seat number ends up on air.
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+    { key: 'show_aggregate',
+      label: tt('studio.f.showAggregate', 'Show the aggregate'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
   ],
   standings: [
+    // Which of the two live tables. An aggregate format keeps a nations table
+    // and a players table at once and they are different shapes, so this is a
+    // choice rather than a text box: an operator mid-broadcast should not be
+    // able to mistype the name of a table.
+    { key: 'table',
+      label: tt('studio.f.whichTable', 'Which table'),
+      choices: [
+        { value: 'nations', label: tt('studio.opt.nations', 'Nations') },
+        { value: 'players', label: tt('studio.opt.players', 'Players') },
+      ] },
     { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Group standings' },
     { key: 'limit', label: tt('studio.f.rows', 'How many rows'), placeholder: '10', numeric: true },
   ],
@@ -84,6 +113,42 @@ const fieldsFor = (tt) => ({
   doors: [],
   ticker: [],
   bracket: [],
+  explainer: [],
+  // The Rivalry Series set. Every fixture field is optional on purpose: blank
+  // means the fixture that is live, which is what somebody with one hand on
+  // the mixer wants, and what the graphics work out for themselves.
+  fixture_card: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Matchday 3' },
+  ],
+  fixture_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+  ],
+  match_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+  ],
+  head_to_head: [
+    { key: 'left', label: tt('studio.f.leftPlayer', 'Player on the left'), placeholder: 'demo_zainab' },
+    { key: 'right', label: tt('studio.f.rightPlayer', 'Player on the right'), placeholder: 'demo_kwame' },
+  ],
+  break_screen: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
+    { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
+    { key: 'until', label: tt('studio.f.until', 'Counting down to'), placeholder: '2026-09-04T18:30' },
+  ],
+  award: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Player of the day' },
+    { key: 'name', label: tt('studio.f.awardName', 'Who won it'), placeholder: 'Temi Adeyemi' },
+    { key: 'detail', label: tt('studio.f.awardDetail', 'Why they won it'), placeholder: '7 goals, 3 wins' },
+    { key: 'picture', label: tt('studio.f.awardPicture', 'Picture address'), placeholder: 'https://' },
+  ],
   intro: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Rivalry Series' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Day 1' },
@@ -109,6 +174,13 @@ const labelsFor = (tt) => ({
   programme: tt('studio.kind.programme', 'Programme'),
   doors: tt('studio.kind.doors', 'Doors'),
   media: tt('studio.kind.media', 'Clip or picture'),
+  fixture_card: tt('studio.kind.fixtureCard', 'Fixture card'),
+  fixture_result: tt('studio.kind.fixtureResult', 'Fixture result'),
+  match_result: tt('studio.kind.matchResult', 'Match result'),
+  head_to_head: tt('studio.kind.headToHead', 'Head to head'),
+  break_screen: tt('studio.kind.breakScreen', 'Break screen'),
+  award: tt('studio.kind.award', 'Award'),
+  explainer: tt('studio.kind.explainer', 'Aggregate rule'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
@@ -136,6 +208,7 @@ const autoFor = (tt) => ({
   doors: tt('studio.auto.doors', 'Reads the door: how many are in, how many the room holds.'),
   ticker: tt('studio.auto.ticker', 'Reads the table, or the programme.'),
   bracket: tt('studio.auto.bracket', 'Reads the matches in progress.'),
+  explainer: tt('studio.auto.explainer', 'Explains how a fixture is decided. Reads how many matches make one.'),
 });
 
 export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentRef }) {
@@ -413,14 +486,32 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                           <span className={styles.fieldLabel}>
                             {f.label}
                           </span>
-                          <input className={styles.input}
-                                 inputMode={f.numeric ? 'numeric' : undefined}
-                                 placeholder={f.placeholder}
-                                 value={values[f.key] ?? ''}
-                                 onChange={(e) => setDraft((d) => ({
-                                   ...d,
-                                   [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
-                                 }))} />
+                          {/* A field with a fixed set of answers is a choice,
+                              not a text box. An operator mid-broadcast should
+                              not be able to put "playerz" in a payload and
+                              spend the next two minutes wondering why the
+                              graphic will not change. */}
+                          {f.choices ? (
+                            <select className={styles.select}
+                                    value={values[f.key] ?? ''}
+                                    onChange={(e) => setDraft((d) => ({
+                                      ...d,
+                                      [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                    }))}>
+                              {f.choices.map((c) => (
+                                <option key={c.value} value={c.value}>{c.label}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input className={styles.input}
+                                   inputMode={f.numeric ? 'numeric' : undefined}
+                                   placeholder={f.placeholder}
+                                   value={values[f.key] ?? ''}
+                                   onChange={(e) => setDraft((d) => ({
+                                     ...d,
+                                     [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                   }))} />
+                          )}
                         </label>
                       ))}
                       <div className={styles.fieldActions}>

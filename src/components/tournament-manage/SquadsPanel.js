@@ -18,6 +18,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import UserChip from '@/components/user-chip/UserChip';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './squads-panel.module.css';
@@ -215,10 +216,13 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
           ))}
 
           <div className={styles.addRow}>
-            <input className={styles.input} value={adding[squad.id] || ''} disabled={busy}
-                   placeholder={tt('squad.addPlaceholder', 'Username, from any club')}
-                   aria-label={tt('squad.addPlaceholder', 'Username, from any club')}
-                   onChange={(e) => setAdding((a) => ({ ...a, [squad.id]: e.target.value }))} />
+            <UserPicker
+              value={adding[squad.id] || ''}
+              onChange={(value) => setAdding((a) => ({ ...a, [squad.id]: value }))}
+              token={token}
+              disabled={busy}
+              placeholder={tt('squad.addPlaceholder', 'Username, from any club')}
+            />
             <button type="button" className={styles.secondary} disabled={busy}
                     onClick={() => addMember(squad.id)}>
               {tt('squad.add', 'Add to squad')}

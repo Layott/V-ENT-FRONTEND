@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import UserChip from '@/components/user-chip/UserChip';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './results-desk.module.css';
@@ -126,9 +127,12 @@ export default function ResultsDesk({ tournamentRef, token }) {
       )}
 
       <form className={styles.addRow} onSubmit={add}>
-        <input className={styles.input} value={username}
-               placeholder={tt('desk.usernamePlaceholder', 'Username, as on their profile')}
-               onChange={(e) => setUsername(e.target.value)} />
+        <UserPicker
+          value={username}
+          onChange={setUsername}
+          token={token}
+          placeholder={tt('desk.usernamePlaceholder', 'Username, as on their profile')}
+        />
         <button type="submit" className={styles.primary} disabled={busy || !username.trim()}>
           {tt('desk.add', 'Let them enter results')}
         </button>

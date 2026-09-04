@@ -3,7 +3,7 @@
 import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
-import UserPicker from '@/components/community/UserPicker';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { mediaUrl } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
@@ -953,7 +953,7 @@ const CommunityInner = () => {
                 </button>
 
                 {newDmOpen && <div className={styles.dmNewForm}>
-                    <UserPicker value={newDmUsername} onChange={setNewDmUsername} token={token} autoFocus />
+                    <UserPicker purpose="message" value={newDmUsername} onChange={setNewDmUsername} token={token} autoFocus />
                     <textarea className={styles.dmNewTextarea} placeholder={tt("ui.first.message.c090", "First message...")} value={newDmBody} onChange={e => setNewDmBody(e.target.value)} maxLength={1000} />
                     {newDmError && <p className={styles.dmError}>{newDmError}</p>}
                     <button className={`${styles.dmNewSendBtn} goldBTN`} onClick={handleStartDm} disabled={!newDmUsername.trim() || !newDmBody.trim() || newDmSending}>
