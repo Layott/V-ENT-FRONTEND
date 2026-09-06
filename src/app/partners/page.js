@@ -12,6 +12,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './partners.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate } from '@/lib/datetime';
 
 // The partner area. Three states in one page, because they are the same subject
 // at different stages: you have not applied, you have applied and are waiting,
@@ -262,7 +263,7 @@ const PartnersPage = () => {
                   </span>
                 </div>
                 <dl className={styles.metaGrid}>
-                  <div><dt>{tt("ui.applied.a3e4", "Applied")}</dt><dd>{new Date(partner.created_at).toLocaleDateString()}</dd></div>
+                  <div><dt>{tt("ui.applied.a3e4", "Applied")}</dt><dd>{formatDate(partner.created_at)}</dd></div>
                   <div><dt>{tt("ui.sign.v.ent.9ce8", "Sign-in with V-ENT")}</dt><dd>{partner.sso_status}</dd></div>
                   <div><dt>{tt("ui.scopes.granted.f614", "Scopes granted")}</dt><dd>{partner.approved_scopes.length || tx("None yet")}</dd></div>
                 </dl>

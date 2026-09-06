@@ -10,6 +10,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate } from '@/lib/datetime';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -206,7 +207,7 @@ function DisputesInner() {
                             </span>
                           </td>
                           <td className={shared.hideMobile}>
-                            {d.created_at ? new Date(d.created_at).toLocaleDateString() : '-'}
+                            {d.created_at ? formatDate(d.created_at) : '-'}
                           </td>
                           <td>
                             {actionable && <div className={shared.actGroup} style={{

@@ -10,6 +10,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './payouts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate } from '@/lib/datetime';
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -275,7 +276,7 @@ function PayoutsInner() {
                           <code className={styles.code}>{p.account_number || '-'}</code>
                         </td>
                         <td className={shared.hideMobile}>
-                          {p.submitted_at ? new Date(p.submitted_at).toLocaleDateString() : '-'}
+                          {p.submitted_at ? formatDate(p.submitted_at) : '-'}
                         </td>
                         <td>
                           <span className={`${shared.badge} ${statusBadgeClass(p.status)}`}>{p.status}</span>

@@ -20,6 +20,7 @@ import styles from './payment.module.css';
 import { API, entryFeeVc, tokenFrom, ventFetch } from '@/components/tournament-lib/tournamentApi';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDateTime } from '@/lib/datetime';
 const EMPTY_PIN = ['', '', '', ''];
 const CoinIcon = ({
   size = 16
@@ -482,7 +483,7 @@ const PaymentModal = ({
       }}>
           {tt("ui.this.runs.at.same.4af5", "This runs at the same time as")}{' '}
           <strong>{conflict?.title || tx("another tournament")}</strong>
-          {conflict?.starts_at ? `, which starts ${new Date(conflict.starts_at).toLocaleString()}` : ''}
+          {conflict?.starts_at ? `, which starts ${formatDateTime(conflict.starts_at)}` : ''}
           {tt("ui.are.already.registered.it.03e6", ", and you are already registered for it.")}
         </p>
         <p className={styles.subtitle} style={{

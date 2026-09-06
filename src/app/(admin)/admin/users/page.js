@@ -12,6 +12,7 @@ import styles from './users.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { formatDate } from '@/lib/datetime';
 const PAGE_SIZE = 20;
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
 const STATUSES = [{
@@ -278,7 +279,7 @@ function UsersInner() {
                           {u.wallet_vc ? Number(u.wallet_vc).toLocaleString() : '0'}
                         </td>
                         <td className={shared.hideMobile}>
-                          {u.date_joined ? new Date(u.date_joined).toLocaleDateString() : '-'}
+                          {u.date_joined ? formatDate(u.date_joined) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>

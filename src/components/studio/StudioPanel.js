@@ -30,6 +30,7 @@ import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
 import TextLayerEditor from './TextLayerEditor';
 import styles from './studio-panel.module.css';
+import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -500,7 +501,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             {tt('studio.noneLive', 'No broadcast running. Starting one gives you a fresh set of URLs, which stop working when you end it.')}
           </p>
           <button type="button" className={styles.primary} disabled={busy}
-                  onClick={() => start(new Date().toLocaleDateString())}>
+                  onClick={() => start(formatDate(new Date()))}>
             {tt('studio.start', 'Start a broadcast')}
           </button>
         </div>
@@ -515,7 +516,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             </span>
             <span className={styles.liveMeta}>
               {tt('studio.since', 'since {t}').replace(
-                '{t}', new Date(live.started_at).toLocaleTimeString())}
+                '{t}', formatTime(live.started_at))}
             </span>
             <button type="button" className={styles.ghost} disabled={busy} onClick={end}>
               {tt('studio.end', 'End broadcast')}
@@ -862,7 +863,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   {s.name || tt('studio.broadcast', 'Broadcast')}
                 </span>
                 <span className={styles.muted}>
-                  {new Date(s.started_at).toLocaleString()}
+                  {formatDateTime(s.started_at)}
                 </span>
                 <span className={styles.muted}>
                   {tt('studio.urlsRetired', 'URLs retired')}

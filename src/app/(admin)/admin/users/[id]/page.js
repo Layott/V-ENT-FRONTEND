@@ -12,6 +12,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './user-detail.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate, formatDateTime } from '@/lib/datetime';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -196,13 +197,13 @@ function UserDetailInner() {
                   <div>
                     <p className={styles.label}>{tt("ui.joined.43a1", "Joined")}</p>
                     <p className={styles.value}>
-                      {u.date_joined ? new Date(u.date_joined).toLocaleDateString() : '-'}
+                      {u.date_joined ? formatDate(u.date_joined) : '-'}
                     </p>
                   </div>
                   <div>
                     <p className={styles.label}>{tt("ui.last.login.43da", "Last login")}</p>
                     <p className={styles.value}>
-                      {u.last_login ? new Date(u.last_login).toLocaleDateString() : '-'}
+                      {u.last_login ? formatDate(u.last_login) : '-'}
                     </p>
                   </div>
                   <div>
@@ -245,7 +246,7 @@ function UserDetailInner() {
                       </thead>
                       <tbody>
                         {detail.logins.map(l => <tr key={l.id}>
-                            <td>{new Date(l.created_at).toLocaleString()}</td>
+                            <td>{formatDateTime(l.created_at)}</td>
                             <td><code className={styles.code}>{l.ip}</code></td>
                             <td className={shared.hideMobile}>{l.device}</td>
                             <td className={shared.hideMobile}>{l.location}</td>
@@ -274,7 +275,7 @@ function UserDetailInner() {
                               </td>
                               <td className={shared.hideMobile}>{t.placement}</td>
                               <td className={shared.hideMobile}>{Number(t.prize_vc || 0).toLocaleString()}</td>
-                              <td className={shared.hideMobile}>{new Date(t.joined_at).toLocaleDateString()}</td>
+                              <td className={shared.hideMobile}>{formatDate(t.joined_at)}</td>
                             </tr>)}
                         </tbody>
                       </table>
@@ -291,7 +292,7 @@ function UserDetailInner() {
                       </thead>
                       <tbody>
                         {detail.wallet.map(w => <tr key={w.id}>
-                            <td>{new Date(w.created_at).toLocaleDateString()}</td>
+                            <td>{formatDate(w.created_at)}</td>
                             <td>{w.type.replace('_', ' ')}</td>
                             <td className={w.amount >= 0 ? styles.amtUp : styles.amtDown}>
                               {Number(w.amount || 0) >= 0 ? '+' : ''}{Number(w.amount || 0).toLocaleString()} VC
@@ -313,7 +314,7 @@ function UserDetailInner() {
                         </thead>
                         <tbody>
                           {detail.reports.map(r => <tr key={r.id}>
-                              <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                              <td>{formatDate(r.created_at)}</td>
                               <td>{r.reporter}</td>
                               <td>{r.reason}</td>
                               <td>
@@ -329,8 +330,8 @@ function UserDetailInner() {
                         <p className={styles.banReason}>{b.reason}</p>
                         <p className={styles.banMeta}>
                           {tt("ui.banned.75c6", "Banned by")} <strong>{b.banned_by}</strong> on{' '}
-                          {new Date(b.created_at).toLocaleDateString()}
-                          {b.lifted_at && ` · Lifted ${new Date(b.lifted_at).toLocaleDateString()}`}
+                          {formatDate(b.created_at)}
+                          {b.lifted_at && ` · Lifted ${formatDate(b.lifted_at)}`}
                         </p>
                       </div>))}
               </div>

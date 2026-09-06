@@ -4,6 +4,7 @@
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './success.module.css';
 import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
+import { formatDate } from '@/lib/datetime';
 
 const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
   const tt = useT();
@@ -89,7 +90,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
                 Tournament starts on {(() => {
                   const raw = tournament?.start_date_and_time || tournament?.start_date;
                   const d = raw ? new Date(raw) : null;
-                  return d && !Number.isNaN(d.getTime()) ? d.toLocaleDateString() : 'TBD';
+                  return d && !Number.isNaN(d.getTime()) ? formatDate(d) : 'TBD';
                 })()}
               </li>
             </ul>

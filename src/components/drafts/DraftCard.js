@@ -5,6 +5,7 @@ import Link from 'next/link';
 import styles from './DraftCard.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDateTime } from '@/lib/datetime';
 const DraftCard = ({
   draft,
   onDelete
@@ -72,8 +73,8 @@ const DraftCard = ({
           <p><strong>{tt("ui.game.b008", "Game:")}</strong> {draft.game || 'N/A'}</p>
           <p><strong>{tt("ui.format.d640", "Format:")}</strong> {draft.tournament_type || 'N/A'}</p>
           <p><strong>{tt("ui.teams.d2f1", "Teams:")}</strong> {draft.max_team || 'N/A'}</p>
-          <p><strong>{tt("ui.start.date.fa4d", "Start Date:")}</strong> {draft.start_date_and_time ? new Date(draft.start_date_and_time).toLocaleString() : 'N/A'}</p>
-          <p><strong>{tt("ui.end.date.5f0a", "End Date:")}</strong> {draft.end_date_and_time ? new Date(draft.end_date_and_time).toLocaleString() : 'N/A'}</p>
+          <p><strong>{tt("ui.start.date.fa4d", "Start Date:")}</strong> {draft.start_date_and_time ? formatDateTime(draft.start_date_and_time) : 'N/A'}</p>
+          <p><strong>{tt("ui.end.date.5f0a", "End Date:")}</strong> {draft.end_date_and_time ? formatDateTime(draft.end_date_and_time) : 'N/A'}</p>
           <p><strong>{tt("ui.description.9b6f", "Description:")}</strong> {draft.tournament_description || tx("No description provided.")}</p>
           <Link href={`/edit-draft/${draft.id}`}>
             <button className={styles.resumeButton}>{tt("ui.resume.editing.a1e4", "Resume Editing")}</button>

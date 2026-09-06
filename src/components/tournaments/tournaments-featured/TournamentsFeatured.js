@@ -5,6 +5,7 @@ import { FiCalendar } from "react-icons/fi";
 import { GrTrophy } from "react-icons/gr";
 import { FaArrowRight } from "react-icons/fa";
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
+import { formatDate } from '@/lib/datetime';
 
 
 const TournamentsFeatured = ({ data }) => {
@@ -16,7 +17,7 @@ const TournamentsFeatured = ({ data }) => {
   const formatTournamentDate = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+    return `${formatDate(start)} - ${formatDate(end)}`;
   };
 
   return (
