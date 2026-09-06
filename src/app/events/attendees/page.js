@@ -142,6 +142,23 @@ const AttendeesContent = ({
    *   - it STOPS when the tab is hidden. A steward switching to the camera app
    *     should not leave this burning their connection.
    */
+  // The loop calls THROUGH a ref, and depends only on the two things that
+  // should ever restart it.
+  //
+  // `load` and `loadSummary` are rebuilt whenever anything in their dependency
+  // lists changes, `tt` among them, and `useT()` hands back a new function on
+  // most renders. An effect naming them tears its timer down and arms a fresh
+  // one on every render, so a 10 second timer never survives to fire: measured
+  // in Chrome, twenty seconds on a visible tab produced no refresh at all.
+  //
+  // Rendering correctly is not working, and this is what that looks like: the
+  // page looked completely right and quietly refreshed nothing. See
+  // `feedback_react_render_loops`.
+  const loadRef = useRef(load);
+  const summaryRef = useRef(loadSummary);
+  useEffect(() => { loadRef.current = load; }, [load]);
+  useEffect(() => { summaryRef.current = loadSummary; }, [loadSummary]);
+
   useEffect(() => {
     if (!token || !eventId) return undefined;
     let stopped = false;
@@ -154,12 +171,12 @@ const AttendeesContent = ({
         timer = setTimeout(tick, wait);
         return;
       }
-      const moved = await load(false);
+      const moved = await loadRef.current(false);
       if (stopped) return;
       // Something changed: go back to asking often, and refresh the counts.
       // Nothing changed: ask a little less often, up to a minute.
       wait = moved ? 10000 : Math.min(Math.round(wait * 1.5), 60000);
-      if (moved) loadSummary();
+      if (moved) summaryRef.current();
       timer = setTimeout(tick, wait);
     };
 
@@ -183,7 +200,7 @@ const AttendeesContent = ({
         document.removeEventListener('visibilitychange', wake);
       }
     };
-  }, [token, eventId, load, loadSummary]);
+  }, [token, eventId]);
   const checkIn = async ticketCode => {
     const value = (ticketCode || '').trim().toUpperCase();
     if (!value) return;
@@ -226,6 +243,44 @@ const AttendeesContent = ({
       setChecking(false);
     }
   };
+  /**
+   * Taking a check-in back.
+   *
+   * Deliberately not behind a confirmation. At a gate with a queue the mistake
+   * was made two seconds ago by the person holding the phone, and a dialog
+   * between them and the correction is how the correction stops happening. It
+   * is reversible in one press the other way, and the door log records who did
+   * it.
+   */
+  const undoCheckIn = async (ticketCode) => {
+    const value = (ticketCode || '').trim().toUpperCase();
+    if (!value) return;
+    setChecking(true);
+    setScanState(null);
+    try {
+      const res = await fetch(
+        `${API}/event/ticket/${encodeURIComponent(value)}/undo-check-in/`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}` },
+          body: JSON.stringify({}),
+        });
+      const body = await res.json();
+      setScanState({
+        ok: body.status === 'success',
+        message: body.status === 'success'
+          ? body.message
+          : apiMessage(tt, body, 'api.couldNotUndo', 'That check-in could not be undone.'),
+      });
+      if (body.status === 'success') { load(); loadSummary(); }
+    } catch {
+      setScanState({ ok: false, message: tt("msg.connectionError", "Connection error.") });
+    } finally {
+      setChecking(false);
+    }
+  };
+
   const local = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return rows;
@@ -463,9 +518,17 @@ const AttendeesContent = ({
                                   onClick={() => checkIn(r.code)}>
                             {tt("door.checkIn", "Check in")}
                           </button>
-                        : <span className={styles.rowDone}>
-                            {r.status === 'checked_in' ? tt("door.in", "In") : ''}
-                          </span>}
+                        : r.status === 'checked_in'
+                          /* CEO, 6 September: "should also be able to undo
+                             check ins". A steward scans the wrong phone all
+                             evening, and a headcount nobody can correct is not
+                             a headcount. */
+                          ? <button type="button" className={styles.undoBtn}
+                                    disabled={checking}
+                                    onClick={() => undoCheckIn(r.code)}>
+                              {tt("door.undo", "Undo")}
+                            </button>
+                          : <span className={styles.rowDone} />}
                     </td>
                   </tr>)}
               </tbody>

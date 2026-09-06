@@ -312,3 +312,46 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
+
+/* Undo. A muted fill rather than a red one: taking back a mis-scan is an
+   ordinary correction at a gate, not a destructive act, and colouring it as a
+   warning makes stewards hesitate over the thing they should do immediately. */
+.undoBtn {
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.undoBtn:hover { background-color: #3d3e45; color: #fff; }
+.undoBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* The action stays reachable on a phone.
+   Found on the Android emulator, which is exactly why mobile is tested there
+   and not on a resized desktop window: the table scrolls sideways inside its
+   own box, which is correct, but it put Check in and Undo off the right edge.
+   A steward at a gate with a queue behind them should never have to scroll
+   sideways to admit somebody.
+   Pinned to the right edge of the scrolling area, with the row's own fill
+   behind it so the columns sliding underneath do not show through. */
+@media only screen and (max-width: 767px) {
+  .table th:last-child,
+  .table td:last-child {
+    position: sticky;
+    right: 0;
+    background-color: var(--overlay-gray);
+    padding-left: 0.5rem;
+    padding-right: 0.75rem;
+  }
+
+  /* The zebra fill has to be repeated here: the sticky cell paints its own
+     background, so without this every other row shows the wrong shade under
+     the button. */
+  .table tbody tr:nth-child(even) td:last-child {
+    background-color: #26272b;
+  }
+}
