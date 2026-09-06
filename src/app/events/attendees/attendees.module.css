@@ -219,3 +219,96 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.72rem;
 }
+
+/* The scanner, reachable from here.
+   On 5 September nobody opened /events/scan at all: staff stood on this page,
+   read codes off the phone's camera app and typed them in, because there was
+   no way to get from this screen to that one. */
+.scanLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  margin-bottom: 1.25rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.scanLink:hover { background-color: #33343a; }
+
+/* Filled chips. Selected is a stronger fill and a brighter label, never a
+   ring: the hairline ban applies to filters like everything else. */
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filterChip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filterChipOn {
+  background-color: var(--v-ent-grn);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* Said out loud when the answer came from the server rather than from this
+   device's copy of the list. A steward whose list was incomplete should know
+   it was, because the next person they look up may be missing too. */
+.fromServer {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+/* Admitting somebody straight from the row the search found. */
+.rowBtn {
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.rowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.rowDone {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.selfTag {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* A header a screen reader announces and nobody else sees. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

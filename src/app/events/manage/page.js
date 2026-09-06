@@ -37,6 +37,7 @@ import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
+import { formatWithZone } from '@/lib/datetime';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -133,6 +134,14 @@ export const ManageEventContent = ({
   // `map_link` all along and no screen sent it.
   const [venueDraft, setVenueDraft] = useState({ venue_name: '', map_link: '', directions: '' });
   const [venueLoaded, setVenueLoaded] = useState(null);
+  // Whether people may admit themselves, and how early the window opens.
+  //
+  // The whole feature existed and could not be switched on by anybody: the
+  // column defaults to False and the settings endpoint was GET only, so 194
+  // lines of working self check-in were unreachable code. This is the control
+  // that reaches it.
+  const [selfCheckIn, setSelfCheckIn] = useState(null);
+  const [savingSelfCheckIn, setSavingSelfCheckIn] = useState(false);
   const [savingVenue, setSavingVenue] = useState(false);
   const [metrics, setMetrics] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
@@ -305,6 +314,12 @@ export const ManageEventContent = ({
       // A control that cannot list them draws its empty state and the rest of
       // the console still loads. This is never the reason a console fails.
       .catch(() => setMyOrgs([]));
+
+    // Whether this event lets people admit themselves.
+    fetch(`${API}/event/${eventRef}/self-check-in/settings/`)
+      .then(res => res.json())
+      .then(body => setSelfCheckIn(body?.data || null))
+      .catch(() => setSelfCheckIn(null));
     setMetrics(me.body?.data || null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
@@ -652,6 +667,45 @@ export const ManageEventContent = ({
     await load();
   };
 
+  /**
+   * Turning self check-in on, and choosing how early it opens.
+   *
+   * CEO, 5 September 2026: "allow useers tocheck in fro,m thheir ed, but it
+   * shold not e like the main oe, the organizer oe wherethey still have to
+   * scanned forthe perso to be checked in shouldbe there, the theyca see
+   * people, who check in themselves."
+   *
+   * Additional to the door, never a replacement. The scanner and this list are
+   * untouched; this only lets somebody holding a ticket mark themselves as
+   * arrived, and the attendee list says which of the two it was.
+   */
+  const saveSelfCheckIn = async (patch) => {
+    if (savingSelfCheckIn) return;
+    setSavingSelfCheckIn(true);
+    setNotice('');
+    setError('');
+    try {
+      const res = await fetch(`${API}/event/${eventRef}/self-check-in/settings/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+        return;
+      }
+      setSelfCheckIn(body.data);
+      setNotice(body.data.enabled
+        ? tt('manage.selfCheckInOn', 'People can now check themselves in.')
+        : tt('manage.selfCheckInOff', 'Only your door staff can check people in now.'));
+    } catch {
+      setError(tt('msg.connectionError', 'Connection error.'));
+    } finally {
+      setSavingSelfCheckIn(false);
+    }
+  };
+
   // Move this event into an organisation.
   //
   // CEO, 4 September 2026: "there is no way to add events to an organization",
@@ -891,6 +945,56 @@ export const ManageEventContent = ({
                              placeholder={tt('manage.venueDirectionsPlaceholder', 'Second gate on Vori Close, parking behind the hall')}
                              onChange={e => setVenueDraft(v => ({ ...v, directions: e.target.value }))} />
                     </label>
+                  </div>}
+
+                  {/* Letting people admit themselves.
+                      CEO, 5 September 2026, and it is ADDITIONAL to the door:
+                      "it shold not e like the main oe, the organizer oe
+                      wherethey still have to scanned forthe perso to be
+                      checked in shouldbe there". */}
+                  {selfCheckIn && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.selfCheckInTitle', 'Letting people check themselves in')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {selfCheckIn.enabled
+                        ? tt('manage.selfCheckInOnHint', 'Anybody holding a ticket can mark themselves as arrived from their own phone, inside the window below. Your door staff and the scanner carry on exactly as they do now, and the attendee list says which of the two admitted each person.')
+                        : tt('manage.selfCheckInOffHint', 'Only your door staff can admit people. Turning this on lets somebody holding a ticket mark themselves as arrived from their own phone. It does not replace the door: a guest still has to give the email their ticket was sent to.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <button type="button"
+                              className={`${styles.primaryBtn} ${selfCheckIn.enabled ? 'redBTN' : 'grnBTN'}`}
+                              disabled={savingSelfCheckIn}
+                              onClick={() => saveSelfCheckIn({ enabled: !selfCheckIn.enabled })}>
+                        {savingSelfCheckIn ? tt('ui.saving', 'Saving...')
+                          : selfCheckIn.enabled
+                            ? tt('manage.selfCheckInTurnOff', 'Turn it off')
+                            : tt('manage.selfCheckInTurnOn', 'Let people check themselves in')}
+                      </button>
+                      {selfCheckIn.enabled && <label className={styles.capacityField}>
+                        <span className={styles.label}>
+                          {tt('manage.selfCheckInOpens', 'Opens this many minutes before')}
+                        </span>
+                        <input className={styles.input} type="number" min="0" max="1440"
+                               defaultValue={selfCheckIn.opens_minutes_before}
+                               onBlur={e => {
+                                 const minutes = Number(e.target.value);
+                                 if (!Number.isNaN(minutes)
+                                     && minutes !== selfCheckIn.opens_minutes_before) {
+                                   saveSelfCheckIn({ opens_minutes_before: minutes });
+                                 }
+                               }} />
+                      </label>}
+                    </div>
+                    {/* The window as real times rather than a number of
+                        minutes, because minutes are not something anybody can
+                        picture. Rendered through the timing model, so an
+                        organiser in Accra reads their own clock. */}
+                    {selfCheckIn.enabled && selfCheckIn.opens_at && <p className={styles.cardHint}>
+                      {tt('manage.selfCheckInWindow', 'People can check themselves in from {from} until {to}.')
+                        .replace('{from}', formatWithZone(selfCheckIn.opens_at))
+                        .replace('{to}', formatWithZone(selfCheckIn.closes_at))}
+                    </p>}
                   </div>}
 
                   {capacity && <div className={capacity.over_capacity

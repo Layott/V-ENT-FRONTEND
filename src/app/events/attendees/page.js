@@ -1,13 +1,13 @@
 'use client';
 
-import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
+import { formatDateTime } from '@/lib/datetime';
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { CiSearch } from 'react-icons/ci';
-import { LuTicket, LuCheck, LuUsers } from 'react-icons/lu';
+import { LuTicket, LuCheck, LuUsers, LuScanLine, LuSmartphone } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -39,36 +39,151 @@ const AttendeesContent = ({
   const [code, setCode] = useState('');
   const [scanState, setScanState] = useState(null); // { ok, message }
   const [checking, setChecking] = useState(false);
-  const load = useCallback(async () => {
-    if (!token || !eventId) return;
-    setLoading(true);
-    setError('');
+  // Only self-admitted, only door-admitted, or everybody. The CEO asked to be
+  // able to tell the two apart; a filter is how you act on the difference.
+  const [gateFilter, setGateFilter] = useState('all');
+  // What the SERVER found for a term this device's copy of the list does not
+  // contain. See `askServer` below.
+  const [remote, setRemote] = useState(null); // { term, rows, count, truncated }
+  const [searching, setSearching] = useState(false);
+
+  // The stamp of the last answer, so the next request asks only for what has
+  // moved. A ref rather than state: the refresh loop reads it, and putting it
+  // in the dependency array would rebuild the loop on every tick.
+  const sinceRef = useRef(null);
+  const rowsRef = useRef([]);
+  useEffect(() => { rowsRef.current = rows; }, [rows]);
+
+  /**
+   * The list, or the part of it that has changed since last time.
+   *
+   * `first` does the full download and shows a loader; every later call is a
+   * delta and must never blank what is already on screen, because a door works
+   * on a venue connection and a page that empties itself on one bad request is
+   * worse than a page that is slightly stale.
+   */
+  const load = useCallback(async (first = false) => {
+    if (!token || !eventId) return true;
+    if (first) { setLoading(true); setError(''); }
     try {
-      const res = await fetch(`${API}/event/${eventId}/attendees/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const since = !first && sinceRef.current
+        ? `?since=${encodeURIComponent(sinceRef.current)}&lean=1` : '';
+      const res = await fetch(`${API}/event/${eventId}/attendees/${since}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const body = await res.json();
       if (!res.ok || body.status !== 'success') {
-        setError(apiMessage(tt, body, "api.couldNotLoadTheAttendee", "Could not load the attendee list."));
-        setRows([]);
-        return;
+        // A failed REFRESH is not a failed page. Only the first load may put
+        // an error where the list was.
+        if (first) {
+          setError(apiMessage(tt, body, "api.couldNotLoadTheAttendee", "Could not load the attendee list."));
+          setRows([]);
+        }
+        return false;
       }
-      setRows(body.data.attendees || []);
+      const incoming = body.data.attendees || [];
+      sinceRef.current = body.data.asked_at || sinceRef.current;
+      if (body.data.delta) {
+        // Merge by code. A changed ticket replaces its row, a new one is
+        // added, and everything untouched stays exactly as it was.
+        if (incoming.length) {
+          const byCode = new Map(rowsRef.current.map(r => [r.code, r]));
+          incoming.forEach(r => byCode.set(r.code, { ...byCode.get(r.code), ...r }));
+          setRows([...byCode.values()]);
+        }
+      } else {
+        setRows(incoming);
+      }
       setCounts({
         count: body.data.count || 0,
-        checked_in: body.data.checked_in || 0
+        checked_in: body.data.checked_in || 0,
       });
+      return incoming.length > 0;
     } catch {
-      setError(tt("msg.connectionError", "Connection error."));
+      if (first) setError(tt("msg.connectionError", "Connection error."));
+      return false;
     } finally {
-      setLoading(false);
+      if (first) setLoading(false);
     }
+  }, [token, eventId, tt]);
+
+  // The numbers, counted in the database rather than off whatever this page is
+  // holding. With a delta on screen, counting rows here would report the size
+  // of the last change as the size of the event.
+  const [summary, setSummary] = useState(null);
+  const loadSummary = useCallback(async () => {
+    if (!token || !eventId) return;
+    try {
+      const res = await fetch(`${API}/event/${eventId}/door-summary/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json();
+      if (res.ok && body.status === 'success') setSummary(body.data);
+    } catch { /* the stat row simply keeps its last good numbers */ }
   }, [token, eventId]);
+
+  useEffect(() => { load(true); loadSummary(); }, [load, loadSummary]);
+
+  /**
+   * Keeping itself current, which is the whole of row 78.
+   *
+   * CEO, 5 September: "make sure every page about evennts updates in realtime
+   * automatically without ay one having to refresh, especiallyywhen new people
+   * areregisteringfor an eventwhen checdk in is ongoing."
+   *
+   * A self-scheduling timeout rather than setInterval, for three reasons that
+   * all cost somebody a door if ignored:
+   *
+   *   - it CANNOT STACK. A slow answer delays the next ask instead of piling a
+   *     second request on top of it.
+   *   - it BACKS OFF. Quiet doors drift from 10s out to 60s, so a page left
+   *     open overnight is not still asking every ten seconds. That is the
+   *     fault nginx throttled the admin console for on 29 August.
+   *   - it STOPS when the tab is hidden. A steward switching to the camera app
+   *     should not leave this burning their connection.
+   */
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!token || !eventId) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 10000;
+
+    const tick = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.hidden) {
+        timer = setTimeout(tick, wait);
+        return;
+      }
+      const moved = await load(false);
+      if (stopped) return;
+      // Something changed: go back to asking often, and refresh the counts.
+      // Nothing changed: ask a little less often, up to a minute.
+      wait = moved ? 10000 : Math.min(Math.round(wait * 1.5), 60000);
+      if (moved) loadSummary();
+      timer = setTimeout(tick, wait);
+    };
+
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      // Coming back to the tab should show the truth immediately rather than
+      // after whatever was left of a 60 second sleep.
+      if (typeof document !== 'undefined' && !document.hidden) {
+        wait = 10000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [token, eventId, load, loadSummary]);
   const checkIn = async ticketCode => {
     const value = (ticketCode || '').trim().toUpperCase();
     if (!value) return;
@@ -86,27 +201,99 @@ const AttendeesContent = ({
       const body = await res.json();
       setScanState({
         ok: body.status === 'success',
-        message: body.message
+        // A refusal carries a code, and the code is what can be translated.
+        // The server's own sentence is written in the server's language.
+        message: body.status === 'success'
+          ? body.message
+          : apiMessage(tt, body, 'api.couldNotCheckIn', 'That ticket could not be checked in.'),
       });
       if (body.status === 'success') {
         setCode('');
+        // The person just admitted may have come from a server search, so they
+        // are not necessarily in this device's list yet. Refreshing the delta
+        // and the counts puts them in both.
         load();
+        loadSummary();
+        setRemote(null);
+        setSearch('');
       }
     } catch {
       setScanState({
         ok: false,
-        message: 'Connection error.'
+        message: tt("msg.connectionError", "Connection error.")
       });
     } finally {
       setChecking(false);
     }
   };
-  const filtered = useMemo(() => {
+  const local = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter(r => [r.attendee_name, r.username, r.code, r.tier,
       r.attendee_email, r.attendee_phone].some(v => (v || '').toLowerCase().includes(q)));
   }, [rows, search]);
+
+  /**
+   * THE FIX. A term this device cannot match is put to the server.
+   *
+   * RIVALRY SERIES SEASON 2, 4 and 5 September 2026: one check-in recorded out
+   * of 1422 tickets. Search filtered the list downloaded when the page opened,
+   * so a ticket bought at 10:15 was invisible to a page loaded at 06:53, and
+   * the page answered "Nobody matches that search" WITHOUT A SINGLE REQUEST
+   * LEAVING THE PHONE. The server saw two requests from the door device all
+   * day, both sign-ins.
+   *
+   * The local list stays, because it is what makes the common case instant and
+   * what keeps the door working when the venue's wifi does not. This is the
+   * fallback for a miss.
+   *
+   * It calls `door-search`, which ADMITS NOBODY. Falling back to `check-in/`
+   * would have meant typing a name let that person through, which is not a
+   * search.
+   */
+  useEffect(() => {
+    const term = search.trim();
+    if (term.length < 2 || local.length > 0 || !token || !eventId) {
+      setRemote(null);
+      setSearching(false);
+      return undefined;
+    }
+    // Debounced: a steward types a name one letter at a time and the server
+    // does not need to hear about every keystroke.
+    let cancelled = false;
+    setSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `${API}/event/${eventId}/door-search/?q=${encodeURIComponent(term)}`,
+          { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json();
+        if (cancelled) return;
+        setRemote(res.ok && body.status === 'success'
+          ? { term, rows: body.data.attendees || [], count: body.data.count || 0,
+              truncated: !!body.data.truncated }
+          : { term, rows: [], count: 0, truncated: false });
+      } catch {
+        if (!cancelled) setRemote({ term, rows: [], count: 0, truncated: false });
+      } finally {
+        if (!cancelled) setSearching(false);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(timer); setSearching(false); };
+  }, [search, local.length, token, eventId]);
+
+  // What is actually on screen: this device's matches, or the server's when
+  // this device has none. A steward must not be able to tell which is which.
+  const found = local.length > 0 ? local : (remote?.rows || []);
+  const fromServer = local.length === 0 && (remote?.rows || []).length > 0;
+
+  const filtered = useMemo(() => {
+    if (gateFilter === 'self') return found.filter(r => r.self_check_in);
+    if (gateFilter === 'door') {
+      return found.filter(r => r.status === 'checked_in' && !r.self_check_in);
+    }
+    return found;
+  }, [found, gateFilter]);
   // An event that asked nothing gets no column, rather than a column of blanks
   // taking width away from the name on a phone.
   const anyAnswers = useMemo(
@@ -146,7 +333,28 @@ const AttendeesContent = ({
               <p className={styles.statLabel}>{tt("ui.still.expected.8840", "Still expected")}</p>
             </div>
           </div>
+          {/* Who admitted themselves, kept apart from who was admitted at a
+              gate. The CEO asked for self check-in to be additional to the
+              door rather than a replacement, and this is where the difference
+              becomes visible: an organiser deciding whether a headcount is
+              real needs to know how it was taken. */}
+          {summary && summary.self_admitted > 0 && <div className={styles.statCard}>
+            <LuSmartphone className={styles.statIcon} />
+            <div>
+              <p className={styles.statValue}>{summary.self_admitted}</p>
+              <p className={styles.statLabel}>{tt("door.selfAdmitted", "Checked in themselves")}</p>
+            </div>
+          </div>}
         </div>
+
+        {/* The scanner, findable. On 5 September nobody opened it at all: staff
+            stood on this page reading codes off a phone camera and typing them
+            in, because there was no way to get from here to there. */}
+        <Link href={`/events/scan?event=${encodeURIComponent(eventId || '')}`}
+              className={styles.scanLink}>
+          <LuScanLine aria-hidden="true" />
+          {tt("door.openScanner", "Open the scanner")}
+        </Link>
 
         <div className={styles.scanCard}>
           <p className={styles.scanTitle}>{tt("ui.check.someone.f698", "Check someone in")}</p>
@@ -166,8 +374,32 @@ const AttendeesContent = ({
           <input className={styles.searchInput} placeholder={tt("ui.search.name.username.code.2ef3", "Search by name, username, code or tier")} value={search} onChange={e => setSearch(e.target.value)} />
         </div>
 
-        {filtered.length === 0 ? <p className={styles.stateText}>
-            {rows.length === 0 ? tx("No tickets sold yet.") : tx("Nobody matches that search.")}
+        {/* Filled chips, never a ring. Selected is a stronger fill. */}
+        <div className={styles.filterRow}>
+          {[['all', tt('door.filterAll', 'Everyone')],
+            ['door', tt('door.filterDoor', 'Admitted at the door')],
+            ['self', tt('door.filterSelf', 'Admitted themselves')]].map(([id, label]) =>
+            <button key={id} type="button"
+                    className={`${styles.filterChip} ${gateFilter === id ? styles.filterChipOn : ''}`}
+                    aria-pressed={gateFilter === id}
+                    onClick={() => setGateFilter(id)}>{label}</button>)}
+        </div>
+
+        {/* Said plainly when the answer came from the server rather than from
+            this device, because the two are otherwise indistinguishable and a
+            steward should know the list they hold was incomplete. */}
+        {fromServer && <p className={styles.fromServer}>
+          {tt("door.foundOnServer", "Found on the server. This device's copy of the list did not have them.")}
+        </p>}
+
+        {searching && filtered.length === 0 ? <p className={styles.stateText}>
+            {tt("door.askingServer", "Asking the server…")}
+          </p>
+         : filtered.length === 0 ? <p className={styles.stateText}>
+            {rows.length === 0 ? tx("No tickets sold yet.")
+             : search.trim().length >= 2
+               ? tt("door.noOneAnywhere", "Nobody with that name or code has a ticket. The whole list was searched, not just this device's copy.")
+               : tx("Nobody matches that search.")}
           </p> : <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
@@ -181,6 +413,11 @@ const AttendeesContent = ({
                   {anyAnswers && <th>{tt('door.asked', 'Answers')}</th>}
                   <th>{tt("ui.status.bae7", "Status")}</th>
                   <th>{tt("ui.checked.cb4a", "Checked in")}</th>
+                  {/* CEO, 6 September: "under door list there should be a way
+                      for admin to search for someone and then check them in".
+                      Search finds them, this admits them, and the steward
+                      never leaves the list. */}
+                  <th><span className={styles.srOnly}>{tt("door.admit", "Admit")}</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -214,12 +451,21 @@ const AttendeesContent = ({
                       </span>
                     </td>
                     <td className={styles.muted}>
-                      {r.checked_in_at ? new Date(r.checked_in_at).toLocaleString(appLocale(), {
-                  day: 'numeric',
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }) : '-'}
+                      {r.checked_in_at ? formatDateTime(r.checked_in_at) : '-'}
+                      {r.self_check_in && <span className={styles.selfTag}>
+                        {tt("door.self", "themselves")}
+                      </span>}
+                    </td>
+                    <td>
+                      {r.status === 'valid'
+                        ? <button type="button" className={`${styles.rowBtn} grnBTN`}
+                                  disabled={checking}
+                                  onClick={() => checkIn(r.code)}>
+                            {tt("door.checkIn", "Check in")}
+                          </button>
+                        : <span className={styles.rowDone}>
+                            {r.status === 'checked_in' ? tt("door.in", "In") : ''}
+                          </span>}
                     </td>
                   </tr>)}
               </tbody>
