@@ -368,7 +368,15 @@ const Overview = ({ tt, numbers, detail }) => (
     <div className={styles.stats}>
       <Stat label={tt('admin.ticketsIssued', 'Tickets issued')} value={numbers.tickets} />
       <Stat label={tt('admin.ticketValid', 'Valid')} value={numbers.valid} />
-      <Stat label={tt('admin.ticketCheckedIn', 'Checked in')} value={numbers.checked_in} />
+      {/* Verified is the figure that means somebody came. The old single
+          "Checked in" number silently included self check-ins, which are
+          people telling their followers they are at the event rather than
+          people a steward admitted. Both are shown, neither is disguised as
+          the other. */}
+      <Stat label={tt('admin.ticketVerified', 'Verified at the door')}
+            value={numbers.verified ?? numbers.at_door ?? numbers.checked_in} />
+      <Stat label={tt('admin.ticketSelfSaid', 'Said they are here')}
+            value={numbers.self_reported ?? numbers.by_self ?? 0} />
       <Stat label={tt('admin.ticketComped', 'Given free')} value={numbers.comped} />
       <Stat label={tt('admin.ticketRefunded', 'Refunded')} value={numbers.refunded} />
       <Stat label={tt('admin.ticketVoid', 'Void')} value={numbers.cancelled} />
@@ -512,8 +520,10 @@ const ticketStatusWord = (tt, s) => ({
 
 const audienceWord = (tt, a) => ({
   all: tt('admin.audienceAll', 'everybody holding a ticket'),
-  checked_in: tt('admin.audienceArrived', 'people who had arrived'),
-  not_checked_in: tt('admin.audienceNotArrived', 'people who had not arrived'),
+  // "arrived" was a claim the data does not support: this audience includes
+  // anybody who tapped "I am here" without being scanned.
+  checked_in: tt('admin.audienceArrived', 'people marked as checked in'),
+  not_checked_in: tt('admin.audienceNotArrived', 'people not marked as checked in'),
 }[a] || a);
 
 export default function AdminEventDetail() {

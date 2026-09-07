@@ -343,11 +343,21 @@ const AttendeesContent = ({
   const found = local.length > 0 ? local : (remote?.rows || []);
   const fromServer = local.length === 0 && (remote?.rows || []).length > 0;
 
+  // Four ways to read the list, and the CEO named three of them:
+  //
+  //   "the organizers should be able to selecet options like total checkins,
+  //    actual verified and self verified."
+  //
+  // `all` is everybody holding a ticket, which is the list itself. The other
+  // three are the check-in question, and `door` is the only one that answers
+  // "how many people actually came" - a self check-in is somebody telling
+  // their followers they are here, not somebody arriving at a gate.
   const filtered = useMemo(() => {
     if (gateFilter === 'self') return found.filter(r => r.self_check_in);
     if (gateFilter === 'door') {
       return found.filter(r => r.status === 'checked_in' && !r.self_check_in);
     }
+    if (gateFilter === 'checked') return found.filter(r => r.status === 'checked_in');
     return found;
   }, [found, gateFilter]);
   // An event that asked nothing gets no column, rather than a column of blanks
@@ -366,6 +376,14 @@ const AttendeesContent = ({
           <Link href="/events" className={styles.backLink}>{tt("ui.back.events.d104", "← Back to events")}</Link>
         </div>;
     }
+    // The three numbers, taken from the server's shared counter rather than
+    // recounted here. `counts.checked_in` is the TOTAL and includes people who
+    // said they were here without anybody checking, so it is never the figure
+    // shown under a bare "Checked in".
+    const selfCount = summary?.self_reported ?? summary?.self_admitted ?? 0;
+    const verifiedCount = summary?.verified
+      ?? Math.max((counts.checked_in || 0) - selfCount, 0);
+
     return <>
         <div className={styles.statRow}>
           <div className={styles.statCard}>
@@ -375,30 +393,35 @@ const AttendeesContent = ({
               <p className={styles.statLabel}>{tt("ui.tickets.sold.a960", "Tickets sold")}</p>
             </div>
           </div>
+          {/* ATTENDANCE, which is the scanned-or-typed figure and nothing else.
+              CEO, 7 September: somebody who admitted themselves "doesnt mean
+              they are checkedin by the organizer, just means that maybe they
+              want to show and announce to their followers ... The ticket
+              scanning or ticket code entering is still the baseline for a
+              proper check in that the person actally came."
+              This card used to show the total, self check-ins included, which
+              overstated how many people walked through the door. */}
           <div className={styles.statCard}>
             <LuCheck className={styles.statIcon} />
             <div>
-              <p className={styles.statValue}>{counts.checked_in}</p>
-              <p className={styles.statLabel}>{tt("ui.checked.cb4a", "Checked in")}</p>
+              <p className={styles.statValue}>{verifiedCount}</p>
+              <p className={styles.statLabel}>{tt("door.verified", "Verified at the door")}</p>
             </div>
           </div>
           <div className={styles.statCard}>
             <LuUsers className={styles.statIcon} />
             <div>
-              <p className={styles.statValue}>{Math.max(counts.count - counts.checked_in, 0)}</p>
+              <p className={styles.statValue}>{Math.max(counts.count - verifiedCount, 0)}</p>
               <p className={styles.statLabel}>{tt("ui.still.expected.8840", "Still expected")}</p>
             </div>
           </div>
-          {/* Who admitted themselves, kept apart from who was admitted at a
-              gate. The CEO asked for self check-in to be additional to the
-              door rather than a replacement, and this is where the difference
-              becomes visible: an organiser deciding whether a headcount is
-              real needs to know how it was taken. */}
-          {summary && summary.self_admitted > 0 && <div className={styles.statCard}>
+          {/* Said separately and never added into the figure above. It is a
+              real signal, just not evidence anybody arrived. */}
+          {selfCount > 0 && <div className={styles.statCard}>
             <LuSmartphone className={styles.statIcon} />
             <div>
-              <p className={styles.statValue}>{summary.self_admitted}</p>
-              <p className={styles.statLabel}>{tt("door.selfAdmitted", "Checked in themselves")}</p>
+              <p className={styles.statValue}>{selfCount}</p>
+              <p className={styles.statLabel}>{tt("door.selfAdmitted", "Said they are here")}</p>
             </div>
           </div>}
         </div>
@@ -430,15 +453,21 @@ const AttendeesContent = ({
           <input className={styles.searchInput} placeholder={tt("ui.search.name.username.code.2ef3", "Search by name, username, code or tier")} value={search} onChange={e => setSearch(e.target.value)} />
         </div>
 
-        {/* Filled chips, never a ring. Selected is a stronger fill. */}
+        {/* Filled chips, never a ring. Selected is a stronger fill.
+            The count rides on the chip, because the difference between the
+            total and the verified figure is the whole point of separating
+            them and it should not need a second screen to see. */}
         <div className={styles.filterRow}>
-          {[['all', tt('door.filterAll', 'Everyone')],
-            ['door', tt('door.filterDoor', 'Admitted at the door')],
-            ['self', tt('door.filterSelf', 'Admitted themselves')]].map(([id, label]) =>
+          {[['all', tt('door.filterAll', 'Everyone'), counts.count],
+            ['checked', tt('door.filterChecked', 'All check-ins'),
+             verifiedCount + selfCount],
+            ['door', tt('door.filterDoor', 'Verified at the door'), verifiedCount],
+            ['self', tt('door.filterSelf', 'Said they are here'), selfCount]]
+            .map(([id, label, n]) =>
             <button key={id} type="button"
                     className={`${styles.filterChip} ${gateFilter === id ? styles.filterChipOn : ''}`}
                     aria-pressed={gateFilter === id}
-                    onClick={() => setGateFilter(id)}>{label}</button>)}
+                    onClick={() => setGateFilter(id)}>{label} {n}</button>)}
         </div>
 
         {/* Said plainly when the answer came from the server rather than from
