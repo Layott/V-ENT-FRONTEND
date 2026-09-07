@@ -1810,7 +1810,7 @@ export const ManageEventContent = ({
               {tab === 'messages' && event && (
                 <DiscordChannels kind="event"
                                  reference={event.slug || event.event_id}
-                                 token={token} showToast={showToast} />
+                                 token={token} showToast={setNotice} />
               )}
               {tab === 'messages' && <section className={styles.card}>
                   <p className={styles.cardHint}>
