@@ -19,7 +19,7 @@ const TABS = [
 ];
 
 const formatDate = (d) => {
-  if (!d) return '—';
+  if (!d) return ' - ';
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
@@ -252,7 +252,7 @@ const SellerInner = () => {
               <div className={styles.aboutGrid}>
                 <div>
                   <p className={styles.aboutLabel}>Location</p>
-                  <p className={styles.aboutValue}>{seller.country || '—'}</p>
+                  <p className={styles.aboutValue}>{seller.country || ' - '}</p>
                 </div>
                 <div>
                   <p className={styles.aboutLabel}>Member since</p>

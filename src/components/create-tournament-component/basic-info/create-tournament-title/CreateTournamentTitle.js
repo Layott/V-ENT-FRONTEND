@@ -158,7 +158,7 @@ const CreateTournamentTitle = ({
           <textarea id="description" value={description} onChange={handleDescriptionChange} className={createTournamentStyles.inputText} placeholder={tt("ui.enter.tournament.description.4a26", "Enter tournament description")} maxLength={1000}></textarea>
           <p className={styles.infoParagraph}>
             <span className={styles.infoSpan}>
-              <FiInfo className={styles.infoIcon} />
+              <FiInfo />
             </span>
             {tt("ui.max.characters.e348", "Max of 1,000 characters.")}
           </p>

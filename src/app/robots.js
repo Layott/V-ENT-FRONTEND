@@ -35,6 +35,8 @@ export default function robots() {
           '/tournaments/overlay',  // a broadcast surface, not a page
           '/production',           // a personal list of what you run
           '/events/my-events',     // a personal list, including unlisted events
+          '/my-stalls',            // your own stalls, your own orders and
+                                   // the delivery addresses on them
           '/events/edit-event',    // a form, and only the organiser may submit it
           '/events/*/edit',
           '/events/*/manage',      // promo codes and who may run the event

@@ -66,8 +66,6 @@
   "src\\components\\create-tournament-component\\basic-info\\create-tournament-visibility\\create-tournament-visibility.module.css:hairline",
   "src\\components\\create-tournament-component\\basic-info\\create-tournament-visibility\\create-tournament-visibility.module.css:pure-black-or-white",
   "src\\components\\create-tournament-component\\format-participants\\tournament-options\\tournament-options.module.css:pure-black-or-white",
-  "src\\components\\create-tournament-component\\review\\review-sponsor-links\\ReviewSponsorLinks.js:em-dash",
-  "src\\components\\create-tournament-component\\review\\reviewFields.js:em-dash",
   "src\\components\\create-tournament-component\\sponsors-links\\web-social-links\\web-social-link.module.css:pure-black-or-white",
   "src\\components\\edit-profile-panels\\FavoriteGamesEditPanel.module.css:glass",
   "src\\components\\edit-profile-panels\\GamingAccountsPanel.module.css:pure-black-or-white",

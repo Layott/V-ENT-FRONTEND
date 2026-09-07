@@ -10,6 +10,8 @@ import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
 import styles from './AdminNav.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const ROLE_LABELS = {
   super: 'Super Admin',
   finance: 'Finance',
@@ -187,7 +189,7 @@ export default function AdminNav({
       <div className={styles.footer}>
         <div className={styles.userRow}>
           <div className={styles.userAvatar}>
-            {(admin?.username || 'A').slice(0, 2).toUpperCase()}
+            <Avatar src={mediaUrl(admin?.avatar)} name={admin?.username || 'admin'} size={36} />
           </div>
           <div className={styles.userInfo}>
             <span className={styles.username}>{admin?.username || 'admin'}</span>

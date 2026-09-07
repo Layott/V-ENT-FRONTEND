@@ -3,7 +3,7 @@
 **Run:** 2026-04-26T22:06:23.163Z  
 **Base URL:** http://localhost:3000  
 **Routes walked:** 112  
-**Total findings:** 176 — P0: 48 / P1: 90 / P2: 38
+**Total findings:** 176 - P0: 48 / P1: 90 / P2: 38
 
 ## Methodology
 
@@ -12,16 +12,16 @@ console errors, HTTP 4xx/5xx, broken imgs, missing alt, header search submit, si
 
 ## Top 10 Most-Impactful Issues
 
-- **P0** `/privacy-policy` — Console error: console.error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
-- **P0** `/home` — Console error: console.error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
-- **P0** `/search?q=fifa` — Navigation failed: Navigation timeout of 25000 ms exceeded
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=rules` — Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=rules` — Page renders 404 / Not Found content
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=bracket` — Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=bracket` — Page renders 404 / Not Found content
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=participants` — Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=participants` — Page renders 404 / Not Found content
-- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=prize` — Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
+- **P0** `/privacy-policy` - Console error: console.error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+- **P0** `/home` - Console error: console.error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+- **P0** `/search?q=fifa` - Navigation failed: Navigation timeout of 25000 ms exceeded
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=rules` - Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=rules` - Page renders 404 / Not Found content
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=bracket` - Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=bracket` - Page renders 404 / Not Found content
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=participants` - Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=participants` - Page renders 404 / Not Found content
+- **P0** `/tournaments/view-tournament?id=tmt_1000&tab=prize` - Console error: console.error: Failed to load resource: the server responded with a status of 404 (Not Found)
 
 ## Findings by Module
 
@@ -305,4 +305,4 @@ console errors, HTTP 4xx/5xx, broken imgs, missing alt, header search submit, si
 
 - Screenshots of P0 routes saved to `tasks/audit-screens/`
 - Many findings are derived from heuristic DOM probes; verify edge cases manually before fixing
-- Phase 4–6 routes (Marketplace / Shop / Anime / Community / Wager) are intentionally stubbed; "coming soon" markers there are not flagged
+- Phase 4-6 routes (Marketplace / Shop / Anime / Community / Wager) are intentionally stubbed; "coming soon" markers there are not flagged

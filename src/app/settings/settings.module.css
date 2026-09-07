@@ -80,3 +80,11 @@
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
 }
+
+/* An error toast that looks exactly like a success toast is a toast that says
+   nothing. This class was referenced by the ternary and defined nowhere, so
+   every failure on this page has been announced in the success colour. */
+.toastError {
+  background-color: #3a2c2d;
+  color: var(--v-ent-red);
+}

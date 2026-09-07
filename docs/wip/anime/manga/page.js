@@ -70,7 +70,7 @@ function CatalogContent() {
         if (status) params.set('status', status);
         const res = await fetch(`${apiUrl}/manga/list/?${params.toString()}`, { headers: authHeaders });
         // Guard against the dev mock layer returning HTML (404) instead of JSON
-        // — res.json() throws SyntaxError "Invalid or unexpected token" when the
+        // - res.json() throws SyntaxError "Invalid or unexpected token" when the
         // body starts with "<".
         const data = await res.json().catch(() => null);
         if (data?.status === 'success') {
@@ -114,7 +114,7 @@ function CatalogContent() {
             <div>
               <h1 className={styles.pageTitle}>Manga catalog</h1>
               <p className={styles.pageSub}>
-                Every series available on V-ENT — sorted, filtered, ready to read.
+                Every series available on V-ENT - sorted, filtered, ready to read.
               </p>
             </div>
             <Link href="/anime" className={styles.backLink}>← Back to hub</Link>

@@ -15,6 +15,7 @@ import tableStyles from "@/styles/modules/tables/tables.module.css";
 import styles from './team-members.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 const MembersTabComponent = ({
   teamId
 }) => {
@@ -96,8 +97,8 @@ const MembersTabComponent = ({
         <div className={`${tableStyles.tournamentsEventsFilterSearchContainer} ${styles.tournamentsEventsFilterSearchContainer}`}>
 
           <div className={styles.inviteAndSearchContainer}>
-            <div className={`${tableStyles.tournamentsEventsFilterContainer} ${styles.tournamentsEventsFilterContainer}`}>
-                <p className={styles.tournamentNumber}>{members.length} {tt("ui.members.f13e", "members")}</p>
+            <div className={`${tableStyles.tournamentsEventsFilterContainer}`}>
+                <p>{members.length} {tt("ui.members.f13e", "members")}</p>
 
                 <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
                 {showGalleryView ? <button className={tableStyles.galleryViewBTN}>
@@ -107,14 +108,14 @@ const MembersTabComponent = ({
                     </button>}
                 </div>
             </div>
-          <div className={styles.inviteNewMembersContainer}>
+          <div>
               <button className={`${styles.inviteNewMemberBTN} redBTN`}><LuUserRoundPlus className={styles.personIcon} /> {tt("ui.invite.new.member.c079", "Invite new member")}</button>
             </div>
 
           </div>
 
-          <div className={`${tableStyles.searchContainer} ${styles.searchContainer}`}>
-            <div className={`${tableStyles.searchBar} ${styles.searchBar}`}>
+          <div className={`${tableStyles.searchContainer}`}>
+            <div className={`${tableStyles.searchBar}`}>
               <CiSearch className={tableStyles.searchIcon} onClick={handleSearch} />
               <input type='text' placeholder={tt("ui.search.members.a1d9", "Search members")} className={tableStyles.searchInput} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={handleKeyDown} />
             </div>
@@ -124,14 +125,14 @@ const MembersTabComponent = ({
 
       </div>
 
-      {!showGalleryView ? <div className={`${styles.participantsTable} ${tableStyles.participantsTable}`}>
+      {!showGalleryView ? <div className={`${tableStyles.participantsTable}`}>
           <div className={`${styles.gridHeader} ${tableStyles.gridHeader} ${profileStyles.middleLayerColor}`}>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.member.6853", "Member")}</div>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.role.c3f1", "Role")}</div>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.ranking.3937", "Ranking")}</div>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.location.d219", "Location")}</div>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.status.bae7", "Status")}</div>
-            <div className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{tt("ui.actions.c3cd", "Actions")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.member.6853", "Member")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.role.c3f1", "Role")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.ranking.3937", "Ranking")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.location.d219", "Location")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.status.bae7", "Status")}</div>
+            <div className={`${tableStyles.gridItem}`}>{tt("ui.actions.c3cd", "Actions")}</div>
           </div>
 
           {currentParticipants.map((member, index) => {
@@ -139,19 +140,16 @@ const MembersTabComponent = ({
         return <div key={member.user_id || index} className={`${styles.gridRow} ${tableStyles.gridRow} ${profileStyles.middleLayerColor}`}>
                 <div className={`${tableStyles.gridItem} ${tableStyles.nameColumn}`}>
                   <div className={tableStyles.gameImageContainer}>
-                    {avatarUrl ? <Image src={mediaUrl(avatarUrl)} alt={member.username || ''} className={tableStyles.gameImage} width={36} height={36} /> : <div className={tableStyles.gameImage} style={{
-                background: 'var(--overlay-gray)'
-              }} />}
+                    <Avatar src={mediaUrl(avatarUrl)} name={member.username || member.display_name} size={36} />
                   </div>
                   <div className={styles.memberNamesContainer}>
                     <UserChip user={{ ...member, full_name: member.display_name }}
                               size={0} secondary
-                              nameClassName={styles.memberName}
                               handleClassName={styles.memberUsername} />
                   </div>
                 </div>
 
-                <div className={`${tableStyles.gridItem} ${styles.participantDiv}`}>
+                <div className={`${tableStyles.gridItem}`}>
                   {member.role || 'Member'}
                 </div>
 
@@ -170,7 +168,7 @@ const MembersTabComponent = ({
                   </Link>
 
                   <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
-                    <BsThreeDots className={styles.iconThreeDots} />
+                    <BsThreeDots />
                   </button>
                 </div>
               </div>;
@@ -196,12 +194,12 @@ const MembersTabComponent = ({
                 }} />}
                     </div>
                     <div className={styles.memberNamesContainer}>
-                      <p className={styles.memberName}>{member.display_name || member.username}</p>
+                      <p>{member.display_name || member.username}</p>
                       <p className={styles.memberUsername}>@{member.username}</p>
                     </div>
                   </div>
 
-                  <div className={`${tableStyles.gridItemExpanded} ${styles.participantDiv}`}>
+                  <div className={`${tableStyles.gridItemExpanded}`}>
                     {member.role || 'Member'}
                   </div>
 
@@ -220,7 +218,7 @@ const MembersTabComponent = ({
                     </Link>
 
                     <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
-                      <BsThreeDots className={styles.iconThreeDots} />
+                      <BsThreeDots />
                     </button>
                   </div>
                 </div>;

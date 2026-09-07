@@ -115,7 +115,7 @@ function CatalogContent() {
             <div>
               <h1 className={styles.pageTitle}>Anime catalog</h1>
               <p className={styles.pageSub}>
-                Watch episodes from every anime tracked on V-ENT — airing, finished and upcoming.
+                Watch episodes from every anime tracked on V-ENT - airing, finished and upcoming.
               </p>
             </div>
             <Link href="/anime" className={styles.backLink}>← Back to hub</Link>

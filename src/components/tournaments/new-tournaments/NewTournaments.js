@@ -113,12 +113,12 @@ const NewTournaments = ({
                             <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={styles.viewDetailsBTN}>
                               {tt("ui.view.details.907b", "View Details")}
                             </Link>
-                            <Link href={`/tournaments/${tournament.tournament_id}/register`} className={styles.registerBTN}>
+                            <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}/register`} className={styles.registerBTN}>
                               {tt("ui.register.d672", "Register")}
                             </Link>
                         </div>
                     </div>
-                </div>) : <div className={styles.noTournamentsMessage}>
+                </div>) : <div>
                 {tt("ui.no.new.tournaments.available.22d6", "No new tournaments available")}
               </div>}
         </div>

@@ -252,7 +252,7 @@ const SendPage = () => {
                     <div className={styles.recipientInfo}>
                       {/* Who the money is going to. Their badge and a way
                           to check the profile before sending. */}
-                      <UserChip user={recipient} size={0} secondary
+                      <UserChip user={recipient} size={40} secondary
                                 nameClassName={styles.recipientName}
                                 handleClassName={styles.recipientHandle} />
                     </div>

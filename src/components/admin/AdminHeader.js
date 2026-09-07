@@ -9,6 +9,8 @@ import { HiOutlineMenu } from 'react-icons/hi';
 import styles from './AdminHeader.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const BREADCRUMBS = {
   '/admin': 'Dashboard',
   '/admin/users': 'Users',
@@ -120,7 +122,7 @@ export default function AdminHeader({
               <span className={styles.adminRole}>{admin?.role_label || tx("Super Admin")}</span>
             </div>
             <div className={styles.avatar}>
-              {(admin?.username || 'A').slice(0, 2).toUpperCase()}
+              <Avatar src={mediaUrl(admin?.avatar)} name={admin?.username || 'admin'} size={36} />
             </div>
             <span className={styles.caret} />
           </button>

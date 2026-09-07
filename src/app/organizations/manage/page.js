@@ -22,6 +22,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import DiscordServerPanel from '@/components/discord/DiscordServerPanel';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'members',
@@ -632,7 +633,7 @@ const ManageOrgContent = ({
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                {r.user?.avatar && <Image src={mediaUrl(r.user.avatar)} alt={r.user.full_name} width={36} height={36} />}
+                                <Avatar src={mediaUrl(r.user?.avatar)} name={r.user?.username || r.user?.full_name} size={36} />
                               </div>
                               <div>
                                 <UserChip user={r.user} size={0} secondary
@@ -689,7 +690,7 @@ const ManageOrgContent = ({
                               <td>
                                 <div className={styles.memberCell}>
                                   <div className={styles.memberAvatar}>
-                                    {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
+                                    <Avatar src={mediaUrl(m.user?.avatar)} name={m.user?.username || m.user?.full_name} size={32} />
                                   </div>
                                   <div className={styles.memberText}>
                                     <span className={styles.memberName}>{m.user?.full_name}</span>
@@ -811,7 +812,7 @@ const ManageOrgContent = ({
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                {i.user?.avatar && <Image src={mediaUrl(i.user.avatar)} alt={i.user.username} width={36} height={36} />}
+                                <Avatar src={mediaUrl(i.user?.avatar)} name={i.user?.username || i.user?.full_name} size={36} />
                               </div>
                               <div className={styles.memberText}>
                                 <UserChip user={i.user} size={0} nameClassName={styles.memberName} />

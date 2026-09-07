@@ -32,6 +32,7 @@ import useGames from '@/hooks/useGames';
 import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './edit-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -632,4 +633,30 @@ const EditTournamentPage = () => (
   </Suspense>
 );
 
-export default EditTournamentPage;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/tournaments/[slug]/edit` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const EditTournamentPageLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      const body = await res.json().catch(() => null);
+      // Two shapes, because the two endpoints answer differently: an event
+      // nests under `data.event`, a tournament sits directly on `data`.
+      // Reading only the nested one sent every tournament to the fallback
+      // listing instead of to the tournament, which is a redirect that looks
+      // like it worked.
+      return body?.data?.slug || body?.data?.tournament?.slug || null;
+      }}
+      to={slug => `/tournaments/${encodeURIComponent(slug)}/edit`}
+      fallback="/tournaments/my-tournaments"
+    />
+  </Suspense>
+);
+
+export default EditTournamentPageLegacy;

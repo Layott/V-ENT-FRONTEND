@@ -96,7 +96,7 @@ const GameSection = ({
             <LuArrowLeft /> {tt("ui.see.less.47c7", "See less")}
           </button>}
 
-        {events.length === 0 && <p className={styles.noEventsMessage}>{tt("ui.no.816c", "No")} {game} {tt("ui.events.available.at.moment.158c", "events available at the moment.")}</p>}
+        {events.length === 0 && <p>{tt("ui.no.816c", "No")} {game} {tt("ui.events.available.at.moment.158c", "events available at the moment.")}</p>}
       </div>
     </div>;
 };

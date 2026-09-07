@@ -66,7 +66,7 @@ export default function MvpPanel({ tournamentId }) {
     <div className={styles.wrap}>
       {award && <div className={styles.award}>
         <span className={styles.awardLabel}>{tt('mvp.award', 'Most valuable player')}</span>
-        <UserChip user={award} size={0} nameClassName={styles.awardName} />
+        <UserChip user={award} size={32} nameClassName={styles.awardName} />
         <span className={styles.awardScore}>
           {tt('mvp.awardScore', '{n} points').replace('{n}', show(award.score, 1))}
         </span>

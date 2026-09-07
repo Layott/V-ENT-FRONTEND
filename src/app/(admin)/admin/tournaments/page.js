@@ -1,6 +1,6 @@
 'use client';
 
-import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
@@ -248,7 +248,7 @@ function TournamentsInner() {
                 <option value="-prize_pool">{tt("ui.prize.high.low.7215", "Prize (High-Low)")}</option>
                 <option value="-participants_count">{tt("ui.participants.high.low.d433", "Participants (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countTournamentsOne', '{n} tournament') : tt('admin.countTournamentsMany', '{n} tournaments')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countTournamentsOne', '{n} tournament') : tt('admin.countTournamentsMany', '{n} tournaments')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : tournaments.length === 0 ? <p className={shared.stateText}>{tt("ui.no.tournaments.found.6976", "No tournaments found.")}</p> : <div className={shared.tableWrap}>

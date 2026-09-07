@@ -34,6 +34,7 @@ import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -315,7 +316,7 @@ const ManageContent = ({ slug }) => {
               .map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
-          <div className={styles.panelArea}>
+          <div>
             {tab === 'actions' && <ActionsPanel slug={slug} embedded />}
             {tab === 'match-control' && <>
               {/* Entering results, and who may. A league tie is one game per
@@ -1027,12 +1028,12 @@ const MatchControlPanel = ({
           them. Scoring it as a single number would throw away the seats and
           give the wrong winner, so it gets its own screen. */}
       {isLeague ? (
-        <div className={styles.scoreboardWrap}>
+        <div>
           <TieScoring tie={{ tie_id: live.id }} token={token}
                       showToast={showToast} onRecorded={onSaved} />
         </div>
       ) : (
-      <div className={styles.scoreboardWrap}>
+      <div>
         <h2 className={styles.panelTitle}>{tt("ui.live.scoring.e82b", "Live Scoring")}</h2>
         <div className={styles.scoreboardCard}>
           <div className={styles.sbHeader}>
@@ -1045,7 +1046,7 @@ const MatchControlPanel = ({
               <div className={styles.sbAvatar}>{nameOf(live.p1).charAt(0)}</div>
               <p className={styles.sbTeamName}>{nameOf(live.p1)}</p>
               <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>−</button>
+                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>-</button>
                 <span className={styles.scoreValue}>{scoreA}</span>
                 <button className={styles.scoreBtn} onClick={() => updateScore(1, 'a')}>+</button>
               </div>
@@ -1057,7 +1058,7 @@ const MatchControlPanel = ({
               <div className={styles.sbAvatar}>{nameOf(live.p2).charAt(0)}</div>
               <p className={styles.sbTeamName}>{nameOf(live.p2)}</p>
               <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>−</button>
+                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>-</button>
                 <span className={styles.scoreValue}>{scoreB}</span>
                 <button className={styles.scoreBtn} onClick={() => updateScore(1, 'b')}>+</button>
               </div>
@@ -1170,7 +1171,33 @@ const Manage = () => <Suspense fallback={<div style={{
 }} />}>
     <ManageContent />
   </Suspense>;
-export default Manage;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/tournaments/[slug]/manage` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ManageLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      const body = await res.json().catch(() => null);
+      // Two shapes, because the two endpoints answer differently: an event
+      // nests under `data.event`, a tournament sits directly on `data`.
+      // Reading only the nested one sent every tournament to the fallback
+      // listing instead of to the tournament, which is a redirect that looks
+      // like it worked.
+      return body?.data?.slug || body?.data?.tournament?.slug || null;
+      }}
+      to={slug => `/tournaments/${encodeURIComponent(slug)}/manage`}
+      fallback="/tournaments/my-tournaments"
+    />
+  </Suspense>
+);
+
+export default ManageLegacy;
 
 // Rendered by `/tournaments/<slug>/manage`, which is where every organiser link
 // in the app actually points.

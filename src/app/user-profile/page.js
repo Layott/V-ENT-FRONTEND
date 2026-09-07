@@ -23,6 +23,7 @@ import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import { formatNumber } from '@/lib/datetime';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -109,6 +110,18 @@ const UserProfileContent = ({
   const [reportDetail, setReportDetail] = useState('');
 
   const [following, setFollowing] = useState(false);
+  // How many people follow this account. Shown beside the button, because
+  // a follow count nobody can see is a number nobody acts on.
+  const [followerCount, setFollowerCount] = useState(0);
+
+  // Seeded from the payload, which carries both since people gained a follower
+  // table. Without this the button opens saying Follow to somebody who already
+  // does, and pressing it would unfollow them.
+  useEffect(() => {
+    if (!profileData) return;
+    setFollowing(!!profileData.is_following);
+    setFollowerCount(profileData.follower_count ?? 0);
+  }, [profileData]);
   const [toast, setToast] = useState('');
   const moreMenuRef = useRef(null);
   const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
@@ -471,9 +484,48 @@ const UserProfileContent = ({
 
   // Empty state detection: zero meaningful data
   const isEmpty = interests.length === 0 && socialLinks.length === 0 && gamingAccounts.length === 0 && favoriteGames.length === 0 && tournaments.length === 0 && events.length === 0 && myTeams.length === 0 && galleryImages.length === 0;
-  const handleFollow = () => {
-    setFollowing(f => !f);
-    showToast(following ? tt("msg.unfollowedShort", "Unfollowed") : tt("msg.followingShort", "Following"));
+  // Following somebody, for real.
+  //
+  // This flipped a local boolean and showed a toast. Nothing was sent
+  // anywhere, so the button said "Following" until the page was reloaded and
+  // then said "Follow" again, and the person being followed never heard about
+  // it. People had no follower table at all until 7 September 2026; now they
+  // do, and this is what writes to it.
+  const handleFollow = async () => {
+    if (!session?.user?.sessionToken) {
+      return showToast(tt('follow.signIn', 'Sign in to follow people.'), 'error');
+    }
+    const wasFollowing = following;
+    // Moved first, so the button answers the press immediately. Put back if
+    // the request is refused, rather than leaving a lie on screen.
+    setFollowing(!wasFollowing);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/follow/user/${encodeURIComponent(username)}/`,
+        {
+          method: wasFollowing ? 'DELETE' : 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.sessionToken}`,
+          },
+          body: wasFollowing ? undefined : JSON.stringify({}),
+        });
+      const body = await res.json().catch(() => ({ status: 'error' }));
+      if (body?.status !== 'success') {
+        setFollowing(wasFollowing);
+        return showToast(apiMessage(tt, body, 'api.somethingWentWrong',
+                                    'That did not go through.'), 'error');
+      }
+      setFollowing(!!body.data.is_following);
+      setFollowerCount(body.data.follower_count ?? 0);
+      showToast(body.data.is_following
+        ? tt('msg.followingShort', 'Following')
+        : tt('msg.unfollowedShort', 'Unfollowed'));
+    } catch (err) {
+      setFollowing(wasFollowing);
+      showToast(apiMessage(tt, err, 'api.somethingWentWrong',
+                           'That did not go through.'), 'error');
+    }
   };
   // Direct messages exist. This button said "DMs coming soon" and did nothing,
   // so the only way to message somebody was to go to Community, open DMs, and
@@ -561,7 +613,8 @@ const UserProfileContent = ({
                   </Link> : <>
                     <button type="button" className={`${styles.heroBtn} ${following ? styles.heroBtnFollowing : styles.heroBtnPrimary}`} onClick={handleFollow}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg>
-                      {following ? 'Following' : 'Follow'}
+                      {following ? tt('org.following', 'Following') : tt('org.follow', 'Follow')}
+                      {followerCount > 0 && ` · ${formatNumber(followerCount)}`}
                     </button>
                     {canMessage && <button type="button" className={styles.heroBtn} onClick={handleMessage}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>

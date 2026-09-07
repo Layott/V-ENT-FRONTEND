@@ -28,6 +28,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
+import { track } from '@/lib/track';
 import styles from './venue-map.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
@@ -248,7 +249,8 @@ export default function VenueMap({
       <div className={styles.row}>
         {(mapLink) && (
           <a className={styles.openIn} href={mapLink}
-             target="_blank" rel="noopener noreferrer">
+             target="_blank" rel="noopener noreferrer"
+             onClick={() => track(eventSlug, 'directions')}>
             {tt('event.openInMaps', 'Open in maps')}
           </a>
         )}

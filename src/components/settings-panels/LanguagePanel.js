@@ -2,12 +2,13 @@
 
 import { useCurrency } from '@/lib/money';
 import InfoTip from '@/components/info-tip/InfoTip';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import shared from './settingsShared.module.css';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { useWalkthrough } from '@/components/walkthrough/WalkthroughProvider';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { timezoneGroups, detectedTimezone } from '@/lib/timezones';
 
 // Three languages, and every one of them actually translates the interface.
 // Yoruba, Igbo, Hausa and Nigerian Pidgin were in this list with nothing behind
@@ -25,23 +26,36 @@ const CURRENCIES = [{
   v: 'VC',
   label: 'VC - VENT COINS (primary)'
 }];
-const TIMEZONES = ['Africa/Lagos', 'Africa/Accra', 'Africa/Nairobi', 'Africa/Johannesburg', 'Africa/Cairo', 'Europe/London', 'America/New_York', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Singapore', 'UTC'];
+// Every zone, grouped and labelled with its offset. This was eleven
+// hand-typed entries, so a reader in Abidjan, Kinshasa, Casablanca, Dhaka or
+// Sao Paulo could not say where they were - on a platform whose whole point is
+// that everybody sees their own clock. See src/lib/timezones.js.
+// The VALUES here are what `DATE_ORDER` in src/lib/datetime.js looks itself
+// up by. They used to be 'DMY', 'MDY', 'YMD' and 'long' while that table is
+// keyed on 'DD/MM/YYYY', 'MM/DD/YYYY' and 'YYYY-MM-DD', so every lookup missed
+// and the setting saved a value that changed nothing on any screen. The exact
+// class this panel was reported for in the first place: a control that stores
+// an answer and does nothing with it.
+//
+// '' is the real default and means "the reader's own language decides", which
+// is what every date did before this setting existed.
 const DATE_FORMATS = [{
-  v: 'DMY',
+  v: '',
+  label: '23 Apr 2026 (follow my language)'
+}, {
+  v: 'DD/MM/YYYY',
   label: 'DD/MM/YYYY (e.g. 23/04/2026)'
 }, {
-  v: 'MDY',
+  v: 'MM/DD/YYYY',
   label: 'MM/DD/YYYY (e.g. 04/23/2026)'
 }, {
-  v: 'YMD',
+  v: 'YYYY-MM-DD',
   label: 'YYYY-MM-DD (e.g. 2026-04-23)'
-}, {
-  v: 'long',
-  label: '23 Apr 2026'
 }];
 const LanguagePanel = ({
   language,
   timezone,
+  dateFormat,
   onSave
 }) => {
   const tx = useTx();
@@ -60,12 +74,23 @@ const LanguagePanel = ({
   } = useWalkthrough();
   const [lang, setLang] = useState(current || language || 'en');
   const [curr, setCurr] = useState('VC');
-  const [tz, setTz] = useState(timezone || 'Africa/Lagos');
-  const [df, setDf] = useState('DMY');
+  // The browser's guess, not Lagos, when nothing is saved. Defaulting a
+  // Ghanaian visitor to Nigeria is the same fault as the shortlist.
+  const [tz, setTz] = useState(timezone || detectedTimezone() || 'UTC');
+  const [df, setDf] = useState(dateFormat || '');
   useEffect(() => {
     setLang(current || language || 'en');
-    setTz(timezone || 'Africa/Lagos');
-  }, [current, language, timezone]);
+    setTz(timezone || detectedTimezone() || 'UTC');
+    setDf(dateFormat || '');
+  }, [current, language, timezone, dateFormat]);
+
+  // Rebuilt only when the saved zone changes: offsets are computed per zone
+  // and there are four hundred of them, so doing it every render is real work
+  // for no reason.
+  const tzGroups = useMemo(
+    () => timezoneGroups({ pinned: [tz, detectedTimezone()].filter(Boolean) }),
+    [tz],
+  );
   const {
     rates,
     preferred,
@@ -148,7 +173,9 @@ const LanguagePanel = ({
               timezone: v
             });
           }}>
-              {TIMEZONES.map(t => <option key={t} value={t}>{t}</option>)}
+              {tzGroups.map(g => <optgroup key={g.region} label={g.region === 'Yours' ? tt('settings.tzYours', 'Yours') : g.region}>
+                  {g.zones.map(z => <option key={`${g.region}_${z.id}`} value={z.id}>{z.label}</option>)}
+                </optgroup>)}
             </select>
           </div>
         </div>

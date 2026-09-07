@@ -151,7 +151,7 @@ const EventDetailsPrize = ({
     }
   };
   if (loading) {
-    return <div className={styles.loadingContainer}>
+    return <div>
         <p>{tt("ui.loading.prize.information.78d6", "Loading prize information...")}</p>
       </div>;
   }
@@ -161,7 +161,7 @@ const EventDetailsPrize = ({
         
         {prizeData.length > 0 ? <>
             {/* Desktop Table */}
-            <div className={styles.desktopTable}>
+            <div>
               <table>
                 <thead>
                   <tr>
@@ -181,33 +181,33 @@ const EventDetailsPrize = ({
             </div>
 
             {/* Mobile Cards */}
-            <div className={styles.mobileCards}>
-              {prizeData.map((prizeItem, index) => <div key={index} className={styles.mobileCard}>
-                  <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>{tt("ui.position.cf1c", "Position")}</div>
-                    <div className={styles.cardValue}>{prizeItem.position}</div>
+            <div>
+              {prizeData.map((prizeItem, index) => <div key={index}>
+                  <div>
+                    <div>{tt("ui.position.cf1c", "Position")}</div>
+                    <div>{prizeItem.position}</div>
                   </div>
-                  <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>{tt("ui.prize.d597", "Prize")}</div>
-                    <div className={styles.cardValue}>{prizeItem.prize}</div>
+                  <div>
+                    <div>{tt("ui.prize.d597", "Prize")}</div>
+                    <div>{prizeItem.prize}</div>
                   </div>
-                  <div className={styles.cardRow}>
-                    <div className={styles.cardLabel}>{tt("ui.bonuses.e144", "Bonuses")}</div>
-                    <div className={styles.cardValue}>{prizeItem.bonus}</div>
+                  <div>
+                    <div>{tt("ui.bonuses.e144", "Bonuses")}</div>
+                    <div>{prizeItem.bonus}</div>
                   </div>
                 </div>)}
             </div>
-          </> : <div className={styles.noPrizeData}>
+          </> : <div>
             <p>{tt("ui.no.prize.information.available.a782", "No prize information available for this event.")}</p>
           </div>}
 
         {/* Event Metadata */}
-        <div className={styles.eventMetadata}>
-          <div className={styles.metadataItem}>
+        <div>
+          <div>
             <GoDotFill />
             <span>{tt("ui.created.0c78", "Created:")} {formatDate(event.created_at || event.createdAt)}</span>
           </div>
-          <div className={styles.metadataItem}>
+          <div>
             <GoDotFill />
             <span>{tt("ui.last.updated.c26d", "Last Updated:")} {formatDate(event.updated_at || event.updatedAt)}</span>
           </div>

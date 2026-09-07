@@ -11,6 +11,7 @@ import { BsThreeDots, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 const ROLE_LABEL = {
   owner: 'Owner',
   captain: 'Captain',
@@ -134,7 +135,7 @@ const TeamProfileMembersTable = ({
         {filtered.map(m => <div key={m.user_id} className={`${styles.membersTableRow} ${styles.tableRow}`}>
             <div className={styles.memberCell}>
               <div className={styles.memberAvatar}>
-                {m.profile_pic ? <Image src={mediaUrl(m.profile_pic)} alt="" aria-hidden="true" width={36} height={36} /> : <div className={styles.avatarFallback} />}
+                <Avatar src={mediaUrl(m.profile_pic)} name={m.username || m.full_name} size={36} />
               </div>
               <div>
                 <UserChip user={m} size={0} secondary
@@ -182,7 +183,7 @@ const TeamProfileMembersTable = ({
             <div className={styles.memberMobileHeader} onClick={() => setExpanded(expanded === m.user_id ? null : m.user_id)}>
               <div className={styles.memberCell}>
                 <div className={styles.memberAvatar}>
-                  {m.profile_pic ? <Image src={mediaUrl(m.profile_pic)} alt="" aria-hidden="true" width={36} height={36} /> : <div className={styles.avatarFallback} />}
+                  <Avatar src={mediaUrl(m.profile_pic)} name={m.username || m.full_name} size={36} />
                 </div>
                 <div>
                   <p className={styles.memberName}>{m.full_name || m.username}</p>

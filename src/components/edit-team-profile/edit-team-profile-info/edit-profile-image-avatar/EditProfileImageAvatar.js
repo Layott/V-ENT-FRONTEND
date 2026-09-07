@@ -53,7 +53,7 @@ const EditProfileImageAvatar = ({
   return <div className={styles.profileImageAvatarContainer}>
       <div className={styles.profileImageContainer}>
         <div className={styles.editProfileImageContainer}>
-          <Image src={mediaUrl(profileImage || avatarAnkara)} alt={tt("ui.profile.image.14dc", "Profile Image")} className={styles.editProfileImage} width={256} height={256} />
+          <Image src={mediaUrl(profileImage || avatarAnkara)} alt={tt("ui.profile.image.14dc", "Profile Image")} width={256} height={256} />
         </div>
         <div className={styles.changeDeleteRecommendContainer}>
           <div className={styles.changeDeleteBTNContainer}>

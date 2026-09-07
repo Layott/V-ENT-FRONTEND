@@ -744,3 +744,138 @@
   .capacityField { max-width: none; width: 100%; }
   .capacityRow > button { width: 100%; }
 }
+
+/* The funnel: what nearly happened before a ticket existed.
+   Horizontal because the labels are words rather than hours, and a vertical
+   bar chart with "checkout_start" under it is unreadable at 375px.
+   Filled rows on a surface step, no strokes, matching .row above. */
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 4px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--overlay-gray);
+}
+
+.funnelRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+/* The bar is the row's own background rather than a child beside the text, so
+   a long label at 375px never squeezes the bar to nothing. */
+.funnelFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: rgba(76, 175, 80, 0.22);
+}
+
+/* The one that came from the tickets table rather than from a browser. It is
+   the number an organiser reconciles money against, so it reads as solid. */
+.funnelRowSold .funnelFill {
+  background: rgba(76, 175, 80, 0.42);
+}
+
+.funnelLabel {
+  position: relative;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.funnelHint {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.funnelCount {
+  position: relative;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.funnelPeople {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  margin-left: 6px;
+}
+
+@media (max-width: 480px) {
+  .funnelCount { font-size: 0.95rem; }
+  .funnelLabel { font-size: 0.8rem; }
+}
+
+/* A chosen option in a row of them: a stronger fill and a text colour, never
+   a ring. Same treatment as .tabOn above, deliberately, because the two sit on
+   the same screen and a second selected look would read as a second meaning.
+
+   Found in the Chrome walk on 7 September: both fee-bearer chips computed to
+   rgba(255,255,255,0.08) and the only thing separating them was the disabled
+   dimming on the selected one, which reads backwards - it made the current
+   choice look unavailable rather than picked. The dimming stays, because
+   pressing the option already in force should do nothing, but it is no longer
+   carrying the meaning on its own. */
+.ghostBtnOn {
+  background-color: #E5B94E;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* Otherwise the 0.5 opacity above washes the chosen chip back out, which is
+   the fault this class exists to fix. */
+.ghostBtnOn:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+/* 44px minimum on anything pressable, on a touch screen.
+   Measured at 390px on 7 September: every control on this console came out
+   29px tall, including "Pay everybody now" - which moves money - and the two
+   fee-bearer chips. Raised at the touch breakpoint rather than everywhere,
+   because the desktop console is a dense screen of many controls and 44px
+   there would push half of them below the fold for no benefit. */
+@media (max-width: 720px) {
+  .ghostBtn,
+  .addBtn,
+  .iconBtn,
+  .tab {
+    min-height: 44px;
+  }
+}
+
+/* The page header: a title and one action, which WRAP on a phone.
+   `rowBetween` carries no bottom margin, so on wrapping the button landed
+   flush against the sentence below it and read as overlapping text. Reported
+   by the CEO on 7 September from an emulator screenshot, which is the only
+   place it was visible - at 1440px the two sit side by side and there is
+   nothing to see. */
+.pageHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .pageHead {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

@@ -68,7 +68,7 @@ const ListingInner = () => {
         });
         const data = await res.json();
         if (mounted && data.status === 'success') setWalletBalance(data.data.balance);
-      } catch { /* swallow — non-critical */ }
+      } catch { /* swallow - non-critical */ }
     };
     fetchBal();
     return () => { mounted = false; };
@@ -139,7 +139,7 @@ const ListingInner = () => {
         setModal(null);
         setOfferAmount('');
         setOfferMessage('');
-        showToast('Offer sent — seller will respond');
+        showToast('Offer sent - seller will respond');
       } else {
         showToast(data.message || 'Offer failed');
       }

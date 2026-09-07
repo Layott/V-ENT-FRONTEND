@@ -145,7 +145,7 @@ const ResetPassword = () => {
                                 </span>
                             </div>
 
-                            {showError && <div className={styles.errorMessageContainer}>
+                            {showError && <div>
                                     <p className={styles.errorMessage}>{tt("ui.passwords.do.not.match.e983", "Passwords do not match!")}</p>
                                 </div>}
                         </div>

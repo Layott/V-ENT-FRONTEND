@@ -282,6 +282,13 @@ const Header = ({
                 <Link href={'/events/my-tickets'} className={styles.menuLink}>
                   {tt("menu.myTickets", "My tickets")}
                 </Link>
+                {/* The account menu is the one place that lists what somebody
+                    RUNS. A stall was missing from it, which is why buying a
+                    pitch led nowhere: the screens existed and nothing linked
+                    to them. */}
+                <Link href={'/my-stalls'} className={styles.menuLink}>
+                  {tt("menu.myStalls", "My stalls")}
+                </Link>
                 <Link href={'/wallets'} className={styles.menuLink}>
                   {tt("menu.wallet", "Wallet")}
                 </Link>

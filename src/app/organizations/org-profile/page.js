@@ -22,7 +22,9 @@ import styles from './org-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { formatNumber } from '@/lib/datetime';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 const TABS = [{
@@ -73,6 +75,19 @@ const socialIconFor = (titleOrKey = '') => {
   }
   return FaGlobe;
 };
+const activitySentence = (tt, tx, a) => {
+  if (a?.code === 'org.activity.memberJoined') {
+    return tt('org.activity.memberJoined', '@{username} joined as {role}')
+      .replace('{username}', a.params?.username || '')
+      .replace('{role}', a.params?.role || '');
+  }
+  if (a?.code === 'org.activity.hosted') {
+    return tt('org.activity.hosted', 'Hosted {title}')
+      .replace('{title}', a.params?.title || '');
+  }
+  return tx(a?.title || a?.text || '');
+};
+
 const OrgProfileContent = ({
   slug: slugFromPath
 }) => {
@@ -351,6 +366,18 @@ const OrgProfileContent = ({
     title: k,
     url: v
   }));
+  // The API sends founders as people now. It sent bare usernames until today
+  // and the deployed backend may still be a version behind, so a string is
+  // read as the username it was. Rendering an object as a React child throws,
+  // and rendering a person's object shape as text would be worse than the bug
+  // being fixed.
+  // What this kind of organisation does. From the model, so the profile, the
+  // console and the API cannot disagree about it. `mixed` is the default for
+  // everything created before types existed, and it turns everything on.
+  const caps = org.capabilities || {
+    teams: true, tournaments: true, events: true, ticketing: true, vendors: true,
+  };
+  const founders = (org.founders || []).map(f => typeof f === 'string' ? { username: f, full_name: f } : f).filter(Boolean);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -450,46 +477,72 @@ const OrgProfileContent = ({
                           <span className={styles.statNumber}>{org.member_count}</span>
                         </div>
                       </div>
-                      <div className={styles.statCard}>
+                      {caps.teams && <div className={styles.statCard}>
                         <AiOutlineTeam className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.teams.cbfd", "Teams")}</span>
                           <span className={styles.statNumber}>{org.team_count}</span>
                         </div>
-                      </div>
+                      </div>}
+                      {/* Followers. The count has been in the payload since
+                          organisations were built and no screen drew it, so
+                          nobody running one could see how many people cared.
+                          CEO: "org owners should also be able to see their
+                          followers ... and info on like how many." */}
                       <div className={styles.statCard}>
+                        <LuUserPlus className={styles.statCardIcon} />
+                        <div>
+                          <span className={styles.statLabel}>{tt("ui.followers.7c31", "Followers")}</span>
+                          <span className={styles.statNumber}>{formatNumber(org.follower_count ?? 0)}</span>
+                        </div>
+                      </div>
+                      {/* What this KIND of organisation actually does. A club
+                          that only fields a squad is not asked about ticketing
+                          or shown a count of events it will never run.
+                          `capabilities` comes from the model, so this screen
+                          and the console read one table rather than each
+                          keeping a copy. */}
+                      {caps.tournaments && <div className={styles.statCard}>
                         <FaTrophy className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.tournaments.fee2", "Tournaments")}</span>
                           <span className={styles.statNumber}>{org.total_tournaments_hosted ?? org.tournaments_hosted}</span>
                         </div>
-                      </div>
-                      <div className={styles.statCard}>
+                      </div>}
+                      {caps.events && <div className={styles.statCard}>
                         <MdOutlineEvent className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.events.c549", "Events")}</span>
                           <span className={styles.statNumber}>{org.events_hosted}</span>
                         </div>
-                      </div>
-                      <div className={styles.statCard}>
+                      </div>}
+                      {caps.tournaments && <div className={styles.statCard}>
                         <FaCoins className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.prize.pool.e9b1", "Prize pool")}</span>
                           <span className={styles.statNumber}>
-                            {(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0).toLocaleString()} VC
+                            {formatNumber(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0)} VC
                           </span>
                         </div>
-                      </div>
+                      </div>}
                     </div>
                   </section>
 
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.recent.activity.72d5", "Recent activity")}</h2>
                     {activity.length === 0 ? <p className={styles.bioText}>{tt("ui.no.recent.activity.yet.5179", "No recent activity yet.")}</p> : <ul className={styles.activityList}>
-                        {activity.map(a => <li key={a.id} className={styles.activityRow}>
+                        {activity.map((a, i) => <li key={a.id || `activity_${i}`} className={styles.activityRow}>
                             <span className={styles.activityDot} />
                             <div className={styles.activityText}>
-                              <span>{tx(a.title)}</span>
+                              {/* The API sends a code and its parameters, so
+                                  the sentence can be French or Portuguese. It
+                                  also sends the English one, which is the
+                                  fallback while a deployed backend is still a
+                                  version behind. It used to send only `text`
+                                  while this read `title`, so every row drew an
+                                  empty span and the panel was a column of
+                                  bare timestamps. */}
+                              <span>{activitySentence(tt, tx, a)}</span>
                               <span className={styles.activityTime}>{formatDate(a.at)}</span>
                             </div>
                           </li>)}
@@ -500,12 +553,21 @@ const OrgProfileContent = ({
                 <div className={styles.overviewRight}>
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.founders.9a7f", "Founders")}</h2>
-                    {(org.founders || []).length === 0 ? <p className={styles.bioText}>-</p> : <ul className={styles.founderList}>
-                        {(org.founders || []).map((name, i) => <li key={`${name}_${i}`} className={styles.founderRow}>
-                            <div className={styles.founderAvatar}>
-                              {name.split(' ').map(p => p[0]).join('').slice(0, 2)}
-                            </div>
-                            <span className={styles.founderName}>{name}</span>
+                    {/* Founders are people, so they go through UserChip like
+                        every other name on the platform: their face, their
+                        founder mark, and a link to their profile. This panel
+                        used to draw initials in a grey circle from a bare
+                        username, which is how the CEO's own picture and badge
+                        went missing under their organisation.
+
+                        `founders` was a list of strings before today and the
+                        deployed API may still be sending that shape, so a
+                        string is turned back into the smallest person we can
+                        honestly describe rather than rendering an object and
+                        blanking the panel. */}
+                    {founders.length === 0 ? <p className={styles.bioText}>{tt('ui.org.noFounders.4b13', 'Not recorded.')}</p> : <ul className={styles.founderList}>
+                        {founders.map((person, i) => <li key={`${person.username || person.full_name}_${i}`} className={styles.founderRow}>
+                            <UserChip user={person} size={36} secondary nameClassName={styles.founderName} />
                           </li>)}
                       </ul>}
                   </section>
@@ -655,8 +717,14 @@ const OrgProfileContent = ({
                   return <tr key={m.id}>
                           <td>
                             <div className={styles.memberCell}>
+                              {/* Through Avatar, which falls back to initials.
+                                  This was a bare next/image behind a truthy
+                                  check, so a member with no uploaded picture
+                                  got an empty circle and nothing identifying
+                                  them at all. Most accounts here have no
+                                  uploaded picture. */}
                               <div className={styles.memberAvatar}>
-                                {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
+                                <Avatar src={mediaUrl(m.user?.avatar)} name={m.user?.username || m.user?.full_name} size={32} />
                               </div>
                               <div className={styles.memberText}>
                                 <UserChip user={m.user} size={0} secondary

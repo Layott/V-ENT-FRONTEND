@@ -53,7 +53,7 @@ const CreateListing = () => {
   const [category, setCategory] = useState('Gaming Hardware');
   const [condition, setCondition] = useState('new');
 
-  // Step 3 — mock image URLs.
+  // Step 3 - mock image URLs.
   const [images, setImages] = useState([]);
 
   // Step 4
@@ -201,7 +201,7 @@ const CreateListing = () => {
               <input
                 type="text"
                 className={styles.input}
-                placeholder="e.g. PS5 Slim — barely used"
+                placeholder="e.g. PS5 Slim - barely used"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength={100}

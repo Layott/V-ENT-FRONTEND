@@ -14,6 +14,8 @@ import styles from './user-detail.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatDateTime } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -177,7 +179,7 @@ function UserDetailInner() {
               {/* Profile summary */}
               <div className={`${shared.card} ${styles.summary}`}>
                 <div className={styles.avatar}>
-                  {(u.username || 'U').slice(0, 2).toUpperCase()}
+                  <Avatar src={mediaUrl(u.avatar)} name={u.username} size={72} />
                 </div>
                 <div className={styles.summaryGrid}>
                   <div>

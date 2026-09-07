@@ -21,6 +21,7 @@ import shared from '@/components/settings-panels/settingsShared.module.css';
 import styles from './settings.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { useCurrency } from '@/lib/money';
 
 // Ids are fixed; labels come from the translator, so switching language
 // renames the navigation without touching which panel is open.
@@ -56,6 +57,8 @@ const PANEL_IDS = [{
 const SettingsContent = () => {
   const tx = useTx();
   const tt = useT();
+  // Publishes a timezone or date-format change to the whole app immediately.
+  const { publishRegion } = useCurrency();
   const PANELS = PANEL_IDS.map(p => ({
     ...p,
     label: tt(p.key)
@@ -236,6 +239,15 @@ const SettingsContent = () => {
         ...(prev || {}),
         ...next
       }));
+      // Applied to the screen at once rather than on the next reload. Without
+      // this the toast said "saved" while every date on the page carried on
+      // showing the old zone, which reads as the setting having done nothing.
+      if ('timezone' in next || 'date_format' in next) {
+        publishRegion({
+          timezone: next.timezone ?? settings?.timezone ?? '',
+          dateFormat: next.date_format ?? settings?.date_format ?? '',
+        });
+      }
       showToast(tt("msg.languageAmpRegionSaved", "Language &amp; region saved"));
     } else {
       showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
@@ -364,7 +376,7 @@ const SettingsContent = () => {
               {activePanel === 'privacy' && <PrivacyPanel privacy={settings?.privacy || {}} onSave={handleSavePrivacy} showToast={showToast} />}
               {activePanel === 'security' && <SecurityPanel security={settings?.security || {}} onSave={handleSaveSecurity} showToast={showToast} />}
               {activePanel === 'payments' && <PaymentsPanel payments={settings?.payments || {}} user={user} onSave={handleSavePayments} showToast={showToast} />}
-              {activePanel === 'language' && <LanguagePanel language={settings?.language} timezone={settings?.timezone} onSave={handleSaveLanguage} />}
+              {activePanel === 'language' && <LanguagePanel language={settings?.language} timezone={settings?.timezone} dateFormat={settings?.date_format} onSave={handleSaveLanguage} />}
               {activePanel === 'devices' && <DevicesPanel devices={devices} onRevoke={handleRevokeDevice} onRevokeAllOthers={handleRevokeAllOthers} showToast={showToast} />}
               {activePanel === 'linked' && <LinkedAccountsPanel showToast={showToast} />}
               {activePanel === 'danger' && <DangerZonePanel showToast={showToast} />}

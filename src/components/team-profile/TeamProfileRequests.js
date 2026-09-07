@@ -10,6 +10,7 @@ import { LuCheck, LuX, LuClock } from 'react-icons/lu';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 const TeamProfileRequests = ({
   team,
   onToast
@@ -112,7 +113,7 @@ const TeamProfileRequests = ({
             {requests.map(r => <div key={r.id} className={styles.requestCard}>
                 <div className={styles.memberCell}>
                   <div className={styles.memberAvatar}>
-                    {r.applicant?.avatar ? <Image src={mediaUrl(r.applicant.avatar)} alt="" aria-hidden="true" width={48} height={48} /> : <div className={styles.avatarFallback} />}
+                    <Avatar src={mediaUrl(r.applicant?.avatar)} name={r.applicant?.username || r.applicant?.full_name} size={48} />
                   </div>
                   <div>
                     <UserChip user={r.applicant} size={0}
@@ -149,7 +150,7 @@ const TeamProfileRequests = ({
             {invites.map(i => <div key={i.id} className={styles.requestCard}>
                 <div className={styles.memberCell}>
                   <div className={styles.memberAvatar}>
-                    {i.invited_by?.avatar ? <Image src={mediaUrl(i.invited_by.avatar)} alt="" aria-hidden="true" width={48} height={48} /> : <div className={styles.avatarFallback} />}
+                    <Avatar src={mediaUrl(i.invited_by?.avatar)} name={i.invited_by?.username || i.invited_by?.full_name} size={48} />
                   </div>
                   <div>
                     <p className={styles.memberName}>@{i.invited_user?.username}</p>

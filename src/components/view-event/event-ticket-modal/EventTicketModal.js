@@ -217,7 +217,7 @@ const EventTicketModal = ({
 
               <p className={styles.sectionTitle}>{tt("ui.quantity.44f6", "Quantity")}</p>
               <div className={styles.qtyRow}>
-                <button className={styles.qtyBtn} onClick={() => setQty(q => Math.max(1, q - 1))} disabled={qty <= 1}>−</button>
+                <button className={styles.qtyBtn} onClick={() => setQty(q => Math.max(1, q - 1))} disabled={qty <= 1}>-</button>
                 <span className={styles.qtyVal}>{qty}</span>
                 <button className={styles.qtyBtn} onClick={() => setQty(q => Math.min(10, q + 1))} disabled={qty >= 10}>+</button>
               </div>

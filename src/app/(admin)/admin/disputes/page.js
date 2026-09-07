@@ -11,7 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { formatDate } from '@/lib/datetime';
+import { formatDate, formatNumber } from '@/lib/datetime';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -172,7 +172,7 @@ function DisputesInner() {
                 <option value="dismissed">{tt("ui.dismissed.e8db", "Dismissed")}</option>
                 <option value="all">{tt("ui.all.statuses.9cb2", "All Statuses")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countDisputesOne', '{n} dispute') : tt('admin.countDisputesMany', '{n} disputes')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countDisputesOne', '{n} dispute') : tt('admin.countDisputesMany', '{n} disputes')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : visible.length === 0 ? <p className={shared.stateText}>{tt("ui.no.disputes.found.48a5", "No disputes found.")}</p> : <div className={shared.tableWrap}>

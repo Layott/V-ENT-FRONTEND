@@ -413,6 +413,28 @@ function ScanContent() {
         return;
       }
 
+      // A code that WAS real and has been given away. Worth a second request
+      // because the alternative on screen is "no such ticket", and that sends
+      // somebody away who is holding a genuine receipt.
+      if (res.status === 409 && body.code === 'TICKET_TRANSFERRED') {
+        setLast({ kind: 'transferred', code: key, moved: body.data || {} });
+        try {
+          const trail = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/event/ticket/${encodeURIComponent(key)}/transfers/`,
+            { headers: { Authorization: `Bearer ${token}` } });
+          const seen = await trail.json();
+          if (seen.status === 'success') {
+            setLast(prev => (prev && prev.code === key
+              ? { ...prev, trail: seen.data }
+              : prev));
+          }
+        } catch {
+          // The name from the refusal above is already on screen. The trail is
+          // the detail, and a door with no signal still gets the answer.
+        }
+        return;
+      }
+
       setLast({ kind: 'unknown', code: key });
     } catch {
       // The network went while we were asking. The device's own copy is the
@@ -602,7 +624,8 @@ function ScanContent() {
           : last.kind === 'duplicate' ? styles.resultDuplicate
             : last.kind === 'checking' ? styles.resultChecking
               : last.kind === 'wrongDay' ? styles.resultDuplicate
-                : styles.resultUnknown}>
+                : last.kind === 'transferred' ? styles.resultDuplicate
+                  : styles.resultUnknown}>
         {last.kind === 'checking' && <>
           <strong>{tt('scan.checking', 'Checking with V-ENT')}</strong>
           <span className={styles.resultSub}>{last.code}</span>
@@ -655,6 +678,23 @@ function ScanContent() {
                 .replace('{time}', shortTime(last.first.at))}
             {last.first.by && ` · ${last.first.by}`}
           </span>
+        </>}
+
+        {/* A code that WAS real and has been given away. "Not on the list"
+            here would send somebody away who is holding a genuine receipt,
+            and would make the steward think they were being lied to. */}
+        {last.kind === 'transferred' && <>
+          <LuTriangleAlert aria-hidden="true" />
+          <strong>{tt('scan.transferred', 'This ticket was given to somebody else')}</strong>
+          <span className={styles.resultSub}>{last.code}</span>
+          {(last.moved?.now_held_by || last.moved?.to_name) && <span className={styles.resultSub}>
+            {tt('scan.transferredTo', 'It belongs to {who} now, who has a different code.')
+              .replace('{who}', last.moved.now_held_by || last.moved.to_name)}
+          </span>}
+          {last.trail?.transfers?.length > 1 && <span className={styles.resultSub}>
+            {tt('scan.transferredTimes', 'It has changed hands {n} times.')
+              .replace('{n}', last.trail.transfers.length)}
+          </span>}
         </>}
 
         {last.kind === 'unknown' && <>

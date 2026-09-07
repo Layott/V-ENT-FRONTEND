@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import Image from 'next/image';
 import { useT } from '@/i18n/LanguageProvider';
 import { mediaUrl } from '@/lib/mediaUrl';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import styles from './user-picker.module.css';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 
 // Choosing a person, rather than spelling their handle from memory.
 //
@@ -207,10 +207,12 @@ const UserPicker = ({
                   disabled={gated && !user.can_message}
                   onClick={() => choose(user)}
                 >
+                  {/* Through Avatar, which is a picture when there is one and
+                      initials when there is not. This was that same pair
+                      written out by hand, which is the thing the platform has
+                      one component for. */}
                   <span className={styles.avatar}>
-                    {mediaUrl(user.avatar)
-                      ? <Image src={mediaUrl(user.avatar)} alt="" aria-hidden="true" width={36} height={36} unoptimized />
-                      : <span className={styles.avatarFallback}>{(user.full_name || user.username).charAt(0)}</span>}
+                    <Avatar src={mediaUrl(user.avatar)} name={user.username || user.full_name} size={36} />
                   </span>
                   <span className={styles.who}>
                     <span className={styles.name}>{user.full_name}{user.founder_badge && <FounderBadge size="sm" />}</span>

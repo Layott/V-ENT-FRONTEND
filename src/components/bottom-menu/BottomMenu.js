@@ -168,7 +168,7 @@ const BottomMenu = ({
         </div> : signedIn ? <div className={styles.profileContainerOuter} ref={menuRef}>
             <div className={styles.profileContainer} onClick={toggleMenu}>
                 <div className={styles.profileImageContainer}>
-                    {isExternalImage ? <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} className={styles.profileImage} width={40} height={40} /> : <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} className={styles.profileImage} width={40} height={40} />}
+                    {isExternalImage ? <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} width={40} height={40} /> : <Image src={profilePic} alt={tt("ui.profile.ff4f", "Profile")} width={40} height={40} />}
                 </div>
                 <p className={styles.username}>{tt("ui.my.profile.9ba8", "My Profile")}</p>
             </div>

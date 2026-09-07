@@ -230,7 +230,7 @@ const MyTournaments = () => {
                       </p>
                     </div>
                     <div className={styles.rowActions}>
-                      <Link href={`/tournaments/create-tournament?draft_id=${d.id}`}>
+                      <Link href={`/tournaments/create-tournament?draft_id=${d.slug || d.id}`}>
                         <button className={styles.actionBtn}><LuPencil /> {tt("ui.resume.b3bd", "Resume")}</button>
                       </Link>
                       {/* Asked once, in place. A draft is somebody's unfinished
@@ -281,7 +281,7 @@ const MyTournaments = () => {
                       <div className={styles.titleLine}>
                         <p className={styles.tournamentName}>{name}</p>
                         <span className={`${styles.statusBadge} ${badgeClass}`}>
-                          {status === 'in_progress' || status === 'live' || status === 'ongoing' ? <LuRadio className={styles.liveDot} /> : null} {statusLabel}
+                          {status === 'in_progress' || status === 'live' || status === 'ongoing' ? <LuRadio /> : null} {statusLabel}
                         </span>
                         {t?.reg_count != null && <span className={styles.regBadge}><LuUsers /> {t.reg_count} {tt("ui.registered.6248", "registered")}</span>}
                         {disputeCount > 0 && <span className={styles.disputeBadge}><LuTriangleAlert /> {disputeCount} {tt("ui.dispute.cfc8", "dispute")}{disputeCount === 1 ? '' : 's'}</span>}

@@ -67,7 +67,7 @@ const UserProfileFavouriteGames = () => {
 
         <div className={styles.gamesWrapper}>
           <div className={`${profileStyles.gameOrAchievementContainer} ${styles.blurredContainer}`}>
-            <div className={`${profileStyles.gameOrAchievementCard} ${styles.addFavouriteGameCard}`}>
+            <div className={`${profileStyles.gameOrAchievementCard}`}>
                 <div className={`${styles.addGameIcons} ${profileStyles.topMostLayerColor}`}>
                     <span className={styles.plusIcon}><FiPlus /></span>
                     <span className={styles.addGameText}>{tt("ui.add.game.010f", "Add Game")}</span>

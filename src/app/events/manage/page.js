@@ -29,6 +29,7 @@ import { appLocale } from '@/lib/appLocale';
 import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
+import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 import UserChip from '@/components/user-chip/UserChip';
 // The same panel the tournament console uses. An event has a programme, a
 // door count, ticket sales and sponsors, all of which somebody wants on a
@@ -37,8 +38,10 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
 import { formatWithZone } from '@/lib/datetime';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -47,9 +50,24 @@ const formatDateTime = value => (value
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
   : '');
+// Step keys to translation keys. A table rather than a switch because the
+// server sends step KEYS and never a sentence: a sentence built in Python
+// cannot be translated, and this list is the only place the words live.
+const FUNNEL_LABELS = {
+  page_open: ['manage.stepPageOpen', 'Opened the event'],
+  ticket_open: ['manage.stepTicketOpen', 'Looked at tickets'],
+  buy_tap: ['manage.stepBuyTap', 'Tapped Buy'],
+  checkout_start: ['manage.stepCheckoutStart', 'Reached the checkout'],
+  vendor_open: ['manage.stepVendorOpen', 'Opened the vendor list'],
+  vendor_stall: ['manage.stepVendorStall', 'Opened a stall'],
+  share: ['manage.stepShare', 'Shared the event'],
+  directions: ['manage.stepDirections', 'Asked for directions'],
+  sold: ['manage.stepSold', 'Bought a ticket'],
+};
+
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
-  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'production',
-  'team'];
+  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors',
+  'production', 'team'];
 // The tab used to be called overlays, before the studio existed for events.
 // Links carrying the old name still open the right place.
 const TAB_ALIASES = { overlays: 'production' };
@@ -201,7 +219,9 @@ export const ManageEventContent = ({
     name: '',
     code: '',
     url: '',
-    allocation: ''
+    allocation: '',
+    commission_pct: '',
+    payee: ''
   });
   const [newPromo, setNewPromo] = useState({
     code: '',
@@ -214,6 +234,13 @@ export const ManageEventContent = ({
     username: '',
     role: 'manager'
   });
+  // Who is owed what out of every ticket sold, and what has already been paid.
+  // Separate from `money` above, which counts what the TICKETS were worth:
+  // these are the same sales seen from the other side, after the platform fee
+  // and any affiliate commission.
+  const [earnings, setEarnings] = useState(null);
+  const [settling, setSettling] = useState(false);
+  const [settleSaid, setSettleSaid] = useState('');
   const call = useCallback(async (path, options = {}) => {
     const res = await fetch(`${API}/event/${eventRef}${path}`, {
       ...options,
@@ -248,12 +275,13 @@ export const ManageEventContent = ({
     setLoading(true);
     setError('');
     setRefused(false);
-    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
       call('/checkout-fields/manage/'),
       call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
       call('/polls/'), call('/email-limits/'),
+      call('/earnings/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -273,6 +301,7 @@ export const ManageEventContent = ({
     setCapacityDraft(cap?.capacity != null ? String(cap.capacity) : '');
     setCapacityModeDraft(cap?.mode || 'per_day');
     setMoney(mo.body?.data || null);
+    setEarnings(ea.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
     setQueue(qu.body?.data || null);
@@ -535,14 +564,18 @@ export const ManageEventContent = ({
       method: 'POST',
       body: JSON.stringify({
         ...newReferral,
-        allocation: Number(newReferral.allocation) || 0
+        allocation: Number(newReferral.allocation) || 0,
+        commission_pct: Number(newReferral.commission_pct) || 0,
+        payee: newReferral.payee.trim()
       })
     }), 'manage.linkAdded', 'Link added.');
     if (done) setNewReferral({
       name: '',
       code: '',
       url: '',
-      allocation: ''
+      allocation: '',
+      commission_pct: '',
+      payee: ''
     });
   };
   // The organiser copies this and sends it to the influencer, so it has to be
@@ -919,11 +952,14 @@ export const ManageEventContent = ({
           <Link href={`/events/${eventRef}`} className={styles.backLink}>
             {tt('manage.backToEvent', '← Back to the event')}
           </Link>
-          <div className={styles.rowBetween}>
+          {/* `pageHead` rather than `rowBetween`: on a phone this wraps, and
+              `rowBetween` carries no bottom margin, so the button landed flush
+              against the sentence below it and read as overlapping text. The
+              CEO reported exactly that from an emulator screenshot on
+              7 September. */}
+          <div className={styles.pageHead}>
             <h1 className={styles.pageTitle}>{tt('manage.title', 'Manage this event')}</h1>
-            <Link href={`/events/scan?event=${eventRef}&gate=Main`} className={styles.primaryBtn}>
-              {tt('manage.openDoor', 'Open the door scanner')}
-            </Link>
+            <DoorScannerLink eventRef={eventRef} />
           </div>
           <p className={styles.pageSub}>
             {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
@@ -939,7 +975,7 @@ export const ManageEventContent = ({
           {refused ? <p className={styles.muted}>
               {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}
               {' '}
-              <Link href={`/events/${eventRef}`} className={styles.link}>
+              <Link href={`/events/${eventRef}`}>
                 {tt('manage.backToEvent', '← Back to the event')}
               </Link>
             </p>
@@ -947,14 +983,14 @@ export const ManageEventContent = ({
             : !eventRef ? <p className={styles.muted}>
                 {tt('manage.pickEvent', 'Open this from the event you want to manage.')}
                 {' '}
-                <Link href="/events/my-events" className={styles.link}>
+                <Link href="/events/my-events">
                   {tt('manage.myEvents', 'My events')}
                 </Link>
               </p>
             : !token ? <p className={styles.muted}>
                 {tt('manage.signIn', 'Sign in to manage an event you run.')}
                 {' '}
-                <Link href="/login" className={styles.link}>
+                <Link href="/login">
                   {tt('ui.login.7b3c', 'Log in')}
                 </Link>
               </p>
@@ -979,13 +1015,13 @@ export const ManageEventContent = ({
                     </p>
                     <div className={styles.capacityRow}>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.venueName', 'Venue name')}</span>
+                        <span>{tt('manage.venueName', 'Venue name')}</span>
                         <input className={styles.input} value={venueDraft.venue_name}
                                placeholder={venueLoaded.location || tt('manage.venueNamePlaceholder', 'The Celebr8 Centre')}
                                onChange={e => setVenueDraft(v => ({ ...v, venue_name: e.target.value }))} />
                       </label>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.venueMapLink', 'Google Maps link')}</span>
+                        <span>{tt('manage.venueMapLink', 'Google Maps link')}</span>
                         <input className={styles.input} value={venueDraft.map_link}
                                placeholder="https://maps.app.goo.gl/..."
                                onChange={e => setVenueDraft(v => ({ ...v, map_link: e.target.value }))} />
@@ -996,7 +1032,7 @@ export const ManageEventContent = ({
                       </button>
                     </div>
                     <label className={styles.capacityField}>
-                      <span className={styles.label}>{tt('manage.venueDirections', 'How to find it')}</span>
+                      <span>{tt('manage.venueDirections', 'How to find it')}</span>
                       <input className={styles.input} value={venueDraft.directions}
                              placeholder={tt('manage.venueDirectionsPlaceholder', 'Second gate on Vori Close, parking behind the hall')}
                              onChange={e => setVenueDraft(v => ({ ...v, directions: e.target.value }))} />
@@ -1028,7 +1064,7 @@ export const ManageEventContent = ({
                             : tt('manage.selfCheckInTurnOn', 'Let people check themselves in')}
                       </button>
                       {selfCheckIn.enabled && <label className={styles.capacityField}>
-                        <span className={styles.label}>
+                        <span>
                           {tt('manage.selfCheckInOpens', 'Opens this many minutes before')}
                         </span>
                         <input className={styles.input} type="number" min="0" max="1440"
@@ -1063,14 +1099,14 @@ export const ManageEventContent = ({
                     </p>
                     <div className={styles.capacityRow}>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.capacityField', 'Venue capacity')}</span>
+                        <span>{tt('manage.capacityField', 'Venue capacity')}</span>
                         <input className={styles.input} type="number" min="0"
                                value={capacityDraft}
                                placeholder={tt('manage.capacityNone', 'No limit')}
                                onChange={e => setCapacityDraft(e.target.value)} />
                       </label>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.capacityMode', 'And that number is')}</span>
+                        <span>{tt('manage.capacityMode', 'And that number is')}</span>
                         <select className={styles.input} value={capacityModeDraft}
                                 onChange={e => setCapacityModeDraft(e.target.value)}>
                           <option value="per_day">{tt('manage.capacityPerDay', 'How many each day holds')}</option>
@@ -1487,6 +1523,118 @@ export const ManageEventContent = ({
                       </div>
                     </div>
 
+
+                    {/* CEO, 7 September 2026, from the ticketing research: who
+                        bears the platform fee, affiliates that actually get
+                        paid, and a settlement run rather than a one-at-a-time
+                        payout queue.
+
+                        `money` above counts what the TICKETS were worth. This
+                        is the same sales seen from the other side: after the
+                        platform cut and anybody commission, which is the
+                        number that reaches a bank account. */}
+                    {earnings && <>
+                      <h3 className={styles.subTitle}>{tt('manage.whoPaysTheFee', 'Who pays the service fee')}</h3>
+                      {earnings.fee_pct > 0
+                        ? <>
+                          <div className={styles.rowActions}>
+                            {[['organiser', 'manage.feeOnMe', 'I absorb it'],
+                              ['buyer', 'manage.feeOnBuyer', 'The buyer pays it on top']].map(([value, key, fallback]) => <button
+                                key={value}
+                                type="button"
+                                className={earnings.fee_bearer === value
+                                  ? `${styles.ghostBtn} ${styles.ghostBtnOn}`
+                                  : styles.ghostBtn}
+                                aria-pressed={earnings.fee_bearer === value}
+                                disabled={busy || earnings.fee_bearer === value}
+                                onClick={() => run(() => call('/fee-bearer/', {
+                                  method: 'POST',
+                                  body: JSON.stringify({ fee_bearer: value }),
+                                }), 'manage.feeBearerSaved', 'Saved. It applies to tickets sold from now on.')}>
+                                {tt(key, fallback)}
+                              </button>)}
+                          </div>
+                          <p className={styles.cardHint}>
+                            {tt('manage.feeExplained', 'V-ENT takes {pct}% of each ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
+                              .replace('{pct}', earnings.fee_pct)}
+                          </p>
+                        </>
+                        : <p className={styles.muted}>{tt('manage.noFeeAtAll', 'V-ENT is not taking a fee on tickets, so there is nothing to pass on.')}</p>}
+
+                      <h3 className={styles.subTitle}>{tt('manage.settlement', 'Paying it out')}</h3>
+                      <div className={styles.rows}>
+                        <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.owedToYou', 'Waiting to be paid to you')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.organiser_owed_vc).toLocaleString(appLocale())} VC</span>
+                        </div>
+                        <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.alreadyPaidYou', 'Already paid to you')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.organiser_paid_vc).toLocaleString(appLocale())} VC</span>
+                        </div>
+                        {earnings.affiliates_owed_vc > 0 && <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.owedToAffiliates', 'Waiting to be paid to affiliates')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.affiliates_owed_vc).toLocaleString(appLocale())} VC</span>
+                        </div>}
+                        {earnings.platform_fee_vc > 0 && <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.platformTook', 'V-ENT service fee')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.platform_fee_vc).toLocaleString(appLocale())} VC</span>
+                        </div>}
+                      </div>
+
+                      {earnings.unclaimed_vc > 0 && <p className={styles.cardHint}>
+                        {tt('manage.unclaimedCommission', '{n} VC is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a settlement will not include it before then.')
+                          .replace('{n}', Number(earnings.unclaimed_vc).toLocaleString(appLocale()))}
+                      </p>}
+
+                      <div className={styles.rowActions}>
+                        <button
+                          type="button"
+                          className={`${styles.ghostBtn} grnBTN`}
+                          disabled={busy || settling
+                            || (earnings.organiser_owed_vc <= 0 && earnings.affiliates_owed_vc <= 0)}
+                          onClick={async () => {
+                            setSettling(true);
+                            setSettleSaid('');
+                            const { ok, body } = await call('/settle/', { method: 'POST', body: JSON.stringify({}) });
+                            setSettling(false);
+                            if (ok) {
+                              setSettleSaid(tt('manage.settledSaid', 'Paid {n} VC across {lines} line(s).')
+                                .replace('{n}', Number(body?.data?.amount_vc || 0).toLocaleString(appLocale()))
+                                .replace('{lines}', body?.data?.lines_paid ?? 0));
+                              await load();
+                            } else {
+                              setError(apiMessage(tt, body, 'api.couldNotSettle', 'Could not pay this out.'));
+                            }
+                          }}>
+                          {settling ? tt('manage.settling', 'Paying...') : tt('manage.settleNow', 'Pay everybody now')}
+                        </button>
+                      </div>
+                      {settleSaid && <p className={styles.cardHint}>{settleSaid}</p>}
+                      <p className={styles.cardHint}>
+                        {tt('manage.settleExplained', 'One pass pays you and every affiliate into your V-ENT wallets. Running it again pays nothing twice, so it is safe to press if you are unsure whether it went through.')}
+                      </p>
+
+                      {earnings.settlements.filter(paid => paid.lines_paid > 0).length > 0 && <>
+                        <h3 className={styles.subTitle}>{tt('manage.pastSettlements', 'Paid out so far')}</h3>
+                        <div className={styles.rows}>
+                          {earnings.settlements.filter(paid => paid.lines_paid > 0).map(paid => <div key={paid.id} className={styles.row}>
+                            <div className={styles.rowMain}>
+                              <strong className={styles.rowName}>{formatDateTime(paid.at)}</strong>
+                            </div>
+                            <span className={styles.code}>{Number(paid.amount_vc).toLocaleString(appLocale())} VC</span>
+                          </div>)}
+                        </div>
+                      </>}
+                    </>}
+
                     <h3 className={styles.subTitle}>{tt('manage.moneyByType', 'By ticket type')}</h3>
                     <div className={styles.rows}>
                       {money.by_tier.map(row => <div key={row.id} className={styles.row}>
@@ -1701,6 +1849,78 @@ export const ManageEventContent = ({
                           section stays visible at zero rather than disappearing:
                           a block that vanishes when empty makes the page jump
                           and reads as broken. */}
+                      {/* CEO, 7 September 2026: "how many clicks, how many
+                          people opened it up, how many tapped buy, how many
+                          check out vendor".
+
+                          Everything else on this tab counts what happened.
+                          This counts what nearly happened, which is the only
+                          half that says WHERE the event is losing people:
+                          nine tickets from forty taps is a checkout problem,
+                          nine from eleven opens is a marketing problem, and
+                          the tickets table reads identically in both.
+
+                          The last row is the only one that did not come from
+                          a browser. It is said on the page rather than left
+                          for somebody to work out, because a reader who
+                          treats all six as equally solid will over-trust the
+                          top five. */}
+                      {metrics.funnel && <>
+                        <h3 className={styles.subTitle}>{tt('manage.funnel', 'Before the ticket')}</h3>
+                        {metrics.funnel.steps.every(step => step.count === 0)
+                          ? <p className={styles.muted}>{tt('manage.funnelEmpty', 'Nothing counted yet. Numbers appear here as people open the event page, look at prices and reach the checkout.')}</p>
+                          : <>
+                            <div className={styles.funnel}>
+                              {metrics.funnel.steps.map(step => {
+                                const top = Math.max(...metrics.funnel.steps.map(x => x.count), 1);
+                                return <div key={step.step} className={`${styles.funnelRow} ${step.step === 'sold' ? styles.funnelRowSold : ''}`}>
+                                    <span className={styles.funnelFill} style={{ width: Math.round(step.count * 100 / top) + '%' }} aria-hidden="true" />
+                                    <span className={styles.funnelLabel}>
+                                      {FUNNEL_LABELS[step.step] ? tt(FUNNEL_LABELS[step.step][0], FUNNEL_LABELS[step.step][1]) : step.step}
+                                      {step.step === 'sold' && <span className={styles.funnelHint}>{tt('manage.funnelCounted', 'Counted from the tickets that exist')}</span>}
+                                    </span>
+                                    <span className={styles.funnelCount}>
+                                      {Number(step.count).toLocaleString(appLocale())}
+                                      {step.people > 0 && step.step !== 'sold' && <span className={styles.funnelPeople}>
+                                        {tt('manage.funnelPeople', '{n} first time').replace('{n}', Number(step.people).toLocaleString(appLocale()))}
+                                      </span>}
+                                    </span>
+                                  </div>;
+                              })}
+                            </div>
+                            {metrics.funnel.sales_predate_tracking && <p className={styles.cardHint}>
+                              {tt('manage.funnelPredates', 'More tickets exist than page opens counted, so some of these sales happened before this counting started, or through a link that never opened the event page. The rates below read high because of it.')}
+                            </p>}
+                            <div className={styles.figureGrid}>
+                              {[['open_to_buy', 'manage.rateOpenBuy', 'Opened, then tapped Buy'],
+                                ['buy_to_checkout', 'manage.rateBuyCheckout', 'Tapped Buy, then reached checkout'],
+                                ['checkout_to_sold', 'manage.rateCheckoutSold', 'Reached checkout, then paid'],
+                                ['open_to_sold', 'manage.rateOpenSold', 'Opened, then paid']].map(([key, tkey, fallback]) => <div key={key} className={styles.figure}>
+                                  <strong className={styles.figureValue}>
+                                    {metrics.funnel.conversion[key] === null
+                                      ? tt('manage.notYetKnown', 'Not yet')
+                                      : `${metrics.funnel.conversion[key]}%`}
+                                  </strong>
+                                  <span className={styles.figureLabel}>{tt(tkey, fallback)}</span>
+                                </div>)}
+                            </div>
+                          </>}
+
+                        {metrics.funnel.stalls.length > 0 && <>
+                          <h3 className={styles.subTitle}>{tt('manage.stallsWalkedTo', 'Stalls people opened')}</h3>
+                          <div className={styles.rows}>
+                            {metrics.funnel.stalls.map(stall => <div key={stall.stall} className={styles.row}>
+                                <div className={styles.rowMain}>
+                                  <span className={styles.rowName}>{stall.name}</span>
+                                </div>
+                                <div className={styles.rowStats}>
+                                  {tt('manage.stallVisits', '{n} opens').replace('{n}', Number(stall.visits).toLocaleString(appLocale()))}
+                                </div>
+                              </div>)}
+                          </div>
+                        </>}
+                      </>}
+
                       {metrics.arrivals_by_hour && <>
                         <h3 className={styles.subTitle}>{tt('manage.whenTheyCame', 'When they arrived')}</h3>
                         {metrics.arrivals_by_hour.length === 0
@@ -1801,6 +2021,9 @@ export const ManageEventContent = ({
                         </button>
                         <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('sales')}>
                           {tt('manage.sheetSales', 'Sales by day')}
+                        </button>
+                        <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('funnel')}>
+                          {tt('manage.sheetFunnel', 'What people did, by day')}
                         </button>
                       </div>
                     </>}
@@ -2027,7 +2250,7 @@ export const ManageEventContent = ({
               {/* ------------------------------------------------ influencers */}
               {tab === 'influencers' && <section className={styles.card}>
                   <p className={styles.cardHint}>
-                    {tt('manage.influencerHint', 'Give somebody a code and their link becomes /events/…?ref=CODE. Set an allocation to hold a number of tickets for them, or leave it at zero to just track what they sell.')}
+                    {tt('manage.influencerHint2', 'Give somebody a code and their link becomes /events/…?ref=CODE. An allocation holds tickets for them; a commission pays them a share of every ticket their link sells, into their V-ENT wallet when you settle. Leave both at zero and the link only tracks.')}
                   </p>
 
                   {referrals.length === 0 ? <p className={styles.muted}>{tt('manage.noInfluencers', 'Nobody is selling for you yet.')}</p> : <div className={styles.rows}>
@@ -2054,6 +2277,16 @@ export const ManageEventContent = ({
                             <span>
                               {tt('manage.allocation', 'Allocation')}:{' '}
                               <strong>{row.allocation ? `${row.remaining} / ${row.allocation}` : tt('manage.uncapped', 'No cap')}</strong>
+                              {row.commission_pct > 0 && <>
+                                {' · '}
+                                {tt('manage.commission', 'Commission')}:{' '}
+                                <strong>{row.commission_pct}%</strong>
+                                {!row.has_payee && <> {' · '}
+                                  <span className={styles.muted}>
+                                    {tt('manage.noPayeeYet', 'nobody to pay yet')}
+                                  </span>
+                                </>}
+                              </>}
                             </span>
                           </div>
                           {row.share_url && <div className={styles.shareRow}>
@@ -2096,6 +2329,14 @@ export const ManageEventContent = ({
                   ...p,
                   url: e.target.value
                 }))} />
+                    <input className={styles.input} type="number" min={0} max={100} step="0.5" placeholder={tt('manage.commissionPlaceholder', 'Commission % (0 = tracking only)')} value={newReferral.commission_pct} onChange={e => setNewReferral(p => ({
+                ...p,
+                commission_pct: e.target.value
+              }))} />
+                    <input className={styles.input} placeholder={tt('manage.payeePlaceholder', 'Pay it to (email or @username)')} value={newReferral.payee} onChange={e => setNewReferral(p => ({
+                ...p,
+                payee: e.target.value
+              }))} autoComplete="off" />
                     <input className={styles.input} type="number" min={0} placeholder={tt('manage.allocationPlaceholder', 'Tickets held (0 = none)')} value={newReferral.allocation} onChange={e => setNewReferral(p => ({
                   ...p,
                   allocation: e.target.value
@@ -2184,6 +2425,14 @@ export const ManageEventContent = ({
                 showToast={setNotice}
               />}
 
+              {/* Pitches for sale. Somebody who buys one gets a shop on
+                  V-ENT straight away; inviting a trader directly is the other
+                  door into the same room. */}
+              {tab === 'vendors' && <section className={styles.card}>
+                  <h3>{tt('console.tabVendors', 'Vendor pitches')}</h3>
+                  <VendorSlotsPanel eventRef={eventRef} token={token} onNotice={setNotice} />
+                </section>}
+
               {tab === 'production' && <section className={styles.card}>
                 {/* The studio: V-ENT's own graphics for an event, bound to the
                     programme and the door, each with a URL for a browser
@@ -2212,7 +2461,7 @@ export const ManageEventContent = ({
                   screen ever sent it, so an event that belonged to one person
                   stayed that way and could be shared with nobody. */}
               {tab === 'team' && <section className={styles.card}>
-                  <h3 className={styles.cardTitle}>
+                  <h3>
                     {tt('manage.orgTitle', 'Who runs this event')}
                   </h3>
                   {myOrgs.length === 0 ? <p className={styles.muted}>
@@ -2245,7 +2494,7 @@ export const ManageEventContent = ({
                   {managers.length === 0 ? <p className={styles.muted}>{tt('manage.noManagers', 'Nobody else is helping run this yet.')}</p> : <div className={styles.rows}>
                       {managers.map(row => <div key={row.id} className={styles.row}>
                           <div className={styles.rowMain}>
-                            <UserChip user={row} size={0}
+                            <UserChip user={row} size={32}
                                       nameClassName={styles.rowName} />
                             <span className={styles.code}>
                               {row.role === 'door' ? tt('manage.roleDoor', 'Door staff') : tt('manage.roleManager', 'Manager')}
@@ -2293,4 +2542,26 @@ const ManageEventPage = () => <Suspense fallback={<div style={{
 }} />}>
     <ManageEventContent />
   </Suspense>;
-export default ManageEventPage;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]/manage` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ManageEventPageLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}/manage`}
+      fallback="/events/my-events"
+    />
+  </Suspense>
+);
+
+export default ManageEventPageLegacy;

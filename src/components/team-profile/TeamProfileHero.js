@@ -80,7 +80,7 @@ const TeamProfileHero = ({
                   {tt("ui.request.sent.1689", "Request sent")}
                 </button> : open ? <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} onClick={onRequestJoin} disabled={requestState === 'loading'}>
                   {requestState === 'loading' ? tx("Sending...") : tx("Request to join")}
-                </button> : <span className={styles.heroClosedNote}>{tt("ui.not.accepting.members.98ed", "Not accepting members")}</span>}
+                </button> : <span>{tt("ui.not.accepting.members.98ed", "Not accepting members")}</span>}
             </>}
         </div>
       </div>

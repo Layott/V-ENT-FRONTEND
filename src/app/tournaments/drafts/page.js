@@ -81,7 +81,7 @@ const Drafts = () => {
   }, [token, retryKey]);
   const handleRetry = () => setRetryKey(k => k + 1);
   const handleEdit = draft => {
-    router.push(`/tournaments/create-tournament?draft_id=${draft.id}`);
+    router.push(`/tournaments/create-tournament?draft_id=${draft.slug || draft.id}`);
   };
   const handlePublish = async draft => {
     if (busyId) return;

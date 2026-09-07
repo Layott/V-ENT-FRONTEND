@@ -81,7 +81,12 @@ export function CurrencyProvider({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/settings/`,
+        // `/setting/`, not `/auth/settings/`. The wrong path answered 404 on every
+        // page load, so `setAppRegion` never received the saved timezone, date
+        // format or currency and the whole Currency and region panel was inert:
+        // it stored an answer and nothing ever read it back. Found by changing
+        // the zone to Auckland in Settings and watching an event date not move.
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setting/`,
                                 { headers: { Authorization: `Bearer ${token}` } });
         const body = await res.json().catch(() => ({}));
         if (cancelled || body?.status !== 'success') return;
@@ -109,6 +114,20 @@ export function CurrencyProvider({
     }
   }, []);
 
+  // Publishing a region change WITHOUT waiting for a reload.
+  //
+  // `setAppRegion` writes to a module value, which nothing re-renders on, so
+  // saving a timezone in settings changed the stored answer and left every
+  // date on screen showing the old zone until the next navigation. That is the
+  // exact shape this panel was reported for: a control that saves and appears
+  // to do nothing. `regionVersion` is bumped alongside it, and because it sits
+  // in the context value every consumer re-renders and re-formats.
+  const [regionVersion, setRegionVersion] = useState(0);
+  const publishRegion = useCallback(next => {
+    setAppRegion(next);
+    setRegionVersion(v => v + 1);
+  }, []);
+
   // Memoised for the same reason as the admin toast provider, which shipped
   // this exact fault: an object literal here is a new value on every render,
   // so every consumer re-renders and anything that lists the context in a
@@ -116,8 +135,8 @@ export function CurrencyProvider({
   // depends on it. Nothing does that here today; the point is that it becomes
   // a refetch loop the first time somebody does, and it is invisible until it
   // reaches a slow connection.
-  const value = useMemo(() => ({ rates, preferred, choose }),
-    [rates, preferred, choose]);
+  const value = useMemo(() => ({ rates, preferred, choose, publishRegion, regionVersion }),
+    [rates, preferred, choose, publishRegion, regionVersion]);
 
   return <CurrencyContext.Provider value={value}>
       {children}

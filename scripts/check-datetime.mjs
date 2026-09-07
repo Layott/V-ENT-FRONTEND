@@ -301,5 +301,8 @@ function main() {
   }
 
   console.log(`0 new timing breaches. ${severe.length} known severe, being worked down.`);
+  if (process.argv.includes('--notes')) {
+    for (const n of notes) console.log(`${n.file}:${n.line}  ${n.id}`);
+  }
   console.log(`${notes.length} number-formatting notes, which do not fail the build.`);
 }

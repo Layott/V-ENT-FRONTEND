@@ -28,7 +28,7 @@ const DisclaimerBanner = () => (
       <MdInfoOutline className={styles.disclaimerIcon} />
       <div>
         <p className={styles.disclaimerTitle}>
-          Wager Beta — Legal review pending. UI only. No live betting.
+          Wager Beta - Legal review pending. UI only. No live betting.
         </p>
         <p className={styles.disclaimerSub}>
           You must be 18+ to wager. All stakes shown are simulated VENT COINS for demonstration.
@@ -43,7 +43,7 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h3 className={styles.modalTitle}>
-          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta — Read First
+          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta - Read First
         </h3>
         <button className={styles.modalClose} onClick={onDismiss} aria-label="Close">
           <MdOutlineClose />
@@ -62,7 +62,7 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
       </div>
       <div className={styles.modalFooter}>
         <button className={styles.outlineBtn} onClick={onDismiss}>Cancel</button>
-        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand — Continue</button>
+        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand - Continue</button>
       </div>
     </div>
   </div>
@@ -222,7 +222,7 @@ const CreateWagerContent = () => {
             <div className={styles.balancePill}>
               <span className={styles.balancePillLabel}>Balance</span>
               <span className={styles.balancePillAmount}>
-                {balance !== null ? fmtNumber(balance) : '—'} VC
+                {balance !== null ? fmtNumber(balance) : ' - '} VC
               </span>
             </div>
           </div>
@@ -339,8 +339,8 @@ const CreateWagerContent = () => {
                 </div>
 
                 <div className={styles.summaryBox}>
-                  <div><span>Match</span><strong>{pickedMatch ? `${pickedMatch.team_a.name} vs ${pickedMatch.team_b.name}` : '—'}</strong></div>
-                  <div><span>Backing</span><strong>{pickedOutcome === 'team_a' ? pickedMatch?.team_a.name : pickedOutcome === 'team_b' ? pickedMatch?.team_b.name : '—'}</strong></div>
+                  <div><span>Match</span><strong>{pickedMatch ? `${pickedMatch.team_a.name} vs ${pickedMatch.team_b.name}` : ' - '}</strong></div>
+                  <div><span>Backing</span><strong>{pickedOutcome === 'team_a' ? pickedMatch?.team_a.name : pickedOutcome === 'team_b' ? pickedMatch?.team_b.name : ' - '}</strong></div>
                   <div><span>Your stake</span><strong>{fmtNumber(stakeNum)} VC</strong></div>
                   <div><span>Win returns</span><strong className={styles.cellGreen}>{fmtNumber(potentialReturn)} VC</strong></div>
                 </div>
@@ -398,14 +398,14 @@ const CreateWagerContent = () => {
                 <p className={styles.stepSub}>Confirm everything looks right. Stake VC will be reserved.</p>
 
                 <div className={styles.reviewGrid}>
-                  <div><span>Match</span><strong>{pickedMatch ? `${pickedMatch.team_a.name} vs ${pickedMatch.team_b.name}` : '—'}</strong></div>
-                  <div><span>Tournament</span><strong>{pickedMatch?.tournament_name || '—'}</strong></div>
-                  <div><span>Game</span><strong>{pickedMatch?.game || '—'}</strong></div>
+                  <div><span>Match</span><strong>{pickedMatch ? `${pickedMatch.team_a.name} vs ${pickedMatch.team_b.name}` : ' - '}</strong></div>
+                  <div><span>Tournament</span><strong>{pickedMatch?.tournament_name || ' - '}</strong></div>
+                  <div><span>Game</span><strong>{pickedMatch?.game || ' - '}</strong></div>
                   <div><span>Backing</span><strong>{pickedOutcome === 'team_a' ? pickedMatch?.team_a.name : pickedMatch?.team_b.name}</strong></div>
                   <div><span>Stake</span><strong>{fmtNumber(stakeNum)} VC</strong></div>
                   <div><span>Opponent</span><strong>{opponentMode === 'open' ? 'Open call' : `@${opponentHandle}`}</strong></div>
                   <div><span>Win returns</span><strong className={styles.cellGreen}>{fmtNumber(potentialReturn)} VC</strong></div>
-                  <div><span>Settle on</span><strong>{pickedMatch ? new Date(pickedMatch.scheduled_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}</strong></div>
+                  <div><span>Settle on</span><strong>{pickedMatch ? new Date(pickedMatch.scheduled_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ' - '}</strong></div>
                 </div>
               </>
             )}

@@ -1,11 +1,12 @@
 'use client';
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { usePrice } from '@/lib/money';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { recordArrival, refFor } from '@/lib/referral';
+import { track } from '@/lib/track';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -54,6 +55,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import TradeHere from '@/components/vendor-slots/TradeHere';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -252,6 +255,10 @@ export const ViewEventContent = ({
   useEffect(() => {
     if (!id) return;
     recordArrival(id, process.env.NEXT_PUBLIC_API_URL);
+    // Everybody who opened the page, not only the ones who arrived through
+    // somebody's link. Most people who open an event never reach a checkout,
+    // and the organiser needs that number more than any other.
+    track(id, 'page_open', { fromEffect: true });
   }, [id]);
   const tabParam = searchParams.get('tab');
   const {
@@ -259,6 +266,7 @@ export const ViewEventContent = ({
     status: sessionStatus
   } = useSession();
   const [event, setEvent] = useState(null);
+  const [fee, setFee] = useState({ bearer: 'organiser', pct: 0 });
   const [linkedTournaments, setLinkedTournaments] = useState([]);
   const [tournamentsLoading, setTournamentsLoading] = useState(true);
   const [linkable, setLinkable] = useState([]);
@@ -711,6 +719,15 @@ export const ViewEventContent = ({
     };
   }, [activeTab, tiersLoading, tiers.length]);
 
+  // Which tabs people actually walk to. `page_open` says they arrived;
+  // `ticket_open` says they went looking for a price, which is a different
+  // person, and the gap between the two is the first place an event leaks.
+  useEffect(() => {
+    if (!id) return;
+    if (activeTab === 'tickets') track(id, 'ticket_open', { fromEffect: true });
+    if (activeTab === 'vendors') track(id, 'vendor_open', { fromEffect: true });
+  }, [id, activeTab]);
+
   // Only the organizer gets the door list (the endpoint enforces it too).
   const isOrganizer = useMemo(() => {
     const me = session?.user;
@@ -790,6 +807,11 @@ export const ViewEventContent = ({
         });
         const body = await res.json();
         setTiers(body?.data?.tiers || []);
+        // Who bears the platform fee, alongside the prices rather than
+        // discovered at the checkout. The panel has to say the number before
+        // somebody commits to a quantity, never as a surprise afterwards.
+        setFee({ bearer: body?.data?.fee_bearer || 'organiser',
+                 pct: Number(body?.data?.fee_pct || 0) });
       } catch {
         setTiers([]);
       } finally {
@@ -845,6 +867,10 @@ export const ViewEventContent = ({
     };
   }, [id]);
   const openBuy = tier => {
+    // A deliberate tap, so no revisit window: somebody who opens the buy panel
+    // twice really did want a ticket twice, and `people` still counts them
+    // once.
+    track(id, 'buy_tap');
     setBuyTier(tier);
     setBuyPin('');
     setBuyQty(1);
@@ -870,7 +896,17 @@ export const ViewEventContent = ({
     (person, i) => (i === index
       ? { ...person, answers: { ...person.answers, [id]: value } }
       : person)));
-  const totalCost = buyTier ? buyTier.price * buyQty : 0;
+  // What the tickets come to, and what leaves the wallet. They are the same
+  // number unless the organiser has passed the platform fee to the buyer, and
+  // the panel shows both lines when they differ so nobody has to work out
+  // where the extra came from.
+  const ticketsCost = buyTier ? buyTier.price * buyQty : 0;
+  // Rounded DOWN, matching the server exactly. A panel that rounds the other
+  // way shows a total the checkout then refuses.
+  const feeCost = (fee.bearer === 'buyer' && fee.pct > 0)
+    ? Math.floor(ticketsCost * fee.pct / 100)
+    : 0;
+  const totalCost = ticketsCost + feeCost;
   const handleBuy = async () => {
     if (!buyTier) return;
     setBuyError('');
@@ -1179,6 +1215,7 @@ export const ViewEventContent = ({
                       .replace('{name}', event.name || '')}
                     label={tt('share.event', 'Share this event')}
                     shorten={isOrganizer ? shortenTicketLink : null}
+                    onShare={() => track(id, 'share')}
                   />
 
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
@@ -1309,6 +1346,15 @@ export const ViewEventContent = ({
                 <div className={styles.ticketHeaderRow}>
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.buy.tickets.029a", "Buy tickets")}</h2>
+                    {/* Said here, beside the prices, and not only in the panel.
+                        Somebody deciding between two tiers is deciding on the
+                        number they can see, and finding out about a fee after
+                        they have picked one is the kind of surprise that loses
+                        the sale and the trust with it. */}
+                    {fee.bearer === 'buyer' && fee.pct > 0 && <p className={styles.body}>
+                      {tt('buy.feeNotice', 'A {pct}% service fee is added at checkout.')
+                        .replace('{pct}', fee.pct)}
+                    </p>}
                     <p className={styles.body}>
                       {countdown?.ended
                   ? tx("This event has ended, so tickets are no longer on sale.")
@@ -1365,7 +1411,7 @@ export const ViewEventContent = ({
                           though something had failed to load. */}
                       <p className={styles.tierDay}>{ticketWhen(t)}</p>
                       <p className={styles.tierPrice}>
-                        {t.price.toLocaleString()} VC
+                        {formatNumber(t.price)} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>
                         {/* What that is worth in the reader's own money. Shown as
                             an approximation on purpose: the charge is settled in
@@ -1375,7 +1421,7 @@ export const ViewEventContent = ({
                     const {
                       converted
                     } = price(t.price_ngn, 'NGN', language);
-                    return converted ? <span className={styles.tierApprox}>
+                    return converted ? <span>
                               {tt("money.approx", "about {amount}").replace('{amount}', converted)}
                             </span> : null;
                   })()}
@@ -1407,6 +1453,12 @@ export const ViewEventContent = ({
 
             {/* VENDORS */}
             {activeTab === 'vendors' && <div className={styles.vendorTab}>
+                {/* Pitches the organiser is SELLING, above the stalls that
+                    already exist. Somebody on this tab is either shopping or
+                    thinking about trading here, and the second group had no
+                    way in at all before today. Draws nothing when there is
+                    nothing on sale. */}
+                <TradeHere eventRef={event?.slug || id} eventName={event?.name} />
                 <div className={styles.ticketHeaderRow}>
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.vendor.zone.2061", "Vendor zone")}</h2>
@@ -1420,7 +1472,7 @@ export const ViewEventContent = ({
                 </div>
 
                 {vendors.length === 0 ? <p className={styles.body}>{tt("ui.no.vendors.confirmed.yet.d9c7", "No vendors confirmed yet.")}</p> : <div className={styles.vendorGrid}>
-                    {vendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${event.id}&vendor=${v.id}`} className={styles.vendorCard}>
+                    {vendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${event.slug || event.id}&vendor=${v.slug || v.id}`} className={styles.vendorCard}>
                         <div className={styles.vendorLogoWrap}>
                           {v.logo ? <Image src={mediaUrl(v.logo)} alt={v.name} width={56} height={56} className={styles.vendorLogo} unoptimized /> : <div className={styles.vendorLogoFallback}><FaStore /></div>}
                         </div>
@@ -1592,7 +1644,7 @@ export const ViewEventContent = ({
             {buyStep === 1 && <div className={styles.modalBody}>
                 <p className={styles.modalLabel}>{tt("ui.quantity.44f6", "Quantity")}</p>
                 <div className={styles.qtyRow}>
-                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">−</button>
+                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">-</button>
                   <span className={styles.qtyValue}>{buyQty}</span>
                   <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.min(10, q + 1))} type="button">+</button>
                 </div>
@@ -1611,7 +1663,7 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.confirmValue}>
-                    {buyTier.price.toLocaleString()} VC × {buyQty}
+                    {formatNumber(buyTier.price)} VC × {buyQty}
                   </span>
                 </div>
                 <div className={styles.confirmRow}>
@@ -1650,6 +1702,10 @@ export const ViewEventContent = ({
                 return;
               }
               setBuyError('');
+              // Past the questions and looking at the price. Everything before
+              // this is interest; this is intent, and the drop from here to a
+              // ticket is a checkout problem rather than a marketing one.
+              track(id, 'checkout_start');
               setBuyStep(2);
             }} type="button">
                   {tt("ui.continue.2e02", "Continue")}
@@ -1662,6 +1718,16 @@ export const ViewEventContent = ({
           }}>
                   {tt("ui.confirm.payment.19b4", "Confirm payment for")} <strong>{event.name}</strong> - {buyTier.name} × {buyQty}.
                 </p>
+                {feeCost > 0 && <>
+                  <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.ticketsLine', 'Tickets')}</span>
+                    <span className={styles.confirmValue}>{ticketsCost.toLocaleString(appLocale())} VC</span>
+                  </div>
+                  <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.serviceFee', 'Service fee')}</span>
+                    <span className={styles.confirmValue}>{feeCost.toLocaleString(appLocale())} VC</span>
+                  </div>
+                </>}
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.pay.2d77", "You pay")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
@@ -1730,4 +1796,26 @@ const ViewEvent = () => {
     <ViewEventContent />
   </Suspense>;
 };
-export default ViewEvent;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ViewEventLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}`}
+      fallback="/events"
+    />
+  </Suspense>
+);
+
+export default ViewEventLegacy;

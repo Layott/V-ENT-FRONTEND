@@ -68,7 +68,7 @@ const UserProfileTournamentsHistory = () => {
   return <div className={profileStyles.tournamentEventsContainer}>
       <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
         <div className={profileStyles.tournamentsEventsFilterContainer}>
-          <p className={styles.tournamentNumber}>{total} {tt("ui.tournament.cb9d", "tournament")}{total !== 1 ? 's' : ''}</p>
+          <p>{total} {tt("ui.tournament.cb9d", "tournament")}{total !== 1 ? 's' : ''}</p>
           <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>{tt("ui.filter.d7de", "Filter")}</div>
         </div>
 
@@ -110,7 +110,7 @@ const UserProfileTournamentsHistory = () => {
         const date = formatDate(t.start_date || t.start_date_and_time || t.date);
         return <div key={t.id || t.tournament_id || index} className={`${styles.gridRow} ${profileStyles.middleLayerColor}`}>
               <div className={`${styles.gridItem} ${styles.nameColumn}`}>
-                <p className={styles.gameName}>{name}</p>
+                <p>{name}</p>
               </div>
               <div className={styles.gridItem}>{game}</div>
               <div className={styles.gridItem}>{type}</div>

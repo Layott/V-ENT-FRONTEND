@@ -12,6 +12,8 @@ import styles from './kyc.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -235,7 +237,7 @@ function KycInner() {
                       <td>
                         <div className={shared.userCell}>
                           <div className={shared.userAvatar}>
-                            {(k.username || 'U').slice(0, 2).toUpperCase()}
+                            <Avatar src={mediaUrl(k.avatar)} name={k.username} size={36} />
                           </div>
                           <div>
                             <p className={styles.kycUser}>{k.username}</p>

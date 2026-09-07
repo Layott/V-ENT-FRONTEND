@@ -155,7 +155,7 @@ const Participants = ({
 
               <p className={styles.infoParagraph}>
                 <span className={styles.infoSpan}>
-                  <FiInfo className={styles.infoIcon} />
+                  <FiInfo />
                 </span>
                 {countRule.note}
               </p>
@@ -202,7 +202,7 @@ const Participants = ({
                 <input id="maxNumber" type="number" placeholder={tt("ui.enter.maximum.number.961a", "Enter maximum number")} className={createTournamentStyles.inputNumber} value={maxIndividuals} onChange={handleMaxIndividualsChange} />
                 <p className={styles.infoParagraph}>
                   <span className={styles.infoSpan}>
-                    <FiInfo className={styles.infoIcon} />
+                    <FiInfo />
                   </span>
                   {tt("ui.maximum.number.individuals.allowed.175c", "The maximum number of individuals allowed is 64.")}
                 </p>
@@ -212,7 +212,7 @@ const Participants = ({
           marginTop: '0.5rem'
         }}>
               <span className={styles.infoSpan}>
-                <FiInfo className={styles.infoIcon} />
+                <FiInfo />
               </span>
               {countRule.note}
             </p>

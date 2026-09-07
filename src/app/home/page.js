@@ -660,7 +660,7 @@ const HomePage = () => {
 
             {/* ── 8. Activity Feed ── */}
             {/* TODO(M2): real activity endpoint - demo data in mock mode only. */}
-            <div className={`${styles.dualCard} ${styles.activityCard}`}>
+            <div className={`${styles.dualCard}`}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>{tt("ui.recent.activity.8aeb", "Recent Activity")}</h2>
                 <span className={styles.activityCount}>

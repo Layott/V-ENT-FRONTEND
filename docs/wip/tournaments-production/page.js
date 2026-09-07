@@ -121,7 +121,7 @@ const ProductionContent = () => {
           </div>
 
           <div className={styles.layout}>
-            {/* LEFT — Match selector */}
+            {/* LEFT - Match selector */}
             <section className={styles.column}>
               <h3 className={styles.colTitle}>Live Match Selector</h3>
               <div className={styles.matchList}>
@@ -137,14 +137,14 @@ const ProductionContent = () => {
                     </div>
                     <p className={styles.matchTeams}>{m.team_a.name} <span className={styles.vsTag}>vs</span> {m.team_b.name}</p>
                     {m.status !== 'scheduled' && (
-                      <p className={styles.matchScore}>{m.score_a} — {m.score_b}</p>
+                      <p className={styles.matchScore}>{m.score_a} - {m.score_b}</p>
                     )}
                   </button>
                 ))}
               </div>
             </section>
 
-            {/* CENTER — Score input + scoreboard preview */}
+            {/* CENTER - Score input + scoreboard preview */}
             <section className={styles.column}>
               <h3 className={styles.colTitle}>Score Input</h3>
               <div className={styles.scoreCard}>
@@ -152,7 +152,7 @@ const ProductionContent = () => {
                   <p className={styles.sideTeam}>{active.team_a.name}</p>
                   <p className={styles.sideTag}>{active.team_a.tag}</p>
                   <div className={styles.scoreCounter}>
-                    <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>−</button>
+                    <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>-</button>
                     <span className={styles.scoreValue}>{scoreA}</span>
                     <button className={styles.scoreBtn} onClick={() => updateScore(1, 'a')}>+</button>
                   </div>
@@ -164,7 +164,7 @@ const ProductionContent = () => {
                   <p className={styles.sideTeam}>{active.team_b.name}</p>
                   <p className={styles.sideTag}>{active.team_b.tag}</p>
                   <div className={styles.scoreCounter}>
-                    <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>−</button>
+                    <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>-</button>
                     <span className={styles.scoreValue}>{scoreB}</span>
                     <button className={styles.scoreBtn} onClick={() => updateScore(1, 'b')}>+</button>
                   </div>
@@ -200,7 +200,7 @@ const ProductionContent = () => {
               </div>
             </section>
 
-            {/* RIGHT — Overlay config + screen scan + clients */}
+            {/* RIGHT - Overlay config + screen scan + clients */}
             <section className={styles.column}>
               <h3 className={styles.colTitle}>Overlay URL for OBS</h3>
               <div className={styles.urlCard}>

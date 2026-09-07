@@ -4,7 +4,7 @@
  * REAL-MODE mobile screenshot + responsive audit for V-ENT Stage-1 pages.
  *
  * Uses a TRUE mobile viewport (CDP device metrics via puppeteer-core:
- * 390x844, deviceScaleFactor 3, isMobile, hasTouch, mobile UA) — unlike the
+ * 390x844, deviceScaleFactor 3, isMobile, hasTouch, mobile UA) - unlike the
  * Claude-in-Chrome extension, this actually shrinks the layout viewport, so
  * media queries fire and scrollWidth reflects the phone width. That means it
  * catches real mobile bugs the CSS-emulation trick cannot: horizontal overflow,

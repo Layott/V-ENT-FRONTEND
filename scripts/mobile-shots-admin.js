@@ -5,7 +5,7 @@
  *
  * The admin surface authenticates with `localStorage.adminToken` (+ adminUser +
  * an adminToken cookie), NOT the NextAuth session that scripts/mobile-shots.js
- * uses — so this companion script mints an admin session via the API, injects it
+ * uses - so this companion script mints an admin session via the API, injects it
  * into the page origin, then walks every admin route at a TRUE 390x844 mobile
  * viewport (CDP device metrics via puppeteer-core) so media queries fire and
  * scrollWidth reflects the phone width (catches real horizontal overflow).
