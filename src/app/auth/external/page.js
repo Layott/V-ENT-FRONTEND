@@ -60,6 +60,23 @@ const ExternalSignInContent = () => {
       }
     }
 
+    // A refusal that arrives with no token. Discord sign-in can end in two
+    // ways that are not failures and must not read like one, and both need the
+    // person told what to do instead rather than "that link is incomplete".
+    const outcome = params.get('outcome');
+    if (!token && outcome && outcome !== 'ok' && outcome !== 'created') {
+      setError({
+        // The one that matters. The account exists and belongs to somebody;
+        // merging on a matching email would hand it, and its wallet, to
+        // whoever can get a Discord account onto that address.
+        email_taken: tt('auth.discordEmailTaken',
+          'There is already a V-ENT account on that email address. Sign in the way you normally do, then connect Discord in Settings.'),
+        no_email: tt('auth.discordNoEmail',
+          'Discord did not share an email address for that account. Add and verify one on Discord, or sign up with your email instead.'),
+      }[outcome] || tt('msg.thatSignInCouldNot', 'That sign-in could not be completed. Please try again.'));
+      return;
+    }
+
     if (!token) {
       setError(tt("msg.thatSignInLinkIs", "That sign-in link is incomplete. Start again from the login page."));
       return;

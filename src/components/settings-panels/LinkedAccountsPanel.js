@@ -69,6 +69,9 @@ const LinkedAccountsPanel = ({
   // These are not PlatformAccount rows: they are whole sign-ins, so they come
   // back from the same endpoint under their own key.
   const [external, setExternal] = useState({});
+  // Whether the SERVER can send a Discord direct message at all, which is a
+  // different question from whether this person wants one.
+  const [dmConfigured, setDmConfigured] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -94,6 +97,7 @@ const LinkedAccountsPanel = ({
       setLinked(body?.data?.linked || {});
       setAvailable(body?.data?.providers || {});
       setExternal(body?.data?.external || {});
+      setDmConfigured(Boolean(body?.data?.dm_configured));
       setError('');
     } catch {
       setError(tt("msg.couldNotLoadYourLinked", "Could not load your linked accounts."));
@@ -136,6 +140,29 @@ const LinkedAccountsPanel = ({
       window.history.replaceState({}, '', rest ? `?${rest}` : window.location.pathname);
     }
   }, [showToast, external, tt]);
+  const toggleDm = async on => {
+    setBusy('discord-dm');
+    setError('');
+    try {
+      const res = await fetch(`${apiBase}/auth/link/discord/dm/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: on }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (body?.status !== 'success') {
+        setError(apiMessage(tt, body, 'api.thatDidNotSave', 'That did not save.'));
+        return;
+      }
+      showToast?.(body.message);
+      await load();
+    } catch (err) {
+      setError(apiMessage(tt, err, 'api.thatDidNotSave', 'That did not save.'));
+    } finally {
+      setBusy('');
+    }
+  };
+
   const connect = async id => {
     setBusy(id);
     try {
@@ -255,6 +282,42 @@ const LinkedAccountsPanel = ({
                     </button>}
                 </div>;
         })}
+
+            {/* Direct messages on Discord. Its own line under the row rather
+                than a third control inside it: this is a preference, not a
+                connection, and the two read differently.
+
+                Only when Discord is connected AND the server can actually
+                send. A switch that saves a preference nothing can honour is
+                worse than no switch. */}
+            {linked.discord?.connected && dmConfigured && <div className={styles.item}>
+              <div className={styles.iconWrap}>{ICONS.discord}</div>
+              <div className={styles.meta}>
+                <div className={styles.row1}>
+                  <span className={styles.label}>
+                    {tt('linked.dmTitle', 'Direct messages on Discord')}
+                  </span>
+                </div>
+                <div className={styles.sub}>
+                  {linked.discord?.dm_available === false
+                    ? tt('linked.dmReconnect', 'Disconnect and connect Discord again to turn this on.')
+                    : linked.discord?.dm_error
+                      ? linked.discord.dm_error
+                      : tt('linked.dmSub', 'Get your V-ENT notifications as a Discord message. You need to share a server with the V-ENT bot.')}
+                </div>
+              </div>
+              <button type="button"
+                      className={`${shared.btn} ${shared.btnSm} ${linked.discord?.dm_enabled ? shared.ghostBTN : shared.goldBTN}`}
+                      aria-pressed={Boolean(linked.discord?.dm_enabled)}
+                      disabled={busy === 'discord-dm' || linked.discord?.dm_available === false}
+                      onClick={() => toggleDm(!linked.discord?.dm_enabled)}>
+                {busy === 'discord-dm'
+                  ? tt('ui.working.9a03', 'Working...')
+                  : linked.discord?.dm_enabled
+                    ? tt('linked.dmOff', 'Turn off')
+                    : tt('linked.dmOn', 'Turn on')}
+              </button>
+            </div>}
 
             {/* Communities you can sign in with. Somebody who signed in with
                 their African Free Fire Community account was connected in the

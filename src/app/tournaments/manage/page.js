@@ -24,6 +24,7 @@ import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
+import DiscordChannels from '@/components/discord/DiscordChannels';
 import SquadRulesPanel from '@/components/cards/SquadRulesPanel';
 import SubmittedLineups from '@/components/cards/SubmittedLineups';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
@@ -376,7 +377,17 @@ const ManageContent = ({ slug }) => {
                   where somebody is already setting up their stream. */}
               <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
-            {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
+            {tab === 'reminders' && <>
+              <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />
+              {/* Discord announcements, beside the reminders, because they are
+                  the same job: telling people something is happening. Same
+                  component the event console mounts. */}
+              {access?.can_manage && (
+                <DiscordChannels kind="tournament"
+                                 reference={tournament.slug || tournament.tournament_id}
+                                 token={token} showToast={showToast} />
+              )}
+            </>}
             {tab === 'stats' && <>
                 {/* How the league table is worked out, above the MVP metrics:
                     the table is what everybody looks at, the awards are what
