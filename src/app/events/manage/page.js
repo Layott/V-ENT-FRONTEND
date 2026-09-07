@@ -14,7 +14,7 @@
 // control whose save is refused.
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -334,6 +334,61 @@ export const ManageEventContent = ({
   useEffect(() => {
     load();
   }, [load]);
+
+  // The console keeps itself current while a door is running.
+  //
+  // CEO, 6 September 2026: "i want all pages on the site to be updating
+  // automatically on its own without users having to refresh", and before that
+  // "especiallyywhen new people areregisteringfor an eventwhen checdk in is
+  // ongoing". An organiser watching the numbers during their own event should
+  // not have to reload to see them move.
+  //
+  // Through a ref and depending only on the event, so a re-render cannot tear
+  // the timer down before it fires. That fault shipped on the door list and is
+  // now caught by `scripts/check-live-updates.mjs`.
+  //
+  // Thirty seconds rather than ten: this is somebody watching a dashboard, not
+  // somebody standing at a gate, and the console pulls several endpoints per
+  // load. It backs off to two minutes when nothing is changing and stops while
+  // the tab is hidden.
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
+
+  useEffect(() => {
+    if (!token || !eventRef) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 30000;
+    const tick = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.hidden) {
+        timer = setTimeout(tick, wait);
+        return;
+      }
+      await loadRef.current();
+      if (stopped) return;
+      wait = Math.min(Math.round(wait * 1.5), 120000);
+      timer = setTimeout(tick, wait);
+    };
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = 30000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [token, eventRef]);
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');

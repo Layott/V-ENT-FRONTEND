@@ -96,11 +96,21 @@ const UserPicker = ({
     }
   }, [apiBase, token]);
 
+  // The debounce fires through a ref, so it restarts when what somebody TYPED
+  // changes and for no other reason.
+  //
+  // `search` is stable today, because its own deps are, which is precisely why
+  // this would be a quiet regression later: the day somebody adds `tt` to that
+  // callback, the debounce restarts on every render and the search stops
+  // happening, with nothing on screen to say so.
+  const searchRef = useRef(search);
+  useEffect(() => { searchRef.current = search; }, [search]);
+
   useEffect(() => {
     if (picked && picked.username === value.replace(/^@/, '')) return;
-    const id = setTimeout(() => search(value), DEBOUNCE_MS);
+    const id = setTimeout(() => searchRef.current(value), DEBOUNCE_MS);
     return () => clearTimeout(id);
-  }, [value, search, picked]);
+  }, [value, picked]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
