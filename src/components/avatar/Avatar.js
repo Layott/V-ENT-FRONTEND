@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import styles from './avatar.module.css';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 /**
  * Profile picture with an initials fallback.
@@ -26,7 +27,17 @@ const initialsOf = (name = '') =>
  *              width fights the stylesheet. next/image needs a width and a
  *              height it can reason about, so a filled avatar is a plain img.
  */
-const Avatar = ({ src, name, size = 40, className = '', rounded = true, fill = false }) => {
+const Avatar = ({ src: rawSrc, name, size = 40, className = '', rounded = true, fill = false }) => {
+  // Turned into a URL HERE, so a caller passing a raw stored path is correct
+  // by construction. `mediaUrl` is idempotent - an absolute URL, a data: or
+  // blob:, and a static import object all pass through untouched - so this is
+  // safe for every caller that was already doing it right.
+  //
+  // CEO, 7 September 2026, on organisation crests not loading in the rankings:
+  // that page drew its own avatar and skipped the one function that turns a
+  // stored path into a URL. Asking every caller to remember is how the sixth
+  // screen forgets, so the component remembers instead.
+  const src = mediaUrl(rawSrc);
   const style = fill
     ? undefined
     : { width: size, height: size, borderRadius: rounded ? '50%' : '10px' };

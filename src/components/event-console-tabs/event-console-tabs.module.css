@@ -43,19 +43,32 @@
   color: #16160f;
 }
 
-/* On a phone the strip scrolls sideways rather than stacking into four rows
-   and pushing the content off the screen. */
+/* On a phone the strip WRAPS. It used to scroll sideways with the scrollbar
+   hidden, which meant fourteen sections existed and about three were visible,
+   with nothing on screen to say so - and the strip scrolls the active tab into
+   view, so opening on Run of show put Tickets, Money and Vendor pitches off
+   the left edge entirely.
+
+   The CEO reported exactly that on 8 September: "I dont see where to manage
+   vendors and the new additions about tickets". Every one of those was a tab
+   they could not see.
+
+   Hiding the scrollbar was the specific mistake: it is ugly, and it is also
+   the only thing that says there is more. Four rows of chips costs vertical
+   space, which is recoverable by scrolling. A section nobody can find costs
+   the feature. */
 @media (max-width: 640px) {
   .strip {
-    flex-wrap: nowrap;
-    margin-left: -1rem;
-    margin-right: -1rem;
-    overflow-x: auto;
-    padding: 0 1rem 0.35rem;
-    scrollbar-width: none;
+    flex-wrap: wrap;
+    gap: 0.4rem;
   }
 
-  .strip::-webkit-scrollbar { display: none; }
-
-  .tab { flex: 0 0 auto; }
+  .tab {
+    /* Smaller so four rows do not become six, but still a 44px tap target. */
+    font-size: 0.8rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.8rem;
+  }
 }

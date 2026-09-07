@@ -108,10 +108,18 @@
   background: #0a0a0c;
 }
 
+/* CONTAIN, not cover.
+   A game's uploaded art is a wordmark - "Free Fire", "EA FC" - and `cover`
+   crops a wide wordmark into this 3:4 portrait box, which showed the word
+   "Free" at enormous size and nothing else. The CEO screenshotted exactly
+   that on 8 September.
+   `contain` shows the whole mark, and the padding keeps it off the corners so
+   it reads as artwork rather than as something that overflowed. */
 .gameCoverWrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 12%;
   display: block;
   transition: transform 0.4s;
 }

@@ -27,18 +27,28 @@ import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
 import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
+// `needs` names the capability a tab depends on. Without it the screen said
+// "this organisation does not do events" in Key stats and "here are its
+// events" in the tab strip at the same time, which reads as a bug in the
+// stats rather than a deliberate answer about what the organisation is.
+//
+// Overview, Members and About carry no `needs`: every organisation has people
+// and a description whatever it does.
 const TABS = [{
   id: 'overview',
   label: 'Overview'
 }, {
   id: 'teams',
-  label: 'Teams'
+  label: 'Teams',
+  needs: 'teams'
 }, {
   id: 'tournaments',
-  label: 'Tournaments'
+  label: 'Tournaments',
+  needs: 'tournaments'
 }, {
   id: 'events',
-  label: 'Events'
+  label: 'Events',
+  needs: 'events'
 }, {
   id: 'members',
   label: 'Members'
@@ -377,6 +387,12 @@ const OrgProfileContent = ({
   const caps = org.capabilities || {
     teams: true, tournaments: true, events: true, ticketing: true, vendors: true,
   };
+  // A shared link carrying ?tab=events opens on a tab this organisation may
+  // not have. Falling back to Overview rather than rendering an empty panel:
+  // the panel would be the same contradiction the tab strip just stopped
+  // making, arrived at from the address bar instead.
+  const openTabs = TABS.filter(t => !t.needs || caps[t.needs]);
+  const shownTab = openTabs.some(t => t.id === activeTab) ? activeTab : 'overview';
   const founders = (org.founders || []).map(f => typeof f === 'string' ? { username: f, full_name: f } : f).filter(Boolean);
   return <div className={styles.pageContainer}>
       <Header />
@@ -451,16 +467,16 @@ const OrgProfileContent = ({
 
           {/* ── Tabs ── */}
           <div className={styles.tabsRow}>
-            {TABS.map(t => <button key={t.id} ref={el => {
+            {openTabs.map(t => <button key={t.id} ref={el => {
             tabsRef.current[t.id] = el;
-          }} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => switchTab(t.id)}>
+          }} type="button" className={`${styles.tabBTN} ${shownTab === t.id ? styles.activeTab : ''}`} onClick={() => switchTab(t.id)}>
                 {tx(t.label)}
               </button>)}
           </div>
 
           {/* ── Tab content ── */}
           <div className={styles.tabPanel}>
-            {activeTab === 'overview' && <div className={styles.overviewGrid}>
+            {shownTab === 'overview' && <div className={styles.overviewGrid}>
                 <div className={styles.overviewLeft}>
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.bio.b31f", "Bio")}</h2>
@@ -590,7 +606,7 @@ const OrgProfileContent = ({
                 </div>
               </div>}
 
-            {activeTab === 'teams' && <div className={styles.cardGridSm}>
+            {shownTab === 'teams' && <div className={styles.cardGridSm}>
                 {teams.map(team => <Link key={team.id} href={`/teams/${team.slug || team.id}`} className={styles.miniCard}>
                     <div className={styles.miniBanner}>
                       {team.banner && <Image src={mediaUrl(team.banner)} alt={`${team.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" style={{
@@ -611,7 +627,7 @@ const OrgProfileContent = ({
                 {teams.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.teams.under.org.2f9f", "No teams under this org yet.")}</div>}
               </div>}
 
-            {activeTab === 'clubs' && <div className={styles.cardGridSm}>
+            {shownTab === 'clubs' && <div className={styles.cardGridSm}>
                 {clubs.map(club => <Link key={club.slug || club.id} href={`/community/club/${club.slug}`} className={styles.miniCard}>
                     <div className={styles.miniBanner}>
                       {club.banner && <Image src={mediaUrl(club.banner)} alt={`${club.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" style={{
@@ -632,7 +648,7 @@ const OrgProfileContent = ({
                 {clubs.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.clubs.under.org.3b57", "No clubs under this org yet.")}</div>}
               </div>}
 
-            {activeTab === 'tournaments' && <div className={styles.tableWrap}>
+            {shownTab === 'tournaments' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -666,7 +682,7 @@ const OrgProfileContent = ({
                 {tournaments.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.tournaments.hosted.yet.345e", "No tournaments hosted yet.")}</div>}
               </div>}
 
-            {activeTab === 'events' && <div className={styles.tableWrap}>
+            {shownTab === 'events' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -700,7 +716,7 @@ const OrgProfileContent = ({
                 {events.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.events.hosted.yet.8ef6", "No events hosted yet.")}</div>}
               </div>}
 
-            {activeTab === 'members' && <div className={styles.tableWrap}>
+            {shownTab === 'members' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -767,7 +783,7 @@ const OrgProfileContent = ({
                 {members.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.members.yet.ea27", "No members yet.")}</div>}
               </div>}
 
-            {activeTab === 'about' && <div className={styles.aboutGrid}>
+            {shownTab === 'about' && <div className={styles.aboutGrid}>
                 <section className={styles.panel}>
                   <h2 className={styles.panelTitle}>{tt("ui.about.6b21", "About")}</h2>
                   <dl className={styles.aboutList}>
