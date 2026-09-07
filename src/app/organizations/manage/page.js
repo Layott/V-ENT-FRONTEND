@@ -20,6 +20,7 @@ import styles from './manage-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import DiscordServerPanel from '@/components/discord/DiscordServerPanel';
 import UserChip from '@/components/user-chip/UserChip';
 import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
@@ -37,6 +38,9 @@ const TABS = [{
 }, {
   id: 'profile',
   label: 'Profile'
+}, {
+  id: 'discord',
+  label: 'Discord'
 }, {
   id: 'verification',
   label: 'Verification'
@@ -982,6 +986,13 @@ const ManageOrgContent = ({
                 </section>
               </div>}
 
+            {/* The organisation's own Discord server. Each capability is
+                granted separately, so the bot invite this opens carries only
+                the permissions that were ticked. */}
+            {activeTab === 'discord' && <DiscordServerPanel
+              orgRef={org?.slug || orgId}
+              token={session?.user?.sessionToken}
+              showToast={showToast} />}
             {activeTab === 'verification' && <div className={styles.verifyWrap}>
                 <section className={styles.panel}>
                   <div className={styles.verifyHead}>

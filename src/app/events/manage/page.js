@@ -14,6 +14,7 @@
 // control whose save is refused.
 
 import { apiMessage } from '@/lib/apiMessage';
+import DiscordChannels from '@/components/discord/DiscordChannels';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -1806,6 +1807,11 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ---------------------------------------------------- messages */}
+              {tab === 'messages' && event && (
+                <DiscordChannels kind="event"
+                                 reference={event.slug || event.event_id}
+                                 token={token} showToast={setNotice} />
+              )}
               {tab === 'messages' && <section className={styles.card}>
                   <p className={styles.cardHint}>
                     {tt('manage.messagesHint', 'One email to everybody holding a ticket, guests included. Each person is written to on their own, so nobody sees anybody else on the list, and somebody holding four tickets is told once.')}
