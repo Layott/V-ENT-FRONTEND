@@ -169,3 +169,108 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
 
   return { data, loading, error, refresh, setData };
 }
+
+/**
+ * The same loop, driving a page's EXISTING loader.
+ *
+ * CEO, 7 September 2026: "useLiveData is imported by nothing ... your actual
+ * ask, every page updating on its own, is not met."
+ *
+ * That was true, and the reason it was true is worth writing down: 73 pages on
+ * this site fetch, and `useLiveData` OWNS the data it fetches. Adopting it
+ * means restructuring a page around it, and 67 restructures is a job nobody
+ * ever starts. So the primitive sat there, imported by nothing, while the
+ * pages it was written for carried on not refreshing.
+ *
+ * This is the other door into the same loop. A page that already has a
+ * `load()` and its own state opts in with ONE line:
+ *
+ *   useAutoRefresh(() => loadAttendees(), [token, eventId]);
+ *
+ * It shares every guarantee above, because it is the same code: cannot stack,
+ * backs off, stops while hidden, wakes on return, and CANNOT be torn down by a
+ * re-render because what it calls lives in a ref.
+ *
+ * ## It never fires on mount
+ *
+ * The page's own effect already did the first load. Firing here as well would
+ * double every page's opening request, which is a real cost on a listing that
+ * fans out. So the first tick is one `interval` away, not immediate.
+ *
+ * ## What must NOT use this
+ *
+ * Anything with a form in it. Refreshing underneath somebody who is typing
+ * replaces what they wrote with what the server still thinks, and a wizard
+ * three steps in loses all three. `scripts/check-live-updates.mjs` knows which
+ * routes those are and never asks them to refresh.
+ */
+export function useAutoRefresh(refresh, deps = [], options = {}) {
+  const {
+    interval = DEFAULT_INTERVAL,
+    maxInterval = DEFAULT_MAX_INTERVAL,
+    enabled = true,
+    changed,
+  } = options;
+
+  // The ref is the entire point. `refresh` is nearly always an arrow written
+  // inline at the call site, so it is a new function on every single render.
+  // Naming it in the effect's deps is the fault this file exists to stop.
+  const refreshRef = useRef(refresh);
+  const changedRef = useRef(changed);
+  useEffect(() => { refreshRef.current = refresh; });
+  useEffect(() => { changedRef.current = changed; });
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const key = JSON.stringify(deps);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+
+    let stopped = false;
+    let timer = null;
+    let wait = interval;
+
+    const tick = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.hidden) {
+        timer = setTimeout(tick, wait);
+        return;
+      }
+      let moved = true;
+      try {
+        const result = await refreshRef.current();
+        if (changedRef.current) moved = !!changedRef.current(result);
+        else if (result === false) moved = false;
+      } catch {
+        // A failed refresh is not a failed page. The page keeps what it has.
+        moved = false;
+      }
+      if (stopped) return;
+      wait = moved ? interval : Math.min(Math.round(wait * 1.5), maxInterval);
+      timer = setTimeout(tick, wait);
+    };
+
+    // Deliberately NOT immediate. See the note above.
+    timer = setTimeout(tick, wait);
+
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = interval;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, enabled, interval, maxInterval]);
+}

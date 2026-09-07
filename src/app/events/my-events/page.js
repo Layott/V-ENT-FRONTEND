@@ -11,6 +11,7 @@
 // it, and run the commercial side of it.
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -34,10 +35,10 @@ const MyEventsPage = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) return;
-    setLoading(true);
-    setError('');
+    if (!quiet) setLoading(true);
+    if (!quiet) setError('');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/my-events/`, {
         headers: {
@@ -52,6 +53,11 @@ const MyEventsPage = () => {
       setLoading(false);
     }
   }, [token]);
+
+  // Keeps itself current. One line, because load already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (status !== 'loading') load();
   }, [status, load]);

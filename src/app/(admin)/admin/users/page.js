@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
@@ -61,10 +62,10 @@ function UsersInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(async ({ quiet = false } = {}) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -98,6 +99,11 @@ function UsersInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, countryFilter, dateFrom, dateTo, sortBy]);
+
+  // Keeps itself current. One line, because fetchUsers already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchUsers({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchUsers();
   }, [authLoading, admin, fetchUsers]);

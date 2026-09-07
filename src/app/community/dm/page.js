@@ -1,8 +1,9 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -63,6 +64,45 @@ const DmInner = ({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const messagesEndRef = useRef(null);
+  // Hoisted out of the effect so the live loop can drive it. A direct message
+  // arriving while the conversation is open is the one thing this page exists
+  // for, and it required a reload.
+  //
+  // Note what `quiet` guards here, which is more than the spinner: on failure
+  // the first load deliberately empties the thread and says so, and a REFRESH
+  // must never do that. A dropped poll on a venue's wifi would otherwise wipe
+  // a conversation somebody was reading and replace it with "Conversation not
+  // found."
+  const fetchThread = useCallback(async ({ quiet = false } = {}) => {
+    if (!id) return;
+    if (!quiet) { setLoading(true); setError(''); }
+    try {
+      const res = await fetch(`${apiUrl}/dm/${id}/`, {
+        headers: authHeaders
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data?.status === 'success' && data.data?.conversation) {
+        setThread({
+          ...data.data.conversation,
+          messages: data.data.messages || []
+        });
+      } else if (!quiet) {
+        setThread(null);
+        setError(apiMessage(tt, data, "api.conversationNotFound", "Conversation not found."));
+      }
+    } catch (err) {
+      console.error('DM fetch error:', err);
+      if (!quiet) {
+        setThread(null);
+        setError(tt("msg.couldNotReachTheServer", "Could not reach the server."));
+      }
+    } finally {
+      if (!quiet) setLoading(false);
+    }
+  }, [id, apiUrl, authHeaders, tt]);
+
+  useAutoRefresh(() => fetchThread({ quiet: true }), [], { interval: 10000 });
+
   useEffect(() => {
     if (!id) {
       // No slug means somebody trimmed the address or followed an old
@@ -72,33 +112,8 @@ const DmInner = ({
       router.replace('/community?tab=dms');
       return;
     }
-    const fetchThread = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await fetch(`${apiUrl}/dm/${id}/`, {
-          headers: authHeaders
-        });
-        const data = await res.json().catch(() => ({}));
-        if (data?.status === 'success' && data.data?.conversation) {
-          setThread({
-            ...data.data.conversation,
-            messages: data.data.messages || []
-          });
-        } else {
-          setThread(null);
-          setError(apiMessage(tt, data, "api.conversationNotFound", "Conversation not found."));
-        }
-      } catch (err) {
-        console.error('DM fetch error:', err);
-        setThread(null);
-        setError(tt("msg.couldNotReachTheServer", "Could not reach the server."));
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchThread();
-  }, [id, apiUrl, authHeaders, router]);
+  }, [id, router, fetchThread]);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth'

@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import LeagueScoring from '@/components/view-tournament/standings/LeagueScoring';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
@@ -23,6 +24,8 @@ import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
+import SquadRulesPanel from '@/components/cards/SquadRulesPanel';
+import SubmittedLineups from '@/components/cards/SubmittedLineups';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
@@ -140,13 +143,13 @@ const ManageContent = ({ slug }) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!id) {
       setError(tt("msg.noTournamentSelected", "No tournament selected."));
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const headers = token ? {
@@ -172,6 +175,10 @@ const ManageContent = ({ slug }) => {
       setLoading(false);
     }
   }, [id, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (viewer.loading) return;
     load();
@@ -326,6 +333,21 @@ const ManageContent = ({ slug }) => {
                 <LineupRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
                                   token={token} showToast={showToast} />
               )}
+              {/* And WHAT a squad must satisfy, which is a different thing from
+                  when it is due. Until this is saved once, the API refuses
+                  every submission and says the organiser has not set the rules
+                  yet - so with no screen here, EAFC squads could not be
+                  submitted on any tournament at all. */}
+              {access?.can_manage && (
+                <SquadRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
+                                 token={token} showToast={showToast} />
+              )}
+              {/* Who has submitted and who has not, which is the question worth
+                  asking in the hour before a deadline. */}
+              {access?.can_manage && (
+                <SubmittedLineups tournamentRef={tournament.slug || tournament.tournament_id}
+                                  token={token} />
+              )}
               <LineupPicker tournamentRef={tournament.slug || tournament.tournament_id}
                             token={token} showToast={showToast} />
             </>}
@@ -399,7 +421,7 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
   const [overrideTo, setOverrideTo] = useState('');
   const [overrideWhy, setOverrideWhy] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentId) return;
     try {
       const [m, v] = await Promise.all([
@@ -419,6 +441,10 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
       setMetrics([]);
     }
   }, [tournamentId, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => { load(); }, [load]);
 
@@ -656,7 +682,7 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
     subject: '', body: '',
   });
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentId) return;
     const auth = { Authorization: `Bearer ${token}` };
     try {
@@ -675,6 +701,10 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
       setAudience(null);
     }
   }, [tournamentId, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => { load(); }, [load]);
 

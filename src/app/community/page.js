@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import UserPicker from '@/components/user-picker/UserPicker';
@@ -177,8 +178,13 @@ const CommunityInner = () => {
   const [composeImage, setComposeImage] = useState('');
   const [feedQuery, setFeedQuery] = useState('');
   const fileInputRef = useRef(null);
-  const loadPosts = async () => {
-    setFeedLoading(true);
+  // A feed that never refreshed. Somebody else's post arriving is the entire
+  // reason this page exists, and it needed a reload.
+  const [feedTick, setFeedTick] = useState(0);
+  useAutoRefresh(() => setFeedTick(t => t + 1), [], { interval: 20000 });
+
+  const loadPosts = async (quiet = false) => {
+    if (!quiet) setFeedLoading(true);
     try {
       const res = await fetch(`${apiUrl}/post/list/`, {
         headers: authHeaders()
@@ -192,9 +198,9 @@ const CommunityInner = () => {
     }
   };
   useEffect(() => {
-    if (sessionReady && activeTab === 'feed') loadPosts();
+    if (sessionReady && activeTab === 'feed') loadPosts(feedTick > 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, token, sessionReady]);
+  }, [activeTab, token, sessionReady, feedTick]);
   const handleCreatePost = async () => {
     if (!composeText.trim() && !composeImage) return;
     try {

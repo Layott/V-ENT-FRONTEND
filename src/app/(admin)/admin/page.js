@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { LuUsers, LuActivity, LuTrophy, LuBanknote, LuCoins, LuShield, LuGavel } from 'react-icons/lu';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -83,9 +84,9 @@ function OverviewInner() {
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const fetchAll = useCallback(async () => {
-    setDataLoading(true);
-    setError('');
+  const fetchAll = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
     try {
       const [kpisRes, chartsRes, activityRes] = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/metrics/`, {
@@ -126,6 +127,11 @@ function OverviewInner() {
       setDataLoading(false);
     }
   }, [tt]);
+
+  // Keeps itself current. One line, because fetchAll already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchAll({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchAll();
   }, [authLoading, admin, fetchAll]);

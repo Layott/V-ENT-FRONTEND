@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -47,7 +48,7 @@ const OrgInvitesPage = () => {
     clubs: tt('ui.scope.clubs.4a06', 'Clubs'),
   }[scope] || scope);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) return;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/invites/mine/`, {
@@ -59,6 +60,11 @@ const OrgInvitesPage = () => {
       setLoading(false);
     }
   }, [token]);
+
+  // Keeps itself current. One line, because load already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     if (status === 'loading') return;

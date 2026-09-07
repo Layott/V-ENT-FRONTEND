@@ -52,6 +52,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useViewer } from '@/lib/gating';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { LuCheck, LuTriangleAlert, LuWifi, LuWifiOff } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
@@ -155,9 +156,9 @@ function ScanContent() {
 
   // ------------------------------------------------------------- the list
 
-  const download = useCallback(async () => {
+  const download = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !eventRef) return;
-    setError('');
+    if (!quiet) setError('');
     try {
       const res = await fetch(`${API}/event/${eventRef}/attendees/`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -195,6 +196,20 @@ function ScanContent() {
   }, [token, eventRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { download(); }, [download]);
+
+  // The door list has to keep arriving, and this is the fault that cost the
+  // Rivalry Series its headcount.
+  //
+  // The list was downloaded ONCE at page load and never again. Somebody who
+  // bought a ticket after a steward opened this screen was simply not in it,
+  // and the door read "not found" for a perfectly valid ticket. The server
+  // fallback added on 6 September fixed the SEARCH; it did not make the list
+  // itself current, so every miss still cost a round trip and a queue.
+  //
+  // Quiet, because a steward mid-scan must never have the screen replaced by a
+  // loading state, and a failed refresh leaves the cached list exactly where
+  // it was.
+  useAutoRefresh(() => download({ quiet: true }), [], { interval: 20000 });
 
   // Restore this device's own scan record, which is the thing a reload would
   // destroy.

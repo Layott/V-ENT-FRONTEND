@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -61,12 +62,12 @@ function PartnersInner() {
   // Each request takes a ticket: filter changes overlap, and the slower answer
   // must not overwrite the newer one.
   const requestRef = useRef(0);
-  const fetchPartners = useCallback(async () => {
+  const fetchPartners = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams();
       if (statusFilter) params.set('status', statusFilter);
@@ -95,6 +96,11 @@ function PartnersInner() {
       if (requestRef.current === ticket) setDataLoading(false);
     }
   }, [statusFilter]);
+
+  // Keeps itself current. One line, because fetchPartners already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchPartners({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchPartners();
   }, [authLoading, admin, fetchPartners]);

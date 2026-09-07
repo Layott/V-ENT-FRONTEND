@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -67,7 +68,7 @@ const PartnersPage = () => {
     setToast(message);
     window.setTimeout(() => setToast(''), 4000);
   };
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     try {
       const cat = await fetch(`${apiBase}/partners/scopes/`);
       if (cat.ok) {
@@ -89,6 +90,10 @@ const PartnersPage = () => {
       setLoading(false);
     }
   }, [apiBase, token]);
+
+  // Keeps itself current. See useAutoRefresh: quiet stops a refresh
+  // flashing the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     load();
   }, [load]);

@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -98,12 +99,12 @@ function AuditLogInner() {
   // "Connection error." over a table that had already loaded correctly. Each
   // run takes a ticket; only the newest one is allowed to touch state.
   const requestRef = useRef(0);
-  const fetchLogs = useCallback(async () => {
+  const fetchLogs = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -130,6 +131,11 @@ function AuditLogInner() {
     }
     setDataLoading(false);
   }, [page, search, actionFilter, adminFilter, dateFrom, dateTo]);
+
+  // Keeps itself current. One line, because fetchLogs already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchLogs({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchLogs();
   }, [authLoading, admin, fetchLogs]);
