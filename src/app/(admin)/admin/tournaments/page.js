@@ -1,6 +1,7 @@
 'use client';
 
 import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useEffect, useState, useCallback } from 'react';
@@ -47,10 +48,10 @@ function TournamentsInner() {
   const [editTarget, setEditTarget] = useState(null);
   const [disqTarget, setDisqTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
-  const fetchTournaments = useCallback(async () => {
+  const fetchTournaments = useCallback(async ({ quiet = false } = {}) => {
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -77,6 +78,10 @@ function TournamentsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. See useAutoRefresh: quiet stops a refresh
+  // flashing the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchTournaments({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchTournaments();
   }, [authLoading, admin, fetchTournaments]);

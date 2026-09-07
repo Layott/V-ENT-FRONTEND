@@ -1,0 +1,164 @@
+/* The door search log. Built to match the door list it sits under: filled
+   surfaces, no strokes anywhere, row separation by fill rather than by rules. */
+
+.panel {
+  margin-top: 1.5rem;
+  border-radius: 14px;
+  background-color: var(--overlay-gray);
+  overflow: hidden;
+}
+
+/* The whole header is the control, so the tap target is the full width rather
+   than a small chevron somebody has to aim at on a phone at a venue. */
+.head {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1.15rem;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.headTitle {
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.headMeta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.body {
+  padding: 0 1.15rem 1.15rem;
+}
+
+.hint {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 62ch;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Filled chips, never a ring. Selected is a stronger fill, matching the
+   gate filter on the door list directly above this. */
+.filterChip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filterChipOn {
+  background-color: var(--v-ent-success);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+}
+
+.counts {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.error {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  color: var(--v-ent-red);
+}
+
+.stateText {
+  margin: 0;
+  padding: 1.25rem 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Wide content scrolls inside its own container rather than pushing the page
+   sideways, which on a phone at a door is the difference between usable and
+   not. */
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  background-color: #26272c;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: var(--fw-semi-bold);
+  padding: 0.85rem 1rem;
+}
+
+.table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.92rem;
+  vertical-align: middle;
+}
+
+.table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.025); }
+
+/* What somebody typed, in a face that makes a mistyped code obvious. */
+.term {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  word-break: break-all;
+}
+
+.badgeHit,
+.badgeMiss {
+  display: inline-block;
+  padding: 0.28rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: var(--fw-semi-bold);
+  white-space: nowrap;
+}
+
+.badgeHit {
+  background-color: rgba(76, 175, 80, 0.18);
+  color: var(--v-ent-success);
+}
+
+/* A miss is the row worth noticing, so it carries the alert colour. Flat fill,
+   no glow. */
+.badgeMiss {
+  background-color: rgba(237, 28, 36, 0.16);
+  color: var(--v-ent-red);
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .body { padding: 0 0.9rem 0.9rem; }
+  .head { padding: 0 0.9rem; }
+}

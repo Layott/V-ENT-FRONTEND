@@ -1,10 +1,11 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { mediaUrl } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
-import { Suspense, useEffect, useState } from 'react';
+import { useCallback, Suspense, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -103,6 +104,29 @@ const PostInner = ({
       /* ignore */
     }
   }, []);
+  // Hoisted out of the effect so the live loop can drive it: a comment or a
+  // like arriving from somebody else should show up without a reload.
+  const fetchPost = useCallback(async ({ quiet = false } = {}) => {
+    if (!id) return;
+    if (!quiet) setLoading(true);
+    try {
+      const res = await fetch(`${apiUrl}/post/${id}/`);
+      const data = await res.json();
+      if (data.status === 'success') {
+        const real = data.data.post || null;
+        setPost(real);
+        // The detail endpoint returns the real thread (with_comments=True).
+        setComments(real?.comments || []);
+      }
+    } catch (err) {
+      console.error('Post fetch error:', err);
+    } finally {
+      if (!quiet) setLoading(false);
+    }
+  }, [id, apiUrl]);
+
+  useAutoRefresh(() => fetchPost({ quiet: true }));
+
   useEffect(() => {
     if (!id) {
       // No slug means somebody trimmed the address or followed an old
@@ -112,25 +136,8 @@ const PostInner = ({
       router.replace('/community?tab=feed');
       return;
     }
-    const fetchPost = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${apiUrl}/post/${id}/`);
-        const data = await res.json();
-        if (data.status === 'success') {
-          const real = data.data.post || null;
-          setPost(real);
-          // The detail endpoint returns the real thread (with_comments=True).
-          setComments(real?.comments || []);
-        }
-      } catch (err) {
-        console.error('Post fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPost();
-  }, [id, apiUrl, router]);
+  }, [id, router, fetchPost]);
   const handleToggleLike = async () => {
     if (!post || !signedIn) return;
     const before = { is_liked: post.is_liked, likes_count: post.likes_count };

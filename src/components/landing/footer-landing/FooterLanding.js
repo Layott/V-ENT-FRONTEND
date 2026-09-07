@@ -72,6 +72,14 @@ const FooterLanding = () => {
             <Link href={'/partners/docs'} className={styles.footerLink}>
                 {tt('landing.apiDocs', 'API documentation')}
             </Link>
+            {/* Both, and terms first, because it is the one somebody agreed
+                to on the way in. The page has existed with its full corrected
+                copy since 29 August and was in the sitemap and on the signup
+                form; the footer is where a person actually looks for it, and
+                it was the one place that did not list it. */}
+            <Link href={'/terms'} className={styles.footerLink}>
+                {tt('landing.termsOfUse', 'Terms of use')}
+            </Link>
             <Link href={'/privacy-policy'} className={styles.footerLink}>
                 {tt('landing.privacyPolicy', 'Privacy policy')}
             </Link>

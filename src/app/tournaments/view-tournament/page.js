@@ -1,6 +1,7 @@
 'use client';
 
 import { withLocalDatesAsISO } from '@/lib/datetime';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatLabel } from '@/lib/formatLabel';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -883,12 +884,12 @@ const BracketPanel = ({
   useEffect(() => () => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
-  const loadBrackets = useCallback(async () => {
+  const loadBrackets = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       // The fixtures endpoint takes the numeric id. The page is addressed by
@@ -904,6 +905,11 @@ const BracketPanel = ({
       setLoading(false);
     }
   }, [tournamentId, numericId, token]);
+
+  // Keeps itself current. One line, because loadBrackets already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => loadBrackets({ quiet: true }));
   useEffect(() => {
     loadBrackets();
   }, [loadBrackets, reloadKey]);

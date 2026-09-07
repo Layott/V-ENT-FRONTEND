@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -72,7 +73,7 @@ const ChallengePage = () => {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }), [token]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     try {
       const res = await fetch(`${apiUrl}/scrim/${slug}/detail/`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -83,13 +84,18 @@ const ChallengePage = () => {
         return;
       }
       setChallenge(body.data.scrim);
-      setError('');
+      if (!quiet) setError('');
     } catch {
       setError(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'));
     } finally {
       setLoading(false);
     }
   }, [apiUrl, slug, token, tt]);
+
+  // Keeps itself current. One line, because load already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     // Wait for the session to resolve before the first read: the answer

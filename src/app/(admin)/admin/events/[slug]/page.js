@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -74,7 +75,7 @@ function AdminEventDetailInner() {
     Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
   }), []);
 
-  const loadDetail = useCallback(async () => {
+  const loadDetail = useCallback(async ({ quiet = false } = {}) => {
     try {
       const res = await fetch(`${api}/auth/admin/events/${slug}/`, { headers: headers() });
       const body = await res.json();
@@ -83,13 +84,18 @@ function AdminEventDetailInner() {
         return;
       }
       setDetail(body.data);
-      setError('');
+      if (!quiet) setError('');
     } catch {
       setError(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'));
     } finally {
       setLoading(false);
     }
   }, [api, slug, headers, tt]);
+
+  // Keeps itself current. One line, because loadDetail already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => loadDetail({ quiet: true }));
 
   useEffect(() => { if (!authLoading) loadDetail(); }, [authLoading, loadDetail]);
 

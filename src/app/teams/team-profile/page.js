@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -59,7 +60,7 @@ export const TeamProfileContent = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [requestState, setRequestState] = useState(null); // 'pending' | 'success' | null
   const [toast, setToast] = useState('');
-  const fetchTeam = useCallback(async () => {
+  const fetchTeam = useCallback(async ({ quiet = false } = {}) => {
     // A team page is public and is in the sitemap, so this must not wait for a
     // token that is never coming. It returned here before `loading` was ever
     // cleared, so a signed-out visitor got "Loading the team..." for ever. The
@@ -72,7 +73,7 @@ export const TeamProfileContent = ({
       return;
     }
     try {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -97,6 +98,11 @@ export const TeamProfileContent = ({
       setLoading(false);
     }
   }, [teamId, session, sessionStatus, router]);
+
+  // Keeps itself current. One line, because fetchTeam already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchTeam({ quiet: true }));
   useEffect(() => {
     fetchTeam();
   }, [fetchTeam]);

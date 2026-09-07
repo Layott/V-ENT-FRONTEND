@@ -15,6 +15,7 @@
 // wrong thing entirely.
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
 import { appLocale } from '@/lib/appLocale';
 import AdminNav from '@/components/admin/AdminNav';
@@ -73,9 +74,9 @@ function RatesInner() {
       body
     };
   }, []);
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
+    if (!quiet) setError('');
     const {
       ok,
       body
@@ -86,6 +87,10 @@ function RatesInner() {
     } else setError(apiMessage(tt, body, 'api.failedToLoadRates', 'Could not load the rates.'));
     setLoading(false);
   }, [call]);
+
+  // Keeps itself current. See useAutoRefresh: quiet stops a refresh
+  // flashing the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) load();
   }, [authLoading, admin, load]);

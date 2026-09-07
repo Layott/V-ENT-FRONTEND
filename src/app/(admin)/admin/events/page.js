@@ -11,6 +11,7 @@
 // has learned the other, and a change to how listing works is one change.
 
 import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -65,10 +66,10 @@ function EventsInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
-  const fetchEvents = useCallback(async () => {
+  const fetchEvents = useCallback(async ({ quiet = false } = {}) => {
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -95,6 +96,11 @@ function EventsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. One line, because fetchEvents already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchEvents({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchEvents();
   }, [authLoading, admin, fetchEvents]);

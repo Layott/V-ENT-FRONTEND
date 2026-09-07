@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -84,8 +85,8 @@ const OrganizationsContent = () => {
     setToast(msg);
     window.setTimeout(() => setToast(''), 2400);
   };
-  const fetchOrganizations = useCallback(async () => {
-    setLoading(true);
+  const fetchOrganizations = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams();
@@ -113,6 +114,11 @@ const OrganizationsContent = () => {
       setLoading(false);
     }
   }, [search, region, focus, verifiedOnly, activeTab, session]);
+
+  // Keeps itself current. One line, because fetchOrganizations already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchOrganizations({ quiet: true }));
   useEffect(() => {
     fetchOrganizations();
   }, [fetchOrganizations]);

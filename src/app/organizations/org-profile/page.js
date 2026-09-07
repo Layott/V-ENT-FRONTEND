@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -118,12 +119,12 @@ const OrgProfileContent = ({
   const isMember = !!org?.my_role;
 
   // ── Data fetch ──
-  const loadAll = useCallback(async () => {
+  const loadAll = useCallback(async ({ quiet = false } = {}) => {
     if (!orgId) {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const headers = {
@@ -170,6 +171,11 @@ const OrgProfileContent = ({
       setLoading(false);
     }
   }, [orgId, session]);
+
+  // Keeps itself current. One line, because loadAll already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => loadAll({ quiet: true }));
   useEffect(() => {
     loadAll();
   }, [loadAll]);

@@ -220,6 +220,132 @@ useEffect(() => {
 }, [raw]);
 `;
 
+// ===================================================================== part 2
+//
+// A page that fetches and NEVER refreshes.
+//
+// Part 1 above catches a refresh timer that cannot fire. This catches the
+// other half of the CEO's ask, and the one that was actually missed:
+//
+//   CEO, 6 September: "i want all pages on the site to be updating
+//   automatically on its own without users having to refresh"
+//   CEO, 7 September: "useLiveData is imported by nothing"
+//
+// Both were true at once. The primitive existed, the dead-timer checker
+// reported zero, and 67 of 73 fetching pages simply never asked again. A
+// checker that reports 0 while the ask is unmet is the exact failure the CEO
+// named about check-seo sitting at 60 for weeks.
+//
+// ## Why there is a list of exemptions rather than a clever rule
+//
+// Refreshing underneath somebody who is typing replaces what they wrote with
+// what the server still thinks, and a wizard three steps in loses all three.
+// So a form must NEVER auto-refresh, and no amount of static analysis reliably
+// tells a form from a table. Naming them, with the reason, is honest and is
+// the same shape as DELIBERATE in tools/endpoint-callers.py.
+const NEVER_REFRESHES = {
+  // Forms and wizards. Refreshing would clobber what somebody is typing.
+  'src/app/events/create-event/page.js': 'the event wizard',
+  'src/app/events/edit-event/page.js': 'a form',
+  'src/app/tournaments/create-tournament/page.js': 'the tournament wizard',
+  'src/app/tournaments/edit-tournament/page.js': 'a form',
+  'src/app/organizations/create/page.js': 'a form',
+  'src/app/organizations/manage/page.js': 'a management form',
+  'src/app/teams/create-team/page.js': 'a form',
+  'src/app/community/scrim/create/page.js': 'a form',
+  'src/app/wallets/send/page.js': 'a form that moves money',
+  'src/app/wallets/withdraw/page.js': 'a form that moves money',
+  'src/app/wallets/topup/page.js': 'a form that moves money',
+  'src/app/wallets/pin/page.js': 'sets a PIN',
+  'src/app/wallets/verify/page.js': 'a form',
+  'src/app/feedback/page.js': 'a form',
+  'src/app/user-profile/page.js': 'carries the profile edit panels',
+  'src/app/settings/page.js': 'settings are forms',
+  'src/app/events/find-ticket/page.js': 'a lookup form',
+  'src/app/events/checkout/page.js': 'a checkout form',
+
+  // One-shot and terminal pages. There is nothing to come back for.
+  'src/app/login/page.js': 'one-shot',
+  'src/app/signup/page.js': 'one-shot',
+  'src/app/forgot-password/page.js': 'one-shot',
+  'src/app/verify-email/page.js': 'one-shot',
+  'src/app/email-verified/[key]/[value]/page.js': 'terminal',
+  'src/app/events/ticket-confirmed/page.js': 'a receipt',
+  'src/app/events/check-in/[code]/page.js': 'one-shot self check-in',
+  'src/app/teams/join/[token]/page.js': 'one-shot join',
+  'src/app/partners/authorize/page.js': 'a one-shot consent screen',
+  'src/app/claim/page.js': 'one-shot',
+  'src/app/wallet-topup-callback/page.js': 'a payment return',
+  'src/app/api/auth/session-handler/page.js': 'a redirect shim',
+
+  'src/app/(admin)/admin/settings/page.js': 'settings are forms',
+  'src/app/edit-team-profile/page.js': 'a form',
+  'src/app/edit-user-profile/page.js': 'a form',
+  'src/app/reset-email/page.js': 'one-shot',
+  'src/app/reset-password/page.js': 'one-shot',
+  'src/app/auth/external/page.js': 'a one-shot sign-in handoff',
+  'src/app/claim/[token]/page.js': 'one-shot',
+
+  // Results follow the query, not the clock. Re-running somebody's search
+  // underneath them every twenty seconds would reorder what they are reading
+  // for no reason they asked for.
+  'src/app/search/page.js': 'results follow the query, not the clock',
+
+  // Drawn by a browser source in OBS, which runs its own loop in
+  // static/overlay-runtime.js rather than React's.
+  'src/app/tournaments/overlay/page.js': 'drawn inside OBS by the overlay runtime',
+};
+
+const REFRESHES = /useAutoRefresh|useLiveData|setInterval|visibilitychange/;
+
+// Split out so the self-test can drive it with a fixture rather than the real
+// tree. A checker that only ever runs against the codebase it is checking
+// cannot tell "clean" from "broken", which is how check-signed-out reached
+// zero three times while being wrong.
+function neverRefreshes(rel, src) {
+  if (!rel.endsWith('/page.js')) return false;
+  if (NEVER_REFRESHES[rel]) return false;
+  if (!NETWORK.test(src)) return false;    // nothing to keep current
+  if (REFRESHES.test(src)) return false;   // already does
+  return true;
+}
+
+function pagesThatNeverRefresh() {
+  const out = [];
+  for (const file of walk(SRC)) {
+    const rel = path.relative(ROOT, file).split(path.sep).join('/');
+    if (neverRefreshes(rel, fs.readFileSync(file, 'utf8'))) out.push(rel);
+  }
+  return out;
+}
+
+// Fixtures for part 2, both directions.
+const STALE_PAGE = `
+export default function Page() {
+  const [rows, setRows] = useState([]);
+  useEffect(() => { fetch(url).then(r => r.json()).then(d => setRows(d.rows)); }, [url]);
+  return null;
+}
+`;
+const WIRED_PAGE = `
+export default function Page() {
+  const load = useCallback(async ({ quiet } = {}) => { await fetch(url); }, [url]);
+  useAutoRefresh(() => load({ quiet: true }));
+  return null;
+}
+`;
+const NO_NETWORK_PAGE = `
+export default function Page() { return null; }
+`;
+
+const PART2 = [
+  ['stale', 'src/app/probe/page.js', STALE_PAGE, 'fetches once and never again'],
+  ['ok', 'src/app/probe/page.js', WIRED_PAGE, 'drives its loader from useAutoRefresh'],
+  ['ok', 'src/app/probe/page.js', NO_NETWORK_PAGE, 'fetches nothing, so nothing to keep current'],
+  ['ok', 'src/app/wallets/send/page.js', STALE_PAGE, 'a named form is exempt'],
+  ['ok', 'src/components/thing/Thing.js', STALE_PAGE, 'not a page'],
+];
+
 const CASES = [
   ['bad', BAD_REAL, 'the door list, exactly as it shipped'],
   ['bad', BAD_INTERVAL, 'setInterval on a function defined in the file'],
@@ -244,11 +370,19 @@ function selfTest() {
     console.error('FAIL: useLiveData.js must be exempt');
     failed++;
   }
+  PART2.forEach(([expect, rel, src, label], n) => {
+    const isStale = neverRefreshes(rel, src);
+    if ((expect === 'stale') !== isStale) {
+      console.error(`FAIL part2 case ${n} (${label}): expected ${expect}, got ${isStale ? 'stale' : 'ok'}`);
+      failed++;
+    }
+  });
   if (failed) {
     console.error(`\n${failed} self-test case(s) failed.`);
     process.exit(1);
   }
-  console.log(`self-test passed: ${CASES.length} cases, both directions.`);
+  console.log(`self-test passed: ${CASES.length + PART2.length} cases, both directions `
+              + `(${CASES.length} dead timers, ${PART2.length} never-refreshes).`);
 }
 
 // -------------------------------------------------------------------- main
@@ -289,5 +423,18 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`0 dead refresh timers. ${findings.length} known, being worked down.`);
+  const stale = pagesThatNeverRefresh();
+  if (stale.length) {
+    console.error(`${stale.length} page(s) that fetch and never refresh:`);
+    console.error('');
+    for (const rel of stale) console.error(`  ${rel}`);
+    console.error('');
+    console.error('  Add one line:  useAutoRefresh(() => yourLoader({ quiet: true }));');
+    console.error('  Or, if it is a form or a one-shot page, name it in');
+    console.error('  NEVER_REFRESHES in this file with the reason.');
+    process.exit(1);
+  }
+
+  console.log(`0 dead refresh timers, 0 pages that never refresh. `
+              + `${findings.length} known, being worked down.`);
 }

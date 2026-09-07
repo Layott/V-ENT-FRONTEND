@@ -1,6 +1,7 @@
 'use client';
 
 import { KYC_REQUIRED } from '@/lib/features';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -98,14 +99,27 @@ const WalletsContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.sessionToken]);
 
-  // ── Initial fetch ────────────────────────────────────────────
+  // ── Initial fetch, and keeping itself current ────────────────
+  //
+  // Three loaders share one effect and one `cancelled` closure, so rather than
+  // hoisting all three out, the loop bumps a counter the effect depends on and
+  // the effect re-runs exactly as it does when the token changes.
+  //
+  // `quiet` is what the counter really buys: on the first pass the page shows
+  // its loading state, and on every later pass it must not, or a wallet
+  // balance somebody is reading would blink to a spinner every fifteen
+  // seconds.
+  const [refreshTick, setRefreshTick] = useState(0);
+  useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 20000 });
+
   useEffect(() => {
     // Wait for the session token before hitting protected endpoints -
     // firing without a Bearer header returns 400s (tokenless race).
     if (!session?.user?.sessionToken) return;
+    const quiet = refreshTick > 0;
     let cancelled = false;
     const loadBalance = async () => {
-      setBalanceLoading(true);
+      if (!quiet) setBalanceLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
           headers: authHeaders()
@@ -123,7 +137,7 @@ const WalletsContent = () => {
       }
     };
     const loadTx = async () => {
-      setTxLoading(true);
+      if (!quiet) setTxLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/transactions/`, {
           headers: authHeaders()
@@ -159,7 +173,7 @@ const WalletsContent = () => {
     return () => {
       cancelled = true;
     };
-  }, [session?.user?.sessionToken]);
+  }, [session?.user?.sessionToken, refreshTick]);
   const stats = computeStats(transactions, withdrawals);
   const ngnBalance = ngnFromVc(balance ?? 0);
   const [convertOpen, setConvertOpen] = useState(false);

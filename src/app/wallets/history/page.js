@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/header/Header';
@@ -25,13 +26,17 @@ const HistoryContent = () => {
       Authorization: `Bearer ${session.user.sessionToken}`
     } : {})
   });
+  const [liveTick, setLiveTick] = useState(0);
+  useAutoRefresh(() => setLiveTick(t => t + 1), [], { interval: 30000 });
+
   useEffect(() => {
+    const quiet = liveTick > 0;
     let cancelled = false;
     // The wallet API is mounted under /auth/ - without the prefix this 404s and
     // the page silently renders "No transactions match your filters."
     if (!session?.user?.sessionToken) return;
     (async () => {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/transactions/`, {
           headers: authHeaders()
@@ -50,7 +55,7 @@ const HistoryContent = () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.sessionToken]);
+  }, [session?.user?.sessionToken, liveTick]);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />

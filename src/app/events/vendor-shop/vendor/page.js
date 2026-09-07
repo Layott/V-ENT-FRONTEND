@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
@@ -47,14 +48,23 @@ const VendorStallContent = () => {
   }), [session?.user?.sessionToken]);
 
   // Fetch vendor
+  // Keeps itself current. The loader lives inside its effect and shares a
+  // closure with it, so the loop bumps a counter the effect depends on rather
+  // than the loader being hoisted out. `quiet` is the important half: without
+  // it a refresh would put the loading state back over content somebody is
+  // reading, every interval, for ever.
+  const [refreshTick, setRefreshTick] = useState(0);
+  useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 30000 });
+
   useEffect(() => {
     if (!vendorId) {
       setError(tt("msg.vendorIdMissing", "Vendor ID missing"));
       setLoading(false);
       return;
     }
+    const quiet = refreshTick > 0;
     const fetchVendor = async () => {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       setError(null);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendor/${vendorId}/`, {
@@ -74,7 +84,7 @@ const VendorStallContent = () => {
       }
     };
     fetchVendor();
-  }, [eventId, vendorId, authHeaders]);
+  }, [eventId, vendorId, authHeaders, refreshTick]);
 
   // Hydrate cart for this event.
   const cartHydrated = useRef(false);

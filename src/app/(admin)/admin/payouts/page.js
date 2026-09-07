@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -48,12 +49,12 @@ function PayoutsInner() {
   // "Connection error." over a table that had already loaded correctly. Each
   // run takes a ticket; only the newest one is allowed to touch state.
   const requestRef = useRef(0);
-  const fetchPayouts = useCallback(async () => {
+  const fetchPayouts = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -82,6 +83,11 @@ function PayoutsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. One line, because fetchPayouts already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchPayouts({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchPayouts();
   }, [authLoading, admin, fetchPayouts]);

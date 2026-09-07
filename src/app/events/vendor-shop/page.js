@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -52,7 +53,16 @@ const VendorShopContent = ({
   }), [session?.user?.sessionToken]);
 
   // Load events for selector
+  // Keeps itself current. The loader lives inside its effect and shares a
+  // closure with it, so the loop bumps a counter the effect depends on rather
+  // than the loader being hoisted out. `quiet` is the important half: without
+  // it a refresh would put the loading state back over content somebody is
+  // reading, every interval, for ever.
+  const [refreshTick, setRefreshTick] = useState(0);
+  useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 30000 });
+
   useEffect(() => {
+    const quiet = refreshTick > 0;
     const fetchEvents = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
@@ -78,7 +88,7 @@ const VendorShopContent = ({
   useEffect(() => {
     if (!eventId) return;
     const fetchVendors = async () => {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendors/`, {
           headers: authHeaders()
@@ -94,7 +104,7 @@ const VendorShopContent = ({
       }
     };
     fetchVendors();
-  }, [eventId, authHeaders]);
+  }, [eventId, authHeaders, refreshTick]);
 
   // Hydrate cart from localStorage
   useEffect(() => {

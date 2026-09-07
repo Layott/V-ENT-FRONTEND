@@ -12,6 +12,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import DoorSearches from '@/components/door/DoorSearches';
 import styles from './attendees.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -534,6 +535,13 @@ const AttendeesContent = ({
               </tbody>
             </table>
           </div>}
+
+        {/* What the door asked for. Organiser only, and the endpoint enforces
+            that: a steward needs to admit people, not to read what every other
+            steward has been typing. Closed by default so the door screen opens
+            on the door. */}
+        {summary?.can_read_lookups
+          && <DoorSearches eventId={eventId} token={token} />}
       </>;
   };
   return <div className={styles.pageContainer}>
