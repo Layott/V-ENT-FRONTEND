@@ -84,9 +84,22 @@ export function withLocalDatesAsISO(payload, fields) {
 // can see", and the viewer's is the sensible default.
 
 import { appLocale } from './appLocale';
+import { appDateFormat, appTimezone } from './appRegion';
 
-/** The zone the reader is actually in, or undefined if the browser will not say. */
+/**
+ * The zone dates should be read in.
+ *
+ * A SAVED preference first, then the browser's guess, then nothing. Somebody
+ * in Lagos opening the site from an airport in Doha still wants Lagos time,
+ * because that is where their tournament is, and the browser cannot know that.
+ * Until they choose, the browser is the best guess available.
+ *
+ * The setting used to be saved and read by nothing at all, so choosing a zone
+ * in Settings changed no date on the site. CEO, 7 September: "do these work?"
+ */
 export function viewerZone() {
+  const chosen = appTimezone();
+  if (chosen) return chosen;
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
   } catch {
@@ -107,9 +120,10 @@ function render(value, options, { zone, fallback = '-' } = {}) {
   try {
     return parsed.toLocaleString(appLocale(), {
       ...options,
-      // An explicit zone wins; otherwise the reader's own, which is what
-      // "their own times" means.
-      timeZone: zone || undefined,
+      // An explicit zone wins - that is the venue clock, and it must, or
+      // somebody reads a Lagos door time in their own zone and arrives late.
+      // Otherwise the reader's: their saved preference, or the browser's guess.
+      timeZone: zone || viewerZone(),
     });
   } catch {
     // An invalid zone from bad data must never take a page down with it.
@@ -125,11 +139,43 @@ export function formatDateTime(value, opts) {
   }, opts);
 }
 
-/** A date on its own: "4 Sept 2026". */
+/**
+ * A date on its own: "4 Sept 2026", or the order the reader asked for.
+ *
+ * The three settings are ORDERS, not format strings, and each maps to a real
+ * locale that already writes dates that way. That matters: `Intl` knows the
+ * separators, the numerals and the direction for every language V-ENT speaks,
+ * and hand-assembling "DD/MM/YYYY" from parts throws all of that away the
+ * moment somebody reads the site in a language that does not use Latin digits.
+ *
+ * With no preference set, the reader's own language decides, which is the
+ * behaviour every date on the site had before and still has by default.
+ */
+const DATE_ORDER = {
+  'DD/MM/YYYY': { locale: 'en-GB', numeric: true },
+  'MM/DD/YYYY': { locale: 'en-US', numeric: true },
+  'YYYY-MM-DD': { locale: 'en-CA', numeric: true },
+};
+
 export function formatDate(value, opts) {
-  return render(value, {
-    day: 'numeric', month: 'short', year: 'numeric',
-  }, opts);
+  const chosen = DATE_ORDER[appDateFormat()];
+  if (!chosen) {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
+  const parsed = asDate(value);
+  if (parsed === null) return (opts && opts.fallback) || '-';
+  try {
+    return parsed.toLocaleDateString(chosen.locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      timeZone: (opts && opts.zone) || viewerZone(),
+    });
+  } catch {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
 }
 
 /** A time on its own: "10:00". */

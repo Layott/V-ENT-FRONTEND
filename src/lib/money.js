@@ -1,5 +1,8 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { setAppRegion } from './appRegion';
+
 // Prices, read in whichever money the reader thinks in.
 //
 // V-ENT prices in naira because that is what Paystack settles and what a VENT
@@ -45,6 +48,58 @@ export function CurrencyProvider({
       // Private window, or storage refused. No preference is fine.
     }
   }, []);
+
+  // The ACCOUNT's own currency, timezone and date format, published for the
+  // whole site.
+  //
+  // CEO, 7 September 2026, of the Currency and region panel: "do these work?"
+  // They did not. All three were written to the account and read by nothing:
+  // the currency preference lived in a separate localStorage key this panel
+  // never touched, dates rendered in the browser's zone whatever the setting
+  // said, and the date format was read nowhere at all.
+  //
+  // Fetched here because this provider is already mounted for the whole app
+  // inside the session wrapper, so it is the one place that can ask once and
+  // publish to everything. A second provider would mean a second request for
+  // the same three values.
+  //
+  // The account WINS over the localStorage preference, because it is the one
+  // that follows somebody to a new device. That is the whole reason to store
+  // it on the account rather than in the browser.
+  const { data: session, status: sessionStatus } = useSession();
+  useEffect(() => {
+    if (sessionStatus !== 'authenticated') {
+      // Signed out: the browser's guess for the zone, the language's own date
+      // order, VENT COINS for prices. Published explicitly so signing out
+      // clears whoever was here before on a shared machine.
+      setAppRegion({ timezone: '', dateFormat: '', currency: '' });
+      return undefined;
+    }
+    const token = session?.user?.sessionToken;
+    if (!token) return undefined;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/settings/`,
+                                { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => ({}));
+        if (cancelled || body?.status !== 'success') return;
+        const s = body.data?.settings || {};
+        setAppRegion({
+          timezone: s.timezone || '',
+          dateFormat: s.date_format || '',
+          currency: (s.payments || {}).default_currency || '',
+        });
+        const chosen = (s.payments || {}).default_currency;
+        if (chosen) setPreferred(chosen);
+      } catch {
+        // The site works on the browser's guess. A failed preference lookup
+        // must never be the reason a date does not render.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionStatus, session?.user?.sessionToken]);
   const choose = useCallback(code => {
     setPreferred(code);
     try {
