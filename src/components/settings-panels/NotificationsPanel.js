@@ -20,6 +20,17 @@ const CHANNELS = [{
 }, {
   id: 'in_app',
   label: 'In-app'
+}, {
+  // CEO, 7 September 2026: "disocrd should have been added here".
+  //
+  // Off by default on every row, unlike push and in-app. Discord can only
+  // deliver to somebody who has connected their account AND turned direct
+  // messages on in Linked accounts, so switching a row on here is a
+  // preference about WHICH notifications go, not a way to start receiving
+  // them. Defaulting it on would promise delivery to people who have not
+  // connected anything.
+  id: 'discord',
+  label: 'Discord'
 }];
 
 // Event rows. Each row stores per-channel keys derived from id+channel.
@@ -74,6 +85,7 @@ const buildDefaults = () => {
     out[DEFAULT_KEY(r.id, 'in_app')] = true;
     out[DEFAULT_KEY(r.id, 'email')] = ['tournament_result', 'wallet_activity', 'marketplace_orders', 'newsletter'].includes(r.id);
     out[DEFAULT_KEY(r.id, 'sms')] = false;
+    out[DEFAULT_KEY(r.id, 'discord')] = false;
   });
   return out;
 };

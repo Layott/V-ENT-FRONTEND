@@ -146,14 +146,10 @@ export default async function sitemap() {
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
 
-  // A club is a public conversation, so it is worth finding. A private one is
-  // readable only from the inside and has no business in a sitemap.
-  const clubPages = clubs
-    .filter((c) => c?.slug && !c.is_private)
-    .map((c) => entry(`/community/club/${c.slug}`, {
-      changeFrequency: 'daily',
-      priority: 0.6,
-    }));
+  // Clubs are withdrawn (CEO, 7 September 2026), so there is nothing at
+  // /community/club to find. Listing a route that 404s is worse than listing
+  // nothing.
+  const clubPages = [];
 
   const orgPages = organizations
     .filter((o) => o?.slug)

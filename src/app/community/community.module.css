@@ -1618,3 +1618,11 @@
   font-size: 0.92rem;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
+
+/* Why a post did not go. It used to fail in silence, so an image with no
+   caption looked like a dead button when it was really a refusal nobody saw. */
+.composeError {
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+  color: var(--v-ent-red);
+}

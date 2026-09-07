@@ -33,9 +33,6 @@ const TABS = [{
   id: 'teams',
   label: 'Teams'
 }, {
-  id: 'clubs',
-  label: 'Clubs'
-}, {
   id: 'profile',
   label: 'Profile'
 }, {

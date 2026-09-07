@@ -38,9 +38,6 @@ const TABS = [{
   id: 'events',
   label: 'Events'
 }, {
-  id: 'clubs',
-  label: 'Clubs'
-}, {
   id: 'members',
   label: 'Members'
 }, {
