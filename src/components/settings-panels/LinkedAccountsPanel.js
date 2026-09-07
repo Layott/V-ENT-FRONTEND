@@ -72,6 +72,10 @@ const LinkedAccountsPanel = ({
   // Whether the SERVER can send a Discord direct message at all, which is a
   // different question from whether this person wants one.
   const [dmConfigured, setDmConfigured] = useState(false);
+  // Where to join. Discord refuses a DM from a bot that shares no server
+  // with the recipient, so this link is not a nicety: it is the step that
+  // makes the switch below actually deliver anything.
+  const [discordInvite, setDiscordInvite] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -98,6 +102,7 @@ const LinkedAccountsPanel = ({
       setAvailable(body?.data?.providers || {});
       setExternal(body?.data?.external || {});
       setDmConfigured(Boolean(body?.data?.dm_configured));
+      setDiscordInvite(body?.data?.discord_invite || '');
       setError('');
     } catch {
       setError(tt("msg.couldNotLoadYourLinked", "Could not load your linked accounts."));
@@ -304,6 +309,17 @@ const LinkedAccountsPanel = ({
                     : linked.discord?.dm_error
                       ? linked.discord.dm_error
                       : tt('linked.dmSub', 'Get your V-ENT notifications as a Discord message. You need to share a server with the V-ENT bot.')}
+                  {/* The join link, right here. Discord will not deliver a
+                      message from a bot you share no server with, so telling
+                      somebody they need to and then not saying where is half
+                      an instruction. */}
+                  {discordInvite && <>
+                    {' '}
+                    <a className={styles.inviteLink} href={discordInvite}
+                       target="_blank" rel="noopener noreferrer">
+                      {tt('linked.dmJoin', 'Join the V-ENT Discord')}
+                    </a>
+                  </>}
                 </div>
               </div>
               <button type="button"

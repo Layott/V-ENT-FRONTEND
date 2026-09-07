@@ -33,7 +33,15 @@ export const socialLinks = [
       name: "TikTok",
     },
     {
-      href: "https://discord.com/invite/mxevc5aQG3",
+      // The V-ENT server, id 1046108379598291036. Checked on 7 September 2026:
+      // this invite and discord.gg/z7MNM9pmYr resolve to the SAME server, 478
+      // members, neither expiring, so the link that was already here was
+      // correct and is left alone.
+      //
+      // It matters more than the other socials: Discord will not let the V-ENT
+      // bot send a direct message to somebody it shares no server with, so
+      // this is also the door that makes direct messages work.
+      href: "https://discord.gg/z7MNM9pmYr",
       icon: <FaDiscord />,
       name: "Discord",
     },
