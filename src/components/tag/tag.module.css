@@ -1,0 +1,51 @@
+/* The one tag. See Tag.js for why the old one was replaced.
+   Filled chip, muted surface, no ring, no blur, no accent tint. */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-weight: var(--fw-semi-bold);
+  /* 0.02em, not 0.06em. Wide tracking on an 11px uppercase label is the
+     stock "AI badge" look, and it costs legibility at exactly the size where
+     legibility is the only thing that matters. */
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.size_sm { font-size: 0.68rem; padding: 5px 8px; }
+.size_md { font-size: 0.78rem; padding: 7px 11px; }
+
+/* Which surface it sits on, so a tag is always one step ABOVE its background
+   rather than a wash over it. A tag on a card and a tag on a panel are the
+   same tag at two depths. */
+.on_panel { background-color: #2a2b30; }
+.on_card { background-color: #33343a; }
+
+/* ------------------------------------------------------------------ tones */
+
+/* A category. Says what a thing IS, so it gets no colour: the reader gains
+   nothing from "EA FC" being red, and spending colour here is what stopped
+   the colours that DO mean something from registering. */
+.tone_neutral { color: rgba(255, 255, 255, 0.86); }
+
+/* Quieter still, for something present but secondary. */
+.tone_muted { color: rgba(255, 255, 255, 0.5); }
+
+/* From here down the colour is the message.
+   Solid text on the same muted fill: no tinted background, because a coloured
+   wash under coloured text is the muddy shape being replaced. */
+.tone_live { color: #ff6b70; }
+.tone_good { color: #6cc46f; }
+.tone_bad { color: rgba(255, 255, 255, 0.45); text-decoration: line-through; }
+.tone_warn { color: var(--v-ent-gold, #d4af37); }
+
+/* Cancelled reads as struck through rather than as another colour, so it is
+   legible as "this is off" without a legend. */
+
+@media only screen and (max-width: 767px) {
+  .size_md { font-size: 0.72rem; padding: 6px 9px; }
+}

@@ -214,7 +214,8 @@ const EditUserProfileInfo = () => {
             await handleSessionExpiration();
             return;
           }
-          setSnackbarMessage(`Failed to load profile data. ${err.message}`);
+          console.error('[v-ent] profile load', err);
+        setSnackbarMessage('We could not load your profile just now. Try again in a moment.');
           setSnackbarType('error');
           setOpen(true);
         } finally {

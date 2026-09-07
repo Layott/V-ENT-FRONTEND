@@ -562,3 +562,18 @@
   background: #fff;
   display: block;
 }
+
+/* Checking yourself in, from the ticket itself.
+   The page existed for days with nothing linking to it. */
+.selfCheckInBtn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.92rem;
+  text-align: center;
+  text-decoration: none;
+}

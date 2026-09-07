@@ -15,6 +15,7 @@ import { ventFetch, API, tokenFrom, ApiError } from '@/components/tournament-lib
 import styles from './drafts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Tag from '@/components/tag/Tag';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -169,7 +170,7 @@ const Drafts = () => {
             </div> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.drafts.e0e5", "Couldn't load drafts")}</p>
-              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <p className={styles.inlineErrorSub}>{tx("We could not load your drafts just now.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : drafts.length === 0 ? <div className={styles.emptyState}>
               <LuTrophy className={styles.emptyIcon} />
@@ -185,7 +186,7 @@ const Drafts = () => {
             const anyBusy = busyId != null;
             return <div key={draft.id} className={styles.draftCard}>
                     <div className={styles.draftHeader}>
-                      <span className={styles.gameTag}>{draftGame(draft)}</span>
+                      <Tag on="card">{draftGame(draft)}</Tag>
                       <span className={styles.draftBadge}>{tt("ui.draft.6a38", "DRAFT")}</span>
                     </div>
                     <h2 className={styles.draftTitle}>{draftTitle(draft)}</h2>

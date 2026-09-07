@@ -1251,15 +1251,51 @@ export default function StudioElement({ params }) {
     }
   }, [token, mode.every]);
 
+  // The feed reader calls THROUGH a ref, and the interval depends only on
+  // primitives.
+  //
+  // Naming `read` here meant the interval was torn down and re-armed whenever
+  // `read` changed identity, and a graphic that is on air reading a stale feed
+  // is the worst place for this fault to live: the score on screen simply stops
+  // moving while everything looks fine. Same class as the door list refresh
+  // that never fired; `scripts/check-live-updates.mjs` found this one.
+  const readRef = useRef(read);
+  useEffect(() => { readRef.current = read; }, [read]);
+
   useEffect(() => {
     if (retired) return undefined;
-    read();
-    const timer = setInterval(read, mode.every);
+    readRef.current();
+    const timer = setInterval(() => readRef.current(), mode.every);
     return () => clearInterval(timer);
-  }, [read, retired, mode.every]);
+  }, [retired, mode.every]);
 
-  const element = feed?.elements?.[kind];
-  const show = mode.preview ? Boolean(element) : Boolean(element?.active);
+  // A SLOT rather than a graphic.
+  //
+  // `/studio/<slug>/slot-full/<token>` is one of the four layers an operator
+  // pastes into OBS once and never touches again. Which graphic it draws comes
+  // from the feed rather than from the address, so the console can swap what is
+  // in a layer mid-show without anybody going near a browser source. That is
+  // the whole difference between this and one URL per graphic, and it is the
+  // shape the RIVALRY control room uses.
+  const slotRole = kind.startsWith('slot-') ? kind.slice(5) : '';
+  const slot = slotRole ? feed?.slots?.[slotRole] : null;
+
+  // What this page is actually drawing: the graphic named by the slot, or the
+  // graphic named by the address.
+  const drawKind = slotRole ? (slot?.item_kind || '') : kind;
+  const slotOverlay = slotRole && slot?.holds === 'overlay' ? slot : null;
+
+  const element = drawKind ? feed?.elements?.[drawKind] : null;
+
+  // A slot is on air when the OPERATOR says the layer is up. A layer holding a
+  // graphic that is itself switched off still shows nothing, so both have to
+  // agree, which is what lets an operator arm a layer and cue its contents
+  // separately.
+  const show = slotRole
+    ? (mode.preview
+        ? Boolean(slot?.holds)
+        : Boolean(slot?.active) && (slotOverlay ? true : Boolean(element?.active)))
+    : (mode.preview ? Boolean(element) : Boolean(element?.active));
   const look = element?.presentation || {};
 
   // Taken off air: play the exit, then stop drawing. Without this the graphic
@@ -1273,7 +1309,26 @@ export default function StudioElement({ params }) {
   }, [show, feed, mode.preview]);
 
   if (!feed || retired) return null;
-  const Component = componentFor(kind, feed?.session?.theme);
+
+  // A layer holding an uploaded file draws that file, full frame, and nothing
+  // of its own. The overlay is served from its own token URL and is already
+  // bound to this same feed, so it updates in real time exactly as a house
+  // graphic does. That is "people can upload anything they want and use to run
+  // overlays that will be updating in realtime", reached through the same four
+  // browser sources as everything else.
+  if (slotOverlay) {
+    if (!show) return null;
+    return (
+      <iframe
+        className={styles.slotOverlay}
+        src={`${API}/overlay/${slotOverlay.overlay_token || ''}/`}
+        title={slotOverlay.overlay_name || 'Overlay'}
+        scrolling="no"
+      />
+    );
+  }
+
+  const Component = componentFor(drawKind, feed?.session?.theme);
   if (!Component) return null;
 
   // `hold` keeps the surface on screen and takes only the content away, for a

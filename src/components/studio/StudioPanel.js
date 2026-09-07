@@ -30,6 +30,7 @@ import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
 import TextLayerEditor from './TextLayerEditor';
 import styles from './studio-panel.module.css';
+import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -46,6 +47,21 @@ const PREVIEW_REPLAY_MS = 10000;
 // Every key here is a literal. `tt(`studio.field.${kind}.${f.key}`)` would be
 // invisible to `check-keys.mjs`, which is how a screen ends up permanently
 // English in French while every checker reports clean.
+//: The parts of the console, in the order somebody running a broadcast wants
+//: them. Graphics first: it is what the operator came for, and everything else
+//: is set up once at the start of the day.
+//: Written as `key` and `fallback` rather than a bare tuple so check-keys can
+//: see them. A label held in a table and read as `tt(row.key, row.fallback)`
+//: was invisible to it twice; that shape is the one it now understands.
+const SECTIONS = [
+  // First, because once the four sources are pasted this is the whole job.
+  { id: 'layers', key: 'studio.secLayers', fallback: 'Layers' },
+  { id: 'graphics', key: 'studio.secGraphics', fallback: 'Graphics' },
+  { id: 'look', key: 'studio.secLook', fallback: 'Look' },
+  { id: 'media', key: 'studio.secMedia', fallback: 'Clips and pictures' },
+  { id: 'past', key: 'studio.secPast', fallback: 'Earlier' },
+];
+
 const fieldsFor = (tt) => ({
   scorebar: [
     { key: 'home', label: tt('studio.f.home', 'Home team'), placeholder: 'Nigeria' },
@@ -284,6 +300,24 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
+  // Which part of the console is showing.
+  //
+  // CEO, 4 September 2026: "right now its just a page that you scroll a lot to
+  // find anything you want, no sub categories or options for a page that has a
+  // lot to manage". It was 1300 lines of one column: every graphic with its
+  // URL, its preview, its fields, four presentation controls and its text
+  // layers, then the house style, then the media library, then the uploads.
+  //
+  // Graphics first because that is what somebody with one hand on the mixer
+  // came for.
+  const [section, setSection] = useState('graphics');
+  // Which graphic is open. One at a time: the operator is looking at a match,
+  // not at this page, and twenty three open cards is the thing being fixed.
+  // Opening one does not put it on air and closing one does not take it off.
+  const [openKind, setOpenKind] = useState('');
+  // Show only what is on air. Off by default, because setting a graphic up is
+  // done before it goes on and the list would be empty exactly then.
+  const [onlyOnAir, setOnlyOnAir] = useState(false);
 
   // The preview loop. Same rule as the uploaded overlays: the feed keeps the
   // numbers live by itself, but the load-in only happens on a load, and how a
@@ -414,6 +448,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     { method: 'POST', body: JSON.stringify(patch) },
   ));
 
+  // Cueing one of the four layers.
+  //
+  // The operator pastes four browser sources into OBS once, stacked bottom to
+  // top, and from then on this is the only thing they touch. What occupies a
+  // layer and whether it is on air are separate presses on purpose: load the
+  // next graphic while the layer is dark, take it up on the cue. That is how a
+  // gallery works, and it is why this is not just an on/off per graphic.
+  const cue = (role, patch) => run(() => call(
+    `/sessions/${live.id}/slot/${role}/`,
+    { method: 'POST', body: JSON.stringify(patch) },
+  ));
+
   // The broadcast's house style. Any one graphic may still differ.
   const setDefaults = (patch) => run(() => call(`/sessions/${live.id}/`, {
     method: 'POST',
@@ -469,7 +515,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             {tt('studio.noneLive', 'No broadcast running. Starting one gives you a fresh set of URLs, which stop working when you end it.')}
           </p>
           <button type="button" className={styles.primary} disabled={busy}
-                  onClick={() => start(new Date().toLocaleDateString())}>
+                  onClick={() => start(formatDate(new Date()))}>
             {tt('studio.start', 'Start a broadcast')}
           </button>
         </div>
@@ -484,24 +530,132 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             </span>
             <span className={styles.liveMeta}>
               {tt('studio.since', 'since {t}').replace(
-                '{t}', new Date(live.started_at).toLocaleTimeString())}
+                '{t}', formatTime(live.started_at))}
             </span>
             <button type="button" className={styles.ghost} disabled={busy} onClick={end}>
               {tt('studio.end', 'End broadcast')}
             </button>
           </div>
 
-          <h3 className={styles.section}>{tt('studio.urls', 'Browser source URLs')}</h3>
+          {/* The sections. Filled chips with `aria-pressed`, the same shape
+              every other tab strip on this platform uses, rather than an
+              underline or a ring. */}
+          <div className={styles.sections} role="group"
+               aria-label={tt('studio.sections', 'Parts of the studio')}>
+            {SECTIONS.map((row) => (
+              <button key={row.id} type="button"
+                      className={section === row.id ? styles.sectionOn : styles.sectionOff}
+                      aria-pressed={section === row.id}
+                      onClick={() => setSection(row.id)}>
+                {tt(row.key, row.fallback)}
+              </button>
+            ))}
+          </div>
+
+          {/* THE FOUR LAYERS.
+              CEO, 6 September 2026, sending the RIVALRY control room: V-ENT
+              should do "this kind of setup for production, except that this
+              one will be online and people can upload anything they want and
+              use to run overlays that will be updating in realtime based off
+              the tournament data and results."
+
+              Before this, going on air with twenty graphics meant twenty
+              browser sources added and removed by hand DURING a show. Four
+              sources, stacked once, and everything after is a press here. */}
+          {section === 'layers' && <div className={styles.layers}>
+            <p className={styles.hint}>
+              {tt('studio.layersHint', 'Four browser sources, added to your scene once and never touched again. Stack them in this order from the back: background, full frame, lower third, corner. Then put whatever you like in each, and take it up when you want it.')}
+            </p>
+
+            {Object.values(live.slots || {}).map((layer) => (
+              <div key={layer.role} className={styles.layer}>
+                <div className={styles.layerHead}>
+                  <span className={styles.layerName}>{layer.label}</span>
+                  <button type="button"
+                          className={layer.active ? styles.layerOn : styles.layerOff}
+                          aria-pressed={!!layer.active}
+                          disabled={busy || !layer.holds}
+                          onClick={() => cue(layer.role, { active: !layer.active })}>
+                    {layer.active
+                      ? tt('studio.layerTakeDown', 'Take it down')
+                      : tt('studio.layerTakeUp', 'Take it up')}
+                  </button>
+                </div>
+
+                {/* What is in it. One control listing both what V-ENT draws
+                    and what this organiser uploaded, because to an operator
+                    they are the same decision: what goes in this layer. */}
+                <select className={styles.layerPick}
+                        value={layer.holds === 'overlay'
+                          ? `overlay:${layer.overlay_id}` : `kind:${layer.item_kind}`}
+                        disabled={busy}
+                        onChange={(e) => {
+                          const [what, which] = e.target.value.split(':');
+                          cue(layer.role, what === 'overlay'
+                            ? { overlay_id: which }
+                            : { item_kind: which });
+                        }}>
+                  <option value="kind:">{tt('studio.layerEmpty', 'Nothing')}</option>
+                  <optgroup label={tt('studio.layerHouse', 'V-ENT graphics')}>
+                    {orderedKinds.map((k) => (
+                      <option key={k} value={`kind:${k}`}>{LABELS[k] || k}</option>
+                    ))}
+                  </optgroup>
+                  {(live.overlays || []).length > 0 && (
+                    <optgroup label={tt('studio.layerUploaded', 'Your uploads')}>
+                      {live.overlays.map((o) => (
+                        <option key={o.id} value={`overlay:${o.id}`}>{o.name}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+
+                {/* The address for this layer, copied once. */}
+                <div className={styles.layerUrlRow}>
+                  <p className={styles.elUrl}>{live.slot_urls?.[layer.role]}</p>
+                  <button type="button" className={styles.copyBtn}
+                          onClick={() => copy(`slot-${layer.role}`, live.slot_urls?.[layer.role])}>
+                    {copied === `slot-${layer.role}`
+                      ? tt('studio.copied', 'Copied')
+                      : tt('studio.copyUrl', 'Copy URL')}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>}
+
+          {section === 'graphics' && <>
           <p className={styles.hint}>
             {tt('studio.urlsHint', 'One per graphic. Add each as a browser source at 1920 by 1080 with a transparent background. They show nothing until you put that graphic on air below.')}
           </p>
 
+          {/* Everything, or only what a viewer is looking at right now. */}
+          <div className={styles.sections}>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOff : styles.sectionOn}
+                    aria-pressed={!onlyOnAir}
+                    onClick={() => setOnlyOnAir(false)}>
+              {tt('studio.allGraphics', 'All graphics')}
+            </button>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOn : styles.sectionOff}
+                    aria-pressed={onlyOnAir}
+                    onClick={() => setOnlyOnAir(true)}>
+              {tt('studio.onAirOnly', 'On air now')}
+            </button>
+          </div>
+
           <div className={styles.elements}>
-            {orderedKinds.map((elementKind) => {
+            {orderedKinds
+              .filter((k) => !onlyOnAir || live.elements?.[k]?.active)
+              .map((elementKind) => {
               const el = live.elements?.[elementKind] || {};
               const fields = FIELDS[elementKind] || [];
               const values = { ...(el.payload || {}), ...(draft[elementKind] || {}) };
               const dirty = Boolean(draft[elementKind] && Object.keys(draft[elementKind]).length);
+              // A graphic with something typed and not yet saved stays open, or
+              // pressing another one would look like it threw the typing away.
+              const open = openKind === elementKind || dirty;
 
               return (
                 <div key={elementKind} className={styles.element}>
@@ -526,8 +680,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                         ? tt('studio.take', 'Take off')
                         : tt('studio.put', 'Put on air')}
                     </button>
+                    <button type="button" className={styles.foldBtn}
+                            aria-expanded={open}
+                            onClick={() => setOpenKind(open ? '' : elementKind)}>
+                      {open ? tt('studio.close', 'Close') : tt('studio.open', 'Open')}
+                    </button>
                   </div>
 
+                  {open && <>
                   <p className={styles.elUrl}>{live.urls[elementKind]}</p>
 
                   {/* What it looks like right now, at the size it will be on
@@ -685,13 +845,21 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                     entrances={live.presentation_options?.entrances}
                     exits={live.presentation_options?.exits}
                   />
+                  </>}
                 </div>
               );
             })}
           </div>
 
+          {orderedKinds.filter((k) => !onlyOnAir || live.elements?.[k]?.active).length === 0 && (
+            <p className={styles.hint}>
+              {tt('studio.noneOnAir', 'Nothing is on air. Every graphic is still here under All graphics.')}
+            </p>
+          )}
+          </>}
+
           {/* The house style, set once for the whole broadcast. */}
-          <div className={styles.defaults}>
+          {section === 'look' && <div className={styles.defaults}>
             <h3 className={styles.section}>{tt('studio.house', 'How graphics behave by default')}</h3>
             <p className={styles.hint}>
               {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
@@ -760,16 +928,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                 <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
               </label>
             </div>
-          </div>
+          </div>}
         </>
       )}
 
       {/* Clips and pictures live with the studio rather than with one
           broadcast, so this shows whether or not one is running. */}
-      <StudioMedia kind={kind} ownerRef={ref} token={token}
-                   live={Boolean(live)} onPlay={playAsset} />
+      {(!live || section === 'media') && (
+        <StudioMedia kind={kind} ownerRef={ref} token={token}
+                     live={Boolean(live)} onPlay={playAsset} />
+      )}
 
-      {past.length > 0 && (
+      {past.length > 0 && (!live || section === 'past') && (
         <>
           <h3 className={styles.section}>{tt('studio.past', 'Earlier broadcasts')}</h3>
           <div className={styles.pastRows}>
@@ -779,7 +949,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   {s.name || tt('studio.broadcast', 'Broadcast')}
                 </span>
                 <span className={styles.muted}>
-                  {new Date(s.started_at).toLocaleString()}
+                  {formatDateTime(s.started_at)}
                 </span>
                 <span className={styles.muted}>
                   {tt('studio.urlsRetired', 'URLs retired')}

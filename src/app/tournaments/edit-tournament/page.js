@@ -97,6 +97,10 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
   const [original, setOriginal] = useState(null);
   const [form, setForm] = useState(null);
   const [formats, setFormats] = useState([]);
+  // The organisations this person may run a tournament in the name of. The
+  // same short list both wizards and the event console fill their picker from,
+  // and empty for most people, who then never see the field.
+  const [myOrgs, setMyOrgs] = useState([]);
   const [current, setCurrent] = useState({ logo: '', banner: '' });
   const [logo, setLogo] = useState(null);
   const [banner, setBanner] = useState(null);
@@ -132,16 +136,27 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
     setLoading(true);
     setError('');
     try {
-      const [res, fmt] = await Promise.all([
+      const [res, fmt, orgs] = await Promise.all([
         fetch(`${API}/tournament/view-tournament/${ref}/`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         }),
         fetch(`${API}/tournament/formats/`).catch(() => null),
+        token
+          ? fetch(`${API}/organization/mine/`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => null)
+          : null,
       ]);
       const body = await res.json().catch(() => ({}));
       if (fmt && fmt.ok) {
         const fb = await fmt.json().catch(() => ({}));
         setFormats(fb?.data?.formats || []);
+      }
+      // A list that will not load leaves the field out and the rest of the
+      // form still opens. This is never the reason an edit screen fails.
+      if (orgs && orgs.ok) {
+        const ob = await orgs.json().catch(() => ({}));
+        setMyOrgs(ob?.data?.organizations || []);
       }
       if (!res.ok || body.status !== 'success') {
         setError(apiMessage(tt, body, 'api.couldNotLoadTournament',
@@ -181,6 +196,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
         prize_currency: t.prize_currency || 'VC',
         approve_registrations: !!t.approve_registrations,
         score_confirmation_mode: t.score_confirmation_mode || 'both_players_confirm',
+        // Whose name it runs in. Blank is a real answer and the common one:
+        // most tournaments belong to a person rather than an organisation.
+        organization: t.organization?.id != null ? String(t.organization.id) : '',
         ...Object.fromEntries(SOCIALS.map(([k]) => [k, t[k] || ''])),
       };
       setOriginal(shaped);
@@ -337,6 +355,28 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                   {tt('tEdit.gameHint', 'Changing the game clears a series chosen under the old one, and any requirement that was about that game.')}
                 </span>
               </label>
+
+              {/* Whose name it runs in.
+                  CEO, 4 September 2026: "how to add events or tournaments to
+                  an organization? i dont see that path". There was none: the
+                  column and both endpoints have accepted this the whole time
+                  and no screen ever sent it. Hidden entirely for the many
+                  people who are in no organisation. */}
+              {myOrgs.length > 0 && (
+                <label className={styles.field}>
+                  <span className={styles.label}>{tt('tEdit.org', 'Run by')}</span>
+                  <select className={styles.input} value={form.organization}
+                          onChange={(e) => set('organization', e.target.value)}>
+                    <option value="">{tt('tEdit.orgNone', 'Just me')}</option>
+                    {myOrgs.map((org) => (
+                      <option key={org.id} value={org.id}>{org.name}</option>
+                    ))}
+                  </select>
+                  <span className={styles.hint}>
+                    {tt('tEdit.orgHint', 'A tournament run by an organisation appears on its page and in the feed of everybody following it.')}
+                  </span>
+                </label>
+              )}
 
               <label className={styles.field}>
                 <span className={styles.label}>{tt('tEdit.mode', 'Mode')}</span>

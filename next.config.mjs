@@ -5,6 +5,26 @@
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig = {
+  // DEV builds into their own directory, so a production build can never
+  // overwrite what a running dev server is serving from.
+  //
+  // `next build` and `next dev` both write to `.next` by default. Run a build
+  // while `pnpm dev` is up and the dev server keeps serving from a directory
+  // whose vendor chunks have just been replaced, so every page 500s with
+  // "Cannot find module './vendor-chunks/react-icons@5.4.0_react@18.3.1.js'".
+  // It has cost this project a debugging round more than once, most recently on
+  // 7 September 2026 while walking the studio slots in OBS, where it looked for
+  // several minutes like the slot pages themselves were broken.
+  //
+  // Keyed off NODE_ENV rather than off a script flag, because `next dev` sets
+  // it to development and `next build` sets it to production, so this holds
+  // however either one is started - pnpm, a hook, an IDE, or by hand.
+  //
+  // PRODUCTION stays at `.next` deliberately: the VPS unit serves
+  // `.next/standalone/server.js`, and moving that would break the deploy to fix
+  // a local annoyance. Two directories that never collide is the fix; which one
+  // moves is just which one is cheaper to move.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
   // next-auth's browser bundle reads process.env.NEXTAUTH_URL to work out its
   // own origin. Next only inlines NEXT_PUBLIC_* into client code, so in the
   // browser that read is undefined and next-auth falls back to its built-in

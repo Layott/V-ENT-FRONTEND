@@ -798,6 +798,52 @@ export const ViewEventContent = ({
     })();
     return () => controller.abort();
   }, [id, tierRefresh]);
+
+  // How many are left, kept current without anybody reloading.
+  //
+  // CEO, 6 September 2026: "i want all pages on the site to be updating
+  // automatically on its own without users having to refresh." This is the
+  // page where staleness actually costs something: somebody reads "12 left",
+  // decides, fills in the form, and the tier sold out four minutes ago. Worse
+  // in the other direction too - a tier that reads sold out when seats were
+  // released is a sale that never happens.
+  //
+  // Quiet on purpose. Sixty seconds, backing off to five minutes, stopping
+  // while the tab is hidden, and it only ever bumps the same counter the
+  // existing loader already watches, so there is one fetch and one code path
+  // rather than a second copy of it.
+  useEffect(() => {
+    if (!id) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 60000;
+    const tick = () => {
+      if (stopped) return;
+      if (typeof document === 'undefined' || !document.hidden) {
+        setTierRefresh((n) => n + 1);
+        wait = Math.min(Math.round(wait * 1.5), 300000);
+      }
+      timer = setTimeout(tick, wait);
+    };
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = 60000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [id]);
   const openBuy = tier => {
     setBuyTier(tier);
     setBuyPin('');

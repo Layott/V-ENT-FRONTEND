@@ -10,7 +10,7 @@
 // same pagination, same table, same edit modal. An admin who has learned one
 // has learned the other, and a change to how listing works is one change.
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -194,7 +194,7 @@ function EventsInner() {
                         </td>
                         <td className={shared.hideMobile}>{e.location || (e.event_type === 'virtual' ? tt("admin.eventOnline", "Online") : '-')}</td>
                         <td className={shared.hideMobile}>
-                          {e.start_date ? new Date(e.start_date).toLocaleDateString() : '-'}
+                          {e.start_date ? formatDate(e.start_date) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>

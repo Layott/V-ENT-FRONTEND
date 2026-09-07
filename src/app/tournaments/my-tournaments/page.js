@@ -206,7 +206,7 @@ const MyTournaments = () => {
             </div> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.78d7", "Couldn't load your tournaments")}</p>
-              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <p className={styles.inlineErrorSub}>{tx("We could not load your tournaments just now.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : tab === 'drafts' ? drafts.length === 0 ? <div className={styles.emptyState}>
                 <LuTrophy className={styles.emptyIcon} />

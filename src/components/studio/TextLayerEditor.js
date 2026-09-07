@@ -102,6 +102,18 @@ const exitLabels = (tt) => ({
 // What a new layer starts as. White, heavy, bottom centre, fading in: legible
 // on any footage, and where a caption belongs unless somebody says otherwise.
 const BLANK = {
+  // Words, or something out of the studio's own media library.
+  // CEO, 4 September 2026, inbox row 51: "there should be elements you can add
+  // or ways to add certan uploaded things like images, sponsor logos, player
+  // images or videos as like elements that will then be movable inside an
+  // element once they are loaded". A caption and a sponsor logo differ in what
+  // is drawn and in nothing else, so this form serves both and only a few rows
+  // of it change.
+  kind: 'text',
+  asset_id: '',
+  // Pixels at 1920x1080. 0 is the media's own size, which is right far more
+  // often than any number somebody would type.
+  width_px: '0',
   text: '',
   field: '',
   font_size: '64',
@@ -190,6 +202,10 @@ export default function TextLayerEditor({
   // Which row the form is open on: a layer id, the string 'new', or nothing.
   const [editing, setEditing] = useState(null);
   const [draft, setDraft] = useState(BLANK);
+  // The media this broadcast may draw from. Fetched here rather than passed in,
+  // because this control is mounted from two different panels and only one of
+  // them has the library already.
+  const [assets, setAssets] = useState([]);
   // Remove asks twice. A single press beside four other buttons, on a laptop,
   // during a match, is how a layer gets deleted by the wrong finger.
   const [confirmId, setConfirmId] = useState(null);
@@ -255,6 +271,20 @@ export default function TextLayerEditor({
 
   useEffect(() => { load(); }, [load]);
 
+  // The media library, once. A layer that draws a picture needs the list of
+  // pictures, and the address is the same one the Clips and pictures panel
+  // reads. A library that will not load leaves the chooser empty and says so,
+  // rather than taking the whole editor down.
+  useEffect(() => {
+    if (!viewer.token || !ownerRef) return;
+    fetch(`${API}/${ownerKind}/${ownerRef}/studio/assets/`, {
+      headers: { Authorization: `Bearer ${viewer.token}` },
+    })
+      .then((res) => res.json())
+      .then((body) => setAssets(body?.data?.assets || []))
+      .catch(() => setAssets([]));
+  }, [ownerKind, ownerRef, viewer.token]);
+
   const openNew = () => {
     setConfirmId(null);
     setError('');
@@ -270,6 +300,9 @@ export default function TextLayerEditor({
     setError('');
     setNote('');
     setDraft({
+      kind: row.kind || 'text',
+      asset_id: row.asset_id != null ? String(row.asset_id) : '',
+      width_px: String(row.width_px ?? 0),
       text: row.text || '',
       field: row.field || '',
       font_size: String(row.font_size ?? 64),
@@ -295,6 +328,9 @@ export default function TextLayerEditor({
   const set = (key, value) => setDraft((d) => ({ ...d, [key]: value }));
 
   const payloadOf = (d) => ({
+    kind: d.kind === 'asset' ? 'asset' : 'text',
+    asset_id: d.kind === 'asset' ? (Number(d.asset_id) || null) : null,
+    width_px: clamp(d.width_px, 0, 1920, 0),
     text: d.text.trim(),
     field: d.field.trim(),
     font_size: clamp(d.font_size, 8, 400, 64),
@@ -571,22 +607,54 @@ export default function TextLayerEditor({
           </p>
 
           <div className={styles.fields}>
-            <label className={`${styles.field} ${styles.wide}`}>
-              <span className={styles.label}>{tt('layers.words', 'The words')}</span>
-              <input className={styles.input} value={draft.text}
-                     placeholder="GRAND FINAL"
-                     onChange={(e) => set('text', e.target.value)} />
+            {/* Words, or a picture. Everything below this row is shared: where
+                it sits, its nudge, how it arrives, how long it stays. */}
+            <label className={styles.field}>
+              <span className={styles.label}>{tt('layers.kind', 'What it is')}</span>
+              <select className={styles.input} value={draft.kind}
+                      onChange={(e) => set('kind', e.target.value)}>
+                <option value="text">{tt('layers.kindText', 'Words')}</option>
+                <option value="asset">{tt('layers.kindAsset', 'A picture or a clip')}</option>
+              </select>
             </label>
 
-            <label className={`${styles.field} ${styles.wide}`}>
-              <span className={styles.label}>{tt('layers.field', 'Or a live value')}</span>
-              <input className={styles.input} value={draft.field}
-                     placeholder="tournament.title"
-                     onChange={(e) => set('field', e.target.value)} />
-              <span className={styles.hint}>
-                {tt('layers.fieldHint', 'Read from this broadcast and kept up to date on air. When it is empty the words above are drawn instead.')}
-              </span>
-            </label>
+            {draft.kind === 'asset' ? <>
+              <label className={`${styles.field} ${styles.wide}`}>
+                <span className={styles.label}>{tt('layers.asset', 'Which one')}</span>
+                <select className={styles.input} value={draft.asset_id}
+                        onChange={(e) => set('asset_id', e.target.value)}>
+                  <option value="">{tt('layers.assetNone', 'Choose from your media')}</option>
+                  {assets.map((a) => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+                <span className={styles.hint}>
+                  {assets.length === 0
+                    ? tt('layers.assetEmpty', 'Nothing in the media library yet. Upload a picture or a clip under Clips and pictures, then it can be added here.')
+                    : tt('layers.assetHint', 'From this broadcast\'s own media library, so an overlay never depends on a file somewhere else staying up.')}
+                </span>
+              </label>
+
+              {numberField('width_px', tt('layers.width', 'How wide, in pixels'),
+                tt('layers.widthHint', 'On a 1920 by 1080 frame. Zero draws it at its own size, and it is never drawn bigger than that whatever you type.'))}
+            </> : <>
+              <label className={`${styles.field} ${styles.wide}`}>
+                <span className={styles.label}>{tt('layers.words', 'The words')}</span>
+                <input className={styles.input} value={draft.text}
+                       placeholder="GRAND FINAL"
+                       onChange={(e) => set('text', e.target.value)} />
+              </label>
+
+              <label className={`${styles.field} ${styles.wide}`}>
+                <span className={styles.label}>{tt('layers.field', 'Or a live value')}</span>
+                <input className={styles.input} value={draft.field}
+                       placeholder="tournament.title"
+                       onChange={(e) => set('field', e.target.value)} />
+                <span className={styles.hint}>
+                  {tt('layers.fieldHint', 'Read from this broadcast and kept up to date on air. When it is empty the words above are drawn instead.')}
+                </span>
+              </label>
+            </>}
 
             {numberField('font_size', tt('layers.size', 'Size, in pixels'),
               tt('layers.sizeHint', 'Measured on a 1920 by 1080 frame, which is what your streaming software adds.'))}

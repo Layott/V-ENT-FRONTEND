@@ -309,18 +309,28 @@ function ScanContent() {
   // A heartbeat rather than a reaction to the queue changing. It asks nothing
   // when the queue is empty, waits out the backoff after a failure, and cannot
   // stack because of the in-flight guard above.
+  // Through a ref, so a re-render cannot restart the heartbeat.
+  //
+  // Naming `flush` meant every render tore the timer down, armed a fresh one
+  // AND called flush immediately, so a busy scanning session flushed far more
+  // often than the eight seconds this is written to. On a venue connection
+  // that is the queue competing with the check-in it is trying to send.
+  // Found by `scripts/check-live-updates.mjs`.
+  const flushRef = useRef(flush);
+  useEffect(() => { flushRef.current = flush; }, [flush]);
+
   useEffect(() => {
     let stopped = false;
     let timer = null;
     const run = async () => {
       if (stopped) return;
-      await flush();
+      await flushRef.current();
       if (stopped) return;
       timer = setTimeout(run, backoffRef.current || 8000);
     };
     run();
     return () => { stopped = true; if (timer) clearTimeout(timer); };
-  }, [flush]);
+  }, []);
 
   // -------------------------------------------------------------- scanning
 

@@ -14,7 +14,7 @@
 // control whose save is refused.
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -37,6 +37,7 @@ import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
+import { formatWithZone } from '@/lib/datetime';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -127,6 +128,21 @@ export const ManageEventContent = ({
   const [myOrgs, setMyOrgs] = useState([]);
   const [eventOrg, setEventOrg] = useState(null);
   const [savingOrg, setSavingOrg] = useState(false);
+  // Where the event actually is. The map on the public page says "the
+  // organiser has not pinned this venue" when there is no coordinate, and
+  // until now there was nowhere to pin one: the edit endpoint has taken
+  // `map_link` all along and no screen sent it.
+  const [venueDraft, setVenueDraft] = useState({ venue_name: '', map_link: '', directions: '' });
+  const [venueLoaded, setVenueLoaded] = useState(null);
+  // Whether people may admit themselves, and how early the window opens.
+  //
+  // The whole feature existed and could not be switched on by anybody: the
+  // column defaults to False and the settings endpoint was GET only, so 194
+  // lines of working self check-in were unreachable code. This is the control
+  // that reaches it.
+  const [selfCheckIn, setSelfCheckIn] = useState(null);
+  const [savingSelfCheckIn, setSavingSelfCheckIn] = useState(false);
+  const [savingVenue, setSavingVenue] = useState(false);
   const [metrics, setMetrics] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [audience, setAudience] = useState(null);
@@ -266,6 +282,27 @@ export const ManageEventContent = ({
     setCanAddManagers(!!m.body?.data?.can_add);
     setEventOrg(m.body?.data?.organization || null);
 
+    // The venue, read from the event itself. The console asks fourteen
+    // endpoints about the tickets and none of them about where the thing is.
+    fetch(`${API}/event/view-event/${eventRef}/`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(res => res.json())
+      .then(body => {
+        const ev = body?.data?.event || body?.data || {};
+        setVenueLoaded({
+          latitude: ev.latitude ?? null,
+          longitude: ev.longitude ?? null,
+          location: ev.location || '',
+        });
+        setVenueDraft({
+          venue_name: ev.venue_name || '',
+          map_link: ev.map_link || '',
+          directions: ev.directions || '',
+        });
+      })
+      .catch(() => setVenueLoaded(null));
+
     // The organisations this person may put an event under. A separate request
     // because it is not about this event: it is about them, and it is the same
     // short list both wizards fill their picker from.
@@ -277,6 +314,12 @@ export const ManageEventContent = ({
       // A control that cannot list them draws its empty state and the rest of
       // the console still loads. This is never the reason a console fails.
       .catch(() => setMyOrgs([]));
+
+    // Whether this event lets people admit themselves.
+    fetch(`${API}/event/${eventRef}/self-check-in/settings/`)
+      .then(res => res.json())
+      .then(body => setSelfCheckIn(body?.data || null))
+      .catch(() => setSelfCheckIn(null));
     setMetrics(me.body?.data || null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
@@ -291,6 +334,61 @@ export const ManageEventContent = ({
   useEffect(() => {
     load();
   }, [load]);
+
+  // The console keeps itself current while a door is running.
+  //
+  // CEO, 6 September 2026: "i want all pages on the site to be updating
+  // automatically on its own without users having to refresh", and before that
+  // "especiallyywhen new people areregisteringfor an eventwhen checdk in is
+  // ongoing". An organiser watching the numbers during their own event should
+  // not have to reload to see them move.
+  //
+  // Through a ref and depending only on the event, so a re-render cannot tear
+  // the timer down before it fires. That fault shipped on the door list and is
+  // now caught by `scripts/check-live-updates.mjs`.
+  //
+  // Thirty seconds rather than ten: this is somebody watching a dashboard, not
+  // somebody standing at a gate, and the console pulls several endpoints per
+  // load. It backs off to two minutes when nothing is changing and stops while
+  // the tab is hidden.
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
+
+  useEffect(() => {
+    if (!token || !eventRef) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 30000;
+    const tick = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.hidden) {
+        timer = setTimeout(tick, wait);
+        return;
+      }
+      await loadRef.current();
+      if (stopped) return;
+      wait = Math.min(Math.round(wait * 1.5), 120000);
+      timer = setTimeout(tick, wait);
+    };
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = 30000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [token, eventRef]);
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');
@@ -591,6 +689,78 @@ export const ManageEventContent = ({
     await load();
   };
 
+  // Where the event is, and the pin the public map needs.
+  //
+  // CEO, 4 September 2026: "what does it also mean by organizer has not
+  // pinned?" It means latitude and longitude are unset, which nobody could do
+  // anything about: `map_link` has been accepted by the edit endpoint the
+  // whole time and no screen ever sent it. Pasting the link is the whole
+  // interaction, because `Event.save()` reads the coordinate out of it. Typing
+  // two numbers by hand is the step where a venue ends up in the Gulf of
+  // Guinea, so this asks for the link instead.
+  const saveVenue = async () => {
+    if (savingVenue) return;
+    setSavingVenue(true);
+    setNotice('');
+    setError('');
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        venue_name: venueDraft.venue_name,
+        map_link: venueDraft.map_link,
+        directions: venueDraft.directions,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingVenue(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(tt('manage.venueSaved', 'Venue saved.'));
+    await load();
+  };
+
+  /**
+   * Turning self check-in on, and choosing how early it opens.
+   *
+   * CEO, 5 September 2026: "allow useers tocheck in fro,m thheir ed, but it
+   * shold not e like the main oe, the organizer oe wherethey still have to
+   * scanned forthe perso to be checked in shouldbe there, the theyca see
+   * people, who check in themselves."
+   *
+   * Additional to the door, never a replacement. The scanner and this list are
+   * untouched; this only lets somebody holding a ticket mark themselves as
+   * arrived, and the attendee list says which of the two it was.
+   */
+  const saveSelfCheckIn = async (patch) => {
+    if (savingSelfCheckIn) return;
+    setSavingSelfCheckIn(true);
+    setNotice('');
+    setError('');
+    try {
+      const res = await fetch(`${API}/event/${eventRef}/self-check-in/settings/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+        return;
+      }
+      setSelfCheckIn(body.data);
+      setNotice(body.data.enabled
+        ? tt('manage.selfCheckInOn', 'People can now check themselves in.')
+        : tt('manage.selfCheckInOff', 'Only your door staff can check people in now.'));
+    } catch {
+      setError(tt('msg.connectionError', 'Connection error.'));
+    } finally {
+      setSavingSelfCheckIn(false);
+    }
+  };
+
   // Move this event into an organisation.
   //
   // CEO, 4 September 2026: "there is no way to add events to an organization",
@@ -793,6 +963,94 @@ export const ManageEventContent = ({
                   <p className={styles.cardHint}>
                     {tt('manage.tierHint', 'What people can buy. Add a type at any time, correct a price, or open more when one sells out. How many are sold is counted from the tickets themselves and cannot be typed.')}
                   </p>
+
+                  {/* Where it is, and the pin the public map needs.
+                      CEO, 4 September 2026: "what does it also mean by
+                      organizer has not pinned?" */}
+                  {venueLoaded && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.venueTitle', 'Where it is')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {venueLoaded.latitude != null && venueLoaded.longitude != null
+                        ? tt('manage.venuePinned', 'This venue is pinned, so the event page draws a map of it.')
+                        : tt('manage.venueNotPinned', 'The event page cannot draw a map yet. Paste the venue link from Google Maps below and the pin is taken from it, so nobody has to type coordinates.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.venueName', 'Venue name')}</span>
+                        <input className={styles.input} value={venueDraft.venue_name}
+                               placeholder={venueLoaded.location || tt('manage.venueNamePlaceholder', 'The Celebr8 Centre')}
+                               onChange={e => setVenueDraft(v => ({ ...v, venue_name: e.target.value }))} />
+                      </label>
+                      <label className={styles.capacityField}>
+                        <span className={styles.label}>{tt('manage.venueMapLink', 'Google Maps link')}</span>
+                        <input className={styles.input} value={venueDraft.map_link}
+                               placeholder="https://maps.app.goo.gl/..."
+                               onChange={e => setVenueDraft(v => ({ ...v, map_link: e.target.value }))} />
+                      </label>
+                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                              disabled={savingVenue} onClick={saveVenue}>
+                        {savingVenue ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                      </button>
+                    </div>
+                    <label className={styles.capacityField}>
+                      <span className={styles.label}>{tt('manage.venueDirections', 'How to find it')}</span>
+                      <input className={styles.input} value={venueDraft.directions}
+                             placeholder={tt('manage.venueDirectionsPlaceholder', 'Second gate on Vori Close, parking behind the hall')}
+                             onChange={e => setVenueDraft(v => ({ ...v, directions: e.target.value }))} />
+                    </label>
+                  </div>}
+
+                  {/* Letting people admit themselves.
+                      CEO, 5 September 2026, and it is ADDITIONAL to the door:
+                      "it shold not e like the main oe, the organizer oe
+                      wherethey still have to scanned forthe perso to be
+                      checked in shouldbe there". */}
+                  {selfCheckIn && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.selfCheckInTitle', 'Letting people check themselves in')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {selfCheckIn.enabled
+                        ? tt('manage.selfCheckInOnHint', 'Anybody holding a ticket can mark themselves as arrived from their own phone, inside the window below. Your door staff and the scanner carry on exactly as they do now, and the attendee list says which of the two admitted each person.')
+                        : tt('manage.selfCheckInOffHint', 'Only your door staff can admit people. Turning this on lets somebody holding a ticket mark themselves as arrived from their own phone. It does not replace the door: a guest still has to give the email their ticket was sent to.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <button type="button"
+                              className={`${styles.primaryBtn} ${selfCheckIn.enabled ? 'redBTN' : 'grnBTN'}`}
+                              disabled={savingSelfCheckIn}
+                              onClick={() => saveSelfCheckIn({ enabled: !selfCheckIn.enabled })}>
+                        {savingSelfCheckIn ? tt('ui.saving', 'Saving...')
+                          : selfCheckIn.enabled
+                            ? tt('manage.selfCheckInTurnOff', 'Turn it off')
+                            : tt('manage.selfCheckInTurnOn', 'Let people check themselves in')}
+                      </button>
+                      {selfCheckIn.enabled && <label className={styles.capacityField}>
+                        <span className={styles.label}>
+                          {tt('manage.selfCheckInOpens', 'Opens this many minutes before')}
+                        </span>
+                        <input className={styles.input} type="number" min="0" max="1440"
+                               defaultValue={selfCheckIn.opens_minutes_before}
+                               onBlur={e => {
+                                 const minutes = Number(e.target.value);
+                                 if (!Number.isNaN(minutes)
+                                     && minutes !== selfCheckIn.opens_minutes_before) {
+                                   saveSelfCheckIn({ opens_minutes_before: minutes });
+                                 }
+                               }} />
+                      </label>}
+                    </div>
+                    {/* The window as real times rather than a number of
+                        minutes, because minutes are not something anybody can
+                        picture. Rendered through the timing model, so an
+                        organiser in Accra reads their own clock. */}
+                    {selfCheckIn.enabled && selfCheckIn.opens_at && <p className={styles.cardHint}>
+                      {tt('manage.selfCheckInWindow', 'People can check themselves in from {from} until {to}.')
+                        .replace('{from}', formatWithZone(selfCheckIn.opens_at))
+                        .replace('{to}', formatWithZone(selfCheckIn.closes_at))}
+                    </p>}
+                  </div>}
 
                   {capacity && <div className={capacity.over_capacity
                       ? styles.capacityWarn : styles.capacityBox}>

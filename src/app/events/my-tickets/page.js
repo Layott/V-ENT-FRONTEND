@@ -105,7 +105,10 @@ const normaliseTicket = t => ({
   event_date: t.event?.start_date || t.event?.event_date || null,
   location: t.event?.location || t.event?.event_link || '',
   price_vc: t.price_vc,
-  attendee_name: t.attendee_name || ''
+  attendee_name: t.attendee_name || '',
+  // Whether this event lets people admit themselves, so the control below is
+  // offered only where pressing it will work.
+  self_check_in: !!t.event?.self_check_in
 });
 const MyTickets = () => {
   const tx = useTx();
@@ -151,10 +154,17 @@ const MyTickets = () => {
   // is the moment somebody wants the truth, and a slow poll covers the case of
   // watching it while a friend is scanned in. Both are quiet: a refresh that
   // blanks the list to a spinner would be worse than a stale number.
+  // Through a ref: naming `fetchTickets` here re-armed the 30 second interval
+  // on every render, so it rarely reached 30 seconds and the page's own
+  // comment about a slow poll was not describing what ran. Found by
+  // `scripts/check-live-updates.mjs`.
+  const fetchTicketsRef = useRef(fetchTickets);
+  useEffect(() => { fetchTicketsRef.current = fetchTickets; }, [fetchTickets]);
+
   useEffect(() => {
     if (!session?.user?.sessionToken) return undefined;
     const again = () => {
-      if (document.visibilityState === 'visible') fetchTickets({ quiet: true });
+      if (document.visibilityState === 'visible') fetchTicketsRef.current({ quiet: true });
     };
     document.addEventListener('visibilitychange', again);
     window.addEventListener('focus', again);
@@ -164,7 +174,7 @@ const MyTickets = () => {
       window.removeEventListener('focus', again);
       clearInterval(timer);
     };
-  }, [fetchTickets, session?.user?.sessionToken]);
+  }, [session?.user?.sessionToken]);
   const filtered = useMemo(() => {
     let out = [...tickets];
     if (statusFilter !== 'all') {
@@ -345,6 +355,19 @@ const MyTickets = () => {
                     {formatDate(activeTicket.purchased_at)}
                   </span>
                 </div>
+
+              {/* CHECKING YOURSELF IN.
+                  The page at /events/check-in/<code> has been built and
+                  correct for days and nothing linked to it, so in practice
+                  nobody could reach it. Same fault as the scanner staff could
+                  not find. It is offered only where the organiser has turned
+                  self check-in on, and only while the ticket is still unused. */}
+              {activeTicket.self_check_in && activeTicket.status === 'active' && (
+                <Link href={`/events/check-in/${encodeURIComponent(activeTicket.code)}`}
+                      className={`${styles.selfCheckInBtn} grnBTN`}>
+                  {tt('tickets.checkMyselfIn', 'Check myself in')}
+                </Link>
+              )}
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.qrFactValue}>

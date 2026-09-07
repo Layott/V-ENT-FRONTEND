@@ -73,6 +73,49 @@ const weightOf = (value) => {
  *  name under it arrives a beat later. Timers held together in the parent would
  *  restart every layer whenever any of them changed.
  */
+/** A picture or a clip, sized by width and capped at its own resolution.
+ *
+ * The cap is not a nicety. A sponsor's logo blown up four times on a broadcast
+ * is the most visible way to break the rule that art is never drawn above its
+ * own resolution, and the operator setting the width has no way to know what
+ * that resolution is.
+ */
+function MediaLayer({ row }) {
+  const [natural, setNatural] = useState(0);
+  const [broken, setBroken] = useState(false);
+  if (broken) return null;
+
+  const asked = Math.max(0, Math.min(1920, Number(row.width_px) || 0));
+  const drawn = asked && natural ? Math.min(asked, natural) : asked;
+  const width = drawn ? `${drawn}px` : undefined;
+
+  if (row.asset_kind === 'video') {
+    return (
+      <video
+        className={styles.media}
+        src={row.asset_url}
+        style={{ width }}
+        muted
+        autoPlay
+        loop
+        playsInline
+        onLoadedMetadata={(e) => setNatural(e.currentTarget.videoWidth || 0)}
+        onError={() => setBroken(true)}
+      />
+    );
+  }
+  return (
+    <img
+      className={styles.media}
+      src={row.asset_url}
+      alt=""
+      style={{ width }}
+      onLoad={(e) => setNatural(e.currentTarget.naturalWidth || 0)}
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
 function Layer({ row, data }) {
   const delay = Math.max(0, Number(row.delay_ms) || 0);
   // Zero means it stays until the graphic goes, which is the ordinary case.
@@ -99,9 +142,11 @@ function Layer({ row, data }) {
   // something sensible on one that does not.
   const live = row.field ? readFeed(row.field, data) : '';
   const words = live || row.text || '';
+  const media = row.kind === 'asset';
   // Nothing to say, so nothing is drawn. An empty box with a text shadow is
-  // still a smudge on live video.
-  if (!words) return null;
+  // still a smudge on live video, and a layer pointing at media that has been
+  // deleted draws nothing rather than a broken image glyph.
+  if (media ? !row.asset_url : !words) return null;
 
   const anchor = frame[`at_${row.position}`] || frame.at_bottom_centre;
   const arrive = phase === 'in' && row.entry && row.entry !== 'none'
@@ -123,18 +168,34 @@ function Layer({ row, data }) {
         '--vent-dy': `${Number(row.offset_y) || 0}px`,
       }}
     >
-      <span
-        className={styles.box}
-        style={{
-          color: COLOUR.test(String(row.colour || '')) ? row.colour : undefined,
-          fontFamily: stack,
-          fontSize: `${Math.max(8, Math.min(400, Number(row.font_size) || 64))}px`,
-          fontWeight: weightOf(row.weight),
-          textAlign: row.align === 'centre' ? 'center' : row.align,
-        }}
-      >
-        <span className={`${styles.words} ${arrive} ${leave}`.trim()}>{words}</span>
-      </span>
+      {media ? (
+        // CEO, 4 September 2026, inbox row 51: "there should be elements you
+        // can add ... images, sponsor logos, player images or videos as like
+        // elements that will then be movable inside an element once they are
+        // loaded". Everything around it is the same as a caption: the anchor,
+        // the nudge, the order, the entrance. Only what is painted differs.
+        //
+        // Width in pixels at 1920x1080, height from the media's own
+        // proportions, and 0 means whatever size the file is. Nothing is drawn
+        // above its natural size, which is the rule the whole platform holds
+        // to because no filter adds detail a file never had.
+        <span className={`${styles.words} ${arrive} ${leave}`.trim()}>
+          <MediaLayer row={row} />
+        </span>
+      ) : (
+        <span
+          className={styles.box}
+          style={{
+            color: COLOUR.test(String(row.colour || '')) ? row.colour : undefined,
+            fontFamily: stack,
+            fontSize: `${Math.max(8, Math.min(400, Number(row.font_size) || 64))}px`,
+            fontWeight: weightOf(row.weight),
+            textAlign: row.align === 'centre' ? 'center' : row.align,
+          }}
+        >
+          <span className={`${styles.words} ${arrive} ${leave}`.trim()}>{words}</span>
+        </span>
+      )}
     </div>
   );
 }

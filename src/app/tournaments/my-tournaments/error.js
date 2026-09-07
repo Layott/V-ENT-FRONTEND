@@ -1,68 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
-const ErrorStyles = {
-  container: {
-    minHeight: '100vh',
-    background: '#000000',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    gap: '1.5rem',
-    padding: '2rem',
-    textAlign: 'center'
-  },
-  heading: {
-    color: '#FFFFFF',
-    fontSize: '1.75rem',
-    fontWeight: '700'
-  },
-  message: {
-    color: '#FFFFFF',
-    fontSize: '1rem',
-    maxWidth: '480px',
-    opacity: 0.7
-  },
-  actions: {
-    display: 'flex',
-    gap: '0.75rem'
-  },
-  button: {
-    padding: '0.625rem 1.5rem',
-    background: '#ED1C24',
-    color: '#FFFFFF',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    cursor: 'pointer'
-  },
-  homeButton: {
-    padding: '0.625rem 1.5rem',
-    background: 'transparent',
-    color: '#FFFFFF',
-    borderRadius: '6px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    cursor: 'pointer',
-    display: 'inline-block'
-  }
-};
-export default function MyTournamentsError({
-  error,
-  reset
-}) {
-  const tx = useTx();
-  const tt = useT();
-  return <div style={ErrorStyles.container}>
-      <h2 style={ErrorStyles.heading}>{tt("ui.something.went.wrong.8d88", "Something went wrong")}</h2>
-      <p style={ErrorStyles.message}>{error?.message || tx("An unexpected error occurred while loading your tournaments.")}</p>
-      <div style={ErrorStyles.actions}>
-        <button style={ErrorStyles.button} onClick={reset}>{tt("ui.try.again.042c", "Try again")}</button>
-        <Link href="/tournaments" style={ErrorStyles.homeButton}>{tt("ui.go.home.8007", "Go home")}</Link>
-      </div>
-    </div>;
+// Every error boundary shows the same screen, and none of them shows a raw
+// exception. See components/error-screen/ErrorScreen.js for why.
+//
+// CEO, 7 September 2026, on seeing "Something went wrong / MdSell is not
+// defined": "what is this error that is not a good kind of error to show
+// users".
+
+import ErrorScreen from '@/components/error-screen/ErrorScreen';
+
+export default function TournamentsMyTournamentsError({ error, reset }) {
+  return <ErrorScreen error={error} reset={reset}
+      whatKey="error.what.my-tournaments"
+      whatText='We could not load your tournaments just now.' />;
 }

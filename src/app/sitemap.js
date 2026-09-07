@@ -76,7 +76,19 @@ export default async function sitemap() {
     entry('/organizations', { changeFrequency: 'daily', priority: 0.7 }),
     entry('/community', { changeFrequency: 'hourly', priority: 0.7 }),
     entry('/rankings', { changeFrequency: 'daily', priority: 0.6 }),
+    // Modules that are announced but not open yet. They are listed because
+    // each one says plainly what it will be and when, and somebody searching
+    // for "V-ENT shop" should reach that rather than nothing at all. Low
+    // priority: they are promises, not content.
+    entry('/anime', { changeFrequency: 'monthly', priority: 0.3 }),
+    entry('/marketplace', { changeFrequency: 'monthly', priority: 0.3 }),
+    entry('/shop', { changeFrequency: 'monthly', priority: 0.3 }),
+    entry('/wager', { changeFrequency: 'monthly', priority: 0.2 }),
     entry('/partners', { changeFrequency: 'monthly', priority: 0.4 }),
+    // What V-ENT costs, and where to say what is wrong. Both are things
+    // somebody searches for by name before they commit to a platform.
+    entry('/pricing', { changeFrequency: 'monthly', priority: 0.6 }),
+    entry('/feedback', { changeFrequency: 'monthly', priority: 0.3 }),
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.
     entry('/partners/docs', { changeFrequency: 'monthly', priority: 0.5 }),

@@ -1,6 +1,6 @@
 'use client';
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useEffect, useState, useCallback } from 'react';
@@ -278,7 +278,7 @@ function TournamentsInner() {
                           {t.prize_pool ? `${Number(t.prize_pool).toLocaleString()} VC` : '-'}
                         </td>
                         <td className={shared.hideMobile}>
-                          {t.created_at ? new Date(t.created_at).toLocaleDateString() : '-'}
+                          {t.created_at ? formatDate(t.created_at) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>

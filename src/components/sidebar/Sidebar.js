@@ -12,7 +12,7 @@ import { IoWalletOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { LuGamepad2 } from "react-icons/lu";
-import { MdOutlineSettings, MdBusiness, MdShield, MdCode } from "react-icons/md";
+import { MdOutlineSettings, MdBusiness, MdShield, MdCode, MdSell, MdOutlineFeedback } from "react-icons/md";
 import { MdLogout } from "react-icons/md";
 import logoRed from "@/images/logo_mark_red.svg";
 import styles from './sidebar.module.css';
@@ -183,6 +183,23 @@ const Sidebar = ({
                 <li className={`${styles.sidebarItem} ${isActive('/partners') ? styles.activeLink : ''}`}>
                     <Link href={'/partners'} className={styles.iconTextLink}>
                         <MdCode className={styles.sidebarIcon} /> {tt("nav.partners", "Build on V-ENT")}
+                    </Link>
+                </li>
+
+                {/* What it costs, and where to say what is wrong.
+                    CEO, 7 September 2026, asking for both together. They sit
+                    next to each other on purpose: the pricing page asks people
+                    to use it hard and report what broke, and a page that asks
+                    for that with no route to the form is asking for nothing.
+                    Both are open to somebody with no account. */}
+                <li className={`${styles.sidebarItem} ${isActive('/pricing') ? styles.activeLink : ''}`}>
+                    <Link href={'/pricing'} className={styles.iconTextLink}>
+                        <MdSell className={styles.sidebarIcon} /> {tt("nav.pricing", "Pricing")}
+                    </Link>
+                </li>
+                <li className={`${styles.sidebarItem} ${isActive('/feedback') ? styles.activeLink : ''}`}>
+                    <Link href={'/feedback'} className={styles.iconTextLink}>
+                        <MdOutlineFeedback className={styles.sidebarIcon} /> {tt("nav.feedback", "Send feedback")}
                     </Link>
                 </li>
 

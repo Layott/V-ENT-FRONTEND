@@ -10,6 +10,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './kyc.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate } from '@/lib/datetime';
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -237,7 +238,7 @@ function KycInner() {
                         </div>
                       </td>
                       <td className={shared.hideMobile}>
-                        {k.submitted_at ? new Date(k.submitted_at).toLocaleDateString() : '-'}
+                        {k.submitted_at ? formatDate(k.submitted_at) : '-'}
                       </td>
                       <td>{(k.doc_type || 'national_id').replace('_', ' ')}</td>
                       <td>

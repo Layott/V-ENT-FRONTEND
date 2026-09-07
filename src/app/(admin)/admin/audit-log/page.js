@@ -11,6 +11,7 @@ import styles from './audit-log.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { formatDateTime } from '@/lib/datetime';
 const PAGE_SIZE = 50;
 const ACTION_BADGE = {
   user_banned: {
@@ -218,7 +219,7 @@ function AuditLogInner() {
                   <tbody>
                     {logs.map(l => <tr key={l.id}>
                         <td className={styles.timeCell}>
-                          {l.created_at ? new Date(l.created_at).toLocaleString() : '-'}
+                          {l.created_at ? formatDateTime(l.created_at) : '-'}
                         </td>
                         <td>{l.admin_username || '-'}</td>
                         <td>{actionBadge(l.action)}</td>

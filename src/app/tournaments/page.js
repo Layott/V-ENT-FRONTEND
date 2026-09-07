@@ -20,6 +20,7 @@ import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import Tag from '@/components/tag/Tag';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -291,7 +292,7 @@ const TournamentsContent = () => {
             } : undefined}>
                     <span className={styles.featuredPill}>{tt("ui.featured.c005", "FEATURED")}</span>
                     <div className={styles.featuredOverlay}>
-                      <span className={styles.gameTag}>{t?.game || tx("Unknown Game")}</span>
+                      <Tag on="card">{t?.game || tx("Unknown Game")}</Tag>
                       <h2 className={styles.featuredTitle}>{t?.name || tx("Untitled Tournament")}</h2>
                       <div className={styles.featuredMeta}>
                         <span><LuTrophy /> {Number(t?.prize_pool || 0).toLocaleString()} VC</span>
@@ -356,7 +357,7 @@ const TournamentsContent = () => {
           {loading ? <TournamentSkeletonGrid /> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.fd5f", "Couldn't load tournaments")}</p>
-              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <p className={styles.inlineErrorSub}>{tx("We could not load the tournaments just now.")}</p>
               <button className={`${styles.primaryBtn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : filtered.length === 0 ? <div className={styles.emptyState}>
               <LuTrophy className={styles.emptyIcon} />
@@ -413,7 +414,7 @@ const TournamentCard = ({
         {fee === 0 && <span className={styles.freeBadge}>{tt("ui.free.entry.2e48", "FREE ENTRY")}</span>}
       </div>
       <div className={styles.tCardBody}>
-        <span className={styles.gameTag}>{t?.game || tx("Unknown Game")}</span>
+        <Tag on="card">{t?.game || tx("Unknown Game")}</Tag>
         <h2 className={styles.tCardTitle}>{t?.name || tx("Untitled Tournament")}</h2>
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>
