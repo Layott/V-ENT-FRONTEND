@@ -1,0 +1,203 @@
+/* The organisation's Discord server console. Filled surfaces, no strokes.
+   Built to sit inside the organisation manage page beside its other panels. */
+
+.panel {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.subTitle {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.hint, .muted {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 70ch;
+}
+
+.error {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  color: var(--v-ent-red);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.row {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.rowHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.rowName {
+  font-size: 1rem;
+  font-weight: var(--fw-medium);
+  color: #fff;
+}
+
+.badgeOk, .badgeBad, .pillOk, .pillGap {
+  padding: 0.24rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.badgeOk { background-color: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.6); }
+.badgeBad { background-color: rgba(237, 28, 36, 0.16); color: var(--v-ent-red); }
+
+.capRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.pillOk { background-color: rgba(76, 175, 80, 0.18); color: var(--v-ent-success); }
+
+/* Granted here, but Discord no longer allows it. A different problem from
+   "not granted", and it gets fixed in their server rather than on this page,
+   so it must not look the same. */
+.pillGap { background-color: rgba(230, 170, 40, 0.18); color: #e6aa28; }
+
+.rowActions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* The capability chooser. Each one is its own filled tile with its own
+   sentence, because "Delete messages" and "Post announcements" are not
+   comparable asks and a row of equal-looking checkboxes would imply they are. */
+.caps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.cap, .capOn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: left;
+  padding: 0.85rem;
+  border-radius: 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.cap { background-color: #2a2b30; color: rgba(255, 255, 255, 0.6); }
+
+.capOn { background-color: #33413a; color: #fff; }
+
+.capOn .capLabel { color: var(--v-ent-success); }
+
+.cap:disabled, .capOn:disabled { cursor: default; }
+
+.capLabel { font-size: 0.9rem; font-weight: var(--fw-semi-bold); }
+
+.capBlurb {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.block, .blockDanger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.block { background-color: #33343a; }
+
+/* Deleting other people's messages is not the same kind of action as posting,
+   and it should not be the same colour as one. A deeper, warmer surface rather
+   than a red outline: still no strokes anywhere. */
+.blockDanger { background-color: #3a2c2d; }
+
+.blockTitle {
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.warn {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border-radius: 10px;
+  background-color: #202126;
+  color: #fff;
+  font-size: 0.88rem;
+  min-width: 0;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.pair { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.go, .save, .danger, .ghost {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.go, .save { background-color: var(--v-ent-success); color: #fff; }
+.danger { background-color: var(--v-ent-red); color: #fff; }
+.ghost { background-color: #33343a; color: rgba(255, 255, 255, 0.75); font-weight: var(--fw-medium); }
+
+.go:disabled, .save:disabled, .danger:disabled, .ghost:disabled {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .caps, .controls { grid-template-columns: 1fr; }
+}
