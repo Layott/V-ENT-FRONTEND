@@ -124,6 +124,19 @@ const nextConfig = {
       { source: '/privacy-policy.pdf', destination: '/privacy-policy', permanent: true },
       { source: '/terms-of-use', destination: '/terms', permanent: true },
       { source: '/term-of-use', destination: '/terms', permanent: true },
+      // The CEO registered the Discord application on 7 September with its
+      // Terms of Service URL as `https://v-ent.co/terms-of-service`, which
+      // 404d. Discord shows that link on the consent screen somebody sees
+      // before granting access, so a dead link there is the worst possible
+      // place for one.
+      //
+      // Redirecting rather than asking for the entry to be retyped: this is
+      // the name most services and most people will guess, it is what every
+      // other platform calls it, and an address somebody has already written
+      // down somewhere should keep working. Same principle as SlugHistory.
+      { source: '/terms-of-service', destination: '/terms', permanent: true },
+      { source: '/tos', destination: '/terms', permanent: true },
+      { source: '/privacy', destination: '/privacy-policy', permanent: true },
     ];
   },
 };
