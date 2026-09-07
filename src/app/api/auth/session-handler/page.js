@@ -79,7 +79,11 @@ export default function SessionHandler() {
 
         // Redirect to login page after a delay
         setTimeout(() => {
-          router.push(`/login?error=${encodeURIComponent(error.message)}`);
+          // A CODE, not the exception. The login page translates by code; an
+          // exception message in a query string is a developer's sentence in
+          // somebody's address bar, and it survives being shared.
+          console.error('[v-ent] session handler', error);
+          router.push('/login?error=SESSION_HANDOFF_FAILED');
         }, 3000);
       }
     }

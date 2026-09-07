@@ -261,7 +261,7 @@
 }
 
 .filterChipOn {
-  background-color: var(--v-ent-grn);
+  background-color: var(--v-ent-success);
   color: #fff;
   font-weight: var(--fw-semi-bold);
 }

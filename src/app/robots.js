@@ -42,6 +42,10 @@ export default function robots() {
           '/events/check-in/',     // a ticket code in a URL; indexing one would
                                    // hand a stranger somebody's admission
           '/events/find-ticket',   // a lookup form, and nothing to rank for
+          '/home',            // a signed-in member's own dashboard. A visitor
+                              // is redirected away from it, so indexing it
+                              // would rank a redirect
+          '/disputes',        // somebody's own disputes, and the other side's
           '/organizations/invites',  // somebody's own invitations
           '/organizations/*/manage', // roles, invites, and the profile form
           '/studio/',         // broadcast graphics: transparent pages meant

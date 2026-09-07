@@ -1,37 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
-import styles from './admin-loading.module.css';
-import { useT } from '@/i18n/LanguageProvider';
-export default function AdminError({
-  error,
-  reset
-}) {
-  const tt = useT();
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-  return <div className={styles.shell} style={{
-    flexDirection: 'column',
-    gap: '1rem'
-  }}>
-      <p style={{
-      color: 'var(--v-ent-red)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: '0.9rem'
-    }}>
-        {tt("ui.something.went.wrong.bee5", "Something went wrong.")}
-      </p>
-      <button onClick={reset} style={{
-      background: 'rgba(237,28,36,0.15)',
-      borderRadius: 5,
-      color: 'var(--v-ent-red)',
-      padding: '0.5rem 1.25rem',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: '0.85rem',
-      cursor: 'pointer'
-    }}>
-        {tt("ui.try.again.042c", "Try again")}
-      </button>
-    </div>;
+// Every error boundary shows the same screen, and none of them shows a raw
+// exception. See components/error-screen/ErrorScreen.js for why.
+//
+// CEO, 7 September 2026, on seeing "Something went wrong / MdSell is not
+// defined": "what is this error that is not a good kind of error to show
+// users".
+
+import ErrorScreen from '@/components/error-screen/ErrorScreen';
+
+export default function AdminAdminError({ error, reset }) {
+  return <ErrorScreen error={error} reset={reset}
+      whatKey="error.what.manage"
+      whatText='The console did not open just now.' />;
 }
