@@ -4,8 +4,11 @@
 .pageContainer {
   width: 100%;
   min-height: 100vh;
-  background-color: var(--primary-bg);
-  color: var(--primary-text);
+  /* #131316 is the page ground everywhere on this site. `--primary-bg`
+     is #FFFFFF and `--primary-text` is #000000: they are the TEXT
+     colours, and pure black is banned as a page ground anyway. */
+  background-color: #131316;
+  color: var(--white);
   display: flex;
   flex-direction: column;
   align-items: center;

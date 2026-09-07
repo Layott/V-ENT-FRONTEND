@@ -54,7 +54,34 @@ export function definedVars(css) {
 const BG_WITH_TEXT_VAR =
   /(?:background|background-color)\s*:\s*[^;]*var\(\s*(--primary-bg|--primary-text|--white|--black)\b/;
 
+/** Whether a rule is painting a PAGE, rather than a small deliberate white bit.
+ *
+ * `--primary-bg` on a 14px toggle knob or a carousel dot is correct: a white
+ * circle on a coloured track is exactly what was wanted. On a `.pageContainer`
+ * with `min-height: 100vh` it is a white page on a dark site.
+ *
+ * Six of the ten hits were knobs and dots. Reporting those as faults would have
+ * had somebody "fix" working controls, which is worse than not checking.
+ */
+function pageLevel(css, index) {
+  const open = css.lastIndexOf('{', index);
+  const selector = css.slice(Math.max(0, css.lastIndexOf('}', open) + 1), open);
+  const block = css.slice(open, css.indexOf('}', index) + 1);
+  if (/min-height\s*:\s*\d+vh/.test(block)) return true;
+  return /(page|container|wrapper|shell|screen|layout|main|body)/i.test(selector);
+}
+
 export function findingsIn(css, file, defined) {
+  // A variable is also "defined" if THIS file sets it, anywhere. The studio
+  // and the Rivalry pack set their own palette on a wrapper - `--panel`,
+  // `--ink`, `--bc` - and a graphic reads it below. That is a local design
+  // token doing exactly what custom properties are for, and calling it
+  // undefined was the checker being wrong, not the code.
+  //
+  // Reported 152 before this. The honest number is far smaller, and a checker
+  // that cries about 152 things is one people stop reading. See
+  // [[feedback_checker_calibration]].
+  const local = new Set([...css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)].map((m) => m[1]));
   const out = [];
   css.split(/\r?\n/).forEach((line, i) => {
     if (/^\s*(\/\*|\*)/.test(line)) return;
@@ -62,7 +89,7 @@ export function findingsIn(css, file, defined) {
 
     // 1. Undefined variable, with no fallback to save it.
     for (const m of line.matchAll(/var\(\s*(--[A-Za-z0-9_-]+)\s*\)/g)) {
-      if (!defined.has(m[1])) {
+      if (!defined.has(m[1]) && !local.has(m[1])) {
         out.push({
           file, line: i + 1, id: 'undefined-css-var',
           why: `${m[1]} is not defined in globals.css, so this declaration is dropped`,
@@ -71,8 +98,8 @@ export function findingsIn(css, file, defined) {
       }
     }
 
-    // 2. `--primary-bg` used as a background on a dark site.
-    if (BG_WITH_TEXT_VAR.test(line)) {
+    // 2. `--primary-bg` used as a PAGE background on a dark site.
+    if (BG_WITH_TEXT_VAR.test(line) && pageLevel(css, css.indexOf(line))) {
       out.push({
         file, line: i + 1, id: 'text-var-as-background',
         why: '--primary-bg is #FFFFFF and is used as a TEXT colour here. '
@@ -82,6 +109,18 @@ export function findingsIn(css, file, defined) {
     }
   });
   return out;
+}
+
+/** Every JS file, for custom properties set from the browser rather than CSS. */
+function walkCode(dir, acc = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === 'node_modules' || entry.name === '.next') continue;
+      walkCode(full, acc);
+    } else if (/\.(js|jsx|mjs)$/.test(entry.name)) acc.push(full);
+  }
+  return acc;
 }
 
 function walk(dir, acc = []) {
@@ -99,10 +138,15 @@ const FIXTURE_DEFINED = new Set(['--primary-bg', '--overlay-gray', '--v-ent-succ
 
 const CASES = [
   ['bad', '  color: var(--v-ent-grn);', 'a token that was never defined'],
-  ['bad', '  background-color: var(--primary-bg);', 'white, on a dark site'],
+  ['bad', '.pageContainer { min-height: 100vh; background-color: var(--primary-bg); }',
+   'a white PAGE on a dark site'],
   ['bad', '.pageContainer { background: var(--primary-bg); }', 'the same, shorthand'],
   ['clean', '  color: var(--primary-bg);', 'text colour, which is what it is for'],
   ['clean', '  background-color: var(--overlay-gray);', 'a real surface token'],
+  ['clean', '.toggleKnob { width: 14px; background-color: var(--primary-bg); }',
+   'a white knob on a toggle, which is deliberate'],
+  ['clean', '.cardImageDotActive { background: var(--primary-bg); }',
+   'a white carousel dot, also deliberate'],
   ['clean', '  color: var(--v-ent-success);', 'the real green'],
   ['clean', '  background-color: #131316;', 'the literal page ground'],
   ['clean', '  color: var(--v-ent-gold, #d4af37);', 'undefined but with a fallback'],
@@ -133,9 +177,42 @@ if (RUN) {
 }
 
 function main() {
-  const defined = definedVars(fs.readFileSync(GLOBALS, 'utf8'));
+  // Definitions from EVERY stylesheet, not just globals.
+  //
+  // Custom properties inherit, so a token set on a wrapper in one file is
+  // legitimately readable from a child's own stylesheet. The Rivalry pack does
+  // exactly that: `rivalry.module.css` sets `--bc`, `--monu` and `--astro` on
+  // its wrapper and eight graphics read them. Reading only globals called all
+  // of that undefined and put the count at 152 when the real answer is far
+  // smaller.
+  //
+  // What survives is the fault worth catching: a name defined NOWHERE, like
+  // `--v-ent-grn`, which silently drops the declaration that uses it.
+  const files = walk(SRC);
+  const defined = new Set();
+  for (const file of files) {
+    for (const v of definedVars(fs.readFileSync(file, 'utf8'))) defined.add(v);
+  }
+
+  // And the ones set from JAVASCRIPT, which no amount of reading CSS can see.
+  // Two real shapes here:
+  //
+  //   style={{ '--round-idx': rIdx }}   a bracket telling its own CSS which
+  //                                     round this is, so the indent can be
+  //                                     computed. Per element, so it cannot
+  //                                     live in a stylesheet at all.
+  //   Fraunces({ variable: '--font-fraunces' })   next/font, which mints the
+  //                                     name at build time.
+  //
+  // Both are correct. Calling them undefined would have somebody delete a
+  // working bracket layout to satisfy a checker.
+  for (const file of walkCode(SRC)) {
+    const src = fs.readFileSync(file, 'utf8');
+    for (const m of src.matchAll(/['"](--[A-Za-z0-9_-]+)['"]\s*:/g)) defined.add(m[1]);
+    for (const m of src.matchAll(/variable\s*:\s*['"](--[A-Za-z0-9_-]+)['"]/g)) defined.add(m[1]);
+  }
   const findings = [];
-  for (const file of walk(SRC)) {
+  for (const file of files) {
     if (file === GLOBALS) continue;
     findings.push(...findingsIn(fs.readFileSync(file, 'utf8'),
                                 path.relative(ROOT, file), defined));

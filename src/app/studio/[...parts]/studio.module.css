@@ -1591,3 +1591,17 @@
   right: var(--vent-safe-x);
   transform: translate(var(--vent-dx), var(--vent-dy));
 }
+
+/* A layer holding a file somebody uploaded.
+   Full frame and transparent: the streaming software composites this onto
+   video, so the page paints nothing of its own and the file paints everything
+   it wants to. No border, because a browser source with a stroke around it
+   goes to air with a stroke around it. */
+.slotOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  background: transparent;
+}
