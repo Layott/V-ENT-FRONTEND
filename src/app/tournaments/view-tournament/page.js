@@ -34,6 +34,7 @@ import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
+import Tag from '@/components/tag/Tag';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -320,7 +321,7 @@ export const ViewTournamentContent = ({
   if (loading) return <SkeletonShell />;
   if (error) {
     if (error.status === 404) return <NotFoundShell />;
-    return <ErrorShell message={error.message} onRetry={retryLoad} />;
+    return <ErrorShell message={tx("We could not load this tournament just now.")} onRetry={retryLoad} />;
   }
   if (!tournament) return <NotFoundShell />;
 
@@ -403,7 +404,7 @@ export const ViewTournamentContent = ({
               <div className={styles.heroContent}>
                 <div className={styles.heroLeft}>
                   <div className={styles.heroTags}>
-                    <span className={styles.gameTag}>{tournament.game || 'Game'}</span>
+                    <Tag on="card">{tournament.game || 'Game'}</Tag>
                     <span className={`${styles.statusBadge} ${styles[`status_${tournament.status}`] || ''}`}>
                       {(tournament.status === 'in_progress' || tournament.status === 'live') && <LuRadio />} {statusLabel}
                     </span>
@@ -1135,7 +1136,7 @@ const BracketPanel = ({
   }
   if (error) {
     return <div className={styles.bracketWrap}>
-        <p className={styles.errText}>{error.message || tx("Could not load the bracket.")}</p>
+        <p className={styles.errText}>{tx("Could not load the bracket.")}</p>
         <div style={{
         display: 'flex',
         justifyContent: 'center'
@@ -1466,7 +1467,7 @@ const ParticipantsPanel = ({
         </div>}
 
       {!loading && error && <div>
-          <p className={styles.errText}>{error.message || tx("Could not load participants.")}</p>
+          <p className={styles.errText}>{tx("Could not load participants.")}</p>
           <div style={{
         display: 'flex',
         justifyContent: 'center'

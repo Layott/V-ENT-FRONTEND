@@ -26,6 +26,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import Avatar from '@/components/avatar/Avatar';
 import Banner from '@/components/banner/Banner';
 import UserChip from '@/components/user-chip/UserChip';
+import Tag from '@/components/tag/Tag';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -890,7 +891,7 @@ const TournamentCard = ({
         {feeVc(t) === 0 && <span className={styles.freeBadge}>{tt("ui.free.4a97", "FREE")}</span>}
       </div>
       <div className={styles.tCardBody}>
-        <span className={styles.gameTag}>{t.game}</span>
+        <Tag on="card">{t.game}</Tag>
         <h3 className={styles.tCardTitle}>{t.name}</h3>
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>

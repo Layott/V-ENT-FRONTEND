@@ -18,6 +18,7 @@ import { ventFetch, API, tokenFrom, toTournament, tournamentStatus, ApiError } f
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Tag from '@/components/tag/Tag';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -297,14 +298,14 @@ const ManageContent = ({
             </div> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.this.tournament.207c", "Couldn't load this tournament")}</p>
-              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <p className={styles.inlineErrorSub}>{tx("We could not load this tournament just now.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : <>
 
               {/* Summary card */}
               <div className={styles.summaryCard}>
                 <div className={styles.summaryTop}>
-                  <span className={styles.gameTag}>{tournament?.game || '-'}</span>
+                  <Tag on="card">{tournament?.game || '-'}</Tag>
                   <span className={`${styles.statusBadge} ${badgeClass}`}>{statusLabel}</span>
                 </div>
                 <div className={styles.summaryMeta}>

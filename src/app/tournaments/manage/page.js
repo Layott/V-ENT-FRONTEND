@@ -29,6 +29,7 @@ import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Tag from '@/components/tag/Tag';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -278,7 +279,7 @@ const ManageContent = ({ slug }) => {
               <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
               <h1 className={styles.pageTitle}>{tournament.name || tournament.tournament_title}</h1>
               <div className={styles.headerMeta}>
-                <span className={styles.gameTag}>{tournament.game || tx("Unknown game")}</span>
+                <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
                 <span className={styles.statusBadge}><LuRadio /> {statusLabel}</span>
                 <span className={styles.metaText}>
                   {tournament.current_participants ?? 0}/{tournament.max_participants ?? 0} {tt("ui.participants.a94a", "participants")}

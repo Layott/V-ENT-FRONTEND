@@ -500,36 +500,18 @@
 }
 
 .typeTag {
+  /* POSITION ONLY. What the tag looks like now lives in one place,
+     components/tag/tag.module.css, because there were eleven copies of this
+     chip drifting apart across eleven stylesheets. The old rule here also
+     carried `backdrop-filter: blur(8px)`, which is the frosted-glass ban. */
   position: absolute;
   top: 0.6rem;
   left: 0.6rem;
-  font-size: 0.65rem;
-  font-weight: var(--fw-semi-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 9px;
-  border-radius: 4px;
-  backdrop-filter: blur(8px);
   z-index: 2;
 }
 
-.type_virtual {
-  background-color: rgba(212, 175, 55, 0.18);
-  color: var(--v-ent-gold);
 
-}
 
-.type_physical {
-  background-color: rgba(237, 28, 36, 0.18);
-  color: #ff7479;
-
-}
-
-.type_hybrid {
-  background-color: rgba(251, 198, 75, 0.18);
-  color: #fbc64b;
-
-}
 
 /* ── Empty / loading ── */
 .emptyState {

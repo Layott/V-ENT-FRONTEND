@@ -22,6 +22,7 @@ import styles from './events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import Tag from '@/components/tag/Tag';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -304,9 +305,7 @@ const EventsListingContent = () => {
                     objectFit: 'cover'
                   }} unoptimized /> : null}
                         <div className={styles.featuredOverlay} />
-                        <span className={`${styles.typeTag} ${styles['type_' + e.event_type]}`}>
-                          {e.event_type}
-                        </span>
+                        <Tag className={styles.typeTag} on="card">{e.event_type}</Tag>
                       </div>
                       <div className={styles.featuredBody}>
                         <h2 className={styles.featuredTitle}>{e.name}</h2>
@@ -420,9 +419,7 @@ const EventsListingContent = () => {
                         {e.banner_image || e.banner ? <Image src={mediaUrl(e.banner_image || e.banner)} alt={e.name} fill sizes="(min-width: 1440px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" style={{
                     objectFit: 'cover'
                   }} unoptimized /> : null}
-                        <span className={`${styles.typeTag} ${styles['type_' + e.event_type]}`}>
-                          {e.event_type}
-                        </span>
+                        <Tag className={styles.typeTag} on="card">{e.event_type}</Tag>
                       </div>
                       <div className={styles.cardBody}>
                         <h2 className={styles.cardTitle}>{e.name}</h2>
