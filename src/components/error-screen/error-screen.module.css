@@ -1,0 +1,91 @@
+/* The error screen. Filled surfaces, no strokes, no glow.
+   Calm on purpose: somebody reading this has already had something fail. */
+
+.wrap {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.icon {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: var(--fw-bold);
+  margin: 0;
+}
+
+.body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0;
+  max-width: 42ch;
+}
+
+/* An opaque hash, not prose. It is the one thing that makes a report
+   actionable, so it is legible rather than hidden in small grey. */
+.reference {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  background-color: #2a2b30;
+  border-radius: 6px;
+  padding: 3px 7px;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.03em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.primary {
+  min-height: 44px;
+  padding: 0 1.35rem;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.secondary:hover { background-color: #3d3e45; color: #fff; }

@@ -54,6 +54,8 @@ const PREVIEW_REPLAY_MS = 10000;
 //: see them. A label held in a table and read as `tt(row.key, row.fallback)`
 //: was invisible to it twice; that shape is the one it now understands.
 const SECTIONS = [
+  // First, because once the four sources are pasted this is the whole job.
+  { id: 'layers', key: 'studio.secLayers', fallback: 'Layers' },
   { id: 'graphics', key: 'studio.secGraphics', fallback: 'Graphics' },
   { id: 'look', key: 'studio.secLook', fallback: 'Look' },
   { id: 'media', key: 'studio.secMedia', fallback: 'Clips and pictures' },
@@ -446,6 +448,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     { method: 'POST', body: JSON.stringify(patch) },
   ));
 
+  // Cueing one of the four layers.
+  //
+  // The operator pastes four browser sources into OBS once, stacked bottom to
+  // top, and from then on this is the only thing they touch. What occupies a
+  // layer and whether it is on air are separate presses on purpose: load the
+  // next graphic while the layer is dark, take it up on the cue. That is how a
+  // gallery works, and it is why this is not just an on/off per graphic.
+  const cue = (role, patch) => run(() => call(
+    `/sessions/${live.id}/slot/${role}/`,
+    { method: 'POST', body: JSON.stringify(patch) },
+  ));
+
   // The broadcast's house style. Any one graphic may still differ.
   const setDefaults = (patch) => run(() => call(`/sessions/${live.id}/`, {
     method: 'POST',
@@ -537,6 +551,78 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               </button>
             ))}
           </div>
+
+          {/* THE FOUR LAYERS.
+              CEO, 6 September 2026, sending the RIVALRY control room: V-ENT
+              should do "this kind of setup for production, except that this
+              one will be online and people can upload anything they want and
+              use to run overlays that will be updating in realtime based off
+              the tournament data and results."
+
+              Before this, going on air with twenty graphics meant twenty
+              browser sources added and removed by hand DURING a show. Four
+              sources, stacked once, and everything after is a press here. */}
+          {section === 'layers' && <div className={styles.layers}>
+            <p className={styles.hint}>
+              {tt('studio.layersHint', 'Four browser sources, added to your scene once and never touched again. Stack them in this order from the back: background, full frame, lower third, corner. Then put whatever you like in each, and take it up when you want it.')}
+            </p>
+
+            {Object.values(live.slots || {}).map((layer) => (
+              <div key={layer.role} className={styles.layer}>
+                <div className={styles.layerHead}>
+                  <span className={styles.layerName}>{layer.label}</span>
+                  <button type="button"
+                          className={layer.active ? styles.layerOn : styles.layerOff}
+                          aria-pressed={!!layer.active}
+                          disabled={busy || !layer.holds}
+                          onClick={() => cue(layer.role, { active: !layer.active })}>
+                    {layer.active
+                      ? tt('studio.layerTakeDown', 'Take it down')
+                      : tt('studio.layerTakeUp', 'Take it up')}
+                  </button>
+                </div>
+
+                {/* What is in it. One control listing both what V-ENT draws
+                    and what this organiser uploaded, because to an operator
+                    they are the same decision: what goes in this layer. */}
+                <select className={styles.layerPick}
+                        value={layer.holds === 'overlay'
+                          ? `overlay:${layer.overlay_id}` : `kind:${layer.item_kind}`}
+                        disabled={busy}
+                        onChange={(e) => {
+                          const [what, which] = e.target.value.split(':');
+                          cue(layer.role, what === 'overlay'
+                            ? { overlay_id: which }
+                            : { item_kind: which });
+                        }}>
+                  <option value="kind:">{tt('studio.layerEmpty', 'Nothing')}</option>
+                  <optgroup label={tt('studio.layerHouse', 'V-ENT graphics')}>
+                    {orderedKinds.map((k) => (
+                      <option key={k} value={`kind:${k}`}>{LABELS[k] || k}</option>
+                    ))}
+                  </optgroup>
+                  {(live.overlays || []).length > 0 && (
+                    <optgroup label={tt('studio.layerUploaded', 'Your uploads')}>
+                      {live.overlays.map((o) => (
+                        <option key={o.id} value={`overlay:${o.id}`}>{o.name}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+
+                {/* The address for this layer, copied once. */}
+                <div className={styles.layerUrlRow}>
+                  <p className={styles.elUrl}>{live.slot_urls?.[layer.role]}</p>
+                  <button type="button" className={styles.copyBtn}
+                          onClick={() => copy(`slot-${layer.role}`, live.slot_urls?.[layer.role])}>
+                    {copied === `slot-${layer.role}`
+                      ? tt('studio.copied', 'Copied')
+                      : tt('studio.copyUrl', 'Copy URL')}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>}
 
           {section === 'graphics' && <>
           <p className={styles.hint}>

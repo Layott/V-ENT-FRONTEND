@@ -325,3 +325,74 @@
 }
 
 .nudgeInput:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* THE FOUR LAYERS.
+   Once the four browser sources are pasted into OBS this panel is the whole
+   operator's job, so it is the first section and the controls are large. */
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.layer {
+  background-color: #2a2b30;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.layerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.layerName {
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.95rem;
+}
+
+/* On air and off air read as different FILLS, never as a ring, and never as a
+   glow. A layer that is up is the one thing an operator must be able to see
+   from across a gallery. */
+.layerOn,
+.layerOff {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.layerOn { background-color: var(--v-ent-red); color: #fff; }
+.layerOff { background-color: #33343a; color: rgba(255, 255, 255, 0.75); }
+.layerOn:disabled,
+.layerOff:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.layerPick {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.layerUrlRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 767px) {
+  .layerHead { flex-direction: column; align-items: stretch; }
+  .layerOn, .layerOff { width: 100%; }
+}

@@ -1,0 +1,249 @@
+/* Feedback.
+ *
+ * CEO, 7 September 2026: "the pricing and feedback pages are ugly please look
+ * at the UI and rethink them."
+ *
+ * The first version was a grey slab floating in the middle of an empty page,
+ * with two native dropdowns in it. Three things wrong, and they compound:
+ *
+ *   - It was CENTRED while every other page on this site is left aligned under
+ *     the sidebar, so it read as a different product.
+ *   - Two native `<select>`s. This site picks with filled chips everywhere
+ *     else, a chip shows every option at once instead of hiding them behind a
+ *     tap, and on Android a native select draws the platform's own light grey
+ *     box in the middle of a dark page.
+ *   - The heading and the explanation were pushed off screen by the slab, so
+ *     the first thing a reader met was a form with no reason attached.
+ *
+ * Now: left aligned like the rest of the site, the question at scale, chips to
+ * choose with, and the box to type in sized like the part that matters.
+ */
+
+/* The page ground is #131316, and `--primary-bg` on this site is WHITE:
+   it is used as a TEXT colour on dark surfaces (see globals.css, where
+   `color: var(--primary-bg)` appears throughout). Using it as a background
+   painted these two pages white, which is exactly what the CEO saw, and left
+   every heading inheriting a dark colour it could not be read against. */
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+.mainContainer { display: flex; }
+
+.rightPaneContainer {
+  width: 100%;
+  padding: 1.25rem 1rem 6rem;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  padding: 1.5rem 0 2rem;
+  max-width: 640px;
+}
+
+.headline {
+  color: var(--white);
+  font-size: 1.9rem;
+  line-height: 1.12;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.9rem;
+}
+
+.lede {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.62);
+  margin: 0;
+  max-width: 56ch;
+}
+
+/* ------------------------------------------------------------------- form */
+
+/* No slab. The page IS the form, so the groups sit on the page ground and only
+   the things you type into get a surface. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.85rem;
+  max-width: 680px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.legend {
+  font-size: 0.82rem;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0;
+}
+
+/* Filled chips, stronger fill when chosen. Never a ring. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip,
+.chipOn {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.chip:hover { background-color: #33343a; color: rgba(255, 255, 255, 0.85); }
+
+.chipOn {
+  background-color: var(--v-ent-success);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* The part that matters, sized like it. */
+.textarea {
+  width: 100%;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.1rem 1.15rem;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.textarea::placeholder { color: rgba(255, 255, 255, 0.32); }
+
+.input {
+  width: 100%;
+  background-color: var(--overlay-gray);
+  border-radius: 12px;
+  padding: 0 1.05rem;
+  min-height: 48px;
+  color: #fff;
+  font-size: 0.98rem;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.32); }
+
+.count {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.send {
+  min-height: 50px;
+  padding: 0 1.75rem;
+  border-radius: 12px;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.98rem;
+  cursor: pointer;
+}
+
+.send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.note {
+  margin: 0;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.error {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background-color: #3a2326;
+  color: #ff9ea2;
+  font-size: 0.92rem;
+}
+
+/* ------------------------------------------------------------------- done */
+
+.done {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.85rem 1.5rem;
+  background-color: var(--overlay-gray);
+  border-radius: 20px;
+}
+
+.doneTitle {
+  font-size: 1.3rem;
+  font-weight: var(--fw-semi-bold);
+  margin: 0;
+  color: var(--v-ent-success);
+}
+
+.doneRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+}
+
+.quiet {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.quiet:hover { background-color: #33343a; color: #fff; }
+
+/* ------------------------------------------------------------ breakpoints */
+
+@media only screen and (min-width: 768px) {
+  .headline { font-size: 2.4rem; }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2.5rem 2.5rem 4rem;
+    max-width: 1100px;
+  }
+  .headline { font-size: 2.6rem; }
+}
+
+@media only screen and (min-width: 1440px) {
+  .rightPaneContainer { padding: 3rem 3rem 5rem; }
+}
