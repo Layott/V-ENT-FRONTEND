@@ -11,12 +11,13 @@
 // reports on those rather than inventing a second thing called a community.
 // One model per concept.
 //
-// This page READS. Moderating a single message already lives on the club
-// itself, where the person doing it can see what they are moderating; a
-// second place to delete a message from, with no context around it, is how
-// the wrong one gets deleted.
+// This listing READS. Moderating happens on the community's own screen, where
+// the person doing it can see the discussion around the thing they are acting
+// on: a delete button in a list with no context is how the wrong message gets
+// removed.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -92,27 +93,34 @@ function CommunitiesInner() {
           {error ? <p className={shared.errorText}>{error}</p> : null}
 
           <div className={shared.card}>
-            {loading ? <p className={shared.emptyText}>{tt('ui.loading', 'Loading...')}</p>
-              : rows.length === 0 ? <p className={shared.emptyText}>
+            {loading ? <p className={shared.stateText}>{tt('ui.loading', 'Loading...')}</p>
+              : rows.length === 0 ? <p className={shared.stateText}>
                   {search ? tt('adminClubs.noneMatch', 'No community matches that.')
                     : tt('adminClubs.none', 'There are no communities yet.')}
                 </p>
-              : <table className={shared.table}>
+              : <div className={shared.tableWrap}><table className={shared.table}>
                   <thead>
                     <tr>
                       <th>{tt('adminClubs.colName', 'Community')}</th>
                       <th>{tt('adminClubs.colMembers', 'Members')}</th>
                       <th>{tt('adminClubs.colMessages', 'Messages')}</th>
+                      <th className={shared.hideMobile}>{tt('adminClubs.colTopics', 'Topics')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rows.map(club => <tr key={club.slug}>
-                        <td><strong>{club.name}</strong></td>
+                        <td>
+                          <Link className={shared.sectionLink}
+                                href={`/admin/communities/${club.slug}`}>
+                            <strong>{club.name}</strong>
+                          </Link>
+                        </td>
                         <td>{formatNumber(club.members)}</td>
                         <td>{formatNumber(club.messages)}</td>
+                        <td className={shared.hideMobile}>{formatNumber(club.topics)}</td>
                       </tr>)}
                   </tbody>
-                </table>}
+                </table></div>}
           </div>
         </main>
       </div>

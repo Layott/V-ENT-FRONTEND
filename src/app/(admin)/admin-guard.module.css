@@ -1,0 +1,61 @@
+/* The console's refusal screen.
+   Filled surfaces and space, no strokes, no glow, matching the console. */
+
+.wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #131316;
+}
+
+.panel {
+  width: 100%;
+  max-width: 30rem;
+  background: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  margin: 0 0 0.9rem;
+}
+
+.body {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 1rem;
+}
+
+.needed {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.4rem;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    padding: 1.5rem 1.15rem;
+  }
+
+  .back {
+    width: 100%;
+  }
+}

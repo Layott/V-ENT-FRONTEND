@@ -113,3 +113,15 @@
   transform: translateX(16px);
   background-color: #fff;
 }
+
+/* The toggle track stays 38x22 because that is what a switch looks like. What
+ * grows on a phone is the area you can press: the label around it, which is
+ * what the finger actually lands on. */
+@media only screen and (max-width: 767px) {
+  .switch {
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .slider { top: 11px; bottom: 11px; }
+}

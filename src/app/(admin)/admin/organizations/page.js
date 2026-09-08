@@ -16,6 +16,7 @@
 // platform loses an argument it cannot reconstruct.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -42,6 +43,14 @@ function OrganizationsInner() {
 
   // Moving money between two wallets. Held open per organisation so the form
   // cannot be filled in against one row and submitted against another.
+  // Making one. The owner is an existing account by name, because an
+  // organisation with no owner is an organisation nobody can run.
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newType, setNewType] = useState('esports');
+  const [newOwner, setNewOwner] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+
   const [moving, setMoving] = useState(null);
   const [toKind, setToKind] = useState('user');
   const [to, setTo] = useState('');
@@ -103,6 +112,34 @@ function OrganizationsInner() {
     }
   };
 
+  const createOrg = async () => {
+    const token = localStorage.getItem('adminToken');
+    setSending(true);
+    try {
+      const res = await fetch(`${API}/auth/admin/organizations/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newName.trim(), org_type: newType,
+          owner: newOwner.trim(), description: newDesc.trim(),
+        }),
+      });
+      const body = await res.json();
+      if (!res.ok || body.status !== 'success') {
+        toast.error(apiMessage(tt, body, 'api.couldNotSave', 'That did not save.'));
+        return;
+      }
+      toast.success(tt('adminOrgs.created', 'Created. It is owned by {who}.')
+        .replace('{who}', newOwner.trim()));
+      setCreating(false); setNewName(''); setNewOwner(''); setNewDesc('');
+      setTick((t) => t + 1);
+    } catch {
+      toast.error(tt('api.networkProblem', 'The network is not answering. Try again.'));
+    } finally {
+      setSending(false);
+    }
+  };
+
   const moveFunds = async () => {
     const token = localStorage.getItem('adminToken');
     setSending(true);
@@ -144,17 +181,23 @@ function OrganizationsInner() {
               <h1 className={shared.pageTitle}>{tt('adminOrgs.title', 'Organisations')}</h1>
               <p className={shared.pageSubtitle}>{tt('adminOrgs.sub', 'Every organisation on the platform, what it holds, and who runs it.')}</p>
             </div>
+            <div className={shared.pageActions}>
+              <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+                      onClick={() => setCreating(true)}>
+                {tt('adminOrgs.create', 'Create one')}
+              </button>
+            </div>
           </div>
 
           {error ? <p className={shared.errorText}>{error}</p> : null}
 
           <div className={shared.card}>
-            {loading ? <p className={shared.emptyText}>{tt('ui.loading', 'Loading...')}</p>
-              : rows.length === 0 ? <p className={shared.emptyText}>
+            {loading ? <p className={shared.stateText}>{tt('ui.loading', 'Loading...')}</p>
+              : rows.length === 0 ? <p className={shared.stateText}>
                   {search ? tt('adminOrgs.noneMatch', 'No organisation matches that.')
                     : tt('adminOrgs.none', 'There are no organisations yet.')}
                 </p>
-              : <table className={shared.table}>
+              : <div className={shared.tableWrap}><table className={shared.table}>
                   <thead>
                     <tr>
                       <th>{tt('adminOrgs.colName', 'Organisation')}</th>
@@ -167,7 +210,12 @@ function OrganizationsInner() {
                   </thead>
                   <tbody>
                     {rows.map(org => <tr key={org.org_id}>
-                        <td><strong>{org.name}</strong></td>
+                        <td>
+                          <Link className={shared.sectionLink}
+                                href={`/admin/organizations/${org.slug}`}>
+                            <strong>{org.name}</strong>
+                          </Link>
+                        </td>
                         <td className={shared.hideMobile}>{org.type}</td>
                         <td className={shared.hideMobile}>{formatNumber(org.members)}</td>
                         <td className={shared.hideMobile}>{org.owner || '-'}</td>
@@ -189,10 +237,49 @@ function OrganizationsInner() {
                         </td>
                       </tr>)}
                   </tbody>
-                </table>}
+                </table></div>}
           </div>
         </main>
       </div>
+
+      {creating ? <div className={shared.modalOverlay} onClick={(e) => {
+        if (e.target === e.currentTarget) setCreating(false);
+      }}>
+        <div className={shared.modal}>
+          <h3 className={shared.modalTitle}>{tt('adminOrgs.createTitle', 'Create an organisation')}</h3>
+          <p className={shared.modalSub}>
+            {tt('adminOrgs.createSub', 'It is owned by an account that already exists. The type decides what it can run, so a team organisation gets no ticketing and an event organiser does.')}
+          </p>
+          <input className={shared.modalInput} value={newName} maxLength={148} autoComplete="off"
+                 placeholder={tt('adminOrgs.namePlaceholder', 'What it is called')}
+                 onChange={(e) => setNewName(e.target.value)} />
+          <select className={shared.modalInput} value={newType}
+                  onChange={(e) => setNewType(e.target.value)}>
+            <option value="team">{tt('adminOrgs.typeTeam', 'Team or club')}</option>
+            <option value="esports">{tt('adminOrgs.typeEsports', 'Esports organisation')}</option>
+            <option value="events">{tt('adminOrgs.typeEvents', 'Event organiser')}</option>
+            <option value="brand">{tt('adminOrgs.typeBrand', 'Brand or sponsor')}</option>
+            <option value="community">{tt('adminOrgs.typeCommunity', 'Community or fan group')}</option>
+            <option value="mixed">{tt('adminOrgs.typeMixed', 'A bit of everything')}</option>
+          </select>
+          <input className={shared.modalInput} value={newOwner} autoComplete="off"
+                 placeholder={tt('adminOrgs.ownerPlaceholder', 'Who owns it: a username or email address')}
+                 onChange={(e) => setNewOwner(e.target.value)} />
+          <input className={shared.modalInput} value={newDesc} maxLength={280}
+                 placeholder={tt('adminOrgs.descPlaceholder', 'What it does, in a sentence')}
+                 onChange={(e) => setNewDesc(e.target.value)} />
+          <div className={shared.modalActions}>
+            <button type="button" className={shared.actView} onClick={() => setCreating(false)}>
+              {tt('ui.cancel', 'Cancel')}
+            </button>
+            <button type="button" className={shared.actApprove}
+                    disabled={sending || !newName.trim() || !newOwner.trim()}
+                    onClick={createOrg}>
+              {sending ? tt('adminOrgs.creating', 'Creating...') : tt('adminOrgs.createDo', 'Create it')}
+            </button>
+          </div>
+        </div>
+      </div> : null}
 
       {/* Moving an organisation's money. It goes through the same transfer as
           every other movement on the platform, so it writes both lines and
