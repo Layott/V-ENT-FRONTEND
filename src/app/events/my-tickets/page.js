@@ -403,7 +403,12 @@ const MyTickets = () => {
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>{tt("ui.attendee.aabc", "Attendee")}</span>
                   <span className={styles.qrFactValue}>
-                    {activeTicket.holder?.full_name || activeTicket.attendee_name || '-'}
+                    {/* A ticket holder may be a guest with no account at all,
+                        and UserChip draws exactly that: plain text, no link,
+                        because there is no profile to open. */}
+                    {activeTicket.holder
+                      ? <UserChip user={activeTicket.holder} size={24} />
+                      : (activeTicket.attendee_name || '-')}
                   </span>
                 </div>
                 <div className={styles.qrFact}>

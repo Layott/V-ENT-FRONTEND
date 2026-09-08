@@ -186,7 +186,9 @@ const TeamProfileMembersTable = ({
                   <Avatar src={mediaUrl(m.profile_pic)} name={m.username || m.full_name} size={36} />
                 </div>
                 <div>
-                  <p className={styles.memberName}>{m.full_name || m.username}</p>
+                  <p className={styles.memberName}>
+                    <UserChip user={m} size={0} />
+                  </p>
                   <p className={styles.memberHandle}>@{m.username}</p>
                 </div>
               </div>

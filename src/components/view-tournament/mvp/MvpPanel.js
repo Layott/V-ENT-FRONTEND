@@ -105,7 +105,7 @@ export default function MvpPanel({ tournamentId }) {
               <tr key={row.player_id}>
                 <td className={styles.posCol}>{row.position}</td>
                 <td className={styles.nameCol}>
-                  {row.username}
+                  <UserChip user={row} size={24} />
                   {row.side && <span className={styles.side}>{row.side}</span>}
                 </td>
                 <td className={styles.numCol}>{row.matches}</td>

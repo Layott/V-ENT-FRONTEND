@@ -1626,3 +1626,10 @@
   font-size: 0.85rem;
   color: var(--v-ent-red);
 }
+
+/* The name inside the chip, so the chip's own text keeps the weight the feed
+   was designed with. The surrounding .postAuthorName still owns the row. */
+.postAuthorNameText {
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}

@@ -792,8 +792,8 @@ const CommunityInner = () => {
                       </Link>
                       <div className={styles.postAuthorInfo}>
                         <span className={styles.postAuthorName}>
-                          {post.author.full_name}
-                          {post.author.founder_badge && <FounderBadge size="sm" />}
+                          <UserChip user={post.author} size={0}
+                                    nameClassName={styles.postAuthorNameText} />
                           {post.author.verified && <span className={styles.verifiedDot} title={tt("ui.verified.aed3", "Verified")} />}
                         </span>
                         <span className={styles.postAuthorHandle}>@{post.author.username}</span>

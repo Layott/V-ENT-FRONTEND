@@ -215,7 +215,9 @@ const UserPicker = ({
                     <Avatar src={mediaUrl(user.avatar)} name={user.username || user.full_name} size={36} />
                   </span>
                   <span className={styles.who}>
-                    <span className={styles.name}>{user.full_name}{user.founder_badge && <FounderBadge size="sm" />}</span>
+                    <span className={styles.name}>
+                      <UserChip user={user} size={0} link={false} />
+                    </span>
                     <span className={styles.handle}>@{user.username}</span>
                   </span>
                   {gated && !user.can_message && (

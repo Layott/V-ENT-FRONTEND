@@ -98,6 +98,96 @@ function rendersName(line) {
   return true;
 }
 
+/**
+ * `@{x.username}`: a handle, which is a different thing from a name.
+ *
+ * The founder mark and the link belong to the NAME. A handle printed under a
+ * chipped name is right, and treating it as a fault is how a checker ends up
+ * reporting twenty-three things when about ten are real.
+ */
+function isHandle(line) {
+  const at = line.search(NAME_EXPR);
+  if (at < 0) return false;
+  return line.slice(0, at).trimEnd().endsWith('@');
+}
+
+/**
+ * Proven both ways, and with TWO instances in one fixture on purpose.
+ *
+ * A one-instance fixture passes under the right rule AND under the old
+ * first-hit-per-file rule, so it cannot tell them apart. That is exactly how
+ * this checker read clean for days while hiding nine hand-written names.
+ *
+ *   node scripts/check-user-chips.mjs --self-test
+ */
+function selfTest() {
+  const cases = [
+    {
+      name: 'two hand-written names in one file are BOTH reported',
+      chipped: false,
+      src: ["<span>{post.author.full_name}</span>",
+            "<span>{comment.author.full_name}</span>"],
+      expect: 2,
+    },
+    {
+      name: 'a name is reported even when the file imports the chip',
+      chipped: true,
+      src: ["<UserChip user={post.author} />",
+            "<span>{comment.author.full_name}</span>"],
+      expect: 1,
+    },
+    {
+      name: 'a handle beside a chipped name is fine',
+      chipped: true,
+      src: ["<UserChip user={u} />", "<span>@{u.username}</span>"],
+      expect: 0,
+    },
+    {
+      name: 'a handle standing in for the name, with no chip, is reported',
+      chipped: false,
+      src: ["<span>@{u.username}</span>"],
+      expect: 1,
+    },
+    {
+      name: 'an attribute is not a rendered name',
+      chipped: false,
+      src: ["<Avatar name={u.full_name} />"],
+      expect: 0,
+    },
+    {
+      name: 'a template literal is a string, not a name on screen',
+      chipped: false,
+      src: ["const msg = `hello ${u.full_name}`;"],
+      expect: 0,
+    },
+    {
+      name: 'one level of nesting still counts',
+      chipped: false,
+      src: ["<span>{m.user?.full_name}</span>"],
+      expect: 1,
+    },
+  ];
+
+  let failures = 0;
+  for (const one of cases) {
+    let found = 0;
+    for (const line of one.src) {
+      if (!rendersName(line)) continue;
+      if (isHandle(line) && one.chipped) continue;
+      found += 1;
+    }
+    const ok = found === one.expect;
+    if (!ok) failures += 1;
+    console.log(`${ok ? 'ok  ' : 'FAIL'}: ${one.name} (expected ${one.expect}, got ${found})`);
+  }
+  console.log(failures === 0
+    ? `${cases.length} self-test case(s) pass`
+    : `${failures} self-test case(s) FAILED`);
+  return failures === 0 ? 0 : 1;
+}
+
+if (process.argv.includes('--self-test')) process.exit(selfTest());
+
 const offenders = [];
 let checked = 0;
 
@@ -113,10 +203,31 @@ for (const file of walk(SRC)) {
   const lines = src.split('\n');
   if (!lines.some(rendersName)) continue;
   checked += 1;
-  if (src.includes('user-chip/UserChip')) continue;
 
-  const line = lines.findIndex(rendersName) + 1;
-  offenders.push(`${rel}:${line} renders a name without UserChip`);
+  // EVERY hand-written name, not the first, and no whole-file exemption for a
+  // file that happens to import the chip.
+  //
+  // Both of those made this checker go blind exactly where somebody had just
+  // worked: fixing the line it reported ADDED the import, and every other
+  // hand-written name in that file became invisible for ever. On 8 September
+  // 2026 that was hiding 23 names across 12 files, 17 of them with no founder
+  // mark, while this read clean and the CEO's 29 August bug was still shipping.
+  //
+  // A check that stops at the first hit per file counts how many FILES are
+  // dirty, and then gets quoted as how many THINGS are wrong.
+  // A file that renders the NAME through the chip may still print the handle
+  // under it, and that is correct: the founder mark belongs to the name, and
+  // "@winlola" under a chip is a handle, not a second name.
+  const chipped = src.includes('user-chip/UserChip');
+
+  lines.forEach((text, index) => {
+    if (!rendersName(text)) return;
+    // `@{x.username}` is a handle. Beside a chipped name it is fine; with no
+    // chip anywhere in the file it IS the name being shown, so it is not.
+    if (isHandle(text) && chipped) return;
+    const what = isHandle(text) ? 'shows a handle as the name' : 'renders a name';
+    offenders.push(`${rel}:${index + 1} ${what}, without UserChip`);
+  });
 }
 
 console.log(`files rendering a name: ${checked}`);
