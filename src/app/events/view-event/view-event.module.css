@@ -1701,3 +1701,72 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .runOfShowLink:hover {
   background-color: rgba(255, 255, 255, 0.14);
 }
+
+/* What the organiser is offering, said on the card rather than discovered at
+   the checkout. A group rate and an early bird price were both settable and
+   both invisible until 8 September, so a buyer paid the list price for four
+   when the organiser had set a cheaper rate for exactly that. */
+.tierOffer {
+  font-size: 0.74rem;
+  color: var(--v-ent-success);
+  margin: 0;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* A presale code. Filled surfaces and space, no strokes. */
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  background: #2a2b30;
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.codeLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.codeInput {
+  flex: 1 1 9rem;
+  min-width: 0;
+  background: #33343a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  font-size: 0.85rem;
+  min-height: 44px;
+}
+
+.codeInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.codeBtn {
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  min-height: 44px;
+}
+
+.codeResult {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin: -0.4rem 0 0.9rem;
+}
+
+@media (max-width: 720px) {
+  .codeRow {
+    align-items: stretch;
+  }
+
+  .codeBtn {
+    width: 100%;
+  }
+}
