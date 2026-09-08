@@ -258,6 +258,26 @@ const enclosedByGuard = (src, at) => {
   return false;
 };
 
+/**
+ * An early return that fires when signed out, above the control.
+ *
+ * Different from a ternary in the one way that matters: nothing after it
+ * renders at all, so a control below cannot reach a signed-out reader through
+ * any branch. `SharedWallet` is written this way and the proximity rule
+ * reported both its controls, neither of which a stranger can see.
+ *
+ * The return has to look like a RENDER return - `return <jsx` or `return null`
+ * - because the same condition inside a loader (`{ setLoading(false); return; }`)
+ * stops a fetch and not a screen. That distinction is the whole safety of this
+ * exception, and there is a fixture for both sides of it.
+ */
+const SIGNED_OUT_RETURN = new RegExp(
+  'if\\s*\\(\\s*(?:!\\s*(?:token|session|viewer\\.signedIn|signedIn|isAuthed)'
+  + '|status\\s*!==\\s*.authenticated.)[^)]*\\)\\s*(?:\\{\\s*)?return\\s*(?:<|null|\\()',
+  'm');
+
+const returnedBefore = (src, at) => SIGNED_OUT_RETURN.test(src.slice(0, at));
+
 let unguarded = 0;
 
 let identity = 0;
@@ -322,6 +342,7 @@ for (const file of files) {
         const near = src.slice(Math.max(0, m.index - 220), m.index + 60);
         if (GUARD.test(near)) continue;
         if (enclosedByGuard(src, m.index)) continue;
+        if (returnedBefore(src, m.index)) continue;
         unguarded += 1;
         const line = src.slice(0, m.index).split('\n').length;
         report.push(`${rel}:${line}\n  a control calling ${m[1]}() sends an Authorization header and is`
@@ -411,6 +432,38 @@ const FIXTURES = [
   );`,
   },
   {
+    // The shape SharedWallet is written in. Nothing below the return renders,
+    // so there is no branch a stranger can be in.
+    name: 'a whole component behind an early return',
+    shouldFlag: false,
+    src: `
+  const post = async (body) => {
+    await fetch(url, { method: 'POST', headers: { Authorization: \`Bearer \${token}\` } });
+  };
+  if (!token) return <p>Sign in to see this wallet.</p>;
+  const view = () => (
+    <button type="button" onClick={() => post({ action: 'send' })}>Send</button>
+  );`,
+  },
+  {
+    // And the same condition where it stops a FETCH rather than a screen. The
+    // control below is still live to a stranger, so this must still be caught:
+    // it is the one way the exception above could hide a real fault.
+    name: 'the same condition inside a loader, not a render',
+    shouldFlag: true,
+    src: `
+  const load = async () => {
+    if (!token) { setLoading(false); return; }
+    await fetch(url);
+  };
+  const post = async (body) => {
+    await fetch(url, { method: 'POST', headers: { Authorization: \`Bearer \${token}\` } });
+  };
+  const view = () => (
+    <button type="button" onClick={() => post({ action: 'send' })}>Send</button>
+  );`,
+  },
+  {
     name: 'a tab strip beside a handler that does authenticate',
     shouldFlag: false,
     src: `
@@ -432,6 +485,7 @@ const flagsFound = (src) => {
     const near = src.slice(Math.max(0, m.index - 220), m.index + 60);
     if (GUARD.test(near)) continue;
     if (enclosedByGuard(src, m.index)) continue;
+    if (returnedBefore(src, m.index)) continue;
     n += 1;
   }
   return n;
