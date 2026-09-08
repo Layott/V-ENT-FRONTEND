@@ -28,6 +28,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
+import PlanCard from '@/components/memberships/PlanCard';
 // `needs` names the capability a tab depends on. Without it the screen said
 // "this organisation does not do events" in Key stats and "here are its
 // events" in the tab strip at the same time, which reads as a bug in the
@@ -50,6 +51,12 @@ const TABS = [{
   id: 'events',
   label: 'Events',
   needs: 'events'
+}, {
+  // What the organisation sells as a membership. No `needs`: any organisation
+  // can sell one, including a club that runs nothing else, which is precisely
+  // the kind that has something to sell.
+  id: 'memberships',
+  label: 'Memberships'
 }, {
   id: 'members',
   label: 'Members'
@@ -122,6 +129,8 @@ const OrgProfileContent = ({
   const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
   const [clubs, setClubs] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [myPlans, setMyPlans] = useState({});
   const [members, setMembers] = useState([]);
   const [activity, setActivity] = useState([]);
   const [following, setFollowing] = useState(false);
@@ -193,6 +202,24 @@ const OrgProfileContent = ({
       setActivity(actData?.data?.activity || []);
       const clubData = await clubRes.json().catch(() => null);
       setClubs(clubData?.data?.clubs || []);
+      // The memberships this organisation sells. A separate request rather
+      // than a field on the organisation, because the same endpoint feeds the
+      // organiser's console and the two must not be able to disagree about
+      // what exists.
+      const planRes = await fetch(`${API}/billing/plans/?org=${encodeURIComponent(orgId)}`, {
+        headers
+      }).catch(() => null);
+      const planData = planRes ? await planRes.json().catch(() => null) : null;
+      setPlans(planData?.data?.plans || []);
+      // What the viewer already holds, asked ONCE for the whole list.
+      // `/billing/entitlements/` answers for every plan at once; six plans
+      // asking one endpoint each would be six round trips, and from Los
+      // Angeles that is well over a second of nothing.
+      const entRes = await fetch(`${API}/billing/entitlements/`, {
+        headers
+      }).catch(() => null);
+      const entData = entRes ? await entRes.json().catch(() => null) : null;
+      setMyPlans(Object.fromEntries((entData?.data?.memberships || []).map(m => [m.plan_slug, m])));
     } catch (err) {
       setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
@@ -789,6 +816,11 @@ const OrgProfileContent = ({
                 {members.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.members.yet.ea27", "No members yet.")}</div>}
               </div>}
 
+            {shownTab === 'memberships' && (plans.length ? <div className={styles.membershipList}>
+                {plans.map(plan => <PlanCard key={plan.slug} plan={plan} href={`/plans/${plan.slug}`} showSeller={false} mine={myPlans[plan.slug] || null} />)}
+              </div> : <div className={styles.sectionEmpty}>
+                {tt("billing.orgNoPlans", "This organisation does not sell a membership yet.")}
+              </div>)}
             {shownTab === 'wallet' && <SharedWallet kind="org" reference={org.slug || orgId} name={org.org_name || org.name} />}
             {shownTab === 'about' && <div className={styles.aboutGrid}>
                 <section className={styles.panel}>

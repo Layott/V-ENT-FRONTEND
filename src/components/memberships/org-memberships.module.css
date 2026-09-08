@@ -1,0 +1,354 @@
+/* The memberships tab on the organisation console. Filled surfaces, zebra
+   rows, no strokes anywhere. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.statLabel {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.statValue {
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.statValueDue {
+  color: #ff8a8e;
+}
+
+.planRow {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.planHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.planName {
+  margin: 0;
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.planMeta {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.numbers {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background-color: #2a2b30;
+  border-radius: 8px;
+  padding: 0.28rem 0.6rem;
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.chipDraft {
+  background-color: #3a3216;
+  color: #e8c760;
+}
+
+.chipDue {
+  background-color: #3a1e1f;
+  color: #ff8a8e;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.action {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--v-ent-success);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-mobile);
+  cursor: pointer;
+  transition: background-color ease-in-out 0.15s;
+}
+
+.action:hover {
+  background-color: var(--v-ent-success-light);
+}
+
+.action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.actionQuiet {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.actionQuiet:hover {
+  background-color: #3d3e45;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  background-color: #2a2b30;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+  font-size: var(--fs-p-size-mobile);
+}
+
+.table th {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-sm-mobile);
+}
+
+.table td {
+  padding: 0.7rem 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  vertical-align: middle;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #303136;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.rowAction {
+  /* 44px, because End ends somebody's membership and it sits in a table row
+     next to other rows. A 36px target on a phone is how the wrong person gets
+     removed. */
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #3d3e45;
+  color: #fff;
+  font-size: var(--fs-p-size-sm-mobile);
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.rowAction:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.statePaid { color: var(--v-ent-success-light); font-weight: var(--fw-semi-bold); }
+.stateFailed { color: #ff8a8e; font-weight: var(--fw-semi-bold); }
+.stateRefunded { color: #e8c760; font-weight: var(--fw-semi-bold); }
+
+/* ── The form ── */
+
+.form {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.formTitle {
+  margin: 0;
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: var(--fw-semi-bold);
+}
+
+.hint {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.5;
+}
+
+.input,
+.textarea,
+.select {
+  background-color: #303136;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  min-height: 44px;
+  font-size: var(--fs-p-size-mobile);
+  font-family: inherit;
+  width: 100%;
+  outline: none;
+}
+
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  outline: 2px solid var(--v-ent-success);
+  outline-offset: 2px;
+}
+
+.benefitGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.benefitRow {
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  min-height: 44px;
+}
+
+.benefitText {
+  flex: 1 1 200px;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 0;
+}
+
+.benefitNumber {
+  width: 96px;
+  background-color: #303136;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-height: 40px;
+  font-size: var(--fs-p-size-mobile);
+  outline: none;
+}
+
+.formError {
+  background-color: #3a1e1f;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: var(--fs-p-size-mobile);
+  color: #ffb4b7;
+}
+
+.sectionEmpty {
+  background-color: #2a2b30;
+  border-radius: 14px;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.skeleton {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  height: 140px;
+}
+
+.error {
+  background-color: #3a1e1f;
+  border-radius: 14px;
+  padding: 1.25rem;
+  color: #ffb4b7;
+  font-size: var(--fs-p-size-mobile);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+/* Asking why a payment is being given back, inline rather than in a native
+   dialog. A window.prompt cannot be translated and is refused outright in
+   some contexts, which would leave the control looking alive and being dead. */
+.refundRow {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.refundReason {
+  background-color: #303136;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  min-height: 36px;
+  min-width: 180px;
+  font-size: var(--fs-p-size-sm-mobile);
+  font-family: inherit;
+  outline: none;
+}
+
+.refundReason:focus-visible {
+  outline: 2px solid var(--v-ent-success);
+  outline-offset: 2px;
+}

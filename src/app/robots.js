@@ -18,6 +18,10 @@ export default function robots() {
           '/admin',           // staff only, and its own login
           '/api/',            // never useful to a crawler
           '/wallets',         // money, and personal by definition
+          '/memberships',     // what somebody pays for and every payment
+                              // they have made. The plans themselves live
+                              // at /plans/<name> and ARE public
+
           '/settings',
           '/notifications',
           '/edit-user-profile',
