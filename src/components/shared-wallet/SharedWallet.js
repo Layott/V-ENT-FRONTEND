@@ -45,6 +45,7 @@ export default function SharedWallet({ kind, reference, name }) {
   const [note, setNote] = useState('');
   const [pin, setPin] = useState('');
   const [newPin, setNewPin] = useState('');
+  const [code, setCode] = useState('');
 
   const path = kind === 'team'
     ? `${API}/auth/team/${encodeURIComponent(reference)}/wallet/`
@@ -89,7 +90,7 @@ export default function SharedWallet({ kind, reference, name }) {
       } else {
         setWallet(body.data);
         setNotice(tt(okKey, okText));
-        setTo(''); setAmount(''); setNote(''); setPin(''); setNewPin('');
+        setTo(''); setAmount(''); setNote(''); setPin(''); setNewPin(''); setCode('');
       }
     } catch {
       setError(tt('api.networkProblem', 'The network is not answering. Try again.'));
@@ -203,11 +204,29 @@ export default function SharedWallet({ kind, reference, name }) {
                      value={pin}
                      onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} />
 
+              {/* The code belongs to the PERSON pressing send, not to the
+                  team: a shared wallet has no device of its own. It appears
+                  only for somebody who has actually enrolled, so nobody is
+                  shown a field they have nothing to type into. */}
+              {wallet.requires_2fa ? (
+                <>
+                  <label className={styles.label} htmlFor="sw-code">
+                    {tt('wallet.authCode', 'Code from your authenticator app')}
+                  </label>
+                  <input id="sw-code" name="sw-code" className={styles.input}
+                         type="text" inputMode="numeric" autoComplete="one-time-code"
+                         value={code}
+                         onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
+                </>
+              ) : null}
+
               <button type="button" className={`${styles.primaryBtn} grnBTN`}
-                      disabled={busy || !to.trim() || !amount || pin.length < 4}
+                      disabled={busy || !to.trim() || !amount || pin.length < 4
+                                || (wallet.requires_2fa && code.length < 6)}
                       onClick={() => post({
                         action: 'send', to_kind: toKind, to: to.trim(),
                         amount: Number(amount), note, pin,
+                        ...(code ? { code } : {}),
                       }, 'wallet.sent', 'Sent.')}>
                 {busy ? tt('wallet.sending', 'Sending...') : tt('wallet.send', 'Send')}
               </button>

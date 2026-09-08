@@ -13,6 +13,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import { formatNumber, ngnFromVc, calcWithdrawFee, calcNetPayout, NIGERIAN_BANKS } from '@/components/wallet/walletHelpers';
 import PinPrompt from '@/components/wallet/PinPrompt';
+import UsdtDestination from '@/components/wallet/UsdtDestination';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -61,7 +62,14 @@ const WithdrawPage = () => {
   } = useSession();
   const [step, setStep] = useState(1);
   const [balance, setBalance] = useState(null);
+  const [requires2fa, setRequires2fa] = useState(false);
   const [kycVerified, setKycVerified] = useState(true);
+  // Which rail the money leaves by. Two destinations, one queue: the hold on
+  // the balance, the approval and the return on a denial are identical either
+  // way, and only where it goes differs.
+  const [rail, setRail] = useState('bank');
+  const [usdtAddress, setUsdtAddress] = useState(null);
+  const [usdtOpen, setUsdtOpen] = useState(null);
   const [tab, setTab] = useState('saved');
   const [savedBanks, setSavedBanks] = useState([]);
   const [selectedBankIdx, setSelectedBankIdx] = useState(0);
@@ -94,6 +102,7 @@ const WithdrawPage = () => {
         if (!cancelled && data?.status === 'success') {
           setBalance(Number(data.data?.balance ?? 0));
           setKycVerified(data.data?.kyc_verified ?? true);
+          setRequires2fa(Boolean(data.data?.requires_2fa));
         }
       } catch (err) {
         console.error('Balance fetch error:', err);
@@ -148,6 +157,18 @@ const WithdrawPage = () => {
       setError(tt("msg.insufficientBalance", "Insufficient balance."));
       return;
     }
+    if (rail === 'usdt') {
+      if (usdtOpen === false) {
+        setError(tt('wallet.usdtNotOpenShort', 'USDT payouts are not open yet. Use a bank transfer.'));
+        return;
+      }
+      if (!usdtAddress) {
+        setError(tt('wallet.pickAnAddress', 'Choose a confirmed crypto address to be paid to.'));
+        return;
+      }
+      setStep(2);
+      return;
+    }
     if (tab === 'saved') {
       if (!savedBanks.length) {
         setError(tt("msg.noSavedBankYetAdd", "No saved bank yet - add a new one."));
@@ -175,14 +196,26 @@ const WithdrawPage = () => {
   const [pinOpen, setPinOpen] = useState(false);
   const [pinError, setPinError] = useState('');
 
-  const handleSubmit = async (pin) => {
+  const handleSubmit = async (pin, code) => {
     setSubmitting(true);
     setError('');
     setPinError('');
-    const payload = {
+    const payload = rail === 'usdt' ? {
       amount: numericVc,
       amount_vc: numericVc,
       pin,
+      ...(code ? { code } : {}),
+      method: 'usdt',
+      // The address is named by its reference, never re-typed here. A
+      // destination typed into the payout form is how a compromised account
+      // empties a wallet, and a chain payment does not reverse.
+      address_ref: usdtAddress?.ref
+    } : {
+      amount: numericVc,
+      amount_vc: numericVc,
+      pin,
+      ...(code ? { code } : {}),
+      method: 'bank',
       bank_name: activeBank.bank_name,
       account_number: activeBank.account_number,
       account_name: activeBank.account_name
@@ -197,7 +230,9 @@ const WithdrawPage = () => {
       if (data?.status !== 'success') {
         const message = apiMessage(tt, data, "api.withdrawalRequestFailed", "Withdrawal request failed.");
         // A refused PIN is answered where it was typed.
-        if (/PIN/i.test(String(data?.code || '')) || /pin/i.test(message)) {
+        const failedCode = String(data?.code || '');
+        if (/PIN/i.test(failedCode) || /pin/i.test(message)
+            || failedCode === 'TWO_FACTOR_REQUIRED' || failedCode === 'INVALID_CODE') {
           setPinError(message);
         } else {
           setPinOpen(false);
@@ -210,7 +245,7 @@ const WithdrawPage = () => {
       setReference(data.data?.reference || `WDR-${Date.now().toString().slice(-8)}`);
 
       // Save bank for future if requested + on a "new" submission
-      if (tab === 'new' && savePref && typeof window !== 'undefined') {
+      if (rail === 'bank' && tab === 'new' && savePref && typeof window !== 'undefined') {
         try {
           const raw = localStorage.getItem(SAVED_BANKS_KEY);
           const list = raw ? JSON.parse(raw) : [];
@@ -285,8 +320,8 @@ const WithdrawPage = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
-              <h1 className={styles.pageTitle}>{tt("ui.withdraw.bank.ee6a", "Withdraw to Bank")}</h1>
-              <p className={styles.pageSubtitle}>{tt("ui.convert.vent.coins.ngn.e92d", "Convert VENT COINS to NGN and send to your bank.")}</p>
+              <h1 className={styles.pageTitle}>{tt('wallet.withdrawTitle', 'Withdraw')}</h1>
+              <p className={styles.pageSubtitle}>{tt('wallet.withdrawSubtitle', 'Turn VENT COINS into naira in your bank, or USDT in your own crypto wallet.')}</p>
             </div>
           </div>
 
@@ -310,7 +345,22 @@ const WithdrawPage = () => {
                   </div>
                 </div>
 
-                {numericVc > 0 && <div className={styles.summaryList}>
+                {/* A USDT payout has no naira figure to show, because there
+                    is no USDT rate on this platform that anybody transacts
+                    on. Printing one would be a number nobody can stand
+                    behind, so the coins are stated and nothing is invented. */}
+                {rail === 'usdt' && numericVc > 0 && <div className={styles.summaryList}>
+                    <div className={styles.summaryRow}>
+                      <span className={styles.summaryKey}>{tt('wallet.youAreAskingFor', 'You are asking for')}</span>
+                      <span className={styles.summaryVal}>{formatNumber(numericVc)} VC</span>
+                    </div>
+                    <div className={styles.summaryRow}>
+                      <span className={styles.summaryKey}>{tt('wallet.usdtAmount', 'Amount in USDT')}</span>
+                      <span className={styles.summaryVal}>{tt('wallet.setAtApproval', 'Set when the payout is approved')}</span>
+                    </div>
+                  </div>}
+
+                {rail === 'bank' && numericVc > 0 && <div className={styles.summaryList}>
                     <div className={styles.summaryRow}>
                       <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
                       <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
@@ -326,16 +376,38 @@ const WithdrawPage = () => {
                     </div>
                   </div>}
 
+                {/* Where it goes. Filled chips, the same shape as the bank
+                    tabs below, because they are the same kind of choice. */}
                 <div className={styles.modalTabs}>
+                  <button type="button" className={`${styles.modalTab} ${rail === 'bank' ? styles.modalTabActive : ''}`}
+                          aria-pressed={rail === 'bank'}
+                          onClick={() => { setRail('bank'); setError(''); }}>
+                    {tt('wallet.railBank', 'Bank, in naira')}
+                  </button>
+                  <button type="button" className={`${styles.modalTab} ${rail === 'usdt' ? styles.modalTabActive : ''}`}
+                          aria-pressed={rail === 'usdt'}
+                          onClick={() => { setRail('usdt'); setError(''); }}>
+                    {tt('wallet.railUsdt', 'USDT, to a crypto wallet')}
+                  </button>
+                </div>
+
+                {rail === 'usdt' && <UsdtDestination
+                  styles={styles}
+                  token={session?.user?.sessionToken}
+                  selected={usdtAddress}
+                  onSelect={setUsdtAddress}
+                  onEnabledChange={setUsdtOpen} />}
+
+                {rail === 'bank' && <div className={styles.modalTabs}>
                   <button type="button" className={`${styles.modalTab} ${tab === 'saved' ? styles.modalTabActive : ''}`} onClick={() => setTab('saved')}>
                     {tt("ui.saved.bank.486d", "Saved Bank")}
                   </button>
                   <button type="button" className={`${styles.modalTab} ${tab === 'new' ? styles.modalTabActive : ''}`} onClick={() => setTab('new')}>
                     {tt("ui.new.bank.2327", "New Bank")}
                   </button>
-                </div>
+                </div>}
 
-                {tab === 'saved' && (savedBanks.length > 0 ? <>
+                {rail === 'bank' && tab === 'saved' && (savedBanks.length > 0 ? <>
                       {savedBanks.map((b, idx) => <div key={`${b.bank_name}-${b.account_number}`} className={`${styles.bankRow} ${idx === selectedBankIdx ? styles.bankRowActive : ''}`} onClick={() => setSelectedBankIdx(idx)}>
                           <div>
                             <div className={styles.bankName}>
@@ -353,7 +425,7 @@ const WithdrawPage = () => {
               }}>{tt("ui.new.bank.2327", "New Bank")}</strong> {tt("ui.add.one.90a6", "to add one.")}
                     </p>)}
 
-                {tab === 'new' && <>
+                {rail === 'bank' && tab === 'new' && <>
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.bank.name.3126", "Bank Name")} <InfoTip id="bankName" /></span></label>
                       <select className={styles.formInput} value={bank} onChange={e => setBank(e.target.value)} style={{
@@ -391,7 +463,7 @@ const WithdrawPage = () => {
                 </div>
               </>}
 
-            {step === 2 && activeBank && <>
+            {step === 2 && (rail === 'usdt' ? usdtAddress : activeBank) && <>
                 <h2 style={{
               fontSize: '1rem',
               margin: '0 0 0.4rem'
@@ -406,12 +478,17 @@ const WithdrawPage = () => {
                 </p>
 
                 <div className={styles.bankRow}>
-                  <div>
+                  {rail === 'usdt' ? <div>
+                    <div className={styles.bankName}>{usdtAddress.network_label}</div>
+                    <div className={styles.bankHolder}>
+                      {usdtAddress.label ? `${usdtAddress.label} - ` : ''}{usdtAddress.short}
+                    </div>
+                  </div> : <div>
                     <div className={styles.bankName}>
                       {activeBank.bank_name} - ****{String(activeBank.account_number || '').slice(-4)}
                     </div>
                     <div className={styles.bankHolder}>{activeBank.account_name}</div>
-                  </div>
+                  </div>}
                 </div>
 
                 <div className={styles.summaryList}>
@@ -419,6 +496,10 @@ const WithdrawPage = () => {
                     <span className={styles.summaryKey}>{tt("ui.amount.43dc", "Amount")}</span>
                     <span className={`${styles.summaryVal} ${styles.summaryRed}`}>-{formatNumber(numericVc)} VC</span>
                   </div>
+                  {rail === 'usdt' ? <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>{tt('wallet.usdtAmount', 'Amount in USDT')}</span>
+                    <span className={styles.summaryVal}>{tt('wallet.setAtApproval', 'Set when the payout is approved')}</span>
+                  </div> : <>
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
                     <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
@@ -432,6 +513,7 @@ const WithdrawPage = () => {
                     <span className={styles.summaryKey}>{tt("ui.net.payout.ba12", "Net payout")}</span>
                     <span className={`${styles.summaryVal} ${styles.summaryGrn}`}>₦{formatNumber(netNgn)}</span>
                   </div>
+                  </>}
                 </div>
 
                 {error && <div className={`${styles.notice} ${styles.noticeError}`}>{error}</div>}
@@ -457,7 +539,7 @@ const WithdrawPage = () => {
                 <p className={styles.successSub}>
                   {tt("ui.request.1204", "Your request for")} <strong style={{
                 color: 'var(--primary-bg)'
-              }}>{formatNumber(numericVc)} VC</strong> (₦{formatNumber(netNgn)} {tt("ui.net.now.f6e0", "net) is now")} <strong style={{
+              }}>{formatNumber(numericVc)} VC</strong>{rail === 'bank' ? ` (₦${formatNumber(netNgn)} ` : ' '}{rail === 'bank' ? tt("ui.net.now.f6e0", "net) is now") : tt('wallet.isNow', 'is now')} <strong style={{
                 color: 'rgba(251,198,75,0.95)'
               }}>{tt("ui.pending.admin.approval.b741", "pending admin approval")}</strong>.
                 </p>
@@ -472,7 +554,9 @@ const WithdrawPage = () => {
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.destination.d427", "Destination")}</span>
                     <span className={styles.summaryVal}>
-                      {activeBank?.bank_name} ****{String(activeBank?.account_number || '').slice(-4)}
+                      {rail === 'usdt'
+                        ? `${usdtAddress?.network_label} ${usdtAddress?.short}`
+                        : `${activeBank?.bank_name} ****${String(activeBank?.account_number || '').slice(-4)}`}
                     </span>
                   </div>
                   <div className={styles.summaryRow}>
@@ -499,10 +583,21 @@ const WithdrawPage = () => {
         error={pinError}
         onCancel={() => { setPinOpen(false); setPinError(''); }}
         onConfirm={handleSubmit}
+        requires2fa={requires2fa}
         title={tt('wallet.withdraw.pinTitle', 'Confirm this payout')}
-        detail={activeBank
-          ? `${formatNumber(numericVc)} VC to ${activeBank.bank_name} ${activeBank.account_number}`
-          : ''}
+        detail={rail === 'usdt'
+          ? (usdtAddress
+            ? tt('wallet.withdrawSummaryUsdt', '{amount} VC to {network} {address}. It leaves your balance now and is returned if the payout is denied.')
+                .replace('{amount}', formatNumber(numericVc))
+                .replace('{network}', usdtAddress.network_label)
+                .replace('{address}', usdtAddress.short)
+            : '')
+          : (activeBank
+            ? tt('wallet.withdrawSummary', '{amount} VC to {bank} {account}. It leaves your balance now and is returned if the payout is denied.')
+                .replace('{amount}', formatNumber(numericVc))
+                .replace('{bank}', activeBank.bank_name)
+                .replace('{account}', activeBank.account_number)
+            : '')}
       />
     </div>;
 };
