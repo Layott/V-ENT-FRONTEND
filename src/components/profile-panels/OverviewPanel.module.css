@@ -201,6 +201,15 @@
   gap: 1.25rem;
 }
 
+/* One card, filling the row. A stranger sees the penalty count and no
+   balance, and a half empty two column grid would read as a card that
+   failed to load rather than one that was never theirs to see. */
+.statStripSingle {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
 .statCard {
   background-color: var(--overlay-gray);
 
@@ -398,7 +407,7 @@
 }
 
 @media (max-width: 480px) {
-  .statStrip { grid-template-columns: 1fr; }
+  .statStrip, .statStripSingle { grid-template-columns: 1fr; }
   .statsGrid { grid-template-columns: repeat(2, 1fr); }
   .gamesGrid { grid-template-columns: repeat(2, 1fr); }
   .achvGrid { grid-template-columns: repeat(3, 1fr); }

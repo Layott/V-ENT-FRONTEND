@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { formatNumber } from '@/lib/datetime';
 import styles from './OverviewPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -141,15 +142,25 @@ const OverviewPanel = ({
 
       {/* RIGHT COLUMN */}
       <div className={styles.rightCol}>
-        {/* Wallet + Penalty */}
-        <div className={styles.statStrip}>
-          <div className={styles.statCard}>
+        {/* Wallet + Penalty.
+
+            The balance is the OWNER'S only. The profile payload carries
+            `wallet_balance` for the person who is signed in and nothing for
+            anybody else, so this card drew "0" on every stranger's profile:
+            wrong as a number, and it reads as though V-ENT publishes what
+            everybody holds. The penalty count is public, and stands alone
+            when the balance is not shown. */}
+        <div className={isOwner ? styles.statStrip : styles.statStripSingle}>
+          {isOwner ? <div className={styles.statCard}>
             <div className={styles.statCardHead}>{tt("ui.wallet.balance.3b5c", "Wallet Balance")}</div>
             <div className={styles.statAmountRow}>
               <span className={styles.statIconCoin} />
-              <span className={styles.statAmount}>{walletBalance.toLocaleString()}</span>
+              {/* formatNumber, not toLocaleString(): the bare call takes its
+                  separators from the DEVICE language, so a reader who chose
+                  Portuguese got English grouping on an English phone. */}
+              <span className={styles.statAmount}>{formatNumber(walletBalance)}</span>
             </div>
-          </div>
+          </div> : null}
           <div className={styles.statCard}>
             <div className={styles.statCardHead}>{tt("ui.penalty.points.bb82", "Penalty Points")}</div>
             <div className={styles.statAmountRow}>

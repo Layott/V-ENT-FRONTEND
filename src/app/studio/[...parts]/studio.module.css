@@ -1605,3 +1605,167 @@
   border: 0;
   background: transparent;
 }
+
+/* ------------------------------------------------- the four house drawings */
+
+/* C1b, the desk. Plates stack up from the bottom left, so a desk of three
+   reads downwards in the order the operator typed them. */
+.hdRoot {
+  bottom: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  left: 96px;
+  position: absolute;
+}
+
+.hdPlate {
+  align-items: stretch;
+  border-radius: 14px;
+  display: flex;
+  overflow: hidden;
+}
+
+.hdRole {
+  align-items: center;
+  background: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 0 26px;
+  text-transform: uppercase;
+}
+
+.hdName {
+  align-items: center;
+  background: #17171a;
+  color: #fff;
+  display: flex;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  padding: 18px 40px;
+}
+
+/* C3 and C6. One plate in the bottom left and nothing else: the rest of the
+   frame is the camera, and every pixel of it stays transparent. */
+.fpPlate {
+  background: #17171a;
+  border-radius: 16px;
+  bottom: 96px;
+  left: 96px;
+  padding: 22px 40px;
+  position: absolute;
+}
+
+.fpLabel {
+  color: var(--v-ent-red, #ED1C24);
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.fpNote {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* B10, the day's ties. A panel rather than a full frame, so it can sit beside
+   a camera without covering it. */
+.mdCard {
+  background: #17171a;
+  border-radius: 18px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  left: 96px;
+  padding: 32px 40px 36px;
+  position: absolute;
+  top: 96px;
+  width: 780px;
+}
+
+.mdHead {
+  align-items: baseline;
+  display: flex;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.mdTitle {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.mdDay {
+  background: var(--v-ent-red, #ED1C24);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 6px 14px;
+  text-transform: uppercase;
+}
+
+.mdList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mdRow {
+  align-items: center;
+  background: #212225;
+  border-radius: 12px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr auto 1fr;
+  padding: 16px 24px;
+}
+
+.mdSide {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 30px;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mdAway {
+  text-align: right;
+}
+
+.mdWon {
+  color: #fff;
+  font-weight: 800;
+}
+
+.mdScore {
+  font-feature-settings: 'tnum';
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.mdScore b {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  margin: 0 8px;
+}
+
+.mdVs {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
