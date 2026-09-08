@@ -40,7 +40,7 @@ import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
-import { formatWithZone } from '@/lib/datetime';
+import { formatWithZone, formatNumber } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -163,6 +163,10 @@ export const ManageEventContent = ({
   const [savingSelfCheckIn, setSavingSelfCheckIn] = useState(false);
   const [savingVenue, setSavingVenue] = useState(false);
   const [metrics, setMetrics] = useState(null);
+  // Who reached the payment page and never paid. Loaded with the rest so the
+  // number is there when the tab opens rather than after a second wait.
+  const [abandoned, setAbandoned] = useState(null);
+  const [reminding, setReminding] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   const [audience, setAudience] = useState(null);
   const [draftMessage, setDraftMessage] = useState({ subject: '', body: '', audience: 'all' });
@@ -275,13 +279,14 @@ export const ManageEventContent = ({
     setLoading(true);
     setError('');
     setRefused(false);
-    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
       call('/checkout-fields/manage/'),
       call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
       call('/polls/'), call('/email-limits/'),
       call('/earnings/'),
+      call('/abandoned/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -351,6 +356,7 @@ export const ManageEventContent = ({
       .then(body => setSelfCheckIn(body?.data || null))
       .catch(() => setSelfCheckIn(null));
     setMetrics(me.body?.data || null);
+    setAbandoned(ab.ok ? ab.body?.data || null : null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
     setPolls(po.body?.data?.polls || []);
@@ -419,6 +425,41 @@ export const ManageEventContent = ({
       }
     };
   }, [token, eventRef]);
+  // The one reminder. `id` sends to a single row; nothing sends to everybody
+  // still open who has not had theirs. Never automatic: the address was given
+  // in order to pay for a ticket, and a person choosing to send one message
+  // about that same purchase is the most it was given for.
+  const remindAbandoned = async (id) => {
+    setReminding(true);
+    setNotice('');
+    setError('');
+    const { ok, body } = await call('/abandoned/remind/', {
+      method: 'POST',
+      body: JSON.stringify(id ? { id } : {}),
+    });
+    setReminding(false);
+    if (!ok) {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    const sent = body?.data?.sent || 0;
+    const failed = body?.data?.failed || 0;
+    // Three outcomes, and they are not interchangeable. A send that FAILED
+    // reported as "everybody has already had theirs" is a mail outage nobody
+    // chases: both halves of that sentence are false and the row is still
+    // waiting. Only the failure needs somebody to do something, so only the
+    // failure gets said loudly.
+    if (failed) {
+      setError(tt('manage.abandonedFailed', 'The mail did not go out for {n} of them, so they are still waiting and you can try again.').replace('{n}', String(failed)));
+    }
+    if (sent) {
+      setNotice(tt('manage.abandonedSent', '{n} reminder sent.').replace('{n}', String(sent)));
+    } else if (!failed) {
+      setNotice(tt('manage.abandonedNoneSent', 'Nothing was sent. Everybody open has already had their one reminder.'));
+    }
+    await load();
+  };
+
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');
@@ -1919,6 +1960,53 @@ export const ManageEventContent = ({
                               </div>)}
                           </div>
                         </>}
+                      </>}
+
+                      {/* The bottom of the funnel, made actionable. An organiser
+                          reading "412 reached the checkout, 88 bought" is
+                          already asking who the other 324 were. */}
+                      {abandoned && (abandoned.open > 0 || abandoned.recovered > 0) && <>
+                        <h3 className={styles.subTitle}>{tt('manage.abandoned', 'Started paying and stopped')}</h3>
+                        <p className={styles.cardHint}>
+                          {tt('manage.abandonedWhat', '{n} people reached the payment page and never paid, worth {ngn}. {r} came back on their own. Each address gets one reminder, only when you send it, and the list is deleted after {d} days.')
+                            .replace('{n}', Number(abandoned.open).toLocaleString(appLocale()))
+                            .replace('{ngn}', formatNumber(abandoned.open_ngn) + ' NGN')
+                            .replace('{r}', Number(abandoned.recovered).toLocaleString(appLocale()))
+                            .replace('{d}', String(abandoned.kept_days))}
+                        </p>
+
+                        {abandoned.open === 0
+                          ? <p className={styles.muted}>{tt('manage.abandonedNoneOpen', 'Nobody is waiting. Everybody who started paying finished.')}</p>
+                          : <>
+                            <div className={styles.rows}>
+                              {abandoned.results.map(row => <div key={row.id} className={styles.row}>
+                                  <div className={styles.rowMain}>
+                                    <span className={styles.rowName}>{row.email}</span>
+                                    <span className={styles.rowStats}>
+                                      {row.tier ? `${row.tier} x${row.quantity}` : `x${row.quantity}`}
+                                      {' \u00b7 '}
+                                      {formatDateTime(row.started_at)}
+                                    </span>
+                                  </div>
+                                  <div className={styles.rowActions}>
+                                    {row.reminded_at
+                                      ? <span className={styles.rowStats}>{tt('manage.abandonedReminded', 'Reminded')}</span>
+                                      : <button type="button" className={styles.ghostBtn} disabled={reminding}
+                                                onClick={() => remindAbandoned(row.id)}>
+                                          {tt('manage.abandonedRemindOne', 'Remind them')}
+                                        </button>}
+                                  </div>
+                                </div>)}
+                            </div>
+
+                            <button type="button" className={styles.primaryBtn}
+                                    disabled={reminding || abandoned.remindable === 0}
+                                    onClick={() => remindAbandoned()}>
+                              {abandoned.remindable === 0
+                                ? tt('manage.abandonedAllReminded', 'Everybody has had their one reminder')
+                                : tt('manage.abandonedRemindAll', 'Remind all {n}').replace('{n}', String(abandoned.remindable))}
+                            </button>
+                          </>}
                       </>}
 
                       {metrics.arrivals_by_hour && <>

@@ -852,6 +852,11 @@
   .ghostBtn,
   .addBtn,
   .iconBtn,
+  /* primaryBtn was missing from this list, so every primary action on this
+     page measured 40px on a real phone while the ghost buttons beside it
+     measured 44. Found on the emulator, not by reading: min-height: 40px in
+     the base rule looks deliberate until something measures it. */
+  .primaryBtn,
   .tab {
     min-height: 44px;
   }
