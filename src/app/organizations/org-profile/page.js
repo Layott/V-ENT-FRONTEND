@@ -27,6 +27,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
 import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
+import SharedWallet from '@/components/shared-wallet/SharedWallet';
 // `needs` names the capability a tab depends on. Without it the screen said
 // "this organisation does not do events" in Key stats and "here are its
 // events" in the tab strip at the same time, which reads as a bug in the
@@ -52,6 +53,11 @@ const TABS = [{
 }, {
   id: 'members',
   label: 'Members'
+}, {
+  // The organisation's own money. Like the team wallet, everybody who belongs
+  // can read it and the API decides who may send, so it carries no `needs`.
+  id: 'wallet',
+  label: 'Wallet'
 }, {
   id: 'about',
   label: 'About'
@@ -783,6 +789,7 @@ const OrgProfileContent = ({
                 {members.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.members.yet.ea27", "No members yet.")}</div>}
               </div>}
 
+            {shownTab === 'wallet' && <SharedWallet kind="org" reference={org.slug || orgId} name={org.org_name || org.name} />}
             {shownTab === 'about' && <div className={styles.aboutGrid}>
                 <section className={styles.panel}>
                   <h2 className={styles.panelTitle}>{tt("ui.about.6b21", "About")}</h2>

@@ -21,6 +21,7 @@ import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, usernameOf } from '@/lib/gating';
+import SharedWallet from '@/components/shared-wallet/SharedWallet';
 const ALL_TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -36,6 +37,12 @@ const ALL_TABS = [{
 }, {
   id: 'stats',
   label: 'Stats'
+}, {
+  // The team's own money. Everybody who belongs sees where it went - a team
+  // whose members cannot see that is worse than no wallet - and the API
+  // decides who may SEND, so this tab is not owner-only.
+  id: 'wallet',
+  label: 'Wallet'
 }, {
   id: 'requests',
   label: 'Requests',
@@ -208,6 +215,7 @@ export const TeamProfileContent = ({
                 {activeTab === 'tournaments' && <TeamProfileTournaments team={team} />}
                 {activeTab === 'events' && <TeamProfileEvents team={team} />}
                 {activeTab === 'stats' && <TeamProfileStats team={team} />}
+                {activeTab === 'wallet' && <SharedWallet kind="team" reference={team.slug || slug} name={team.team_name || team.name} />}
                 {activeTab === 'requests' && isOwner && <TeamProfileRequests team={team} onToast={showToast} />}
               </div>
             </>}

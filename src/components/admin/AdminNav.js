@@ -67,6 +67,23 @@ const NAV = [{
     roles: ['super', 'moderator'],
     perms: ['resolve_dispute'],
     badge: 'disputes'
+  }, {
+    // Two of the ten sections the admin spec of 7 September asks for. The
+    // rest are either already here or waiting on a feature that does not
+    // exist: the marketplace is Phase 4, the wager system Phase 6, the shop
+    // Phase 3. A console section for an unbuilt feature is a screen of
+    // controls that do nothing.
+    label: 'Organisations',
+    href: '/admin/organizations',
+    icon: MdGavel,
+    roles: ['super', 'admin'],
+    perms: ['manage_organizations']
+  }, {
+    label: 'Communities',
+    href: '/admin/communities',
+    icon: MdGavel,
+    roles: ['super', 'admin', 'moderator'],
+    perms: ['manage_communities']
   }]
 }, {
   section: 'Finance',
