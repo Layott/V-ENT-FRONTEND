@@ -70,7 +70,7 @@ const DmInner = () => {
         if (data?.status === 'success' && data.data?.thread) {
           setThread({ ...data.data.thread, messages: data.data.messages || data.data.thread.messages || [] });
         } else {
-          // Mock layer or backend has no thread for this id — fall back to a
+          // Mock layer or backend has no thread for this id - fall back to a
           // minimal local stub so the UI still has a heading + avatar to render
           // instead of going blank with a 404 in console.
           setThread({

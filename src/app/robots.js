@@ -18,6 +18,10 @@ export default function robots() {
           '/admin',           // staff only, and its own login
           '/api/',            // never useful to a crawler
           '/wallets',         // money, and personal by definition
+          '/memberships',     // what somebody pays for and every payment
+                              // they have made. The plans themselves live
+                              // at /plans/<name> and ARE public
+
           '/settings',
           '/notifications',
           '/edit-user-profile',
@@ -35,6 +39,8 @@ export default function robots() {
           '/tournaments/overlay',  // a broadcast surface, not a page
           '/production',           // a personal list of what you run
           '/events/my-events',     // a personal list, including unlisted events
+          '/my-stalls',            // your own stalls, your own orders and
+                                   // the delivery addresses on them
           '/events/edit-event',    // a form, and only the organiser may submit it
           '/events/*/edit',
           '/events/*/manage',      // promo codes and who may run the event

@@ -334,7 +334,9 @@ const ThreadInner = ({
                         </div>
                         <div className={styles.replyBody}>
                           <div className={styles.replyHeader}>
-                            <span className={styles.replyAuthor}>{reply.author.full_name}{reply.author.founder_badge && <FounderBadge size="sm" />}</span>
+                            <span className={styles.replyAuthor}>
+                              <UserChip user={reply.author} size={0} />
+                            </span>
                             <span className={styles.replyHandle}>@{reply.author.username}</span>
                             <span className={styles.replyTime}>{relativeTime(reply.created_at)}</span>
                           </div>

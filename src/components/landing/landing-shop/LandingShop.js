@@ -17,7 +17,7 @@ const LandingShop = ({ scrollToForm }) => {
     const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
 
   return (
-    <div className={`${landingStyles.landingShopContainer} ${styles.landingShopContainer}`}>
+    <div className={`${landingStyles.landingShopContainer}`}>
         <div className={`${landingStyles.innerLandingShopContainer} ${styles.innerLandingShopContainer}`}>
             <div
                 ref={refText}

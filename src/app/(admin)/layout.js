@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import '../../app/globals.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { useAdminAuth } from '@/components/admin/useAdminAuth';
+import styles from './admin-guard.module.css';
 
 // The admin portal talks to the real backend only.
 //
@@ -18,7 +21,8 @@ import { useT } from '@/i18n/LanguageProvider';
 // pages had loaded fine.
 //
 // The root layout already sets lang, viewport and the icons, so the only thing
-// worth keeping here is the console's own document title.
+// worth keeping here is the console's own document title, and the one guard
+// below.
 export default function AdminLayout({
   children
 }) {
@@ -27,5 +31,44 @@ export default function AdminLayout({
   useEffect(() => {
     document.title = title;
   }, [title]);
+
+  // Whether this person may be on this section at all.
+  //
+  // Walked on 8 September 2026 as a moderator: typing /admin/admins opened the
+  // screen. The API refused the data with a 403, correctly, and the page still
+  // drew the heading, the refusal sentence from that fetch, and a live "Give
+  // somebody a role" button. The nav had always hidden the link, and hiding a
+  // link is not a permission.
+  //
+  // One guard here rather than a check in each of fourteen pages, so a section
+  // built next week is covered on the day it is written, and the permission it
+  // needs is read from the same map the nav reads.
+  const { loading, allowed, needed } = useAdminAuth();
+
+  if (!loading && !allowed) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.panel}>
+          <h1 className={styles.title}>
+            {tt('admin.notYours', 'This section is not part of your role')}
+          </h1>
+          <p className={styles.body}>
+            {tt('admin.notYoursBody',
+              'Your role does not include this part of the console, so there is nothing here for you to change. If you need it, ask a super admin to widen your role.')}
+          </p>
+          {needed?.length ? (
+            <p className={styles.needed}>
+              {tt('admin.notYoursNeeds', 'It needs: {perms}')
+                .replace('{perms}', needed.join(', '))}
+            </p>
+          ) : null}
+          <Link href="/admin" className={`${styles.back} grnBTN`}>
+            {tt('admin.backToDashboard', 'Back to the dashboard')}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return children;
 }

@@ -16,7 +16,7 @@ import styles from './pool-detail.module.css';
 const fmtNumber = (n) => Number(n || 0).toLocaleString();
 
 const fmtCountdown = (deadline, nowMs) => {
-  if (!deadline) return '—';
+  if (!deadline) return ' - ';
   const ms = new Date(deadline).getTime() - nowMs;
   if (ms <= 0) return 'Closed';
   const totalSec = Math.floor(ms / 1000);
@@ -35,7 +35,7 @@ const DisclaimerBanner = () => (
       <MdInfoOutline className={styles.disclaimerIcon} />
       <div>
         <p className={styles.disclaimerTitle}>
-          Wager Beta — Legal review pending. UI only. No live betting.
+          Wager Beta - Legal review pending. UI only. No live betting.
         </p>
         <p className={styles.disclaimerSub}>
           You must be 18+ to wager. All stakes shown are simulated VENT COINS for demonstration.
@@ -50,7 +50,7 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h3 className={styles.modalTitle}>
-          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta — Read First
+          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta - Read First
         </h3>
         <button className={styles.modalClose} onClick={onDismiss} aria-label="Close">
           <MdOutlineClose />
@@ -63,13 +63,13 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
         </p>
         <ul className={styles.modalList}>
           <li>You must be 18 years or older to use this feature.</li>
-          <li>All stakes are simulated in VENT COINS — no real money is at risk in beta.</li>
+          <li>All stakes are simulated in VENT COINS - no real money is at risk in beta.</li>
           <li>Bet responsibly. Set personal limits before staking.</li>
         </ul>
       </div>
       <div className={styles.modalFooter}>
         <button className={styles.outlineBtn} onClick={onDismiss}>Cancel</button>
-        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand — Continue</button>
+        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand - Continue</button>
       </div>
     </div>
   </div>
@@ -344,7 +344,7 @@ const PoolDetailContent = () => {
 
                   <div className={styles.balanceLine}>
                     <span>Balance</span>
-                    <strong>{balance !== null ? fmtNumber(balance) : '—'} VC</strong>
+                    <strong>{balance !== null ? fmtNumber(balance) : ' - '} VC</strong>
                   </div>
 
                   <label className={styles.stakeFieldLabel}>Outcome</label>
@@ -389,7 +389,7 @@ const PoolDetailContent = () => {
                   </div>
 
                   <div className={styles.summaryGrid}>
-                    <div><span>Odds</span><strong>{selectedOpt ? Number(selectedOpt.current_odds).toFixed(2) : '—'}</strong></div>
+                    <div><span>Odds</span><strong>{selectedOpt ? Number(selectedOpt.current_odds).toFixed(2) : ' - '}</strong></div>
                     <div><span>Potential return</span><strong className={styles.cellGreen}>{fmtNumber(potential)} VC</strong></div>
                   </div>
 
@@ -434,7 +434,7 @@ const PoolDetailContent = () => {
                   {step === 'submitting' && (
                     <div className={styles.pendingBox}>
                       <div className={styles.spinner} />
-                      <p>Pending — securing your stake…</p>
+                      <p>Pending - securing your stake…</p>
                     </div>
                   )}
                 </>

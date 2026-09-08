@@ -13,6 +13,12 @@
 // It is one component because it is one decision, asked in the last place
 // before money moves. Asking earlier, on the amount screen, would mean holding
 // a PIN in state across three steps for no reason.
+//
+// The authenticator code lives here too, for the same reason: it is asked at
+// the same moment, and putting it anywhere else would mean two prompts for one
+// decision. It appears ONLY when the wallet endpoint has said this account has
+// a confirmed second factor (`requires_2fa` on the balance payload). Somebody
+// who has not enrolled is never shown a field they have nothing to type into.
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -28,12 +34,14 @@ export default function PinPrompt({
   error = '',
   title,
   detail,
+  requires2fa = false,
 }) {
   const tt = useT();
   const [pin, setPin] = useState('');
+  const [code, setCode] = useState('');
   const field = useRef(null);
 
-  useEffect(() => { if (!open) setPin(''); }, [open]);
+  useEffect(() => { if (!open) { setPin(''); setCode(''); } }, [open]);
 
   useEffect(() => {
     if (open && field.current) field.current.focus();
@@ -48,11 +56,11 @@ export default function PinPrompt({
 
   if (!open) return null;
 
-  const ready = pin.length === 4;
+  const ready = pin.length === 4 && (!requires2fa || code.length === 6);
 
   const submit = (e) => {
     e.preventDefault();
-    if (ready && !busy) onConfirm(pin);
+    if (ready && !busy) onConfirm(pin, code);
   };
 
   return (
@@ -100,6 +108,26 @@ export default function PinPrompt({
           onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
           disabled={busy}
         />
+
+        {requires2fa && (
+          <>
+            <label className={styles.label} htmlFor="wallet-2fa">
+              {tt('wallet.pinPrompt.codeField', 'Six digits from your authenticator app')}
+            </label>
+            <input
+              id="wallet-2fa"
+              className={styles.input}
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              placeholder="000000"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              disabled={busy}
+            />
+          </>
+        )}
 
         {error && <p className={styles.error} role="alert">{error}</p>}
 

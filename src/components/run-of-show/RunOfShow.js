@@ -24,6 +24,7 @@
 // ends up a version behind.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -510,6 +511,18 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
   }, [address, authToken, token, ownerRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+
+  // A run of show is READ during the thing it describes: staff on a phone,
+  // watching for the next cue. Refreshing only when somebody switches back to
+  // the tab means a phone left open on the cue list never changes, which is
+  // exactly the way this screen is used.
+  //
+  // `useAutoRefresh` rather than an effect naming `load`: `load` is a
+  // useCallback that changes whenever the address does, and an effect that
+  // names it re-arms its timer on every render so the timer never fires. The
+  // hook holds it in a ref for that reason, and it backs off and pauses on a
+  // hidden tab so a room full of open phones does not become a load test.
+  useAutoRefresh(() => load(true), [address, authToken], { interval: 20000 });
 
   useEffect(() => {
     const back = () => { if (document.visibilityState === 'visible') load(true); };

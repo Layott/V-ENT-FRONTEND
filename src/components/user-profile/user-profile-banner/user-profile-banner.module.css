@@ -98,3 +98,11 @@
     height: 370px;
   }
 }
+
+/* Why a banner upload was refused. Referenced and never defined, so the
+   sentence rendered in the same colour as everything around it. */
+.errorMessage {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--v-ent-red);
+}

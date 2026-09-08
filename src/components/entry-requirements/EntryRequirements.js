@@ -312,7 +312,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
           ) : queue.map(item => (
             <div key={item.id} className={styles.submission}>
               <div className={styles.subHead}>
-                <UserChip user={item.user} size={0} nameClassName={styles.subWho} />
+                <UserChip user={item.user} size={28} nameClassName={styles.subWho} />
                 <span className={styles.subWhat}>{kindLabel(tt, item.requirement?.kind, item.requirement?.label)}</span>
               </div>
               <pre className={styles.subValue}>

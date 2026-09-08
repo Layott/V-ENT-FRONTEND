@@ -696,7 +696,7 @@ const SearchPageInner = () => {
           {/* Hero / search */}
           <section className={styles.hero}>
             <div className={styles.heroTop}>
-              <div className={styles.heroText}>
+              <div>
                 <h1 className={styles.heroTitle}>{tt("ui.search.v.ent.6327", "Search V-ENT")}</h1>
                 <p className={styles.heroSubtitle}>
                   {tt("ui.find.tournaments.events.teams.f234", "Find tournaments, events, teams, users, marketplace listings, products, threads,\n                  clubs, manga, AMVs and organizations across the platform.")}

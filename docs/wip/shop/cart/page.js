@@ -242,7 +242,7 @@ const CartPage = () => {
     if (next === 2 && items.length === 0) return;
     if (next === 3 && !validateAddress()) return;
     if (next > step) {
-      // forward — no extra rules
+      // forward - no extra rules
     }
     setStep(next);
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });

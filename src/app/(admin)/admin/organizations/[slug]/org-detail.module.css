@@ -1,0 +1,24 @@
+/* One organisation, in the console. */
+
+.back {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  margin-bottom: 1.1rem;
+  min-height: 44px;
+  line-height: 44px;
+}
+
+.back:hover { color: #fff; }
+
+.typeValue {
+  font-size: 1.05rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.spaced { margin-top: 2rem; }
+
+.credit { color: var(--v-ent-success); font-weight: var(--fw-bold); }
+.debit { color: var(--v-ent-red); font-weight: var(--fw-bold); }

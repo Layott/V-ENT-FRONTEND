@@ -168,7 +168,7 @@ const OverlayThumbnail = ({ overlay }) => {
         {t === 'scoreboard' && (
           <div className={styles.thumbScoreboard} style={{ background: `linear-gradient(135deg, ${accent}, #1a1a1e 80%)` }}>
             <span className={styles.thumbSbTeam}>CRW</span>
-            <span className={styles.thumbSbScore}>3 — 2</span>
+            <span className={styles.thumbSbScore}>3-2</span>
             <span className={styles.thumbSbTeam}>AR</span>
           </div>
         )}
@@ -236,7 +236,7 @@ const ScenePreview = ({ scene }) => {
       {scene.type === 'match' && (
         <>
           <div className={styles.previewSbStrip} style={{ background: accent }}>
-            CRW 3 — 2 AR
+            CRW 3-2 AR
           </div>
           <span className={styles.previewSubText}>FIFA Pro Cup · R1</span>
         </>
@@ -349,7 +349,7 @@ const ProductionPage = () => {
       vmixConnected,
       slConnected,
       totalConnected,
-      activeSceneName: activeScene?.name || '—',
+      activeSceneName: activeScene?.name || ' - ',
       lastSceneChange: activeScene?.last_used,
       liveTournamentsUsing: 1,
     };
@@ -552,7 +552,7 @@ const ProductionPage = () => {
                     <p className={styles.statValue}>{stats.liveTournamentsUsing}</p>
                     <span className={styles.statDelta}>using production</span>
                   </div>
-                  <p className={styles.statMeta}>{liveTournament?.name || '—'}</p>
+                  <p className={styles.statMeta}>{liveTournament?.name || ' - '}</p>
                 </div>
               </div>
 
@@ -814,7 +814,7 @@ const ProductionPage = () => {
                               {p.status}
                             </span>
                             <span className={styles.metaItem}>
-                              {p.latency_ms != null ? `${p.latency_ms}ms` : '— ms'}
+                              {p.latency_ms != null ? `${p.latency_ms}ms` : ' - ms'}
                             </span>
                             <span className={styles.metaItem}>last event {formatRelative(p.last_ping)}</span>
                           </div>

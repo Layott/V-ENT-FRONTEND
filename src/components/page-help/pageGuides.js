@@ -418,11 +418,7 @@ export const GUIDES = {
     what: 'One conversation.',
     does: ['Read it', 'Reply, if you are signed in'],
   },
-  '/community/club/:slug': {
-    title: 'A club',
-    what: 'A smaller group inside the community, around one game or one idea.',
-    does: ['Read what the club is posting', 'Join it'],
-  },
+  
   '/community/scrim/create': {
     title: 'Posting a scrim',
     what: 'Asking for a practice match against somebody at your level.',
@@ -624,11 +620,7 @@ export const GUIDES = {
       'Change what they are allowed to do',
     ],
   },
-  '/community/club': {
-    title: 'Clubs',
-    what: 'Smaller groups inside the community, each around one game or idea.',
-    does: ['Find a club', 'Join one'],
-  },
+  
   '/community/post': {
     title: 'Posts',
     what: 'What the community is posting right now.',

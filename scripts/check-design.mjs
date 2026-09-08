@@ -103,7 +103,18 @@ const RULES = [
   {
     id: 'em-dash',
     why: 'an em or en dash. Use a hyphen, a comma, a colon or parentheses.',
-    test: /[–—]/,
+    // Written as ESCAPES rather than as the characters themselves.
+    //
+    // On 7 September 2026 a sweep that replaced every em and en dash in the
+    // repository reached into this line and replaced the two inside the
+    // character class, turning it into the range `[ - - ]` - which matches
+    // almost everything, and reported 169,170 breaches on the next run.
+    //
+    // A checker that contains the thing it looks for is a checker that any
+    // bulk edit can disarm. The escapes are immune, and the file is now on
+    // that sweep's leave-alone list as well: both, because either alone has
+    // already failed once.
+    test: new RegExp("[" + String.fromCharCode(0x2014, 0x2013) + "]"),
   },
 ];
 
@@ -182,7 +193,7 @@ const CASES = [
   ['frosted glass', '.panel { backdrop-filter: blur(12px); }', 1],
   ['a banned typeface', "  font-family: 'Inter', sans-serif;", 1],
   ['Clash Grotesk is the house font', "  font-family: 'ClashGrotesk-Variable', sans-serif;", 0],
-  ['an em dash in a comment', '/* one thing — then another */', 1],
+  ['an em dash in a comment', '/* one thing - then another */', 1],
   ['a hyphen is fine', '/* one thing - then another */', 0],
   ['a comment naming a ban is not a ban', '// never use border: 1px solid here', 0],
   ['a loading spinner is the motion the rules require',

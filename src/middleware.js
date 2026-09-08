@@ -48,6 +48,11 @@ const protectedRoutes = [
   "/community/dm",
   "/community/scrim/create",
   "/wallets",
+  // Somebody's own memberships and every payment they have made. The
+  // whole page means "mine", so it is gated as a page rather than
+  // control by control. The plans themselves live at /plans/<name>,
+  // which is a different prefix and stays public and indexed.
+  "/memberships",
   "/settings",
   "/notifications",
   "/disputes",

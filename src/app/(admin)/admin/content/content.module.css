@@ -1,0 +1,86 @@
+/* Reports and content, in the console.
+ *
+ * Tabs are filled chips carrying aria-pressed, never an underline and never a
+ * ring. Structure comes from surface and space.
+ */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  background-color: #212225;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab:hover { color: #fff; }
+
+.tabOn {
+  background-color: #3a3b42;
+  color: #fff;
+  font-weight: var(--fw-bold);
+}
+
+.tabCount {
+  background-color: var(--v-ent-red);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: var(--fw-bold);
+}
+
+.detail {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  max-width: 32rem;
+}
+
+.open {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--v-ent-gold);
+  font-size: 0.76rem;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-bottom: 1.1rem;
+  cursor: pointer;
+}
+
+.check input {
+  margin-top: 0.15rem;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--v-ent-red);
+  flex-shrink: 0;
+}
+
+/* What is not built, said in a sentence on the page ground rather than drawn
+ * as a panel of controls that do nothing. */
+.waiting {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin-top: 1.25rem;
+  max-width: 44rem;
+}

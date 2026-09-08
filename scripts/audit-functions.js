@@ -379,7 +379,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
         const forms = $$('form').length;
         const submitButtons = $$('button[type="submit"], form button').length;
 
-        // Modals already-open? (be strict — dialog role or visible modal class)
+        // Modals already-open? (be strict - dialog role or visible modal class)
         const modalOpen = !!$$('[role="dialog"][aria-hidden="false"], [class*="modalOpen" i], [class*="modal-open" i]').length;
 
         // Pagination
@@ -388,7 +388,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
         // Filter inputs
         const filterInputs = $$('input[type="search"], select, input[placeholder*="ilter" i], input[placeholder*="earch" i]').length;
 
-        // Heading present — exclude sidebar/header content
+        // Heading present - exclude sidebar/header content
         const headingEl = $$('main h1, main h2, [class*="pageTitle" i], [class*="heroTitle" i], h1, h2').find((h) => {
           let p = h.parentElement;
           for (let i = 0; i < 6 && p; i++) {
@@ -471,7 +471,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
         }
       } catch { /* tolerate */ }
     } else if (isAuthShellRoute && !info.headerSearchPresent && !isAdminRoute) {
-      // Only flag once per module to avoid noise — track via global set
+      // Only flag once per module to avoid noise - track via global set
       if (!globalThis.__auditNoSearch) globalThis.__auditNoSearch = new Set();
       if (!globalThis.__auditNoSearch.has(r.module)) {
         globalThis.__auditNoSearch.add(r.module);
@@ -680,7 +680,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
   md += `**Run:** ${new Date().toISOString()}  \n`;
   md += `**Base URL:** ${BASE}  \n`;
   md += `**Routes walked:** ${ROUTES.length}  \n`;
-  md += `**Total findings:** ${findings.length} — P0: ${counts.P0} / P1: ${counts.P1} / P2: ${counts.P2}\n\n`;
+  md += `**Total findings:** ${findings.length} - P0: ${counts.P0} / P1: ${counts.P1} / P2: ${counts.P2}\n\n`;
   md += `## Methodology\n\n`;
   md += `Headless Chrome via puppeteer-core. Demo-login once, then visit every route and exercise:\n`;
   md += `console errors, HTTP 4xx/5xx, broken imgs, missing alt, header search submit, sidebar/bottom-menu link health, header icons (avatar/notif/cart/wishlist), tab/panel sync with URL, form/submit pairing, like-toggle, modal ESC close, logout, mobile shell @ 375x812, and stale "coming soon"/TODO copy. Findings de-duped per route+module.\n\n`;
@@ -690,7 +690,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
     .sort((a, b) => ord.indexOf(a.severity) - ord.indexOf(b.severity))
     .slice(0, 10);
   for (const t of top) {
-    md += `- **${t.severity}** \`${t.route}\` — ${t.description}\n`;
+    md += `- **${t.severity}** \`${t.route}\` - ${t.description}\n`;
   }
   md += `\n## Findings by Module\n\n`;
 
@@ -718,7 +718,7 @@ function timeLeftMs() { return RUN_DEADLINE_MS - (Date.now() - startTs); }
   md += `## Notes\n\n`;
   md += `- Screenshots of P0 routes saved to \`tasks/audit-screens/\`\n`;
   md += `- Many findings are derived from heuristic DOM probes; verify edge cases manually before fixing\n`;
-  md += `- Phase 4–6 routes (Marketplace / Shop / Anime / Community / Wager) are intentionally stubbed; "coming soon" markers there are not flagged\n`;
+  md += `- Phase 4-6 routes (Marketplace / Shop / Anime / Community / Wager) are intentionally stubbed; "coming soon" markers there are not flagged\n`;
 
   fs.writeFileSync(REPORT_PATH, md, 'utf8');
   console.log(`[audit] wrote ${REPORT_PATH}`);

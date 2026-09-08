@@ -9,6 +9,7 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import styles from './prize-distribution-inside.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatNumber } from '@/lib/datetime';
 
 // Reconstructs the position/prize/extras working state from the persisted
 // formData.prize_distribution array so re-visiting this step (or opening a
@@ -100,7 +101,7 @@ const PrizeDistributionInside = ({
   }[currency] || '';
   const showCoins = amount => {
     const coins = toCoins(amount);
-    return coins ? `${coins.toLocaleString()} VC` : '0 VC';
+    return coins ? `${formatNumber(coins)} VC` : '0 VC';
   };
   useEffect(() => {
     const formattedPrizeDistribution = positions.map(position => ({
@@ -224,7 +225,7 @@ const PrizeDistributionInside = ({
 
             <p className={createTournamentStyles.infoParagraph}>
               <span className={styles.infoSpan}>
-                <FiInfo className={styles.infoIcon} />
+                <FiInfo />
               </span>
               {tt("ui.enter.each.amount.c1e3", "Enter each amount in")} {currency}{tt("ui.prizes.pay.out.vent.82d9", ". Prizes pay out in VENT COINS at")}
               {' '}{rates.ngn_per_coin.toLocaleString()} {tt("ui.ngn.vc.converted.figure.9bb9", "NGN to 1 VC, and the converted figure is\n              shown under every field. A position left empty is omitted.")}
@@ -265,7 +266,7 @@ const PrizeDistributionInside = ({
                   </button>}
               </div>)}
 
-            <div className={styles.addBTNContainer}>
+            <div>
               <button type="button" className={styles.addAnotherBTN} onClick={addAnotherPosition}>
                 <FaPlus className={styles.plusIcon} />
                 {tt("ui.add.another.e8ac", "Add Another")}
@@ -285,7 +286,7 @@ const PrizeDistributionInside = ({
             </div>
             <p className={createTournamentStyles.infoParagraph}>
               <span className={styles.infoSpan}>
-                <FiInfo className={styles.infoIcon} />
+                <FiInfo />
               </span>
               {tt("ui.prize.amount.should.v.5ac8", "Prize amount should be in v-ent coins.")}
             </p>

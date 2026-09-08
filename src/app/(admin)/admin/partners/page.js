@@ -326,10 +326,10 @@ function PartnersInner() {
   const toggleScope = key => {
     setDraftScopes(current => current.includes(key) ? current.filter(s => s !== key) : [...current, key]);
   };
-  if (authLoading) return <div className={shared.loadingScreen}>{tt("ui.loading.b04b", "Loading...")}</div>;
-  return <div className={shared.adminShell}>
+  if (authLoading) return <div className={shared.stateText}>{tt("ui.loading.b04b", "Loading...")}</div>;
+  return <div className={shared.pageContainer}>
       <AdminNav admin={admin} onLogout={logout} />
-      <div className={shared.adminMain}>
+      <div className={shared.mainContainer}>
         <AdminHeader title={tt("ui.partners.aa16", "Partners")} admin={admin} onLogout={logout} />
 
         <div className={shared.contentArea}>

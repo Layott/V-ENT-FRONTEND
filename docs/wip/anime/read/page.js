@@ -179,7 +179,7 @@ function ReaderContent() {
                 {loading ? 'Loading...' : series?.title || 'Reader'}
               </h1>
               <p className={styles.topSub}>
-                {chapter ? `Chapter ${chapter.number} — ${chapter.title}` : ''}
+                {chapter ? `Chapter ${chapter.number} - ${chapter.title}` : ''}
               </p>
             </div>
             <div className={styles.topActions}>
@@ -337,7 +337,7 @@ function ReaderContent() {
               <BsChevronLeft /> Prev
             </button>
             <span className={styles.pageIndicator}>
-              {totalPages === 0 ? '—' : layoutMode === 'strip'
+              {totalPages === 0 ? ' - ' : layoutMode === 'strip'
                 ? `${currentPage + 1} / ${totalPages}`
                 : layoutMode === 'spread'
                   ? `${currentPage + 1}-${Math.min(totalPages, currentPage + 2)} / ${totalPages}`

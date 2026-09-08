@@ -216,6 +216,19 @@ function OverviewInner() {
                   </li>)}
               </ul>}
           </div>
+
+          {/* What this console deliberately does NOT manage, said in a
+              sentence rather than shipped as four empty tabs.
+              CEO, 7 September 2026, in the admin dashboard spec: "An admin
+              screen for managing a marketplace that does not exist is a screen
+              with nothing behind it. Those sections wait for their feature,
+              and saying so is better than shipping empty tabs." */}
+          <div className={styles.notBuilt}>
+            <p className={shared.sectionTitle}>{tt('admin.notBuiltTitle', 'Not here yet')}</p>
+            <p className={styles.notBuiltText}>
+              {tt('admin.notBuiltBody', 'There is no marketplace section, no wager section and no shop section in this console, because none of those features is built on the platform. The marketplace is Phase 4, the shop is Phase 3, the wager system is Phase 6 and needs a legal review first, and manga and AMV review arrives with the anime module in Phase 5. Each one gets its console section on the day it has something to manage. The Marketplace Manager and Wager Manager roles can already be assigned and grant nothing until then.')}
+            </p>
+          </div>
         </main>
       </div>
     </div>;

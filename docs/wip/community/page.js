@@ -423,7 +423,7 @@ const CommunityInner = () => {
             <div>
               <h1 className={styles.pageTitle}>Community</h1>
               <p className={styles.pageSubtitle}>
-                Feed, forums, clubs, DMs, and scrims — the social layer of V-ENT.
+                Feed, forums, clubs, DMs, and scrims - the social layer of V-ENT.
               </p>
             </div>
           </div>
@@ -811,7 +811,7 @@ const CommunityInner = () => {
                               </span>
                               <span className={styles.dmConvoTime}>{relativeTime(thread.last_message_at)}</span>
                             </div>
-                            <span className={styles.dmConvoPreview}>{lastMsg?.body || '—'}</span>
+                            <span className={styles.dmConvoPreview}>{lastMsg?.body || ' - '}</span>
                           </div>
                           {thread.unread_count > 0 && (
                             <span className={styles.dmUnreadBadge}>{thread.unread_count}</span>

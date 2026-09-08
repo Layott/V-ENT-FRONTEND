@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT Admin — Tournaments (Mockup)</title>
+  <title>V-ENT Admin - Tournaments (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -39,7 +39,7 @@
       font-weight: 700; font-display: swap;
     }
 
-    /* ── CSS Variables — exact copies from globals.css + admin-overview ── */
+    /* ── CSS Variables - exact copies from globals.css + admin-overview ── */
     :root {
       --v-ent-red:        #ED1C24;
       --v-ent-light-red:  #FF3B45;
@@ -489,7 +489,7 @@
     .redBTN:hover   { background-color: var(--v-ent-light-red); }
 
     /* ════════════════════════════════════════════════════════════════
-       STATS CARDS — 3 across (same card pattern as admin-overview)
+       STATS CARDS - 3 across (same card pattern as admin-overview)
     ════════════════════════════════════════════════════════════════ */
     .stats-grid {
       display: grid;
@@ -818,7 +818,7 @@
        RESPONSIVE BREAKPOINTS
     ════════════════════════════════════════════════════════════════ */
 
-    /* Mobile — max 767px */
+    /* Mobile - max 767px */
     @media (max-width: 767px) {
       :root { --sidebar-w: 250px; }
       .sidebar { transform: translateX(-100%); }
@@ -850,7 +850,7 @@
       .pagination { justify-content: center; }
     }
 
-    /* Small tablet 768px–1023px */
+    /* Small tablet 768px - 1023px */
     @media (min-width: 768px) and (max-width: 1023px) {
       :root { --sidebar-w: var(--sidebar-w-md); }
       .header { left: var(--sidebar-w-md); }
@@ -861,7 +861,7 @@
       .header-search input { width: 120px; }
     }
 
-    /* Tablet/laptop 1024px–1439px */
+    /* Tablet/laptop 1024px - 1439px */
     @media (min-width: 1024px) and (max-width: 1439px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
     }
@@ -925,7 +925,7 @@
           <span class="nav-badge">3</span>
         </a>
       </li>
-      <!-- Tournaments nav item — ACTIVE on this page -->
+      <!-- Tournaments nav item - ACTIVE on this page -->
       <li class="sidebar-item active-item">
         <a class="nav-link" href="#">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1065,7 +1065,7 @@
   <div class="notif-item">
     <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🏆</div>
     <div class="notif-body">
-      <p class="notif-text">COD Warzone Cup registration opened — 0 participants so far</p>
+      <p class="notif-text">COD Warzone Cup registration opened - 0 participants so far</p>
       <p class="notif-time">5h ago</p>
     </div>
   </div>
@@ -1162,7 +1162,7 @@
   <div class="table-card">
     <div class="section-header">
       <p class="section-title">All Tournaments</p>
-      <span class="result-count" id="result-count">Showing 1–10 of 287</span>
+      <span class="result-count" id="result-count">Showing 1-10 of 287</span>
     </div>
 
     <div class="table-wrap">
@@ -1188,28 +1188,28 @@
 
     <!-- Pagination -->
     <div class="pagination">
-      <span class="pagination-info" id="pag-info">Showing 1–10 of 287</span>
+      <span class="pagination-info" id="pag-info">Showing 1-10 of 287</span>
       <div class="pagination-controls">
         <button class="pg-btn" disabled>← Prev</button>
         <button class="pg-btn active">1</button>
-        <button class="pg-btn" onclick="showToast('Page 2 — loading next 10 tournaments…', 'info')">2</button>
-        <button class="pg-btn" onclick="showToast('Page 3 — loading next 10 tournaments…', 'info')">3</button>
+        <button class="pg-btn" onclick="showToast('Page 2 - loading next 10 tournaments…', 'info')">2</button>
+        <button class="pg-btn" onclick="showToast('Page 3 - loading next 10 tournaments…', 'info')">3</button>
         <span style="color:var(--text-dim);font-size:0.78rem;padding:0.3rem 0.2rem;">…</span>
-        <button class="pg-btn" onclick="showToast('Page 29 — last page of results.', 'info')">29</button>
-        <button class="pg-btn" onclick="showToast('Page 2 — loading next 10 tournaments…', 'info')">Next →</button>
+        <button class="pg-btn" onclick="showToast('Page 29 - last page of results.', 'info')">29</button>
+        <button class="pg-btn" onclick="showToast('Page 2 - loading next 10 tournaments…', 'info')">Next →</button>
       </div>
     </div>
   </div>
 
   <!-- Mockup notes -->
   <div class="mockup-notes">
-    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    <strong>MOCKUP NOTES - Track B · Awaiting CEO approval</strong><br>
     · <strong>Table:</strong> 10 rows shown, paginated server-side (GET /admin/tournaments/?page=1&status=&game=&sort=newest) · Total 287 records<br>
     · <strong>Disputes column:</strong> Red badge if &gt;0; dash if none. Clicking "View" goes to /admin/tournaments/[id] where dispute resolution lives<br>
     · <strong>Cancel action:</strong> Confirmation modal → PATCH /admin/tournaments/[id]/cancel/ → row badge updates to Cancelled · Cancel button disables<br>
     · <strong>Column sort:</strong> Client-side sort on current 10 rows (demo); real build adds sort param to API call<br>
     · <strong>Filters:</strong> Debounced 300ms on search input; instant on select change; combine all params on each API call<br>
-    · <strong>Mobile hidden columns:</strong> Game, Start Date, Prize Pool, Organizer hidden at &lt;768px — show Name, Status, Disputes, Actions only<br>
+    · <strong>Mobile hidden columns:</strong> Game, Start Date, Prize Pool, Organizer hidden at &lt;768px - show Name, Status, Disputes, Actions only<br>
     · <strong>References used:</strong> card → admin-overview metric cards · table → tournament participants tab · badges → admin-overview badge system · layout → admin-overview.html
   </div>
 
@@ -1266,7 +1266,7 @@
 
 <script>
   /* ════════════════════════════════════════════════════════════════
-     DATA — 10 sample tournaments
+     DATA - 10 sample tournaments
   ════════════════════════════════════════════════════════════════ */
   const TOURNAMENTS = [
     { id: 1,  emoji: '🎮', name: 'PUBG Masters Lagos',       organizer: 'johndoe_ng',    game: 'PUBG',  status: 'Ongoing',           participants: '64/64',   prizeRaw: 50000,  prize: '₦50,000',  date: '2026-03-15', disputes: 2 },
@@ -1281,7 +1281,7 @@
     { id: 10, emoji: '🎯', name: 'Valorant Lagos Open',       organizer: 'ktech_gamer',   game: 'Other', status: 'Draft',             participants: '0/32',    prizeRaw: 20000,  prize: '₦20,000',  date: '2026-04-10', disputes: 0 },
   ];
 
-  /* Working copy — starts as full list, filtered in place */
+  /* Working copy - starts as full list, filtered in place */
   let rows = TOURNAMENTS.map(t => ({ ...t }));
 
   /* Sort state */
@@ -1390,7 +1390,7 @@
       const isFinal = (t.status === 'Completed' || t.status === 'Cancelled');
       const disputeCell = t.disputes > 0
         ? `<span class="dispute-badge">${t.disputes}</span>`
-        : `<span class="dispute-dash">—</span>`;
+        : `<span class="dispute-dash"> - </span>`;
       const cancelBtnDisabled = isFinal ? 'disabled' : '';
       const rowCancelledClass = t.status === 'Cancelled' ? 'row-cancelled' : '';
 
@@ -1427,8 +1427,8 @@
 
     const total = 287;
     const shown = Math.min(data.length, 10);
-    document.getElementById('result-count').textContent = `Showing 1–${shown} of ${total}`;
-    document.getElementById('pag-info').textContent = `Showing 1–${shown} of ${total}`;
+    document.getElementById('result-count').textContent = `Showing 1 - ${shown} of ${total}`;
+    document.getElementById('pag-info').textContent = `Showing 1 - ${shown} of ${total}`;
   }
 
   /* ── Date formatter ───────────────────────────────────────────── */

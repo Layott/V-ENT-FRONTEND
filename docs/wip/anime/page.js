@@ -82,7 +82,7 @@ function HubContent() {
             <div>
               <h1 className={styles.pageTitle}>Anime Hub</h1>
               <p className={styles.pageSub}>
-                Read manga, watch fan-made AMVs, jump into live co-reading rooms — Africa-first anime culture, all in V-ENT.
+                Read manga, watch fan-made AMVs, jump into live co-reading rooms - Africa-first anime culture, all in V-ENT.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ function HubContent() {
             />
             <div className={styles.cardGrid3}>
               {liveRooms.map((r) => <RoomCard key={r.id} room={r} />)}
-              {!loading && liveRooms.length === 0 && <p className={styles.emptyState}>No live rooms — start your own.</p>}
+              {!loading && liveRooms.length === 0 && <p className={styles.emptyState}>No live rooms - start your own.</p>}
             </div>
           </section>
 

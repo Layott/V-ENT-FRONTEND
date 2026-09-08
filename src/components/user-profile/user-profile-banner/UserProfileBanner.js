@@ -78,7 +78,7 @@ const UserProfileBanner = ({
 
       {error && <div className={styles.errorMessage || "error-message"}>{error}</div>}
 
-      <Image src={mediaUrl(displayImage)} width={500} height={200} alt={tt("ui.profile.banner.image.dc98", "Profile Banner Image")} className={styles.bannerImage} />
+      <Image src={mediaUrl(displayImage)} width={500} height={200} alt={tt("ui.profile.banner.image.dc98", "Profile Banner Image")} />
     </div>;
 };
 export default UserProfileBanner;

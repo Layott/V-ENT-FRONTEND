@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { CiSearch } from 'react-icons/ci';
-import { LuTicket, LuCheck, LuUsers, LuScanLine, LuSmartphone } from 'react-icons/lu';
+import { LuTicket, LuCheck, LuUsers, LuSmartphone } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -17,6 +17,8 @@ import styles from './attendees.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const AttendeesContent = ({
   slug: slugFromPath
@@ -426,15 +428,6 @@ const AttendeesContent = ({
           </div>}
         </div>
 
-        {/* The scanner, findable. On 5 September nobody opened it at all: staff
-            stood on this page reading codes off a phone camera and typing them
-            in, because there was no way to get from here to there. */}
-        <Link href={`/events/scan?event=${encodeURIComponent(eventId || '')}`}
-              className={styles.scanLink}>
-          <LuScanLine aria-hidden="true" />
-          {tt("door.openScanner", "Open the scanner")}
-        </Link>
-
         <div className={styles.scanCard}>
           <p className={styles.scanTitle}>{tt("ui.check.someone.f698", "Check someone in")}</p>
           <div className={styles.scanRow}>
@@ -513,7 +506,7 @@ const AttendeesContent = ({
                           them looks like a bug on the door list. Their email
                           is the thing that identifies them. */}
                       {r.username
-                        ? <UserChip user={r} size={0} secondary
+                        ? <UserChip user={r} size={32} secondary
                                     handleClassName={styles.handle} />
                         : <span className={styles.handle}>{r.attendee_email}</span>}
                       {r.attendee_phone && <span className={styles.handle}>
@@ -583,6 +576,16 @@ const AttendeesContent = ({
             <Link href={`/events/${eventId || ''}`} className={styles.backLink}>{tt("ui.back.event.ba2d", "← Back to event")}</Link>
             <h1 className={styles.pageTitle}>{tt("ui.door.list.9958", "Door list")}</h1>
             <p className={styles.pageSubtitle}>{tt("ui.everyone.holding.ticket.who.9087", "Everyone holding a ticket, and who has arrived.")}</p>
+            {/* The scanner, findable. On 5 September nobody opened it at all:
+                staff stood on this page reading codes off a phone camera and
+                typing them in, because there was no way to get from here to
+                there. It was added below the three stat cards, which on a
+                phone at a gate means scrolling past three numbers to reach
+                the one control that matters. Header now, and the same
+                component every other organiser screen draws. Row 168. */}
+            <div className={styles.headAction}>
+              <DoorScannerLink eventRef={eventId} />
+            </div>
           </div>
           {body()}
         </div>
@@ -596,7 +599,29 @@ const Attendees = () => <Suspense fallback={<div style={{
 }} />}>
     <AttendeesContent />
   </Suspense>;
-export default Attendees;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]/attendees` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const AttendeesLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}/attendees`}
+      fallback="/events/my-events"
+    />
+  </Suspense>
+);
+
+export default AttendeesLegacy;
 
 // Exported so the slug route can render it. Everything a person
 // clicks still lives here; the route file only supplies the address.

@@ -282,6 +282,21 @@ const Header = ({
                 <Link href={'/events/my-tickets'} className={styles.menuLink}>
                   {tt("menu.myTickets", "My tickets")}
                 </Link>
+                {/* What somebody PAYS FOR, beside what they hold and what they
+                    run. The memberships screen was reachable only from a plan
+                    page after subscribing, so anybody wanting to check their
+                    next payment had to find a plan first. A capability with no
+                    way in is not built. */}
+                <Link href={'/memberships'} className={styles.menuLink}>
+                  {tt("menu.myMemberships", "My memberships")}
+                </Link>
+                {/* The account menu is the one place that lists what somebody
+                    RUNS. A stall was missing from it, which is why buying a
+                    pitch led nowhere: the screens existed and nothing linked
+                    to them. */}
+                <Link href={'/my-stalls'} className={styles.menuLink}>
+                  {tt("menu.myStalls", "My stalls")}
+                </Link>
                 <Link href={'/wallets'} className={styles.menuLink}>
                   {tt("menu.wallet", "Wallet")}
                 </Link>

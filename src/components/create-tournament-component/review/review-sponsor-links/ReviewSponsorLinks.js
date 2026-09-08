@@ -50,7 +50,7 @@ const SponsorCard = ({ sponsor, index, t }) => {
           </div>
         )}
         <div className={styles.sponsorNameAndUsernameContainer}>
-          <h3 className={bioInfoStyles.headerH3}>{sponsor?.name || '–'}</h3>
+          <h3 className={bioInfoStyles.headerH3}>{sponsor?.name || '-'}</h3>
           {sponsor?.username && <p>{sponsor.username}</p>}
         </div>
       </div>

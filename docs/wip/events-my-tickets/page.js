@@ -29,7 +29,7 @@ const STATUS_FILTERS = [
 ];
 
 const formatDate = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return ' - ';
   return new Date(iso).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -38,7 +38,7 @@ const formatDate = (iso) => {
 };
 
 const formatDateTime = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return ' - ';
   return new Date(iso).toLocaleString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -154,7 +154,7 @@ const MyTickets = () => {
                 <FaTicketAlt className={styles.titleIcon} /> My Tickets
               </h2>
               <p className={styles.pageSub}>
-                Your purchased event passes — show the QR at the door.
+                Your purchased event passes - show the QR at the door.
               </p>
             </div>
             <Link href="/events" className={`${styles.browseBtn} goldBTN`}>
@@ -240,7 +240,7 @@ const MyTickets = () => {
                       </div>
 
                       <p className={styles.attendee}>
-                        Attendee: {t.holder?.full_name || t.attendee_name || '—'}
+                        Attendee: {t.holder?.full_name || t.attendee_name || ' - '}
                       </p>
 
                       <span className={styles.viewHint}>Tap to view full QR →</span>
@@ -308,7 +308,7 @@ const MyTickets = () => {
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>Attendee</span>
                   <span className={styles.qrFactValue}>
-                    {activeTicket.holder?.full_name || activeTicket.attendee_name || '—'}
+                    {activeTicket.holder?.full_name || activeTicket.attendee_name || ' - '}
                   </span>
                 </div>
                 <div className={styles.qrFact}>

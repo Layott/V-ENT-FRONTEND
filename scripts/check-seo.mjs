@@ -47,6 +47,7 @@ const PRIVATE_PREFIXES = [
   ['s', 'a short link, which redirects'],
   ['studio', 'a broadcast surface, not a page to find'],
   ['scan', 'a door tool'],
+  ['my-stalls', 'your own stalls, orders and the delivery addresses on them'],
   ['check-in', 'a door tool'],
 ];
 

@@ -236,9 +236,15 @@ export default function RunOfShowPanel({ kind, ownerRef, token, showToast }) {
       {/* ------------------------------------------------------- bringing it in */}
       <div className={styles.block}>
         <h3 className={styles.blockName}>
+          {/* "Start from your spreadsheet" as the only heading is what made a
+              spreadsheet look required. Three ways in, and the heading now
+              says so. */}
           {sheet ? tt('ros.replaceTitle', 'Bring in a newer version')
-            : tt('ros.importTitle', 'Start from your spreadsheet')}
+            : tt('ros.startTitle', 'How you want to build it')}
         </h3>
+        <p className={styles.blockHint}>
+          {sheet ? null : tt('ros.startHint', 'Three ways: bring in a spreadsheet you already wrote it in, paste the rows out of one, or start from scratch and type it straight in here.')}
+        </p>
         <p className={styles.blockHint}>
           {tt('ros.importHint', 'An .xlsx or a .csv. Every worksheet that looks like a running order becomes a day; the rest are left alone. The columns it reads are PHASE, ACTIVITY, OWNS IT, MATCH, STARTS, ENDS and MINS, matched by name wherever they sit.')}
         </p>
@@ -275,6 +281,19 @@ export default function RunOfShowPanel({ kind, ownerRef, token, showToast }) {
             {showPaste ? tt('ros.pasteHide', 'Never mind')
               : tt('ros.pasteShow', 'Or paste the rows')}
           </button>
+          {/* The third way in, and the one that was missing. Everything after
+              this press already worked - adding, editing and removing a cue
+              are all built - but the editor only draws once a sheet exists,
+              and the only way to get a sheet was to import one. So an
+              organiser without a spreadsheet had no way in at all.
+              `days/` creates the sheet when there is none, so this is one
+              press and then the ordinary editor. */}
+          {!sheet ? (
+            <button type="button" className={styles.ghostBtn} disabled={busy}
+                    onClick={addDay}>
+              {tt('ros.startBlank', 'Or start from scratch and type it in')}
+            </button>
+          ) : null}
         </div>
 
         {showPaste ? (

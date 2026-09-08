@@ -181,7 +181,7 @@ function isIgnorable(text) {
     'Images loaded lazily',
     'react-scan',
     'Hydration failed', // we'll separately flag this if it appears, but info-level in dev
-    'net::ERR_ABORTED', // benign — Next.js cancels in-flight RSC fetches when navigating
+    'net::ERR_ABORTED', // benign - Next.js cancels in-flight RSC fetches when navigating
     'data:image/svg+xml;base64', // inline SVG fetches sometimes report aborted in dev
     '_rsc=', // Next.js RSC prefetch streams cancel on navigation, harmless
   ];

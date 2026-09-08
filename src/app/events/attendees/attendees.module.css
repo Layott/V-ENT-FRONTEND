@@ -355,3 +355,12 @@
     background-color: #26272b;
   }
 }
+
+/* Room for the scanner button under the subtitle. Without it the button sits
+   flush against the sentence above and reads as overlapping it, which is the
+   exact fault reported on the console header on 7 September - and which I
+   then reproduced here by adding a control to a header that had no room for
+   one. */
+.headAction {
+  margin-top: 0.9rem;
+}

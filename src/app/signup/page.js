@@ -243,7 +243,7 @@ const Signup = () => {
                             <input type="email" name="email" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={formData.email} onChange={handleInputChange} required />
                                 {isEmailLoading ? <CircularProgress size={20} sx={{
               color: 'red'
-            }} className={styles.emailLoader} /> : emailError && <p className={styles.errorMessage}>{emailError}</p>}
+            }} /> : emailError && <p className={styles.errorMessage}>{emailError}</p>}
                         </div>
 
 

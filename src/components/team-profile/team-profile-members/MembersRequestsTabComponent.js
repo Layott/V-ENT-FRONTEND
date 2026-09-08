@@ -56,7 +56,7 @@ const MembersRequestsTabComponent = ({
     color: 'red'
   }}>{error}</p>;
   return <div className={styles.requestsContainer}>
-      <div className={styles.controlSettingsDiv}>
+      <div>
         <p>
           {tt("ui.control.public.requests.join.e1bd", "Control public requests to join your team in your")} <Link className={styles.teamProfileLink} href={'./team-profile'}>{tt("ui.profile.settings.e30f", "profile settings")}</Link>
         </p>

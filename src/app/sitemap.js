@@ -98,12 +98,13 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
     readList('/club/list/'),
     readList('/organization/list/'),
+    readList('/billing/plans/public/'),
   ]);
 
   const tournamentPages = tournaments
@@ -146,14 +147,10 @@ export default async function sitemap() {
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
 
-  // A club is a public conversation, so it is worth finding. A private one is
-  // readable only from the inside and has no business in a sitemap.
-  const clubPages = clubs
-    .filter((c) => c?.slug && !c.is_private)
-    .map((c) => entry(`/community/club/${c.slug}`, {
-      changeFrequency: 'daily',
-      priority: 0.6,
-    }));
+  // Clubs are withdrawn (CEO, 7 September 2026), so there is nothing at
+  // /community/club to find. Listing a route that 404s is worse than listing
+  // nothing.
+  const clubPages = [];
 
   const orgPages = organizations
     .filter((o) => o?.slug)
@@ -162,7 +159,18 @@ export default async function sitemap() {
       priority: 0.6,
     }));
 
+  // A membership an organiser sells. Public and worth finding: somebody
+  // deciding whether to join is exactly the reader a search result reaches,
+  // and the endpoint only ever returns plans that are actually public.
+  const planPages = plans
+    .filter((p) => p?.slug)
+    .map((p) => entry(`/plans/${p.slug}`, {
+      changeFrequency: 'weekly',
+      priority: 0.5,
+      lastModified: p.updated_at,
+    }));
+
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...teamPages, ...clubPages, ...orgPages].flat();
+          ...teamPages, ...clubPages, ...orgPages, ...planPages].flat();
 }

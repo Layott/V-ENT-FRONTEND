@@ -8,6 +8,7 @@ import image from '@/images/signed_in_user_big.webp';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 const ReviewModal = ({
   isOpen,
   onClose,
@@ -254,7 +255,7 @@ const ReviewModal = ({
                 avatar: "/api/placeholder/32/32"
               }]).map(member => <div key={member.id} className={styles.memberItem}>
                       <div className={styles.memberAvatar}>
-                        <Image src={mediaUrl(member.avatar || image)} alt={member.name} width={32} height={32} />
+                        <Avatar src={mediaUrl(member.avatar)} name={member.username || member.name} size={32} />
                       </div>
                       <div className={styles.memberDetails}>
                         <UserChip user={{ ...member, full_name: member.name }}

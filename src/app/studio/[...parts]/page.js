@@ -1105,6 +1105,189 @@ function Explainer({ data }) {
   );
 }
 
+
+// ----------------------------------------------------- the four house drawings
+//
+// `desk_lower_third`, `matchday`, `analyst_desk` and `play_area` arrived as a
+// port of the CADE Rivalry Series pack and were listed under the house look as
+// well, so a broadcast that had NOT picked that look put the client's green
+// artwork on air. These four are the house answer: V-ENT surfaces and the red
+// accent, the same payload fields, the same feed, the same empty states.
+
+/** C1b in the house look: who is on the desk.
+ *
+ * The role goes first and in the accent block, which is the one thing worth
+ * keeping from the pack's reasoning: on a desk the role identifies the person,
+ * because half the audience has never heard the name.
+ */
+function HouseDesk({ payload }) {
+  const tt = useT();
+
+  const people = [
+    { name: payload.name, role: payload.role },
+    { name: payload.name_2, role: payload.role_2 },
+    { name: payload.name_3, role: payload.role_3 },
+  ]
+    .map((seat) => ({
+      name: String(seat.name || '').trim(),
+      role: String(seat.role || '').trim(),
+    }))
+    .filter((seat) => seat.name);
+
+  if (!people.length) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.desk', 'On the desk')}
+        line={tt('studio.rv.deskTBC', 'The desk is being confirmed.')} />
+    );
+  }
+
+  return (
+    <div className={styles.hdRoot}>
+      {people.map((person, i) => (
+        <div className={styles.hdPlate} key={`${i}-${person.name}`}>
+          {person.role && <span className={styles.hdRole}>{person.role}</span>}
+          <span className={styles.hdName}>{person.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** The furniture both camera frames are made of.
+ *
+ * One component, because the analyst desk and the play area are the same plate
+ * with different words in it, and two copies is how one of them ends up a
+ * different size. The middle of the frame stays transparent either way: that is
+ * where the people or the game are.
+ */
+function HouseFramePlate({ label, note }) {
+  return (
+    <div className={styles.fpPlate}>
+      <div className={styles.fpLabel}>{label}</div>
+      {note && <div className={styles.fpNote}>{note}</div>}
+    </div>
+  );
+}
+
+/** C3 in the house look: furniture around a camera pointed at the desk. */
+function HouseAnalystDesk({ payload }) {
+  const tt = useT();
+  return (
+    <HouseFramePlate
+      label={payload.label || tt('studio.rv.theDesk', 'The desk')}
+      note={payload.note || tt('studio.rv.analysts', 'Analysts')} />
+  );
+}
+
+/** C6 in the house look: the same furniture, around the game.
+ *
+ * A blank note draws the venue off the record rather than a placeholder, and an
+ * operator who types something still wins. `tournament.venue` is not on the
+ * feed yet; it is read under the name the event side already uses so the two
+ * agree the day it is added.
+ */
+function HousePlayArea({ payload, data }) {
+  const tt = useT();
+  return (
+    <HouseFramePlate
+      label={payload.label || tt('studio.rv.playArea', 'The play area')}
+      note={payload.note || data?.tournament?.venue || data?.event?.venue || ''} />
+  );
+}
+
+/** B10 in the house look: the day's ties, and the same card with the results.
+ *
+ * One component and one argument, exactly as the pack version has: `results`
+ * turns VS into the aggregate. Two graphics for one card is how the fixtures
+ * and the results drift apart halfway through a show.
+ */
+function HouseMatchday({ payload, data }) {
+  const tt = useT();
+  const rivalry = rivalryOf(data);
+  const results = optIn(payload.results);
+
+  // The organiser's own running order when the feed carries it, and the flat
+  // fixture list when it does not. A card that shows one day's draw under
+  // another day's number is worse on air than a card that says nothing about
+  // the day at all, so the tag only appears when the day is known.
+  // `rivalry.days[].fixtures` is a list of IDS, not fixtures. Reading it as
+  // objects drew a card of five rows saying VS with no names in them, which is
+  // a card that looks finished and says nothing. Resolve against
+  // `rivalry.fixtures`, exactly as the pack version does.
+  const all = Array.isArray(rivalry?.fixtures) ? rivalry.fixtures : [];
+  const byId = new Map(all.map((f) => [String(f.id), f]));
+  const days = (Array.isArray(rivalry?.days) ? rivalry.days : [])
+    .map((day, i) => ({
+      date: String(day.date || ''),
+      number: Number(day.number) || i + 1,
+      fixtures: (day.fixtures || []).map((id) => byId.get(String(id))).filter(Boolean),
+    }))
+    .filter((day) => day.fixtures.length);
+
+  const asked = String(payload.day || '').trim();
+  // A day that matches nothing resolves to NOTHING rather than to a
+  // neighbouring day: a whole card of the wrong five ties reads as confidently
+  // correct, which is worse on air than an empty one.
+  const day = asked
+    ? days.find((d) => String(d.number) === asked || d.date === asked) || null
+    : days[0] || null;
+  const fixtures = (day ? day.fixtures : all).slice(0, 6);
+
+  if (!fixtures.length) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('studio.rv.matchUps', 'Today’s match ups')}
+        line={tt('studio.rv.fixturesTBC', 'The fixtures are being confirmed.')} />
+    );
+  }
+
+  return (
+    <div className={styles.mdCard}>
+      <div className={styles.mdHead}>
+        <span className={styles.mdTitle}>
+          {results
+            ? tt('studio.rv.results', 'Results')
+            : tt('studio.rv.matchUps', 'Today’s match ups')}
+        </span>
+        {day?.number && (
+          <span className={styles.mdDay}>
+            {tt('studio.rv.day', 'Day {n}').replace('{n}', String(day.number))}
+          </span>
+        )}
+      </div>
+      <div className={styles.mdList}>
+        {fixtures.map((fixture, i) => {
+          const home = fixture.home || {};
+          const away = fixture.away || {};
+          const hg = count(home.aggregate);
+          const ag = count(away.aggregate);
+          // An aggregate nobody has played is not a 0-0, and a tie still
+          // running carries a running total, which is not a result either. The
+          // row keeps saying VS until the tie is decided.
+          const decided = Boolean(fixture.decided || fixture.status === 'completed');
+          const scored = results && decided && hg !== null && ag !== null;
+          return (
+            <div className={styles.mdRow} key={fixture.id ?? i}>
+              <span className={`${styles.mdSide} ${scored && hg > ag ? styles.mdWon : ''}`}>
+                {home.name || ''}
+              </span>
+              {scored ? (
+                <span className={styles.mdScore}>{hg}<b>-</b>{ag}</span>
+              ) : (
+                <span className={styles.mdVs}>{tt('studio.rv.vs', 'VS')}</span>
+              )}
+              <span className={`${styles.mdSide} ${styles.mdAway} ${scored && ag > hg ? styles.mdWon : ''}`}>
+                {away.name || ''}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const ELEMENTS = {
   scorebar: Scorebar,
   standings: Standings,
@@ -1127,16 +1310,16 @@ const ELEMENTS = {
   break_screen: BreakScreen,
   award: Award,
   explainer: Explainer,
-  // Four graphics off the CEO's stream elements sheet that the studio had no
-  // kind for. They exist in the Rivalry look only for now: the drawing is the
-  // client's pack and a V-ENT house version of each is still to be made, so
-  // they are listed here as well rather than being dead under the house look.
-  // An operator who switches one on gets a working graphic either way, which
-  // is the thing that matters at a venue.
-  desk_lower_third: DeskLowerThird,
-  matchday: MatchdayCard,
-  analyst_desk: AnalystDesk,
-  play_area: PlayAreaFrame,
+  // Four graphics off the CEO's stream elements sheet. They arrived as a port
+  // of the client's pack and were listed here as well, so a broadcast on the
+  // HOUSE look put the client's green artwork on air. These are the house
+  // drawings, added 8 September: same payload fields, same feed, same empty
+  // states, V-ENT's own colours. The pack versions stay in the RIVALRY map
+  // below, which is what a look is for.
+  desk_lower_third: HouseDesk,
+  matchday: HouseMatchday,
+  analyst_desk: HouseAnalystDesk,
+  play_area: HousePlayArea,
 };
 
 // The same kinds, drawn in the CADE Rivalry Series pack.

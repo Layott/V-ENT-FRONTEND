@@ -20,8 +20,11 @@ import styles from './manage-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import SharedWallet from '@/components/shared-wallet/SharedWallet';
 import DiscordServerPanel from '@/components/discord/DiscordServerPanel';
+import OrgMembershipsPanel from '@/components/memberships/OrgMembershipsPanel';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 import { sameUser, usernameOf } from '@/lib/gating';
 const TABS = [{
   id: 'members',
@@ -33,8 +36,18 @@ const TABS = [{
   id: 'teams',
   label: 'Teams'
 }, {
-  id: 'clubs',
-  label: 'Clubs'
+  // Memberships live beside Members and Teams rather than on a page of their
+  // own. An organiser running the organisation is already on this screen, and
+  // a sixteenth tab somewhere else is a tab nobody finds.
+  id: 'memberships',
+  label: 'Memberships'
+}, {
+  // The console is where somebody who RUNS this organisation comes to do
+  // things to it, and its money is one of those things. The profile page has
+  // shown the same wallet since it was built, which is the right place to read
+  // it; it was the wrong and only place to spend from.
+  id: 'wallet',
+  label: 'Wallet'
 }, {
   id: 'profile',
   label: 'Profile'
@@ -48,7 +61,11 @@ const TABS = [{
 
 // The four parts of an organisation a manager can be given. Owners and admins
 // hold all of them; the picker only ever applies to a manager.
-const SCOPES = ['teams', 'events', 'tournaments', 'clubs'];
+// `finance` is the organisation's wallet, and it is its own scope rather than
+// a corner of `teams`: running the roster is not the same permission as
+// spending the money, and the wallet is the one thing here that cannot be
+// put back by editing a row.
+const SCOPES = ['teams', 'events', 'tournaments', 'clubs', 'finance'];
 const ROLES = ['member', 'manager', 'admin'];
 const formatDate = iso => {
   if (!iso) return '-';
@@ -270,7 +287,8 @@ const ManageOrgContent = ({
     teams: tt("ui.scope.teams.6b12", "Teams"),
     events: tt("ui.scope.events.9d47", "Events"),
     tournaments: tt("ui.scope.tournaments.2f83", "Tournaments"),
-    clubs: tt("ui.scope.clubs.4a06", "Clubs")
+    clubs: tt("ui.scope.clubs.4a06", "Clubs"),
+    finance: tt("ui.scope.finance.7c31", "Wallet")
   }[scope] || scope);
   const roleWord = role => ({
     owner: tt("ui.org.role.owner.5d18", "owner"),
@@ -635,7 +653,7 @@ const ManageOrgContent = ({
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                {r.user?.avatar && <Image src={mediaUrl(r.user.avatar)} alt={r.user.full_name} width={36} height={36} />}
+                                <Avatar src={mediaUrl(r.user?.avatar)} name={r.user?.username || r.user?.full_name} size={36} />
                               </div>
                               <div>
                                 <UserChip user={r.user} size={0} secondary
@@ -692,10 +710,12 @@ const ManageOrgContent = ({
                               <td>
                                 <div className={styles.memberCell}>
                                   <div className={styles.memberAvatar}>
-                                    {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
+                                    <Avatar src={mediaUrl(m.user?.avatar)} name={m.user?.username || m.user?.full_name} size={32} />
                                   </div>
                                   <div className={styles.memberText}>
-                                    <span className={styles.memberName}>{m.user?.full_name}</span>
+                                    <span className={styles.memberName}>
+                                      <UserChip user={m.user} size={0} />
+                                    </span>
                                     <span className={styles.memberHandle}>@{m.user?.username}</span>
                                   </div>
                                 </div>
@@ -814,7 +834,7 @@ const ManageOrgContent = ({
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                {i.user?.avatar && <Image src={mediaUrl(i.user.avatar)} alt={i.user.username} width={36} height={36} />}
+                                <Avatar src={mediaUrl(i.user?.avatar)} name={i.user?.username || i.user?.full_name} size={36} />
                               </div>
                               <div className={styles.memberText}>
                                 <UserChip user={i.user} size={0} nameClassName={styles.memberName} />
@@ -989,6 +1009,17 @@ const ManageOrgContent = ({
             {/* The organisation's own Discord server. Each capability is
                 granted separately, so the bot invite this opens carries only
                 the permissions that were ticked. */}
+            {activeTab === 'wallet' && <div className={styles.membersWrap}>
+                <SharedWallet kind="org" reference={org?.slug || orgId}
+                              name={org?.org_name || org?.name} />
+              </div>}
+
+            {activeTab === 'memberships' && <OrgMembershipsPanel
+              orgSlug={org?.slug || orgId}
+              token={session?.user?.sessionToken}
+              canManage={canManage}
+              onToast={showToast} />}
+
             {activeTab === 'discord' && <DiscordServerPanel
               orgRef={org?.slug || orgId}
               token={session?.user?.sessionToken}

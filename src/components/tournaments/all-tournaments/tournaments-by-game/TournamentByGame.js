@@ -161,7 +161,7 @@ const TournamentsByGame = ({
                       <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={newTournamentsStyles.viewDetailsBTN}>
                         {tt("ui.view.details.907b", "View Details")}
                       </Link>
-                      <Link href={`/tournaments/${tournament.tournament_id}/register`} className={newTournamentsStyles.registerBTN}>
+                      <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}/register`} className={newTournamentsStyles.registerBTN}>
                         {tt("ui.register.d672", "Register")}
                       </Link>
                     </div>

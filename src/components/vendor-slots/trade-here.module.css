@@ -1,0 +1,219 @@
+/* Pitches on sale, on the public event page. Filled surfaces, no strokes. */
+
+.wrap {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.blurb, .meta, .desc {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 70ch;
+}
+
+.blurb { margin-bottom: 1rem; }
+
+.good {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--v-ent-success);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  /* Without this a grid child sizes past the viewport and the container clips
+     silently, which this codebase has shipped before. */
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.name {
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+/* Sold out is a fact, not an alarm. */
+.gone {
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.price {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: var(--fw-bold);
+  color: var(--v-ent-success);
+}
+
+.desc { color: rgba(255, 255, 255, 0.72); }
+
+.buy, .ghost {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+
+.buy { background-color: var(--v-ent-success); color: #fff; }
+.ghost {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: var(--fw-medium);
+}
+
+.buy:disabled, .ghost:disabled {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 60;
+}
+
+.modal {
+  background-color: #212225;
+  border-radius: 14px;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  margin: 0 0 0.3rem;
+  font-size: 1.1rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.modalSub {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border-radius: 10px;
+  background-color: #202126;
+  color: #fff;
+  font-size: 0.9rem;
+  min-width: 0;
+}
+
+.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+/* The conditions get their own surface. They are the thing being agreed to,
+   and setting them apart is what makes that legible rather than decorative. */
+.rules {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.rulesTitle {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: var(--fw-semi-bold);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.rulesBody {
+  margin: 0 0 0.7rem;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: pre-wrap;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: #fff;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.problem {
+  margin: 0 0 0.8rem;
+  font-size: 0.86rem;
+  color: var(--v-ent-red);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .list { grid-template-columns: 1fr; }
+  .actions { justify-content: stretch; }
+  .actions .buy, .actions .ghost { flex: 1; }
+}

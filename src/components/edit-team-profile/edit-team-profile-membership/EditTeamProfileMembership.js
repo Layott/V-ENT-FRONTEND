@@ -14,7 +14,7 @@ const EditTeamProfileMembership = () => {
           <h4>{tt("ui.allow.membership.requests.2637", "Allow membership requests")}</h4>
           <div className={styles.onOffBTNContainer}>
             <button className={`${styles.sliderSwitch} ${isOn ? styles.on : styles.off}`} onClick={toggleSwitch} aria-checked={isOn} role="switch">
-              {/* <span className={styles.srOnly}>{isOn ? "On" : "Off"}</span> */}
+              {/* <span>{isOn ? "On" : "Off"}</span> */}
               <span className={styles.sliderThumb} />
             </button>
           </div>

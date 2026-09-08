@@ -11,7 +11,9 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './payouts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { formatDate } from '@/lib/datetime';
+import { formatDate, formatNumber } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -229,7 +231,7 @@ function PayoutsInner() {
                 <option value="-amount_vc">{tt("ui.amount.high.low.13a9", "Amount (High-Low)")}</option>
                 <option value="amount_vc">{tt("ui.amount.low.high.56f4", "Amount (Low-High)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countPayoutsOne', '{n} payout') : tt('admin.countPayoutsMany', '{n} payouts')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countPayoutsOne', '{n} payout') : tt('admin.countPayoutsMany', '{n} payouts')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -270,7 +272,7 @@ function PayoutsInner() {
                         <td>
                           <div className={shared.userCell}>
                             <div className={shared.userAvatar}>
-                              {(p.username || 'U').slice(0, 2).toUpperCase()}
+                              <Avatar src={mediaUrl(p.avatar)} name={p.username} size={36} />
                             </div>
                             <span>{p.username}</span>
                           </div>

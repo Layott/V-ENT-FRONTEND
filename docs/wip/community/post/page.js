@@ -181,7 +181,7 @@ const PostInner = () => {
                     <span className={styles.time}>{relativeTime(post.created_at)}</span>
                   </div>
 
-                  {/* Page heading — derived from post title or first 60 chars of body */}
+                  {/* Page heading - derived from post title or first 60 chars of body */}
                   <h1 className={styles.postHeading}>
                     {post.title || (post.content || '').slice(0, 60) || 'Community post'}
                   </h1>
@@ -315,7 +315,7 @@ const seedComments = (post) => {
     'Big W. Pulled up.',
     'GG, that bracket was nuts.',
     'Send me the link?',
-    'Same boat — sat through that all weekend.',
+    'Same boat - sat through that all weekend.',
     'Couldn\'t agree more.',
     'Watching this Sunday for sure.',
     'Tag me when you go live next.',

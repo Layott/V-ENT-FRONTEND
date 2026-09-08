@@ -45,7 +45,7 @@ const STATUS_INFO = {
   },
   disputed: {
     title: 'Dispute open',
-    body: 'V-ENT is reviewing your dispute. We typically resolve within 24–48 hours.',
+    body: 'V-ENT is reviewing your dispute. We typically resolve within 24-48 hours.',
     badgeClass: 'statusDisputed',
     badgeLabel: 'Disputed',
   },
@@ -66,7 +66,7 @@ const statusToStepIndex = (status) => {
 };
 
 const formatDate = (d) => {
-  if (!d) return '—';
+  if (!d) return ' - ';
   return new Date(d).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
@@ -115,7 +115,7 @@ const PurchaseInner = () => {
       const data = await res.json();
       if (data.status === 'success') {
         setPurchase((prev) => prev ? { ...prev, status: 'completed' } : prev);
-        showToast('Order confirmed — funds released to seller');
+        showToast('Order confirmed - funds released to seller');
       }
     } catch {
       showToast('Could not confirm receipt');
@@ -137,7 +137,7 @@ const PurchaseInner = () => {
       if (data.status === 'success') {
         setPurchase((prev) => prev ? { ...prev, status: 'disputed', dispute_reason: disputeReason } : prev);
         setDisputeOpen(false);
-        showToast('Dispute opened — V-ENT support will reach out');
+        showToast('Dispute opened - V-ENT support will reach out');
       }
     } catch {
       showToast('Could not open dispute');

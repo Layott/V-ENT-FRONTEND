@@ -290,7 +290,7 @@ const VendorShopContent = ({
                 <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No vendors match.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.different.category.clear.1b19", "Try a different category or clear the search.")}</p>
               </div> : <div className={styles.vendorGrid}>
-                {filteredVendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${v.id}`} className={styles.vendorCard}>
+                {filteredVendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${v.slug || v.id}`} className={styles.vendorCard}>
                     <div className={styles.vendorBannerWrap}>
                       {v.banner ? <Image src={mediaUrl(v.banner)} alt={v.name} fill sizes="(min-width: 1024px) 33vw, 100vw" style={{
                   objectFit: 'cover'
@@ -353,7 +353,7 @@ const VendorShopContent = ({
                 <button className={`${styles.addToCartBtn} goldBTN`} onClick={() => addToCart(activeProduct)} disabled={!activeProduct.in_stock} type="button">
                   {activeProduct.in_stock ? tx("Add to cart") : tx("Sold out")}
                 </button>
-                <Link href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${activeProduct.vendor_id}`} className={styles.viewVendorBtn}>
+                <Link href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${activeProduct.vendor_slug}`} className={styles.viewVendorBtn}>
                   {tt("ui.visit.stall.f79e", "Visit stall")}
                 </Link>
               </div>
@@ -390,7 +390,7 @@ const VendorShopContent = ({
                         <p className={styles.cartItemVendor}>{item.vendor_name}</p>
                         <div className={styles.cartItemFoot}>
                           <div className={styles.qtyControl}>
-                            <button onClick={() => updateQty(item.id, -1)} type="button" aria-label={tt("ui.decrease.quantity.6c02", "Decrease quantity")}>−</button>
+                            <button onClick={() => updateQty(item.id, -1)} type="button" aria-label={tt("ui.decrease.quantity.6c02", "Decrease quantity")}>-</button>
                             <span>{item.qty}</span>
                             <button onClick={() => updateQty(item.id, 1)} type="button" aria-label={tt("ui.increase.quantity.062e", "Increase quantity")}>+</button>
                           </div>
