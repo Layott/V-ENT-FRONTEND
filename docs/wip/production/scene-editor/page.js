@@ -28,7 +28,7 @@ const CANVAS_H = 720;
 const GRID_SIZE = 40;
 
 const TOOLBOX_ITEMS = [
-  { id: 'scoreboard', label: 'Scoreboard', icon: BsLayers, w: 540, h: 90, defaultText: 'CRW 3 — 2 AR' },
+  { id: 'scoreboard', label: 'Scoreboard', icon: BsLayers, w: 540, h: 90, defaultText: 'CRW 3-2 AR' },
   { id: 'lower_third', label: 'Lower Third', icon: BsType, w: 380, h: 80, defaultText: 'JAY_O · Caster' },
   { id: 'sponsor_bar', label: 'Sponsor Bar', icon: BsUiRadiosGrid, w: CANVAS_W, h: 60, defaultText: 'POWERED BY' },
   { id: 'team_names', label: 'Team Tag', icon: BsAward, w: 160, h: 64, defaultText: 'CRW' },
@@ -71,7 +71,7 @@ const SceneEditorContent = () => {
     }
     // Default match scene
     return [
-      { id: 'el1', type: 'scoreboard', x: 360, y: 40, w: 540, h: 90, text: 'CRW 3 — 2 AR', color: '#ED1C24' },
+      { id: 'el1', type: 'scoreboard', x: 360, y: 40, w: 540, h: 90, text: 'CRW 3-2 AR', color: '#ED1C24' },
       { id: 'el2', type: 'lower_third', x: 60, y: 540, w: 380, h: 80, text: 'JAY_O · Caster', color: '#D4AF37' },
       { id: 'el3', type: 'sponsor_bar', x: 0, y: 660, w: CANVAS_W, h: 60, text: 'POWERED BY', color: '#FBC64B' },
       { id: 'el4', type: 'timer', x: 560, y: 160, w: 180, h: 70, text: '14:22', color: '#ED1C24' },

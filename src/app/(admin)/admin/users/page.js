@@ -13,7 +13,9 @@ import styles from './users.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
-import { formatDate } from '@/lib/datetime';
+import { formatDate, formatNumber } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const PAGE_SIZE = 20;
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
 const STATUSES = [{
@@ -220,7 +222,7 @@ function UsersInner() {
                 <option value="username">{tt("ui.username.z.fd1c", "Username A-Z")}</option>
                 <option value="-wallet_vc">{tt("ui.wallet.high.low.7287", "Wallet (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countUsersOne', '{n} user') : tt('admin.countUsersMany', '{n} users')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countUsersOne', '{n} user') : tt('admin.countUsersMany', '{n} users')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -262,10 +264,10 @@ function UsersInner() {
                           <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggleSelect(u.id)} className={styles.checkbox} aria-label={`Select ${u.username}`} />
                         </td>
                         <td>
-                          <Link href={`/admin/users/${u.id}`} className={styles.userLink}>
+                          <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={styles.userLink}>
                             <div className={shared.userCell}>
                               <div className={shared.userAvatar}>
-                                {(u.username || 'U').slice(0, 2).toUpperCase()}
+                                <Avatar src={mediaUrl(u.avatar)} name={u.username} size={36} />
                               </div>
                               <div>
                                 <span className={styles.userName}>{u.username}</span>
@@ -289,7 +291,7 @@ function UsersInner() {
                         </td>
                         <td>
                           <div className={shared.actGroup}>
-                            <Link href={`/admin/users/${u.id}`} className={`${shared.actBtn} ${shared.actView}`}>
+                            <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={`${shared.actBtn} ${shared.actView}`}>
                               {tt("ui.view.69bd", "View")}
                             </Link>
                             {u.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => actOnUser(u.id, 'unban')}>

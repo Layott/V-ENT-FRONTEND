@@ -41,12 +41,12 @@ const SOCIAL_ICONS = {
 };
 
 const formatDate = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return ' - ';
   try {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   } catch {
-    return '—';
+    return ' - ';
   }
 };
 
@@ -138,7 +138,7 @@ const OrgProfileContent = () => {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  // Tab click — preserve scroll for previous tab, restore for new
+  // Tab click - preserve scroll for previous tab, restore for new
   const switchTab = (tab) => {
     setScrollByTab((s) => ({ ...s, [activeTab]: window.scrollY }));
     setActiveTab(tab);
@@ -158,7 +158,7 @@ const OrgProfileContent = () => {
   // ── Actions ──
   const handleFollow = async () => {
     setFollowing((v) => !v);
-    showToast(following ? 'Unfollowed' : 'Following — you will get updates.');
+    showToast(following ? 'Unfollowed' : 'Following - you will get updates.');
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/organization/${orgId}/follow/`, {
         method: 'POST',
@@ -184,7 +184,7 @@ const OrgProfileContent = () => {
       const data = await res.json();
       if (data?.status === 'success') {
         setApplyState('pending');
-        showToast('Application submitted — awaiting approval.');
+        showToast('Application submitted - awaiting approval.');
       } else {
         setApplyState(null);
         showToast(data?.message || 'Application failed.');
@@ -469,7 +469,7 @@ const OrgProfileContent = () => {
                   <section className={styles.panel}>
                     <h3 className={styles.panelTitle}>Founders</h3>
                     {(org.founders || []).length === 0 ? (
-                      <p className={styles.bioText}>—</p>
+                      <p className={styles.bioText}> - </p>
                     ) : (
                       <ul className={styles.founderList}>
                         {(org.founders || []).map((name, i) => (
@@ -677,7 +677,7 @@ const OrgProfileContent = () => {
                           {isOwner && (
                             <td className={styles.alignRight}>
                               {isMemberOwner ? (
-                                <span className={styles.cellMuted}>—</span>
+                                <span className={styles.cellMuted}> - </span>
                               ) : (
                                 <div className={styles.menuWrap}>
                                   <button
@@ -742,19 +742,19 @@ const OrgProfileContent = () => {
                       <dd>
                         {org.contact_email ? (
                           <a href={`mailto:${org.contact_email}`} className={styles.linkAccent}>{org.contact_email}</a>
-                        ) : '—'}
+                        ) : ' - '}
                       </dd>
                     </div>
                     <div className={styles.aboutRow}>
                       <dt><MdBusiness /> Focus</dt>
-                      <dd className={styles.capitalize}>{org.focus || '—'}</dd>
+                      <dd className={styles.capitalize}>{org.focus || ' - '}</dd>
                     </div>
                   </dl>
                 </section>
 
                 <section className={styles.panel}>
                   <h3 className={styles.panelTitle}>Mission</h3>
-                  <p className={styles.bioText}>{org.mission || '—'}</p>
+                  <p className={styles.bioText}>{org.mission || ' - '}</p>
                 </section>
 
                 <section className={styles.panel}>

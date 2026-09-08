@@ -221,7 +221,9 @@ const EditTeamRosterModal = ({
                       </div>
                       <div className={styles.memberDetails}>
                         <span className={styles.memberName}>{member.name}</span>
-                        <span className={styles.memberUsername}>{member.username}</span>
+                        {/* A handle, so it reads as one. The name above it is
+                            the member's own, already shown. */}
+                        <span className={styles.memberUsername}>@{member.username}</span>
                       </div>
                     </div>
                     <button className={styles.restoreButton} onClick={() => handleRestoreMember(member.id)}>

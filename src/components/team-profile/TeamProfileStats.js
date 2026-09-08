@@ -83,7 +83,7 @@ const TeamProfileStats = ({
                 {points.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="3" fill="var(--v-ent-gold)" stroke="#131316" strokeWidth="1" />)}
               </svg>
               <div className={styles.sparkLabels}>
-                {series.map((pt, i) => <span key={i} className={styles.sparkLabel}>{pt.month}</span>)}
+                {series.map((pt, i) => <span key={i}>{pt.month}</span>)}
               </div>
             </div>}
         </section>

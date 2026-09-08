@@ -4,29 +4,49 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
-import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText } from 'react-icons/lu';
+import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
 import styles from './AdminNav.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
+// Every short role the backend can emit, and there are eight.
+//
+// This held four. `ROLE_LABELS[role]` is `undefined` for the rest, so an
+// Admin, a Tournament Organizer, a Marketplace Manager and a Wager Manager all
+// saw a BLANK badge in the sidebar and a blank line under their own name in
+// the footer. The four missing ones are exactly the roles the admin spec of 7
+// September adds, which is how it went unnoticed.
+//
+// `decorators.ROLE_SHORT` is the source of these keys.
 const ROLE_LABELS = {
   super: 'Super Admin',
-  finance: 'Finance',
+  admin: 'Admin',
+  finance: 'Financial Manager',
   moderator: 'Moderator',
+  tournaments: 'Tournament Organizer',
+  marketplace: 'Marketplace Manager',
+  wager: 'Wager Manager',
   support: 'Support'
 };
 
-// Nav items carry BOTH a `roles` array (short-alias fallback map) and a `perms`
-// list (permission keys from admin.permissions). `roles: null` = every admin.
-// `perms: null` on Dashboard = every authenticated admin always sees it.
-const NAV = [{
+// One key per item, and it is the SAME permission name the endpoint behind it
+// is decorated with in `vent_auth/decorators.py`. `perms: null` on the
+// Dashboard is the one universal item: every admin role holds
+// `view_dashboard`, and it is the page they land on.
+//
+// `tools/check-admin-nav.py` fails the build if a name here is not a real
+// permission, or if an admin route exists with no way to reach it. /admin/kyc
+// was a finished page in no navigation list for weeks, reachable only by
+// typing the address.
+export const NAV = [{
   section: 'Overview',
   items: [{
     label: 'Dashboard',
     href: '/admin',
     icon: MdOutlineDashboard,
-    roles: null,
     perms: null
   }]
 }, {
@@ -37,50 +57,80 @@ const NAV = [{
     label: 'Users',
     href: '/admin/users',
     icon: LuUsers,
-    roles: ['super', 'moderator', 'finance', 'support'],
     perms: ['view_users'],
     badge: 'users'
   }, {
     label: 'Events',
     href: '/admin/events',
     icon: LuCalendar,
-    roles: ['super', 'moderator'],
     perms: ['manage_events']
   }, {
     label: 'Games',
     href: '/admin/games',
     icon: LuGamepad2,
-    roles: ['super', 'moderator'],
-    perms: ['cancel_tournament']
+    perms: ['manage_games']
   }, {
     label: 'Tournaments',
     href: '/admin/tournaments',
     icon: RiTrophyLine,
-    roles: ['super', 'moderator'],
-    perms: ['cancel_tournament', 'override_match_score', 'resolve_dispute']
+    perms: ['manage_tournaments']
   }, {
     label: 'Disputes',
     href: '/admin/disputes',
     icon: MdGavel,
-    roles: ['super', 'moderator'],
     perms: ['resolve_dispute'],
     badge: 'disputes'
+  }, {
+    // Two of the ten sections the admin spec of 7 September asks for. The
+    // rest are either already here or waiting on a feature that does not
+    // exist: the marketplace is Phase 4, the wager system Phase 6, the shop
+    // Phase 3. A console section for an unbuilt feature is a screen of
+    // controls that do nothing.
+    label: 'Organisations',
+    href: '/admin/organizations',
+    icon: LuBuilding,
+    perms: ['view_organizations']
+  }, {
+    label: 'Communities',
+    href: '/admin/communities',
+    icon: LuMessagesSquare,
+    perms: ['manage_communities']
+  }, {
+    // Reports were filed into a table nothing read. The badge is the count of
+    // reports still waiting, because a queue with no number on it is a queue
+    // people stop opening.
+    label: 'Reports and content',
+    href: '/admin/content',
+    icon: LuFlag,
+    perms: ['moderate_content'],
+    badge: 'reports'
   }]
 }, {
   section: 'Finance',
   items: [{
+    label: 'Money',
+    href: '/admin/finance',
+    icon: LuReceipt,
+    perms: ['view_transactions']
+  }, {
     label: 'Rates',
     href: '/admin/rates',
     icon: LuCoins,
-    roles: ['super', 'finance'],
-    perms: ['view_transactions']
+    perms: ['manage_rates']
   }, {
     label: 'Payouts',
     href: '/admin/payouts',
     icon: IoWalletOutline,
-    roles: ['super', 'finance'],
-    perms: ['list_payouts', 'approve_payouts'],
+    perms: ['list_payouts'],
     badge: 'payouts'
+  }, {
+    // A finished page that was in no navigation list anywhere, so the only way
+    // to reach it was to type the address.
+    label: 'Identity checks',
+    href: '/admin/kyc',
+    icon: LuIdCard,
+    perms: ['list_kyc'],
+    badge: 'kyc'
   }]
 }, {
   section: 'Partners',
@@ -92,35 +142,76 @@ const NAV = [{
     label: 'Partner access',
     href: '/admin/partners',
     icon: LuShield,
-    roles: ['super'],
     perms: ['manage_admins']
   }]
 }, {
   section: 'System',
   items: [{
+    // Creating and removing administrators. The one thing the spec gives a
+    // Super Admin and withholds from an Admin.
+    label: 'Administrators',
+    href: '/admin/admins',
+    icon: LuShield,
+    perms: ['manage_admins']
+  }, {
     label: 'Audit Log',
     href: '/admin/audit-log',
     icon: LuFileText,
-    roles: ['super', 'moderator', 'finance', 'support'],
     perms: ['view_audit_log']
   }, {
     label: 'Settings',
     href: '/admin/settings',
     icon: MdOutlineSettings,
-    roles: ['super'],
-    perms: ['manage_admins']
+    perms: ['manage_settings']
   }]
 }];
 
-// Decide if a nav item is visible. Prefer the permission bool-map when present
-// (any matching permission grants the item); always fall back to the role map so
-// a valid role never loses access. Dashboard (perms:null, roles:null) is universal.
-function canSeeItem(item, role, permissions) {
-  if (!item.roles && !item.perms) return true; // universal (Dashboard)
-  if (permissions && item.perms && item.perms.some(k => permissions[k])) return true;
-  if (!item.roles) return true;
-  return item.roles.includes(role);
+// Decide if a nav item is visible, from the permission map and nothing else.
+//
+// This used to carry a `roles` array beside every `perms` list and grant the
+// item if EITHER matched. That is a second permission table, and on 8
+// September it disagreed with the first one in four places at once: a
+// Financial Manager was offered the Users link the API refuses, an Admin was
+// offered Rates, a Tournament Organizer was offered Games. A link that opens
+// a 403 is worse than no link, because the person cannot tell whether they
+// lack the permission or the console is broken.
+//
+// `permissions` comes from /auth/admin/me/, which always sends it, built from
+// the same ROLE_PERMISSIONS the endpoints are decorated with. When it is
+// missing the session is not answering, and the honest answer is the Dashboard
+// alone rather than every section on a guess.
+function canSeeItem(item, permissions) {
+  if (!item.perms) return true;                 // universal (Dashboard)
+  if (!permissions) return false;               // fail closed, never open
+  return item.perms.some(key => permissions[key]);
 }
+
+/**
+ * What a section needs, by address.
+ *
+ * The nav has always known this: it hides a link somebody may not use. Nothing
+ * knew it at the PAGE, so typing the address opened the screen anyway. A
+ * moderator reaching /admin/admins got the heading, the sentence "You do not
+ * have permission to perform this action" from the refused fetch, and a live
+ * "Give somebody a role" button. The API refused the data, correctly, and the
+ * screen still offered the action.
+ *
+ * One map, read by both, so a new section cannot be hidden in the nav and open
+ * at its own address.
+ */
+export function permsForPath(pathname) {
+  const path = String(pathname || '').replace(/\/+$/, '') || '/admin';
+  let best = null;
+  for (const group of NAV) {
+    for (const item of group.items) {
+      if (path === item.href || path.startsWith(`${item.href}/`)) {
+        if (!best || item.href.length > best.href.length) best = item;
+      }
+    }
+  }
+  return best ? best.perms || null : null;
+}
+
 export default function AdminNav({
   admin,
   onLogout,
@@ -159,7 +250,7 @@ export default function AdminNav({
           items
         }) => {
           // Show a section if the admin can see at least one of its items.
-          const visibleItems = items.filter(item => canSeeItem(item, role, permissions));
+          const visibleItems = items.filter(item => canSeeItem(item, permissions));
           if (!visibleItems.length) return null;
           return <li key={section}>
                 <p className={styles.sectionLabel}>{section}</p>
@@ -187,7 +278,7 @@ export default function AdminNav({
       <div className={styles.footer}>
         <div className={styles.userRow}>
           <div className={styles.userAvatar}>
-            {(admin?.username || 'A').slice(0, 2).toUpperCase()}
+            <Avatar src={mediaUrl(admin?.avatar)} name={admin?.username || 'admin'} size={36} />
           </div>
           <div className={styles.userInfo}>
             <span className={styles.username}>{admin?.username || 'admin'}</span>

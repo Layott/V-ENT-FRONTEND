@@ -116,7 +116,7 @@ const TournamentDetailsPrize = ({ tournament }) => {
         <div className={styles.dateContainer}>
           <p className={styles.createdDateParagraph}>
             Tournament ID:&nbsp;
-            <span className={styles.createdDateSpan}>
+            <span>
               {tournament.tournament_id || 'N/A'}
             </span>
           </p>
@@ -125,7 +125,7 @@ const TournamentDetailsPrize = ({ tournament }) => {
 
           <p className={styles.updatedDateParagraph}>
             Total Prize Pool:&nbsp;
-            <span className={styles.updatedDateSpan}>
+            <span>
               {tournament.prize_distributions ? 
                 `$${tournament.prize_distributions.reduce((total, prize) => total + parseFloat(prize.prize), 0).toFixed(2)}` 
                 : 'N/A'

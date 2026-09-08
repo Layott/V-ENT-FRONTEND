@@ -33,10 +33,15 @@ const TABS = [{
   id: 'forums',
   label: 'Forums',
   icon: <FaComments />
-}, {
-  id: 'clubs',
-  label: 'Clubs',
-  icon: <FaUsers />
+// Clubs is deliberately absent.
+//
+// CEO, 7 September 2026: "lets remove the clubs feature for now, i dont want
+// to turn the website into a place of chatting."
+//
+// The tab, the routes and the sitemap entries are gone. The Django models,
+// endpoints and data are untouched, because there were zero clubs, zero
+// members and zero club posts on production, and "for now" should cost one
+// revert rather than a destructive migration.
 }, {
   id: 'dms',
   label: 'DMs',
@@ -176,6 +181,11 @@ const CommunityInner = () => {
   const [feedLoading, setFeedLoading] = useState(true);
   const [composeText, setComposeText] = useState('');
   const [composeImage, setComposeImage] = useState('');
+  // The FILE itself. `composeImage` is only the preview: sending the data URL
+  // is what made every attached picture vanish.
+  const [composeFile, setComposeFile] = useState(null);
+  const [composeError, setComposeError] = useState('');
+  const [composing, setComposing] = useState(false);
   const [feedQuery, setFeedQuery] = useState('');
   const fileInputRef = useRef(null);
   // A feed that never refreshed. Somebody else's post arriving is the entire
@@ -202,56 +212,94 @@ const CommunityInner = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token, sessionReady, feedTick]);
   const handleCreatePost = async () => {
-    if (!composeText.trim() && !composeImage) return;
+    if (!composeText.trim() && !composeFile) return;
+    setComposeError('');
+    setComposing(true);
     try {
+      // multipart, because the picture is a FILE. It used to be read into a
+      // data URL and posted inside a JSON body, which arrives at Django as a
+      // string and leaves request.FILES empty, so every attached image was
+      // silently dropped. Same fault as the organisation logo on 4 September.
+      const form = new FormData();
+      form.append('body', composeText.trim());
+      form.append('content', composeText.trim());
+      if (composeFile) form.append('image', composeFile);
+
+      // No Content-Type: the browser must set the multipart boundary itself,
+      // and naming it by hand is what breaks the parse on the other side.
+      const { 'Content-Type': _drop, ...headers } = authHeaders();
       const res = await fetch(`${apiUrl}/post/create/`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({
-          body: composeText.trim(),
-          content: composeText.trim(),
-          images: composeImage ? [composeImage] : [],
-          type: composeImage ? 'image' : 'text'
-        })
+        method: 'POST', headers, body: form,
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (data.status === 'success' && data.data?.post) {
         setPosts(prev => [data.data.post, ...prev]);
         setComposeText('');
         setComposeImage('');
+        setComposeFile(null);
+        return;
       }
+      // Said out loud. It used to fail in complete silence, so an image-only
+      // post looked like a button that did nothing.
+      setComposeError(apiMessage(tt, data, 'community.postFailed',
+        'That did not post. Try again.'));
     } catch (err) {
-      console.error('Compose post error:', err);
+      setComposeError(apiMessage(tt, err, 'community.postFailed',
+        'That did not post. Try again.'));
+    } finally {
+      setComposing(false);
     }
   };
   const handleFileChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // The FILE is what gets sent. The data URL is only ever the preview.
+    setComposeFile(file);
     const reader = new FileReader();
     reader.onload = ev => setComposeImage(ev.target.result);
     reader.readAsDataURL(file);
   };
   const handleAttachImage = () => fileInputRef.current?.click();
+  // The like, reading the names the API actually sends.
+  //
+  // CEO, 7 September: "the like button and the others are not really working."
+  // The API was fine: /post/<id>/like/ answers 200 and toggles correctly. The
+  // FEED was reading `is_liked`, which the payload does not contain. It sends
+  // `liked_by_me` and `like_count`. So every like registered and the heart
+  // never filled, which from the outside is a dead button.
+  //
+  // The answer is now applied rather than assumed, so a refused like puts the
+  // heart back instead of leaving a lie on screen until the next refresh.
   const handleToggleLike = async postId => {
+    const before = posts.find(p => p.id === postId);
     setPosts(prev => prev.map(p => p.id === postId ? {
       ...p,
-      is_liked: !p.is_liked,
-      likes_count: p.likes_count + (p.is_liked ? -1 : 1)
+      liked_by_me: !p.liked_by_me,
+      liked: !p.liked_by_me,
+      like_count: (p.like_count ?? p.likes_count ?? 0) + (p.liked_by_me ? -1 : 1),
+      likes_count: (p.like_count ?? p.likes_count ?? 0) + (p.liked_by_me ? -1 : 1)
     } : p));
     try {
-      await fetch(`${apiUrl}/post/${postId}/like/`, {
+      const res = await fetch(`${apiUrl}/post/${postId}/like/`, {
         method: 'POST',
         headers: authHeaders()
       });
+      const body = await res.json().catch(() => ({}));
+      if (body?.status === 'success') {
+        const d = body.data || {};
+        setPosts(prev => prev.map(p => p.id === postId ? {
+          ...p,
+          liked_by_me: Boolean(d.liked_by_me),
+          liked: Boolean(d.liked_by_me),
+          like_count: d.like_count ?? p.like_count,
+          likes_count: d.like_count ?? p.likes_count
+        } : p));
+        return;
+      }
+      if (before) setPosts(prev => prev.map(p => p.id === postId ? before : p));
     } catch (err) {
-      console.error('Like error:', err);
+      if (before) setPosts(prev => prev.map(p => p.id === postId ? before : p));
     }
-  };
-  const handleToggleBookmark = postId => {
-    setPosts(prev => prev.map(p => p.id === postId ? {
-      ...p,
-      is_bookmarked: !p.is_bookmarked
-    } : p));
   };
   const filteredPosts = useMemo(() => {
     const q = feedQuery.trim().toLowerCase();
@@ -708,7 +756,9 @@ const CommunityInner = () => {
                   {composeImage && <div className={styles.composeImageWrap}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={composeImage} alt={tt("ui.attachment.preview.f608", "attachment preview")} className={styles.composeImagePreview} />
-                      <button type="button" className={styles.composeImageRemove} onClick={() => setComposeImage('')}>
+                      {/* Both, or Remove clears the preview and still uploads
+                          the file it was previewing. */}
+                      <button type="button" className={styles.composeImageRemove} onClick={() => { setComposeImage(''); setComposeFile(null); }}>
                         {tt("ui.remove.e963", "Remove")}
                       </button>
                     </div>}
@@ -720,10 +770,14 @@ const CommunityInner = () => {
                   display: 'none'
                 }} onChange={handleFileChange} />
                     <span className={styles.composeCounter}>{composeText.length}/500</span>
-                    <button type="button" className={`${styles.composePostBtn} goldBTN`} onClick={handleCreatePost} disabled={!composeText.trim() && !composeImage}>
-                      {tt("ui.post.7858", "Post")}
+                    <button type="button" className={`${styles.composePostBtn} goldBTN`} onClick={handleCreatePost} disabled={composing || !composeText.trim() && !composeFile}>
+                      {composing ? tt("community.posting", "Posting...") : tt("ui.post.7858", "Post")}
                     </button>
                   </div>
+                  {/* Said out loud. Posting used to fail in silence, so an
+                      image with no caption looked like a dead button when it
+                      was really a refusal nobody was shown. */}
+                  {composeError && <p className={styles.composeError} role="alert">{composeError}</p>}
                 </div>
               </div>}
 
@@ -738,8 +792,8 @@ const CommunityInner = () => {
                       </Link>
                       <div className={styles.postAuthorInfo}>
                         <span className={styles.postAuthorName}>
-                          {post.author.full_name}
-                          {post.author.founder_badge && <FounderBadge size="sm" />}
+                          <UserChip user={post.author} size={0}
+                                    nameClassName={styles.postAuthorNameText} />
                           {post.author.verified && <span className={styles.verifiedDot} title={tt("ui.verified.aed3", "Verified")} />}
                         </span>
                         <span className={styles.postAuthorHandle}>@{post.author.username}</span>
@@ -774,24 +828,29 @@ const CommunityInner = () => {
                       </div>}
 
                     <div className={styles.postActions}>
-                      {signedIn ? <button className={`${styles.reactBtn} ${post.is_liked ? styles.liked : ''}`} onClick={() => handleToggleLike(post.id)} aria-label={tt("ui.like.c4eb", "like")}>
-                        {post.is_liked ? <FaHeart className={styles.reactIcon} /> : <FaRegHeart className={styles.reactIcon} />}
-                        <span>{post.likes_count}</span>
+                      {signedIn ? <button className={`${styles.reactBtn} ${post.liked_by_me ? styles.liked : ''}`} onClick={() => handleToggleLike(post.id)} aria-label={tt("ui.like.c4eb", "like")}>
+                        {post.liked_by_me ? <FaHeart className={styles.reactIcon} /> : <FaRegHeart className={styles.reactIcon} />}
+                        <span>{post.like_count ?? post.likes_count ?? 0}</span>
                       </button> : <span className={styles.reactBtn} aria-label={tt("community.likeCount", "likes")}>
                         <FaRegHeart className={styles.reactIcon} />
-                        <span>{post.likes_count}</span>
+                        <span>{post.like_count ?? post.likes_count ?? 0}</span>
                       </span>}
                       <Link href={`/community/post/${post.slug || post.id}`} className={styles.reactBtn} aria-label={tt("ui.comment.118a", "comment")}>
                         <FaRegComment className={styles.reactIcon} />
                         <span>{post.comments_count}</span>
                       </Link>
+                      {/* No count: the API does not report shares, and
+                          `post.shares` rendered as an empty space beside the
+                          icon, which reads as a broken button. */}
                       <button type="button" className={styles.reactBtn} aria-label={tt("ui.share.aab9", "share")} onClick={() => sharePost(post)}>
                         <FaShare className={styles.reactIcon} />
-                        <span>{post.shares}</span>
                       </button>
-                      <button className={`${styles.reactBtn} ${styles.reactBookmark} ${post.is_bookmarked ? styles.bookmarked : ''}`} onClick={() => handleToggleBookmark(post.id)} aria-label={tt("ui.bookmark.2003", "bookmark")}>
-                        {post.is_bookmarked ? <FaBookmark className={styles.reactIcon} /> : <FaRegBookmark className={styles.reactIcon} />}
-                      </button>
+                      {/* The bookmark is GONE rather than fixed. It called no
+                          API at all: it flipped an icon in local state and
+                          forgot on reload, so it was a control that could not
+                          work. Bringing it back means an endpoint and a place
+                          to read saved posts, which is a feature rather than a
+                          fix. */}
                     </div>
                   </article>)}
             </div>}

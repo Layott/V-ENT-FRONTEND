@@ -9,6 +9,7 @@ import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 const SOCIAL_ICONS = {
   twitter: FaTwitter,
   instagram: FaInstagram,
@@ -74,7 +75,7 @@ const TeamProfileOverview = ({
           <h3 className={styles.panelTitle}>{tt("ui.owner.89ff", "Owner")}</h3>
           <div className={styles.ownerRow}>
             <div className={styles.ownerAvatar}>
-              {ownerAvatar ? <Image src={mediaUrl(ownerAvatar)} alt="" aria-hidden="true" width={48} height={48} /> : <div className={styles.ownerAvatarFallback} />}
+              <Avatar src={mediaUrl(ownerAvatar)} name={owner?.username || owner?.full_name} size={48} />
             </div>
             <div>
               {/* The owner is a person: their name carries their badge

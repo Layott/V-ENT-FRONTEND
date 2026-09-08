@@ -162,11 +162,14 @@ const CreateTournamentComponent = ({ draftId = null }) => {
         formDataToSend.append('game_id', formData.game_id);
       }
       formDataToSend.append('game_mode', formData.game_mode || '');
-      // The edition and the event this tournament belongs to. Both are asked
-      // for on step 1 and neither was ever sent, so both were gone the moment
-      // the organiser left the page.
+      // The edition. Asked for on step 1 and never sent, so it was gone the
+      // moment the organiser left the page.
       formDataToSend.append('series_id', formData.series_id || '');
-      if (formData.event) formDataToSend.append('event', formData.event);
+      // `event` is deliberately NOT sent. Putting a tournament inside an event
+      // is the EVENT organiser's decision - the link is created through
+      // `/event/<event>/link-tournament/`, which checks they own the event.
+      // Accepting it here would let anybody attach their tournament to
+      // somebody else's event by naming it in the form.
       // Whose name it runs in. Empty means the organiser's own, which is the
       // common case. Without this the column stayed null on every tournament
       // ever created and following an organisation showed an empty feed.
@@ -415,7 +418,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
         </div>
       )}
       <ProgressMenu selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-      <div className={styles.renderTabContent}>{renderTabContent()}</div>
+      <div>{renderTabContent()}</div>
     </div>
   );
 };

@@ -51,7 +51,7 @@ const isIgnorable = (t) => !t || IGNORE.some((p) => t.includes(p));
     if (msg.type() === 'error') record('errors', `console.error: ${msg.text()}`);
     else if (msg.type() === 'warning') record('warns', `console.warn: ${msg.text()}`);
   });
-  page.on('requestfailed', (req) => record('fails', `requestfailed: ${req.url()} — ${req.failure()?.errorText || '?'}`));
+  page.on('requestfailed', (req) => record('fails', `requestfailed: ${req.url()} - ${req.failure()?.errorText || '?'}`));
   page.on('response', (res) => {
     const url = res.url();
     const s = res.status();
@@ -75,13 +75,13 @@ const isIgnorable = (t) => !t || IGNORE.some((p) => t.includes(p));
       return false;
     });
     if (!clicked) record('errors', 'No demo button on /login');
-    // Give auth a beat — don't wait for /home redirect (pre-existing issue).
+    // Give auth a beat - don't wait for /home redirect (pre-existing issue).
     await new Promise((r) => setTimeout(r, 4000));
   } catch (e) {
     record('errors', `login: ${e.message}`);
   }
 
-  // Walk each wallet route. Use domcontentloaded — networkidle0 hangs in dev
+  // Walk each wallet route. Use domcontentloaded - networkidle0 hangs in dev
   // when there's an open WebSocket for HMR.
   for (const r of ROUTES) {
     current = { path: r.path, label: r.label };

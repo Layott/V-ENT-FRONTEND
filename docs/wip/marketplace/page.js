@@ -49,7 +49,7 @@ const MarketplaceInner = () => {
   const [allListings, setAllListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters — initialised from URL.
+  // Filters - initialised from URL.
   const [tab, setTab] = useState(searchParams.get('tab') || 'all');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [search, setSearch] = useState(searchParams.get('q') || '');
@@ -198,8 +198,7 @@ const MarketplaceInner = () => {
                   Vermillion <span className={styles.heroAccentText}>City Marketplace</span>
                 </h1>
                 <p className={styles.heroTagline}>
-                  Buy, sell and trade hardware, apparel, collectibles, tickets, services and digital goods —
-                  every transaction protected by VENT COIN escrow.
+                  Buy, sell and trade hardware, apparel, collectibles, tickets, services and digital goods - every transaction protected by VENT COIN escrow.
                 </p>
               </div>
               <div className={styles.heroCtas}>

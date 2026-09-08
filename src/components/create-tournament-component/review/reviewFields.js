@@ -13,8 +13,9 @@
 // tell somebody their tournament is configured when it is not.
 
 import { formatLabel } from '@/lib/formatLabel';
+import { formatNumber } from '@/lib/datetime';
 
-const DASH = '–';
+const DASH = '-';
 
 /** A date and time the way somebody wrote it, read back in their locale. */
 export const showDateTime = (value, locale = 'en') => {
@@ -86,7 +87,7 @@ export const showCoins = (t, value) => {
   if (value === undefined || value === null || String(value).trim() === '') return DASH;
   const n = Number(value);
   if (Number.isNaN(n)) return String(value);
-  return t('review.coinsAmount', '{n} VENT COINS').replace('{n}', n.toLocaleString());
+  return t('review.coinsAmount', '{n} VENT COINS').replace('{n}', formatNumber(n));
 };
 
 /** The place a prize is for: 1st, 2nd, 3rd, then 4th and up. */

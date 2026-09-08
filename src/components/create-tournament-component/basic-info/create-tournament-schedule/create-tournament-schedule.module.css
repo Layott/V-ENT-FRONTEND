@@ -217,3 +217,11 @@
     justify-content: space-between;
   }
 }
+
+/* A date the wizard has refused. Referenced by the ternary on both date fields
+   and defined nowhere, so an invalid date looked exactly like a valid one and
+   the only sign was the message underneath. A filled ground rather than a red
+   stroke, per the no-hairline rule. */
+.errorInput {
+  background-color: #3a2c2d;
+}

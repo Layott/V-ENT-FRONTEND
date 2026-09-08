@@ -97,10 +97,10 @@ const EditTeamProfileContent = ({
   };
   if (loading || sessionStatus === 'loading') {
     return <div className={styles.pageContainer}>
-        <Header className={styles.customHeader} />
+        <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
-          <Sidebar customClass={styles.customSidebar} />
+          <Sidebar />
           <div className={styles.rightPaneContainer}>
             <p className={styles.stateText}>{tt("ui.loading.33ce", "Loading…")}</p>
           </div>
@@ -110,10 +110,10 @@ const EditTeamProfileContent = ({
   }
   if (error || !team) {
     return <div className={styles.pageContainer}>
-        <Header className={styles.customHeader} />
+        <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
-          <Sidebar customClass={styles.customSidebar} />
+          <Sidebar />
           <div className={styles.rightPaneContainer}>
             <div className={styles.gateCard}>
               <h2 className={styles.gateTitle}>{tt("ui.team.not.found.f9de", "Team not found")}</h2>
@@ -127,10 +127,10 @@ const EditTeamProfileContent = ({
   }
   if (!isOwner) {
     return <div className={styles.pageContainer}>
-        <Header className={styles.customHeader} />
+        <Header />
         <MobileHeader />
         <main className={styles.mainContainer}>
-          <Sidebar customClass={styles.customSidebar} />
+          <Sidebar />
           <div className={styles.rightPaneContainer}>
             <div className={styles.gateCard}>
               <div className={styles.gateIcon}><LuShieldX /></div>
@@ -146,11 +146,11 @@ const EditTeamProfileContent = ({
       </div>;
   }
   return <div className={styles.pageContainer}>
-      <Header className={styles.customHeader} />
+      <Header />
       <MobileHeader />
 
       <main className={styles.mainContainer}>
-        <Sidebar customClass={styles.customSidebar} />
+        <Sidebar />
 
         <div className={styles.rightPaneContainer}>
           <div className={styles.headerRow}>

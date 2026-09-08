@@ -59,8 +59,8 @@ const buildClubPosts = (club) => {
   ];
   const lines = [
     `Welcome to ${club.name}. Drop your username and main map.`,
-    `Tryouts open this Friday — top 4 join the club roster.`,
-    `Just dropped a tutorial — link below. Hope it helps the new members.`,
+    `Tryouts open this Friday - top 4 join the club roster.`,
+    `Just dropped a tutorial - link below. Hope it helps the new members.`,
     `Internal scrim tonight, 8 PM WAT. React if you can roll.`,
     `Patch notes are out. Loadout meta is shifting again. Thoughts?`,
   ];
@@ -109,7 +109,7 @@ const buildClubEvents = (club) => {
     },
     {
       id: `clbevt_${club.id}_2`,
-      title: `Member Meetup — Lagos`,
+      title: `Member Meetup - Lagos`,
       starts_at: new Date(Date.now() + 14 * 86400 * 1000).toISOString(),
       type: 'Meetup',
       location: 'Lagos, NG',

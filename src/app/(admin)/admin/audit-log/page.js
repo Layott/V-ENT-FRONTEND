@@ -12,7 +12,7 @@ import styles from './audit-log.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
-import { formatDateTime } from '@/lib/datetime';
+import { formatDateTime, formatNumber } from '@/lib/datetime';
 const PAGE_SIZE = 50;
 const ACTION_BADGE = {
   user_banned: {
@@ -206,7 +206,7 @@ function AuditLogInner() {
               </select>
               <DateField value={dateFrom} onChange={e => setDateFrom(e.target.value)} ariaLabel={tt("ui.from.3f66", "From")} className={shared.filterSelect} />
               <DateField value={dateTo} onChange={e => setDateTo(e.target.value)} ariaLabel={tt("ui.text.ae79", "To")} className={shared.filterSelect} />
-              <span className={shared.resultsCount}>{total.toLocaleString()} {tt("ui.entries.c2e3", "entries")}</span>
+              <span className={shared.resultsCount}>{formatNumber(total)} {tt("ui.entries.c2e3", "entries")}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : logs.length === 0 ? <p className={shared.stateText}>{tt("ui.no.log.entries.found.3fdc", "No log entries found.")}</p> : <div className={shared.tableWrap}>

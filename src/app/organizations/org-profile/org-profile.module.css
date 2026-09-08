@@ -891,3 +891,22 @@
 @media only screen and (min-width: 1440px) {
   .bannerWrap { height: 280px; }
 }
+
+/* The memberships this organisation sells. A vertical stack, never a
+   three-column pricing table: an organiser may sell one plan or six, and a
+   grid built for exactly three lies about both. */
+.membershipList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .membershipList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    /* Without this a grid child sizes to its content and pushes the container
+       past the viewport, where it clips silently. */
+    grid-auto-rows: min-content;
+  }
+}

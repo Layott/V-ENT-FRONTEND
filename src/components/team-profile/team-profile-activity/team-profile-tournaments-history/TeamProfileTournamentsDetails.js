@@ -46,7 +46,7 @@ const TeamProfileTournamentsDetails = ({ selectedTournament, setSelectedTourname
             </div>
 
           </div>
-          <div className={styles.tournamentImage}>
+          <div>
             <Image
               src={selectedTournament.src}
               alt={selectedTournament.name}

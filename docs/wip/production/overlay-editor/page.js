@@ -267,7 +267,7 @@ const OverlayEditorContent = () => {
 
           {/* Editor layout */}
           <div className={styles.editorLayout}>
-            {/* Left — settings panel */}
+            {/* Left - settings panel */}
             <aside className={styles.settingsPanel}>
               <div className={styles.section}>
                 <h4 className={styles.sectionTitle}>Theme</h4>
@@ -417,7 +417,7 @@ const OverlayEditorContent = () => {
               </div>
             </aside>
 
-            {/* Right — live preview */}
+            {/* Right - live preview */}
             <section className={styles.previewPanel}>
               <div className={styles.previewHeader}>
                 <span className={styles.previewLabel}>LIVE PREVIEW · 1280×720</span>

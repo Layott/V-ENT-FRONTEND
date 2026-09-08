@@ -11,7 +11,7 @@ const OtherFeatures = () => {
   const tt = useT();
 
   return (
-    <div className={`${landingStyles.otherFeaturesContainer} ${styles.otherFeaturesContainer}`}>
+    <div className={`${landingStyles.otherFeaturesContainer}`}>
         <div className={`${landingStyles.innerOtherFeaturesContainer} ${styles.innerOtherFeaturesContainer}`}>
             <div className={styles.headingTextContainer}>
                 <h2>{tt('landing.otherFeatures', 'Other features')}</h2>

@@ -1,4 +1,4 @@
-/* Transparent root — full bleed for OBS Browser source */
+/* Transparent root - full bleed for OBS Browser source */
 .root {
   position: fixed;
   inset: 0;
@@ -245,7 +245,7 @@
   to { transform: translateX(-50%); }
 }
 
-/* Preview controls — only visible when this overlay page is opened directly,
+/* Preview controls - only visible when this overlay page is opened directly,
    not in OBS. OBS doesn't render hover, so they stay hidden in production. */
 .previewControls {
   position: absolute;
@@ -308,7 +308,7 @@
   color: rgba(255,255,255,0.4);
 }
 
-/* Responsive — overlays scale down on smaller streams */
+/* Responsive - overlays scale down on smaller streams */
 @media only screen and (max-width: 768px) {
   .scoreboard { min-width: unset; width: calc(100% - 32px); }
   .sbBlock { padding: 8px 12px; gap: 8px; }

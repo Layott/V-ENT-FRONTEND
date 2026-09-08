@@ -172,7 +172,7 @@ const ProductInner = () => {
     if (!product || !inStock) return;
     setAdding(true);
 
-    // Local cart write — single source of truth so cart count + cart page sync
+    // Local cart write - single source of truth so cart count + cart page sync
     const existing = readCart();
     const variant =
       sizes.length || colors.length ? { size: size || null, color: color || null } : null;
@@ -433,14 +433,14 @@ const ProductInner = () => {
                 {inStock ? (
                   <span className={styles.stockOk}>
                     <BsCheck2 /> In stock
-                    {variantStock <= 5 ? ` — ${variantStock} left` : ''}
+                    {variantStock <= 5 ? ` - ${variantStock} left` : ''}
                   </span>
                 ) : (
                   <span className={styles.stockOut}>Out of stock</span>
                 )}
               </div>
 
-              {/* Variants — sizes */}
+              {/* Variants - sizes */}
               {sizes.length > 0 && (
                 <div className={styles.variantGroup}>
                   <span className={styles.variantLabel}>
@@ -474,7 +474,7 @@ const ProductInner = () => {
                 </div>
               )}
 
-              {/* Variants — colors */}
+              {/* Variants - colors */}
               {colors.length > 0 && (
                 <div className={styles.variantGroup}>
                   <span className={styles.variantLabel}>
@@ -630,7 +630,7 @@ const ProductInner = () => {
                 <div>
                   <p className={styles.tabBodyText}>
                     {product.description ||
-                      'Premium V-ENT merchandise — designed for African gamers, made for tournament-day pressure.'}
+                      'Premium V-ENT merchandise - designed for African gamers, made for tournament-day pressure.'}
                   </p>
                   {product.tags?.length > 0 && (
                     <div className={styles.tagList}>
@@ -703,7 +703,7 @@ const ProductInner = () => {
                           ? 'Fit is perfect and the material is top quality. Shipping was fast to Lagos.'
                           : i === 1
                             ? 'Exactly what I wanted. The V-ENT red pops even more in person.'
-                            : 'Great purchase — wearing it to the next LAN for sure.'}
+                            : 'Great purchase - wearing it to the next LAN for sure.'}
                       </p>
                     </div>
                   ))}

@@ -120,7 +120,7 @@ const CreateOrganizationContent = () => {
         return false;
       }
       if (formData.tag.length < 2 || formData.tag.length > 5) {
-        setErrorMsg('Tag must be 2–5 characters.');
+        setErrorMsg('Tag must be 2-5 characters.');
         return false;
       }
     }
@@ -214,7 +214,7 @@ const CreateOrganizationContent = () => {
             <div>
               <h1 className={styles.wizardTitle}>Create Organization</h1>
               <p className={styles.wizardSubtitle}>
-                Launch your org — teams, tournaments, and brand in one flow.
+                Launch your org - teams, tournaments, and brand in one flow.
               </p>
             </div>
             <div className={styles.headerActions}>
@@ -272,7 +272,7 @@ const CreateOrganizationContent = () => {
                     maxLength={5}
                     className={styles.input}
                   />
-                  <span className={styles.helpText}>2–5 character shorthand shown across the platform.</span>
+                  <span className={styles.helpText}>2-5 character shorthand shown across the platform.</span>
                 </div>
               </div>
             )}
@@ -490,33 +490,33 @@ const CreateOrganizationContent = () => {
                 <div className={styles.reviewGrid}>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Name</span>
-                    <span className={styles.reviewValue}>{formData.name || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.name || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Tag</span>
-                    <span className={styles.reviewValue}>{formData.tag || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.tag || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Bio</span>
-                    <span className={styles.reviewValue}>{formData.bio || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.bio || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Region</span>
-                    <span className={styles.reviewValue}>{formData.region || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.region || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Focus</span>
                     <span className={styles.reviewValue} style={{ textTransform: 'capitalize' }}>
-                      {formData.focus || '—'}
+                      {formData.focus || ' - '}
                     </span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Email</span>
-                    <span className={styles.reviewValue}>{formData.contact_email || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.contact_email || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Location</span>
-                    <span className={styles.reviewValue}>{formData.location || '—'}</span>
+                    <span className={styles.reviewValue}>{formData.location || ' - '}</span>
                   </div>
                   <div className={styles.reviewRow}>
                     <span className={styles.reviewLabel}>Social links</span>

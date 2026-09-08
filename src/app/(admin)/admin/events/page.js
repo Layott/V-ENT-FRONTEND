@@ -10,7 +10,7 @@
 // same pagination, same table, same edit modal. An admin who has learned one
 // has learned the other, and a change to how listing works is one change.
 
-import {formatDate, withLocalDatesAsISO} from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
@@ -171,7 +171,7 @@ function EventsInner() {
                 <option value="name">{tt("ui.name.z.257c", "Name A-Z")}</option>
                 <option value="-tickets_sold">{tt("admin.ticketsHighLow", "Tickets (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countEventsOne', '{n} event') : tt('admin.countEventsMany', '{n} events')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countEventsOne', '{n} event') : tt('admin.countEventsMany', '{n} events')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : events.length === 0 ? <p className={shared.stateText}>{tt("admin.noEventsFound", "No events found.")}</p> : <div className={shared.tableWrap}>

@@ -341,3 +341,20 @@
   font-size: 0.8rem;
   line-height: 1.45;
 }
+
+/* Two actions in the header now, the door scanner beside the public link.
+   They stack on a phone, each with its own room. */
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .headActions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+}

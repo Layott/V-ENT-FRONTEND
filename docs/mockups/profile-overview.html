@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT — Profile Overview (Mockup)</title>
+  <title>V-ENT - Profile Overview (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -622,7 +622,7 @@
       .overview-grid { grid-template-columns:1fr; }
     }
 
-    /* Tablet 768px — sidebar collapses, bottom menu appears */
+    /* Tablet 768px - sidebar collapses, bottom menu appears */
     @media (max-width:900px) {
       .sidebar { display:none; }
       .header  { left:0; padding:0 1rem; }
@@ -828,7 +828,7 @@
       <div class="profile-dropdown" id="profile-dropdown">
         <a href="#">View Profile</a>
         <a href="#">Settings</a>
-        <button onclick="event.stopPropagation(); alert('Logout — would call NextAuth signOut() in the real app.')">Logout</button>
+        <button onclick="event.stopPropagation(); alert('Logout - would call NextAuth signOut() in the real app.')">Logout</button>
       </div>
     </div>
   </div>
@@ -1209,7 +1209,7 @@
     if (trig && dd && !trig.contains(e.target)) dd.classList.remove('open');
   });
 
-  // ── Tabs (visual switcher only — Overview is the live tab in this mockup)
+  // ── Tabs (visual switcher only - Overview is the live tab in this mockup)
   document.querySelectorAll('.profile-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));

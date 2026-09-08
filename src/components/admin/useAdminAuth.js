@@ -18,11 +18,13 @@
 // carried the code.
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
+import { permsForPath } from '@/components/admin/AdminNav'
 
 export function useAdminAuth() {
   const router = useRouter()
+  const pathname = usePathname()
   const { data: session, status } = useSession()
   const [admin, setAdmin] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -115,5 +117,24 @@ export function useAdminAuth() {
     router.replace('/home')
   }
 
-  return { admin, loading, logout }
+  // May this person be on THIS section?
+  //
+  // The nav has always known, because it hides a link somebody may not use.
+  // Nothing knew it at the page, so typing the address opened the screen: a
+  // moderator reaching /admin/admins got the heading, a refusal sentence from
+  // the fetch the API correctly rejected, and a live "Give somebody a role"
+  // button. Hiding a link is not a permission, and neither is a 403 that
+  // arrives after the screen has already offered the action.
+  //
+  // Read from the same map the nav reads, so a section cannot be hidden in one
+  // and open in the other.
+  // `permissions` is a MAP of action to boolean, not a list. The backend builds
+  // it as `{action: (admin_role in roles)}`, so every action a role does not
+  // have is present and false. Reading it as an array threw on every render,
+  // which the role walk caught the first time it ran.
+  const needed = permsForPath(pathname)
+  const held = admin?.permissions || {}
+  const allowed = !needed || needed.some((name) => held[name] === true)
+
+  return { admin, loading, logout, allowed, needed }
 }

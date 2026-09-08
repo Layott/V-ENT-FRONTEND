@@ -46,7 +46,7 @@ const OrganizationsContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pendingApplications, setPendingApplications] = useState({});
-  const [toast, setToast] = useState(searchParams.get('created') === 'true' ? 'Organization created — welcome to the roster.' : '');
+  const [toast, setToast] = useState(searchParams.get('created') === 'true' ? 'Organization created - welcome to the roster.' : '');
 
   const showToast = (msg) => {
     setToast(msg);
@@ -142,7 +142,7 @@ const OrganizationsContent = () => {
       const data = await res.json();
       if (data?.status === 'success') {
         setPendingApplications((s) => ({ ...s, [orgId]: 'pending' }));
-        showToast('Application sent — awaiting approval.');
+        showToast('Application sent - awaiting approval.');
       } else {
         setPendingApplications((s) => ({ ...s, [orgId]: null }));
         showToast(data?.message || 'Application failed');

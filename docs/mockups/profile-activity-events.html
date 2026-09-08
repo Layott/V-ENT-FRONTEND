@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT — Profile · Activity · Event History (Mockup)</title>
+  <title>V-ENT - Profile · Activity · Event History (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -780,7 +780,7 @@
       <div class="profile-dropdown" id="profile-dropdown">
         <a href="/user-profile">View Profile</a>
         <a href="/edit-user-profile">Edit Profile</a>
-        <button onclick="event.stopPropagation(); alert('Logout — this would call NextAuth signOut() in the real app.')">Logout</button>
+        <button onclick="event.stopPropagation(); alert('Logout - this would call NextAuth signOut() in the real app.')">Logout</button>
       </div>
     </div>
   </div>
@@ -934,7 +934,7 @@
             <option value="20">20</option>
           </select>
         </div>
-        <span class="pag-info" id="pag-info">Showing 1–10 of 10</span>
+        <span class="pag-info" id="pag-info">Showing 1-10 of 10</span>
       </div>
       <div class="pag-btns" id="pag-btns"></div>
     </div>
@@ -1005,7 +1005,7 @@
     {
       id:'e001', name:'Lagos Anime & Comic Con 2026',
       type:'Anime Con', game:'Multi-fandom',
-      venue:'Eko Convention Centre, Lagos', date:'14–16 Jun 2026',
+      venue:'Eko Convention Centre, Lagos', date:'14-16 Jun 2026',
       tier:'VIP Pass', tierClass:'vip',
       status:'upcoming', img:'featured_events_1.jpg', daysAgo:50
     },
@@ -1159,7 +1159,7 @@
           <td>${e.date}</td>
           <td><span class="ev-tier ${e.tierClass}">${e.tier}</span></td>
           <td><span class="ev-status s-${e.status}">${STATUS_LABEL[e.status]}</span></td>
-          <td><a class="action-link" href="#" onclick="event.preventDefault(); alert('View details — ${e.name.replace(/'/g,"\\'")}')">View Details</a></td>
+          <td><a class="action-link" href="#" onclick="event.preventDefault(); alert('View details - ${e.name.replace(/'/g,"\\'")}')">View Details</a></td>
         </tr>
       `).join('');
 
@@ -1185,7 +1185,7 @@
               <div class="ev-card-row"><span class="lbl">Game / Theme</span><span class="val">${e.game}</span></div>
               <div class="ev-card-row"><span class="lbl">Venue</span><span class="val">${e.venue}</span></div>
               <div class="ev-card-row"><span class="lbl">Ticket Tier</span><span class="val"><span class="ev-tier ${e.tierClass}">${e.tier}</span></span></div>
-              <button class="ev-card-action" onclick="alert('View details — ${e.name.replace(/'/g,"\\'")}')">View Details</button>
+              <button class="ev-card-action" onclick="alert('View details - ${e.name.replace(/'/g,"\\'")}')">View Details</button>
             </div>
           </div>
         </div>
@@ -1197,7 +1197,7 @@
     const info  = document.getElementById('pag-info');
     info.textContent = total === 0
       ? 'Showing 0 of 0'
-      : `Showing ${start + 1}–${end} of ${total}`;
+      : `Showing ${start + 1} - ${end} of ${total}`;
 
     const btns = document.getElementById('pag-btns');
     let html = `<button class="pag-btn" onclick="goPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} aria-label="Previous">
@@ -1224,13 +1224,13 @@
     headEl.parentElement.classList.toggle('open');
   }
 
-  /* ── Main + sub-tab visual switching (mock — only "Activity" + "Event History" are populated) ── */
+  /* ── Main + sub-tab visual switching (mock - only "Activity" + "Event History" are populated) ── */
   document.querySelectorAll('.main-tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.main-tab').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
       if (t.textContent.trim() !== 'Activity') {
-        alert(`"${t.textContent.trim()}" — placeholder (only Activity is populated in this mockup).`);
+        alert(`"${t.textContent.trim()}" - placeholder (only Activity is populated in this mockup).`);
       }
     });
   });
@@ -1239,7 +1239,7 @@
       document.querySelectorAll('.sub-tab').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
       if (t.textContent.trim() !== 'Event History') {
-        alert(`"${t.textContent.trim()}" — placeholder (Event History is the populated view).`);
+        alert(`"${t.textContent.trim()}" - placeholder (Event History is the populated view).`);
       }
     });
   });

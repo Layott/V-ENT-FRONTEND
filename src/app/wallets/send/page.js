@@ -63,6 +63,12 @@ const SendPage = () => {
   } = useSession();
   const [step, setStep] = useState(1);
   const [balance, setBalance] = useState(null);
+  const [requires2fa, setRequires2fa] = useState(false);
+  // Who the money is going to is NAMED, never guessed from the text typed.
+  // The same word could be a username, a team or an organisation, and guessing
+  // wrong sends somebody's money to a stranger with the same name. The API
+  // refuses to guess for exactly that reason, so the screen has to say.
+  const [toKind, setToKind] = useState('user');
   const [query, setQuery] = useState('');
   const [recipient, setRecipient] = useState(null);
   const [recipientError, setRecipientError] = useState('');
@@ -94,6 +100,7 @@ const SendPage = () => {
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
           setBalance(Number(data.data?.balance ?? 0));
+          setRequires2fa(Boolean(data.data?.requires_2fa));
         }
       } catch (err) {
         console.error('Balance fetch error:', err);
@@ -121,24 +128,51 @@ const SendPage = () => {
     const timer = setTimeout(async () => {
       setRecipientLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user/lookup/?q=${encodeURIComponent(q)}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          signal: controller.signal
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
+        // Three kinds, three lookups, one normalised answer. Every branch
+        // resolves against a REAL record before the confirmation card is
+        // drawn: this page once synthesised a plausible-looking recipient in
+        // the browser, so the card could show somebody who does not exist.
+        const base = process.env.NEXT_PUBLIC_API_URL;
+        const headers = { Authorization: `Bearer ${token}` };
+        let found = null;
+
+        if (toKind === 'user') {
+          const res = await fetch(`${base}/auth/user/lookup/?q=${encodeURIComponent(q)}`, { headers, signal: controller.signal });
+          const data = await res.json();
+          if (data.status === 'success' && data.data?.user) {
+            const u = data.data.user;
+            found = { kind: 'user', ref: u.username, name: u.full_name || u.username, label: `@${u.username}`, handle: `@${u.username}`, avatar: u.avatar, user: u };
+          }
+        } else if (toKind === 'team') {
+          const res = await fetch(`${base}/team/list-teams/?search=${encodeURIComponent(q)}`, { headers, signal: controller.signal });
+          const data = await res.json();
+          const team = (data?.data?.teams || [])[0];
+          if (team) {
+            found = { kind: 'team', ref: team.slug || team.name, name: team.name, label: team.name, handle: team.game || '', avatar: team.logo || team.logo_url };
+          }
+        } else {
+          const res = await fetch(`${base}/organization/list/?search=${encodeURIComponent(q)}`, { headers, signal: controller.signal });
+          const data = await res.json();
+          const org = (data?.data?.organizations || [])[0];
+          if (org) {
+            found = { kind: 'org', ref: org.slug || org.name, name: org.name, label: org.name, handle: org.tag || '', avatar: org.logo };
+          }
+        }
+
+        if (found) {
           setRecipientError('');
-          setRecipient(data.data.user);
+          setRecipient(found);
         } else {
           setRecipient(null);
-          setRecipientError(apiMessage(tt, data, "api.noUserFoundWithThat", "No user found with that username."));
+          setRecipientError(
+            toKind === 'user' ? tt('wallet.noSuchUser', 'No account found with that username or email.')
+              : toKind === 'team' ? tt('wallet.noSuchTeam', 'No team found with that name.')
+                : tt('wallet.noSuchOrg', 'No organisation found with that name.'));
         }
       } catch (err) {
         if (err?.name !== 'AbortError') {
           setRecipient(null);
-          setRecipientError('Could not check that username. Try again.');
+          setRecipientError(tt('wallet.lookupFailed', 'Could not check that name. Try again.'));
         }
       } finally {
         setRecipientLoading(false);
@@ -148,7 +182,8 @@ const SendPage = () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, session?.user?.sessionToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, toKind, session?.user?.sessionToken]);
   const numericAmount = Number(amount) || 0;
   const balanceAfter = (balance ?? 0) - numericAmount;
   const canContinueAmount = numericAmount > 0 && balance != null && numericAmount <= balance;
@@ -174,7 +209,7 @@ const SendPage = () => {
   const [pinOpen, setPinOpen] = useState(false);
   const [pinError, setPinError] = useState('');
 
-  const handleSend = async (pin) => {
+  const handleSend = async (pin, code) => {
     setSubmitting(true);
     setError('');
     setPinError('');
@@ -183,9 +218,11 @@ const SendPage = () => {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
-          recipient_username: recipient.username,
+          to_kind: recipient.kind,
+          to: recipient.ref,
           amount: numericAmount,
           pin,
+          ...(code ? { code } : {}),
           note: memo
         })
       });
@@ -195,7 +232,9 @@ const SendPage = () => {
         // A refused PIN is answered where it was typed. Closing the prompt and
         // showing it on the page behind would read as the send having failed
         // for some other reason.
-        if (/PIN/i.test(String(data?.code || '')) || /pin/i.test(message)) {
+        const failedCode = String(data?.code || '');
+        if (/PIN/i.test(failedCode) || /pin/i.test(message)
+            || failedCode === 'TWO_FACTOR_REQUIRED' || failedCode === 'INVALID_CODE') {
           setPinError(message);
         } else {
           setPinOpen(false);
@@ -215,7 +254,23 @@ const SendPage = () => {
       setSubmitting(false);
     }
   };
-  const initials = (recipient?.full_name || recipient?.username || '').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '?';
+  const initials = (recipient?.name || '').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '?';
+  const KINDS = [
+    { id: 'user', label: tt('wallet.kindUser', 'A person') },
+    { id: 'team', label: tt('wallet.kindTeam', 'A team') },
+    { id: 'org', label: tt('wallet.kindOrg', 'An organisation') },
+  ];
+  const pickKind = (id) => {
+    setToKind(id);
+    setQuery('');
+    setRecipient(null);
+    setRecipientError('');
+  };
+  const lookupLabel = toKind === 'user'
+    ? tt('wallet.toUserHint', 'Their username or email')
+    : toKind === 'team'
+      ? tt('wallet.toTeamHint', 'The team name')
+      : tt('wallet.toOrgHint', 'The organisation name');
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -227,7 +282,7 @@ const SendPage = () => {
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.send.vent.coins.6a21", "Send VENT COINS")}</h1>
-              <p className={styles.pageSubtitle}>{tt("ui.transfer.coins.instantly.another.01bd", "Transfer coins instantly to another V-ENT user.")}</p>
+              <p className={styles.pageSubtitle}>{tt('wallet.sendSubtitle', 'Send coins to a person, a team, or an organisation.')}</p>
             </div>
           </div>
 
@@ -241,27 +296,59 @@ const SendPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}><span className="fieldLabelRow">{tt("ui.recipient.username.email.9e0a", "Recipient (username or email)")} <InfoTip id="sendRecipient" /></span></label>
-                  <input type="text" className={styles.formInput} placeholder={tt("ui.username.user.email.com.26ca", "@username or user@email.com")} value={query} onChange={e => setQuery(e.target.value)} autoFocus />
+                  <label className={styles.formLabel}>
+                    <span className="fieldLabelRow">{tt('wallet.sendingTo', 'Sending to')} <InfoTip id="sendRecipient" /></span>
+                  </label>
+                  {/* Said, never guessed. "vermillion" could be a username, a
+                      team or an organisation, and the API refuses to guess
+                      because guessing wrong sends the money to a stranger. */}
+                  <div className={styles.chipGroup} role="group" aria-label={tt('wallet.sendingTo', 'Sending to')}>
+                    {KINDS.map(k => (
+                      <button key={k.id} type="button"
+                              className={`${styles.chip} ${toKind === k.id ? styles.chipActive : ''}`}
+                              aria-pressed={toKind === k.id}
+                              onClick={() => pickKind(k.id)}>
+                        {k.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel} htmlFor="send-lookup">
+                    <span className="fieldLabelRow">{lookupLabel}</span>
+                  </label>
+                  <input id="send-lookup" name="send-lookup" type="text" className={styles.formInput}
+                         placeholder={toKind === 'user'
+                           ? tt("ui.username.user.email.com.26ca", "@username or user@email.com")
+                           : tt('wallet.startTyping', 'Start typing the name')}
+                         value={query} onChange={e => setQuery(e.target.value)} autoFocus />
                 </div>
 
                 {recipient && <div className={styles.recipientCard}>
                     <div className={styles.recipientAvatar}>
-                      {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.full_name} unoptimized /> : initials}
+                      {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.name} unoptimized /> : initials}
                     </div>
                     <div className={styles.recipientInfo}>
-                      {/* Who the money is going to. Their badge and a way
-                          to check the profile before sending. */}
-                      <UserChip user={recipient} size={0} secondary
-                                nameClassName={styles.recipientName}
-                                handleClassName={styles.recipientHandle} />
+                      {/* Who the money is going to. For a person that is their
+                          chip, with the badge and a way to check the profile
+                          before sending; a team or an organisation has neither
+                          a profile chip nor a handle, so it says its own name. */}
+                      {recipient.kind === 'user'
+                        ? <UserChip user={recipient.user} size={40} secondary
+                                    nameClassName={styles.recipientName}
+                                    handleClassName={styles.recipientHandle} />
+                        : <>
+                            <p className={styles.recipientName}>{recipient.name}</p>
+                            {recipient.handle ? <p className={styles.recipientHandle}>{recipient.handle}</p> : null}
+                          </>}
                     </div>
                     <span className={`${styles.recipientStatus} ${styles.recipientFound}`}>
                       {tt("ui.found.d7a7", "✓ Found")}
                     </span>
                   </div>}
 
-                {recipientLoading && !recipient && <p className={styles.pageSubtitle}>{tt("ui.checking.username.2eef", "Checking that username...")}</p>}
+                {recipientLoading && !recipient && <p className={styles.pageSubtitle}>{tt('wallet.checkingName', 'Checking that name...')}</p>}
 
                 {recipientError && !recipientLoading && <div className={`${styles.notice} ${styles.noticeError}`}>{recipientError}</div>}
 
@@ -276,11 +363,11 @@ const SendPage = () => {
             {step === 2 && recipient && <>
                 <div className={styles.recipientCard}>
                   <div className={styles.recipientAvatar}>
-                    {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.full_name} unoptimized /> : initials}
+                    {recipient.avatar ? <Image src={mediaUrl(recipient.avatar)} width={40} height={40} alt={recipient.name} unoptimized /> : initials}
                   </div>
                   <div className={styles.recipientInfo}>
-                    <p className={styles.recipientName}>{recipient.full_name}</p>
-                    <p className={styles.recipientHandle}>@{recipient.username}</p>
+                    <p className={styles.recipientName}>{recipient.name}</p>
+                    {recipient.handle ? <p className={styles.recipientHandle}>{recipient.handle}</p> : null}
                   </div>
                   <button type="button" className={styles.btnGhost} style={{
                 background: 'transparent',
@@ -345,7 +432,7 @@ const SendPage = () => {
                 <div className={styles.summaryList}>
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.text.ae79", "To")}</span>
-                    <span className={styles.summaryVal}>{recipient.full_name} (@{recipient.username})</span>
+                    <span className={styles.summaryVal}>{recipient.name}{recipient.handle ? ` (${recipient.handle})` : ''}</span>
                   </div>
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.amount.43dc", "Amount")}</span>
@@ -397,7 +484,7 @@ const SendPage = () => {
                 color: 'var(--v-ent-gold)'
               }}>{formatNumber(numericAmount)} VC</strong> {tt("ui.sent.0a7e", "sent to")} <strong style={{
                 color: 'var(--primary-bg)'
-              }}>@{recipient.username}</strong>.
+              }}>{recipient.label || recipient.name}</strong>.
                 </p>
 
                 <div className={styles.summaryList} style={{
@@ -441,11 +528,12 @@ const SendPage = () => {
         error={pinError}
         onCancel={() => { setPinOpen(false); setPinError(''); }}
         onConfirm={handleSend}
+        requires2fa={requires2fa}
         title={tt('wallet.send.pinTitle', 'Confirm this transfer')}
         detail={recipient
-          ? tt('wallet.sendSummary', '{amount} VC to @{who}')
+          ? tt('wallet.sendSummaryTo', '{amount} VC to {who}')
               .replace('{amount}', formatNumber(numericAmount))
-              .replace('{who}', recipient.username)
+              .replace('{who}', recipient.label || recipient.name)
           : ''}
       />
     </div>;

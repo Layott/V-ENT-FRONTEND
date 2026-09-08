@@ -84,7 +84,7 @@ const TeamProfileTournamentsHistory = ({
   return <div className={profileStyles.tournamentEventsContainer}>
         <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
             <div className={profileStyles.tournamentsEventsFilterContainer}>
-                <p className={styles.tournamentNumber}>{tournaments.length} {tt("ui.tournaments.c9fa", "tournaments")}</p>
+                <p>{tournaments.length} {tt("ui.tournaments.c9fa", "tournaments")}</p>
                 <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>
                     {tt("ui.filter.d7de", "Filter")}
                 </div>
@@ -121,7 +121,7 @@ const TeamProfileTournamentsHistory = ({
                 background: 'var(--overlay-gray)'
               }} />}
                 </div>
-                <p className={styles.gameName}>{tournament.tournament_title || tournament.name}</p>
+                <p>{tournament.tournament_title || tournament.name}</p>
               </div>
               <div className={styles.gridItem}>{tournament.game}</div>
               <div className={styles.gridItem}>{tournament.tournament_type || tournament.type}</div>

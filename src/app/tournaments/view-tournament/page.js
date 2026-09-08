@@ -1,6 +1,6 @@
 'use client';
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatLabel } from '@/lib/formatLabel';
 import InfoTip from '@/components/info-tip/InfoTip';
@@ -36,6 +36,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
 import Tag from '@/components/tag/Tag';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -733,7 +734,7 @@ const RulesPanel = ({
     </a> : null;
 
   if (rulesText || rulesDoc) {
-    return <div className={styles.rulesContainer}>
+    return <div>
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>{tt("ui.tournament.rules.df25", "Tournament Rules")}</h2>
           {rulesText && <div className={styles.sectionText} style={{
@@ -748,7 +749,7 @@ const RulesPanel = ({
   // are best-of-3", "check in 15 minutes before" - as though the organiser had
   // set them. Somebody could be disqualified citing a rule that exists nowhere
   // but this file, so it now says plainly that there are none.
-  return <div className={styles.rulesContainer}>
+  return <div>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{tt("ui.tournament.rules.df25", "Tournament Rules")}</h2>
         <p className={styles.sectionText}>
@@ -1450,7 +1451,7 @@ const ParticipantsPanel = ({
     const q = search.trim().toLowerCase();
     return r.name.toLowerCase().includes(q) || r.captain.toLowerCase().includes(q) || r.region.toLowerCase().includes(q);
   });
-  return <div className={styles.partWrap}>
+  return <div>
       <div className={styles.partHeader}>
         <h2 className={styles.sectionTitle}>{tt("ui.participants.1fd9", "Participants (")}{normalized.length})</h2>
         <div className={styles.searchBarSmall}>
@@ -1489,15 +1490,15 @@ const ParticipantsPanel = ({
           <div className={styles.tableWrap}>
             <div className={styles.tableHeader}>
               <div className={styles.colSeed}>{tt("ui.seed.32fe", "Seed")}</div>
-              <div className={styles.colTeam}>{tt("ui.team.player.bf87", "Team / Player")}</div>
-              <div className={styles.colRegion}>{tt("ui.country.d523", "Country")}</div>
-              <div className={styles.colCap}>{tt("ui.captain.0a98", "Captain")}</div>
+              <div>{tt("ui.team.player.bf87", "Team / Player")}</div>
+              <div>{tt("ui.country.d523", "Country")}</div>
+              <div>{tt("ui.captain.0a98", "Captain")}</div>
               <div className={styles.colWR}>{tt("ui.record.1c54", "Record")}</div>
-              <div className={styles.colStatus}>{tt("ui.status.bae7", "Status")}</div>
+              <div>{tt("ui.status.bae7", "Status")}</div>
             </div>
             {filtered.map(r => <div key={r.key} className={styles.tableRow}>
                 <div className={styles.colSeed}>#{r.seed}</div>
-                <div className={styles.colTeam}>
+                <div>
                   <div className={styles.teamCell}>
                     <Avatar src={r.avatar || r.logo} size={28} name={r.name} />
                     <div>
@@ -1506,8 +1507,8 @@ const ParticipantsPanel = ({
                     </div>
                   </div>
                 </div>
-                <div className={styles.colRegion}>{r.region}</div>
-                <div className={styles.colCap}>@{r.captain}</div>
+                <div>{r.region}</div>
+                <div>@{r.captain}</div>
                 <div className={styles.colWR}>
                   {r.winRate === null ? <span>{r.record}</span> : <>
                       <div className={styles.wrBar}>
@@ -1518,7 +1519,7 @@ const ParticipantsPanel = ({
                       <span>{r.record}</span>
                     </>}
                 </div>
-                <div className={styles.colStatus}>
+                <div>
                   <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>
                     {r.status}
                   </span>
@@ -1598,10 +1599,10 @@ const PrizePanel = ({
     count: 4
   }];
   const sponsors = Array.isArray(tournament?.sponsors) ? tournament.sponsors : [];
-  return <div className={styles.prizeWrap}>
+  return <div>
       <div className={styles.prizeHero}>
         <p className={styles.metaLabel}>{tt("ui.total.prize.pool.a6fe", "Total Prize Pool")}</p>
-        <p className={styles.prizeAmount}>{total.toLocaleString()} <span className={styles.vcUnit}>VC</span></p>
+        <p className={styles.prizeAmount}>{formatNumber(total)} <span className={styles.vcUnit}>VC</span></p>
         <p className={styles.prizeFiat}>≈ {coinsAsNgn(total)} NGN</p>
       </div>
 
@@ -1642,7 +1643,7 @@ const PrizePanel = ({
                     <p className={styles.sbName}>{name}</p>
                     {tier && <p className={styles.sbTier}>{tier}</p>}
                   </div>
-                  {amount != null && <p className={styles.sbAmount}>{amount.toLocaleString()} VC</p>}
+                  {amount != null && <p className={styles.sbAmount}>{formatNumber(amount)} VC</p>}
                 </div>;
         })}
           </div>
@@ -1763,4 +1764,30 @@ const ViewTournament = () => <Suspense fallback={<div style={{
 }} />}>
     <ViewTournamentContent />
   </Suspense>;
-export default ViewTournament;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/tournaments/[slug]` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ViewTournamentLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      const body = await res.json().catch(() => null);
+      // Two shapes, because the two endpoints answer differently: an event
+      // nests under `data.event`, a tournament sits directly on `data`.
+      // Reading only the nested one sent every tournament to the fallback
+      // listing instead of to the tournament, which is a redirect that looks
+      // like it worked.
+      return body?.data?.slug || body?.data?.tournament?.slug || null;
+      }}
+      to={slug => `/tournaments/${encodeURIComponent(slug)}`}
+      fallback="/tournaments"
+    />
+  </Suspense>
+);
+
+export default ViewTournamentLegacy;

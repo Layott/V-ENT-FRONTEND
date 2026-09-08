@@ -35,7 +35,7 @@ const relativeTime = (iso) => {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-// Tiny markdown renderer — bold / italic / code / links / lists / quotes / line breaks.
+// Tiny markdown renderer - bold / italic / code / links / lists / quotes / line breaks.
 const renderMarkdown = (text = '') => {
   if (!text) return null;
   const lines = text.split('\n');

@@ -91,25 +91,14 @@ export const formatNgn = (n) => `₦${formatNumber(n)}`;
 
 export const formatVc = (n) => `${formatNumber(n)} VC`;
 
-export const formatDate = (d) => {
-  if (!d) return '-';
-  const dt = new Date(d);
-  if (Number.isNaN(dt.getTime())) return String(d);
-  return dt.toLocaleDateString(appLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
-};
-
-export const formatDateTime = (d) => {
-  if (!d) return '-';
-  const dt = new Date(d);
-  if (Number.isNaN(dt.getTime())) return String(d);
-  return dt.toLocaleString(appLocale(), {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// Dates go through the one timing model, like every other date on the site.
+//
+// These were a second copy: they read the language but not the reader's zone
+// and not the date ORDER they chose in settings. So somebody who set
+// DD/MM/YYYY got it everywhere except their own statement, which is the one
+// screen where a misread date is a misread payment. Re-exported under the
+// names the wallet already calls so nothing downstream has to change.
+export { formatDate, formatDateTime } from '@/lib/datetime';
 
 // Banks (mock list - matches what the BE would expose)
 export const NIGERIAN_BANKS = [

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT Admin — Overview (Mockup)</title>
+  <title>V-ENT Admin - Overview (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -39,7 +39,7 @@
       font-weight: 700; font-display: swap;
     }
 
-    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    /* ── CSS Variables - exact copies from globals.css + project ──── */
     :root {
       --v-ent-red:        #ED1C24;
       --v-ent-light-red:  #FF3B45;
@@ -83,7 +83,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       SIDEBAR — matches Sidebar.module.css exactly
+       SIDEBAR - matches Sidebar.module.css exactly
     ════════════════════════════════════════════════════════════════ */
     .sidebar {
       background-color: var(--page-bg);
@@ -99,7 +99,7 @@
       transition: transform 0.3s ease;
     }
 
-    /* Logo — ClashGrotesk-Medium, 1.75rem (at 1024px+), red */
+    /* Logo - ClashGrotesk-Medium, 1.75rem (at 1024px+), red */
     .logo-container {
       width: 100%;
       height: var(--header-h);
@@ -143,7 +143,7 @@
     .role-finance { background: rgba(76,175,80,0.12); color: var(--v-ent-grn); border: 1px solid rgba(76,175,80,0.25); }
     .role-mod     { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.15); }
 
-    /* Nav — ClashGrotesk-Light 0.9rem, items calc(100% - 1.5rem), border-radius 5px */
+    /* Nav - ClashGrotesk-Light 0.9rem, items calc(100% - 1.5rem), border-radius 5px */
     .sidebar-nav { margin-top: 0.25rem; flex: 1; }
     .sidebar-list {
       display: flex;
@@ -207,7 +207,7 @@
       margin: 0.35rem 0;
     }
 
-    /* Sidebar footer — logged-in admin user */
+    /* Sidebar footer - logged-in admin user */
     .sidebar-footer {
       padding: 0.75rem 0.75rem 1rem;
       border-top: 0.5px solid var(--border-subtle);
@@ -247,7 +247,7 @@
     .s-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
 
     /* ════════════════════════════════════════════════════════════════
-       HEADER — height 60px, #17181A, padding 0 1.5rem 0 2rem
+       HEADER - height 60px, #17181A, padding 0 1.5rem 0 2rem
     ════════════════════════════════════════════════════════════════ */
     .header {
       position: fixed;
@@ -316,7 +316,7 @@
     .h-role  { font-size: 0.65rem; color: var(--text-dim); }
 
     /* ════════════════════════════════════════════════════════════════
-       MOBILE BOTTOM NAV — height 70px, #131316, hidden at 768px+
+       MOBILE BOTTOM NAV - height 70px, #131316, hidden at 768px+
     ════════════════════════════════════════════════════════════════ */
     .bottom-nav {
       display: none;
@@ -415,14 +415,14 @@
     .redBTN   { background-color: var(--v-ent-red); border: 1px solid var(--v-ent-red); color: #fff; }
     .redBTN:hover   { background-color: var(--v-ent-light-red); }
 
-    /* ── Metrics grid — 6 cards ──────────────────────────────────── */
+    /* ── Metrics grid - 6 cards ──────────────────────────────────── */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 0.75rem;
       margin-bottom: 1.75rem;
     }
-    /* Cards — bg #212225, border-radius 10px, padding 1.25rem */
+    /* Cards - bg #212225, border-radius 10px, padding 1.25rem */
     .card {
       background-color: var(--overlay-gray);
       border-radius: 10px;
@@ -697,7 +697,7 @@
        RESPONSIVE BREAKPOINTS
     ════════════════════════════════════════════════════════════════ */
 
-    /* Mobile — max 767px */
+    /* Mobile - max 767px */
     @media (max-width: 767px) {
       :root { --sidebar-w: 250px; }
 
@@ -745,7 +745,7 @@
       .hide-mobile { display: none; }
     }
 
-    /* Small tablet 768px–1023px */
+    /* Small tablet 768px - 1023px */
     @media (min-width: 768px) and (max-width: 1023px) {
       :root { --sidebar-w: var(--sidebar-w-md); } /* 180px */
 
@@ -760,7 +760,7 @@
       .three-col    { grid-template-columns: 1fr 1fr; }
     }
 
-    /* Tablet/laptop 1024px–1439px */
+    /* Tablet/laptop 1024px - 1439px */
     @media (min-width: 1024px) and (max-width: 1439px) {
       .metrics-grid { grid-template-columns: repeat(3, 1fr); }
       .lower-grid   { grid-template-columns: 1fr 340px; }
@@ -968,7 +968,7 @@
     @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
 
     /* ════════════════════════════════════════════════════════════════
-       MODAL — Add Admin
+       MODAL - Add Admin
     ════════════════════════════════════════════════════════════════ */
     .overlay {
       position: fixed;
@@ -1157,7 +1157,7 @@
     </ul>
   </nav>
 
-  <!-- Footer — logged-in user -->
+  <!-- Footer - logged-in user -->
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="s-avatar">SA</div>
@@ -1256,7 +1256,7 @@
   <div class="notif-item">
     <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🏆</div>
     <div class="notif-body">
-      <p class="notif-text">COD Warzone Cup registration opened — 0 participants so far</p>
+      <p class="notif-text">COD Warzone Cup registration opened - 0 participants so far</p>
       <p class="notif-time">5h ago</p>
     </div>
   </div>
@@ -1659,12 +1659,12 @@
 
   <!-- Mockup notes (remove in real build) -->
   <div class="mockup-notes">
-    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    <strong>MOCKUP NOTES - Track B · Awaiting CEO approval</strong><br>
     · <strong>Roles:</strong> Super Admin (all sections) · Finance (Overview + Finance only) · Moderator (Overview + Management only)<br>
-    · <strong>Activity feed:</strong> Persistent — every admin action (ban, approve, override, KYC, role change) auto-appends a row via AdminAction Django model. Never auto-clears.<br>
+    · <strong>Activity feed:</strong> Persistent - every admin action (ban, approve, override, KYC, role change) auto-appends a row via AdminAction Django model. Never auto-clears.<br>
     · <strong>KYC queue:</strong> Quick approve/reject on Overview; full document view at /admin/kyc<br>
-    · <strong>Disputes:</strong> Surfaced inside /admin/tournaments/[id] — not a standalone page<br>
-    · <strong>Production/streaming:</strong> NOT in admin — user-facing premium feature at /tournaments/production?id=...<br>
+    · <strong>Disputes:</strong> Surfaced inside /admin/tournaments/[id] - not a standalone page<br>
+    · <strong>Production/streaming:</strong> NOT in admin - user-facing premium feature at /tournaments/production?id=...<br>
     · <strong>Pages to build:</strong> Overview · Users · User detail · Tournaments · Tournament detail (disputes + score override) · Payouts · KYC · Audit Log · Admin login (/admin/login)<br>
     · <strong>References used:</strong> sidebar → Sidebar.module.css · cards → profile-page.module.css · tables → tournament participants tab · layout → wallets/page.js + wallet.html gold standard
   </div>
@@ -1700,7 +1700,7 @@
     </div>
 
     <div class="role-info" id="role-info-text">
-      <strong>Moderator</strong> — Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.
+      <strong>Moderator</strong> - Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.
     </div>
 
     <div class="btn-row">
@@ -1856,9 +1856,9 @@
 
   /* ── Add admin form ───────────────────────────────────────────── */
   const ROLE_DESCRIPTIONS = {
-    moderator: '<strong>Moderator</strong> — Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.',
-    finance:   '<strong>Finance</strong> — Can approve/reject payouts and view revenue metrics. Cannot ban users or manage tournaments.',
-    super:     '<strong>Super Admin</strong> — Full access to all sections including system settings, audit log, and role assignment.'
+    moderator: '<strong>Moderator</strong> - Can manage users, review KYC, and view tournament disputes. Cannot access financial data or payouts.',
+    finance:   '<strong>Finance</strong> - Can approve/reject payouts and view revenue metrics. Cannot ban users or manage tournaments.',
+    super:     '<strong>Super Admin</strong> - Full access to all sections including system settings, audit log, and role assignment.'
   };
   function updateRoleInfo(val) {
     document.getElementById('role-info-text').innerHTML = ROLE_DESCRIPTIONS[val] || '';
@@ -1869,7 +1869,7 @@
     addFeedItem('purple', 'Admin invite sent to <strong>new moderator</strong>');
   }
 
-  /* ── Feed — append new item ───────────────────────────────────── */
+  /* ── Feed - append new item ───────────────────────────────────── */
   const DOT_COLORS = { success: '#2E8B3E', error: '#ED1C24', kyc: '#FFD54F', purple: 'rgba(156,39,176,0.9)', info: 'rgba(33,150,243,0.9)' };
   function addFeedItem(type, text) {
     const feed = document.querySelector('.feed-list');
@@ -1890,7 +1890,7 @@
     feed.insertBefore(item, feed.firstChild);
   }
 
-  /* ── Global search (demo — filters visible user/tourn names) ─── */
+  /* ── Global search (demo - filters visible user/tourn names) ─── */
   function handleSearch(q) {
     const lower = q.trim().toLowerCase();
     // Filter payout table rows

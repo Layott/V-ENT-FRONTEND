@@ -1,5 +1,8 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { setAppRegion } from './appRegion';
+
 // Prices, read in whichever money the reader thinks in.
 //
 // V-ENT prices in naira because that is what Paystack settles and what a VENT
@@ -45,6 +48,63 @@ export function CurrencyProvider({
       // Private window, or storage refused. No preference is fine.
     }
   }, []);
+
+  // The ACCOUNT's own currency, timezone and date format, published for the
+  // whole site.
+  //
+  // CEO, 7 September 2026, of the Currency and region panel: "do these work?"
+  // They did not. All three were written to the account and read by nothing:
+  // the currency preference lived in a separate localStorage key this panel
+  // never touched, dates rendered in the browser's zone whatever the setting
+  // said, and the date format was read nowhere at all.
+  //
+  // Fetched here because this provider is already mounted for the whole app
+  // inside the session wrapper, so it is the one place that can ask once and
+  // publish to everything. A second provider would mean a second request for
+  // the same three values.
+  //
+  // The account WINS over the localStorage preference, because it is the one
+  // that follows somebody to a new device. That is the whole reason to store
+  // it on the account rather than in the browser.
+  const { data: session, status: sessionStatus } = useSession();
+  useEffect(() => {
+    if (sessionStatus !== 'authenticated') {
+      // Signed out: the browser's guess for the zone, the language's own date
+      // order, VENT COINS for prices. Published explicitly so signing out
+      // clears whoever was here before on a shared machine.
+      setAppRegion({ timezone: '', dateFormat: '', currency: '' });
+      return undefined;
+    }
+    const token = session?.user?.sessionToken;
+    if (!token) return undefined;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        // `/setting/`, not `/auth/settings/`. The wrong path answered 404 on every
+        // page load, so `setAppRegion` never received the saved timezone, date
+        // format or currency and the whole Currency and region panel was inert:
+        // it stored an answer and nothing ever read it back. Found by changing
+        // the zone to Auckland in Settings and watching an event date not move.
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setting/`,
+                                { headers: { Authorization: `Bearer ${token}` } });
+        const body = await res.json().catch(() => ({}));
+        if (cancelled || body?.status !== 'success') return;
+        const s = body.data?.settings || {};
+        setAppRegion({
+          timezone: s.timezone || '',
+          dateFormat: s.date_format || '',
+          currency: (s.payments || {}).default_currency || '',
+        });
+        const chosen = (s.payments || {}).default_currency;
+        if (chosen) setPreferred(chosen);
+      } catch {
+        // The site works on the browser's guess. A failed preference lookup
+        // must never be the reason a date does not render.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionStatus, session?.user?.sessionToken]);
   const choose = useCallback(code => {
     setPreferred(code);
     try {
@@ -54,6 +114,20 @@ export function CurrencyProvider({
     }
   }, []);
 
+  // Publishing a region change WITHOUT waiting for a reload.
+  //
+  // `setAppRegion` writes to a module value, which nothing re-renders on, so
+  // saving a timezone in settings changed the stored answer and left every
+  // date on screen showing the old zone until the next navigation. That is the
+  // exact shape this panel was reported for: a control that saves and appears
+  // to do nothing. `regionVersion` is bumped alongside it, and because it sits
+  // in the context value every consumer re-renders and re-formats.
+  const [regionVersion, setRegionVersion] = useState(0);
+  const publishRegion = useCallback(next => {
+    setAppRegion(next);
+    setRegionVersion(v => v + 1);
+  }, []);
+
   // Memoised for the same reason as the admin toast provider, which shipped
   // this exact fault: an object literal here is a new value on every render,
   // so every consumer re-renders and anything that lists the context in a
@@ -61,8 +135,8 @@ export function CurrencyProvider({
   // depends on it. Nothing does that here today; the point is that it becomes
   // a refetch loop the first time somebody does, and it is invisible until it
   // reaches a slow connection.
-  const value = useMemo(() => ({ rates, preferred, choose }),
-    [rates, preferred, choose]);
+  const value = useMemo(() => ({ rates, preferred, choose, publishRegion, regionVersion }),
+    [rates, preferred, choose, publishRegion, regionVersion]);
 
   return <CurrencyContext.Provider value={value}>
       {children}

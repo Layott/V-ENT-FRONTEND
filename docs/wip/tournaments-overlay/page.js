@@ -52,7 +52,7 @@ const OverlayContent = () => {
 
   return (
     <div className={styles.root}>
-      {/* Visually-hidden heading for a11y — overlay page is transparent for
+      {/* Visually-hidden heading for a11y - overlay page is transparent for
           OBS Browser source, so we keep a screen-reader-only title. */}
       <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
         {tournament?.name || 'Tournament'} live overlay
@@ -90,7 +90,7 @@ const OverlayContent = () => {
         </div>
       )}
 
-      {/* Lower third — caster card */}
+      {/* Lower third - caster card */}
       {config.lower_third?.is_visible && (
         <div className={styles.lowerThird} style={{ '--accent': config.lower_third.accent_color }}>
           <div className={styles.lowerLogo}>VC</div>
@@ -118,9 +118,9 @@ const OverlayContent = () => {
       <div className={styles.previewControls}>
         <span className={styles.previewBadge}>OBS PREVIEW</span>
         <div className={styles.previewControlsInner}>
-          <button onClick={() => setScoreA(Math.max(0, scoreA - 1))}>A −</button>
+          <button onClick={() => setScoreA(Math.max(0, scoreA - 1))}>A -</button>
           <button onClick={() => setScoreA(scoreA + 1)}>A +</button>
-          <button onClick={() => setScoreB(Math.max(0, scoreB - 1))}>B −</button>
+          <button onClick={() => setScoreB(Math.max(0, scoreB - 1))}>B -</button>
           <button onClick={() => setScoreB(scoreB + 1)}>B +</button>
         </div>
         <span className={styles.previewHint}>Hover to test scores · This UI is hidden in OBS</span>

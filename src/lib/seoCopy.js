@@ -231,6 +231,7 @@ export const PRIVATE_TITLES = {
   home: { en: 'Home', fr: 'Accueil', pt: 'Início' },
   'user-profile': { en: 'Profile', fr: 'Profil', pt: 'Perfil' },
   partners: { en: 'Partners', fr: 'Partenaires', pt: 'Parceiros' },
+  memberships: { en: 'My memberships', fr: 'Mes abonnements', pt: 'As minhas subscrições' },
 };
 
 export const sectionCopy = (section, locale) => {

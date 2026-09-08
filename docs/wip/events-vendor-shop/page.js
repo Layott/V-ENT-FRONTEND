@@ -35,7 +35,7 @@ const VendorShopContent = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
 
-  // Cart state — local to vendor-shop session, persisted in localStorage per event.
+  // Cart state - local to vendor-shop session, persisted in localStorage per event.
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -515,7 +515,7 @@ const VendorShopContent = () => {
                               onClick={() => updateQty(item.id, -1)}
                               type="button"
                               aria-label="Decrease quantity"
-                            >−</button>
+                            >-</button>
                             <span>{item.qty}</span>
                             <button
                               onClick={() => updateQty(item.id, 1)}

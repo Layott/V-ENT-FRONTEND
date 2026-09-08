@@ -20,7 +20,7 @@ const TABS = [
 ];
 
 const formatDate = (d) => {
-  if (!d) return '—';
+  if (!d) return ' - ';
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
@@ -168,18 +168,18 @@ const SellerDashboard = () => {
           <div className={styles.statsGrid}>
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Active listings</p>
-              <p className={styles.statValue}>{stats?.active_listings ?? (loading ? '—' : 0)}</p>
+              <p className={styles.statValue}>{stats?.active_listings ?? (loading ? ' - ' : 0)}</p>
               <p className={styles.statDelta}>Live in marketplace</p>
             </div>
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Pending orders</p>
-              <p className={styles.statValue}>{stats?.pending_orders ?? (loading ? '—' : 0)}</p>
+              <p className={styles.statValue}>{stats?.pending_orders ?? (loading ? ' - ' : 0)}</p>
               <p className={styles.statDelta}>Awaiting fulfilment</p>
             </div>
             <div className={styles.statCard}>
               <p className={styles.statLabel}>This month</p>
               <p className={styles.statValue}>
-                {stats?.month_revenue_vc?.toLocaleString() ?? (loading ? '—' : 0)}
+                {stats?.month_revenue_vc?.toLocaleString() ?? (loading ? ' - ' : 0)}
                 <span className={styles.statUnit}> VC</span>
               </p>
               <p className={styles.statDelta}>+12% vs last month</p>
@@ -187,7 +187,7 @@ const SellerDashboard = () => {
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Avg rating</p>
               <p className={styles.statValue}>
-                {stats?.rating ?? (loading ? '—' : '0.0')}
+                {stats?.rating ?? (loading ? ' - ' : '0.0')}
                 <span className={styles.statUnit}> / 5</span>
               </p>
               <p className={styles.statDelta}>Across all listings</p>
@@ -273,7 +273,7 @@ const SellerDashboard = () => {
                       <img src={o.listing?.images?.[0]} alt={o.listing?.title} className={styles.listingThumb} />
                       <span className={styles.listingName}>{o.listing?.title}</span>
                     </div>
-                    <span>@{o.buyer?.username || '—'}</span>
+                    <span>@{o.buyer?.username || ' - '}</span>
                     <span className={styles.priceCell}>{o.price_vc?.toLocaleString()} VC</span>
                     <span className={`${styles.statusBadge} ${styles[statusKey(o.status)]}`}>{o.status}</span>
                     <div className={styles.actionsCell}>
@@ -309,7 +309,7 @@ const SellerDashboard = () => {
               <div className={styles.earningsCard}>
                 <h3 className={styles.earningsTitle}>Lifetime earnings</h3>
                 <p className={styles.earningsAmount}>
-                  {stats?.revenue_vc?.toLocaleString() ?? (loading ? '—' : 0)}
+                  {stats?.revenue_vc?.toLocaleString() ?? (loading ? ' - ' : 0)}
                   <span>VC</span>
                 </p>
                 <div className={styles.earningsRow}>

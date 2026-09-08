@@ -84,9 +84,22 @@ export function withLocalDatesAsISO(payload, fields) {
 // can see", and the viewer's is the sensible default.
 
 import { appLocale } from './appLocale';
+import { appDateFormat, appTimezone } from './appRegion';
 
-/** The zone the reader is actually in, or undefined if the browser will not say. */
+/**
+ * The zone dates should be read in.
+ *
+ * A SAVED preference first, then the browser's guess, then nothing. Somebody
+ * in Lagos opening the site from an airport in Doha still wants Lagos time,
+ * because that is where their tournament is, and the browser cannot know that.
+ * Until they choose, the browser is the best guess available.
+ *
+ * The setting used to be saved and read by nothing at all, so choosing a zone
+ * in Settings changed no date on the site. CEO, 7 September: "do these work?"
+ */
 export function viewerZone() {
+  const chosen = appTimezone();
+  if (chosen) return chosen;
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
   } catch {
@@ -107,9 +120,25 @@ function render(value, options, { zone, fallback = '-' } = {}) {
   try {
     return parsed.toLocaleString(appLocale(), {
       ...options,
-      // An explicit zone wins; otherwise the reader's own, which is what
-      // "their own times" means.
-      timeZone: zone || undefined,
+      // THE READER'S ZONE, always, unless a caller names one explicitly.
+      //
+      // CEO, 7 September 2026, on the venue-clock exception I had written:
+      // "isnt this bad, let fix it so everyone see venue timing in their own
+      // time, except they set a timezone in their profile ... and it should
+      // be same for date."
+      //
+      // The old rule made a venue's own clock beat the reader's, so somebody
+      // in Accra opening a Lagos event saw 10:00 meaning Lagos. That is one
+      // fewer mistake for the person at the door and one more for everybody
+      // reading from anywhere else, and everybody reading is the larger group
+      // by a long way. What stops the Accra reader arriving late is the ZONE
+      // LABEL, not rendering in a zone that is not theirs - so the label
+      // stays and the zone does not.
+      //
+      // `zone` is still honoured when a caller passes one, because a run of
+      // show genuinely is written on the venue's clock and is read by the
+      // people standing in the venue.
+      timeZone: zone || viewerZone(),
     });
   } catch {
     // An invalid zone from bad data must never take a page down with it.
@@ -125,11 +154,43 @@ export function formatDateTime(value, opts) {
   }, opts);
 }
 
-/** A date on its own: "4 Sept 2026". */
+/**
+ * A date on its own: "4 Sept 2026", or the order the reader asked for.
+ *
+ * The three settings are ORDERS, not format strings, and each maps to a real
+ * locale that already writes dates that way. That matters: `Intl` knows the
+ * separators, the numerals and the direction for every language V-ENT speaks,
+ * and hand-assembling "DD/MM/YYYY" from parts throws all of that away the
+ * moment somebody reads the site in a language that does not use Latin digits.
+ *
+ * With no preference set, the reader's own language decides, which is the
+ * behaviour every date on the site had before and still has by default.
+ */
+const DATE_ORDER = {
+  'DD/MM/YYYY': { locale: 'en-GB', numeric: true },
+  'MM/DD/YYYY': { locale: 'en-US', numeric: true },
+  'YYYY-MM-DD': { locale: 'en-CA', numeric: true },
+};
+
 export function formatDate(value, opts) {
-  return render(value, {
-    day: 'numeric', month: 'short', year: 'numeric',
-  }, opts);
+  const chosen = DATE_ORDER[appDateFormat()];
+  if (!chosen) {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
+  const parsed = asDate(value);
+  if (parsed === null) return (opts && opts.fallback) || '-';
+  try {
+    return parsed.toLocaleDateString(chosen.locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      timeZone: (opts && opts.zone) || viewerZone(),
+    });
+  } catch {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
 }
 
 /** A time on its own: "10:00". */
@@ -139,8 +200,13 @@ export function formatTime(value, opts) {
 
 /** A date and time with the zone named: "4 Sept 2026, 10:00 WAT".
  *
- *  For anything somebody has to BE somewhere for. The zone is the difference
- *  between arriving and arriving an hour out, and it costs three characters.
+ *  For anything somebody has to BE somewhere for. It renders in the READER's
+ *  zone like everything else, and names that zone - so an Accra reader sees
+ *  "09:00 GMT" for a Lagos door that opens at 10:00 WAT, which is the same
+ *  instant said in the language of their own watch.
+ *
+ *  The three characters are the whole point. Without them two people compare
+ *  times and disagree; with them they are obviously talking about one moment.
  */
 export function formatWithZone(value, opts) {
   return render(value, {
@@ -149,7 +215,13 @@ export function formatWithZone(value, opts) {
   }, opts);
 }
 
-/** The same instant stated in a named zone, for a venue's own clock. */
+/** The same instant stated in a NAMED zone, for the few places that need one.
+ *
+ *  Not the default any more (CEO, 7 September 2026). This is for a run of show
+ *  and an operator's rundown: documents written on the venue's clock, read by
+ *  people standing in the venue. Everything a member of the public reads goes
+ *  through the ordinary formatters and lands in their own zone.
+ */
 export function formatInZone(value, zone, opts) {
   return formatWithZone(value, { ...opts, zone });
 }

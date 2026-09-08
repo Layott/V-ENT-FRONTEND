@@ -390,7 +390,7 @@ const UserProfileGallery = () => {
       backgroundColor: getSnackbarBackgroundColor(snackbarType)
     }}>
           <span>{snackbarMessage}</span>
-          <button onClick={() => setShowSnackbar(false)} className={`${styles.snackbarClose} ${styles.snackbarMessageBtn}`}>
+          <button onClick={() => setShowSnackbar(false)} className={`${styles.snackbarMessageBtn}`}>
             ×
           </button>
         </div>}
@@ -432,7 +432,7 @@ const UserProfileGallery = () => {
       </div>
 
       {/* {fetchError && (
-                <div className={styles.errorMessage} style={{
+                <div style={{
                     color: 'red',
                     padding: '10px',
                     marginBottom: '10px',

@@ -275,7 +275,7 @@ const ManageContent = ({
                   <Link href={`/tournaments/${tournament.slug || tournament.id}`}>
                     <button className={styles.outlineBtn}><LuEye /> {tt("ui.view.public.page.13b1", "View Public Page")}</button>
                   </Link>
-                  <Link href={`/tournaments/create-tournament?draft_id=${tournament.id}`}>
+                  <Link href={`/tournaments/create-tournament?draft_id=${tournament.slug || tournament.id}`}>
                     <button className={`${styles.btn} goldBTN`}><LuPencil /> {tt("ui.edit.5301", "Edit")}</button>
                   </Link>
                 </div>}

@@ -14,6 +14,8 @@ import styles from './user-detail.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatDateTime } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -49,6 +51,15 @@ function UserDetailInner() {
   const [notifyModalOpen, setNotifyModalOpen] = useState(false);
   const [newRole, setNewRole] = useState('user');
   const [notifyMsg, setNotifyMsg] = useState('');
+  // Every destructive control confirms and says what it will do. The ban
+  // button here used to fire straight away with a hardcoded reason, while the
+  // users LIST asked properly: two surfaces, one job, one of them built.
+  const [banOpen, setBanOpen] = useState(false);
+  const [banReason, setBanReason] = useState('');
+  const [resetOpen, setResetOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTyped, setDeleteTyped] = useState('');
+  const [busy, setBusy] = useState(false);
   const userId = params?.id;
   const fetchDetail = useCallback(async ({ quiet = false } = {}) => {
     if (!userId) {
@@ -139,6 +150,56 @@ function UserDetailInner() {
     }
     return false;
   }
+  // `action` above is PATCH-shaped, which is right for ban and role and wrong
+  // for everything added since. This is the POST half, kept separate rather
+  // than bolted onto the same function with a verb argument.
+  async function send(path, payload, okText) {
+    const token = localStorage.getItem('adminToken');
+    setBusy(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/${path}/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload || {})
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        toast.push(okText, 'success');
+        fetchDetail();
+        return true;
+      }
+      toast.push(apiMessage(tt, data, 'api.actionFailed', 'Action failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    } finally {
+      setBusy(false);
+    }
+    return false;
+  }
+
+  async function removeAccount() {
+    const token = localStorage.getItem('adminToken');
+    setBusy(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/delete/`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm: true, reason: 'deleted from the console' })
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        toast.push(tt('adminUser.deleted', 'The account is gone.'), 'success');
+        router.replace('/admin/users');
+        return;
+      }
+      toast.push(apiMessage(tt, data, 'api.actionFailed', 'Action failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (authLoading) return null;
   const u = detail?.user;
   return <div className={shared.pageContainer}>
@@ -163,13 +224,19 @@ function UserDetailInner() {
               <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => setRoleModalOpen(true)}>
                 {tt("ui.change.role.7b55", "Change Role")}
               </button>
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setResetOpen(true)}>
+                {tt('adminUser.reset', 'Send a password reset')}
+              </button>
               {u?.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => action('unban')}>
                   {tt("ui.unban.d267", "Unban")}
-                </button> : <button className={`${shared.actBtn} ${shared.actBan}`} onClick={() => action('ban', {
-              reason: 'TOS violation'
-            })}>
+                </button> : <button className={`${shared.actBtn} ${shared.actBan}`}
+                  onClick={() => { setBanOpen(true); setBanReason(''); }}>
                   {tt("ui.ban.bfa1", "Ban")}
                 </button>}
+              <button className={`${shared.actBtn} ${shared.actReject}`}
+                      onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
+                {tt('adminUser.delete', 'Delete account')}
+              </button>
             </div>
           </div>
 
@@ -177,7 +244,7 @@ function UserDetailInner() {
               {/* Profile summary */}
               <div className={`${shared.card} ${styles.summary}`}>
                 <div className={styles.avatar}>
-                  {(u.username || 'U').slice(0, 2).toUpperCase()}
+                  <Avatar src={mediaUrl(u.avatar)} name={u.username} size={72} />
                 </div>
                 <div className={styles.summaryGrid}>
                   <div>
@@ -321,8 +388,11 @@ function UserDetailInner() {
                         <tbody>
                           {detail.reports.map(r => <tr key={r.id}>
                               <td>{formatDate(r.created_at)}</td>
-                              <td>{r.reporter}</td>
-                              <td>{r.reason}</td>
+                              <td>{r.reporter?.username || '-'}</td>
+                              <td>
+                                {r.reason_label || r.reason}
+                                {r.detail ? <p className={styles.reportDetail}>{r.detail}</p> : null}
+                              </td>
                               <td>
                                 <span className={`${shared.badge} ${r.status === 'open' ? shared.sPending : shared.sApproved}`}>
                                   {r.status}
@@ -374,6 +444,85 @@ function UserDetailInner() {
         </div>}
 
       {/* Send notification modal */}
+      {banOpen && <div className={shared.modalOverlay} onClick={(e) => {
+        if (e.target === e.currentTarget) setBanOpen(false);
+      }}>
+          <div className={shared.modal}>
+            <p className={shared.modalTitle}>{tt('admin.banTitle', 'Ban this account?')}</p>
+            <p className={shared.modalSub}>
+              {tt('admin.banSub', 'They lose access immediately. The reason is written to the audit log.')}
+            </p>
+            <p className={shared.modalSub}><strong>{u?.username}</strong></p>
+            <input className={shared.modalInput} value={banReason} maxLength={500}
+                   placeholder={tt('admin.banReasonPlaceholder', 'Why? For example: repeated no-shows')}
+                   onChange={(e) => setBanReason(e.target.value)} />
+            <div className={shared.modalActions}>
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setBanOpen(false)}>
+                {tt('ui.cancel.77df', 'Cancel')}
+              </button>
+              <button className={`${shared.actBtn} ${shared.actBan}`} disabled={!banReason.trim()}
+                      onClick={async () => {
+                        const ok = await action('ban', { reason: banReason.trim() });
+                        if (ok) setBanOpen(false);
+                      }}>
+                {tt('admin.banConfirm', 'Ban account')}
+              </button>
+            </div>
+          </div>
+        </div>}
+
+      {resetOpen && <div className={shared.modalOverlay} onClick={(e) => {
+        if (e.target === e.currentTarget) setResetOpen(false);
+      }}>
+          <div className={shared.modal}>
+            <p className={shared.modalTitle}>{tt('adminUser.resetTitle', 'Send a password reset?')}</p>
+            <p className={shared.modalSub}>
+              {tt('adminUser.resetSub', 'A code goes to {email}, the same one the sign-in page sends. Nobody here sees or sets their password.')
+                .replace('{email}', u?.email || '')}
+            </p>
+            <div className={shared.modalActions}>
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setResetOpen(false)}>
+                {tt('ui.cancel.77df', 'Cancel')}
+              </button>
+              <button className={`${shared.actBtn} ${shared.actApprove}`} disabled={busy}
+                      onClick={async () => {
+                        const ok = await send('reset-password', {},
+                          tt('adminUser.resetSent', 'A reset code has been emailed to them.'));
+                        if (ok) setResetOpen(false);
+                      }}>
+                {busy ? tt('adminUser.sending', 'Sending...') : tt('adminUser.resetDo', 'Send it')}
+              </button>
+            </div>
+          </div>
+        </div>}
+
+      {deleteOpen && <div className={shared.modalOverlay} onClick={(e) => {
+        if (e.target === e.currentTarget) setDeleteOpen(false);
+      }}>
+          <div className={shared.modal}>
+            <p className={shared.modalTitle}>{tt('adminUser.deleteTitle', 'Delete this account for good?')}</p>
+            <p className={shared.modalSub}>
+              {tt('adminUser.deleteSub', 'This cannot be undone. Their profile, wallet, gallery and every registration go with it. Ban them instead if you only want to stop them signing in.')}
+            </p>
+            <p className={shared.modalSub}>
+              {tt('adminUser.deleteType', 'Type {name} to confirm.').replace('{name}', u?.username || '')}
+            </p>
+            <input className={shared.modalInput} value={deleteTyped} autoComplete="off"
+                   placeholder={u?.username || ''}
+                   onChange={(e) => setDeleteTyped(e.target.value)} />
+            <div className={shared.modalActions}>
+              <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDeleteOpen(false)}>
+                {tt('ui.cancel.77df', 'Cancel')}
+              </button>
+              <button className={`${shared.actBtn} ${shared.actReject}`}
+                      disabled={busy || deleteTyped.trim() !== (u?.username || '')}
+                      onClick={removeAccount}>
+                {busy ? tt('adminUser.deleting', 'Deleting...') : tt('adminUser.deleteDo', 'Delete it')}
+              </button>
+            </div>
+          </div>
+        </div>}
+
       {notifyModalOpen && <div className={styles.modalOverlay} onClick={() => setNotifyModalOpen(false)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.send.notification.0df1", "Send Notification")}</p>
@@ -385,16 +534,22 @@ function UserDetailInner() {
               <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setNotifyModalOpen(false)}>
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
-              <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => {
+              {/* This used to show a success toast and send nothing at all: no
+                  endpoint, no request, no row. Somebody warning a member
+                  believed they had, and the member never heard anything. */}
+              <button className={`${shared.actBtn} ${shared.actApprove}`} disabled={busy} onClick={async () => {
             if (!notifyMsg.trim()) {
               toast.push(tt("msg.typeAMessageFirst", "Type a message first."), 'warn');
               return;
             }
-            toast.push(tt('admin.notificationSent', 'Notification sent to {name}.').replace('{name}', u?.username || ''), 'success');
-            setNotifyMsg('');
-            setNotifyModalOpen(false);
+            const ok = await send('notify', { message: notifyMsg.trim() },
+              tt('admin.notificationSent', 'Notification sent to {name}.').replace('{name}', u?.username || ''));
+            if (ok) {
+              setNotifyMsg('');
+              setNotifyModalOpen(false);
+            }
           }}>
-                {tt("ui.send.9bc2", "Send")}
+                {busy ? tt('adminUser.sending', 'Sending...') : tt("ui.send.9bc2", "Send")}
               </button>
             </div>
           </div>

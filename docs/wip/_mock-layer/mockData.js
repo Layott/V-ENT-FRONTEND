@@ -1,4 +1,4 @@
-// Mock data for V-ENT — used when NEXT_PUBLIC_USE_MOCK=true or when the
+// Mock data for V-ENT - used when NEXT_PUBLIC_USE_MOCK=true or when the
 // backend is unreachable. All shapes follow the real API contract:
 //   { status: 'success' | 'error', data: {...}, message: '...' }
 
@@ -6,7 +6,7 @@
 // client render identical strings (avoids React hydration mismatches).
 // `new Date()` would re-evaluate on every module load and the server's value
 // would drift from the client's by however many ms elapsed between renders.
-const SEED_NOW_MS = 1735_000_000_000; // 2024-12-23T22:13:20Z — fixed forever
+const SEED_NOW_MS = 1735_000_000_000; // 2024-12-23T22:13:20Z - fixed forever
 const now = new Date(SEED_NOW_MS);
 const daysFromNow = (n) => new Date(SEED_NOW_MS + n * 86_400_000).toISOString();
 
@@ -71,7 +71,7 @@ export const mockUser = {
   session_token: 'mock_session_token_demo',
 };
 
-// Tournament names — realistic, regional. Pulled per-index so each tournament
+// Tournament names - realistic, regional. Pulled per-index so each tournament
 // has a unique themed banner seed.
 const TOURNAMENT_NAMES = [
   'Naija FIFA Cup 26',
@@ -381,9 +381,9 @@ export const mockKycQueue = Array.from({ length: 8 }).map((_, i) => ({
 
 export const mockActivity = [
   { id: 1, type: 'tournament_won', title: 'Won FIFA Pro Cup 3', prize: 5000, at: daysFromNow(-1) },
-  { id: 2, type: 'match_result', title: 'Beat Alpha Reapers 3–2', at: daysFromNow(-2) },
+  { id: 2, type: 'match_result', title: 'Beat Alpha Reapers 3-2', at: daysFromNow(-2) },
   { id: 3, type: 'team_invite', title: 'Nexus Titans invited you', at: daysFromNow(-3) },
-  { id: 4, type: 'event_ticket', title: 'Booked VIP ticket — V-ENT LAN #2', at: daysFromNow(-4) },
+  { id: 4, type: 'event_ticket', title: 'Booked VIP ticket - V-ENT LAN #2', at: daysFromNow(-4) },
   { id: 5, type: 'wallet_topup', title: 'Topped up 5,000 VC', at: daysFromNow(-5) },
 ];
 
@@ -515,7 +515,7 @@ const ORG_FOUNDERS = [
   ['Mariam Ibrahim', 'Tobi Adelaja'],
 ];
 const ORG_MISSIONS = [
-  'Create a sustainable esports ecosystem for African gamers — from grassroots cup to global stage.',
+  'Create a sustainable esports ecosystem for African gamers - from grassroots cup to global stage.',
   'Build the largest competitive gaming community in West Africa.',
   'Empower African gaming creators with brand deals, training, and on-stage opportunities.',
   'Make Vermillion the premier home for FPS competition across the continent.',
@@ -530,7 +530,7 @@ const ORG_BIOS = [
   'Collective of players, creators, and coaches building the next generation of West African esports.',
   'Vermillion-backed competitive roster focused on FPS and battle-royale titles across Africa.',
   'Velocity trains squads, hosts community cups, and partners with brands that love esports.',
-  'Phoenix fields rosters across mobile and console esports — we rise, and we rise together.',
+  'Phoenix fields rosters across mobile and console esports - we rise, and we rise together.',
 ];
 
 export const mockOrganizations = Array.from({ length: 6 }).map((_, i) => ({
@@ -617,7 +617,7 @@ export let mockOrgJoinRequests = [
 ];
 
 export const mockOrgActivity = [
-  { id: 1, type: 'tournament_hosted', title: 'Hosted FIFA Pro Cup 5 — 24 teams', at: daysFromNow(-1) },
+  { id: 1, type: 'tournament_hosted', title: 'Hosted FIFA Pro Cup 5-24 teams', at: daysFromNow(-1) },
   { id: 2, type: 'team_added', title: 'Added Crimson Wolves to the roster', at: daysFromNow(-3) },
   { id: 3, type: 'prize_awarded', title: 'Awarded 15,000 VC across 3 winners', at: daysFromNow(-5) },
   { id: 4, type: 'member_joined', title: 'New Manager joined the org', at: daysFromNow(-8) },
@@ -678,9 +678,9 @@ export const mockListings = Array.from({ length: 20 }).map((_, i) => ({
     sales_count: 3 + i * 2,
   },
   description:
-    'High-quality listing from a verified V-ENT seller. All orders protected by escrow — funds only release when the buyer marks the order complete. Message the seller for bespoke requests.',
+    'High-quality listing from a verified V-ENT seller. All orders protected by escrow - funds only release when the buyer marks the order complete. Message the seller for bespoke requests.',
   specs: [
-    { label: 'Delivery', value: i % 2 === 0 ? '1–3 days' : 'Instant' },
+    { label: 'Delivery', value: i % 2 === 0 ? '1-3 days' : 'Instant' },
     { label: 'Revisions', value: '2 free revisions' },
     { label: 'Region', value: 'Global' },
   ],
@@ -751,10 +751,10 @@ export const mockShopProducts = Array.from({ length: 12 }).map((_, i) => ({
   limited: i < 2,
   limited_ends_at: daysFromNow(3 + i),
   description:
-    'Premium V-ENT official merchandise. Designed for players, by players. Ships across Africa. Pay in NGN or VENT COINS — members earn coins back on every qualifying purchase.',
+    'Premium V-ENT official merchandise. Designed for players, by players. Ships across Africa. Pay in NGN or VENT COINS - members earn coins back on every qualifying purchase.',
   specs: [
     { label: 'Material', value: 'Premium cotton blend' },
-    { label: 'Shipping', value: '3–5 business days' },
+    { label: 'Shipping', value: '3-5 business days' },
     { label: 'Returns', value: '14-day return policy' },
   ],
   new_drop: i >= 4 && i < 12,
@@ -829,7 +829,7 @@ export const mockManga = Array.from({ length: 18 }).map((_, i) => {
     chapters: chapterNum,
     rating: +(4.0 + (i % 10) / 10).toFixed(1),
     synopsis:
-      'A sprawling Afro-futurist saga of steel, spirits, and street-level honour. Follow our hero as they carve a path through a city that eats the gifted alive — read now on V-ENT.',
+      'A sprawling Afro-futurist saga of steel, spirits, and street-level honour. Follow our hero as they carve a path through a city that eats the gifted alive - read now on V-ENT.',
     latest_chapter: {
       number: chapterNum,
       title: `Chapter ${chapterNum}`,
@@ -846,7 +846,7 @@ const AMV_SEEDS = [
 
 export const mockAmvs = Array.from({ length: 12 }).map((_, i) => ({
   id: `amv_${i}`,
-  title: `${['Anthem', 'Nightdrive', 'Echoes', 'Blaze', 'Reverie', 'Skyfall'][i % 6]} — V-ENT AMV`,
+  title: `${['Anthem', 'Nightdrive', 'Echoes', 'Blaze', 'Reverie', 'Skyfall'][i % 6]} - V-ENT AMV`,
   creator: `@editor_${i + 1}`,
   creator_avatar: `https://i.pravatar.cc/80?img=${30 + i}`,
   thumb: `https://picsum.photos/seed/${AMV_SEEDS[i]}/800/450`,
@@ -939,16 +939,16 @@ export const mockAnimeComments = [
 // ---------- Community ----------
 
 const POST_BODIES = [
-  'Just closed a clutch 1v4 — absolute heater today. GGs to everyone in lobby.',
+  'Just closed a clutch 1v4 - absolute heater today. GGs to everyone in lobby.',
   'Looking for a 2v2 scrim partner tonight. NG server, FIFA 24.',
-  'Dropping my tournament recap later — wild final round.',
+  'Dropping my tournament recap later - wild final round.',
   'Anyone else think the new COD update killed movement?',
   'W stream tonight. Pulled up the grind.',
-  'Recruiting for our Tekken squad — must be Blue rank or above.',
+  'Recruiting for our Tekken squad - must be Blue rank or above.',
   'Hot take: bracket tournaments > round robin. Fight me in the replies.',
   'Day 4 of my PUBG ranked grind. Currently Crown II.',
   "Who's watching the Vermillion finals this weekend?",
-  'Just hit Master tier in Valorant — third account. Cooking.',
+  'Just hit Master tier in Valorant - third account. Cooking.',
 ];
 
 export const mockFeedPosts = Array.from({ length: 10 }).map((_, i) => ({
@@ -968,16 +968,16 @@ export const mockFeedPosts = Array.from({ length: 10 }).map((_, i) => ({
 const THREAD_CATEGORIES = ['General', 'Tournaments', 'Anime', 'Marketplace', 'Support'];
 const THREAD_TITLES = [
   'Best loadout for COD Mobile season 7?',
-  'Tournament bracket format — what works best?',
+  'Tournament bracket format - what works best?',
   'New anime season recommendations',
   'Selling a clean PS5 controller, DM if interested',
-  'Cannot verify my email — help',
+  'Cannot verify my email - help',
   'Who wants to run FIFA scrims tonight?',
   'Bug: bracket not loading on mobile',
   'AMV editing tips for beginners',
-  'Looking to buy VENT COINS — safe way?',
-  'Wallet top-up failed — what to do?',
-  'Team recruitment — Crimson Wolves open tryouts',
+  'Looking to buy VENT COINS - safe way?',
+  'Wallet top-up failed - what to do?',
+  'Team recruitment - Crimson Wolves open tryouts',
   'Best anime fight scenes of all time',
 ];
 
@@ -1007,7 +1007,7 @@ export const mockThreadReplies = Array.from({ length: 5 }).map((_, i) => ({
     avatar: `https://i.pravatar.cc/100?img=${30 + i}`,
   },
   body: [
-    'Agreed — same here. The last update broke my setup too.',
+    'Agreed - same here. The last update broke my setup too.',
     'Tried this last night, works like a charm.',
     'Got a clip of something similar, will upload later.',
     "Anyone got tips on this? I'm stuck on the same problem.",
@@ -1050,9 +1050,9 @@ export const mockConversations = Array.from({ length: 6 }).map((_, i) => ({
     'Scrim at 9 PM works for you?',
     'GG earlier, that last round was insane.',
     'Send the tournament link when you get a chance.',
-    'Roster update pushed — check the club page.',
+    'Roster update pushed - check the club page.',
     'Let me know if you want to run ranked later.',
-    'Got the prize payout — thanks for organizing.',
+    'Got the prize payout - thanks for organizing.',
   ][i],
   time: new Date(SEED_NOW_MS - i * 1800e3).toISOString(),
   unread: i < 2,
@@ -1060,7 +1060,7 @@ export const mockConversations = Array.from({ length: 6 }).map((_, i) => ({
 
 export const mockDmMessages = {
   dm_0: [
-    { id: 'm_0_0', from: 'them', body: 'Yo — scrim at 9 PM works for you?', created_at: new Date(SEED_NOW_MS - 3600e3).toISOString() },
+    { id: 'm_0_0', from: 'them', body: 'Yo - scrim at 9 PM works for you?', created_at: new Date(SEED_NOW_MS - 3600e3).toISOString() },
     { id: 'm_0_1', from: 'me', body: "Yeah I'm good. Best of 5?", created_at: new Date(SEED_NOW_MS - 3300e3).toISOString() },
     { id: 'm_0_2', from: 'them', body: 'Bo5 locked in. Inviting you now.', created_at: new Date(SEED_NOW_MS - 3000e3).toISOString() },
   ],
@@ -1072,14 +1072,14 @@ export const mockDmMessages = {
     { id: 'm_2_0', from: 'them', body: 'Send the tournament link when you get a chance.', created_at: new Date(SEED_NOW_MS - 7200e3).toISOString() },
   ],
   dm_3: [
-    { id: 'm_3_0', from: 'them', body: 'Roster update pushed — check the club page.', created_at: new Date(SEED_NOW_MS - 9000e3).toISOString() },
+    { id: 'm_3_0', from: 'them', body: 'Roster update pushed - check the club page.', created_at: new Date(SEED_NOW_MS - 9000e3).toISOString() },
     { id: 'm_3_1', from: 'me', body: 'Looks clean. Approved.', created_at: new Date(SEED_NOW_MS - 8700e3).toISOString() },
   ],
   dm_4: [
     { id: 'm_4_0', from: 'them', body: 'Let me know if you want to run ranked later.', created_at: new Date(SEED_NOW_MS - 10800e3).toISOString() },
   ],
   dm_5: [
-    { id: 'm_5_0', from: 'them', body: 'Got the prize payout — thanks for organizing.', created_at: new Date(SEED_NOW_MS - 12600e3).toISOString() },
+    { id: 'm_5_0', from: 'them', body: 'Got the prize payout - thanks for organizing.', created_at: new Date(SEED_NOW_MS - 12600e3).toISOString() },
     { id: 'm_5_1', from: 'me', body: 'Respect. GG out there.', created_at: new Date(SEED_NOW_MS - 12300e3).toISOString() },
   ],
 };
@@ -1117,7 +1117,7 @@ const _marketTypes = [
   { type: 'total_rounds', name: 'Total Rounds' },
   { type: 'mvp', name: 'Match MVP' },
   { type: 'first_blood', name: 'First Blood' },
-  { type: 'prop', name: 'Player Prop — Kills' },
+  { type: 'prop', name: 'Player Prop - Kills' },
 ];
 
 export const mockWagerMarkets = Array.from({ length: 12 }).map((_, i) => {
@@ -1343,12 +1343,12 @@ const _monthsAgo = (m) => new Date(now.getTime() - m * 30 * 86_400_000).toISOStr
 const _txTypes = ['top_up', 'deduction', 'prize', 'send', 'receive', 'withdrawal', 'refund'];
 const _txDescriptions = {
   top_up: 'Wallet top-up via Paystack',
-  deduction: 'Tournament entry fee — FIFA Pro Cup',
-  prize: 'Tournament prize — PUBG Sundown Cup',
+  deduction: 'Tournament entry fee - FIFA Pro Cup',
+  prize: 'Tournament prize - PUBG Sundown Cup',
   send: 'Sent to @reaper_x',
   receive: 'Received from @org_crimson',
   withdrawal: 'Withdrawal to GTBank ****0192',
-  refund: 'Refund — cancelled match',
+  refund: 'Refund - cancelled match',
 };
 
 export let mockTransactionsExtended = Array.from({ length: 28 }).map((_, i) => {
@@ -1534,13 +1534,13 @@ const _SHOP_DEFS = [
   { name: 'Apex Legends Skin Bundle - Phantom',  category: 'Digital Goods', seeds: ['shop-skin-apex', 'shop-skin-apex-preview'],                            price_ngn: 11_500, tags: ['skin', 'apex', 'instant'], variants: 'platform', sale: true },
   { name: 'V-ENT Stream Overlay Pack',          category: 'Digital Goods', seeds: ['shop-overlay-pack', 'shop-overlay-pack-preview', 'shop-overlay-pack-detail'], price_ngn: 9_500,  tags: ['overlay', 'stream', 'instant'], variants: '', sale: false },
 
-  // ── VC Packs (6) — sells V-ENT internal currency in tiered bonus structure
-  { name: 'VENT COIN Starter Pack — 1k',  category: 'VC Pack', seeds: ['shop-vc-1k', 'shop-vc-1k-stack'],   price_ngn: 1_000_000, tags: ['vc-pack', 'currency'], variants: '', sale: false, vc_amount: 1_000,   vc_bonus: 0 },
-  { name: 'VENT COIN Booster — 5k',        category: 'VC Pack', seeds: ['shop-vc-5k', 'shop-vc-5k-stack'],   price_ngn: 5_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 5_000,   vc_bonus: 250 },
-  { name: 'VENT COIN Pro — 10k',           category: 'VC Pack', seeds: ['shop-vc-10k', 'shop-vc-10k-stack'], price_ngn: 10_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 10_000,  vc_bonus: 750 },
-  { name: 'VENT COIN Elite — 25k',         category: 'VC Pack', seeds: ['shop-vc-25k', 'shop-vc-25k-stack'], price_ngn: 25_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 25_000,  vc_bonus: 2_000 },
-  { name: 'VENT COIN Champion — 50k',      category: 'VC Pack', seeds: ['shop-vc-50k', 'shop-vc-50k-stack'], price_ngn: 50_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 50_000,  vc_bonus: 5_000 },
-  { name: 'VENT COIN Legend — 100k',       category: 'VC Pack', seeds: ['shop-vc-100k', 'shop-vc-100k-stack'], price_ngn: 100_000_000, tags: ['vc-pack', 'currency', 'bonus', 'best-value'], variants: '', sale: false, vc_amount: 100_000, vc_bonus: 12_500 },
+  // ── VC Packs (6) - sells V-ENT internal currency in tiered bonus structure
+  { name: 'VENT COIN Starter Pack - 1k',  category: 'VC Pack', seeds: ['shop-vc-1k', 'shop-vc-1k-stack'],   price_ngn: 1_000_000, tags: ['vc-pack', 'currency'], variants: '', sale: false, vc_amount: 1_000,   vc_bonus: 0 },
+  { name: 'VENT COIN Booster - 5k',        category: 'VC Pack', seeds: ['shop-vc-5k', 'shop-vc-5k-stack'],   price_ngn: 5_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 5_000,   vc_bonus: 250 },
+  { name: 'VENT COIN Pro - 10k',           category: 'VC Pack', seeds: ['shop-vc-10k', 'shop-vc-10k-stack'], price_ngn: 10_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 10_000,  vc_bonus: 750 },
+  { name: 'VENT COIN Elite - 25k',         category: 'VC Pack', seeds: ['shop-vc-25k', 'shop-vc-25k-stack'], price_ngn: 25_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 25_000,  vc_bonus: 2_000 },
+  { name: 'VENT COIN Champion - 50k',      category: 'VC Pack', seeds: ['shop-vc-50k', 'shop-vc-50k-stack'], price_ngn: 50_000_000, tags: ['vc-pack', 'currency', 'bonus'], variants: '', sale: false, vc_amount: 50_000,  vc_bonus: 5_000 },
+  { name: 'VENT COIN Legend - 100k',       category: 'VC Pack', seeds: ['shop-vc-100k', 'shop-vc-100k-stack'], price_ngn: 100_000_000, tags: ['vc-pack', 'currency', 'bonus', 'best-value'], variants: '', sale: false, vc_amount: 100_000, vc_bonus: 12_500 },
 
   // ── Featured / On-Sale cross-category drops (4) ─────────────────────────
   { name: 'Crimson Cobras Tournament Bundle',     category: 'Apparel',      seeds: ['shop-bundle-cobras', 'shop-bundle-cobras-2', 'shop-bundle-cobras-3'], price_ngn: 45_000, tags: ['bundle', 'team', 'limited', 'featured'], variants: 'apparel', sale: true },
@@ -1550,10 +1550,10 @@ const _SHOP_DEFS = [
 ];
 
 const _shopDescriptions = {
-  Apparel: 'Premium V-ENT branded apparel — designed in Lagos, made for African gamers. Soft cotton-blend fabric, screen-printed graphics, ships continent-wide.',
+  Apparel: 'Premium V-ENT branded apparel - designed in Lagos, made for African gamers. Soft cotton-blend fabric, screen-printed graphics, ships continent-wide.',
   'Gaming Gear': 'Tournament-grade gaming hardware tested by the V-ENT pro roster. Low latency, premium build quality, 12-month warranty included.',
-  'Anime Merch': 'Officially licensed V-ENT anime merchandise — collector-grade detail, limited print runs. Ships continent-wide with V-ENT escrow protection.',
-  'Digital Goods': 'Instant digital delivery via your linked V-ENT account. Skins, emotes and passes redeem within seconds — no shipping required.',
+  'Anime Merch': 'Officially licensed V-ENT anime merchandise - collector-grade detail, limited print runs. Ships continent-wide with V-ENT escrow protection.',
+  'Digital Goods': 'Instant digital delivery via your linked V-ENT account. Skins, emotes and passes redeem within seconds - no shipping required.',
   'VC Pack': 'Top up your V-ENT wallet with VENT COINS. Use for tournament entries, marketplace purchases, ticketing and gifting. Bonus VC stacked on every tier above 1k.',
 };
 
@@ -1602,7 +1602,7 @@ const _shopVariants = (kind, hasSale) => {
   return [];
 };
 
-// 1 NGN = 1 VC for shop pricing parity (matches existing test data — wallet
+// 1 NGN = 1 VC for shop pricing parity (matches existing test data - wallet
 // pricing already uses this 1:1 split everywhere).
 const _ngnToVc = (ngn) => Math.round(ngn / 1000);
 
@@ -1614,8 +1614,8 @@ export let mockProducts = _SHOP_DEFS.map((def, i) => {
     id: `prdx_${i}`,
     name: def.name,
     description: isVcPack
-      ? `${def.name} — instant top-up to your V-ENT wallet. Receive ${def.vc_amount.toLocaleString()} VC${def.vc_bonus ? ` plus a ${def.vc_bonus.toLocaleString()} VC bonus` : ''} the moment payment confirms.`
-      : `${def.name} — ${_shopDescriptions[def.category]}`,
+      ? `${def.name} - instant top-up to your V-ENT wallet. Receive ${def.vc_amount.toLocaleString()} VC${def.vc_bonus ? ` plus a ${def.vc_bonus.toLocaleString()} VC bonus` : ''} the moment payment confirms.`
+      : `${def.name} - ${_shopDescriptions[def.category]}`,
     category: def.category,
     price_vent_coins: price_vc,
     price_ngn: def.price_ngn,
@@ -1681,12 +1681,12 @@ export let mockOrders = Array.from({ length: 8 }).map((_, i) => {
   };
 });
 
-// ── Marketplace listings v2 (32 listings) — six themed categories ────────
+// ── Marketplace listings v2 (32 listings) - six themed categories ────────
 // Each entry hand-crafted with realistic title, condition, specs, location,
 // and themed image seeds (no generic placeholders).
 const _LISTING_DEFS = [
   // ── Gaming Hardware (6) ───────────────────────────────────────────────
-  { title: 'PS5 Slim 1TB — barely used',           cat: 'Gaming Hardware', condition: 'like_new', price_vc: 220, seeds: ['mkt-ps5-slim', 'mkt-ps5-slim-side', 'mkt-ps5-slim-controller', 'mkt-ps5-slim-box', 'mkt-ps5-slim-cables'], specs: { brand: 'Sony', model: 'PS5 Slim 1TB', warranty: '6 months remaining', region: 'PAL' }, seller: 'gadget_king_lagos', loc: 'Lagos', isHot: true },
+  { title: 'PS5 Slim 1TB - barely used',           cat: 'Gaming Hardware', condition: 'like_new', price_vc: 220, seeds: ['mkt-ps5-slim', 'mkt-ps5-slim-side', 'mkt-ps5-slim-controller', 'mkt-ps5-slim-box', 'mkt-ps5-slim-cables'], specs: { brand: 'Sony', model: 'PS5 Slim 1TB', warranty: '6 months remaining', region: 'PAL' }, seller: 'gadget_king_lagos', loc: 'Lagos', isHot: true },
   { title: 'Xbox Series X 1TB - sealed import',     cat: 'Gaming Hardware', condition: 'new',      price_vc: 280, seeds: ['mkt-xbox-series-x', 'mkt-xbox-series-x-side', 'mkt-xbox-series-x-box', 'mkt-xbox-series-x-controller'], specs: { brand: 'Microsoft', model: 'Xbox Series X 1TB', warranty: '12 months', region: 'PAL' }, seller: 'rig_god_naija', loc: 'Abuja', isHot: false },
   { title: 'Razer DeathAdder V3 Pro - mint',        cat: 'Gaming Hardware', condition: 'like_new', price_vc: 65,  seeds: ['mkt-razer-mouse', 'mkt-razer-mouse-2', 'mkt-razer-mouse-3'],                                              specs: { brand: 'Razer', model: 'DeathAdder V3 Pro', warranty: 'Manufacturer 18 months', region: 'Global' }, seller: 'rig_god_naija', loc: 'Lagos', isHot: false },
   { title: 'Keychron K2 75% mech keyboard',          cat: 'Gaming Hardware', condition: 'good',     price_vc: 75,  seeds: ['mkt-keyboard-keychron', 'mkt-keyboard-keychron-side', 'mkt-keyboard-keychron-keys'],                     specs: { brand: 'Keychron', model: 'K2 75%', layout: '75%', switches: 'Cherry MX Brown', region: 'Global' }, seller: 'keys_for_clout', loc: 'Lagos', isHot: false },
@@ -1740,7 +1740,7 @@ export let mockListingsV2 = _LISTING_DEFS.map((def, i) => {
   return {
     id: `lstx_${i}`,
     title: def.title,
-    description: `${def.title} — verified seller listing. All sales protected by V-ENT escrow. Funds release on buyer confirmation.
+    description: `${def.title} - verified seller listing. All sales protected by V-ENT escrow. Funds release on buyer confirmation.
 
 Includes detailed authentication, original packaging where applicable, and full V-ENT buyer protection. Ships within 24 hours of order confirmation.`,
     category: cat,
@@ -1800,10 +1800,10 @@ Includes detailed authentication, original packaging where applicable, and full 
   };
 });
 
-// Watchlist — IDs of listings the current user has hearted.
+// Watchlist - IDs of listings the current user has hearted.
 export let mockMarketWatchlist = ['lstx_1', 'lstx_5'];
 
-// Offers — pending make-offer requests from buyers.
+// Offers - pending make-offer requests from buyers.
 export let mockMarketOffers = Array.from({ length: 3 }).map((_, i) => ({
   id: `offer_${i}`,
   listing_id: mockListingsV2[i].id,
@@ -1867,7 +1867,7 @@ export let mockMangaSeries = _mangaTitlesV2.map((title, i) => ({
   cover: `https://picsum.photos/seed/${_mangaSeedsV2[i]}/400/600`,
   banner: `https://picsum.photos/seed/${_mangaSeedsV2[i]}-banner/1200/300`,
   genres: _mangaGenresV2[i],
-  description: `${title} — an Afro-futurist saga of grit, honour and ancient power. Read every chapter on V-ENT Anime, drop your theories in co-read rooms.`,
+  description: `${title} - an Afro-futurist saga of grit, honour and ancient power. Read every chapter on V-ENT Anime, drop your theories in co-read rooms.`,
   status: _mangaStatuses[i % _mangaStatuses.length],
   total_chapters: 12 + i * 2,
   author: _mangaAuthorsV2[i],
@@ -1887,7 +1887,7 @@ export let mockChapters = mockMangaSeries.flatMap((series) =>
     series_id: series.id,
     series_title: series.title,
     number: c + 1,
-    title: `Chapter ${c + 1} — ${['Awakening', 'The Descent', 'Crimson Path', 'Blade Calls', 'Shadow Pact', 'The Reckoning'][c]}`,
+    title: `Chapter ${c + 1} - ${['Awakening', 'The Descent', 'Crimson Path', 'Blade Calls', 'Shadow Pact', 'The Reckoning'][c]}`,
     page_urls: Array.from({ length: 15 + c * 2 }).map(
       (__, p) => `https://picsum.photos/seed/manga-page-${series.id}-c${c + 1}-p${p + 1}/700/1000`
     ),
@@ -1920,7 +1920,7 @@ const _amvHandlesV2 = [
 
 export let mockAmvsV2 = Array.from({ length: 18 }).map((_, i) => ({
   id: `amvx_${i}`,
-  title: `${_amvTitlesV2[i]} — AMV`,
+  title: `${_amvTitlesV2[i]} - AMV`,
   description: `An emotional ${_amvTitlesV2[i].toLowerCase()} edit cut to a banger. Hand-edited frame-by-frame.`,
   uploader: {
     id: `editor_${i}`,
@@ -1939,8 +1939,8 @@ export let mockAmvsV2 = Array.from({ length: 18 }).map((_, i) => ({
   uploaded_at: daysFromNow(-i),
   anime_referenced: ['Crimson Tide', 'Shadow Veil', 'Vermillion Sky', 'Iron Sage'][i % 4],
   song_used: [
-    'Phonk Drive — Producer X', 'Lost Memories — DJ Echo',
-    'Crimson Beat — Vermillion', 'Neon Pulse — Layo',
+    'Phonk Drive - Producer X', 'Lost Memories - DJ Echo',
+    'Crimson Beat - Vermillion', 'Neon Pulse - Layo',
   ][i % 4],
   featured: i < 4,
 }));
@@ -1948,7 +1948,7 @@ export let mockAmvsV2 = Array.from({ length: 18 }).map((_, i) => ({
 // ── Co-reading rooms v2 ───────────────────────────────────────────────────
 export let mockCoReadingRooms = Array.from({ length: 6 }).map((_, i) => ({
   id: `roomx_${i}`,
-  name: `${mockMangaSeries[i].title} — Read Together`,
+  name: `${mockMangaSeries[i].title} - Read Together`,
   host: {
     id: i === 0 ? mockUser.id : `host_${i}`,
     username: i === 0 ? mockUser.username : `host_${i}`,
@@ -2066,12 +2066,12 @@ export let mockNotifications = Array.from({ length: 20 }).map((_, i) => {
     title: _notifTitles[type],
     message: [
       `Reaper_X requested to join Crimson Wolves.`,
-      `You finished 2nd in FIFA Pro Cup 4 — 5,000 VC awarded.`,
+      `You finished 2nd in FIFA Pro Cup 4-5,000 VC awarded.`,
       `Layo Gaming invited you to PUBG Sundown.`,
       `V-ENT LAN #2 starts in 24 hours.`,
       `You have 3 new messages from @femi_a.`,
       `@editor_3 mentioned you in "AMV editing tips" thread.`,
-      `Your bet on Crimson Wolves won — 1,800 VC payout.`,
+      `Your bet on Crimson Wolves won - 1,800 VC payout.`,
       `Your withdrawal of 8,000 VC was approved.`,
       `Your "PS5 Slim" listing sold for 800 VC.`,
       `Your order VENT-100002 shipped via DHL.`,
@@ -2106,16 +2106,16 @@ export let mockPosts = Array.from({ length: 25 }).map((_, i) => {
       verified: i % 5 === 0,
     },
     content: [
-      'Closed a clutch 1v4 — heater day. GGs all.',
+      'Closed a clutch 1v4 - heater day. GGs all.',
       'Looking for 2v2 scrim tonight, EA FC 25.',
       'Tournament recap dropping tonight, wild final.',
       'New COD Warzone update killed movement for me.',
       'W stream tonight. Pulled up the grind.',
       'Tekken 8 squad recruiting, must be Blue rank+.',
-      'Hot take — bracket > round robin. Fight me.',
+      'Hot take - bracket > round robin. Fight me.',
       'Day 4 of PUBG ranked grind. Crown II now.',
       'Vermillion Encore finals this weekend, who watching?',
-      'Valorant Master tier — third account. Cooking.',
+      'Valorant Master tier - third account. Cooking.',
     ][i % 10],
     images: type === 'image' ? [`https://picsum.photos/seed/community-clip-${seedForGame(GAMES[i % GAMES.length])}-${i}/700/450`] : [],
     video_url: type === 'video' ? 'https://www.youtube.com/embed/dQw4w9WgXcQ' : null,
@@ -2143,9 +2143,9 @@ export let mockPosts = Array.from({ length: 25 }).map((_, i) => {
 const _forumCategories = ['General', 'Tournaments', 'Anime', 'Marketplace', 'Tech'];
 const _forumTitles = [
   'Best loadout COD Mobile season 7?', 'Bracket format guide', 'New anime season recs',
-  'Selling clean PS5 controller', 'Cannot verify email — help', 'FIFA scrims tonight',
-  'Bug — bracket not loading mobile', 'AMV editing tips for beginners',
-  'Buying VENT COINS — safe way?', 'Wallet top-up failed', 'Crimson Wolves tryouts open',
+  'Selling clean PS5 controller', 'Cannot verify email - help', 'FIFA scrims tonight',
+  'Bug - bracket not loading mobile', 'AMV editing tips for beginners',
+  'Buying VENT COINS - safe way?', 'Wallet top-up failed', 'Crimson Wolves tryouts open',
   'Best anime fight scenes ever',
 ];
 
@@ -2174,14 +2174,14 @@ export let mockForumReplies = mockForumThreads.flatMap((thread) =>
     id: `rplx_${thread.id}_${r}`,
     thread_id: thread.id,
     body: [
-      'Same here — last patch broke my setup too.',
+      'Same here - last patch broke my setup too.',
       'Tried this last night. Works like a charm.',
       'Got a clip of something similar, will upload.',
       'Anyone got tips? Stuck on the same problem.',
       'Mods should pin this one.',
       'Big +1 to OP, ran into this Wednesday.',
       'Try clearing cache first, fixed it for me.',
-      'Disagree — round robin is fairer.',
+      'Disagree - round robin is fairer.',
     ][r % 8],
     author: {
       id: `user_${r + 50}`,
@@ -2202,7 +2202,7 @@ export let mockClubsV2 = _clubGames.map((game, i) => ({
   name: `${game} Nation`,
   banner: `https://picsum.photos/seed/club-${seedForGame(game)}-banner/1200/400`,
   logo: `https://picsum.photos/seed/club-${seedForGame(game)}-logo/200/200`,
-  description: `${game} Nation — the home base for every ${game} player on V-ENT. Pickup matches, scrims, weekly tourneys.`,
+  description: `${game} Nation - the home base for every ${game} player on V-ENT. Pickup matches, scrims, weekly tourneys.`,
   game,
   member_count: 120 + i * 47,
   posts_count: 20 + i * 8,
@@ -2234,7 +2234,7 @@ export let mockDmThreads = Array.from({ length: 6 }).map((_, i) => {
       thread_id: `dmx_${i}`,
       from: m % 2 === 0 ? `user_dm_${i}` : mockUser.id,
       body: [
-        'Yo — scrim tonight?', 'Yeah locked in. Bo5?', 'Bo5 locked, inviting now.',
+        'Yo - scrim tonight?', 'Yeah locked in. Bo5?', 'Bo5 locked, inviting now.',
         'GG that round.', 'Send the tourney link?', 'Roster updated, check it.',
         'Approved.', 'Run ranked later?', 'Got the payout, thanks.',
       ][m % 9],
@@ -2272,7 +2272,7 @@ export let mockScrimsV2 = Array.from({ length: 8 }).map((_, i) => ({
   scheduled_at: daysFromNow(i * 0.5 + 0.5),
   status: _scrimStatuses[i],
   prize_vc: i % 2 === 0 ? 0 : 500 + i * 100,
-  notes: 'Friendly scrim — clean play, no toxic.',
+  notes: 'Friendly scrim - clean play, no toxic.',
   created_at: daysFromNow(-i),
 }));
 
@@ -2409,7 +2409,7 @@ export let mockEventVendors = Array.from({ length: 6 }).map((_, i) => ({
   name: _vendorNames[i],
   logo: `https://picsum.photos/seed/${_vendorSeeds[i]}-logo/200/200`,
   banner: `https://picsum.photos/seed/${_vendorSeeds[i]}-banner/1200/300`,
-  description: `${_vendorNames[i]} — official V-ENT event vendor. On-site pickup, exclusive drops.`,
+  description: `${_vendorNames[i]} - official V-ENT event vendor. On-site pickup, exclusive drops.`,
   category: ['Apparel', 'Prints', 'Food & Drink', 'Hardware', 'Books', 'Cosplay'][i],
   booth_number: `B-${10 + i}`,
   status: i < 5 ? 'active' : 'paused',
@@ -2565,7 +2565,7 @@ export let mockTeamInvites = Array.from({ length: 6 }).map((_, i) => ({
     avatar: `https://i.pravatar.cc/100?img=${(40 + i) % 70}`,
   },
   role: i % 2 === 0 ? 'player' : 'manager',
-  message: 'Saw your match — want you on the squad. Tryouts welcome.',
+  message: 'Saw your match - want you on the squad. Tryouts welcome.',
   status: 'pending',
   expires_at: daysFromNow(7 - i),
   created_at: daysFromNow(-i),
@@ -2586,7 +2586,7 @@ export let mockJoinRequests = Array.from({ length: 4 }).map((_, i) => ({
     avatar: `https://i.pravatar.cc/100?img=${(50 + i) % 70}`,
     rank: 100 + i * 50,
   },
-  message: 'Played against your team last week — would love to try out.',
+  message: 'Played against your team last week - would love to try out.',
   status: 'pending',
   created_at: daysFromNow(-i),
 }));
@@ -2791,7 +2791,7 @@ mockRankingsPlayers.forEach((p, i) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────
-// ADMIN MODULE — extended state for full mock-driven admin dashboard
+// ADMIN MODULE - extended state for full mock-driven admin dashboard
 // ─────────────────────────────────────────────────────────────────────────
 
 // Admin hero KPIs (full set per BRD spec)
@@ -2900,7 +2900,7 @@ export const mockAdminUserActivity = (userId) => {
   };
 };
 
-// Tournaments — admin-extended (with prize/participants for table)
+// Tournaments - admin-extended (with prize/participants for table)
 export let mockAdminTournaments = mockTournaments.map((t, i) => ({
   ...t,
   organizer_username: ['ladi_layo', 'esports_lagos', 'nexus_admin', 'phoenix_org'][i % 4],
@@ -2909,7 +2909,7 @@ export let mockAdminTournaments = mockTournaments.map((t, i) => ({
   prize_pool: 5000 + (i * 2000),
 }));
 
-// Payouts queue — extends mockWithdrawalRequests with display fields
+// Payouts queue - extends mockWithdrawalRequests with display fields
 export let mockAdminPayouts = [
   ...mockWithdrawalRequests.map((w, i) => ({
     id: w.id,
@@ -2939,7 +2939,7 @@ export let mockAdminPayouts = [
   })),
 ];
 
-// Audit log — start mutable, will be prepended on every admin action
+// Audit log - start mutable, will be prepended on every admin action
 export let mockAdminAuditFeed = [
   ..._auditActions.flatMap((action, i) =>
     Array.from({ length: 3 }).map((__, j) => ({
@@ -2949,9 +2949,9 @@ export let mockAdminAuditFeed = [
         user_banned: `User spammer_${i}_${j} was banned (TOS violation)`,
         user_unbanned: `User reformed_${i}_${j} was unbanned`,
         payout_approved: `Payout of ₦${(15 + i + j) * 1000} approved for gamer_${i}_${j}`,
-        payout_rejected: `Payout for gamer_${i}_${j} rejected — Bank details mismatch`,
+        payout_rejected: `Payout for gamer_${i}_${j} rejected - Bank details mismatch`,
         kyc_approved: `KYC approved for verified_${i}_${j}`,
-        kyc_rejected: `KYC rejected for unclear_${i}_${j} — Document blurry`,
+        kyc_rejected: `KYC rejected for unclear_${i}_${j} - Document blurry`,
         tournament_refunded: `Tournament prize refunded for canceled match`,
         tournament_cancelled: `Tournament "Cup ${i}-${j}" cancelled by organizer`,
         admin_login: `Admin signed in from new device`,

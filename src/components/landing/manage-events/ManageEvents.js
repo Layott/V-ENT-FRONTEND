@@ -16,7 +16,7 @@ const ManageEvents = ({ scrollToForm }) => {
   const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
 
   return (
-    <div className={`${landingStyles.manageEventsContainer} ${styles.manageEventsContainer}`}>
+    <div className={`${landingStyles.manageEventsContainer}`}>
       <div className={landingStyles.innerManageEventsContainer}>
       
         <div className={styles.leftManageEventsContainer}>
@@ -45,7 +45,7 @@ const ManageEvents = ({ scrollToForm }) => {
               </h2>
             </div>
             
-            <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
+            <div className={`${landingStyles.descriptionContainer}`}>
               <p className={`${landingStyles.descriptionParagraph} ${styles.descriptionParagraph}`}>
                 {tt("landing.events.body", "Host gaming events or anime screenings with ease using our powerful event management tools. From ticketing to attendee tracking, V-ENT empowers you to organize memorable events for your audience.")}
               </p>

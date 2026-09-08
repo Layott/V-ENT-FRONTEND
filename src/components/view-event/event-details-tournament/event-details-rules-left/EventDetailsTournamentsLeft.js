@@ -86,67 +86,67 @@ const EventDetailsTournamentsLeft = ({ event }) => {
             <h3 className={styles.headerH3}>Tournament Rules</h3>
 
             <div className={styles.rules}>
-                <div className={styles.respectConduct}>
-                    <p className={styles.respectConductParagraph}>
-                        <span className={styles.respectConductTitle}>Respect & Conduct:</span> &nbsp;
-                        <span className={styles.respectConductText}>{rules.respectConduct}</span>
+                <div>
+                    <p>
+                        <span>Respect & Conduct:</span> &nbsp;
+                        <span>{rules.respectConduct}</span>
                     </p>
                 </div>
 
-                <div className={styles.gameSettings}>
-                    <p className={styles.gameSettingsParagraph}>
-                        <span className={styles.gameSettingsTitle}>Game Settings:</span> &nbsp;
-                        <span className={styles.gameSettingsText}>{rules.gameSettings}</span>
+                <div>
+                    <p>
+                        <span>Game Settings:</span> &nbsp;
+                        <span>{rules.gameSettings}</span>
                     </p>
                 </div>
 
                 <div className={styles.matchFormat}>
                     <h4 className={styles.matchFormatH4}>Match Format:</h4>
-                    <p className={styles.mapSelectionParagraph}>
-                        <span className={styles.mapSelectionTitle}>Map/Mode Selection:</span> &nbsp;
-                        <span className={styles.mapSelectionText}>{rules.mapSelection}</span>
+                    <p>
+                        <span>Map/Mode Selection:</span> &nbsp;
+                        <span>{rules.mapSelection}</span>
                     </p>
 
-                    <p className={styles.overtimeParagraph}>
-                        <span className={styles.overtimeTitle}>Tiebreaker Rules:</span> &nbsp;
-                        <span className={styles.overtimeText}>{rules.overtime}</span>
-                    </p>
-                </div>
-
-                <div className={styles.cheating}>
-                    <p className={styles.cheatingParagraph}>
-                        <span className={styles.cheatingTitle}>Fair Play:</span> &nbsp;
-                        <span className={styles.cheatingText}>{rules.cheating}</span>
+                    <p>
+                        <span>Tiebreaker Rules:</span> &nbsp;
+                        <span>{rules.overtime}</span>
                     </p>
                 </div>
 
-                <div className={styles.accountUse}>
-                    <p className={styles.accountUseParagraph}>
-                        <span className={styles.accountUseTitle}>Account Requirements:</span> &nbsp;
-                        <span className={styles.accountUseText}>{rules.accountUse}</span>
+                <div>
+                    <p>
+                        <span>Fair Play:</span> &nbsp;
+                        <span>{rules.cheating}</span>
                     </p>
                 </div>
 
-                <div className={styles.reporting}>
-                    <p className={styles.reportingParagraph}>
-                        <span className={styles.reportingTitle}>Reporting Issues:</span> &nbsp;
-                        <span className={styles.reportingText}>{rules.reporting}</span>
+                <div>
+                    <p>
+                        <span>Account Requirements:</span> &nbsp;
+                        <span>{rules.accountUse}</span>
                     </p>
                 </div>
 
-                <div className={styles.prize}>
-                    <p className={styles.prizeParagraph}>
-                        <span className={styles.prizeTitle}>Prize Distribution:</span> &nbsp;
-                        <span className={styles.prizeText}>{rules.prize}</span>
+                <div>
+                    <p>
+                        <span>Reporting Issues:</span> &nbsp;
+                        <span>{rules.reporting}</span>
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        <span>Prize Distribution:</span> &nbsp;
+                        <span>{rules.prize}</span>
                     </p>
                 </div>
 
                 {/* Only show tiebreakers section if there are tiebreakers */}
                 {rules.tiebreakers && rules.tiebreakers.length > 0 && (
-                    <div className={styles.tiebreakers}>
-                        <p className={styles.tiebreakersParagraph}>
-                            <span className={styles.tiebreakersTitle}>Final Standings Tiebreakers:</span> &nbsp;
-                            <span className={styles.tiebreakersText}>In case of teams having the same final score, winners will be determined using the following tiebreaker rules in order:</span>
+                    <div>
+                        <p>
+                            <span>Final Standings Tiebreakers:</span> &nbsp;
+                            <span>In case of teams having the same final score, winners will be determined using the following tiebreaker rules in order:</span>
                         </p>
                         <ul>
                             {rules.tiebreakers.map((rule, index) => (
@@ -158,18 +158,17 @@ const EventDetailsTournamentsLeft = ({ event }) => {
 
                 {/* Show additional rules if provided from backend */}
                 {rules.additionalRules && (
-                    <div className={styles.additionalRules}>
-                        <h4 className={styles.additionalRulesH4}>Additional Rules:</h4>
+                    <div>
+                        <h4>Additional Rules:</h4>
                         <div 
                             dangerouslySetInnerHTML={{ 
                                 __html: rules.additionalRules.replace(/\n/g, '<br/>') 
-                            }} 
-                            className={styles.additionalRulesParagraph}
+                            }}
                         />
                     </div>
                 )}
 
-                <div className={styles.generalNote}>
+                <div>
                     <p><strong>Important:</strong> All participants must check in 30 minutes before the event start time. Late arrivals may result in disqualification.</p>
                     <p><strong>Event Type:</strong> {event?.event_type === 'physical' ? 'Physical/LAN Event' : 'Online Tournament'}</p>
                     <p>Play fair, have fun, and good luck to all participants! 🎮</p>

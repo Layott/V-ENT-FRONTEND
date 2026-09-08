@@ -265,7 +265,7 @@ const ScrimCreateInner = () => {
                 <label className={styles.label}>Opponent (optional)</label>
                 <input
                   type="text"
-                  placeholder="Leave empty for an open scrim — anyone can accept"
+                  placeholder="Leave empty for an open scrim - anyone can accept"
                   className={styles.input}
                   value={form.opponent}
                   onChange={(e) => updateField('opponent', e.target.value)}

@@ -304,7 +304,9 @@ const PostInner = ({
                         </div>
                         <div className={styles.commentBody}>
                           <div className={styles.commentHeader}>
-                            <span className={styles.commentAuthor}>{c.author?.full_name || c.author?.username || 'User'}</span>
+                            <span className={styles.commentAuthor}>
+                              <UserChip user={c.author} size={0} />
+                            </span>
                             <span className={styles.commentHandle}>@{c.author?.username}</span>
                             <span className={styles.commentTime}>{relativeTime(c.created_at)}</span>
                           </div>

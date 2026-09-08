@@ -56,7 +56,7 @@ export default function MockAutoLogin() {
         window.location.reload();
       }
     }).catch(() => {
-      // Swallow — user can still click "Try demo account" manually.
+      // Swallow - user can still click "Try demo account" manually.
     });
   }, [status, pathname]);
 

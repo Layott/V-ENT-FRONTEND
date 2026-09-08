@@ -16,7 +16,7 @@ import styles from './match.module.css';
 const fmtNumber = (n) => Number(n || 0).toLocaleString();
 
 const fmtCountdown = (deadline, nowMs) => {
-  if (!deadline) return '—';
+  if (!deadline) return ' - ';
   const ms = new Date(deadline).getTime() - nowMs;
   if (ms <= 0) return 'Closed';
   const totalSec = Math.floor(ms / 1000);
@@ -35,7 +35,7 @@ const DisclaimerBanner = () => (
       <MdInfoOutline className={styles.disclaimerIcon} />
       <div>
         <p className={styles.disclaimerTitle}>
-          Wager Beta — Legal review pending. UI only. No live betting.
+          Wager Beta - Legal review pending. UI only. No live betting.
         </p>
         <p className={styles.disclaimerSub}>
           You must be 18+ to wager. All stakes shown are simulated VENT COINS for demonstration.
@@ -50,7 +50,7 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h3 className={styles.modalTitle}>
-          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta — Read First
+          <MdInfoOutline className={styles.disclaimerIcon} /> Wager Beta - Read First
         </h3>
         <button className={styles.modalClose} onClick={onDismiss} aria-label="Close">
           <MdOutlineClose />
@@ -69,7 +69,7 @@ const DisclaimerModal = ({ onAccept, onDismiss }) => (
       </div>
       <div className={styles.modalFooter}>
         <button className={styles.outlineBtn} onClick={onDismiss}>Cancel</button>
-        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand — Continue</button>
+        <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept}>I Understand - Continue</button>
       </div>
     </div>
   </div>
@@ -484,7 +484,7 @@ const MatchContent = () => {
                       {placeStep === 'submitting' ? (
                         <div className={styles.pendingBox}>
                           <div className={styles.spinner} />
-                          <p>Pending — securing your stake…</p>
+                          <p>Pending - securing your stake…</p>
                         </div>
                       ) : (
                         <button
@@ -496,7 +496,7 @@ const MatchContent = () => {
                       )}
 
                       <p className={styles.balanceLine}>
-                        Balance: <strong>{balance !== null ? fmtNumber(balance) : '—'} VC</strong>
+                        Balance: <strong>{balance !== null ? fmtNumber(balance) : ' - '} VC</strong>
                       </p>
                     </>
                   )}
@@ -602,7 +602,7 @@ const MatchContent = () => {
                     {placeStep === 'submitting' ? (
                       <div className={styles.pendingBox}>
                         <div className={styles.spinner} />
-                        <p>Pending — securing your stake…</p>
+                        <p>Pending - securing your stake…</p>
                       </div>
                     ) : (
                       <button

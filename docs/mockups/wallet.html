@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT — Wallet (Mockup)</title>
+  <title>V-ENT - Wallet (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -407,7 +407,7 @@
       <div class="caret-icon"></div>
       <div class="profile-dropdown" id="profile-dropdown">
         <a href="/user-profile">View Profile</a>
-        <button onclick="event.stopPropagation(); alert('Logout — this would call NextAuth signOut() in the real app.')">Logout</button>
+        <button onclick="event.stopPropagation(); alert('Logout - this would call NextAuth signOut() in the real app.')">Logout</button>
       </div>
     </div>
   </div>
@@ -579,7 +579,7 @@
       </div>
       <div class="info-row">
         <span class="info-row-label">You will receive</span>
-        <span class="info-row-val" id="topup-vc-preview">— VENT COINS</span>
+        <span class="info-row-val" id="topup-vc-preview"> - VENT COINS</span>
       </div>
       <div class="notice notice-info">You will be redirected to Paystack to complete payment securely.</div>
       <div class="btn-row">
@@ -600,8 +600,8 @@
         <div class="step wait"><div class="step-circle">3</div><div class="step-lbl">Done</div></div>
       </div>
       <div class="summary-list">
-        <div class="summary-row"><span class="summary-key">You pay</span><span class="summary-val" id="topup-confirm-ngn">—</span></div>
-        <div class="summary-row"><span class="summary-key">You receive</span><span class="summary-val grn" id="topup-confirm-vc">—</span></div>
+        <div class="summary-row"><span class="summary-key">You pay</span><span class="summary-val" id="topup-confirm-ngn"> - </span></div>
+        <div class="summary-row"><span class="summary-key">You receive</span><span class="summary-val grn" id="topup-confirm-vc"> - </span></div>
         <div class="summary-hr"></div>
         <div class="summary-row"><span class="summary-key">Payment method</span><span class="summary-val">Paystack</span></div>
         <div class="summary-row"><span class="summary-key">Processing fee</span><span class="summary-val">₦0</span></div>
@@ -650,7 +650,7 @@
       </div>
       <div class="info-row">
         <span class="info-row-label">Balance after</span>
-        <span class="info-row-val" id="send-balance-after">— VC</span>
+        <span class="info-row-val" id="send-balance-after"> - VC</span>
       </div>
       <div class="form-group">
         <label class="form-label">Note (optional)</label>
@@ -665,7 +665,7 @@
     <!-- Step 2 -->
     <div id="send-s2" style="display:none;">
       <h3 class="modal-title">Enter Your PIN</h3>
-      <p class="modal-sub" id="send-pin-sub">Confirm sending — VC to —</p>
+      <p class="modal-sub" id="send-pin-sub">Confirm sending - VC to - </p>
       <div class="steps">
         <div class="step done"><div class="step-circle">✓</div><div class="step-lbl">Details</div></div>
         <div class="step-line done"></div>
@@ -674,9 +674,9 @@
         <div class="step wait"><div class="step-circle">3</div><div class="step-lbl">Done</div></div>
       </div>
       <div class="summary-list">
-        <div class="summary-row"><span class="summary-key">To</span><span class="summary-val" id="send-confirm-to">—</span></div>
-        <div class="summary-row"><span class="summary-key">Amount</span><span class="summary-val red" id="send-confirm-amount">—</span></div>
-        <div class="summary-row"><span class="summary-key">Balance after</span><span class="summary-val" id="send-confirm-balance">—</span></div>
+        <div class="summary-row"><span class="summary-key">To</span><span class="summary-val" id="send-confirm-to"> - </span></div>
+        <div class="summary-row"><span class="summary-key">Amount</span><span class="summary-val red" id="send-confirm-amount"> - </span></div>
+        <div class="summary-row"><span class="summary-key">Balance after</span><span class="summary-val" id="send-confirm-balance"> - </span></div>
       </div>
       <p style="font-family:'ClashGrotesk-Light',sans-serif;font-size:0.82rem;color:var(--text-dim);text-align:center;margin-bottom:0.75rem;">Enter your 4-digit transaction PIN</p>
       <div class="pin-row">
@@ -697,10 +697,10 @@
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--v-ent-grn)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h3 class="modal-title" style="text-align:center;margin-bottom:0.4rem;">Transfer Successful!</h3>
-      <p class="modal-sub" style="text-align:center;margin-bottom:1.4rem;" id="send-success-msg">— VENT COINS sent to —</p>
+      <p class="modal-sub" style="text-align:center;margin-bottom:1.4rem;" id="send-success-msg"> - VENT COINS sent to - </p>
       <div class="summary-list" style="text-align:left;">
-        <div class="summary-row"><span class="summary-key">Reference</span><span class="summary-val" id="send-success-ref" style="font-size:0.72rem;">—</span></div>
-        <div class="summary-row"><span class="summary-key">New balance</span><span class="summary-val grn" id="send-success-balance">—</span></div>
+        <div class="summary-row"><span class="summary-key">Reference</span><span class="summary-val" id="send-success-ref" style="font-size:0.72rem;"> - </span></div>
+        <div class="summary-row"><span class="summary-key">New balance</span><span class="summary-val grn" id="send-success-balance"> - </span></div>
       </div>
       <button class="btn redBTN btn-full" onclick="closeModal('send-modal')">Done</button>
     </div>
@@ -728,7 +728,7 @@
     </div>
     <div class="info-row">
       <span class="info-row-label">You will receive</span>
-      <span class="info-row-val" id="withdraw-ngn-preview">— NGN</span>
+      <span class="info-row-val" id="withdraw-ngn-preview"> - NGN</span>
     </div>
     <div class="modal-tabs">
       <button class="modal-tab on" id="wtab-saved" onclick="switchWithdrawTab('saved')">Saved Bank</button>
@@ -737,7 +737,7 @@
     <!-- Saved bank -->
     <div id="withdraw-saved">
       <div class="bank-row">
-        <div><div class="bank-name">GTBank — ****4521</div><div class="bank-holder">Emeka Okafor</div></div>
+        <div><div class="bank-name">GTBank - ****4521</div><div class="bank-holder">Emeka Okafor</div></div>
         <span class="bank-default">✓ Default</span>
       </div>
     </div>
@@ -760,7 +760,7 @@
         <input class="form-input" type="text" placeholder="Verified automatically" readonly style="opacity:0.5;" />
       </div>
     </div>
-    <div class="notice notice-warn">Withdrawals are processed within 1–3 business days. KYC must be verified.</div>
+    <div class="notice notice-warn">Withdrawals are processed within 1-3 business days. KYC must be verified.</div>
     <div class="btn-row">
       <button class="btn ghostBTN" onclick="closeModal('withdraw-modal')">Cancel</button>
       <button class="btn redBTN">Withdraw</button>
@@ -788,19 +788,19 @@
   /* ── Transaction data ── */
   const TRANSACTIONS = [
     { id:'t001', type:'topup',    name:'Paystack Top-up',            ref:'REF: PSK-20260322-001',              date:'22 Mar 2026', status:'success', amount:+500  },
-    { id:'t002', type:'fee',      name:'Tournament Registration',    ref:'Valorant Champions Cup — Team Slot', date:'20 Mar 2026', status:'success', amount:-50   },
-    { id:'t003', type:'prize',    name:'Tournament Winnings',        ref:'PUBG Invitational — 1st Place',      date:'15 Mar 2026', status:'success', amount:+1000 },
+    { id:'t002', type:'fee',      name:'Tournament Registration',    ref:'Valorant Champions Cup - Team Slot', date:'20 Mar 2026', status:'success', amount:-50   },
+    { id:'t003', type:'prize',    name:'Tournament Winnings',        ref:'PUBG Invitational - 1st Place',      date:'15 Mar 2026', status:'success', amount:+1000 },
     { id:'t004', type:'send',     name:'Sent to @kelechi_gamer',     ref:'Team fund contribution',             date:'10 Mar 2026', status:'success', amount:-200  },
     { id:'t005', type:'receive',  name:'Received from @tunde_plays', ref:'Event registration split',           date:'8 Mar 2026',  status:'success', amount:+100  },
-    { id:'t006', type:'withdraw', name:'Bank Withdrawal',            ref:'GTBank — ****4521',                  date:'2 Mar 2026',  status:'pending', amount:-100  },
+    { id:'t006', type:'withdraw', name:'Bank Withdrawal',            ref:'GTBank - ****4521',                  date:'2 Mar 2026',  status:'pending', amount:-100  },
     { id:'t007', type:'topup',    name:'Paystack Top-up',            ref:'REF: PSK-20260228-004',              date:'28 Feb 2026', status:'success', amount:+200  },
-    { id:'t008', type:'fee',      name:'Event Registration',         ref:'Lagos Gaming Expo — Individual',     date:'14 Feb 2026', status:'failed',  amount:-20   },
-    { id:'t009', type:'prize',    name:'Tournament Winnings',        ref:'FIFA Lagos Open — 2nd Place',        date:'5 Feb 2026',  status:'success', amount:+300  },
+    { id:'t008', type:'fee',      name:'Event Registration',         ref:'Lagos Gaming Expo - Individual',     date:'14 Feb 2026', status:'failed',  amount:-20   },
+    { id:'t009', type:'prize',    name:'Tournament Winnings',        ref:'FIFA Lagos Open - 2nd Place',        date:'5 Feb 2026',  status:'success', amount:+300  },
     { id:'t010', type:'topup',    name:'Paystack Top-up',            ref:'REF: PSK-20260128-009',              date:'28 Jan 2026', status:'success', amount:+100  },
     { id:'t011', type:'send',     name:'Sent to @ada_gamer',         ref:'Tournament entry split',             date:'20 Jan 2026', status:'success', amount:-50   },
     { id:'t012', type:'receive',  name:'Received from @chidi_fc',    ref:'Friendly transfer',                  date:'12 Jan 2026', status:'success', amount:+75   },
-    { id:'t013', type:'fee',      name:'Tournament Registration',    ref:'PUBG Lagos Cup — Team Slot',         date:'3 Jan 2026',  status:'success', amount:-50   },
-    { id:'t014', type:'withdraw', name:'Bank Withdrawal',            ref:'Zenith Bank — ****9012',             date:'28 Dec 2025', status:'success', amount:-200  },
+    { id:'t013', type:'fee',      name:'Tournament Registration',    ref:'PUBG Lagos Cup - Team Slot',         date:'3 Jan 2026',  status:'success', amount:-50   },
+    { id:'t014', type:'withdraw', name:'Bank Withdrawal',            ref:'Zenith Bank - ****9012',             date:'28 Dec 2025', status:'success', amount:-200  },
     { id:'t015', type:'topup',    name:'Paystack Top-up',            ref:'REF: PSK-20251220-017',              date:'20 Dec 2025', status:'success', amount:+500  },
   ];
 
@@ -864,7 +864,7 @@
 
     // Pagination info
     document.getElementById('pag-info').textContent =
-      total === 0 ? 'No results' : `Showing ${start + 1}–${end} of ${total}`;
+      total === 0 ? 'No results' : `Showing ${start + 1} - ${end} of ${total}`;
 
     // Pagination buttons
     const totalPages = Math.ceil(total / ROWS);
@@ -888,7 +888,7 @@
   function updateTopupConversion() {
     const ngn = parseFloat(document.getElementById('topup-ngn').value) || 0;
     const vc  = ngn / 1000;
-    document.getElementById('topup-vc-preview').textContent = ngn > 0 ? `${vc.toLocaleString('en-NG', {minimumFractionDigits: vc % 1 === 0 ? 0 : 2})} VENT COINS` : '— VENT COINS';
+    document.getElementById('topup-vc-preview').textContent = ngn > 0 ? `${vc.toLocaleString('en-NG', {minimumFractionDigits: vc % 1 === 0 ? 0 : 2})} VENT COINS` : ' - VENT COINS';
   }
 
   function goToTopupStep(n) {
@@ -908,7 +908,7 @@
     const amt     = parseFloat(document.getElementById('send-amount').value) || 0;
     const balance = 1250;
     const after   = balance - amt;
-    document.getElementById('send-balance-after').textContent = amt > 0 ? `${after.toLocaleString()} VC` : '— VC';
+    document.getElementById('send-balance-after').textContent = amt > 0 ? `${after.toLocaleString()} VC` : ' - VC';
     if (amt > balance) document.getElementById('send-balance-after').style.color = 'var(--v-ent-red)';
     else document.getElementById('send-balance-after').style.color = 'var(--v-ent-grn)';
   }
@@ -946,7 +946,7 @@
   function updateWithdrawConversion() {
     const vc  = parseFloat(document.getElementById('withdraw-amount').value) || 0;
     const ngn = vc * 1000;
-    document.getElementById('withdraw-ngn-preview').textContent = vc > 0 ? `₦${ngn.toLocaleString()}` : '— NGN';
+    document.getElementById('withdraw-ngn-preview').textContent = vc > 0 ? `₦${ngn.toLocaleString()}` : ' - NGN';
   }
 
   function switchWithdrawTab(tab) {

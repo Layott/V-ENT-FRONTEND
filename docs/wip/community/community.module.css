@@ -1290,7 +1290,7 @@
   cursor: not-allowed;
 }
 
-/* Mobile scrim rows — switch to card layout */
+/* Mobile scrim rows - switch to card layout */
 @media only screen and (max-width: 767px) {
   .scrimTableHeader { display: none; }
   .scrimRow {

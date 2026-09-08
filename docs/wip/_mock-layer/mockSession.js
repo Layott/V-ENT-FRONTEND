@@ -1,6 +1,6 @@
 // Mock NextAuth session + localStorage seed for mock mode.
 // Used by SessionWrapper when NEXT_PUBLIC_USE_MOCK=true so the UI behaves as
-// if a real user is already authenticated — i.e. the header avatar renders,
+// if a real user is already authenticated - i.e. the header avatar renders,
 // protected pages don't bounce to /login, and admin pages don't bounce to
 // /admin/login.
 
@@ -25,7 +25,7 @@ export const MOCK_SESSION = {
 };
 
 // Seed the localStorage slots the UI reads on first paint. Safe to call every
-// mount — only writes if not already present so it doesn't trample an
+// mount - only writes if not already present so it doesn't trample an
 // already-persisted real session.
 export function seedMockSessionStorage() {
   if (typeof window === 'undefined') return;
@@ -60,11 +60,11 @@ export function seedMockSessionStorage() {
       );
     }
 
-    // Generic auth token fallback — some components look for `authToken`.
+    // Generic auth token fallback - some components look for `authToken`.
     if (!localStorage.getItem('authToken')) {
       localStorage.setItem('authToken', mockUser.session_token);
     }
   } catch {
-    // localStorage may be unavailable (private mode, SSR, etc.) — fail quiet.
+    // localStorage may be unavailable (private mode, SSR, etc.) - fail quiet.
   }
 }

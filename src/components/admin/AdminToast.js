@@ -45,7 +45,24 @@ export function AdminToastProvider({
   // every page at once, which is exactly how it was reported.
   //
   // `push` and `dismiss` were already stable. Only the wrapper was not.
-  const value = useMemo(() => ({ push, dismiss }), [push, dismiss]);
+  // `success` and `error` beside `push`, because six call sites already used
+  // them and the context did not have them. `toast.success(...)` on an object
+  // holding only `push` and `dismiss` is a TypeError, thrown on the SUCCESS
+  // path, so the organisations console verified an organisation on the server
+  // and then died before it could redraw. The catch below it called
+  // `toast.error`, which threw again.
+  //
+  // Added rather than rewritten at the call sites: every one of them is
+  // saying the right thing, and a console where half the pages say
+  // `push(msg, 'success')` and half say `success(msg)` is the next version of
+  // the same fault.
+  const value = useMemo(() => ({
+    push,
+    dismiss,
+    success: (msg, duration) => push(msg, 'success', duration),
+    error: (msg, duration) => push(msg, 'error', duration),
+    info: (msg, duration) => push(msg, 'info', duration),
+  }), [push, dismiss]);
 
   return <ToastCtx.Provider value={value}>
       {children}

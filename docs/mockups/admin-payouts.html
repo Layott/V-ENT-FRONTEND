@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT Admin — Payouts (Mockup)</title>
+  <title>V-ENT Admin - Payouts (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -39,7 +39,7 @@
       font-weight: 700; font-display: swap;
     }
 
-    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    /* ── CSS Variables - exact copies from globals.css + project ──── */
     :root {
       --v-ent-red:        #ED1C24;
       --v-ent-light-red:  #FF3B45;
@@ -490,7 +490,7 @@
     .grnBTN   { background-color: var(--v-ent-grn); border: 1px solid var(--v-ent-grn); color: #fff; }
     .grnBTN:hover   { background-color: var(--v-ent-light-grn); color: #000; }
 
-    /* ── Stats cards — 4-col ─────────────────────────────────────── */
+    /* ── Stats cards - 4-col ─────────────────────────────────────── */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -817,7 +817,7 @@
        RESPONSIVE BREAKPOINTS
     ════════════════════════════════════════════════════════════════ */
 
-    /* Mobile — max 767px */
+    /* Mobile - max 767px */
     @media (max-width: 767px) {
       :root { --sidebar-w: 250px; }
       .sidebar { transform: translateX(-100%); }
@@ -842,7 +842,7 @@
       .reject-popover { position: fixed; left: 1rem; right: 1rem; bottom: calc(var(--bottom-nav-h) + 1rem); top: auto; min-width: unset; }
     }
 
-    /* Small tablet 768px–1023px */
+    /* Small tablet 768px - 1023px */
     @media (min-width: 768px) and (max-width: 1023px) {
       :root { --sidebar-w: var(--sidebar-w-md); }
       .header { left: var(--sidebar-w-md); }
@@ -853,7 +853,7 @@
       .header-search input { width: 120px; }
     }
 
-    /* Tablet/laptop 1024px–1439px */
+    /* Tablet/laptop 1024px - 1439px */
     @media (min-width: 1024px) and (max-width: 1439px) {
       .metrics-grid { grid-template-columns: repeat(4, 1fr); }
     }
@@ -926,7 +926,7 @@
 
       <li class="nav-divider"></li>
       <li class="nav-section-label">Finance</li>
-      <!-- Payouts — ACTIVE -->
+      <!-- Payouts - ACTIVE -->
       <li class="sidebar-item active-item">
         <a class="nav-link" href="#">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -1050,7 +1050,7 @@
   <div class="notif-item">
     <div class="notif-icon-wrap" style="background:rgba(33,150,243,0.1);">🏆</div>
     <div class="notif-body">
-      <p class="notif-text">COD Warzone Cup registration opened — 0 participants so far</p>
+      <p class="notif-text">COD Warzone Cup registration opened - 0 participants so far</p>
       <p class="notif-time">5h ago</p>
     </div>
   </div>
@@ -1349,7 +1349,7 @@
             <td><div class="amount-primary">₦50,000</div><div class="amount-secondary">50 VENT Coins</div></td>
             <td class="hide-mobile">Unknown</td>
             <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">1d ago</td>
-            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Suspicious activity</div></td>
+            <td class="hide-mobile"><div class="bank-info"> - </div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Suspicious activity</div></td>
             <td><span class="badge s-rejected" id="badge-13">Rejected</span></td>
             <td><div class="act-group" id="actions-13"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for spammer_01.', 'info')">View</button></div></td>
           </tr>
@@ -1359,7 +1359,7 @@
             <td><div class="amount-primary">₦100,000</div><div class="amount-secondary">100 VENT Coins</div></td>
             <td class="hide-mobile">Unknown</td>
             <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">2d ago</td>
-            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Unverified KYC</div></td>
+            <td class="hide-mobile"><div class="bank-info"> - </div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Unverified KYC</div></td>
             <td><span class="badge s-rejected" id="badge-14">Rejected</span></td>
             <td><div class="act-group" id="actions-14"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for fraud_acc.', 'info')">View</button></div></td>
           </tr>
@@ -1369,7 +1369,7 @@
             <td><div class="amount-primary">₦15,000</div><div class="amount-secondary">15 VENT Coins</div></td>
             <td class="hide-mobile">eFootball</td>
             <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">3d ago</td>
-            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Account too new</div></td>
+            <td class="hide-mobile"><div class="bank-info"> - </div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Account too new</div></td>
             <td><span class="badge s-rejected" id="badge-15">Rejected</span></td>
             <td><div class="act-group" id="actions-15"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for temp_user.', 'info')">View</button></div></td>
           </tr>
@@ -1379,7 +1379,7 @@
             <td><div class="amount-primary">₦8,800</div><div class="amount-secondary">8.8 VENT Coins</div></td>
             <td class="hide-mobile">Valorant</td>
             <td class="hide-mobile" style="color:var(--text-dim);font-size:0.8rem;">4d ago</td>
-            <td class="hide-mobile"><div class="bank-info">—</div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Duplicate request</div></td>
+            <td class="hide-mobile"><div class="bank-info"> - </div><div class="bank-acct" style="color:var(--v-ent-red);font-size:0.7rem;">Duplicate request</div></td>
             <td><span class="badge s-rejected" id="badge-16">Rejected</span></td>
             <td><div class="act-group" id="actions-16"><button class="act-btn act-view" onclick="showToast('Viewing rejection log for zeek_plays.', 'info')">View</button></div></td>
           </tr>
@@ -1390,7 +1390,7 @@
 
     <!-- Pagination -->
     <div class="pagination-row">
-      <p class="pagination-info" id="pagination-info">Showing 1–16 of 284 total payouts processed</p>
+      <p class="pagination-info" id="pagination-info">Showing 1-16 of 284 total payouts processed</p>
       <div class="pagination-btns">
         <button class="pg-btn" disabled>&lsaquo; Prev</button>
         <button class="pg-btn active">1</button>
@@ -1405,13 +1405,13 @@
 
   <!-- Mockup notes -->
   <div class="mockup-notes">
-    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
+    <strong>MOCKUP NOTES - Track B · Awaiting CEO approval</strong><br>
     · <strong>Approve flow:</strong> Confirm dialog → badge changes to Approved → buttons disabled → toast "Payout approved. Bank transfer initiated." → real build triggers Paystack disbursement API<br>
     · <strong>Reject flow:</strong> Inline reason selector (Suspicious activity / Unverified KYC / Duplicate request / Account too new / Other) → confirm → badge Rejected → toast with reason<br>
-    · <strong>Bank transfer:</strong> Real build calls Paystack Transfer API after admin approval. Never simulated — Paystack only (per External Services Rule)<br>
+    · <strong>Bank transfer:</strong> Real build calls Paystack Transfer API after admin approval. Never simulated - Paystack only (per External Services Rule)<br>
     · <strong>VENT Coins:</strong> 1 VENT Coin = ₦1,000 equivalence shown here; confirm exchange rate with backend team before building<br>
     · <strong>Filters:</strong> Search filters by username + tournament name in real time. Status + date filters combine. All filter client-side in this mockup; real build = server-side with query params<br>
-    · <strong>Pagination:</strong> Showing 1–16 of 284 total. Real build = server-paginated, 20 per page<br>
+    · <strong>Pagination:</strong> Showing 1-16 of 284 total. Real build = server-paginated, 20 per page<br>
     · <strong>Mobile:</strong> Bank Account + Requested columns hidden. User, Amount, Status, Actions remain<br>
     · <strong>References used:</strong> sidebar → admin-overview.html · stats cards → admin-overview.html metric cards · table → tournament participants tab + admin-overview payouts table · filters → self-designed to match existing input patterns
   </div>
@@ -1639,7 +1639,7 @@
     actionsDiv.innerHTML = `<button class="act-btn act-view" onclick="showToast('Viewing rejection log for ${user}.', 'info')">View</button>`;
 
     cancelReject();
-    showToast(`Payout rejected — ${reasonLabel}.`, 'error');
+    showToast(`Payout rejected - ${reasonLabel}.`, 'error');
     updatePendingCount(-1);
   }
 

@@ -24,7 +24,18 @@ const nextConfig = {
   // `.next/standalone/server.js`, and moving that would break the deploy to fix
   // a local annoyance. Two directories that never collide is the fix; which one
   // moves is just which one is cheaper to move.
-  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
+  //
+  // In development the port goes in the NAME. Two dev servers on one checkout
+  // write the same directory and overwrite each other's chunks, and what the
+  // browser then says is "Cannot find module './vendor-chunks/next-auth@...'",
+  // which names webpack and next-auth and points at neither. That cost three
+  // restarts on 8 September while several people worked in this repo at once.
+  // `next dev -p 3001` puts 3001 in PORT before the config is read, so this is
+  // enough to keep them apart; with no PORT it falls back to the old name, so
+  // a single server behaves exactly as before.
+  distDir: process.env.NODE_ENV === 'development'
+    ? (process.env.PORT ? `.next-dev-${process.env.PORT}` : '.next-dev')
+    : '.next',
   // next-auth's browser bundle reads process.env.NEXTAUTH_URL to work out its
   // own origin. Next only inlines NEXT_PUBLIC_* into client code, so in the
   // browser that read is undefined and next-auth falls back to its built-in
@@ -74,28 +85,24 @@ const nextConfig = {
       ...(mediaHost
         ? [{ protocol: 'https', hostname: mediaHost, port: '', pathname: '/**' }]
         : []),
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '',
-        pathname: '/**',
-      },
-      // Local dev backend served over IPv4 loopback (the Chrome walkthrough uses
-      // 127.0.0.1 because Chrome resolves `localhost` to ::1, which Django's
-      // dev server doesn't bind). Media URLs come back as http://127.0.0.1:8000/media/*.
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8000',
-        pathname: '/**',
-      },
-      // Alt dev port for the backend (used when :8000 is taken locally).
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8100',
-        pathname: '/**',
-      },
+      // Any loopback port, and only in development.
+      //
+      // Next matches a pattern's port with `if (pattern.port !== undefined)`,
+      // so OMITTING port matches any port and `port: ''` means "must have no
+      // port at all". This list used to pin 8000 and 8100, which had the same
+      // shape as the CORS origin list: it was extended once per port somebody
+      // happened to use, and a backend on any other port made `next/image`
+      // throw "Invalid src prop". That throw is not a broken picture, it takes
+      // the whole page down to its error boundary, which on 8 September read as
+      // "This page did not load" while the API was answering 200.
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+            { protocol: 'http', hostname: 'localhost', pathname: '/**' },
+            { protocol: 'http', hostname: '127.0.0.1', pathname: '/**' },
+          ]
+        : [
+            { protocol: 'http', hostname: 'localhost', port: '', pathname: '/**' },
+          ]),
     ],
   },
   // Optional: Add this to help with image loading issues

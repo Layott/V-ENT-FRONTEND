@@ -1,0 +1,77 @@
+/* Administrators and the role table.
+ *
+ * Surfaces, not lines. A role card is a filled panel one step off the page
+ * ground, and the permission list inside it is a step up again.
+ */
+
+.email {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+.note {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.74rem;
+  line-height: 1.5;
+  margin-top: 0.3rem;
+  max-width: 20rem;
+}
+
+.rolesHeading {
+  margin-top: 2.25rem;
+  margin-bottom: 0.9rem;
+}
+
+.roleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+.roleCard {
+  background-color: #212225;
+  border-radius: 14px;
+  padding: 1.1rem 1.15rem;
+  min-width: 0;
+}
+
+.roleHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.roleName {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.roleToggle {
+  background-color: #2f3036;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.roleToggle:hover { color: #fff; background-color: #3a3b42; }
+
+.permList {
+  margin-top: 0.85rem;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+}
+
+.perm {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  list-style: none;
+}

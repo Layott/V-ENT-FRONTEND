@@ -25,10 +25,11 @@ import { useCheckoutFields, CheckoutFieldList }
   from '@/components/checkout-fields/CheckoutFields';
 import styles from './guest-checkout.module.css';
 import { refFor } from '@/lib/referral';
+import { formatNumber } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
+export default function GuestCheckout({ eventRef, tier, code, onDone, onClose }) {
   const tt = useT();
 
   const { perOrder, perTicket, maxPerEmail } = useCheckoutFields(eventRef);
@@ -39,6 +40,10 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [issued, setIssued] = useState(null);
+  // What this costs, from the endpoint the checkout itself charges through. A
+  // guest used to see the amount for the first time on the payment page, and
+  // a group rate the organiser had set was never mentioned at all.
+  const [quote, setQuote] = useState(null);
 
 
   // One answer set per ticket, so the size on ticket two is not the size on
@@ -54,6 +59,28 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
       return next.slice(0, quantity);
     });
   }, [quantity]);
+
+  useEffect(() => {
+    if (!eventRef || !tier?.id) return undefined;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const params = new URLSearchParams({ tier: String(tier.id),
+                                             quantity: String(quantity) });
+        if (code) params.set('code', code);
+        const res = await fetch(`${API}/event/${eventRef}/quote/?${params}`,
+                                { signal: controller.signal });
+        const body = await res.json();
+        setQuote(body?.status === 'success' ? body.data : null);
+      } catch (err) {
+        if (err?.name !== 'AbortError') setQuote(null);
+      }
+    })();
+    return () => controller.abort();
+  }, [eventRef, tier?.id, quantity, code]);
+
+  const priced = (quote && quote.tier_id === tier?.id
+                  && quote.quantity === quantity) ? quote : null;
 
   const setPerson = (index, patch) => setPeople(prev => prev.map(
     (p, i) => (i === index ? { ...p, ...patch } : p)));
@@ -72,6 +99,9 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
           tier_id: tier.id,
           quantity,
           email,
+          // A hidden tier is checked again here. Without the code the guest is
+          // refused at the last step, after filling the whole form in.
+          ...(code ? { code } : {}),
           answers: orderAnswers,
           attendees: people.map(p => ({ name: p.name, answers: p.answers })),
           callback_url: typeof window === 'undefined' ? ''
@@ -230,6 +260,19 @@ export default function GuestCheckout({ eventRef, tier, onDone, onClose }) {
             onChange={(id, value) => setAnswer(index, id, value)} />
         </div>
       ))}
+
+      {/* The number, before the payment page rather than on it. */}
+      {priced && <div className={styles.totalRow}>
+        <span className={styles.label}>{tt('ui.total.b259', 'Total')}</span>
+        <strong className={styles.totalValue}>
+          {formatNumber(priced.total_vc)} VC
+        </strong>
+      </div>}
+      {priced?.price_reason === 'group' && <p className={styles.help}>
+        {tt('buy.groupSaving', 'Saves {amount} VC')
+          .replace('{amount}', formatNumber(
+            Math.max(0, (priced.list_unit_vc - priced.unit_vc) * quantity)))}
+      </p>}
 
       {error && <p className={styles.error}>{error}</p>}
 

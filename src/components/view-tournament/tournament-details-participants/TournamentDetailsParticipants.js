@@ -114,11 +114,11 @@ const TournamentDetailsParticipants = ({
           <div className={tableStyles.gameImageContainer}>
             <Avatar src={participant.avatar} name={participant.name} />
           </div>
-          <p className={styles.gameName}>{participant.name}</p>
+          <p>{participant.name}</p>
         </div>
 
-        <div className={`${item()} ${styles.participantDiv}`}>
-          {typeIsTeam ? <LuUsers className={styles.participantIcon} /> : <LuUser className={styles.participantIcon} />}
+        <div className={`${item()}`}>
+          {typeIsTeam ? <LuUsers /> : <LuUser />}
           {typeIsTeam ? 'Team' : 'Individual'}
         </div>
 
@@ -133,7 +133,7 @@ const TournamentDetailsParticipants = ({
             {tt("ui.view.profile.685e", "View Profile")}
           </Link>
           <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
-            <BsThreeDots className={styles.iconThreeDots} />
+            <BsThreeDots />
           </button>
         </div>
       </div>;
@@ -147,7 +147,7 @@ const TournamentDetailsParticipants = ({
 
       <div className={tableStyles.tournamentsEventsFilterSearchContainer}>
         <div className={tableStyles.tournamentsEventsFilterContainer}>
-          <p className={styles.tournamentNumber}>
+          <p>
             {loading ? tx("Loading...") : `${filtered.length} participant${filtered.length !== 1 ? 's' : ''}`}
           </p>
           <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
@@ -174,9 +174,9 @@ const TournamentDetailsParticipants = ({
         </p>}
 
       {!loading && !error && filtered.length > 0 && <>
-          {!showGalleryView ? <div className={`${tableStyles.participantsTable} ${styles.participantsTable}`}>
+          {!showGalleryView ? <div className={`${tableStyles.participantsTable}`}>
               <div className={`${styles.gridHeader} ${tableStyles.gridHeader} ${profileStyles.middleLayerColor}`}>
-                {headerCols.map(col => <div key={col} className={`${tableStyles.gridItem} ${styles.gridItemHeader}`}>{col}</div>)}
+                {headerCols.map(col => <div key={col} className={`${tableStyles.gridItem}`}>{col}</div>)}
               </div>
               {currentParticipants.map((p, i) => <ParticipantRow key={p.id ?? i} participant={p} expanded={false} />)}
             </div> : <div className={tableStyles.participantsTableExpandedContainer}>

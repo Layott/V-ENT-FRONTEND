@@ -225,6 +225,14 @@ const labelsFor = (tt) => ({
   break_screen: tt('studio.kind.breakScreen', 'Break screen'),
   award: tt('studio.kind.award', 'Award'),
   explainer: tt('studio.kind.explainer', 'Aggregate rule'),
+  // The four off the CEO's stream elements sheet. They had payload editors and
+  // no NAMES, so the console listed them as desk_lower_third and play_area
+  // among Score bar and Now and next, which is a machine name in front of an
+  // operator mid-show.
+  desk_lower_third: tt('studio.kind.deskLowerThird', 'Desk lower third'),
+  matchday: tt('studio.kind.matchday', 'Matchday'),
+  analyst_desk: tt('studio.kind.analystDesk', 'Analyst desk'),
+  play_area: tt('studio.kind.playArea', 'Play area'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
