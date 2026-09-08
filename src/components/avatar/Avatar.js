@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react';
 import Image from 'next/image';
 import styles from './avatar.module.css';
 import { mediaUrl } from '@/lib/mediaUrl';
@@ -38,14 +39,46 @@ const Avatar = ({ src: rawSrc, name, size = 40, className = '', rounded = true, 
   // stored path into a URL. Asking every caller to remember is how the sixth
   // screen forgets, so the component remembers instead.
   const src = mediaUrl(rawSrc);
+
+  // A URL is not a picture.
+  //
+  // CEO, 7 September 2026: "Even the logos and banners of organizations dont
+  // load up there." Having a `logo` column filled in says only that a path was
+  // stored. The file behind it can be gone - moved between hosts, uploaded to
+  // one box and read from another, or deleted - and the request then answers
+  // 404. React has done nothing wrong at that point, so the element stays and
+  // the browser draws its torn-picture glyph with the alt text spilling out of
+  // a 36px circle. That is worse than the initials it would have drawn had the
+  // column simply been empty, and it is indistinguishable on screen from the
+  // page being broken.
+  //
+  // Measured on the rankings organisations tab: a crest whose file is missing
+  // reports `complete: true, naturalWidth 0`, which is the signature of a load
+  // that FAILED. (An image that has merely not started yet reports
+  // `complete: false` - the two are different states and reading only
+  // naturalWidth cannot tell them apart.)
+  //
+  // The src that failed is remembered rather than a bare flag, so a row whose
+  // picture is later replaced is tried again instead of inheriting the last
+  // one's failure.
+  const [failedSrc, setFailedSrc] = useState(null);
+  const usable = src && failedSrc !== src;
+
   const style = fill
     ? undefined
     : { width: size, height: size, borderRadius: rounded ? '50%' : '10px' };
 
-  if (src) {
+  if (usable) {
     if (fill) {
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={src} alt={name || ''} className={`${styles.img} ${styles.fill} ${className}`} />;
+      return (
+        <img
+          src={src}
+          alt={name || ''}
+          className={`${styles.img} ${styles.fill} ${className}`}
+          onError={() => setFailedSrc(src)}
+        />
+      );
     }
     return (
       <Image
@@ -56,6 +89,7 @@ const Avatar = ({ src: rawSrc, name, size = 40, className = '', rounded = true, 
         className={`${styles.img} ${className}`}
         style={style}
         unoptimized
+        onError={() => setFailedSrc(src)}
       />
     );
   }

@@ -18,6 +18,15 @@
 // It takes a className and no inline size, because a banner is sized by the
 // layout it sits in and every one of these sites already has a class for that.
 
+// The second half of the same fault, found on 8 September 2026: a src that is
+// PRESENT and answers 404 draws the identical broken glyph. `mediaUrl` returning
+// null is only one of the two ways a picture goes missing, and the commoner one
+// on this platform is a stored path whose file is not on the box that is being
+// asked. A load that fails now falls through to the same empty surface as a
+// banner that was never uploaded, so the two cases look alike on screen instead
+// of one of them looking like a bug.
+
+import { useState } from 'react';
 import styles from './banner.module.css';
 
 /**
@@ -29,9 +38,20 @@ import styles from './banner.module.css';
  *                  thumbnail in a row says nothing at all.
  */
 export default function Banner({ src, alt = '', className = '', label = '' }) {
-  if (src) {
+  // The src that failed, not a flag: a record whose artwork is replaced gets a
+  // fresh attempt rather than inheriting the previous one's failure.
+  const [failedSrc, setFailedSrc] = useState(null);
+
+  if (src && failedSrc !== src) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} className={className} />;
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={() => setFailedSrc(src)}
+      />
+    );
   }
 
   return (

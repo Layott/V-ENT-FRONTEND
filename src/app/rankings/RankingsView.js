@@ -4,7 +4,6 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
@@ -18,6 +17,22 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { formatNumber } from '@/lib/datetime';
+
+// A face, a team crest or an organisation's logo, whichever tab is open.
+//
+// Declared at module scope on purpose. Defined inside `RankingsView` it was a
+// NEW component type on every render, so React threw away every avatar and
+// built a fresh <img> each time the page re-rendered - restarting each picture's
+// download from nothing, on a screen that re-renders on every keystroke in the
+// search box.
+//
+// `mediaUrl` is applied inside `Avatar` itself and is idempotent, so the row's
+// stored path is handed over as it stands.
+const RankAvatar = ({ src, name, size, className }) => (
+  <Avatar src={mediaUrl(src)} name={name} size={size} className={className} />
+);
+
 const TABS = [{
   id: 'players',
   label: 'Players'
@@ -139,16 +154,6 @@ const RankingsView = () => {
     return players;
   }, [tab, players, teams, organizations]);
 
-  // Rankings rows are real users/teams and most have no uploaded picture yet.
-  // next/image throws ("Cannot read properties of null") on a null src, which
-  // white-screened the whole page - fall back to initials like the rest of the app.
-  // The shared Avatar, not a copy. This file drew its own, with no `mediaUrl`,
-  // which is exactly why organisation logos did not load here while the same
-  // crest showed everywhere else: turning a stored path into a URL is the one
-  // job `mediaUrl` exists for and this screen skipped it.
-  const RankAvatar = ({ src, name, size, className }) => (
-    <Avatar src={mediaUrl(src)} name={name} size={size} className={className} />
-  );
   const sortedList = useMemo(() => {
     const arr = [...activeList];
     switch (sortBy) {
@@ -302,7 +307,7 @@ const RankingsView = () => {
                 </p>}
                 <div className={styles.podiumStats}>
                   <div className={styles.podiumStat}>
-                    <span className={styles.podiumStatValue}>{entry.points.toLocaleString()}</span>
+                    <span className={styles.podiumStatValue}>{formatNumber(entry.points)}</span>
                     <span className={styles.podiumStatLabel}>{tt("ui.points.4b2a", "Points")}</span>
                   </div>
                   <div className={styles.podiumStatDivider} />
@@ -377,7 +382,7 @@ const RankingsView = () => {
                     <span className={styles.regionSub}>{entry.region}</span>
                   </div>
                   <div className={`${styles.col} ${styles.colPoints}`}>
-                    <span className={styles.pointsValue}>{entry.points.toLocaleString()}</span>
+                    <span className={styles.pointsValue}>{formatNumber(entry.points)}</span>
                   </div>
                   <div className={`${styles.col} ${styles.colWl}`}>
                     <span className={styles.wlValue}>
@@ -428,7 +433,7 @@ const RankingsView = () => {
                       </div>
                       <div className={styles.mobileDetailItem}>
                         <span className={styles.mobileDetailLabel}>{tt("ui.points.4b2a", "Points")}</span>
-                        <span className={styles.mobileDetailValue}>{entry.points.toLocaleString()}</span>
+                        <span className={styles.mobileDetailValue}>{formatNumber(entry.points)}</span>
                       </div>
                       <div className={styles.mobileDetailItem}>
                         <span className={styles.mobileDetailLabel}>W-L</span>
@@ -479,7 +484,7 @@ const RankingsView = () => {
               </div>
               <GoDotFill className={styles.yourRankDot} />
               <div className={styles.yourRankStat}>
-                <span className={styles.yourRankStatValue}>{sessionUserEntry.points.toLocaleString()}</span>
+                <span className={styles.yourRankStatValue}>{formatNumber(sessionUserEntry.points)}</span>
                 <span className={styles.yourRankStatLabel}>{tt("ui.points.4b2a", "Points")}</span>
               </div>
               <GoDotFill className={styles.yourRankDot} />
