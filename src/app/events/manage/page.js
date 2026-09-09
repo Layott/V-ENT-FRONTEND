@@ -14,6 +14,7 @@
 // control whose save is refused.
 
 import { apiMessage } from '@/lib/apiMessage';
+import { downloadWithToken } from '@/lib/download';
 import DiscordChannels from '@/components/discord/DiscordChannels';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
@@ -485,29 +486,21 @@ export const ManageEventContent = ({
 
   // ------------------------------------------------------ messages and polls
 
-  // The CSV comes back as a file rather than as JSON, so it is fetched as a
-  // blob and handed to a temporary link. A plain href would send the browser
-  // without the Bearer token and be refused.
+  // The sheet comes back as a file rather than as JSON, so it is fetched with
+  // the token and saved from a blob. `downloadWithToken` is that, in one place:
+  // the tournament side had the same three buttons written as `window.open`,
+  // which cannot carry a header, and every one of them opened a tab showing a
+  // refusal.
   const downloadSheet = async sheet => {
     setBusy(true);
     setError('');
     try {
-      const res = await fetch(`${API}/event/${eventRef}/metrics/export/?sheet=${sheet}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
+      const problem = await downloadWithToken(
+        `${API}/event/${eventRef}/metrics/export/?sheet=${sheet}`,
+        token, `${eventRef}-${sheet}.csv`);
+      if (problem) {
         setError(tt('manage.downloadFailed', 'That sheet could not be downloaded.'));
-        return;
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${eventRef}-${sheet}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
     } finally {
       setBusy(false);
     }

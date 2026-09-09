@@ -291,3 +291,12 @@
   .stage { flex-wrap: wrap; }
   .close { width: 100%; }
 }
+
+/* A stage that is played somewhere or sometime the tournament is not.
+
+   Only drawn when the stage carries its own, so the common case stays a clean
+   two-line row rather than repeating the tournament's date on every stage. */
+.stageWhen {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}

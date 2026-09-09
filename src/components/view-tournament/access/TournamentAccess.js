@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LuCheck, LuCopy, LuDownload, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
+import { downloadWithToken } from '@/lib/download';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './tournament-access.module.css';
 
@@ -132,12 +133,29 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
     }
   };
 
-  const download = kind => {
-    // Sent with the token in the address because a download is a navigation
-    // and cannot carry a header.
-    const url = `${API}/tournament/${tournamentId}/invites/download/?as=${kind}`;
-    window.open(url, '_blank', 'noopener');
+  // Fetched with the token and saved from a blob. It used to be a
+  // `window.open`, with a comment claiming the token was in the address: it was
+  // not, and a navigation cannot carry a header, so every one of these buttons
+  // opened a tab showing a JSON refusal.
+  const save = async (url, fallbackName) => {
+    setError('');
+    setBusy(true);
+    try {
+      const problem = await downloadWithToken(url, token, fallbackName);
+      if (problem === 'PREMIUM_REQUIRED') {
+        setError(tt('api.PREMIUM_REQUIRED',
+          'That is a premium feature. Ask a V-ENT admin to turn premium on for this account.'));
+      } else if (problem) {
+        setError(tt('export.failed', 'That file could not be downloaded.'));
+      }
+    } finally {
+      setBusy(false);
+    }
   };
+
+  const download = kind => save(
+    `${API}/tournament/${tournamentId}/invites/download/?as=${kind}`,
+    `codes.${kind}`);
 
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
 
@@ -213,6 +231,14 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
               <LuDownload aria-hidden="true" /> {tt('access.csv', 'Spreadsheet')}
             </button>
             <button type="button" className={styles.ghost} disabled={busy}
+                    onClick={() => download('pdf')}>
+              <LuDownload aria-hidden="true" /> {tt('access.pdf', 'PDF')}
+            </button>
+            <button type="button" className={styles.ghost} disabled={busy}
+                    onClick={() => download('docx')}>
+              <LuDownload aria-hidden="true" /> {tt('access.docx', 'Word')}
+            </button>
+            <button type="button" className={styles.ghost} disabled={busy}
                     onClick={clearUnused}>
               {tt('access.clear', 'Clear unused')}
             </button>
@@ -249,18 +275,28 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       <div className={styles.block}>
         <p className={styles.title}>{tt('export.title', 'Take the data out')}</p>
         <p className={styles.hint}>
-          {tt('export.hint', 'Spreadsheets you can open anywhere. The results sheet has a row per match, so an aggregate fixture is not collapsed into one line.')}
+          {tt('export.hint2', 'A spreadsheet to work on, or a document to send. The results sheet has a row per match, so an aggregate fixture is not collapsed into one line. Excel, Word and PDF are premium.')}
         </p>
-        <div className={styles.mint}>
+        <div className={styles.sheets}>
           {[['participants', 'export.participants', 'Entrants'],
             ['results', 'export.results', 'Results'],
             ['standings', 'export.standings', 'Standings']].map(([sheet, key, label]) => (
-            <button key={sheet} type="button" className={styles.ghost}
-                    onClick={() => window.open(
-                      `${API}/tournament/${tournamentId}/export/?sheet=${sheet}`,
-                      '_blank', 'noopener')}>
-              <LuDownload aria-hidden="true" /> {tt(key, label)}
-            </button>
+            <div key={sheet} className={styles.sheetRow}>
+              <span className={styles.sheetName}>{tt(key, label)}</span>
+              <span className={styles.sheetFormats}>
+                {[['csv', 'export.asCsv', 'Spreadsheet'],
+                  ['xlsx', 'export.asXlsx', 'Excel'],
+                  ['docx', 'export.asDocx', 'Word'],
+                  ['pdf', 'export.asPdf', 'PDF']].map(([as, fkey, flabel]) => (
+                  <button key={as} type="button" className={styles.ghost} disabled={busy}
+                          onClick={() => save(
+                            `${API}/tournament/${tournamentId}/export/?sheet=${sheet}&as=${as}`,
+                            `${sheet}.${as}`)}>
+                    <LuDownload aria-hidden="true" /> {tt(fkey, flabel)}
+                  </button>
+                ))}
+              </span>
+            </div>
           ))}
         </div>
       </div>

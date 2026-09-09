@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import TournamentAccess from '@/components/view-tournament/access/TournamentAccess';
+import PrizePlan from '@/components/tournament-prizes/PrizePlan';
 import { LuTrophy, LuUsers, LuCalendar, LuShuffle, LuPencil, LuEye, LuTriangleAlert, LuX, LuChevronUp, LuChevronDown } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -92,6 +93,7 @@ const ManageContent = ({
   const [retryKey, setRetryKey] = useState(0);
   const [toast, setToast] = useState(null);
   const [busyAction, setBusyAction] = useState(null); // 'bracket' | 'cancel' | null
+  const [prizesOpen, setPrizesOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   // How the field is seeded when the bracket is drawn. Defaults to results,
@@ -228,27 +230,14 @@ const ManageContent = ({
       setBusyAction(null);
     }
   };
-  const handleDistributePrizes = async () => {
+  // Opens the plan rather than paying. This press used to send the money on
+  // the spot: wallets credited, nothing shown first, and the organiser reading
+  // the transactions afterwards to find out what had moved. The server refuses
+  // without `confirm` now, and the confirmation is a list of names and amounts
+  // rather than a question.
+  const handleDistributePrizes = () => {
     if (!id || busyAction) return;
-    setBusyAction('prizes');
-    try {
-      await ventFetch(API.TOURNAMENT.DISTRIBUTE_PRIZES(id), {
-        method: 'POST',
-        token
-      });
-      showToast(tt("msg.prizesDistributedToWinners", "Prizes distributed to winners."));
-      setRetryKey(k => k + 1);
-    } catch (err) {
-      if (err?.code === 'ALREADY_DISTRIBUTED') {
-        showToast(tt("msg.prizesHaveAlreadyBeenDistributed", "Prizes have already been distributed for this tournament."));
-      } else if (err?.code === 'STATE_CONFLICT') {
-        showToast(apiMessage(tt, err, "api.prizesCanOnlyBeDistributed", "Prizes can only be distributed once the tournament is completed."));
-      } else {
-        showToast(apiMessage(tt, err, "api.couldNotDistributePrizes", "Could not distribute prizes."));
-      }
-    } finally {
-      setBusyAction(null);
-    }
+    setPrizesOpen(true);
   };
   const status = tournamentStatus(tournament);
   const statusLabel = STATUS_LABELS[status] || 'Upcoming';
@@ -389,12 +378,22 @@ const ManageContent = ({
                     <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tx("Close Registration & Generate Bracket")}
                   </button>
                   {status === 'completed' && <button className={`${styles.btn} goldBTN`} onClick={handleDistributePrizes} disabled={!!busyAction}>
-                      <LuTrophy /> {busyAction === 'prizes' ? tx("Distributing…") : tx("Distribute Prizes")}
+                      <LuTrophy /> {tt("prizes.open", "Prizes")}
                     </button>}
                   <button className={`${styles.btn} ${styles.dangerBtn}`} onClick={openCancelModal} disabled={!!busyAction}>
                     <LuX /> {tt("ui.cancel.refund.336c", "Cancel & Refund")}
                   </button>
                 </div>
+
+                {prizesOpen && <PrizePlan
+                  tournamentRef={id}
+                  token={token}
+                  showToast={showToast}
+                  onClose={paid => {
+                    setPrizesOpen(false);
+                    if (paid) setRetryKey(k => k + 1);
+                  }}
+                />}
               </div>
 
               {/* Registrations */}

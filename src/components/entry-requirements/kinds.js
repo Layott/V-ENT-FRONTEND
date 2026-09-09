@@ -17,6 +17,8 @@ export const KIND_LABELS = {
   social_follow: ['req.kind.socialFollow', 'Follow these accounts'],
   download: ['req.kind.download', 'Download something and give us a detail from it'],
   custom_field: ['req.kind.customField', 'Answer a question'],
+  penalty_points: ['req.kind.penaltyPoints', 'Be under a penalty point limit'],
+  ranking: ['req.kind.ranking', 'Be inside or outside a ranking position'],
   partner_verified: ['req.kind.partnerVerified', 'A partner confirms the account'],
 };
 
