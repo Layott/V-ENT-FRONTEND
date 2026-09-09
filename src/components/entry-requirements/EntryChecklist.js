@@ -36,6 +36,16 @@ const REASONS = {
   game_account: ['req.why.gameAccount', 'Connect your {game} account on your profile first.'],
   game_details: ['req.why.gameDetails', 'Add your in-game name for {game} on your profile first.'],
   team_logo: ['req.why.teamLogo', 'Your team needs a logo before it can enter.'],
+  penalty_points: ['req.why.penaltyPoints',
+    'This tournament is for players with {limit} penalty points or fewer, and you have {points}.'],
+  penalty_points_team: ['req.why.penaltyPointsTeam',
+    'This tournament is for teams with {limit} penalty points or fewer, and yours has {points}.'],
+  ranking_top: ['req.why.rankingTop',
+    'This tournament is for players in the top {position}, and you are {rank}.'],
+  ranking_below: ['req.why.rankingBelow',
+    'This tournament is for players outside the top {position}.'],
+  ranking_unranked: ['req.why.rankingUnranked',
+    'This tournament is for ranked players, and you have not completed a ranked match yet.'],
   pending: ['req.why.pending', 'Waiting for the organiser to check this.'],
 };
 

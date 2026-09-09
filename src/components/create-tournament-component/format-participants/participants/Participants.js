@@ -7,6 +7,16 @@ import { FiInfo } from "react-icons/fi";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './participants.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { useFormatShape, countRule as ruleFrom } from '@/lib/formatCatalogue';
+import { plannedCount, plannedSeats } from '../tournament-format/TournamentFormat';
+// Who may register, in words rather than the raw option value. It read
+// "Participants limited to teams." in English on every language of the site.
+const ACCESS = {
+  teams: { name: 'Teams', blurb: 'Only teams can register for this tournament.' },
+  individuals: { name: 'Individuals', blurb: 'Only single players can register.' },
+  both: { name: 'Both', blurb: 'Teams and single players can both register.' },
+};
+
 const Participants = ({
   formData = {},
   updateFormData
@@ -19,45 +29,40 @@ const Participants = ({
   const [maxIndividuals, setMaxIndividuals] = useState(formData?.max_number_of_participants || '');
   const [error, setError] = useState('');
 
-  // What each format actually needs, rather than one parity rule applied to all
-  // of them and described as if it were single elimination's.
+  // What this format actually needs, read from the catalogue that enforces it
+  // rather than from a copy kept here.
   //
-  // Single elimination pairs everybody off, so an odd count leaves somebody
-  // without an opponent in round one. Round robin plays everybody against
-  // everybody and does not care. Swiss pairs by record and gives the odd one
-  // out a bye. Battle royale puts them all in at once.
-  const format = String(formData?.bracket_type || '').toLowerCase().replace(/[\s-]+/g, '_');
-  const countRule = (() => {
-    if (format === 'single_elimination' || format === 'double_elimination') {
-      return {
-        min: 2,
-        evenOnly: true,
-        note: tt('ui.count.knockout', 'An even number, so nobody is left without an opponent in the first round.'),
-      };
-    }
-    if (format === 'round_robin') {
-      return {
-        min: 3,
-        evenOnly: false,
-        note: tt('ui.count.roundRobin', 'Everyone plays everyone, so any number from three upwards works.'),
-      };
-    }
-    if (format === 'swiss') {
-      return {
-        min: 4,
-        evenOnly: false,
-        note: tt('ui.count.swiss', 'Four or more. With an odd number, one player gets a bye each round.'),
-      };
-    }
-    if (format === 'battle_royale') {
-      return {
-        min: 2,
-        evenOnly: false,
-        note: tt('ui.count.battleRoyale', 'Everyone plays at once, so any number from two upwards works.'),
-      };
-    }
-    return { min: 2, evenOnly: false, note: tt('ui.count.any', 'Two or more.') };
-  })();
+  // The copy was wrong for four of the eight formats. It tested
+  // `format === 'swiss'` while the value normalises to `swiss_system`, so the
+  // Swiss rule never fired once; double elimination was given a minimum of 2
+  // against the catalogue's 4; round robin's ceiling of 20 was not here at
+  // all, so 40 teams could be typed into a form that would build 780 fixtures;
+  // and gsl, aggregate_2v2 and ladder had no rule of any kind.
+  const { entry } = useFormatShape(
+    formData?.bracket_type, plannedCount(formData), plannedSeats(formData));
+  const rule = ruleFrom(entry);
+  const fill = (key, fallback, values) => {
+    let out = tt(key, fallback);
+    Object.entries(values).forEach(([name, value]) => {
+      out = out.split(`{${name}}`).join(String(value));
+    });
+    return out;
+  };
+  const countRule = {
+    min: rule.min,
+    max: rule.max,
+    evenOnly: rule.evenOnly,
+    note: !rule.known
+      ? tt('ui.count.any', 'Two or more.')
+      : rule.evenOnly
+        ? fill('ui.count.evenFrom',
+            'An even number, {min} or more, so nobody is left without an opponent in the first round.',
+            { min: rule.min })
+        : rule.max
+          ? fill('ui.count.between', 'Between {min} and {max}.',
+              { min: rule.min, max: rule.max })
+          : fill('ui.count.from', '{min} or more.', { min: rule.min }),
+  };
 
   const validateCount = (value, fieldName) => {
     const n = parseInt(value, 10);
@@ -67,6 +72,13 @@ const Participants = ({
     }
     if (n < countRule.min) {
       setError(tt('msg.atLeastN', 'Enter at least {n}.').replace('{n}', countRule.min));
+      return false;
+    }
+    // A ceiling the catalogue holds and the form never did. Round robin past
+    // twenty is 190 fixtures, which the server refuses after somebody has
+    // filled in the whole wizard.
+    if (countRule.max && n > countRule.max) {
+      setError(fill('msg.atMostN', 'Enter at most {n}.', { n: countRule.max }));
       return false;
     }
     if (countRule.evenOnly && n % 2 !== 0) {
@@ -117,8 +129,8 @@ const Participants = ({
           {['teams', 'individuals', 'both'].map(option => <div key={option} className={`${createTournamentStyles.oneThirdBoxContainer} ${selectedOption === option ? createTournamentStyles.activeBox : ''}`} onClick={() => handleOptionClick(option)}>
               <div className={`${createTournamentStyles.option} ${selectedOption === option ? createTournamentStyles.selected : ''}`}></div>
               <div className={createTournamentStyles.boxTextContainer}>
-                <h4>{option.charAt(0).toUpperCase() + option.slice(1)}</h4>
-                <p>{`Participants limited to ${option}.`}</p>
+                <h4>{tt(`ui.access.${option}`, ACCESS[option].name)}</h4>
+                <p>{tt(`ui.access.${option}.blurb`, ACCESS[option].blurb)}</p>
               </div>
             </div>)}
         </div>

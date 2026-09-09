@@ -1,36 +1,41 @@
 'use client';
 
-// Picking the shape of the competition.
+// Picking the shape of the competition, and being told what that shape is.
 //
-// Two things were wrong here and both were invisible.
+// The list itself used to be written out here: eight entries with their names,
+// their blurbs and their notes, beside a catalogue on the server that already
+// held all three. Twice that copy has drifted. It offered five of the eight
+// formats, so three the platform runs could not be chosen at all; and
+// `swiss-system` resolved to nothing, so a Swiss tournament had no format.
 //
-// The list offered five formats. The backend supports eight, and the three it
-// left out - GSL groups, the aggregate 2v2 league, and the ladder - could not be
-// chosen at all, so a structure the platform runs could not be built on the
-// screen that exists to build them. The CEO asked for exactly this: "make sure
-// it is easy for a user to create any tournament structure they want."
+// So the LIST comes from `/tournament/formats/` now, which is the same
+// catalogue that validates the save. What stays here is the wording, because a
+// sentence built in Python cannot be translated: each key has an entry in the
+// dictionary and the server's English is the fallback. A format added on the
+// server therefore appears here the same day, in English, rather than not
+// appearing at all.
 //
-// And nothing explained what a format does once it is picked. `formats.py` has
-// carried a `notes` line for every one of them since it was written, the API
-// serialises it, and no screen has ever shown it. The note is the sentence that
-// stops somebody running a 16-team round robin by accident and discovering at
-// the venue that it is 120 matches.
-//
-// The notes live here rather than being read from the API, because a sentence
-// built in Python cannot be translated. They go through `tt()` with the English
-// as the fallback, and the same text sits in fr and pt.
+// The second half is the spec line this screen never answered: "Tournament
+// structure, explained automatically once the bracket is chosen." Naming the
+// format is not explaining it. Twelve teams in a round robin is sixty-six
+// fixtures over eleven rounds, and that is the number that decides whether the
+// afternoon is long enough. It is computed on the server by the same rules the
+// bracket generator uses, and `tests_structure.py` builds real brackets to
+// prove the two agree.
 
 import { useState } from 'react';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './tournament-format.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { formatKey } from '@/lib/formatLabel';
+import { useFormatShape, structureLines } from '@/lib/formatCatalogue';
 
-// The value stored is what the backend accepts. The hyphenated spellings are
-// what this screen has always saved, and `normalise_bracket` reads both, so
-// they stay as they are rather than orphaning every draft in progress.
-const FORMATS = [
-  {
-    value: 'single-elimination',
+// One English string per format, which is both the dictionary fallback and
+// what the screen shows if the catalogue cannot be reached. The keys are the
+// catalogue's own, and `tools/check-format-catalogue.py` fails if the two
+// lists stop matching.
+const WORDS = {
+  single_elimination: {
     nameKey: 'ui.single.elimination.7001',
     name: 'Single Elimination',
     blurbKey: 'ui.participants.eliminated.after.one.d1bb',
@@ -38,8 +43,7 @@ const FORMATS = [
     noteKey: 'format.noteSingle',
     note: 'A field that is not a power of two needs byes in the first round, which the strongest seeds should receive.',
   },
-  {
-    value: 'double-elimination',
+  double_elimination: {
     nameKey: 'ui.double.elimination.261d',
     name: 'Double Elimination',
     blurbKey: 'ui.participants.must.lose.twice.a411',
@@ -47,8 +51,7 @@ const FORMATS = [
     noteKey: 'format.noteDouble',
     note: 'Twice the matches of single elimination for the same field, so it needs roughly twice the time. The grand final is where organisers differ: a bracket reset gives the lower-bracket side the two wins the upper-bracket side has already earned.',
   },
-  {
-    value: 'round-robin',
+  round_robin: {
     nameKey: 'ui.round.robin.b15b',
     name: 'Round Robin',
     blurbKey: 'ui.participants.play.against.all.f6db',
@@ -56,8 +59,7 @@ const FORMATS = [
     noteKey: 'format.noteRoundRobin',
     note: 'Matches grow with the square of the field: eight teams is 28 matches, sixteen is 120. Past about twelve it wants splitting into groups.',
   },
-  {
-    value: 'swiss-system',
+  swiss: {
     nameKey: 'ui.swiss.system.f479',
     name: 'Swiss System',
     blurbKey: 'ui.participants.compete.set.number.7eef',
@@ -65,8 +67,7 @@ const FORMATS = [
     noteKey: 'format.noteSwiss',
     note: 'Rounds are usually enough to separate the field: 5 rounds for 16, 6 for 32. Teams reaching three wins advance and three losses are out, which is the shape a Counter-Strike major runs.',
   },
-  {
-    value: 'battle-royale',
+  battle_royale: {
     nameKey: 'ui.battle.royale.853c',
     name: 'Battle Royale',
     blurbKey: 'ui.many.players.teams.compete.89b8',
@@ -74,8 +75,7 @@ const FORMATS = [
     noteKey: 'format.noteBattleRoyale',
     note: 'The placement table is the argument: PUBG Mobile pays 10 for a win down to 1 for eighth, Free Fire pays 12 down to 1 for tenth. Both pay 1 a kill. Set it to match the game being played.',
   },
-  {
-    value: 'gsl',
+  gsl: {
     nameKey: 'format.gsl',
     name: 'GSL Groups',
     blurbKey: 'format.gslBlurb',
@@ -83,8 +83,7 @@ const FORMATS = [
     noteKey: 'format.noteGsl',
     note: 'Five matches per group of four: two openers, a winners match, a losers match, and a decider. It feeds a knockout stage.',
   },
-  {
-    value: 'aggregate_2v2',
+  aggregate_2v2: {
     nameKey: 'format.aggregate',
     name: 'Aggregate League',
     blurbKey: 'format.aggregateBlurb',
@@ -92,8 +91,7 @@ const FORMATS = [
     noteKey: 'format.noteAggregate',
     note: 'The EA FC league format V-ENT already runs. A tie is TOTAL GOALS across the per-player fixtures, never a win count.',
   },
-  {
-    value: 'ladder',
+  ladder: {
     nameKey: 'format.ladder',
     name: 'Ladder',
     blurbKey: 'format.ladderBlurb',
@@ -101,18 +99,53 @@ const FORMATS = [
     noteKey: 'format.noteLadder',
     note: 'Good for a season that runs for weeks rather than an afternoon.',
   },
+};
+
+// The order they are offered in, when the catalogue cannot be reached. The
+// server's own order wins whenever it answers.
+const OFFLINE_ORDER = [
+  'single_elimination', 'double_elimination', 'round_robin', 'swiss',
+  'battle_royale', 'gsl', 'aggregate_2v2', 'ladder',
 ];
+
+/** However many entrants this tournament is being built for, or 0. */
+export const plannedCount = (formData = {}) => {
+  const raw = formData.number_of_teams ?? formData.max_number_of_participants;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) ? n : 0;
+};
+
+/** How many players each side fields inside one fixture. */
+export const plannedSeats = (formData = {}) => {
+  const n = parseInt(formData.players_per_team ?? formData.team_size, 10);
+  return Number.isFinite(n) && n > 1 ? n : 1;
+};
 
 const TournamentFormat = ({ formData = {}, updateFormData }) => {
   const tt = useT();
   const [selectedOption, setSelectedOption] = useState(formData.bracket_type || null);
 
-  const handleOptionClick = option => {
-    setSelectedOption(option);
-    updateFormData('bracket_type', option);
+  const chosenKey = formatKey(selectedOption);
+  const { entry, entries } = useFormatShape(
+    selectedOption, plannedCount(formData), plannedSeats(formData));
+
+  const handleOptionClick = key => {
+    setSelectedOption(key);
+    updateFormData('bracket_type', key);
   };
 
-  const chosen = FORMATS.find(f => f.value === selectedOption);
+  // The catalogue when it answers, the offline list when it does not. Either
+  // way each row is a catalogue key with the words attached.
+  const rows = (entries && entries.length
+    ? entries.map(f => ({ key: f.key, label: f.label, summary: f.summary }))
+    : OFFLINE_ORDER.map(key => ({ key, label: '', summary: '' }))
+  ).filter(row => WORDS[row.key] || row.label);
+
+  const lines = structureLines(tt, entry);
+  const words = chosenKey ? WORDS[chosenKey] : null;
+  const noteText = words
+    ? tt(words.noteKey, entry?.notes || words.note)
+    : (entry?.notes || '');
 
   return <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
@@ -121,26 +154,37 @@ const TournamentFormat = ({ formData = {}, updateFormData }) => {
         </h3>
 
         <div className={createTournamentStyles.twoBoxesInRowContainer}>
-          {FORMATS.map(format => <div
-            key={format.value}
-            className={`${createTournamentStyles.halfBoxContainer} ${selectedOption === format.value ? createTournamentStyles.activeBox : ''}`}
-            onClick={() => handleOptionClick(format.value)}>
-              <div className={`${createTournamentStyles.option} ${selectedOption === format.value ? createTournamentStyles.selected : ''}`} />
-              <div className={createTournamentStyles.boxTextContainer}>
-                <h4>{tt(format.nameKey, format.name)}</h4>
-                <p>{tt(format.blurbKey, format.blurb)}</p>
-              </div>
-            </div>)}
+          {rows.map(row => {
+            const w = WORDS[row.key];
+            const isChosen = chosenKey === row.key;
+            return <div
+              key={row.key}
+              className={`${createTournamentStyles.halfBoxContainer} ${isChosen ? createTournamentStyles.activeBox : ''}`}
+              onClick={() => handleOptionClick(row.key)}>
+                <div className={`${createTournamentStyles.option} ${isChosen ? createTournamentStyles.selected : ''}`} />
+                <div className={createTournamentStyles.boxTextContainer}>
+                  <h4>{w ? tt(w.nameKey, row.label || w.name) : row.label}</h4>
+                  <p>{w ? tt(w.blurbKey, row.summary || w.blurb) : row.summary}</p>
+                </div>
+              </div>;
+          })}
         </div>
 
         {/* What picking it actually commits the organiser to. Shown only once
             something is chosen, because eight notes at once is a wall nobody
             reads and the one that matters is the one they just picked. */}
-        {chosen && <div className={styles.note}>
+        {(noteText || lines.length > 0) && <div className={styles.note}>
           <span className={styles.noteLabel}>
             {tt('format.whatThisMeans', 'What this means')}
           </span>
-          <p className={styles.noteBody}>{tt(chosen.noteKey, chosen.note)}</p>
+          {noteText && <p className={styles.noteBody}>{noteText}</p>}
+
+          {/* The arithmetic, once there is an entrant count to do it with.
+              Before that there is nothing honest to say about the size of the
+              thing, so nothing is said. */}
+          {lines.length > 0 && <ul className={styles.structure}>
+            {lines.map(line => <li key={line} className={styles.structureLine}>{line}</li>)}
+          </ul>}
         </div>}
       </div>
     </div>;

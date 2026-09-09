@@ -27,3 +27,24 @@
   color: rgba(255, 255, 255, 0.75);
   margin: 0;
 }
+
+/* The computed structure: rounds, matches, byes.
+
+   A plain list with no markers. Numbers in a row of facts do not need a
+   bullet, a tick or a stripe to be read as a list, and this project bans all
+   three. Spacing carries it. */
+.structure {
+  list-style: none;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.structureLine {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+}

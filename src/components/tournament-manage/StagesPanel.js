@@ -23,9 +23,18 @@ import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatLabel } from '@/lib/formatLabel';
 import { useT } from '@/i18n/LanguageProvider';
+import DateField from '@/components/date-field/DateField';
+import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import styles from './stages-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
+
+// The English behind each place, which is also the dictionary fallback.
+const PLACE_WORDS = {
+  online: 'Online',
+  physical: 'At a venue',
+  hybrid: 'Online and at a venue',
+};
 
 export default function StagesPanel({ tournamentRef, token, canManage = false, showToast }) {
   const tt = useT();
@@ -86,12 +95,26 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       .replace('{n}', row.advances);
   };
 
+  const blank = format => ({
+    format, label: '', advances: format === 'round_robin' ? 4 : 0, groups: 0,
+    starts_at: '', ends_at: '', place_type: '', location: '', virtual_link: '',
+  });
+
   const startEditing = () => setDraft(
     rows.length
-      ? rows.map(r => ({ format: r.format, label: r.label,
-                         advances: r.advances, groups: r.groups }))
-      : [{ format: 'round_robin', label: '', advances: 4, groups: 0 },
-         { format: 'single_elimination', label: '', advances: 0, groups: 0 }]);
+      ? rows.map(r => ({
+          format: r.format, label: r.label,
+          advances: r.advances, groups: r.groups,
+          // Read back what was SET on the stage, never what it inherited.
+          // Loading the inherited value would silently turn "same as the
+          // tournament" into a fixed copy the next time anybody pressed Save.
+          starts_at: isoToLocalInput(r.starts_at) || '',
+          ends_at: isoToLocalInput(r.ends_at) || '',
+          place_type: r.place_type || '',
+          location: r.location || '',
+          virtual_link: r.virtual_link || '',
+        }))
+      : [blank('round_robin'), blank('single_elimination')]);
 
   const setField = (index, key, value) => setDraft(prev => prev.map(
     (row, i) => (i === index ? { ...row, [key]: value } : row)));
@@ -104,8 +127,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     return next;
   });
 
-  const addRow = () => setDraft(prev => [
-    ...prev, { format: 'single_elimination', label: '', advances: 0, groups: 0 }]);
+  const addRow = () => setDraft(prev => [...prev, blank('single_elimination')]);
 
   const removeRow = index => setDraft(prev => prev.filter((_, i) => i !== index));
 
@@ -123,6 +145,15 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             label: r.label || '',
             advances: Number(r.advances) || 0,
             groups: Number(r.groups) || 0,
+            // Converted before it leaves the browser, which is the only side
+            // that knows which zone the organiser typed in. Sent as typed, an
+            // organiser in Lagos setting 10:00 creates a stage that starts at
+            // 11:00 their time.
+            starts_at: r.starts_at ? localInputToISO(r.starts_at) : '',
+            ends_at: r.ends_at ? localInputToISO(r.ends_at) : '',
+            place_type: r.place_type || '',
+            location: r.location || '',
+            virtual_link: r.virtual_link || '',
           })),
         }),
       });
@@ -270,6 +301,24 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
               <div className={styles.stageText}>
                 <span className={styles.stageName}>{row.label}</span>
                 <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
+                {(row.when?.is_its_own || row.where?.is_its_own) && (
+                  <span className={styles.stageWhen}>
+                    {[
+                      row.when?.is_its_own && row.when?.starts_at
+                        // Named zone, because this is something people have to
+                        // BE somewhere for: a reader in Accra seeing 10:00 for
+                        // a Lagos stage and arriving at their own 10:00 is an
+                        // hour late.
+                        ? formatWithZone(row.when.starts_at)
+                        : null,
+                      row.where?.is_its_own
+                        ? (row.where.location
+                          || tt(`stages.place.${row.where.place_type}`,
+                                PLACE_WORDS[row.where.place_type] || ''))
+                        : null,
+                    ].filter(Boolean).join(', ')}
+                  </span>
+                )}
                 {row.status === 'complete' && (
                   <span className={styles.done}>
                     {tt('stages.complete', 'Closed. {n} went through.')
@@ -364,6 +413,60 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                          onChange={e => setField(index, 'advances', e.target.value)} />
                 </label>
               </div>
+
+              {/* When and where this stage is played. Left blank it is the
+                  tournament's own, which is what most stages want and why
+                  nothing here is required. */}
+              <div className={styles.fields}>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.startsAt', 'Starts')}</span>
+                  <DateField
+                    withTime
+                    value={row.starts_at}
+                    disabled={busy}
+                    onChange={e => setField(index, 'starts_at', e.target.value)}
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.endsAt', 'Ends')}</span>
+                  <DateField
+                    withTime
+                    value={row.ends_at}
+                    disabled={busy}
+                    onChange={e => setField(index, 'ends_at', e.target.value)}
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.placeType', 'Played')}</span>
+                  <select className={styles.select} value={row.place_type} disabled={busy}
+                          onChange={e => setField(index, 'place_type', e.target.value)}>
+                    <option value="">{tt('stages.placeSame', 'Same as the tournament')}</option>
+                    <option value="online">{tt('stages.place.online', 'Online')}</option>
+                    <option value="physical">{tt('stages.place.physical', 'At a venue')}</option>
+                    <option value="hybrid">{tt('stages.place.hybrid', 'Both')}</option>
+                  </select>
+                </label>
+              </div>
+
+              {(row.place_type === 'physical' || row.place_type === 'hybrid') && (
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.location', 'Where')}</span>
+                  <input className={styles.text} value={row.location} disabled={busy}
+                         placeholder={tt('stages.locationPlaceholder', 'The address people turn up to')}
+                         onChange={e => setField(index, 'location', e.target.value)} />
+                </label>
+              )}
+
+              {(row.place_type === 'online' || row.place_type === 'hybrid') && (
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.virtualLink', 'The link')}</span>
+                  <input className={styles.text} value={row.virtual_link} disabled={busy}
+                         placeholder="https://"
+                         onChange={e => setField(index, 'virtual_link', e.target.value)} />
+                </label>
+              )}
             </div>
           ))}
 
