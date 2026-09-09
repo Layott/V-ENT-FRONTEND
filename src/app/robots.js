@@ -65,6 +65,10 @@ export default function robots() {
           '/s/',              // a shortened link is a second address for a page
                               // that already has one; indexing it splits the
                               // ranking between the two
+          '/marketplace/create',     // a form, and only its author may submit it
+          '/marketplace/dashboard',  // somebody's own listings and their numbers
+          '/marketplace/purchase',   // an order: what somebody bought, from whom,
+                                     // for how much. Personal by definition
         ],
       },
       {
@@ -75,7 +79,8 @@ export default function robots() {
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
                    '/events/check-in/', '/s/', '/studio/', '/production',
-                   '/run-of-show/', '/logout'],
+                   '/run-of-show/', '/logout', '/marketplace/create',
+                   '/marketplace/dashboard', '/marketplace/purchase'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

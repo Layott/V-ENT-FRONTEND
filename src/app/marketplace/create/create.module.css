@@ -427,3 +427,14 @@
   .mediaGrid { grid-template-columns: repeat(5, 1fr); }
   .optionGrid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* One field and its label, stacked.
+
+   The original form laid every field out by hand; a listing form whose fields
+   come from the server needs one shape it can repeat, and this is it. */
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}

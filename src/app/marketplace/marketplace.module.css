@@ -741,3 +741,23 @@
     min-width: 44px;
   }
 }
+
+/* 44px under a thumb, on every pressable thing on this page.
+
+   The design was drawn for a desktop and the chips came out at 33 and 34 px on
+   a real phone: measured on the emulator at 412 CSS px, not guessed at from a
+   resized window. A chip somebody has to aim at is a chip they mis-tap, and
+   the filter row is exactly where somebody is tapping quickly. */
+@media (max-width: 900px) {
+  .tabBtn,
+  .catBtn,
+  .pageBtn {
+    min-height: 44px;
+  }
+
+  .heroSearchInput,
+  .priceInput,
+  .select {
+    min-height: 44px;
+  }
+}
