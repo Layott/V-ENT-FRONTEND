@@ -68,6 +68,10 @@ function ContentInner() {
   const [note, setNote] = useState('');
   const [alsoBan, setAlsoBan] = useState(false);
   const [removing, setRemoving] = useState(null);
+  // Withdrawing a licence is a decision about a photograph somebody consented
+  // to, recorded on the row with the wording they agreed to. It was the one
+  // control on this console that acted on a single press.
+  const [withdrawing, setWithdrawing] = useState(null);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -352,7 +356,7 @@ function ContentInner() {
                             </> : null}
                             {row.kind === 'gallery' && row.released ? <button type="button"
                                     className={`${shared.actBtn} ${shared.actView}`}
-                                    onClick={() => act('gallery', row.ref, 'revoke_release', 'withdrawn by an admin')}>
+                                    onClick={() => { setWithdrawing(row); setReason(''); }}>
                               {tt('adminContent.revoke', 'Withdraw the licence')}
                             </button> : null}
                             <button type="button" className={`${shared.actBtn} ${shared.actReject}`}
@@ -404,6 +408,36 @@ function ContentInner() {
             <button type="button" className={`${shared.actBtn} ${shared.actReject}`}
                     disabled={busy || !note.trim()} onClick={() => decide('action')}>
               {tt('adminContent.uphold', 'Act on it')}
+            </button>
+          </div>
+        </div>
+      </div> : null}
+
+      {withdrawing ? <div className={shared.modalOverlay}
+                          onClick={(e) => { if (e.target === e.currentTarget) setWithdrawing(null); }}>
+        <div className={shared.modal}>
+          <h3 className={shared.modalTitle}>
+            {tt('adminContent.withdrawTitle', 'Withdraw this licence?')}
+          </h3>
+          <p className={shared.modalSub}>
+            {tt('adminContent.withdrawSub', 'The picture stays where it is. V-ENT stops being allowed to use it in anything new, and the reason you give is written to the audit log with your name on it.')}
+          </p>
+          <input className={shared.modalInput} value={reason} maxLength={500}
+                 placeholder={tt('adminContent.withdrawWhy', 'Why the licence is being withdrawn')}
+                 onChange={(e) => setReason(e.target.value)} />
+          <div className={shared.modalActions}>
+            <button type="button" className={`${shared.actBtn} ${shared.actView}`}
+                    onClick={() => setWithdrawing(null)}>
+              {tt('ui.cancel', 'Cancel')}
+            </button>
+            <button type="button" className={`${shared.actBtn} ${shared.actReject}`}
+                    disabled={busy || !reason.trim()}
+                    onClick={async () => {
+                      const ok = await act('gallery', withdrawing.ref, 'revoke_release', reason.trim());
+                      if (ok) { setWithdrawing(null); setReason(''); }
+                    }}>
+              {busy ? tt('adminContent.withdrawing', 'Withdrawing...')
+                    : tt('adminContent.revoke', 'Withdraw the licence')}
             </button>
           </div>
         </div>
