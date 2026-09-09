@@ -38,6 +38,7 @@ export default function robots() {
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
           '/production',           // a personal list of what you run
+          '/logout',               // an action, not a page
           '/events/my-events',     // a personal list, including unlisted events
           '/my-stalls',            // your own stalls, your own orders and
                                    // the delivery addresses on them
@@ -74,7 +75,7 @@ export default function robots() {
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
                    '/events/check-in/', '/s/', '/studio/', '/production',
-                   '/run-of-show/'],
+                   '/run-of-show/', '/logout'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),
