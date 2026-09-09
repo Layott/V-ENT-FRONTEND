@@ -264,3 +264,27 @@
 .oauthButton:hover { background-color: #3a3b41; }
 
 .oauthButton:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Sending the reset code again. A quiet second action under the primary one,
+   filled rather than outlined, and a real 44px target on a phone. */
+.resendBtn {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.82);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.resendBtn:hover {
+  background: #33343a;
+}
+
+.resendBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

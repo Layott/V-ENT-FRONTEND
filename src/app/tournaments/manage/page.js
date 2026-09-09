@@ -22,6 +22,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
+import StagesPanel from '@/components/tournament-manage/StagesPanel';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
 import DiscordChannels from '@/components/discord/DiscordChannels';
@@ -361,7 +362,16 @@ const ManageContent = ({ slug }) => {
                   organiser deciding who is in. */}
               <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
             </>}
-            {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
+            {tab === 'brackets' && <>
+              {/* What shape the whole thing is, above the bracket it produces:
+                  groups into a playoff, Swiss into a top cut. The backend has
+                  composed tournaments out of stages since the catalogue learned
+                  which format can feed which, and no screen ever read it. */}
+              <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
+                           token={token} canManage={Boolean(access?.can_manage)}
+                           showToast={showToast} />
+              <BracketsPanel rounds={rounds} />
+            </>}
             {tab === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"
                               ownerRef={tournament.slug || tournament.tournament_id}

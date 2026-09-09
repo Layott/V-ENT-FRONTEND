@@ -376,3 +376,11 @@
     grid-template-columns: minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr) minmax(1fr, 1fr);
   }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .inviteNewMemberBTN {
+    min-height: 44px;
+  }
+}

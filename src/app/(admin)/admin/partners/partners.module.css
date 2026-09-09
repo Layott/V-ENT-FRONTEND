@@ -378,3 +378,27 @@
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* Asked before the address is removed. Sign-in that returns to it stops
+   working, so this is the one control here that takes two presses. */
+.confirmAsk {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  margin-left: auto;
+  max-width: 26ch;
+}
+
+.danger {
+  background-color: var(--v-ent-red);
+  border-radius: 7px;
+  padding: 5px 12px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.76rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.danger:hover { background-color: #c9161d; }
+.danger:disabled { opacity: 0.5; cursor: default; }

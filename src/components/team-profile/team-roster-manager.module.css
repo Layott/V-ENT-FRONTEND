@@ -183,3 +183,59 @@
   .ghost,
   .danger { flex: 1 1 auto; }
 }
+
+/* Handing the team over. The most consequential control here, so it sits in its
+   own surface rather than in a row, and it asks twice. */
+.handOver {
+  background: #2a2b30;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin: 1rem 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.handTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.handBtn {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #33343a;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.handBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.handConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.handAsk {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.quietBtn {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  cursor: pointer;
+}

@@ -212,3 +212,11 @@
   color: rgba(237, 28, 36, 0.85);
 }
 .dot { color: rgba(255, 255, 255, 0.3); }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .uploadBtn {
+    min-height: 44px;
+  }
+}

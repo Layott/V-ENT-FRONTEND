@@ -28,6 +28,7 @@ function statusBadgeClass(s) {
   if (s === 'upcoming') return shared.sActive;
   if (s === 'ongoing') return shared.sOngoing;
   if (s === 'cancelled') return shared.sCancelled;
+  if (s === 'deleted') return shared.sRejected;
   if (s === 'completed') return shared.sApproved;
   return shared.sDraft;
 }
@@ -39,7 +40,8 @@ const statusLabel = (tt, value) => {
     upcoming: tt('admin.eventUpcoming', 'Upcoming'),
     ongoing: tt('ui.ongoing.2e02', 'Ongoing'),
     completed: tt('ui.completed.1798', 'Completed'),
-    cancelled: tt('ui.cancelled.a1bf', 'Cancelled')
+    cancelled: tt('ui.cancelled.a1bf', 'Cancelled'),
+    deleted: tt('admin.deleted', 'Deleted')
   };
   return labels[String(value || '').toLowerCase()] || value || '-';
 };
@@ -107,6 +109,28 @@ function EventsInner() {
   useEffect(() => {
     setPage(1);
   }, [search, statusFilter, sortBy]);
+  // The event twin of restoreTournament, written in the same pass.
+  async function restoreEvent(row) {
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({ ...p, [row.id]: true }));
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${row.slug || row.id}/restore/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}` },
+        });
+      const data = await res.json();
+      if (data.status === 'success') {
+        toast.push(tt('admin.restored', 'Restored. It is back where it was.'), 'success');
+        fetchEvents();
+      } else toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    }
+    setActionLoading(p => ({ ...p, [row.id]: false }));
+  }
+
   async function saveEvent(id, payload) {
     const token = localStorage.getItem('adminToken');
     setActionLoading(p => ({
@@ -164,6 +188,9 @@ function EventsInner() {
                 <option value="ongoing">{tt("ui.ongoing.2e02", "Ongoing")}</option>
                 <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
                 <option value="cancelled">{tt("ui.cancelled.a1bf", "Cancelled")}</option>
+                {/* The bin. Same tab on both consoles, because the two are one
+                    job with different nouns. */}
+                <option value="deleted">{tt("admin.deleted", "Deleted")}</option>
               </select>
               <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="-created_at">{tt("ui.newest.first.a40b", "Newest First")}</option>
@@ -211,8 +238,15 @@ function EventsInner() {
                             <Link href={`/admin/events/${e.slug || e.id}`} className={`${shared.actBtn} ${shared.actView}`}>
                               {tt("admin.manage", "Manage")}
                             </Link>
-                            {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(e)} disabled={!!actionLoading[e.id]} title={tt("admin.editEventAsAdmin", "Edit this event as an admin. The organiser is told it changed.")}>
+                            {mayEdit && !e.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(e)} disabled={!!actionLoading[e.id]} title={tt("admin.editEventAsAdmin", "Edit this event as an admin. The organiser is told it changed.")}>
                               {tt("admin.editTournament", "Edit")}
+                            </button>}
+                            {e.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                                    onClick={() => restoreEvent(e)}
+                                    disabled={!!actionLoading[e.id]}
+                                    title={tt('admin.restoreWho', 'Deleted by {who}')
+                                      .replace('{who}', e.deleted_by || '-')}>
+                              {tt('admin.restore', 'Restore')}
                             </button>}
                           </div>
                         </td>

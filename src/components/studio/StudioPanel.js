@@ -495,7 +495,15 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
       setCopied(elementKind);
       setTimeout(() => setCopied(''), 2000);
     } catch {
-      // Blocked outside a secure context. The URL is on screen and selectable.
+      // Blocked: outside a secure context, or the window does not have focus,
+      // which is the ordinary case when somebody copies from a second monitor.
+      //
+      // The row is opened rather than nothing happening, because the URL is
+      // only rendered while the row is open. The comment here used to claim it
+      // was "on screen and selectable", which was true only if it happened to
+      // be expanded already. A press that does nothing visible is the same as
+      // a dead button.
+      setOpenKind(elementKind);
     }
   };
 

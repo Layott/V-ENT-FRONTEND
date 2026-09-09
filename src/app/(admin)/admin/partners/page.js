@@ -215,6 +215,11 @@ function PartnersInner() {
     }
   };
 
+  // Asked before it happens. Removing the address a partner's sign-in returns
+  // to breaks that sign-in for everybody using it, and this was the one
+  // destructive control in the console that acted on a single press.
+  const [confirmRemove, setConfirmRemove] = useState('');
+
   const removeRedirect = async uri => {
     setBusy(true);
     try {
@@ -572,10 +577,30 @@ function PartnersInner() {
                 ) : (open.redirect_uris || []).map(uri => (
                   <div key={uri} className={styles.redirectRow}>
                     <code className={styles.redirectUri}>{uri}</code>
-                    <button type="button" className={styles.ghost} disabled={busy}
-                            onClick={() => removeRedirect(uri)}>
-                      {tt('admin.partners.redirectRemove', 'Remove')}
-                    </button>
+                    {confirmRemove === uri ? (
+                      <>
+                        <span className={styles.confirmAsk}>
+                          {tt('admin.partners.redirectRemoveAsk',
+                            'Sign-in that returns here stops working. Remove it?')}
+                        </span>
+                        <button type="button" className={styles.danger} disabled={busy}
+                                onClick={async () => {
+                                  await removeRedirect(uri);
+                                  setConfirmRemove('');
+                                }}>
+                          {tt('admin.partners.redirectRemoveYes', 'Yes, remove it')}
+                        </button>
+                        <button type="button" className={styles.ghost} disabled={busy}
+                                onClick={() => setConfirmRemove('')}>
+                          {tt('ui.cancel.0f8e', 'Cancel')}
+                        </button>
+                      </>
+                    ) : (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              onClick={() => setConfirmRemove(uri)}>
+                        {tt('admin.partners.redirectRemove', 'Remove')}
+                      </button>
+                    )}
                   </div>
                 ))}
 

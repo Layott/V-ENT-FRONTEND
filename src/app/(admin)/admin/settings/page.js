@@ -55,10 +55,15 @@ function SettingsInner() {
   const toast = useAdminToast();
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  // A load that fails left `settings` null and `loading` false, so this page
+  // showed "Loading..." for ever with a toast that had already gone. Three
+  // admin pages had that exact shape in August; this was the fourth.
+  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const fetchSettings = useCallback(async () => {
     setLoading(true);
+    setError('');
     const token = localStorage.getItem('adminToken');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/settings/`, {
@@ -68,11 +73,15 @@ function SettingsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') setSettings(data.data);
+      // A refusal is not an exception, and this branch did nothing at all: the
+      // page sat on "Loading..." with no reason given.
+      else setError(apiMessage(tt, data, 'api.failedToLoadSettings',
+        'Could not load the settings.'));
     } catch {
-      toast.push(tt("msg.failedToLoadSettings", "Failed to load settings."), 'error');
+      setError(tt("msg.connectionError", "Connection error."));
     }
     setLoading(false);
-  }, [toast]);
+  }, [tt]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!authLoading && admin) fetchSettings();
   }, [authLoading, admin, fetchSettings]);
@@ -125,7 +134,14 @@ function SettingsInner() {
             </div>
           </div>
 
-          {loading || !settings ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : <div className={styles.grid}>
+          {error && !loading ? <div className={shared.card}>
+              <p className={shared.errorText}>{error}</p>
+              <button className={`${shared.actBtn} ${shared.actView}`}
+                      onClick={fetchSettings}>
+                {tt("ui.retry.9f5c", "Retry")}
+              </button>
+            </div>
+          : loading || !settings ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : <div className={styles.grid}>
               {/* Platform fees */}
               <div className={shared.card}>
                 <h2 className={styles.sectionTitle}>{tt("ui.platform.fees.8467", "Platform Fees")}</h2>

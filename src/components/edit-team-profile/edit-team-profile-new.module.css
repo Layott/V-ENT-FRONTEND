@@ -264,3 +264,11 @@
 }
 
 .saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .toggle {
+    min-height: 44px;
+  }
+}

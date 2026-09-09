@@ -232,6 +232,9 @@ export const PRIVATE_TITLES = {
   'user-profile': { en: 'Profile', fr: 'Profil', pt: 'Perfil' },
   partners: { en: 'Partners', fr: 'Partenaires', pt: 'Parceiros' },
   memberships: { en: 'My memberships', fr: 'Mes abonnements', pt: 'As minhas subscrições' },
+  // Signing out. Noindex like the rest of these: it is an action, not
+  // something anybody should reach from a search result.
+  logout: { en: 'Sign out', fr: 'Se déconnecter', pt: 'Terminar sessão' },
 };
 
 export const sectionCopy = (section, locale) => {

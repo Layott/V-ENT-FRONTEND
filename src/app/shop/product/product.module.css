@@ -795,3 +795,16 @@
 @media only screen and (min-width: 1440px) {
   .rightPaneContainer { padding: 2rem 2.5rem; }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .galleryNavBtn,
+  .colorChipDot,
+  .qtyBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

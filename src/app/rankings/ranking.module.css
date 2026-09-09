@@ -1075,3 +1075,23 @@
     gap: 0.5rem;
   }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .mobileExpandBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Measured on the emulator at 411 CSS px. Sized by padding, so the stylesheet
+   checker cannot see them; the device reported 28px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .actionBtn,
+  .tabBTN {
+    min-height: 44px;
+  }
+}

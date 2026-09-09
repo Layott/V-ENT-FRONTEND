@@ -941,3 +941,11 @@
   text-align: center;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .removeBtn {
+    min-height: 44px;
+  }
+}

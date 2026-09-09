@@ -21,6 +21,7 @@ function statusBadgeClass(s) {
   if (s === 'ongoing') return shared.sOngoing;
   if (s === 'draft') return shared.sDraft;
   if (s === 'cancelled') return shared.sCancelled;
+  if (s === 'deleted') return shared.sRejected;
   if (s === 'completed') return shared.sApproved;
   return shared.sDraft;
 }
@@ -93,6 +94,30 @@ function TournamentsInner() {
   useEffect(() => {
     setPage(1);
   }, [search, statusFilter, sortBy]);
+  // Putting a deleted tournament back. Admin only on the server too: an
+  // organiser who could delete and restore at will could hide something and
+  // return it with nothing recorded in between.
+  async function restoreTournament(row) {
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({ ...p, [row.id]: true }));
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/tournament/${row.slug || row.id}/restore/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}` },
+        });
+      const data = await res.json();
+      if (data.status === 'success') {
+        toast.push(tt('admin.restored', 'Restored. It is back where it was.'), 'success');
+        fetchTournaments();
+      } else toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    }
+    setActionLoading(p => ({ ...p, [row.id]: false }));
+  }
+
   async function cancelTournament(id) {
     const token = localStorage.getItem('adminToken');
     setActionLoading(p => ({
@@ -244,6 +269,10 @@ function TournamentsInner() {
                 <option value="ongoing">{tt("ui.ongoing.2e02", "Ongoing")}</option>
                 <option value="draft">{tt("ui.draft.23d3", "Draft")}</option>
                 <option value="cancelled">{tt("ui.cancelled.a1bf", "Cancelled")}</option>
+                {/* Deleted has a bucket. A row belonging to no tab has
+                    vanished rather than been filtered, which is how three
+                    cancelled tournaments were lost in August. */}
+                <option value="deleted">{tt("admin.deleted", "Deleted")}</option>
                 <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
               </select>
               <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
@@ -292,28 +321,43 @@ function TournamentsInner() {
                         </td>
                         <td>
                           <div className={shared.actGroup}>
-                            {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(t)} disabled={!!actionLoading[t.id]} title={tt("admin.editAsAdmin", "Edit this tournament as an admin. The organiser is told it changed.")}>
+                            {/* A deleted tournament offers nothing but its
+                                numbers and Restore. Found by walking the
+                                Deleted tab: it was still offering Edit, Score,
+                                DQ and Announce on a row that is not on the
+                                site, and announcing to the entrants of a
+                                deleted tournament is a message nobody can
+                                explain. The events console already did this;
+                                this is the half that was forgotten. */}
+                            {mayEdit && !t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(t)} disabled={!!actionLoading[t.id]} title={tt("admin.editAsAdmin", "Edit this tournament as an admin. The organiser is told it changed.")}>
                               {tt("admin.editTournament", "Edit")}
                             </button>}
-                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
+                            {!t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
                               {tt("ui.score.489f", "Score")}
-                            </button>
-                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
+                            </button>}
+                            {!t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
                               DQ
-                            </button>
+                            </button>}
                             <button className={`${shared.actBtn} ${shared.actView}`}
                                     onClick={() => setNumbersTarget(t)}
                                     title={tt('admin.tournamentNumbers', 'Entries, money and matches for this tournament')}>
                               {tt('admin.numbers', 'Numbers')}
                             </button>
-                            {mayAnnounce && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                            {mayAnnounce && !t.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
                                     onClick={() => setAnnounceTarget(t)}
                                     title={tt('admin.announceTitle', 'Tell everybody registered something')}>
                               {tt('admin.announce', 'Announce')}
                             </button>}
-                            {t.status !== 'cancelled' && t.status !== 'completed' && <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setCancelTarget(t)} disabled={!!actionLoading[t.id]}>
+                            {t.status !== 'cancelled' && t.status !== 'completed' && t.status !== 'deleted' && <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setCancelTarget(t)} disabled={!!actionLoading[t.id]}>
                                 {tt("ui.cancel.77df", "Cancel")}
                               </button>}
+                            {t.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                                    onClick={() => restoreTournament(t)}
+                                    disabled={!!actionLoading[t.id]}
+                                    title={tt('admin.restoreWho', 'Deleted by {who}')
+                                      .replace('{who}', t.deleted_by || '-')}>
+                              {tt('admin.restore', 'Restore')}
+                            </button>}
                           </div>
                         </td>
                       </tr>)}

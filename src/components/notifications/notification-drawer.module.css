@@ -229,3 +229,14 @@
 @media (prefers-reduced-motion: reduce) {
   .row, .headBtn, .closeBtn, .seeAll { transition: none; }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .closeBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

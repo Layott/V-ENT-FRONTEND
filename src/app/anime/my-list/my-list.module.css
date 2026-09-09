@@ -271,3 +271,18 @@
   background-repeat: no-repeat;
   background-position: right 0.65rem center;
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .continueBtn {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .removeBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

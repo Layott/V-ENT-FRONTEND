@@ -704,3 +704,24 @@
 @media only screen and (min-width: 1440px) {
   .cardGrid { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .primaryBtn,
+  .secondaryBtn,
+  .clearBtn,
+  .skeletonTabPill,
+  .skeletonFilterPill {
+    min-height: 44px;
+  }
+}
+
+/* Measured on the emulator at 411 CSS px, not inferred from this file.
+   These are sized by their padding, so the stylesheet checker cannot see
+   them; the device reported 36px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .tabBtn {
+    min-height: 44px;
+  }
+}

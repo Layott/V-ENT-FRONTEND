@@ -496,3 +496,12 @@
   color: rgba(255, 255, 255, 0.65);
   font-weight: var(--fw-medium);
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .heroPrimaryBtn,
+  .heroSecondaryBtn {
+    min-height: 44px;
+  }
+}

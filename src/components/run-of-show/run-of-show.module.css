@@ -503,3 +503,11 @@
 .roleChipOn .roleCount {
   color: rgba(19, 19, 22, 0.55);
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .roleChip {
+    min-height: 44px;
+  }
+}
