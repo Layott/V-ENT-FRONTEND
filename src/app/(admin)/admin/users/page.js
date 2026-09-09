@@ -40,6 +40,12 @@ const STATUSES = [{
   // option nothing could ask.
   value: 'premium',
   label: 'Premium'
+}, {
+  // Everybody who pressed "I want premium" while there was no price set. The
+  // list is the answer to the question the refusal used to send people to a
+  // member of staff with.
+  value: 'wants_premium',
+  label: 'Wants premium'
 }];
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -296,6 +302,11 @@ function UsersInner() {
                               two is the same bug in slower motion. */}
                           {u.is_premium && <span className={`${shared.badge} ${shared.sApproved}`}>
                               {tt('adminUser.premium', 'Premium')}
+                            </span>}
+                          {!u.is_premium && u.wants_premium && <span className={`${shared.badge} ${shared.sPending}`}
+                                title={u.wants_premium.surface || ''}>
+                              {tt('adminUser.wantsPremium', 'Wants premium')}
+                              {u.wants_premium.times > 1 ? ` ${u.wants_premium.times}` : ''}
                             </span>}
                         </td>
                         <td className={shared.hideMobile}>

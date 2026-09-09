@@ -15,6 +15,7 @@
 // paying it cannot disagree.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { LuTrophy, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
@@ -285,7 +286,11 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
           // Told before the effort, not after it. The control is not rendered
           // live to be refused on press.
           <p className={styles.hint}>
-            {tt('prizes.autoPremium', 'Paying automatically at a time you set is a premium feature. Ask a V-ENT admin to turn premium on for this account.')}
+            {tt('prizes.autoPremium', 'Paying automatically at a time you set is a premium feature.')}
+            {' '}
+            <Link href="/premium" className={styles.hintLink}>
+              {tt('premium.seeWhatItCosts', 'See what premium costs')}
+            </Link>
           </p>
         )}
       </div>

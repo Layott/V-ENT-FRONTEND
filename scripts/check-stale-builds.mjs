@@ -23,7 +23,7 @@
  */
 import { execSync } from 'node:child_process';
 import { readdirSync, rmSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -211,4 +211,10 @@ function main() {
   return 1;
 }
 
-process.exit(main());
+// Run only when this file IS the command. Without the guard, importing
+// `listeningPorts` from here runs the whole cleaner as a side effect, which is
+// exactly what `check-before-build.mjs` did on its first run: it printed this
+// script's self-test and never reached its own.
+const invokedDirectly = process.argv[1]
+  && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (invokedDirectly) process.exit(main());

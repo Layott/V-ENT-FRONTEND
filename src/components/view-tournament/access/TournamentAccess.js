@@ -13,6 +13,7 @@
 // happens to them is being pasted into a WhatsApp message one at a time.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { LuCheck, LuCopy, LuDownload, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { downloadWithToken } from '@/lib/download';
@@ -30,6 +31,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [premiumBlocked, setPremiumBlocked] = useState(false);
   const [notice, setNotice] = useState('');
   const [howMany, setHowMany] = useState('8');
   const [copied, setCopied] = useState('');
@@ -143,8 +145,11 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
     try {
       const problem = await downloadWithToken(url, token, fallbackName);
       if (problem === 'PREMIUM_REQUIRED') {
+        // Refused, and told where to go about it. The old sentence ended at
+        // "ask a V-ENT admin", which is a dead end with instructions.
         setError(tt('api.PREMIUM_REQUIRED',
-          'That is a premium feature. Ask a V-ENT admin to turn premium on for this account.'));
+          'That is a premium feature. Open the premium page to see what it costs.'));
+        setPremiumBlocked(true);
       } else if (problem) {
         setError(tt('export.failed', 'That file could not be downloaded.'));
       }
@@ -301,7 +306,15 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
         </div>
       </div>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error}>
+        {error}
+        {premiumBlocked ? <>
+          {' '}
+          <Link href="/premium" className={styles.errorLink}>
+            {tt('premium.seeWhatItCosts', 'See what premium costs')}
+          </Link>
+        </> : null}
+      </p>}
       {notice && <p className={styles.notice}>{notice}</p>}
     </section>
   );

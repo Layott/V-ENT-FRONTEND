@@ -452,3 +452,16 @@
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.6);
 }
+
+/* Where the refusal goes. A link rather than a sentence naming a person to go
+   and find: the reader can act on this one. */
+.lockedLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.4rem;
+  color: var(--v-ent-gold);
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}

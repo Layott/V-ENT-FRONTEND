@@ -168,6 +168,32 @@ function SettingsInner() {
                 </div>
               </div>
 
+              {/* What premium costs. Zero means it is not on sale, and the
+                  offer page says so and records who wanted it, rather than
+                  telling anybody to come and find an admin. */}
+              <div className={shared.card}>
+                <h2 className={styles.sectionTitle}>{tt('adminSettings.premiumTitle', 'Premium')}</h2>
+                <p className={styles.sectionSub}>
+                  {tt('adminSettings.premiumSub', 'What a V-ENT premium subscription costs, in VENT COINS. Leave a price at 0 and premium is not on sale: the offer page says so and records who asked for it.')}
+                </p>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt('adminSettings.premiumMonthly', 'Monthly (VC)')}</span>
+                  </label>
+                  <input type="number" min="0" className={styles.input}
+                         value={settings.premium?.price_vc_monthly ?? 0}
+                         onChange={e => patch('premium', 'price_vc_monthly', parseInt(e.target.value || '0', 10))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt('adminSettings.premiumYearly', 'Yearly (VC)')}</span>
+                  </label>
+                  <input type="number" min="0" className={styles.input}
+                         value={settings.premium?.price_vc_yearly ?? 0}
+                         onChange={e => patch('premium', 'price_vc_yearly', parseInt(e.target.value || '0', 10))} />
+                </div>
+              </div>
+
               {/* Feature flags */}
               <div className={shared.card}>
                 <h2 className={styles.sectionTitle}>{tt("ui.feature.flags.4f5a", "Feature Flags")}<InfoTip id="adminFeatureFlags" /></h2>
