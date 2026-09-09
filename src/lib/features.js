@@ -37,7 +37,13 @@ export const KYC_REQUIRED = false;
  */
 export const COMING_SOON_ROUTES = new Set([
   '/anime',
-  '/marketplace',
+  // '/marketplace' left this list on 9 September 2026: Vermillion City is
+  // BUILT. It is still closed, and that is now decided by ONE answer rather
+  // than by this list as well - `feature_flags.marketplace_enabled`, which the
+  // API publishes as the AND of the console's module switch and the server's
+  // `MARKETPLACE_ENABLED`. Leaving it here too would have been a third switch,
+  // and a third switch is how the nav ends up saying Coming Soon over a page
+  // that works, which is the exact drift this file was written to stop.
   '/shop',
   '/wager',
 ]);
