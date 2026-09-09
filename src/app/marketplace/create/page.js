@@ -244,7 +244,10 @@ const CreateListing = () => {
                 <div className={styles.panel}>
                   <p className={styles.panelTitle}>{tt('mk.step2', 'What it costs')}</p>
 
-                  {uses.map(field => {
+                  {/* `tags` is in every kind's `uses`, and it has its own
+                      box below with room to type one per line. Rendering it
+                      from the loop as well asked for it twice. */}
+                  {uses.filter(field => field !== 'tags').map(field => {
                     const words = FIELD_WORDS[field] || [`mk.f.${field}`, field];
                     const label = tt(words[0], words[1])
                       + (required.includes(field) ? '' : ` ${tt('mk.optional', '(optional)')}`);
@@ -349,7 +352,15 @@ const CreateListing = () => {
                           {tt((FIELD_WORDS[f] || [])[0] || `mk.f.${f}`,
                               (FIELD_WORDS[f] || [])[1] || f)}
                         </span>
-                        <span className={styles.reviewValue}>{String(form[f])}</span>
+                        <span className={styles.reviewValue}>
+                          {/* A chosen option is shown as the WORD, not as the
+                              key it is stored under. "hourly" on a review
+                              screen is the server's vocabulary leaking into
+                              somebody's last look before they publish. */}
+                          {['price_kind', 'delivery', 'condition'].includes(f)
+                            ? tt(`mk.opt.${form[f]}`, String(form[f]))
+                            : String(form[f])}
+                        </span>
                       </div>
                     ))}
                     {files.length > 0 && (

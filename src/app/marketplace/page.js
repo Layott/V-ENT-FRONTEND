@@ -370,7 +370,12 @@ const MarketplaceInner = () => {
                           <span className={styles.cardPriceUnit}>VC</span>
                         </div>
                         <div className={styles.sellerMini}>
-                          <UserChip user={l.seller} size={24}
+                          {/* `link={false}`: the whole card is already a link,
+                              and an anchor inside an anchor is invalid markup
+                              that React hydrates into something nobody
+                              intended. The seller's own page is one tap away
+                              from the listing. */}
+                          <UserChip user={l.seller} size={24} link={false}
                                     nameClassName={styles.sellerHandle} />
                           {l.seller_record?.rating && (
                             <span className={styles.sellerRating}>
