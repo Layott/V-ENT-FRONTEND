@@ -204,3 +204,14 @@
 
 .error { color: #e5636a; font-size: 0.85rem; line-height: 1.5; }
 .notice { color: var(--v-ent-success-light, #66bb6a); font-size: 0.85rem; }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .copyBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

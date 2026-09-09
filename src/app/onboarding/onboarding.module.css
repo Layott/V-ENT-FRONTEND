@@ -403,3 +403,13 @@
   color: rgba(255, 255, 255, 0.4);
   margin-top: 0.4rem;
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .smallBtn,
+  .ghostBtn,
+  .primaryBtn {
+    min-height: 44px;
+  }
+}

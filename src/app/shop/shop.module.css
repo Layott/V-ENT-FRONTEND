@@ -755,3 +755,21 @@
   .rightPaneContainer { padding: 2rem 2.5rem; }
   .heroTitle { font-size: var(--desktop-h1-size); }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .iconBtn,
+  .cartBtn,
+  .newsletterBtn {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .heroNavBtn,
+  .wishlistBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

@@ -270,3 +270,12 @@
   font-size: 0.62rem;
   white-space: nowrap;
 }
+
+/* Measured on the emulator at 411 CSS px, not inferred from this file.
+   These are sized by their padding, so the stylesheet checker cannot see
+   them; the device reported 36px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .signInLink {
+    min-height: 44px;
+  }
+}

@@ -551,3 +551,19 @@
   }
   .layout { grid-template-columns: 280px 1fr 320px; }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .btn {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .scoreBtn,
+  .toggle {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

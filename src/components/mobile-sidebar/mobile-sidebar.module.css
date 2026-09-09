@@ -265,3 +265,12 @@
 /* The way in, first in the menu for somebody with no account. Colour and
    weight rather than an outline. */
 .signInItem a { color: var(--v-ent-red, #ED1C24); font-weight: 600; }
+
+/* Measured on the emulator at 411 CSS px, not inferred from this file.
+   These are sized by their padding, so the stylesheet checker cannot see
+   them; the device reported 33px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .subLink {
+    min-height: 44px;
+  }
+}

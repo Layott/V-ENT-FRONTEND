@@ -555,3 +555,13 @@
   .inviteActions { }
   .inviteAccept, .inviteDecline { flex: 1 1 auto; }
 }
+
+/* Measured on the emulator at 411 CSS px. Sized by padding, so the stylesheet
+   checker cannot see them; the device reported 28 to 36px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .actionBtn,
+  .tabBTN,
+  .createTeamBTN {
+    min-height: 44px;
+  }
+}

@@ -214,3 +214,11 @@
 .deleteBTN:hover { background-color: #c9161d; }
 
 .deleteBTN:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .deleteBTN {
+    min-height: 44px;
+  }
+}

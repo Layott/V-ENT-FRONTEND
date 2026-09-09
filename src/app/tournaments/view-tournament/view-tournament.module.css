@@ -1578,3 +1578,18 @@
 .runOfShowLink:hover {
   background-color: rgba(255, 255, 255, 0.14);
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .primaryBtn {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .socialBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
