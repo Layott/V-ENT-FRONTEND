@@ -204,6 +204,10 @@ function main() {
   console.log(`\n${stale.length} stale dev build directory(s), ${gb} GB`);
   if (clean) return 0;
   console.log('Run with --clean to remove them. Nothing being served is touched.');
+  // LAST, because check-all reads the last line and the debt ledger takes
+  // its number from it. A friendly sentence printed after the count is how
+  // a checker ends up recording no number at all.
+  console.log(`${stale.length} stale dev build directory(s), ${gb} GB`);
   return 1;
 }
 
