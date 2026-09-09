@@ -51,8 +51,22 @@ function health(dir) {
   return { ok: true, why: `${entries.length} entries` };
 }
 
-/** The binary a build actually runs. Its absence is the failure itself. */
-const NEXT_BIN = join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next');
+/**
+ * Known files deep inside a package that a build actually opens.
+ *
+ * Counting empty directories is too weak, and that is recorded rather than
+ * guessed: on 8 September `next` had its package.json back and was still
+ * missing `dist/compiled/jest-worker/processChild.js`, and the build failed on
+ * exactly that file. A partially gutted package looks healthy to any check
+ * that only asks whether the folder has anything in it.
+ */
+const DEEP_FILES = [
+  ['next', 'dist/bin/next'],
+  ['next', 'dist/compiled/jest-worker/processChild.js'],
+  ['next', 'dist/server/next-server.js'],
+  ['react', 'index.js'],
+  ['react-dom', 'index.js'],
+];
 
 function selfTest() {
   const cases = [
@@ -63,17 +77,36 @@ function selfTest() {
     { name: 'scripts/ has no package.json, so it reads as gutted',
       dir: join(ROOT, 'scripts'), expect: false },
   ];
+
+  // Declared BEFORE the loop that adds to them. Written the other way round
+  // first, which only passed because nothing was missing: the moment a file
+  // actually went, `failuresDeep += 1` would have thrown a ReferenceError from
+  // the temporal dead zone instead of reporting the fault it exists to report.
   let failures = 0;
+  let failuresDeep = 0;
+
+  // The deep-file probe, which is the half that catches a PARTIALLY gutted
+  // package: on 8 September `next` had its package.json back and was still
+  // missing dist/compiled/jest-worker/processChild.js. A folder-is-not-empty
+  // check reads clean on that, and the build still fails.
+  for (const [name, rel] of DEEP_FILES) {
+    const there = existsSync(join(ROOT, 'node_modules', name, ...rel.split('/')));
+    if (!there) failuresDeep += 1;
+    console.log(`${there ? 'ok  ' : 'FAIL'}: ${name}/${rel} is present`);
+  }
+
   for (const one of cases) {
     const got = health(one.dir).ok;
     const ok = got === one.expect;
     if (!ok) failures += 1;
     console.log(`${ok ? 'ok  ' : 'FAIL'}: ${one.name}`);
   }
-  console.log(failures === 0
-    ? `${cases.length} self-test case(s) pass`
-    : `${failures} self-test case(s) FAILED`);
-  return failures === 0 ? 0 : 1;
+  const total = failures + failuresDeep;
+  const count = cases.length + DEEP_FILES.length;
+  console.log(total === 0
+    ? `${count} self-test case(s) pass`
+    : `${total} self-test case(s) FAILED`);
+  return total === 0 ? 0 : 1;
 }
 
 if (process.argv.includes('--self-test')) process.exit(selfTest());
@@ -87,8 +120,12 @@ for (const name of packages) {
   if (!state.ok) broken.push(`${name}: ${state.why}`);
 }
 
-if (existsSync(join(ROOT, 'node_modules', 'next')) && !existsSync(NEXT_BIN)) {
-  broken.push('next: the bin a build runs is not there');
+for (const [name, rel] of DEEP_FILES) {
+  const pkg = join(ROOT, 'node_modules', name);
+  if (!existsSync(pkg)) continue;            // already reported above
+  if (!existsSync(join(pkg, ...rel.split('/')))) {
+    broken.push(`${name}: ${rel} is not there`);
+  }
 }
 
 if (broken.length) {
