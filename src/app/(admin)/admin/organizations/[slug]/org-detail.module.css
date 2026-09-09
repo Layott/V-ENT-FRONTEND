@@ -22,3 +22,13 @@
 
 .credit { color: var(--v-ent-success); font-weight: var(--fw-bold); }
 .debit { color: var(--v-ent-red); font-weight: var(--fw-bold); }
+
+/* The reason premium was given, in the admin's own words. Set in normal case:
+   the label style beside it is uppercase, and a sentence somebody typed read
+   back at them in capitals looks like the page is shouting it. */
+.premiumNote {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+}

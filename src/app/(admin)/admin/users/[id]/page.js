@@ -56,6 +56,8 @@ function UserDetailInner() {
   // users LIST asked properly: two surfaces, one job, one of them built.
   const [banOpen, setBanOpen] = useState(false);
   const [banReason, setBanReason] = useState('');
+  const [premiumOpen, setPremiumOpen] = useState(false);
+  const [premiumNote, setPremiumNote] = useState('');
   const [resetOpen, setResetOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTyped, setDeleteTyped] = useState('');
@@ -117,6 +119,12 @@ function UserDetailInner() {
       payload = {
         ban: act === 'ban',
         reason: body?.reason || ''
+      };
+    } else if (act === 'premium' || act === 'unpremium') {
+      url = `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/premium/`;
+      payload = {
+        premium: act === 'premium',
+        note: body?.note || ''
       };
     } else if (act === 'role') {
       url = `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/role/`;
@@ -233,6 +241,19 @@ function UserDetailInner() {
                   onClick={() => { setBanOpen(true); setBanReason(''); }}>
                   {tt("ui.ban.bfa1", "Ban")}
                 </button>}
+              {/* Only to somebody who may actually do it. A control that is
+                  rendered and then refused is the fault this project bans by
+                  name; `permissions` comes from the same ROLE_PERMISSIONS
+                  table the endpoint checks, so the two cannot disagree. */}
+              {admin?.permissions?.grant_premium && (u?.is_premium
+                ? <button className={`${shared.actBtn} ${shared.actView}`}
+                          onClick={() => action('unpremium')}>
+                    {tt('adminUser.takePremium', 'Take premium back')}
+                  </button>
+                : <button className={`${shared.actBtn} ${shared.actApprove}`}
+                          onClick={() => { setPremiumOpen(true); setPremiumNote(''); }}>
+                    {tt('adminUser.givePremium', 'Give premium')}
+                  </button>)}
               <button className={`${shared.actBtn} ${shared.actReject}`}
                       onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
                 {tt('adminUser.delete', 'Delete account')}
@@ -285,6 +306,22 @@ function UserDetailInner() {
                       <span className={`${shared.badge} ${u.role === 'admin' ? shared.roleAdmin : u.role === 'organizer' ? shared.roleOrganizer : shared.roleUser}`}>
                         {u.role || 'user'}
                       </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className={styles.label}>{tt('adminUser.premium', 'Premium')}</p>
+                    <p className={styles.value}>
+                      <span className={`${shared.badge} ${u.is_premium ? shared.sApproved : shared.sDraft}`}>
+                        {u.is_premium
+                          ? tt('adminUser.premiumOn', 'On')
+                          : tt('adminUser.premiumOff', 'Off')}
+                      </span>
+                      {/* The reason, beside the answer. It is the thing
+                          somebody is looking for when they open this page
+                          asking why an account has paid features. */}
+                      {u.is_premium && u.premium_note && (
+                        <span className={styles.premiumNote}> {u.premium_note}</span>
+                      )}
                     </p>
                   </div>
                   <div>
@@ -444,6 +481,39 @@ function UserDetailInner() {
         </div>}
 
       {/* Send notification modal */}
+      {/* Premium, with the reason in the same press. A note added afterwards
+          is a note nobody adds, and "why does this account have premium" is
+          the question the field exists to answer. */}
+      {premiumOpen && <div className={shared.modalOverlay} onClick={(e) => {
+        if (e.target === e.currentTarget) setPremiumOpen(false);
+      }}>
+          <div className={shared.modal}>
+            <p className={shared.modalTitle}>
+              {tt('adminUser.premiumTitle', 'Give this account premium?')}
+            </p>
+            <p className={shared.modalSub}>
+              {tt('adminUser.premiumSub', 'They get every premium feature straight away, at no charge. Say why, so the next person reading this knows.')}
+            </p>
+            <input className={shared.modalInput} value={premiumNote} autoFocus
+                   placeholder={tt('adminUser.premiumPlaceholder', 'Why? For example: partner for the Rivalry season')}
+                   onChange={(e) => setPremiumNote(e.target.value)} />
+            <div className={shared.modalActions}>
+              <button className={`${shared.actBtn} ${shared.actView}`}
+                      onClick={() => setPremiumOpen(false)}>
+                {tt('ui.cancel.0f8e', 'Cancel')}
+              </button>
+              <button className={`${shared.actBtn} ${shared.actApprove}`}
+                      disabled={!premiumNote.trim()}
+                      onClick={async () => {
+                        const ok = await action('premium', { note: premiumNote.trim() });
+                        if (ok) setPremiumOpen(false);
+                      }}>
+                {tt('adminUser.premiumConfirm', 'Give premium')}
+              </button>
+            </div>
+          </div>
+        </div>}
+
       {banOpen && <div className={shared.modalOverlay} onClick={(e) => {
         if (e.target === e.currentTarget) setBanOpen(false);
       }}>

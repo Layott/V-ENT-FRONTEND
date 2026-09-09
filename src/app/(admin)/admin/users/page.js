@@ -33,6 +33,13 @@ const STATUSES = [{
 }, {
   value: 'kyc_pending',
   label: 'KYC Pending'
+}, {
+  // Not a status of the account, but the question somebody actually opens
+  // this page to ask: who has premium, and did we mean to give it to them.
+  // The endpoint has answered it since the control shipped; without this
+  // option nothing could ask.
+  value: 'premium',
+  label: 'Premium'
 }];
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -282,6 +289,14 @@ function UsersInner() {
                           <span className={`${shared.badge} ${statusBadgeClass(u.status)}`}>
                             {u.status?.replace('_', ' ')}
                           </span>
+                          {/* Premium is a second fact about the same account
+                              rather than a status, so it sits beside the badge
+                              instead of replacing it. On the row as well as on
+                              the detail page: a field that lands on one of the
+                              two is the same bug in slower motion. */}
+                          {u.is_premium && <span className={`${shared.badge} ${shared.sApproved}`}>
+                              {tt('adminUser.premium', 'Premium')}
+                            </span>}
                         </td>
                         <td className={shared.hideMobile}>
                           {u.wallet_vc ? Number(u.wallet_vc).toLocaleString() : '0'}
