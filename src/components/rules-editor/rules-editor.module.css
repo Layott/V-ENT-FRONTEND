@@ -121,6 +121,10 @@
 .chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  /* A pill somebody has to hit on a phone. The padding sets how it looks, the
+     min-height sets whether a thumb lands on it. */
+  min-height: 44px;
   gap: 0.3rem;
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
@@ -135,6 +139,13 @@
 .chip:hover {
   background-color: rgba(255, 255, 255, 0.16);
   color: #fff;
+}
+
+/* The one currently taken. Fill and text colour, never a ring. */
+.chipOn {
+  background-color: var(--v-ent-success);
+  color: #10231a;
+  font-weight: 600;
 }
 
 /* Tie-breakers, in order */

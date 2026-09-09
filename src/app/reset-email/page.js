@@ -32,6 +32,48 @@ const ResetEmail = () => {
       inputsRef.current[index - 1].focus();
     }
   };
+  // Sending the code again.
+  //
+  // `auth/resend-forgot-password-token/` has existed since the reset flow was
+  // written and no screen called it, so somebody whose code never arrived, or
+  // who let it expire, had to start the whole flow again from the beginning.
+  const [resending, setResending] = useState(false);
+  const handleResend = async () => {
+    const email = typeof window !== 'undefined'
+      ? localStorage.getItem('forgotPasswordEmail') : '';
+    if (!email) {
+      setSnackbarMessage(tt('msg.emailNotFoundPleaseTry',
+        'Email not found. Please try again from the Forgot Password page.'));
+      setSnackbarType('error');
+      setOpen(true);
+      return;
+    }
+    setResending(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/resend-forgot-password-token/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setSnackbarMessage(tt('reset.codeResent', 'A new code is on its way to your email.'));
+        setSnackbarType('success');
+      } else {
+        setSnackbarMessage(apiMessage(tt, data, 'api.couldNotResendCode',
+          'That code could not be sent again. Try once more in a moment.'));
+        setSnackbarType('error');
+      }
+    } catch {
+      setSnackbarMessage(tt('api.couldNotResendCode',
+        'That code could not be sent again. Try once more in a moment.'));
+      setSnackbarType('error');
+    } finally {
+      setOpen(true);
+      setResending(false);
+    }
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     const token = values.join('');
@@ -121,9 +163,23 @@ const ResetEmail = () => {
             {tt("ui.submit.2dac", "Submit")}
           </button>
 
+          <button type="button" className={generalStyles.resendBtn}
+            onClick={handleResend} disabled={resending}>
+            {resending
+              ? tt('reset.resending', 'Sending...')
+              : tt('reset.resendCode', 'Send the code again')}
+          </button>
+
           </form>
+              {/* This used to read "Didn't get the code? Resend Code" and
+                  link back to /forgot-password, which resends nothing: it
+                  makes somebody type the address they just typed. Resending
+                  is the button above now, so this link says what it is
+                  really for, which is correcting a wrong address. Two
+                  controls for one job, one of which does not do it, is
+                  worse than one. */}
               <div className={generalStyles.formHelperContainer}>
-                  <p>{tt("ui.didn't.get.code.7ee6", "Didn't get the code?")} <Link href={'/forgot-password'}>{tt("ui.resend.code.a57d", "Resend Code")}</Link></p>
+                  <p>{tt('reset.wrongAddress', 'Wrong email address?')} <Link href={'/forgot-password'}>{tt('reset.startAgain', 'Start again')}</Link></p>
               </div>
 
               <div className={generalStyles.formHelperContainer}>

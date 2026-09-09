@@ -16,6 +16,7 @@ import styles from './my-tickets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import VendorOrders from '@/components/vendor-orders/VendorOrders';
 const STATUS_FILTERS = [{
   id: 'all'
 }, {
@@ -361,6 +362,11 @@ const MyTickets = () => {
                   </button>;
           })}
             </div>}
+
+          {/* What was bought at the stalls, under the tickets, because it is
+              the same question asked at the same moment: what am I holding for
+              this event. It draws nothing when there are no orders. */}
+          <VendorOrders token={session?.user?.sessionToken} />
         </div>
       </main>
 

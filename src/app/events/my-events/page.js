@@ -20,6 +20,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import DeleteControl from '@/components/delete-control/DeleteControl';
 import styles from './my-events.module.css';
 import { useT, useLanguage } from '@/i18n/LanguageProvider';
 const MyEventsPage = () => {
@@ -139,6 +140,19 @@ const MyEventsPage = () => {
                         <Link href={`/events/${ref}/manage`} className={styles.ghostBtn}>
                           {tt('myEvents.manage', 'Influencers & promos')}
                         </Link>
+                        {/* Only the person who made it, or the owner of the
+                            organisation it belongs to. Somebody added to run
+                            the door for one day is not somebody who removes
+                            the event, which is what permissions.py has said
+                            since it was written. */}
+                        {row.role !== 'manager' && (
+                          <DeleteControl kind="event" reference={ref}
+                                         name={row.name} token={token}
+                                         className={styles.ghostBtn}
+                                         onDeleted={() => {
+                                           setRows(all => all.filter(x => x.id !== row.id));
+                                         }} />
+                        )}
                       </div>
                     </div>;
           })}

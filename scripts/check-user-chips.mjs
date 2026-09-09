@@ -99,6 +99,39 @@ function rendersName(line) {
 }
 
 /**
+ * Inside a `<select>` option, where a chip is not possible.
+ *
+ * HTML says an `<option>` holds text and nothing else: a browser drops any
+ * element put inside one. So a name in an option is the only way to write it,
+ * and reporting it is asking for a change that cannot be made. That is a false
+ * positive, and a checker with false positives is one somebody eventually
+ * satisfies by breaking working code.
+ *
+ * Looks back a few lines rather than at one, because the name is usually on
+ * its own line under the opening tag. It stops at a `</option>`, so a span
+ * written after an option closes is still caught.
+ */
+function insideOption(lines, index) {
+  // What is open at the name's own position, first. An option written on one
+  // line closes on that line too, so a lookback alone misses it - which the
+  // self-test caught, in the fixture written to prove the opposite case.
+  const text = lines[index];
+  const at = text.search(NAME_EXPR);
+  const before = at >= 0 ? text.slice(0, at) : text;
+  if (before.lastIndexOf('<option') > before.lastIndexOf('</option>')) return true;
+  if (before.includes('</option>')) return false;
+
+  for (let i = index - 1; i >= Math.max(0, index - 4); i -= 1) {
+    const line = lines[i];
+    const close = line.lastIndexOf('</option>');
+    const open = line.lastIndexOf('<option');
+    if (open > close) return true;
+    if (close > -1) return false;
+  }
+  return false;
+}
+
+/**
  * `@{x.username}`: a handle, which is a different thing from a name.
  *
  * The founder mark and the link belong to the NAME. A handle printed under a
@@ -149,6 +182,21 @@ function selfTest() {
       expect: 1,
     },
     {
+      name: 'a name inside a select option is not reportable: a chip cannot go there',
+      chipped: false,
+      src: ["<option key={m.id} value={m.user?.username}>",
+            "  {m.user?.full_name}",
+            "</option>"],
+      expect: 0,
+    },
+    {
+      name: 'a span written after an option closes is still caught',
+      chipped: false,
+      src: ["<option value=\"a\">{m.user?.full_name}</option>",
+            "<span>{other.author.full_name}</span>"],
+      expect: 1,
+    },
+    {
       name: 'an attribute is not a rendered name',
       chipped: false,
       src: ["<Avatar name={u.full_name} />"],
@@ -171,11 +219,12 @@ function selfTest() {
   let failures = 0;
   for (const one of cases) {
     let found = 0;
-    for (const line of one.src) {
-      if (!rendersName(line)) continue;
-      if (isHandle(line) && one.chipped) continue;
+    one.src.forEach((line, index) => {
+      if (!rendersName(line)) return;
+      if (isHandle(line) && one.chipped) return;
+      if (insideOption(one.src, index)) return;
       found += 1;
-    }
+    });
     const ok = found === one.expect;
     if (!ok) failures += 1;
     console.log(`${ok ? 'ok  ' : 'FAIL'}: ${one.name} (expected ${one.expect}, got ${found})`);
@@ -225,6 +274,7 @@ for (const file of walk(SRC)) {
     // `@{x.username}` is a handle. Beside a chipped name it is fine; with no
     // chip anywhere in the file it IS the name being shown, so it is not.
     if (isHandle(text) && chipped) return;
+    if (insideOption(lines, index)) return;
     const what = isHandle(text) ? 'shows a handle as the name' : 'renders a name';
     offenders.push(`${rel}:${index + 1} ${what}, without UserChip`);
   });

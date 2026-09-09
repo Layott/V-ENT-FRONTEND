@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuRotateCcw, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
+import { formatLabel } from '@/lib/formatLabel';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './rules-editor.module.css';
 
@@ -34,6 +35,12 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
+  // Every format's standard rules, from the server. `rules/reset/` can only
+  // put back the preset for the format this tournament already has, so without
+  // these an organiser who wanted a battle royale's placement table on a round
+  // robin had to type twenty rows by hand.
+  const [presets, setPresets] = useState(null);
+  const [picked, setPicked] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -56,6 +63,31 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
   }, [tournamentId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+
+  // Separate from the rules, and deliberately not blocking them: this is a
+  // convenience, and a tournament whose presets fail to load must still be
+  // editable.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/rule-presets/`);
+        const body = await res.json().catch(() => ({}));
+        if (alive && res.ok && body.status === 'success') setPresets(body.data);
+      } catch { /* the editor works without them */ }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  // Taking a preset does NOT save. The organiser sees what it did to every
+  // number first, and Save is still the thing that commits it.
+  const takePreset = key => {
+    const preset = presets?.presets?.[key];
+    if (!preset) return;
+    setRules({ ...preset });
+    setPicked(key);
+    setNote('');
+  };
 
   const set = (key, value) => setRules(prev => ({ ...prev, [key]: value }));
 
@@ -180,6 +212,35 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
           </button>
         )}
       </div>
+
+      {/* Starting from a standard set. Chips rather than a dropdown because
+          there are eight and the summary matters as much as the name. */}
+      {canEdit && !meta?.locked && presets?.formats?.length > 0 && (
+        <section className={styles.block}>
+          <h4 className={styles.blockTitle}>
+            {tt('rules.startFrom', 'Start from a standard set')}
+          </h4>
+          <p className={styles.hint}>
+            {tt('rules.startFromHint',
+              'Fills in the points, the tie-breakers and any placement table with what that format usually pays. Nothing is saved until you press Save, and saving one from another format also changes what this tournament is played as.')}
+          </p>
+          <div className={styles.presetRow}>
+            {presets.formats.map(f => (
+              <button key={f.key} type="button"
+                      className={`${styles.chip} ${picked === f.key ? styles.chipOn : ''}`}
+                      title={f.summary}
+                      onClick={() => takePreset(f.key)}>
+                {formatLabel(tt, f.key, f.label)}
+              </button>
+            ))}
+          </div>
+          {picked && (
+            <p className={styles.hint}>
+              {presets.formats.find(f => f.key === picked)?.summary}
+            </p>
+          )}
+        </section>
+      )}
 
       {meta?.locked && (
         <p className={styles.locked}>

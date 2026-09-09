@@ -10,6 +10,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import DeleteControl from '@/components/delete-control/DeleteControl';
 import { ventFetch, API, tokenFrom, toTournamentArray, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './my-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -312,6 +313,20 @@ const MyTournaments = () => {
                       {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`}>
                           <button className={`${styles.actionBtn} ${styles.manageBtn}`}><LuSettings /> {tt("ui.manage.bf58", "Manage")}</button>
                         </Link>}
+                      {/* Deleting a published tournament, which nothing on the
+                          platform could do: the only path was the draft one,
+                          which refuses anything published. Soft, so an admin
+                          can still see it and put it back. */}
+                      <DeleteControl kind="tournament"
+                                     reference={t?.slug || t?.id}
+                                     name={name} token={token}
+                                     className={styles.actionBtn}
+                                     onDeleted={() => {
+                                       setTournaments(all => all.filter(
+                                         x => (x?.id ?? x?.slug) !== (t?.id ?? t?.slug)));
+                                       setNote(tt('del.tournamentGone', 'Deleted. An admin can restore it.'));
+                                       setTimeout(() => setNote(''), 4000);
+                                     }} />
                     </div>
                   </div>;
           })}
