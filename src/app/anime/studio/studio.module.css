@@ -1,0 +1,238 @@
+/* The author's side of the anime module.
+   Built on the tournament console's shapes: filled surfaces, a radius scale
+   rather than one radius everywhere, and no strokes anywhere. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--fs-p-size-mobile);
+  text-decoration: none;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.25rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: var(--mobile-h2-size);
+  font-weight: var(--fw-extra-bold);
+  color: #fff;
+  line-height: 1.1;
+}
+
+.pageSub {
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 44rem;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  min-width: 0;      /* a grid child must be allowed to shrink or it clips */
+}
+
+.cardTitle {
+  margin: 0 0 0.75rem;
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.row,
+.rowActive {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.rowActive {
+  background-color: #33343a;
+  color: #fff;
+}
+
+.rowTitle {
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.rowMeta {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.4rem;
+}
+
+.input,
+.textarea {
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  min-height: 44px;
+  color: #fff;
+  font-size: var(--fs-p-size-mobile);
+  width: 100%;
+  max-width: 100%;
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0;
+}
+
+.primaryBtn,
+.quietBtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-mobile);
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 0.6rem;
+}
+
+.primaryBtn {
+  background-color: var(--v-ent-red);
+  color: #fff;
+}
+
+.quietBtn {
+  background-color: #33343a;
+  color: #fff;
+  margin-top: 0;
+}
+
+.primaryBtn:disabled,
+.quietBtn:disabled {
+  background-color: #3a3b41;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+}
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.skeleton {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  height: 220px;
+  margin-bottom: 1rem;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  background-color: #33343a;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  font-size: var(--fs-p-size-mobile);
+  z-index: 60;
+  max-width: calc(100vw - 2rem);
+}
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+    padding: 1.75rem 1.5rem 2rem;
+  }
+
+  .pageTitle {
+    font-size: var(--desktop-h5-size);
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem;
+  }
+}

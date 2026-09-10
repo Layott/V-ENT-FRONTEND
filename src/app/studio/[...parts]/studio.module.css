@@ -571,6 +571,18 @@
 
 .pgRow:nth-child(odd) { background: #26272b; }
 .pgTime { font-size: 22px; font-weight: 600; opacity: 0.85; }
+
+/* The day, above the time, on a programme that runs over more than one day.
+   Smaller and quieter: the time is what somebody in the hall is reading, the
+   day is only there so two days cannot be mistaken for one. */
+.pgDay {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 .pgName { font-size: 24px; font-weight: 600; }
 .pgRoom { font-size: 18px; opacity: 0.65; }
 

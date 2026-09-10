@@ -69,6 +69,14 @@ export default function robots() {
           '/marketplace/dashboard',  // somebody's own listings and their numbers
           '/marketplace/purchase',   // an order: what somebody bought, from whom,
                                      // for how much. Personal by definition
+          '/anime/read/',     // a chapter is the paid thing. The comic, its
+                              // synopsis and its chapter list are public and in
+                              // the sitemap; indexing the reader would rank an
+                              // address most readers are refused at
+          '/anime/room/',     // a room's token IS its invitation. Indexing one
+                              // posts the invitation publicly
+          '/anime/my-list',   // one reader's own place in every comic
+          '/anime/studio',    // an author's own unpublished work
         ],
       },
       {
@@ -80,7 +88,9 @@ export default function robots() {
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
                    '/events/check-in/', '/s/', '/studio/', '/production',
                    '/run-of-show/', '/logout', '/marketplace/create',
-                   '/marketplace/dashboard', '/marketplace/purchase'],
+                   '/marketplace/dashboard', '/marketplace/purchase',
+                   '/anime/read/', '/anime/room/', '/anime/my-list',
+                   '/anime/studio'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

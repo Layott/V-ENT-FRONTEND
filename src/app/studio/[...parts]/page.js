@@ -41,7 +41,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './studio.module.css';
 import {
-  place, clock, rivalryOf, tagOf, count, optIn,
+  place, clock, spansDays, dayOf, rivalryOf, tagOf, count, optIn,
   pickFixture, pickLeg, findPlayer, readFeed,
   secondsUntil, countdown, Face,
 } from '@/components/studio/elements/lib';
@@ -618,15 +618,25 @@ function NowNext({ data }) {
 }
 
 // The running order. The operator picks how many rows; the feed says which.
+//
+// A programme that runs over more than one day carries the day on each row.
+// Without it the wall at Lagos Anime Con read "09:00 PM After-party" and then
+// "12:00 PM Free Fire finals" below it, which is right - the finals are the
+// next day at noon - and looks like the list is broken. A single-day running
+// order still shows the time alone, because there the date is noise.
 function Programme({ payload, data }) {
   const rows = (data.programme || []).slice(0, Number(payload.limit) || 6);
   if (!rows.length) return null;
+  const withDays = spansDays(rows);
   return (
     <div className={styles.programme}>
       <div className={styles.pgTitle}>{payload.title || data.event?.name || 'Programme'}</div>
       {rows.map((p, i) => (
         <div key={i} className={styles.pgRow}>
-          <span className={styles.pgTime}>{clock(p.starts_at)}</span>
+          <span className={styles.pgTime}>
+            {withDays && <span className={styles.pgDay}>{dayOf(p.starts_at)}</span>}
+            {clock(p.starts_at)}
+          </span>
           <span className={styles.pgName}>{p.title}</span>
           <span className={styles.pgRoom}>{p.room || ''}</span>
         </div>
