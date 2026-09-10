@@ -385,14 +385,23 @@ export default function RunOfShow({ sheet, compact = false }) {
 
       {shown.length === 0 ? (
         <div className={styles.empty}>
+          {/* Two different nothings, and saying the wrong one is worse than
+              saying nothing. A day with no cues on it at all is not a filter
+              that matched nothing: found on the walk, where a new day with no
+              items read "Nothing on this day belongs to ." with the role name
+              empty and a full stop hanging off the end. */}
           <p className={styles.emptyLine}>
-            {tt('ros.noneForRole', 'Nothing on this day belongs to {role}.')
-              .replace('{role}', role)}
+            {role
+              ? tt('ros.noneForRole', 'Nothing on this day belongs to {role}.')
+                .replace('{role}', role)
+              : tt('ros.emptyDay', 'Nothing is on this day yet.')}
           </p>
-          <button type="button" className={styles.emptyAction}
-                  onClick={() => setRole('')}>
-            {tt('ros.showEverything', 'Show everything')}
-          </button>
+          {role ? (
+            <button type="button" className={styles.emptyAction}
+                    onClick={() => setRole('')}>
+              {tt('ros.showEverything', 'Show everything')}
+            </button>
+          ) : null}
         </div>
       ) : (
         <div className={styles.flow}>
