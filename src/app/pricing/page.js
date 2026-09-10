@@ -157,7 +157,14 @@ export default function Pricing() {
               {tt('pricing.testBody', 'The things that end up behind a price will be the things enough people rely on. So the most useful thing you can do right now is run a real tournament or a real event on it and tell us what got in your way.')}
             </p>
             <div className={styles.ctaRow}>
-              <Link href="/feedback" className={`${styles.ctaBtn} grnBTN`}>
+              {/* Eight of the things on this page are ALREADY switched off on
+                  a free account, and the page that says what they cost is the
+                  one somebody who just hit one of them needs. Named here so
+                  this page does not read as though nothing is gated yet. */}
+              <Link href="/premium" className={`${styles.ctaBtn} grnBTN`}>
+                {tt('premium.seeWhatItCosts', 'See what premium costs')}
+              </Link>
+              <Link href="/feedback" className={styles.ctaQuiet}>
                 {tt('pricing.giveFeedback', 'Send feedback')}
               </Link>
               <Link href="/tournaments" className={styles.ctaQuiet}>

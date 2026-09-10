@@ -15,6 +15,7 @@
 // offers fewer.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   LuArrowDown, LuArrowUp, LuCheck, LuPlus, LuX,
 } from 'react-icons/lu';
@@ -298,8 +299,13 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
                   {locked.map(spec => kindLabel(tt, spec.kind, spec.label)).join(', ')}
                 </span>
                 <span className={styles.lockedWhy}>
-                  {tt('req.premiumWhy', 'Ask a V-ENT admin to turn premium on for this account, and these become available on every tournament you run.')}
+                  {tt('req.premiumWhy', 'Turn premium on for this account and these become available on every tournament you run.')}
                 </span>
+                {/* A refusal that names a person to go and find is a dead end
+                    with instructions. This one goes somewhere that can act. */}
+                <Link href="/premium" className={styles.lockedLink}>
+                  {tt('premium.seeWhatItCosts', 'See what premium costs')}
+                </Link>
               </div>
             )}
 

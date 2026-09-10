@@ -88,6 +88,10 @@ export default async function sitemap() {
     // What V-ENT costs, and where to say what is wrong. Both are things
     // somebody searches for by name before they commit to a platform.
     entry('/pricing', { changeFrequency: 'monthly', priority: 0.6 }),
+    // What premium costs and what it switches on. Public for the same reason
+    // /pricing is: the person deciding whether to pay is the whole audience,
+    // and a price behind a sign-in wall reaches none of them.
+    entry('/premium', { changeFrequency: 'weekly', priority: 0.6 }),
     entry('/feedback', { changeFrequency: 'monthly', priority: 0.3 }),
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.

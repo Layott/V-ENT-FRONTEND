@@ -45,6 +45,8 @@ function OrgDetailInner() {
   const router = useRouter();
   const slug = params?.slug;
   const { admin, loading: authLoading, logout } = useAdminAuth();
+  const [premiumOpen, setPremiumOpen] = useState(false);
+  const [premiumNote, setPremiumNote] = useState('');
   const toast = useAdminToast();
 
   const [org, setOrg] = useState(null);
@@ -198,8 +200,55 @@ function OrgDetailInner() {
                     {org.verified ? tt('adminOrgs.removeVerified', 'Remove verification')
                       : tt('adminOrgs.markVerified', 'Verify')}
                   </button>
+                  {/* A DIFFERENT permission from Verify above. Verifying an
+                      organisation is administration; giving it the paid
+                      features for nothing is commerce, and the console shows
+                      the control only to the roles the endpoint accepts. */}
+                  {admin?.permissions?.grant_premium && (org.is_premium
+                    ? <button type="button" className={`${shared.actBtn} ${shared.actView}`}
+                              onClick={() => act({ action: 'set_premium', premium: false },
+                                tt('adminOrg.premiumOff', 'Premium is off for this organisation.'))}>
+                        {tt('adminUser.takePremium', 'Take premium back')}
+                      </button>
+                    : <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+                              onClick={() => { setPremiumOpen(true); setPremiumNote(''); }}>
+                        {tt('adminUser.givePremium', 'Give premium')}
+                      </button>)}
                 </div>
               </div>
+
+              {premiumOpen && <div className={shared.modalOverlay} onClick={(e) => {
+                if (e.target === e.currentTarget) setPremiumOpen(false);
+              }}>
+                  <div className={shared.modal}>
+                    <p className={shared.modalTitle}>
+                      {tt('adminOrg.premiumTitle', 'Give this organisation premium?')}
+                    </p>
+                    <p className={shared.modalSub}>
+                      {tt('adminOrg.premiumSub', 'Everybody running a tournament or an event for it gets the premium features, at no charge. Say why.')}
+                    </p>
+                    <input className={shared.modalInput} value={premiumNote} autoFocus
+                           placeholder={tt('adminUser.premiumPlaceholder', 'Why? For example: partner for the Rivalry season')}
+                           onChange={(e) => setPremiumNote(e.target.value)} />
+                    <div className={shared.modalActions}>
+                      <button type="button" className={`${shared.actBtn} ${shared.actView}`}
+                              onClick={() => setPremiumOpen(false)}>
+                        {tt('ui.cancel.0f8e', 'Cancel')}
+                      </button>
+                      <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+                              disabled={!premiumNote.trim()}
+                              onClick={async () => {
+                                const ok = await act({
+                                  action: 'set_premium', premium: true,
+                                  note: premiumNote.trim(),
+                                }, tt('adminOrg.premiumOn', 'Premium is on for this organisation.'));
+                                if (ok) setPremiumOpen(false);
+                              }}>
+                        {tt('adminUser.premiumConfirm', 'Give premium')}
+                      </button>
+                    </div>
+                  </div>
+                </div>}
 
               <div className={shared.statsGrid}>
                 <div className={shared.card}>
@@ -209,6 +258,17 @@ function OrgDetailInner() {
                 <div className={shared.card}>
                   <p className={shared.metricLabel}>{tt('adminOrg.members', 'Members')}</p>
                   <p className={shared.metricValue}>{formatNumber(org.members || 0)}</p>
+                </div>
+                <div className={shared.card}>
+                  <p className={shared.metricLabel}>{tt('adminUser.premium', 'Premium')}</p>
+                  <p className={styles.typeValue}>
+                    {org.is_premium
+                      ? tt('adminUser.premiumOn', 'On')
+                      : tt('adminUser.premiumOff', 'Off')}
+                  </p>
+                  {org.is_premium && org.premium_note && (
+                    <p className={styles.premiumNote}>{org.premium_note}</p>
+                  )}
                 </div>
                 <div className={shared.card}>
                   <p className={shared.metricLabel}>{tt('adminOrg.type', 'Type')}</p>

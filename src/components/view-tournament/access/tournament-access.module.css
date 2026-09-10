@@ -251,3 +251,10 @@
     min-width: 100%;
   }
 }
+
+/* The way out of a premium refusal, inline with the message. */
+.errorLink {
+  color: var(--v-ent-gold);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}

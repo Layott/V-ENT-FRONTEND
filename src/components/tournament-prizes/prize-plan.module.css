@@ -216,3 +216,10 @@
     align-items: flex-start;
   }
 }
+
+/* The way out of the refusal, inline with the sentence that explains it. */
+.hintLink {
+  color: var(--v-ent-gold);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
