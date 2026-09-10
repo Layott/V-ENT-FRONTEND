@@ -80,7 +80,15 @@ export default async function sitemap() {
     // each one says plainly what it will be and when, and somebody searching
     // for "V-ENT shop" should reach that rather than nothing at all. Low
     // priority: they are promises, not content.
-    entry('/anime', { changeFrequency: 'monthly', priority: 0.3 }),
+    // The anime module is BUILT and closed. Its public pages are listed
+    // because each says plainly what it is, and somebody searching for
+    // "V-ENT manga" should reach that rather than nothing. The reader and the
+    // rooms are NOT listed: a chapter is the paid thing and a room is a
+    // private address that doubles as its own invitation.
+    entry('/anime', { changeFrequency: 'weekly', priority: 0.4 }),
+    entry('/anime/manga', { changeFrequency: 'daily', priority: 0.5 }),
+    entry('/anime/battles', { changeFrequency: 'weekly', priority: 0.4 }),
+    entry('/anime/rooms', { changeFrequency: 'daily', priority: 0.3 }),
     entry('/marketplace', { changeFrequency: 'monthly', priority: 0.3 }),
     entry('/shop', { changeFrequency: 'monthly', priority: 0.3 }),
     entry('/wager', { changeFrequency: 'monthly', priority: 0.2 }),

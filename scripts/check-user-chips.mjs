@@ -57,6 +57,13 @@ const ALLOWED = new Map([
   // The admin console is internal tooling: a table of accounts to act on,
   // where every row already links to the admin's own detail view rather than
   // to a public profile.
+  // The live participant list in a reading room. The feed sends USERNAMES, not
+  // people: it is a cursor-paged list of who is present right now, and asking
+  // it for an avatar and a founder mark per tick would be a person object per
+  // participant per two seconds. The names beside a message and on a room card
+  // ARE chips, because those are people being presented.
+  ['src/app/anime/room/[token]/RoomClient.js',
+   'a live presence list of usernames from the feed, not people to open'],
   ['ADMIN', 'internal tooling, rows link to the admin detail view'],
 ]);
 
