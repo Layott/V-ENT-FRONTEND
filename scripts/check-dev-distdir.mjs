@@ -28,7 +28,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONFIG = path.join(ROOT, 'next.config.mjs');
 
 /** The line that decides the build directory, and whether the port is in it. */
-function audit(text) {
+function audit(raw) {
+  // Line endings first. On a Windows checkout git hands this file back with
+  // CRLF, the clause then ends ",\r\n", and a pattern anchored on ",\n" finds
+  // nothing and reports "no distDir" about a config that is perfectly correct.
+  // It did exactly that on 10 September, after a branch switch rewrote the
+  // endings, and blocked a commit over nothing.
+  const text = String(raw).replace(/\r\n/g, '\n');
   const problems = [];
   const match = text.match(/distDir:[\s\S]{0,400}?,\n/);
   if (!match) {
@@ -62,6 +68,13 @@ function selfTest() {
       name: 'no distDir at all is caught',
       text: 'export default { reactStrictMode: true }\n',
       expect: 1,
+    },
+    {
+      name: 'the real config passes with Windows line endings',
+      // Normalise before converting, or a checkout that is already CRLF
+      // becomes \r\r\n and the fixture tests something nothing produces.
+      text: fs.readFileSync(CONFIG, 'utf8').replace(/\r\n/g, '\n').replace(/\n/g, '\r\n'),
+      expect: 0,
     },
     {
       name: 'a port-scoped dev dir passes',
