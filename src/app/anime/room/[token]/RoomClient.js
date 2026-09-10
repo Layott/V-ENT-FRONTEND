@@ -166,6 +166,18 @@ const RoomClient = ({ roomToken }) => {
 
   const react = (emoji) => post('chat/', { emoji, page });
 
+  // Enter sends, on the rows that are not forms.
+  //
+  // The chat row IS a form, so Enter has always sent a message there. The note
+  // and the invite are a bare input beside a button, which looks identical and
+  // ignored Enter, so a note typed and confirmed the way the row above it
+  // works went nowhere.
+  const onEnter = action => (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    action();
+  };
+
   const stick = async () => {
     if (!noteText.trim()) return;
     await post('annotations/', {
@@ -421,7 +433,8 @@ const RoomClient = ({ roomToken }) => {
                       <input className={styles.chatInput} value={invite}
                              placeholder={tt('anime.invitePlaceholder',
                                'A username or an email address')}
-                             onChange={e => setInvite(e.target.value)} />
+                             onChange={e => setInvite(e.target.value)}
+                             onKeyDown={onEnter(sendInvite)} />
                       <button type="button" className={styles.chatSendBtn}
                               onClick={sendInvite}>
                         {tt('anime.send', 'Send it')}
@@ -441,7 +454,8 @@ const RoomClient = ({ roomToken }) => {
                   </p>
                   <div className={styles.chatInputRow}>
                     <input className={styles.chatInput} value={noteText}
-                           onChange={e => setNoteText(e.target.value)} />
+                           onChange={e => setNoteText(e.target.value)}
+                           onKeyDown={onEnter(stick)} />
                     <button type="button" className={styles.chatSendBtn}
                             onClick={stick}>
                       {tt('anime.stick', 'Stick it')}

@@ -23,9 +23,28 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
 import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/anime';
-import { formatDate } from '@/lib/datetime';
+import { formatDate, localInputToISO } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
 import styles from './studio.module.css';
+
+/** The field the API keeps this comic's price in, or nothing when it is free. */
+const PRICE_FIELD = {
+  per_chapter: 'chapter_price_vc',
+  subscription: 'subscription_price_vc',
+};
+
+/** What a comic costs now, whichever of the two fields holds it. */
+const priceOf = series => (
+  series?.pricing === 'per_chapter' ? series.chapter_price_vc
+    : series?.pricing === 'subscription' ? series.subscription_price_vc
+      : 0);
+
+/** The one price field a pricing uses, ready to spread into a request body. */
+const priceBody = (pricing, value) => {
+  const field = PRICE_FIELD[pricing];
+  if (!field) return {};
+  return { [field]: Number(value) || 0 };
+};
 
 const Studio = () => {
   const tt = useT();
@@ -46,7 +65,15 @@ const Studio = () => {
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState('manga');
   const [pricing, setPricing] = useState('free');
+  const [price, setPrice] = useState('');
   const [synopsis, setSynopsis] = useState('');
+
+  // What the comic already picked costs, so it can be changed after the day it
+  // was made. The create form choosing a paid pricing and sending no number
+  // made a comic that says it is paid and costs nothing, and there was no
+  // second screen to correct it on.
+  const [editPricing, setEditPricing] = useState('free');
+  const [editPrice, setEditPrice] = useState('');
 
   // Uploading a chapter. The FILES are held here rather than in a draft: a
   // data URL in state is how the wizard uploads broke once.
@@ -86,6 +113,15 @@ const Studio = () => {
     return undefined;
   }, [open, viewer.loading, load]);
 
+  // The comic picked on the left decides what the pricing editor shows, and
+  // picking another one has to move it, or the author edits the price of the
+  // comic they were looking at a moment ago.
+  useEffect(() => {
+    if (!picked) return;
+    setEditPricing(picked.pricing || 'free');
+    setEditPrice(String(priceOf(picked) || ''));
+  }, [picked]);
+
   const create = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -93,9 +129,9 @@ const Studio = () => {
     try {
       const made = await call('/series/', {
         method: 'POST', token,
-        body: { title, kind, pricing, synopsis },
+        body: { title, kind, pricing, synopsis, ...priceBody(pricing, price) },
       });
-      setTitle(''); setSynopsis('');
+      setTitle(''); setSynopsis(''); setPrice('');
       setToast(tt('anime.comicCreated', 'Your comic is created. It is private until you publish it.'));
       await load();
       setPicked(made);
@@ -117,7 +153,9 @@ const Studio = () => {
       if (chapterTitle) form.append('title', chapterTitle);
       if (earlyVc) form.append('early_access_vc', earlyVc);
       if (inVolume) form.append('volume', inVolume);
-      if (publishAt) form.append('published_at', new Date(publishAt).toISOString());
+      // The typed value carries no zone, so it becomes an instant here, where
+      // the browser is the only thing that knows which zone it was typed in.
+      if (publishAt) form.append('published_at', localInputToISO(publishAt));
       const files = pagesRef.current?.files || [];
       for (const file of files) form.append('pages', file);
 
@@ -167,6 +205,28 @@ const Studio = () => {
       await load();
     } catch (err) {
       setToast(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const savePricing = async (e) => {
+    e.preventDefault();
+    if (!picked) return;
+    setBusy(true);
+    setToast(null);
+    try {
+      await call(`/series/${picked.slug}/`, {
+        method: 'PATCH', token,
+        body: { pricing: editPricing, ...priceBody(editPricing, editPrice) },
+      });
+      setToast(editPricing === 'free'
+        ? tt('anime.nowFree', 'It is free to read.')
+        : fill(tt('anime.priceSaved', 'Saved. It costs {n} VENT COINS.'),
+          { n: Number(editPrice) || 0 }));
+      await load();
+    } catch (err) {
+      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -332,6 +392,19 @@ const Studio = () => {
             ))}
           </select>
 
+          {pricing !== 'free' && (
+            <>
+              <label className={styles.label} htmlFor="anime-price">
+                {pricing === 'per_chapter'
+                  ? tt('anime.priceChapter', 'What a chapter costs, in VENT COINS')
+                  : tt('anime.priceMonth', 'What a month costs, in VENT COINS')}
+              </label>
+              <input id="anime-price" className={styles.input} value={price}
+                     inputMode="numeric" required
+                     onChange={e => setPrice(e.target.value)} />
+            </>
+          )}
+
           <label className={styles.label} htmlFor="anime-synopsis">
             {tt('anime.synopsis', 'What it is about')}
           </label>
@@ -339,7 +412,8 @@ const Studio = () => {
                     value={synopsis} onChange={e => setSynopsis(e.target.value)} />
 
           <button type="submit" className={styles.primaryBtn}
-                  disabled={busy || !title.trim()}>
+                  disabled={busy || !title.trim()
+                    || (pricing !== 'free' && !(Number(price) > 0))}>
             {tt('anime.createComic', 'Create it')}
           </button>
         </form>
@@ -370,6 +444,44 @@ const Studio = () => {
                 : tt('anime.boost', 'Boost it for a week')}
             </button>
           </div>
+
+          <form className={styles.form} onSubmit={savePricing}>
+            <h3 className={styles.cardTitle}>
+              {tt('anime.whatItCosts', 'What it costs')}
+            </h3>
+            <p className={styles.rowMeta}>
+              {tt('anime.whatItCostsSub',
+                'Readers pay this in VENT COINS, and it lands in your wallet. '
+                + 'Change it whenever you like; anybody who already paid keeps '
+                + 'what they paid for.')}
+            </p>
+            <label className={styles.label} htmlFor="edit-pricing">
+              {tt('anime.pricingField', 'How it is paid for')}
+            </label>
+            <select id="edit-pricing" className={styles.input} value={editPricing}
+                    onChange={e => setEditPricing(e.target.value)}>
+              {pricings.map(([key, word]) => (
+                <option key={key} value={key}>{word}</option>
+              ))}
+            </select>
+            {editPricing !== 'free' && (
+              <>
+                <label className={styles.label} htmlFor="edit-price">
+                  {editPricing === 'per_chapter'
+                    ? tt('anime.priceChapter', 'What a chapter costs, in VENT COINS')
+                    : tt('anime.priceMonth', 'What a month costs, in VENT COINS')}
+                </label>
+                <input id="edit-price" className={styles.input} value={editPrice}
+                       inputMode="numeric" required
+                       onChange={e => setEditPrice(e.target.value)} />
+              </>
+            )}
+            <button type="submit" className={styles.primaryBtn}
+                    disabled={busy
+                      || (editPricing !== 'free' && !(Number(editPrice) > 0))}>
+              {tt('anime.savePricing', 'Save what it costs')}
+            </button>
+          </form>
 
           <form className={styles.form} onSubmit={addVolume}>
             <h3 className={styles.cardTitle}>
