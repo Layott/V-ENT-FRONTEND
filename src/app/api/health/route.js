@@ -22,6 +22,32 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+// Which build this process is actually serving, read off disk once.
+//
+// It used to come from `process.env.NEXT_BUILD_ID`, which nothing sets, so
+// every instance answered `"build": "unknown"` and the one thing this endpoint
+// existed to make visible was invisible. On 10 September a deploy built a new
+// frontend, failed to roll the instances, and left the site serving the
+// previous build for twenty minutes with every check saying active and
+// healthy. The build id is what makes that a one-line question.
+//
+// Read at module load, not per request: it cannot change without the process
+// being replaced, which is the whole point of comparing it.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const BUILD = (() => {
+  for (const path of ['.next/BUILD_ID', join(process.cwd(), '.next/BUILD_ID')]) {
+    try {
+      const id = readFileSync(path, 'utf8').trim();
+      if (id) return id;
+    } catch {
+      // Next dev has no BUILD_ID file. Fall through to the env vars.
+    }
+  }
+  return process.env.NEXT_BUILD_ID || process.env.BUILD_ID || 'unknown';
+})();
+
 export async function GET() {
   return new Response(
     JSON.stringify({
@@ -32,7 +58,7 @@ export async function GET() {
       port: process.env.PORT || 'unknown',
       // Which build. After a deploy the two briefly differ, and that is the
       // fastest way to see the rollout is only half done.
-      build: process.env.NEXT_BUILD_ID || process.env.BUILD_ID || 'unknown',
+      build: BUILD,
       uptime: Math.round(process.uptime()),
     }),
     {
