@@ -198,6 +198,17 @@ export function formatTime(value, opts) {
   return render(value, { hour: '2-digit', minute: '2-digit' }, opts);
 }
 
+/** A day on its own, short: "Fri 18 Sep".
+ *
+ *  For a list where the TIME is the column and the day only has to separate
+ *  one day from the next, which is what a running order on a wall is. The
+ *  year is deliberately absent: nobody reading a programme in the hall needs
+ *  it, and the row has to stay one line.
+ */
+export function formatDayShort(value, opts) {
+  return render(value, { weekday: 'short', day: 'numeric', month: 'short' }, opts);
+}
+
 /** A date and time with the zone named: "4 Sept 2026, 10:00 WAT".
  *
  *  For anything somebody has to BE somewhere for. It renders in the READER's
@@ -275,6 +286,7 @@ export function formatNumber(value, options) {
 
 export default {
   localInputToISO, isoToLocalInput, withLocalDatesAsISO,
+  formatDayShort,
   viewerZone, formatDateTime, formatDate, formatTime, formatWithZone,
   formatInZone, formatDateRange, formatRelative, formatNumber,
 };

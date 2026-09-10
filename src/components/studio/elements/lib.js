@@ -12,6 +12,7 @@
 // Pure functions and one component. Nothing here draws a surface.
 
 import { useState } from 'react';
+import { formatDate, formatTime, formatDayShort } from '@/lib/datetime';
 
 /** Ordinal for a standings place: 1st, 2nd, 3rd. */
 const place = (n) => {
@@ -20,13 +21,34 @@ const place = (n) => {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 };
 
-/** A clock reading for a programme row. */
-const clock = (iso) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+/** A clock reading for a programme row.
+ *
+ * Through `formatTime` rather than `toLocaleTimeString([])`, which reads the
+ * clock off whatever language the machine running OBS happens to be set to.
+ * One timing model for the whole site includes the graphics on the wall.
+ */
+const clock = (iso) => (iso ? formatTime(iso, { fallback: '' }) : '');
+
+/** The day a programme row falls on, for a programme that spans more than one.
+ *
+ * A single-day running order needs no date and the graphic is cleaner without
+ * it. A two-day one without it reads as broken: Lagos Anime Con drew
+ * "09:00 PM After-party" and then "12:00 PM Free Fire finals" underneath,
+ * which is correct - the finals are the next day at noon - and looks like the
+ * list is out of order.
+ */
+const spansDays = (rows) => {
+  const days = new Set(
+    (rows || [])
+      .map((r) => (r && r.starts_at ? formatDate(r.starts_at, { fallback: '' }) : ''))
+      .filter(Boolean));
+  return days.size > 1;
 };
+
+/** The short day label a row carries when the programme spans days. */
+const dayOf = (iso) => (iso
+  ? formatDayShort(iso, { fallback: '' })
+  : '');
 
 // ------------------------------------------------------- the aggregate tie
 //
@@ -251,7 +273,7 @@ const nationCode = (nation) => {
 };
 
 export {
-  place, clock, rivalryOf, tagOf, count, optIn,
+  place, clock, spansDays, dayOf, rivalryOf, tagOf, count, optIn,
   pickFixture, pickLeg, findPlayer, readFeed,
   secondsUntil, countdown, Face,
   nationCode,
