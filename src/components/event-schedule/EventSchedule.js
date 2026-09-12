@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { LuClock, LuMapPin, LuUsers } from 'react-icons/lu';
 import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import styles from './event-schedule.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -32,9 +33,13 @@ const dayDate = value => (value
 export default function EventSchedule({ eventRef }) {
   const tt = useT();
   const [days, setDays] = useState(null);
+  // A failed load used to set an empty list, so the section vanished and
+  // "no programme" and "could not load the programme" looked the same.
+  const [loadError, setLoadError] = useState('');
 
   const load = useCallback(async () => {
     if (!eventRef) return;
+    setLoadError('');
     try {
       const res = await fetch(`${API}/event/${eventRef}/sessions/`);
       const body = await res.json().catch(() => ({}));
@@ -43,8 +48,13 @@ export default function EventSchedule({ eventRef }) {
         return;
       }
       setDays([]);
-    } catch {
+      // A 404 is an event with no programme, which is not an error.
+      if (res.status !== 404) {
+        setLoadError(apiMessage(tt, body, 'schedule.loadFailed', 'The programme could not be loaded.'));
+      }
+    } catch (err) {
       setDays([]);
+      setLoadError(apiMessage(tt, err, 'schedule.loadFailed', 'The programme could not be loaded.'));
     }
   }, [eventRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -52,6 +62,17 @@ export default function EventSchedule({ eventRef }) {
 
   if (days === null) {
     return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;
+  }
+  if (loadError) {
+    return (
+      <p className={styles.state}>
+        {loadError}
+        {' '}
+        <button type="button" className={styles.retry} onClick={load}>
+          {tt('common.tryAgain', 'Try again')}
+        </button>
+      </p>
+    );
   }
   if (days.length === 0) return null;
 
