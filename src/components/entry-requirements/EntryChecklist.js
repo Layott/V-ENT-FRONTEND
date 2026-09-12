@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { LuCheck, LuClock, LuTriangleAlert } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
+import { useViewer } from '@/lib/gating';
 import { kindLabel } from './kinds';
 import styles from './entry-checklist.module.css';
 
@@ -61,6 +62,7 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
   const [error, setError] = useState('');
   const [drafts, setDrafts] = useState({});
   const [sending, setSending] = useState(null);
+  const viewer = useViewer();
 
   const load = useCallback(async () => {
     if (!token) { setLoading(false); return; }
@@ -180,7 +182,7 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
                    target="_blank" rel="noopener noreferrer">{url}</a>
               ))}
 
-              {!row.met && row.needs_submission && (
+              {viewer.signedIn && !row.met && row.needs_submission && (
                 <div className={styles.sendRow}>
                   <input
                     className={styles.text}

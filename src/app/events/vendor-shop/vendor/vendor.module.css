@@ -28,6 +28,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  min-height: 44px;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
@@ -41,6 +42,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
   background-color: var(--overlay-gray);
@@ -198,6 +200,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   padding: 0.55rem 1rem;
   border-radius: 6px;
   background-color: var(--overlay-gray);
@@ -219,6 +222,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   padding: 0.55rem 1rem;
   border-radius: 6px;
   font-family: inherit;
@@ -742,6 +746,43 @@
 .pinInput:focus-visible { outline: 2px solid var(--v-ent-red); outline-offset: 2px; }
 
 .orderError { color: #ff6b6b; font-size: 0.88rem; margin: 0; }
+
+/* An option a product comes in, and how an order is fulfilled: filled chips,
+   the pressed one a stronger fill. Never a ring. */
+.optionBlock { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.6rem; }
+.optionLabel { font-size: 0.8rem; color: rgba(255, 255, 255, 0.65); margin: 0; }
+.optionRow { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.optionChip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: var(--fw-medium, 500);
+  cursor: pointer;
+  outline: none;
+}
+.optionChip[aria-pressed='true'] { background-color: var(--v-ent-gold, #e0a526); color: #1a1400; }
+.optionChip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.productOptions { margin: 0 0 0.4rem; font-size: 0.78rem; color: rgba(255, 255, 255, 0.5); }
+
+.deliveryBlock { display: flex; flex-direction: column; gap: 0.5rem; }
+.pinInputPlain {
+  min-height: 44px;
+  padding: 0.6rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: #1a1b1f;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  width: 100%;
+  resize: vertical;
+}
+.pinInputPlain:focus-visible { outline: 2px solid var(--v-ent-red); outline-offset: 2px; }
 
 .checkoutBtn { min-height: 48px; border-radius: 10px; cursor: pointer; font-weight: var(--fw-semi-bold); }
 .checkoutBtn:disabled { opacity: 0.6; cursor: not-allowed; }

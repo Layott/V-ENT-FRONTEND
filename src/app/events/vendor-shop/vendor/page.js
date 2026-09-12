@@ -1,6 +1,9 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { formatNumber } from '@/lib/datetime';
+import { useViewer } from '@/lib/gating';
+import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
@@ -28,7 +31,8 @@ const VendorStallContent = () => {
     data: session
   } = useSession();
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('event') || 'evt_2000';
+  const eventId = searchParams.get('event') || '';
+  const viewer = useViewer();
   const vendorId = searchParams.get('vendor') || searchParams.get('id') || '';
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +42,11 @@ const VendorStallContent = () => {
   const [contactOpen, setContactOpen] = useState(false);
   const [contactSent, setContactSent] = useState(false);
   const [contactMsg, setContactMsg] = useState('');
+  const [contactBusy, setContactBusy] = useState(false);
+  const [contactError, setContactError] = useState('');
+  const [pickedVariant, setPickedVariant] = useState('');
+  const [fulfilment, setFulfilment] = useState('collect');
+  const [delivery, setDelivery] = useState({ name: '', phone: '', address: '', note: '' });
   const [cartOpen, setCartOpen] = useState(false);
   const [pin, setPin] = useState('');
   const [placing, setPlacing] = useState(false);
@@ -115,17 +124,24 @@ const VendorStallContent = () => {
     if (!eventId || typeof window === 'undefined' || !cartHydrated.current) return;
     localStorage.setItem(CART_STORAGE_KEY(eventId), JSON.stringify(cart));
   }, [cart, eventId]);
-  const addToCart = p => {
+  // A line is one product in one option: a medium hoodie and a large one are
+  // two lines, and the API is told which is which. Baskets saved before
+  // options existed have no `variant`, and read as the plain product.
+  const lineKey = i => `${i.id}:${i.variant || ''}`;
+  const addToCart = (p, variant = '') => {
+    if ((p.variants || []).length && !variant) return;
     setCart(prev => {
-      const existing = prev.find(i => i.id === p.id);
+      const key = `${p.id}:${variant}`;
+      const existing = prev.find(i => lineKey(i) === key);
       if (existing) {
-        return prev.map(i => i.id === p.id ? {
+        return prev.map(i => lineKey(i) === key ? {
           ...i,
           qty: i.qty + 1
         } : i);
       }
       return [...prev, {
         ...p,
+        variant,
         qty: 1,
         vendor_id: vendor?.id,
         vendor_name: vendor?.name,
@@ -133,11 +149,15 @@ const VendorStallContent = () => {
       }];
     });
     setActiveProduct(null);
+    setPickedVariant('');
   };
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartTotalVc = cart.reduce((s, i) => s + Number(i.price || 0) * i.qty, 0);
-  const changeQty = (id, delta) => {
-    setCart(prev => prev.map(i => i.id === id ? {
+  // Delivery is offered only when every line can be delivered: an order is
+  // fulfilled once, and the API refuses a delivery carrying a collect-only item.
+  const deliverable = cart.length > 0 && cart.every(i => i.can_deliver);
+  const changeQty = (key, delta) => {
+    setCart(prev => prev.map(i => lineKey(i) === key ? {
       ...i,
       qty: Math.max(0, i.qty + delta)
     } : i).filter(i => i.qty > 0));
@@ -145,7 +165,12 @@ const VendorStallContent = () => {
   const placeOrder = async () => {
     if (!cart.length) return;
     if (cartTotalVc > 0 && pin.length < 4) {
-      setOrderError('Enter your 4-digit wallet PIN to authorise this payment.');
+      setOrderError(tt('stall.pinNeeded', 'Enter your 4-digit wallet PIN to authorise this payment.'));
+      return;
+    }
+    const wantsDelivery = deliverable && fulfilment === 'deliver';
+    if (wantsDelivery && !(delivery.name.trim() && delivery.phone.trim() && delivery.address.trim())) {
+      setOrderError(tt('stall.deliveryNeeded', 'A delivery needs a name, a phone number and an address.'));
       return;
     }
     setPlacing(true);
@@ -157,9 +182,12 @@ const VendorStallContent = () => {
         body: JSON.stringify({
           items: cart.map(i => ({
             product_id: i.id,
-            quantity: i.qty
+            quantity: i.qty,
+            variant: i.variant || ''
           })),
-          pin
+          pin,
+          fulfilment: wantsDelivery ? 'deliver' : 'collect',
+          delivery: wantsDelivery ? delivery : undefined
         })
       });
       const data = await res.json();
@@ -174,25 +202,46 @@ const VendorStallContent = () => {
         localStorage.removeItem(CART_STORAGE_KEY(eventId));
       } catch {}
     } catch {
-      setOrderError('Connection error. Please try again.');
+      setOrderError(tt('stall.connectionError', 'Connection error. Please try again.'));
     } finally {
       setPlacing(false);
     }
   };
-  const submitContact = () => {
-    if (!contactMsg.trim()) return;
-    setContactSent(true);
-    setContactMsg('');
+  // A real request. Until 12 September this set a flag and showed "Message
+  // sent" with nothing leaving the browser; the network tab was empty.
+  const submitContact = async () => {
+    if (!contactMsg.trim() || contactBusy) return;
+    setContactBusy(true);
+    setContactError('');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/vendor/${encodeURIComponent(vendorId)}/contact/`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ message: contactMsg.trim() })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.status !== 'success') {
+        setContactError(apiMessage(tt, data, 'stall.contactFailed', 'That did not send. Try again.'));
+        return;
+      }
+      setContactSent(true);
+      setContactMsg('');
+    } catch {
+      setContactError(tt('stall.connectionError', 'Connection error. Please try again.'));
+    } finally {
+      setContactBusy(false);
+    }
   };
   const closeContact = () => {
     setContactOpen(false);
     setContactSent(false);
     setContactMsg('');
+    setContactError('');
   };
   const productInCartQty = useMemo(() => {
     const map = {};
     cart.forEach(i => {
-      map[i.id] = i.qty;
+      map[i.id] = (map[i.id] || 0) + i.qty;
     });
     return map;
   }, [cart]);
@@ -291,10 +340,11 @@ const VendorStallContent = () => {
                   <div className={styles.productBody}>
                     <p className={styles.productName}>{p.name}</p>
                     <p className={styles.productPrice}>
-                      {Number(p.price || 0).toLocaleString()} VC
+                      {formatNumber(Number(p.price || 0))} VC
                     </p>
+                    {(p.variants || []).length > 0 && <p className={styles.productOptions}>{p.variants.join(' · ')}</p>}
                     <span className={styles.addBtn}>
-                      {p.in_stock ? tx("Add to cart") : 'Unavailable'}
+                      {p.in_stock ? tx("Add to cart") : tt('stall.unavailable', 'Unavailable')}
                     </span>
                   </div>
                 </button>)}
@@ -306,10 +356,10 @@ const VendorStallContent = () => {
 
       {/* Product modal */}
       {activeProduct && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setActiveProduct(null);
+      if (e.target === e.currentTarget) { setActiveProduct(null); setPickedVariant(''); }
     }}>
           <div className={styles.productModal}>
-            <button className={styles.modalCloseAbs} onClick={() => setActiveProduct(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
+            <button className={styles.modalCloseAbs} onClick={() => { setActiveProduct(null); setPickedVariant(''); }} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
               <MdOutlineClose />
             </button>
             <div className={styles.productModalImgWrap}>
@@ -321,16 +371,25 @@ const VendorStallContent = () => {
               <p className={styles.productModalVendor}>{vendor.name}</p>
               <h2 className={styles.productModalName}>{activeProduct.name}</h2>
               <p className={styles.productModalPrice}>
-                {Number(activeProduct.price || 0).toLocaleString()} VC
+                {formatNumber(Number(activeProduct.price || 0))} VC
               </p>
-              <p className={styles.productModalDesc}>
-                {activeProduct.description || tx("Vendor-exclusive item, on-site pickup only.")}
-              </p>
+              {activeProduct.description && <p className={styles.productModalDesc}>{activeProduct.description}</p>}
               <p className={styles.stockHint}>
-                {activeProduct.in_stock ? `${activeProduct.stock || 'Limited'} available • Booth ${vendor.booth_number || vendor.booth}` : tx("Currently sold out - check back later.")}
+                {activeProduct.in_stock
+                  ? tt('stall.availableAtBooth', '{n} available at booth {booth}')
+                      .replace('{n}', formatNumber(Number(activeProduct.stock || 0)))
+                      .replace('{booth}', vendor.booth_number || vendor.booth || '-')
+                  : tx("Currently sold out - check back later.")}
+                {activeProduct.in_stock && activeProduct.can_deliver && ` · ${tt('stall.canDeliver', 'Can be delivered')}`}
               </p>
-              <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct)} disabled={!activeProduct.in_stock} type="button">
-                {activeProduct.in_stock ? tx("Add to cart") : tx("Sold out")}
+              {(activeProduct.variants || []).length > 0 && <div className={styles.optionBlock}>
+                  <p className={styles.optionLabel}>{tt('stall.pickOption', 'Pick one')}</p>
+                  <div className={styles.optionRow} role="group" aria-label={tt('stall.pickOption', 'Pick one')}>
+                    {activeProduct.variants.map(v => <button key={v} type="button" className={styles.optionChip} aria-pressed={pickedVariant === v} onClick={() => setPickedVariant(v)}>{v}</button>)}
+                  </div>
+                </div>}
+              <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct, pickedVariant)} disabled={!activeProduct.in_stock || ((activeProduct.variants || []).length > 0 && !pickedVariant)} type="button">
+                {!activeProduct.in_stock ? tx("Sold out") : ((activeProduct.variants || []).length > 0 && !pickedVariant) ? tt('stall.pickOptionFirst', 'Pick an option first') : tx("Add to cart")}
               </button>
             </div>
           </div>
@@ -350,19 +409,20 @@ const VendorStallContent = () => {
               </button>
             </div>
             <div className={styles.contactBody}>
-              {!contactSent ? <>
+              {!contactSent ? <NeedsAccount action={tt('stall.contactAction', 'message a stallholder')}>
                   <p className={styles.contactSub}>
-                    {tt("ui.send.quick.message.vendor.e254", "Send a quick message. The vendor will reply via your V-ENT inbox.")}
+                    {tt('stall.contactHow', 'Ask a quick question. The stallholder gets it as a notification with your username, and can find you at the booth or on your profile.')}
                   </p>
-                  <textarea className={styles.contactInput} rows={4} placeholder={tt("ui.e.g.do.have.c6e0", "e.g. Do you have the Limited Tee in size XL?")} value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
-                  <button className={`${styles.contactSendBtn} redBTN`} onClick={submitContact} disabled={!contactMsg.trim()} type="button">
-                    {tt("ui.send.message.c70a", "Send message")}
+                  <textarea className={styles.contactInput} rows={4} maxLength={400} placeholder={tt("ui.e.g.do.have.c6e0", "e.g. Do you have the Limited Tee in size XL?")} value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
+                  {contactError && <p className={styles.orderError} role="alert">{contactError}</p>}
+                  <button className={`${styles.contactSendBtn} redBTN`} onClick={submitContact} disabled={!contactMsg.trim() || contactBusy} type="button">
+                    {contactBusy ? tt('stall.sending', 'Sending...') : tt("ui.send.message.c70a", "Send message")}
                   </button>
-                </> : <div className={styles.contactSuccess}>
+                </NeedsAccount> : <div className={styles.contactSuccess}>
                   <FaCheckCircle className={styles.successIcon} />
                   <p className={styles.successTitle}>{tt("ui.message.sent.9cf1", "Message sent")}</p>
                   <p className={styles.successSub}>
-                    {vendor.name} {tt("ui.will.reply.via.v.41f4", "will reply via your V-ENT inbox.")}
+                    {tt('stall.contactSentHow', '{name} has it as a notification with your username.').replace('{name}', vendor.name)}
                   </p>
                   <button className={`${styles.contactSendBtn} goldBTN`} onClick={closeContact} type="button">
                     {tt("ui.done.e9b4", "Done")}
@@ -377,7 +437,7 @@ const VendorStallContent = () => {
       {cart.length > 0 && !cartOpen && <div className={styles.checkoutBar}>
           <div className={styles.checkoutBarInfo}>
             <span className={styles.checkoutBarCount}>{cartCount} {tt("ui.item.3a7d", "item")}{cartCount === 1 ? '' : 's'}</span>
-            <span className={styles.checkoutBarTotal}>{cartTotalVc.toLocaleString()} VC</span>
+            <span className={styles.checkoutBarTotal}>{formatNumber(cartTotalVc)} VC</span>
           </div>
           <button type="button" className={`${styles.checkoutBarBtn} goldBTN`} onClick={() => {
         setCartOpen(true);
@@ -405,48 +465,69 @@ const VendorStallContent = () => {
             {placedOrder ? <div className={styles.cartBody}>
                 <p className={styles.orderCode}>{placedOrder.code}</p>
                 <p className={styles.orderHint}>
-                  {tt("ui.show.this.code.at.f5ec", "Show this code at booth")} {vendor?.booth || vendor?.booth_number || '-'} {tt("ui.collect.af4d", "to collect.")}
+                  {placedOrder.fulfilment === 'deliver'
+                    ? tt('stall.deliveryOnItsWay', 'It will be delivered to {name}. The stallholder marks it sent with a tracking number, and you see that in your orders.').replace('{name}', placedOrder.delivery_name || delivery.name)
+                    : `${tt("ui.show.this.code.at.f5ec", "Show this code at booth")} ${vendor?.booth || vendor?.booth_number || '-'} ${tt("ui.collect.af4d", "to collect.")}`}
                 </p>
                 <ul className={styles.orderLines}>
-                  {placedOrder.items.map(i => <li key={i.product_id} className={styles.orderLine}>
-                      <span>{i.quantity} × {i.name}</span>
-                      <span>{i.line_vc.toLocaleString()} VC</span>
+                  {placedOrder.items.map(i => <li key={`${i.product_id}:${i.variant || ''}`} className={styles.orderLine}>
+                      <span>{i.quantity} × {i.name}{i.variant ? ` (${i.variant})` : ''}</span>
+                      <span>{formatNumber(i.line_vc)} VC</span>
                     </li>)}
                 </ul>
                 <div className={styles.cartTotalRow}>
                   <span>{tt("ui.paid.dc9d", "Paid")}</span>
-                  <span className={styles.cartTotalVal}>{placedOrder.total_vc.toLocaleString()} VC</span>
+                  <span className={styles.cartTotalVal}>{formatNumber(placedOrder.total_vc)} VC</span>
                 </div>
               </div> : cart.length === 0 ? <div className={styles.cartBody}>
                 <p className={styles.stateText}>{tt("ui.order.empty.add.something.1970", "Your order is empty. Add something from the stall.")}</p>
               </div> : <div className={styles.cartBody}>
                 <ul className={styles.orderLines}>
-                  {cart.map(i => <li key={i.id} className={styles.orderLine}>
-                      <span className={styles.cartItemName}>{i.name}</span>
+                  {cart.map(i => <li key={lineKey(i)} className={styles.orderLine}>
+                      <span className={styles.cartItemName}>{i.name}{i.variant ? ` (${i.variant})` : ''}</span>
                       <span className={styles.qtyControls}>
-                        <button type="button" onClick={() => changeQty(i.id, -1)} aria-label={tt("ui.remove.one.afbc", "Remove one")}>-</button>
+                        <button type="button" onClick={() => changeQty(lineKey(i), -1)} aria-label={tt("ui.remove.one.afbc", "Remove one")}>-</button>
                         <span>{i.qty}</span>
-                        <button type="button" onClick={() => changeQty(i.id, 1)} aria-label={tt("ui.add.one.bb49", "Add one")}>+</button>
+                        <button type="button" onClick={() => changeQty(lineKey(i), 1)} aria-label={tt("ui.add.one.bb49", "Add one")}>+</button>
                       </span>
-                      <span>{(Number(i.price || 0) * i.qty).toLocaleString()} VC</span>
+                      <span>{formatNumber(Number(i.price || 0) * i.qty)} VC</span>
                     </li>)}
                 </ul>
 
                 <div className={styles.cartTotalRow}>
                   <span>{tt("ui.total.b259", "Total")}</span>
-                  <span className={styles.cartTotalVal}>{cartTotalVc.toLocaleString()} VC</span>
+                  <span className={styles.cartTotalVal}>{formatNumber(cartTotalVc)} VC</span>
                 </div>
 
-                {cartTotalVc > 0 && <div className={styles.pinBlock}>
-                    <label className={styles.pinLabel} htmlFor="vendor-pin"><span className="fieldLabelRow">{tt("ui.wallet.pin.2cdf", "Wallet PIN")} <InfoTip id="walletPin" /></span></label>
-                    <input id="vendor-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
-                  </div>}
+                {/* Paying needs a wallet, so a stranger is told that here rather
+                    than after typing a PIN. */}
+                <NeedsAccount action={tt('stall.payAction', 'pay for an order from your wallet')}>
+                  {deliverable && <div className={styles.optionBlock}>
+                      <p className={styles.optionLabel}>{tt('stall.howToGetIt', 'How do you want it?')}</p>
+                      <div className={styles.optionRow} role="group" aria-label={tt('stall.howToGetIt', 'How do you want it?')}>
+                        <button type="button" className={styles.optionChip} aria-pressed={fulfilment === 'collect'} onClick={() => setFulfilment('collect')}>{tt('stall.collectAtBooth', 'Collect at the booth')}</button>
+                        <button type="button" className={styles.optionChip} aria-pressed={fulfilment === 'deliver'} onClick={() => setFulfilment('deliver')}>{tt('stall.deliverToMe', 'Deliver to me')}</button>
+                      </div>
+                    </div>}
+                  {deliverable && fulfilment === 'deliver' && <div className={styles.deliveryBlock}>
+                      <input className={styles.pinInputPlain} placeholder={tt('stall.deliveryName', 'Name on the parcel')} value={delivery.name} onChange={e => setDelivery({ ...delivery, name: e.target.value })} autoComplete="name" aria-label={tt('stall.deliveryName', 'Name on the parcel')} />
+                      <input className={styles.pinInputPlain} placeholder={tt('stall.deliveryPhone', 'Phone number')} value={delivery.phone} onChange={e => setDelivery({ ...delivery, phone: e.target.value })} inputMode="tel" autoComplete="tel" aria-label={tt('stall.deliveryPhone', 'Phone number')} />
+                      <textarea className={styles.pinInputPlain} rows={2} placeholder={tt('stall.deliveryAddress', 'Delivery address')} value={delivery.address} onChange={e => setDelivery({ ...delivery, address: e.target.value })} autoComplete="street-address" aria-label={tt('stall.deliveryAddress', 'Delivery address')} />
+                      <input className={styles.pinInputPlain} placeholder={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} value={delivery.note} onChange={e => setDelivery({ ...delivery, note: e.target.value })} maxLength={200} aria-label={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} />
+                    </div>}
+                  {!deliverable && cart.some(i => i.can_deliver) && <p className={styles.stateText}>{tt('stall.collectOnlyMixed', 'Something in this order can only be collected, so the whole order is collected at the booth.')}</p>}
 
-                {orderError && <p className={styles.orderError}>{orderError}</p>}
+                  {cartTotalVc > 0 && <div className={styles.pinBlock}>
+                      <label className={styles.pinLabel} htmlFor="vendor-pin"><span className="fieldLabelRow">{tt("ui.wallet.pin.2cdf", "Wallet PIN")} <InfoTip id="walletPin" /></span></label>
+                      <input id="vendor-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
+                    </div>}
 
-                <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
-                  {placing ? tx("Placing order…") : `Pay ${cartTotalVc.toLocaleString()} VC`}
-                </button>
+                  {orderError && <p className={styles.orderError} role="alert">{orderError}</p>}
+
+                  <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
+                    {placing ? tx("Placing order…") : `${tt('stall.pay', 'Pay')} ${formatNumber(cartTotalVc)} VC`}
+                  </button>
+                </NeedsAccount>
               </div>}
           </div>
         </div>}

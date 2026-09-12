@@ -159,6 +159,9 @@ const MyTickets = () => {
     }
     setGiveBusy(false);
     setGiveDone(tt('tickets.gaveItAway', 'It is theirs now, and it has a new code. Yours no longer opens the gate.'));
+    // The open card says so too: it read "Active" with a live "Check myself
+    // in" under a sentence saying the code no longer opens the gate.
+    setActiveTicket(current => (current ? { ...current, status: 'transferred', self_check_in: false } : current));
     // The ticket is somebody else's, so it leaves this list. Reloading rather
     // than editing the row in place: a ticket given to an address that is not
     // this account is gone, and a row edited in place would still be sitting
@@ -274,7 +277,9 @@ const MyTickets = () => {
     all: tt("ui.all.6a72", "All"),
     active: tt("ui.active.a733", "Active"),
     used: tt("ui.ticket.used.4c72", "Used"),
-    refunded: tt("ui.refunded.d6fb", "Refunded")
+    refunded: tt("ui.refunded.d6fb", "Refunded"),
+    cancelled: tt('tickets.statusCancelled', 'Cancelled'),
+    transferred: tt('tickets.statusGivenAway', 'Given away')
   }[id] || id);
   const statusIcon = s => {
     if (s === 'active') return <FaCheckCircle />;
@@ -343,7 +348,7 @@ const MyTickets = () => {
                           {t.tier}
                         </span>
                         <span className={`${styles.statusBadge} ${styles['status_' + t.status]}`}>
-                          {statusIcon(t.status)} {t.status}
+                          {statusIcon(t.status)} {filterLabel(t.status)}
                         </span>
                       </div>
 
@@ -411,7 +416,7 @@ const MyTickets = () => {
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>{tt("ui.status.bae7", "Status")}</span>
                   <span className={`${styles.qrFactValue} ${styles['status_' + activeTicket.status]}`}>
-                    {activeTicket.status}
+                    {filterLabel(activeTicket.status)}
                   </span>
                 </div>
                 <div className={styles.qrFact}>

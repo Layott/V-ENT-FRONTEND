@@ -195,8 +195,12 @@
   font-size: 0.85rem;
   padding: 9px 12px;
   border-radius: 8px;
-  flex: 1 1 150px;
+  /* `auto`, not a pixel basis: the same class sits in rows AND in stacked
+     fields, and a 150px basis in a column became a 150px TALL input on the
+     venue and self check-in forms (seen in Chrome, 12 September). */
+  flex: 1 1 auto;
   min-width: 0;
+  min-height: 44px;
 }
 
 .smallInput {

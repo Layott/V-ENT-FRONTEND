@@ -355,6 +355,91 @@ const CASES = [
   ['clean', DEBOUNCE, 'a debounce is not a poller'],
 ];
 
+// ------------------------------------------------ part 3: a loud refresh
+//
+// The refresh must be QUIET. The event console's loop called `load()` with
+// nothing, and `load()` began with `setLoading(true)` and `setError('')`: every
+// thirty seconds the whole console was replaced by "Loading...", the form
+// somebody was typing into unmounted, and the refusal they had just been shown
+// was wiped. The stall page had fixed exactly this a week earlier, with a
+// `quiet` flag; the console never got one. Second occurrence, so a catcher.
+//
+// The shape: a refresh call site (`useAutoRefresh(() => X(...))` or
+// `loadRef.current(...)`) whose argument list does not mention `quiet`, in a
+// file where a loader sets a loading flag true.
+const REFRESH_CALL = /(?:useAutoRefresh\(\s*\(\)\s*=>\s*|loadRef\.current)\s*(?:\w+\s*)?\(([^)]*)\)/g;
+const SETS_LOADING = /set\w*[Ll]oading\w*\(\s*true\s*\)/;
+
+function loudRefreshes(src) {
+  if (!SETS_LOADING.test(src)) return [];
+  const out = [];
+  let m;
+  REFRESH_CALL.lastIndex = 0;
+  while ((m = REFRESH_CALL.exec(src))) {
+    const args = m[1] || '';
+    // `setTick(t => t + 1)` style loops bump a counter and the effect reads
+    // `refreshTick > 0` as quiet; those name no loader here and are fine.
+    // `load(false)` is the attendees page's spelling of the same thing: the
+    // argument is `first`, and false means "not the first, so no loading line".
+    if (/quiet|tick|refresh/i.test(args) || /^\s*false\s*$/.test(args) || /set\w+\(/.test(m[0])) continue;
+    out.push(m[0].trim());
+  }
+  return out;
+}
+
+const LOUD = `
+const load = useCallback(async () => { setLoading(true); await fetch(url); setLoading(false); }, [url]);
+const loadRef = useRef(load);
+useEffect(() => { const tick = async () => { await loadRef.current(); timer = setTimeout(tick, wait); }; }, [url]);
+`;
+const QUIET_REF = `
+const load = useCallback(async ({ quiet = false } = {}) => { if (!quiet) setLoading(true); await fetch(url); setLoading(false); }, [url]);
+const loadRef = useRef(load);
+useEffect(() => { const tick = async () => { await loadRef.current({ quiet: true }); timer = setTimeout(tick, wait); }; }, [url]);
+`;
+const QUIET_HOOK = `
+const load = useCallback(async ({ quiet } = {}) => { if (!quiet) setLoading(true); await fetch(url); }, [url]);
+useAutoRefresh(() => load({ quiet: true }));
+`;
+const LOUD_HOOK = `
+const load = useCallback(async () => { setLoading(true); await fetch(url); setLoading(false); }, [url]);
+useAutoRefresh(() => load());
+`;
+const COUNTER_HOOK = `
+const [refreshTick, setRefreshTick] = useState(0);
+useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 30000 });
+useEffect(() => { const quiet = refreshTick > 0; if (!quiet) setLoading(true); fetch(url); }, [refreshTick]);
+`;
+const NO_LOADING = `
+const load = useCallback(async () => { const r = await fetch(url); setRows(await r.json()); }, [url]);
+useAutoRefresh(() => load());
+`;
+const FIRST_FLAG = `
+const load = useCallback(async (first = false) => { if (first) { setLoading(true); } await fetch(url); }, [url]);
+const loadRef = useRef(load);
+useEffect(() => { const tick = async () => { await loadRef.current(false); timer = setTimeout(tick, wait); }; }, [url]);
+`;
+const PART3 = [
+  ['ok', FIRST_FLAG, 'the attendees page: false means not the first load'],
+  ['loud', LOUD, 'the event console loop, as it shipped'],
+  ['loud', LOUD_HOOK, 'useAutoRefresh calling a loud loader'],
+  ['ok', QUIET_REF, 'the same loop passing quiet'],
+  ['ok', QUIET_HOOK, 'useAutoRefresh passing quiet'],
+  ['ok', COUNTER_HOOK, 'a counter bump, read as quiet in the effect'],
+  ['ok', NO_LOADING, 'a loader with no loading flag has nothing to be loud with'],
+];
+
+function loudRefreshFiles() {
+  const out = [];
+  for (const file of walk(SRC)) {
+    const rel = path.relative(ROOT, file).split(path.sep).join('/');
+    if (rel.endsWith('useLiveData.js')) continue;
+    const hits = loudRefreshes(fs.readFileSync(file, 'utf8'));
+    if (hits.length) out.push([rel, hits]);
+  }
+  return out;
+}
+
 function selfTest() {
   let failed = 0;
   CASES.forEach(([expect, source, label], n) => {
@@ -377,12 +462,19 @@ function selfTest() {
       failed++;
     }
   });
+  PART3.forEach(([expect, src, label], n) => {
+    const isLoud = loudRefreshes(src).length > 0;
+    if ((expect === 'loud') !== isLoud) {
+      console.error(`FAIL part3 case ${n} (${label}): expected ${expect}, got ${isLoud ? 'loud' : 'ok'}`);
+      failed++;
+    }
+  });
   if (failed) {
     console.error(`\n${failed} self-test case(s) failed.`);
     process.exit(1);
   }
-  console.log(`self-test passed: ${CASES.length + PART2.length} cases, both directions `
-              + `(${CASES.length} dead timers, ${PART2.length} never-refreshes).`);
+  console.log(`self-test passed: ${CASES.length + PART2.length + PART3.length} cases, both directions `
+              + `(${CASES.length} dead timers, ${PART2.length} never-refreshes, ${PART3.length} loud refreshes).`);
 }
 
 // -------------------------------------------------------------------- main
@@ -435,6 +527,17 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`0 dead refresh timers, 0 pages that never refresh. `
+  const loud = loudRefreshFiles();
+  if (loud.length) {
+    console.error(`${loud.length} refresh loop(s) that put the loading state over the page:`);
+    console.error('');
+    for (const [rel, hits] of loud) console.error(`  ${rel}  ${hits.join(' | ')}`);
+    console.error('');
+    console.error('  Give the loader a `quiet` flag, skip setLoading(true) and the error');
+    console.error('  reset when it is set, and pass { quiet: true } from the refresh.');
+    process.exit(1);
+  }
+
+  console.log(`0 dead refresh timers, 0 pages that never refresh, 0 loud refreshes. `
               + `${findings.length} known, being worked down.`);
 }

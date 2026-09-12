@@ -125,7 +125,11 @@ const normaliseTier = t => {
     id: t.id,
     name,
     tier,
-    price: Number(t.price_vc ?? t.price ?? 0),
+    // What one ticket costs NOW: the list price until an early bird ends,
+    // then the standard price. The checkout quotes the same function.
+    price: Number(t.price_now_vc ?? t.price_vc ?? t.price ?? 0),
+    list_price: Number(t.price_vc ?? t.price ?? 0),
+    early_bird_ended: !!t.early_bird_ended,
     // VENT COINS
     price_ngn: Number(t.price_ngn ?? 0),
     available: Number(t.remaining ?? 0),

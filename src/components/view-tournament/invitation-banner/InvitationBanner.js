@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/i18n/LanguageProvider';
+import { useViewer } from '@/lib/gating';
 import styles from './invitation-banner.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -23,6 +24,7 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export default function InvitationBanner({ tournamentRef, token }) {
   const tt = useT();
   const router = useRouter();
+  const viewer = useViewer();
   const [invitation, setInvitation] = useState(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState('');
@@ -43,7 +45,9 @@ export default function InvitationBanner({ tournamentRef, token }) {
 
   useEffect(() => { load(); }, [load]);
 
-  if (!invitation || done === 'declined') return null;
+  // An invitation is addressed to an account, so a stranger never has one to
+  // answer. Said on the identity rather than left to the missing token.
+  if (!viewer.signedIn || !invitation || done === 'declined') return null;
 
   const answer = async (choice) => {
     setBusy(true);
