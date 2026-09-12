@@ -205,7 +205,7 @@ const CreateTournamentType = ({
                 <div className={styles.eventSearchContainer}>
                   <input id="selectEvent" type="text" placeholder={tt("ui.search.events.7710", "Search for events...")} className={createTournamentStyles.inputText} value={eventSearchTerm} onChange={handleEventSearchChange} />
                   
-                  {isLoadingEvents && <div className={styles.loadingMessage}>
+                  {isLoadingEvents && <div>
                       {tt("ui.loading.events.f691", "Loading events...")}
                     </div>}
                   
@@ -232,11 +232,11 @@ const CreateTournamentType = ({
                         </button>)}
                     </div>}
                   
-                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && <div className={styles.noEventsFound}>
+                  {eventSearchTerm && !isLoadingEvents && filteredEvents.length === 0 && availableEvents.length > 0 && <div>
                       {tt("ui.no.events.found.matching.105f", "No events found matching your search.")}
                     </div>}
 
-                  {!isLoadingEvents && availableEvents.length === 0 && eventSearchTerm && <div className={styles.noEventsFound}>
+                  {!isLoadingEvents && availableEvents.length === 0 && eventSearchTerm && <div>
                       {tt("ui.no.events.available.please.e682", "No events available. Please try again later.")}
                     </div>}
                 </div>

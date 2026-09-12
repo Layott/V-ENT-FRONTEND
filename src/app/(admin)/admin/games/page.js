@@ -13,6 +13,7 @@
 // is why the control says "Retire" and not "Delete".
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -87,9 +88,9 @@ function GamesInner() {
       body
     };
   }, []);
-  const load = useCallback(async () => {
-    setDataLoading(true);
-    setError('');
+  const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     const {
       ok,
       body
@@ -97,6 +98,10 @@ function GamesInner() {
     if (ok) setGames(body.data?.results || []);else setError(apiMessage(tt, body, 'api.failedToLoadGames', 'Failed to load the games.'));
     setDataLoading(false);
   }, [call]);
+
+  // Keeps itself current. See useAutoRefresh: quiet stops a refresh
+  // flashing the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) load();
   }, [authLoading, admin, load]);

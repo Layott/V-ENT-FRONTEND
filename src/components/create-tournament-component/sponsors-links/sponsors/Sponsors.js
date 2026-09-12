@@ -116,13 +116,13 @@ const Sponsors = ({
                   {field.logo ? <div className={styles.logoPreview}>
                       <Image src={mediaUrl(field.logo)} alt={tt("ui.uploaded.logo.a606", "Uploaded Logo")} className={styles.logoImage} width={60} height={40} />
                       <div className={styles.resetAndRemoveContainer}>
-                        <button className={styles.removeImageContainer} onClick={e => handleResetLogo(index, e)}>
+                        <button onClick={e => handleResetLogo(index, e)}>
                           {tt("ui.cancel.77df", "Cancel")}
                         </button>
                       </div>
                     </div> : <div className={styles.logoUploadPlaceholder}>
                       <span>
-                        <BiUpload className={styles.uploadIcon} />
+                        <BiUpload />
                         {tt("ui.upload.logo.8a04", "Upload Logo")}
                       </span>
                     </div>}

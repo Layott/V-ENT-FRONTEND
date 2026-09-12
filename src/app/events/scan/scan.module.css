@@ -250,3 +250,39 @@
     flex: 1 1 100%;
   }
 }
+
+/* Check-ins the server refused for good. Amber rather than red: the door is
+   still working, and this is something to raise afterwards rather than a
+   reason to stop the queue. */
+.refused {
+  background-color: rgba(212, 175, 55, 0.16);
+  color: var(--v-ent-light-gold);
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+}
+
+/* A quiet line for a state that is not an error: the session still resolving,
+   or a list that is genuinely empty. */
+.note {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  margin: 0;
+}
+
+/* Waiting on the server for a code this device has never seen. Neutral: it is
+   not a refusal yet, and colouring it red would tell a steward to turn
+   somebody away a second before the answer arrives. */
+.resultChecking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.4rem 1rem;
+  text-align: center;
+}

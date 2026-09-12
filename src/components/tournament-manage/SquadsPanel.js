@@ -17,6 +17,8 @@
 // either half is what the old model did.
 
 import { useCallback, useEffect, useState } from 'react';
+import UserChip from '@/components/user-chip/UserChip';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './squads-panel.module.css';
@@ -194,8 +196,10 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
 
           {squad.members.map((m) => (
             <div key={m.username} className={styles.member}>
+              {/* A squad member is a person, so their face and their founder
+                  mark belong here, and their name opens their profile. */}
               <span className={styles.memberName}>
-                @{m.username}
+                <UserChip user={m} size={28} />
                 {m.is_captain && ` · ${tt('squad.captain', 'captain')}`}
               </span>
               {/* The fact the whole feature exists to keep. */}
@@ -212,10 +216,13 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
           ))}
 
           <div className={styles.addRow}>
-            <input className={styles.input} value={adding[squad.id] || ''} disabled={busy}
-                   placeholder={tt('squad.addPlaceholder', 'Username, from any club')}
-                   aria-label={tt('squad.addPlaceholder', 'Username, from any club')}
-                   onChange={(e) => setAdding((a) => ({ ...a, [squad.id]: e.target.value }))} />
+            <UserPicker
+              value={adding[squad.id] || ''}
+              onChange={(value) => setAdding((a) => ({ ...a, [squad.id]: value }))}
+              token={token}
+              disabled={busy}
+              placeholder={tt('squad.addPlaceholder', 'Username, from any club')}
+            />
             <button type="button" className={styles.secondary} disabled={busy}
                     onClick={() => addMember(squad.id)}>
               {tt('squad.add', 'Add to squad')}

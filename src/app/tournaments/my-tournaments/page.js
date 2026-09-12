@@ -10,6 +10,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import DeleteControl from '@/components/delete-control/DeleteControl';
 import { ventFetch, API, tokenFrom, toTournamentArray, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './my-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -206,7 +207,7 @@ const MyTournaments = () => {
             </div> : error ? <div className={styles.inlineErrorCard}>
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.78d7", "Couldn't load your tournaments")}</p>
-              <p className={styles.inlineErrorSub}>{error.message || tx("Something went wrong. Please try again.")}</p>
+              <p className={styles.inlineErrorSub}>{tx("We could not load your tournaments just now.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : tab === 'drafts' ? drafts.length === 0 ? <div className={styles.emptyState}>
                 <LuTrophy className={styles.emptyIcon} />
@@ -230,7 +231,7 @@ const MyTournaments = () => {
                       </p>
                     </div>
                     <div className={styles.rowActions}>
-                      <Link href={`/tournaments/create-tournament?draft_id=${d.id}`}>
+                      <Link href={`/tournaments/create-tournament?draft_id=${d.slug || d.id}`}>
                         <button className={styles.actionBtn}><LuPencil /> {tt("ui.resume.b3bd", "Resume")}</button>
                       </Link>
                       {/* Asked once, in place. A draft is somebody's unfinished
@@ -281,7 +282,7 @@ const MyTournaments = () => {
                       <div className={styles.titleLine}>
                         <p className={styles.tournamentName}>{name}</p>
                         <span className={`${styles.statusBadge} ${badgeClass}`}>
-                          {status === 'in_progress' || status === 'live' || status === 'ongoing' ? <LuRadio className={styles.liveDot} /> : null} {statusLabel}
+                          {status === 'in_progress' || status === 'live' || status === 'ongoing' ? <LuRadio /> : null} {statusLabel}
                         </span>
                         {t?.reg_count != null && <span className={styles.regBadge}><LuUsers /> {t.reg_count} {tt("ui.registered.6248", "registered")}</span>}
                         {disputeCount > 0 && <span className={styles.disputeBadge}><LuTriangleAlert /> {disputeCount} {tt("ui.dispute.cfc8", "dispute")}{disputeCount === 1 ? '' : 's'}</span>}
@@ -312,6 +313,20 @@ const MyTournaments = () => {
                       {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`}>
                           <button className={`${styles.actionBtn} ${styles.manageBtn}`}><LuSettings /> {tt("ui.manage.bf58", "Manage")}</button>
                         </Link>}
+                      {/* Deleting a published tournament, which nothing on the
+                          platform could do: the only path was the draft one,
+                          which refuses anything published. Soft, so an admin
+                          can still see it and put it back. */}
+                      <DeleteControl kind="tournament"
+                                     reference={t?.slug || t?.id}
+                                     name={name} token={token}
+                                     className={styles.actionBtn}
+                                     onDeleted={() => {
+                                       setTournaments(all => all.filter(
+                                         x => (x?.id ?? x?.slug) !== (t?.id ?? t?.slug)));
+                                       setNote(tt('del.tournamentGone', 'Deleted. An admin can restore it.'));
+                                       setTimeout(() => setNote(''), 4000);
+                                     }} />
                     </div>
                   </div>;
           })}

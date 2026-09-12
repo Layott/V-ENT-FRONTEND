@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import AdminNav from '@/components/admin/AdminNav';
@@ -12,6 +13,9 @@ import styles from './users.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { formatDate, formatNumber } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const PAGE_SIZE = 20;
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
 const STATUSES = [{
@@ -29,6 +33,19 @@ const STATUSES = [{
 }, {
   value: 'kyc_pending',
   label: 'KYC Pending'
+}, {
+  // Not a status of the account, but the question somebody actually opens
+  // this page to ask: who has premium, and did we mean to give it to them.
+  // The endpoint has answered it since the control shipped; without this
+  // option nothing could ask.
+  value: 'premium',
+  label: 'Premium'
+}, {
+  // Everybody who pressed "I want premium" while there was no price set. The
+  // list is the answer to the question the refusal used to send people to a
+  // member of staff with.
+  value: 'wants_premium',
+  label: 'Wants premium'
 }];
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -60,10 +77,10 @@ function UsersInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(async ({ quiet = false } = {}) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -97,6 +114,11 @@ function UsersInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, countryFilter, dateFrom, dateTo, sortBy]);
+
+  // Keeps itself current. One line, because fetchUsers already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchUsers({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchUsers();
   }, [authLoading, admin, fetchUsers]);
@@ -213,7 +235,7 @@ function UsersInner() {
                 <option value="username">{tt("ui.username.z.fd1c", "Username A-Z")}</option>
                 <option value="-wallet_vc">{tt("ui.wallet.high.low.7287", "Wallet (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countUsersOne', '{n} user') : tt('admin.countUsersMany', '{n} users')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countUsersOne', '{n} user') : tt('admin.countUsersMany', '{n} users')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -255,10 +277,10 @@ function UsersInner() {
                           <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggleSelect(u.id)} className={styles.checkbox} aria-label={`Select ${u.username}`} />
                         </td>
                         <td>
-                          <Link href={`/admin/users/${u.id}`} className={styles.userLink}>
+                          <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={styles.userLink}>
                             <div className={shared.userCell}>
                               <div className={shared.userAvatar}>
-                                {(u.username || 'U').slice(0, 2).toUpperCase()}
+                                <Avatar src={mediaUrl(u.avatar)} name={u.username} size={36} />
                               </div>
                               <div>
                                 <span className={styles.userName}>{u.username}</span>
@@ -273,16 +295,29 @@ function UsersInner() {
                           <span className={`${shared.badge} ${statusBadgeClass(u.status)}`}>
                             {u.status?.replace('_', ' ')}
                           </span>
+                          {/* Premium is a second fact about the same account
+                              rather than a status, so it sits beside the badge
+                              instead of replacing it. On the row as well as on
+                              the detail page: a field that lands on one of the
+                              two is the same bug in slower motion. */}
+                          {u.is_premium && <span className={`${shared.badge} ${shared.sApproved}`}>
+                              {tt('adminUser.premium', 'Premium')}
+                            </span>}
+                          {!u.is_premium && u.wants_premium && <span className={`${shared.badge} ${shared.sPending}`}
+                                title={u.wants_premium.surface || ''}>
+                              {tt('adminUser.wantsPremium', 'Wants premium')}
+                              {u.wants_premium.times > 1 ? ` ${u.wants_premium.times}` : ''}
+                            </span>}
                         </td>
                         <td className={shared.hideMobile}>
                           {u.wallet_vc ? Number(u.wallet_vc).toLocaleString() : '0'}
                         </td>
                         <td className={shared.hideMobile}>
-                          {u.date_joined ? new Date(u.date_joined).toLocaleDateString() : '-'}
+                          {u.date_joined ? formatDate(u.date_joined) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>
-                            <Link href={`/admin/users/${u.id}`} className={`${shared.actBtn} ${shared.actView}`}>
+                            <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={`${shared.actBtn} ${shared.actView}`}>
                               {tt("ui.view.69bd", "View")}
                             </Link>
                             {u.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => actOnUser(u.id, 'unban')}>

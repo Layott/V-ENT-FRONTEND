@@ -24,7 +24,7 @@ const TeamProfileBio = () => {
 
                     <div className={styles.profileImageUpload}>
                         <label htmlFor="profileImageUpload" className={styles.profileImageUploadLabel}>
-                            <FiCamera className={styles.uploadIcon} />
+                            <FiCamera />
                         </label>
                         <input type="file" accept="image/*" onChange={handleProfileImageUploader} id="profileImageUpload" className={styles.uploadInput} />
                     </div>
@@ -37,13 +37,13 @@ const TeamProfileBio = () => {
                         <p className={styles.userLocation}><IoLocationOutline />
                             <span className={styles.userLocationState}>{tt("ui.lagos.b622", "Lagos")}</span>,
                             &nbsp;
-                            <span className={styles.userLocationCountry}>{tt("ui.nigeria.9742", "Nigeria")}</span>
+                            <span>{tt("ui.nigeria.9742", "Nigeria")}</span>
                         </p>
                     </div>
 
                     <div className={styles.profileEditButtonContainer}>
                         <Link href={'/edit-team-profile'} onClick={toggleEditMode} className={styles.editButtonLink}>
-                            <FiEdit3 className={styles.editIcon} />
+                            <FiEdit3 />
                             {tt("ui.edit.team.profile.839a", "Edit Team Profile")}
 
                         </Link>

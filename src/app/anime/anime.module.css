@@ -265,16 +265,22 @@
   font-size: var(--fs-p-size-mobile);
 }
 
+/* `cardGrid` is the four-across one under another name, because that is what
+   every rail on the hub uses and `cardGrid4` reads like a magic number at the
+   call site. The designed pair is kept: some rails are deliberately three. */
+.cardGrid,
 .cardGrid4, .cardGrid3 {
   display: grid;
   gap: 1rem;
   grid-template-columns: 1fr;
 }
 @media (min-width: 480px) {
+  .cardGrid,
   .cardGrid4 { grid-template-columns: repeat(2, 1fr); }
   .cardGrid3 { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 1024px) {
+  .cardGrid,
   .cardGrid4 { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
   .cardGrid3 { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 }
@@ -495,4 +501,13 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.65);
   font-weight: var(--fw-medium);
+}
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .heroPrimaryBtn,
+  .heroSecondaryBtn {
+    min-height: 44px;
+  }
 }

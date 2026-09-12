@@ -24,12 +24,12 @@ const TABS = [
 ];
 
 const formatDate = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return ' - ';
   try {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   } catch {
-    return '—';
+    return ' - ';
   }
 };
 
@@ -358,7 +358,7 @@ const ManageOrgContent = () => {
               <div>
                 <h1 className={styles.pageTitle}>Manage {org.name}</h1>
                 <p className={styles.pageSubtitle}>
-                  Owner-only controls — invite members, link teams, request verification.
+                  Owner-only controls - invite members, link teams, request verification.
                 </p>
               </div>
             </div>
@@ -500,7 +500,7 @@ const ManageOrgContent = () => {
                               <td>{formatDate(m.joined_at)}</td>
                               <td className={styles.alignRight}>
                                 {isMemberOwner ? (
-                                  <span className={styles.cellMuted}>—</span>
+                                  <span className={styles.cellMuted}> - </span>
                                 ) : (
                                   <div className={styles.menuWrap}>
                                     <button
@@ -634,7 +634,7 @@ const ManageOrgContent = () => {
                     <div>
                       <h3 className={styles.panelTitle}>Verified status</h3>
                       <p className={styles.bioText}>
-                        Verified orgs get a blue tick across the platform — required for hosting paid tournaments,
+                        Verified orgs get a blue tick across the platform - required for hosting paid tournaments,
                         receiving sponsor payouts, and running events with V-ENT branding.
                       </p>
                     </div>
@@ -692,7 +692,7 @@ const ManageOrgContent = () => {
                       </div>
                     ) : verificationSubmitted ? (
                       <div className={styles.verifyAlreadyDone}>
-                        <FaCheckCircle /> Verification request submitted — review takes 3–5 business days.
+                        <FaCheckCircle /> Verification request submitted - review takes 3-5 business days.
                       </div>
                     ) : (
                       <button

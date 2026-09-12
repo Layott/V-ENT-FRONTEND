@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -61,12 +62,12 @@ function PartnersInner() {
   // Each request takes a ticket: filter changes overlap, and the slower answer
   // must not overwrite the newer one.
   const requestRef = useRef(0);
-  const fetchPartners = useCallback(async () => {
+  const fetchPartners = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams();
       if (statusFilter) params.set('status', statusFilter);
@@ -95,6 +96,11 @@ function PartnersInner() {
       if (requestRef.current === ticket) setDataLoading(false);
     }
   }, [statusFilter]);
+
+  // Keeps itself current. One line, because fetchPartners already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchPartners({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchPartners();
   }, [authLoading, admin, fetchPartners]);
@@ -209,6 +215,11 @@ function PartnersInner() {
     }
   };
 
+  // Asked before it happens. Removing the address a partner's sign-in returns
+  // to breaks that sign-in for everybody using it, and this was the one
+  // destructive control in the console that acted on a single press.
+  const [confirmRemove, setConfirmRemove] = useState('');
+
   const removeRedirect = async uri => {
     setBusy(true);
     try {
@@ -320,10 +331,10 @@ function PartnersInner() {
   const toggleScope = key => {
     setDraftScopes(current => current.includes(key) ? current.filter(s => s !== key) : [...current, key]);
   };
-  if (authLoading) return <div className={shared.loadingScreen}>{tt("ui.loading.b04b", "Loading...")}</div>;
-  return <div className={shared.adminShell}>
+  if (authLoading) return <div className={shared.stateText}>{tt("ui.loading.b04b", "Loading...")}</div>;
+  return <div className={shared.pageContainer}>
       <AdminNav admin={admin} onLogout={logout} />
-      <div className={shared.adminMain}>
+      <div className={shared.mainContainer}>
         <AdminHeader title={tt("ui.partners.aa16", "Partners")} admin={admin} onLogout={logout} />
 
         <div className={shared.contentArea}>
@@ -566,10 +577,30 @@ function PartnersInner() {
                 ) : (open.redirect_uris || []).map(uri => (
                   <div key={uri} className={styles.redirectRow}>
                     <code className={styles.redirectUri}>{uri}</code>
-                    <button type="button" className={styles.ghost} disabled={busy}
-                            onClick={() => removeRedirect(uri)}>
-                      {tt('admin.partners.redirectRemove', 'Remove')}
-                    </button>
+                    {confirmRemove === uri ? (
+                      <>
+                        <span className={styles.confirmAsk}>
+                          {tt('admin.partners.redirectRemoveAsk',
+                            'Sign-in that returns here stops working. Remove it?')}
+                        </span>
+                        <button type="button" className={styles.danger} disabled={busy}
+                                onClick={async () => {
+                                  await removeRedirect(uri);
+                                  setConfirmRemove('');
+                                }}>
+                          {tt('admin.partners.redirectRemoveYes', 'Yes, remove it')}
+                        </button>
+                        <button type="button" className={styles.ghost} disabled={busy}
+                                onClick={() => setConfirmRemove('')}>
+                          {tt('ui.cancel.0f8e', 'Cancel')}
+                        </button>
+                      </>
+                    ) : (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              onClick={() => setConfirmRemove(uri)}>
+                        {tt('admin.partners.redirectRemove', 'Remove')}
+                      </button>
+                    )}
                   </div>
                 ))}
 

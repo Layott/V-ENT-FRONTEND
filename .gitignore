@@ -47,3 +47,9 @@ scripts/mobile-shots/
 # Python bytecode from the scripts/ checkers.
 __pycache__/
 *.pyc
+.next-dev
+.next-dev-*
+
+# A browser profile of its own for scripts/walk-console.mjs, so a walk does not
+# share cookies with whatever else is signed in on this machine.
+.walk-profile

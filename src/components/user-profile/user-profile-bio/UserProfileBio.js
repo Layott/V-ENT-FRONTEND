@@ -130,11 +130,11 @@ const UserProfileBio = ({
 
             <div className={styles.profileImageUpload}>
               <label htmlFor="profileImageUpload" className={styles.profileImageUploadLabel}>
-                <FiCamera className={styles.uploadIcon} />
+                <FiCamera />
               </label>
               <input type="file" accept="image/*" onChange={handleProfileImageUploader} id="profileImageUpload" className={styles.uploadInput} disabled={isUploading} />
             </div>
-            {isUploading && <div className={styles.uploadingIndicator}>{tt("ui.uploading.070e", "Uploading...")}</div>}
+            {isUploading && <div>{tt("ui.uploading.070e", "Uploading...")}</div>}
           </div>
           <div className={styles.profileDetailsContainer}>
             <div className={styles.profileDetails}>
@@ -146,13 +146,13 @@ const UserProfileBio = ({
               </p>
               <p className={styles.userLocation}>
                 <IoLocationOutline />
-                <span className={styles.userLocationCountry}>{country}</span>
+                <span>{country}</span>
               </p>
             </div>
 
             <div className={styles.profileEditButtonContainer}>
               <Link href={"/edit-user-profile"} onClick={toggleEditMode} className={styles.editButtonLink}>
-                <FiEdit3 className={styles.editIcon} />
+                <FiEdit3 />
                 {tt("ui.edit.profile.cd28", "Edit Profile")}
               </Link>
             </div>

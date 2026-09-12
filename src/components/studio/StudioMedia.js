@@ -199,6 +199,17 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
                 {tt('media.nothingYet', 'Nothing here yet.')}
               </p>
             )}
+            {/* The uploaded faces, registered on THIS page under the same
+                name the overlay runtime gives them, which is the bare slot
+                (`font-family: 'hero'`). Without this the preview below draws
+                "Aa" in the page's own font and proves nothing. */}
+            {assets.some((a) => a.kind === 'font' && a.slot && a.url) && (
+              <style>
+                {assets.filter((a) => a.kind === 'font' && a.slot && a.url).map((a) => (
+                  `@font-face { font-family: "${a.slot.replace(/"/g, '')}"; src: url("${a.url}"); }`
+                )).join(' ')}
+              </style>
+            )}
             {assets.map((a) => (
               <div key={a.id} className={styles.row}>
                 <div className={styles.thumb}>
@@ -208,7 +219,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
                       // A font has no picture. The only preview worth anything
                       // is the typeface itself, so the name is drawn IN it.
                       ? <span className={styles.thumbFont}
-                              style={{ fontFamily: a.slot ? `"vent-${a.slot}"` : 'inherit' }}>
+                              style={{ fontFamily: a.slot ? `"${a.slot}"` : 'inherit' }}>
                           Aa
                         </span>
                       : <img className={styles.thumbMedia} src={a.url} alt="" />}

@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -10,6 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate, formatNumber } from '@/lib/datetime';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -57,12 +59,12 @@ function DisputesInner() {
   // "Connection error." over a table that had already loaded correctly. Each
   // run takes a ticket; only the newest one is allowed to touch state.
   const requestRef = useRef(0);
-  const fetchDisputes = useCallback(async () => {
+  const fetchDisputes = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -93,6 +95,11 @@ function DisputesInner() {
       setDataLoading(false);
     }
   }, [page, statusFilter]);
+
+  // Keeps itself current. One line, because fetchDisputes already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchDisputes({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchDisputes();
   }, [authLoading, admin, fetchDisputes]);
@@ -165,7 +172,7 @@ function DisputesInner() {
                 <option value="dismissed">{tt("ui.dismissed.e8db", "Dismissed")}</option>
                 <option value="all">{tt("ui.all.statuses.9cb2", "All Statuses")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countDisputesOne', '{n} dispute') : tt('admin.countDisputesMany', '{n} disputes')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countDisputesOne', '{n} dispute') : tt('admin.countDisputesMany', '{n} disputes')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : visible.length === 0 ? <p className={shared.stateText}>{tt("ui.no.disputes.found.48a5", "No disputes found.")}</p> : <div className={shared.tableWrap}>
@@ -206,7 +213,7 @@ function DisputesInner() {
                             </span>
                           </td>
                           <td className={shared.hideMobile}>
-                            {d.created_at ? new Date(d.created_at).toLocaleDateString() : '-'}
+                            {d.created_at ? formatDate(d.created_at) : '-'}
                           </td>
                           <td>
                             {actionable && <div className={shared.actGroup} style={{

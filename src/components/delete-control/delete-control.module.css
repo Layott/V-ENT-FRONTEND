@@ -1,0 +1,91 @@
+/* Asking before deleting. Filled surfaces, no strokes. The question sits in
+   the row rather than in a modal, because a modal over a list loses which row
+   was pressed. */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.trigger:hover { background-color: #4a2226; color: #fff; }
+.trigger:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ask {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  max-width: 32rem;
+}
+
+.question {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.reassure {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  margin-top: 0.35rem;
+}
+
+.problem {
+  color: var(--v-ent-red, #ed1c24);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin-top: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.danger,
+.quiet {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.danger {
+  background-color: var(--v-ent-red, #ed1c24);
+  color: #fff;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.danger:hover { background-color: #c9161d; }
+
+.quiet {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.quiet:hover { background-color: #3d3e45; color: #fff; }
+
+.danger:disabled,
+.quiet:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.danger:focus-visible,
+.quiet:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

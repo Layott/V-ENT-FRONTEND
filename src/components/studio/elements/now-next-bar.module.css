@@ -1,0 +1,124 @@
+/* C2, the now and next bar.
+ *
+ * Every number here is `nownext()` in the pack's `stream_more.py`, carried
+ * over unchanged: right 96px, bottom 118px, rows 62px tall with a 6px gap, a
+ * 3px radius, and the label block filling the row height. The frame is
+ * 1920x1080 because an OBS browser source is that size, so a pixel here is the
+ * pixel the designer placed.
+ *
+ * Colours come from the tokens in `rivalry.module.css`, which are the pack's
+ * own. The two hexes below are not tokens and are not duplicates of any: #fff
+ * is white where the pack asks for white, and #4A3B00 is the dark ink the pack
+ * sets on its gold block.
+ */
+
+.nn {
+  bottom: 118px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: absolute;
+  right: 96px;
+}
+
+/* The pack takes the whole bar up 80ms after the graphic is cued. Held above
+ * the shared `wipeIn` by specificity, so the entrance keeps the studio's
+ * duration and this keeps the pack's delay. */
+.root .nn { animation-delay: 80ms; }
+
+.row {
+  align-items: center;
+  background: var(--panel);
+  border-radius: 3px;
+  display: flex;
+  height: 62px;
+  overflow: hidden;
+}
+
+.lab {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  font-family: var(--bc);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  padding: 0 18px;
+  text-transform: uppercase;
+}
+
+/* NOW in the series green, NEXT in the standings gold. The two states are told
+ * apart by fill, which is how the whole pack separates one thing from another. */
+.row.now .lab {
+  background: var(--green);
+  color: #fff;
+}
+
+.row.next .lab {
+  background: var(--gold);
+  color: #4A3B00;
+}
+
+.txt {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 24px;
+  font-weight: 400;
+  padding: 0 22px;
+  /* The pack's cues are set in capitals. A run sheet is typed by an organiser
+     in whatever case they use, so the case is decided here rather than by what
+     was typed at half past two in the morning. */
+  text-transform: uppercase;
+}
+
+/* The separator stays lowercase, because the approved artwork reads
+   "NIGERIA v GHANA" and a capital V is a different mark. */
+.sep {
+  color: var(--panel-edge);
+  font-weight: 400;
+  margin: 0 6px;
+  text-transform: lowercase;
+}
+
+.tail {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding-right: 20px;
+  text-transform: uppercase;
+}
+
+/* Nothing on and nothing next. The bar's own surface, its own corner and its
+ * own type, so an operator sees a graphic that is working and an audience sees
+ * a sentence. Never a spinner, never the word loading. */
+.empty {
+  background: var(--panel);
+  border-radius: 3px;
+  bottom: 118px;
+  padding: 18px 24px;
+  position: absolute;
+  right: 96px;
+}
+
+.emptyK {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.emptyLine {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root .nn { animation-delay: 0ms; }
+}

@@ -294,3 +294,17 @@
     width: 40px;
   }
 }
+
+/* The match being played right now. Referenced by `cardMod` and defined
+   nowhere, so a live match was indistinguishable from a scheduled one on a
+   bracket somebody is watching to find it.
+
+   A filled surface and a brighter edge of TEXT, never a glow and never a
+   pulse: the design rule is explicit that a live indicator is flat. */
+.matchLive {
+  background-color: #33413a;
+}
+
+.matchLive .matchTeamName {
+  color: #fff;
+}

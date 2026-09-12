@@ -46,4 +46,247 @@ export function withLocalDatesAsISO(payload, fields) {
   return out;
 }
 
-export default { localInputToISO, isoToLocalInput, withLocalDatesAsISO };
+// ---------------------------------------------------------------------------
+// The display half: one timing model for the whole site
+// ---------------------------------------------------------------------------
+//
+// CEO, 6 September 2026: "the timing model should be across the entire site,
+// people in ghana, should be seeing all set timings in their own times.
+// everything that has to do with dates and timing shiuld pickk it from that
+// timing model."
+//
+// The half above already gets INPUT right: what an organiser typed in Lagos is
+// converted to an instant before it is sent. Reading was the half still done by
+// hand in 260 places, and done two ways that are both wrong:
+//
+//   new Date(iso).toLocaleDateString()          <- the BROWSER's language
+//   new Date(iso).toLocaleDateString('en-GB')   <- somebody else's language
+//
+// The first is the subtle one. Passing no locale, or `undefined`, does not mean
+// "the default"; it means whatever language the browser is set to, which on a
+// Portuguese reader's phone is Portuguese no matter what they chose on the
+// site, and on an English phone stays English no matter what they chose. The
+// zone was always right by accident, because `toLocale*` uses the reader's own
+// zone; the words never were.
+//
+// So everything here takes `appLocale()` for the words and the reader's own
+// zone for the clock, and there is one place to change if that ever has to
+// move.
+//
+// ## The venue clock, which is a real exception and not an oversight
+//
+// A physical event opens its doors at the VENUE's clock. Somebody in Accra
+// reading "10:00" for a Lagos event and turning up at their own 10:00 is an
+// hour late, and an audience that misses the start blames the platform. So the
+// reader sees their own time AND the zone it is in - `withZone` - and anything
+// that must state the venue's own clock asks for it explicitly with `inZone`.
+// The rule is not "always the viewer's zone", it is "always a zone the reader
+// can see", and the viewer's is the sensible default.
+
+import { appLocale } from './appLocale';
+import { appDateFormat, appTimezone } from './appRegion';
+
+/**
+ * The zone dates should be read in.
+ *
+ * A SAVED preference first, then the browser's guess, then nothing. Somebody
+ * in Lagos opening the site from an airport in Doha still wants Lagos time,
+ * because that is where their tournament is, and the browser cannot know that.
+ * Until they choose, the browser is the best guess available.
+ *
+ * The setting used to be saved and read by nothing at all, so choosing a zone
+ * in Settings changed no date on the site. CEO, 7 September: "do these work?"
+ */
+export function viewerZone() {
+  const chosen = appTimezone();
+  if (chosen) return chosen;
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function asDate(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/** Every formatter here goes through this, so there is one set of decisions. */
+function render(value, options, { zone, fallback = '-' } = {}) {
+  const parsed = asDate(value);
+  if (parsed === null) return fallback;
+  try {
+    return parsed.toLocaleString(appLocale(), {
+      ...options,
+      // THE READER'S ZONE, always, unless a caller names one explicitly.
+      //
+      // CEO, 7 September 2026, on the venue-clock exception I had written:
+      // "isnt this bad, let fix it so everyone see venue timing in their own
+      // time, except they set a timezone in their profile ... and it should
+      // be same for date."
+      //
+      // The old rule made a venue's own clock beat the reader's, so somebody
+      // in Accra opening a Lagos event saw 10:00 meaning Lagos. That is one
+      // fewer mistake for the person at the door and one more for everybody
+      // reading from anywhere else, and everybody reading is the larger group
+      // by a long way. What stops the Accra reader arriving late is the ZONE
+      // LABEL, not rendering in a zone that is not theirs - so the label
+      // stays and the zone does not.
+      //
+      // `zone` is still honoured when a caller passes one, because a run of
+      // show genuinely is written on the venue's clock and is read by the
+      // people standing in the venue.
+      timeZone: zone || viewerZone(),
+    });
+  } catch {
+    // An invalid zone from bad data must never take a page down with it.
+    return parsed.toLocaleString(appLocale(), options);
+  }
+}
+
+/** A date and a time together: "4 Sept 2026, 10:00". */
+export function formatDateTime(value, opts) {
+  return render(value, {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  }, opts);
+}
+
+/**
+ * A date on its own: "4 Sept 2026", or the order the reader asked for.
+ *
+ * The three settings are ORDERS, not format strings, and each maps to a real
+ * locale that already writes dates that way. That matters: `Intl` knows the
+ * separators, the numerals and the direction for every language V-ENT speaks,
+ * and hand-assembling "DD/MM/YYYY" from parts throws all of that away the
+ * moment somebody reads the site in a language that does not use Latin digits.
+ *
+ * With no preference set, the reader's own language decides, which is the
+ * behaviour every date on the site had before and still has by default.
+ */
+const DATE_ORDER = {
+  'DD/MM/YYYY': { locale: 'en-GB', numeric: true },
+  'MM/DD/YYYY': { locale: 'en-US', numeric: true },
+  'YYYY-MM-DD': { locale: 'en-CA', numeric: true },
+};
+
+export function formatDate(value, opts) {
+  const chosen = DATE_ORDER[appDateFormat()];
+  if (!chosen) {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
+  const parsed = asDate(value);
+  if (parsed === null) return (opts && opts.fallback) || '-';
+  try {
+    return parsed.toLocaleDateString(chosen.locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      timeZone: (opts && opts.zone) || viewerZone(),
+    });
+  } catch {
+    return render(value, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }, opts);
+  }
+}
+
+/** A time on its own: "10:00". */
+export function formatTime(value, opts) {
+  return render(value, { hour: '2-digit', minute: '2-digit' }, opts);
+}
+
+/** A day on its own, short: "Fri 18 Sep".
+ *
+ *  For a list where the TIME is the column and the day only has to separate
+ *  one day from the next, which is what a running order on a wall is. The
+ *  year is deliberately absent: nobody reading a programme in the hall needs
+ *  it, and the row has to stay one line.
+ */
+export function formatDayShort(value, opts) {
+  return render(value, { weekday: 'short', day: 'numeric', month: 'short' }, opts);
+}
+
+/** A date and time with the zone named: "4 Sept 2026, 10:00 WAT".
+ *
+ *  For anything somebody has to BE somewhere for. It renders in the READER's
+ *  zone like everything else, and names that zone - so an Accra reader sees
+ *  "09:00 GMT" for a Lagos door that opens at 10:00 WAT, which is the same
+ *  instant said in the language of their own watch.
+ *
+ *  The three characters are the whole point. Without them two people compare
+ *  times and disagree; with them they are obviously talking about one moment.
+ */
+export function formatWithZone(value, opts) {
+  return render(value, {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+  }, opts);
+}
+
+/** The same instant stated in a NAMED zone, for the few places that need one.
+ *
+ *  Not the default any more (CEO, 7 September 2026). This is for a run of show
+ *  and an operator's rundown: documents written on the venue's clock, read by
+ *  people standing in the venue. Everything a member of the public reads goes
+ *  through the ordinary formatters and lands in their own zone.
+ */
+export function formatInZone(value, zone, opts) {
+  return formatWithZone(value, { ...opts, zone });
+}
+
+/** A range, collapsing the parts that repeat: "4 - 6 Sept 2026". */
+export function formatDateRange(from, to, opts) {
+  const start = asDate(from);
+  const end = asDate(to);
+  if (start === null) return opts?.fallback ?? '-';
+  if (end === null) return formatDate(start, opts);
+  const sameDay = formatDate(start, opts) === formatDate(end, opts);
+  if (sameDay) return formatDate(start, opts);
+  return `${formatDate(start, opts)} - ${formatDate(end, opts)}`;
+}
+
+/** How long ago, in words, for a feed or a log. */
+export function formatRelative(value, opts) {
+  const parsed = asDate(value);
+  if (parsed === null) return opts?.fallback ?? '-';
+  const seconds = Math.round((parsed.getTime() - Date.now()) / 1000);
+  const steps = [
+    ['second', 60], ['minute', 60], ['hour', 24],
+    ['day', 7], ['week', 4.35], ['month', 12], ['year', Infinity],
+  ];
+  let amount = seconds;
+  for (const [unit, size] of steps) {
+    if (Math.abs(amount) < size) {
+      try {
+        return new Intl.RelativeTimeFormat(appLocale(), { numeric: 'auto' })
+          .format(Math.round(amount), unit);
+      } catch {
+        return formatDateTime(value, opts);
+      }
+    }
+    amount /= size;
+  }
+  return formatDateTime(value, opts);
+}
+
+/** A number, in the reader's language, so 1,422 and 1.422 both come out right. */
+export function formatNumber(value, options) {
+  if (value === null || value === undefined || value === '') return '-';
+  const n = typeof value === 'number' ? value : Number(value);
+  if (Number.isNaN(n)) return '-';
+  try {
+    return n.toLocaleString(appLocale(), options);
+  } catch {
+    return String(n);
+  }
+}
+
+export default {
+  localInputToISO, isoToLocalInput, withLocalDatesAsISO,
+  formatDayShort,
+  viewerZone, formatDateTime, formatDate, formatTime, formatWithZone,
+  formatInZone, formatDateRange, formatRelative, formatNumber,
+};

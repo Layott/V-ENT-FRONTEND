@@ -1559,3 +1559,37 @@
   font-size: 0.79rem;
   margin-top: 0.15rem;
 }
+
+/* The run of show, linked from the hero when the organiser has published one.
+   The same filled control the event page uses, so the two read alike. */
+.runOfShowLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.86rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.runOfShowLink:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .primaryBtn {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .socialBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

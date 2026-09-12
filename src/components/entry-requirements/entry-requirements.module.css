@@ -408,3 +408,60 @@
     width: 100%;
   }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .iconBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* What premium would add, shown in the picker rather than hidden.
+
+   A filled surface a step off the panel, no stroke and no lock icon: the
+   heading says what it is. Somebody has to be able to see what is for sale,
+   and a button that refuses on press is the fault this exists to avoid. */
+.locked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.lockedTitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.lockedWhat {
+  font-size: 0.92rem;
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.lockedWhy {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Where the refusal goes. A link rather than a sentence naming a person to go
+   and find: the reader can act on this one. */
+.lockedLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.4rem;
+  color: var(--v-ent-gold);
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}

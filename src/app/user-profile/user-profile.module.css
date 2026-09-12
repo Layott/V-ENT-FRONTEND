@@ -590,3 +590,29 @@
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* Why there is no Message button.
+   A viewer with no button and no explanation assumes the page is broken, and
+   this says which it is - from the person's OWN stated setting, never from
+   anything about the viewer. Somebody who has been blocked sees exactly what
+   somebody who simply is not allowed sees. Plain text on the page bg, no
+   stroke and no box: it is a note, not a control. */
+.heroNote {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.8rem;
+}
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .heroIconBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

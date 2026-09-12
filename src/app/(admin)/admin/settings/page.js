@@ -55,10 +55,15 @@ function SettingsInner() {
   const toast = useAdminToast();
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  // A load that fails left `settings` null and `loading` false, so this page
+  // showed "Loading..." for ever with a toast that had already gone. Three
+  // admin pages had that exact shape in August; this was the fourth.
+  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const fetchSettings = useCallback(async () => {
     setLoading(true);
+    setError('');
     const token = localStorage.getItem('adminToken');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/settings/`, {
@@ -68,11 +73,15 @@ function SettingsInner() {
       });
       const data = await res.json();
       if (data.status === 'success') setSettings(data.data);
+      // A refusal is not an exception, and this branch did nothing at all: the
+      // page sat on "Loading..." with no reason given.
+      else setError(apiMessage(tt, data, 'api.failedToLoadSettings',
+        'Could not load the settings.'));
     } catch {
-      toast.push(tt("msg.failedToLoadSettings", "Failed to load settings."), 'error');
+      setError(tt("msg.connectionError", "Connection error."));
     }
     setLoading(false);
-  }, [toast]);
+  }, [tt]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!authLoading && admin) fetchSettings();
   }, [authLoading, admin, fetchSettings]);
@@ -125,7 +134,14 @@ function SettingsInner() {
             </div>
           </div>
 
-          {loading || !settings ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : <div className={styles.grid}>
+          {error && !loading ? <div className={shared.card}>
+              <p className={shared.errorText}>{error}</p>
+              <button className={`${shared.actBtn} ${shared.actView}`}
+                      onClick={fetchSettings}>
+                {tt("ui.retry.9f5c", "Retry")}
+              </button>
+            </div>
+          : loading || !settings ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : <div className={styles.grid}>
               {/* Platform fees */}
               <div className={shared.card}>
                 <h2 className={styles.sectionTitle}>{tt("ui.platform.fees.8467", "Platform Fees")}</h2>
@@ -149,6 +165,32 @@ function SettingsInner() {
                 <div className={styles.formGroup}>
                   <label className={styles.label}><span className="fieldLabelRow">{tt("ui.daily.top.up.cap.f3e9", "Daily top-up cap (₦)")} <InfoTip id="adminDailyCap" /></span></label>
                   <input type="number" className={styles.input} value={settings.platform_fees.topup_max_ngn_per_day} onChange={e => patch('platform_fees', 'topup_max_ngn_per_day', parseInt(e.target.value || '0', 10))} />
+                </div>
+              </div>
+
+              {/* What premium costs. Zero means it is not on sale, and the
+                  offer page says so and records who wanted it, rather than
+                  telling anybody to come and find an admin. */}
+              <div className={shared.card}>
+                <h2 className={styles.sectionTitle}>{tt('adminSettings.premiumTitle', 'Premium')}</h2>
+                <p className={styles.sectionSub}>
+                  {tt('adminSettings.premiumSub', 'What a V-ENT premium subscription costs, in VENT COINS. Leave a price at 0 and premium is not on sale: the offer page says so and records who asked for it.')}
+                </p>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt('adminSettings.premiumMonthly', 'Monthly (VC)')}</span>
+                  </label>
+                  <input type="number" min="0" className={styles.input}
+                         value={settings.premium?.price_vc_monthly ?? 0}
+                         onChange={e => patch('premium', 'price_vc_monthly', parseInt(e.target.value || '0', 10))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt('adminSettings.premiumYearly', 'Yearly (VC)')}</span>
+                  </label>
+                  <input type="number" min="0" className={styles.input}
+                         value={settings.premium?.price_vc_yearly ?? 0}
+                         onChange={e => patch('premium', 'price_vc_yearly', parseInt(e.target.value || '0', 10))} />
                 </div>
               </div>
 

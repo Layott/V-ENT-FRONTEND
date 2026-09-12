@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { IoNotificationsOutline, IoTrophyOutline, IoCalendarOutline, IoWalletOutline, IoWarningOutline, IoPeopleOutline, IoShieldCheckmarkOutline, IoCashOutline, IoInformationCircleOutline, IoAtCircleOutline, IoPersonAddOutline, IoCheckmarkDoneOutline } from 'react-icons/io5';
@@ -54,11 +55,15 @@ const Notifications = () => {
   // Initial + tab-change load. Gated on the session token so we never fire a
   // tokenless request (the backend 400s without a Bearer header → console error
   // → mobile audit fails). Token + tab in deps.
+  // Notifications are the one list where being stale is the whole failure.
+  const [liveTick, setLiveTick] = useState(0);
+  useAutoRefresh(() => setLiveTick(t => t + 1), [], { interval: 20000 });
+
   useEffect(() => {
     if (!token) return;
+    const quiet = liveTick > 0;
     let cancelled = false;
-    setLoading(true);
-    setError(false);
+    if (!quiet) { setLoading(true); setError(false); }
     (async () => {
       try {
         const data = await listNotifications(token, {
@@ -81,7 +86,7 @@ const Notifications = () => {
     return () => {
       cancelled = true;
     };
-  }, [token, tab, reloadKey]);
+  }, [token, tab, reloadKey, liveTick]);
   const loadMore = async () => {
     if (!token || loadingMore) return;
     setLoadingMore(true);

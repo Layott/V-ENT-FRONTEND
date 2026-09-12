@@ -1,6 +1,7 @@
 'use client';
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useEffect, useState, useCallback } from 'react';
@@ -20,6 +21,7 @@ function statusBadgeClass(s) {
   if (s === 'ongoing') return shared.sOngoing;
   if (s === 'draft') return shared.sDraft;
   if (s === 'cancelled') return shared.sCancelled;
+  if (s === 'deleted') return shared.sRejected;
   if (s === 'completed') return shared.sApproved;
   return shared.sDraft;
 }
@@ -46,11 +48,16 @@ function TournamentsInner() {
   const [overrideTarget, setOverrideTarget] = useState(null);
   const [editTarget, setEditTarget] = useState(null);
   const [disqTarget, setDisqTarget] = useState(null);
+  // The two things the admin spec asks for that the console could not do:
+  // read a tournament's numbers, and tell the people in it something.
+  const [numbersTarget, setNumbersTarget] = useState(null);
+  const [announceTarget, setAnnounceTarget] = useState(null);
+  const mayAnnounce = !!admin?.permissions?.send_notifications;
   const [actionLoading, setActionLoading] = useState({});
-  const fetchTournaments = useCallback(async () => {
+  const fetchTournaments = useCallback(async ({ quiet = false } = {}) => {
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -77,12 +84,40 @@ function TournamentsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. See useAutoRefresh: quiet stops a refresh
+  // flashing the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchTournaments({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchTournaments();
   }, [authLoading, admin, fetchTournaments]);
   useEffect(() => {
     setPage(1);
   }, [search, statusFilter, sortBy]);
+  // Putting a deleted tournament back. Admin only on the server too: an
+  // organiser who could delete and restore at will could hide something and
+  // return it with nothing recorded in between.
+  async function restoreTournament(row) {
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({ ...p, [row.id]: true }));
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/tournament/${row.slug || row.id}/restore/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}` },
+        });
+      const data = await res.json();
+      if (data.status === 'success') {
+        toast.push(tt('admin.restored', 'Restored. It is back where it was.'), 'success');
+        fetchTournaments();
+      } else toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    }
+    setActionLoading(p => ({ ...p, [row.id]: false }));
+  }
+
   async function cancelTournament(id) {
     const token = localStorage.getItem('adminToken');
     setActionLoading(p => ({
@@ -234,6 +269,10 @@ function TournamentsInner() {
                 <option value="ongoing">{tt("ui.ongoing.2e02", "Ongoing")}</option>
                 <option value="draft">{tt("ui.draft.23d3", "Draft")}</option>
                 <option value="cancelled">{tt("ui.cancelled.a1bf", "Cancelled")}</option>
+                {/* Deleted has a bucket. A row belonging to no tab has
+                    vanished rather than been filtered, which is how three
+                    cancelled tournaments were lost in August. */}
+                <option value="deleted">{tt("admin.deleted", "Deleted")}</option>
                 <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
               </select>
               <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
@@ -243,7 +282,7 @@ function TournamentsInner() {
                 <option value="-prize_pool">{tt("ui.prize.high.low.7215", "Prize (High-Low)")}</option>
                 <option value="-participants_count">{tt("ui.participants.high.low.d433", "Participants (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countTournamentsOne', '{n} tournament') : tt('admin.countTournamentsMany', '{n} tournaments')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countTournamentsOne', '{n} tournament') : tt('admin.countTournamentsMany', '{n} tournaments')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : tournaments.length === 0 ? <p className={shared.stateText}>{tt("ui.no.tournaments.found.6976", "No tournaments found.")}</p> : <div className={shared.tableWrap}>
@@ -278,22 +317,47 @@ function TournamentsInner() {
                           {t.prize_pool ? `${Number(t.prize_pool).toLocaleString()} VC` : '-'}
                         </td>
                         <td className={shared.hideMobile}>
-                          {t.created_at ? new Date(t.created_at).toLocaleDateString() : '-'}
+                          {t.created_at ? formatDate(t.created_at) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>
-                            {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(t)} disabled={!!actionLoading[t.id]} title={tt("admin.editAsAdmin", "Edit this tournament as an admin. The organiser is told it changed.")}>
+                            {/* A deleted tournament offers nothing but its
+                                numbers and Restore. Found by walking the
+                                Deleted tab: it was still offering Edit, Score,
+                                DQ and Announce on a row that is not on the
+                                site, and announcing to the entrants of a
+                                deleted tournament is a message nobody can
+                                explain. The events console already did this;
+                                this is the half that was forgotten. */}
+                            {mayEdit && !t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(t)} disabled={!!actionLoading[t.id]} title={tt("admin.editAsAdmin", "Edit this tournament as an admin. The organiser is told it changed.")}>
                               {tt("admin.editTournament", "Edit")}
                             </button>}
-                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
+                            {!t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setOverrideTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.override.match.score.b227", "Override match score")}>
                               {tt("ui.score.489f", "Score")}
-                            </button>
-                            <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
+                            </button>}
+                            {!t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
                               DQ
+                            </button>}
+                            <button className={`${shared.actBtn} ${shared.actView}`}
+                                    onClick={() => setNumbersTarget(t)}
+                                    title={tt('admin.tournamentNumbers', 'Entries, money and matches for this tournament')}>
+                              {tt('admin.numbers', 'Numbers')}
                             </button>
-                            {t.status !== 'cancelled' && t.status !== 'completed' && <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setCancelTarget(t)} disabled={!!actionLoading[t.id]}>
+                            {mayAnnounce && !t.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                                    onClick={() => setAnnounceTarget(t)}
+                                    title={tt('admin.announceTitle', 'Tell everybody registered something')}>
+                              {tt('admin.announce', 'Announce')}
+                            </button>}
+                            {t.status !== 'cancelled' && t.status !== 'completed' && t.status !== 'deleted' && <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setCancelTarget(t)} disabled={!!actionLoading[t.id]}>
                                 {tt("ui.cancel.77df", "Cancel")}
                               </button>}
+                            {t.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                                    onClick={() => restoreTournament(t)}
+                                    disabled={!!actionLoading[t.id]}
+                                    title={tt('admin.restoreWho', 'Deleted by {who}')
+                                      .replace('{who}', t.deleted_by || '-')}>
+                              {tt('admin.restore', 'Restore')}
+                            </button>}
                           </div>
                         </td>
                       </tr>)}
@@ -341,6 +405,166 @@ function TournamentsInner() {
 
       {/* Disqualify modal */}
       {disqTarget && <DisqualifyModal tournament={disqTarget} onCancel={() => setDisqTarget(null)} onSubmit={choice => disqualifyTeam(disqTarget.id, choice)} loading={!!actionLoading[disqTarget.id]} />}
+
+      {numbersTarget && <TournamentNumbersModal tournament={numbersTarget} onCancel={() => setNumbersTarget(null)} />}
+
+      {announceTarget && <AnnounceModal tournament={announceTarget} onCancel={() => setAnnounceTarget(null)} />}
+    </div>;
+}
+
+/** What a tournament came to: entries, money and matches.
+ *
+ *  Every number is counted from rows by the API rather than read from a stored
+ *  counter, because a counter drifts the first time somebody is refunded and
+ *  then nobody can say which of the two numbers is true.
+ */
+function TournamentNumbersModal({ tournament, onCancel }) {
+  const tt = useT();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const token = localStorage.getItem('adminToken');
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.slug || tournament.id}/analytics/`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const body = await res.json();
+        if (cancelled) return;
+        if (!res.ok || body.status !== 'success') {
+          setError(apiMessage(tt, body, 'api.couldNotLoad', 'Could not load the numbers.'));
+        } else {
+          setData(body.data);
+        }
+      } catch {
+        // Never a bare await. A network failure with no catch leaves a
+        // spinner running for ever with nothing to press.
+        if (!cancelled) setError(tt('api.networkProblem', 'The network is not answering. Try again.'));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [tournament, tt]);
+
+  return <div className={shared.modalOverlay} onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div className={shared.modal}>
+        <p className={shared.modalTitle}>{tournament.name}</p>
+        {loading ? <p className={shared.stateText}>{tt('ui.loading', 'Loading...')}</p>
+          : error ? <p className={shared.errorText}>{error}</p>
+          : <div className={styles.numbers}>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.entered', 'Entered')}</span>
+                <strong>{formatNumber(data.participation.entered)}
+                  {data.participation.capacity ? ` / ${formatNumber(data.participation.capacity)}` : ''}</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.confirmedEntries', 'Confirmed')}</span>
+                <strong>{formatNumber(data.participation.confirmed)}</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.checkedIn', 'Checked in')}</span>
+                <strong>{formatNumber(data.participation.checked_in)}</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.disqualified', 'Disqualified')}</span>
+                <strong>{formatNumber(data.participation.disqualified)}</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.takenIn', 'Entry fees taken')}</span>
+                <strong>{formatNumber(data.revenue.taken_vc)} VC</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.givenBack', 'Refunded')}</span>
+                <strong>{formatNumber(data.revenue.returned_vc)} VC</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.matchesPlayed', 'Matches finished')}</span>
+                <strong>{formatNumber(data.matches.completed)} / {formatNumber(data.matches.total)}</strong>
+              </div>
+              <div className={styles.numberRow}>
+                <span>{tt('admin.openDisputes', 'Disputes open')}</span>
+                <strong>{formatNumber(data.matches.open_disputes)}</strong>
+              </div>
+            </div>}
+        <div className={shared.modalActions}>
+          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>
+            {tt('ui.close', 'Close')}
+          </button>
+        </div>
+      </div>
+    </div>;
+}
+
+/** Tell everybody registered something.
+ *
+ *  It lands in their notification inbox and in their email, and the send is
+ *  written down before either goes out, so a message that half delivers is a
+ *  record with a count on it rather than an event nobody can prove happened.
+ */
+function AnnounceModal({ tournament, onCancel }) {
+  const tt = useT();
+  const toast = useAdminToast();
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [audience, setAudience] = useState('all');
+  const [sending, setSending] = useState(false);
+
+  const send = async () => {
+    const token = localStorage.getItem('adminToken');
+    setSending(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.slug || tournament.id}/announce/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: subject.trim(), body: body.trim(), audience })
+      });
+      const data = await res.json();
+      if (!res.ok || data.status !== 'success') {
+        toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+        return;
+      }
+      toast.push(data.message || tt('admin.announced', 'Sent.'), 'success');
+      onCancel();
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return <div className={shared.modalOverlay} onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div className={shared.modal}>
+        <p className={shared.modalTitle}>
+          {tt('admin.announceTo', 'Message everybody in {name}').replace('{name}', tournament.name)}
+        </p>
+        <p className={shared.modalSub}>
+          {tt('admin.announceSub', 'It goes to their inbox on the site and to their email address. Five a day, because people stop reading after that.')}
+        </p>
+        <select className={shared.modalInput} value={audience} onChange={(e) => setAudience(e.target.value)}>
+          <option value="all">{tt('admin.audienceAll', 'Everybody registered')}</option>
+          <option value="confirmed">{tt('admin.audienceConfirmed', 'Confirmed entries only')}</option>
+          <option value="paid">{tt('admin.audiencePaid', 'People who paid an entry fee')}</option>
+        </select>
+        <input className={shared.modalInput} value={subject} maxLength={140}
+               placeholder={tt('admin.announceSubject', 'What it is about')}
+               onChange={(e) => setSubject(e.target.value)} />
+        <textarea className={shared.modalInput} rows={4} value={body} maxLength={2000}
+                  placeholder={tt('admin.announceBody', 'What you need them to know')}
+                  onChange={(e) => setBody(e.target.value)} />
+        <div className={shared.modalActions}>
+          <button className={`${shared.actBtn} ${shared.actView}`} onClick={onCancel}>
+            {tt('ui.cancel.77df', 'Cancel')}
+          </button>
+          <button className={`${shared.actBtn} ${shared.actApprove}`}
+                  disabled={sending || !subject.trim() || !body.trim()} onClick={send}>
+            {sending ? tt('admin.sending', 'Sending...') : tt('ui.send.9bc2', 'Send')}
+          </button>
+        </div>
+      </div>
     </div>;
 }
 /** Correct somebody else's tournament from the console.

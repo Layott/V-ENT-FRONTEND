@@ -74,6 +74,13 @@ const mapTournamentToFormData = t => {
     options: t.options && typeof t.options === 'object' ? t.options : {},
     series_id: t.series_id ?? t.tournament_series_id ?? '',
     event: t.event ?? t.event_id ?? '',
+    // Whose name it runs in. The mapper had no key for it, and the wizard
+    // appends `organization` on every submit with `|| ''` behind it - so
+    // re-opening a draft posted an empty organisation and CLEARED whichever
+    // one the organiser had chosen. The API reads a slug here, and the
+    // detail payload spells it `tournament_organization`.
+    organization: t.organization ?? t.tournament_organization?.slug
+      ?? t.tournament_organization ?? '',
     points_win: t.points_win ?? t.league?.points_win ?? 3,
     points_draw: t.points_draw ?? t.league?.points_draw ?? 1,
     points_loss: t.points_loss ?? t.league?.points_loss ?? 0,

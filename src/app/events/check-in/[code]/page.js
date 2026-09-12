@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { LuTicket } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
-import { appLocale } from '@/lib/appLocale';
+import { formatDateTime } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -26,11 +26,10 @@ import styles from './check-in.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-const formatTime = value => (value
-  ? new Date(value).toLocaleString(appLocale(), {
-    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-  })
-  : '');
+// Through the one timing model, so a ticket holder in Accra reads their own
+// clock in the language they chose. This was a local copy of the same
+// formatting, which is how two screens end up disagreeing about a time.
+const formatTime = value => (value ? formatDateTime(value) : '');
 
 export default function SelfCheckIn({ params }) {
   const tt = useT();

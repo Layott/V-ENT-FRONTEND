@@ -207,3 +207,22 @@
   font-weight: 600;
   margin: 0 0 0.35rem;
 }
+
+/* The amount, before the payment page rather than on it. A guest used to find
+   out what they were paying only once Paystack had them. */
+.totalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: #2a2b30;
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  margin: 0.4rem 0 0.9rem;
+}
+
+.totalValue {
+  font-size: 1.15rem;
+  color: var(--v-ent-success);
+  font-feature-settings: 'tnum';
+}

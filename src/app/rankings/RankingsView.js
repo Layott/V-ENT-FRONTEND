@@ -4,7 +4,6 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
@@ -16,6 +15,24 @@ import styles from './ranking.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
+import { formatNumber } from '@/lib/datetime';
+
+// A face, a team crest or an organisation's logo, whichever tab is open.
+//
+// Declared at module scope on purpose. Defined inside `RankingsView` it was a
+// NEW component type on every render, so React threw away every avatar and
+// built a fresh <img> each time the page re-rendered - restarting each picture's
+// download from nothing, on a screen that re-renders on every keystroke in the
+// search box.
+//
+// `mediaUrl` is applied inside `Avatar` itself and is idempotent, so the row's
+// stored path is handed over as it stands.
+const RankAvatar = ({ src, name, size, className }) => (
+  <Avatar src={mediaUrl(src)} name={name} size={size} className={className} />
+);
+
 const TABS = [{
   id: 'players',
   label: 'Players'
@@ -26,56 +43,13 @@ const TABS = [{
   id: 'organizations',
   label: 'Organizations'
 }];
-const REGIONS = [{
-  value: 'global',
-  label: 'Global'
-}, {
-  value: 'Africa',
-  label: 'Africa'
-}, {
-  value: 'West Africa',
-  label: 'West Africa'
-}, {
-  value: 'East Africa',
-  label: 'East Africa'
-}, {
-  value: 'Southern Africa',
-  label: 'Southern Africa'
-}, {
-  value: 'North Africa',
-  label: 'North Africa'
-}, {
-  value: 'Europe',
-  label: 'Europe'
-}, {
-  value: 'North America',
-  label: 'North America'
-}, {
-  value: 'Asia',
-  label: 'Asia'
-}];
-const COUNTRIES = [{
-  value: '',
-  label: 'All countries'
-}, {
-  value: 'Nigeria',
-  label: 'Nigeria'
-}, {
-  value: 'Lagos',
-  label: 'Lagos'
-}, {
-  value: 'Abuja',
-  label: 'Abuja'
-}, {
-  value: 'Ghana',
-  label: 'Ghana'
-}, {
-  value: 'Kenya',
-  label: 'Kenya'
-}, {
-  value: 'South Africa',
-  label: 'South Africa'
-}];
+// The country and region lists come from the API now. This file used to hold
+// seven entries with Lagos and Abuja among them - two Nigerian cities offered
+// as countries - and no way to reach anywhere else. A screen cannot know which
+// countries exist on the platform, so it is not the place for this list.
+const ALL_COUNTRIES = { value: '', label: 'All countries' };
+const GLOBAL_REGION = { value: 'global', label: 'Global' };
+
 const SORTS = [{
   value: 'rank',
   label: 'Rank'
@@ -117,6 +91,9 @@ const RankingsView = () => {
   const [error, setError] = useState(null);
   const [following, setFollowing] = useState({});
   const [expandedRow, setExpandedRow] = useState(null); // mobile
+  // What the two dropdowns should offer, sent with the rankings themselves so
+  // there is one request and nothing left uncalled.
+  const [filters, setFilters] = useState({ countries: [], regions: [] });
 
   const fetchRankings = useCallback(async () => {
     setLoading(true);
@@ -142,6 +119,7 @@ const RankingsView = () => {
       setPlayers(payload.players || []);
       setTeams(payload.teams || []);
       setOrganizations(payload.organizations || []);
+      setFilters(payload.filters || { countries: [], regions: [] });
     } catch (err) {
       setError(apiMessage(tt, err, "api.failedToLoadRankings", "Failed to load rankings"));
       setPlayers([]);
@@ -176,23 +154,6 @@ const RankingsView = () => {
     return players;
   }, [tab, players, teams, organizations]);
 
-  // Rankings rows are real users/teams and most have no uploaded picture yet.
-  // next/image throws ("Cannot read properties of null") on a null src, which
-  // white-screened the whole page - fall back to initials like the rest of the app.
-  const RankAvatar = ({
-    src,
-    name,
-    size,
-    className
-  }) => {
-    if (src) {
-      return <Image src={src} alt={name || ''} width={size} height={size} className={className} unoptimized />;
-    }
-    const initials = (name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
-    return <div className={`${className} ${styles.avatarFallback}`} aria-label={name || ''}>
-        {initials}
-      </div>;
-  };
   const sortedList = useMemo(() => {
     const arr = [...activeList];
     switch (sortBy) {
@@ -228,11 +189,12 @@ const RankingsView = () => {
     if (tab === 'players') {
       // A profile address is the username, not the row number. /u/3 is against
       // the slug rule and lets anybody walk the user table by counting.
-      router.push(`/u/${encodeURIComponent(entry.username || entry.name || entry.id)}`);
+      if (!entry.username) return;   // no handle, no profile to open
+      router.push(`/u/${encodeURIComponent(entry.username)}`);
     } else if (tab === 'teams') {
-      router.push(`/teams/${encodeURIComponent(entry.id)}`);
+      router.push(`/teams/${encodeURIComponent(entry.slug || entry.id)}`);
     } else if (tab === 'organizations') {
-      router.push(`/organizations/${encodeURIComponent(entry.id)}`);
+      router.push(`/organizations/${encodeURIComponent(entry.slug || entry.id)}`);
     }
   };
   const toggleFollow = (e, entry) => {
@@ -302,14 +264,16 @@ const RankingsView = () => {
 
         <div className={styles.filterSelect}>
           <select value={region} onChange={e => setRegion(e.target.value)} className={styles.select}>
-            {REGIONS.map(r => <option key={r.value} value={r.value}>{tx(r.label)}</option>)}
+            <option value={GLOBAL_REGION.value}>{tt('rankings.regionGlobal', 'Global')}</option>
+            {filters.regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
           <TiArrowSortedDown className={styles.selectCaret} />
         </div>
 
         <div className={styles.filterSelect}>
           <select value={country} onChange={e => setCountry(e.target.value)} className={styles.select}>
-            {COUNTRIES.map(c => <option key={c.value || 'all'} value={c.value}>{tx(c.label)}</option>)}
+            <option value={ALL_COUNTRIES.value}>{tt('rankings.allCountries', 'All countries')}</option>
+            {filters.countries.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <TiArrowSortedDown className={styles.selectCaret} />
         </div>
@@ -337,13 +301,13 @@ const RankingsView = () => {
                   <RankAvatar src={entry.avatar} name={entry.name} size={88} className={styles.podiumAvatar} />
                 </div>
                 <p className={styles.podiumName}>{entry.name}</p>
-                <p className={styles.podiumMeta}>
+                {entry.country && <p className={styles.podiumMeta}>
                   <LuMapPin className={styles.podiumMetaIcon} />
                   {entry.country}
-                </p>
+                </p>}
                 <div className={styles.podiumStats}>
                   <div className={styles.podiumStat}>
-                    <span className={styles.podiumStatValue}>{entry.points.toLocaleString()}</span>
+                    <span className={styles.podiumStatValue}>{formatNumber(entry.points)}</span>
                     <span className={styles.podiumStatLabel}>{tt("ui.points.4b2a", "Points")}</span>
                   </div>
                   <div className={styles.podiumStatDivider} />
@@ -409,14 +373,16 @@ const RankingsView = () => {
                     </div>
                   </div>
                   <div className={`${styles.col} ${styles.colRegion}`}>
-                    <span className={styles.regionText}>
-                      <LuMapPin className={styles.regionIcon} />
-                      {entry.country}
-                    </span>
+                    {entry.country
+                      ? <span className={styles.regionText}>
+                          <LuMapPin className={styles.regionIcon} />
+                          {entry.country}
+                        </span>
+                      : <span className={styles.regionText}>-</span>}
                     <span className={styles.regionSub}>{entry.region}</span>
                   </div>
                   <div className={`${styles.col} ${styles.colPoints}`}>
-                    <span className={styles.pointsValue}>{entry.points.toLocaleString()}</span>
+                    <span className={styles.pointsValue}>{formatNumber(entry.points)}</span>
                   </div>
                   <div className={`${styles.col} ${styles.colWl}`}>
                     <span className={styles.wlValue}>
@@ -461,11 +427,13 @@ const RankingsView = () => {
                     <div className={styles.mobileDetailGrid}>
                       <div className={styles.mobileDetailItem}>
                         <span className={styles.mobileDetailLabel}>{tt("ui.region.0f21", "Region")}</span>
-                        <span className={styles.mobileDetailValue}>{entry.country} · {entry.region}</span>
+                        <span className={styles.mobileDetailValue}>
+                          {[entry.country, entry.region].filter(Boolean).join(' · ') || '-'}
+                        </span>
                       </div>
                       <div className={styles.mobileDetailItem}>
                         <span className={styles.mobileDetailLabel}>{tt("ui.points.4b2a", "Points")}</span>
-                        <span className={styles.mobileDetailValue}>{entry.points.toLocaleString()}</span>
+                        <span className={styles.mobileDetailValue}>{formatNumber(entry.points)}</span>
                       </div>
                       <div className={styles.mobileDetailItem}>
                         <span className={styles.mobileDetailLabel}>W-L</span>
@@ -516,7 +484,7 @@ const RankingsView = () => {
               </div>
               <GoDotFill className={styles.yourRankDot} />
               <div className={styles.yourRankStat}>
-                <span className={styles.yourRankStatValue}>{sessionUserEntry.points.toLocaleString()}</span>
+                <span className={styles.yourRankStatValue}>{formatNumber(sessionUserEntry.points)}</span>
                 <span className={styles.yourRankStatLabel}>{tt("ui.points.4b2a", "Points")}</span>
               </div>
               <GoDotFill className={styles.yourRankDot} />

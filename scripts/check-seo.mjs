@@ -47,6 +47,7 @@ const PRIVATE_PREFIXES = [
   ['s', 'a short link, which redirects'],
   ['studio', 'a broadcast surface, not a page to find'],
   ['scan', 'a door tool'],
+  ['my-stalls', 'your own stalls, orders and the delivery addresses on them'],
   ['check-in', 'a door tool'],
 ];
 
@@ -99,6 +100,18 @@ for (const route of routes) {
     });
     continue;
   }
+
+  // A route that is NOINDEX will never appear in a search result, so asking it
+  // for a per-record title is asking for work nobody will ever see. A manage
+  // screen, an edit form, a door list, a private thread and a one-time token
+  // are all detail routes and none of them should rank.
+  //
+  // Without this the checker reported 18 of these and the real answer was 5,
+  // which is how a checker becomes a number people scroll past. See
+  // `feedback_checker_calibration`.
+  const isNoindex = /robots\s*:\s*\{[^}]*index\s*:\s*false/.test(near);
+
+  if (isDetail && isNoindex) continue;
 
   if (isDetail && !/generateMetadata/.test(near)) {
     findings.push({

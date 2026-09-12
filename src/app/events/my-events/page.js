@@ -11,6 +11,7 @@
 // it, and run the commercial side of it.
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -19,6 +20,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import DeleteControl from '@/components/delete-control/DeleteControl';
 import styles from './my-events.module.css';
 import { useT, useLanguage } from '@/i18n/LanguageProvider';
 const MyEventsPage = () => {
@@ -34,10 +36,10 @@ const MyEventsPage = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) return;
-    setLoading(true);
-    setError('');
+    if (!quiet) setLoading(true);
+    if (!quiet) setError('');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/my-events/`, {
         headers: {
@@ -52,6 +54,11 @@ const MyEventsPage = () => {
       setLoading(false);
     }
   }, [token]);
+
+  // Keeps itself current. One line, because load already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (status !== 'loading') load();
   }, [status, load]);
@@ -133,6 +140,19 @@ const MyEventsPage = () => {
                         <Link href={`/events/${ref}/manage`} className={styles.ghostBtn}>
                           {tt('myEvents.manage', 'Influencers & promos')}
                         </Link>
+                        {/* Only the person who made it, or the owner of the
+                            organisation it belongs to. Somebody added to run
+                            the door for one day is not somebody who removes
+                            the event, which is what permissions.py has said
+                            since it was written. */}
+                        {row.role !== 'manager' && (
+                          <DeleteControl kind="event" reference={ref}
+                                         name={row.name} token={token}
+                                         className={styles.ghostBtn}
+                                         onDeleted={() => {
+                                           setRows(all => all.filter(x => x.id !== row.id));
+                                         }} />
+                        )}
                       </div>
                     </div>;
           })}

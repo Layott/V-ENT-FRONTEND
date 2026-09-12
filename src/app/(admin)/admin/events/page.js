@@ -10,7 +10,8 @@
 // same pagination, same table, same edit modal. An admin who has learned one
 // has learned the other, and a change to how listing works is one change.
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import {formatDate, withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -27,6 +28,7 @@ function statusBadgeClass(s) {
   if (s === 'upcoming') return shared.sActive;
   if (s === 'ongoing') return shared.sOngoing;
   if (s === 'cancelled') return shared.sCancelled;
+  if (s === 'deleted') return shared.sRejected;
   if (s === 'completed') return shared.sApproved;
   return shared.sDraft;
 }
@@ -38,7 +40,8 @@ const statusLabel = (tt, value) => {
     upcoming: tt('admin.eventUpcoming', 'Upcoming'),
     ongoing: tt('ui.ongoing.2e02', 'Ongoing'),
     completed: tt('ui.completed.1798', 'Completed'),
-    cancelled: tt('ui.cancelled.a1bf', 'Cancelled')
+    cancelled: tt('ui.cancelled.a1bf', 'Cancelled'),
+    deleted: tt('admin.deleted', 'Deleted')
   };
   return labels[String(value || '').toLowerCase()] || value || '-';
 };
@@ -65,10 +68,10 @@ function EventsInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
-  const fetchEvents = useCallback(async () => {
+  const fetchEvents = useCallback(async ({ quiet = false } = {}) => {
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -95,12 +98,39 @@ function EventsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. One line, because fetchEvents already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchEvents({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchEvents();
   }, [authLoading, admin, fetchEvents]);
   useEffect(() => {
     setPage(1);
   }, [search, statusFilter, sortBy]);
+  // The event twin of restoreTournament, written in the same pass.
+  async function restoreEvent(row) {
+    const token = localStorage.getItem('adminToken');
+    setActionLoading(p => ({ ...p, [row.id]: true }));
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/${row.slug || row.id}/restore/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}` },
+        });
+      const data = await res.json();
+      if (data.status === 'success') {
+        toast.push(tt('admin.restored', 'Restored. It is back where it was.'), 'success');
+        fetchEvents();
+      } else toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    }
+    setActionLoading(p => ({ ...p, [row.id]: false }));
+  }
+
   async function saveEvent(id, payload) {
     const token = localStorage.getItem('adminToken');
     setActionLoading(p => ({
@@ -158,6 +188,9 @@ function EventsInner() {
                 <option value="ongoing">{tt("ui.ongoing.2e02", "Ongoing")}</option>
                 <option value="completed">{tt("ui.completed.1798", "Completed")}</option>
                 <option value="cancelled">{tt("ui.cancelled.a1bf", "Cancelled")}</option>
+                {/* The bin. Same tab on both consoles, because the two are one
+                    job with different nouns. */}
+                <option value="deleted">{tt("admin.deleted", "Deleted")}</option>
               </select>
               <select className={shared.filterSelect} value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="-created_at">{tt("ui.newest.first.a40b", "Newest First")}</option>
@@ -165,7 +198,7 @@ function EventsInner() {
                 <option value="name">{tt("ui.name.z.257c", "Name A-Z")}</option>
                 <option value="-tickets_sold">{tt("admin.ticketsHighLow", "Tickets (High-Low)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countEventsOne', '{n} event') : tt('admin.countEventsMany', '{n} events')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countEventsOne', '{n} event') : tt('admin.countEventsMany', '{n} events')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {dataLoading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : events.length === 0 ? <p className={shared.stateText}>{tt("admin.noEventsFound", "No events found.")}</p> : <div className={shared.tableWrap}>
@@ -194,7 +227,7 @@ function EventsInner() {
                         </td>
                         <td className={shared.hideMobile}>{e.location || (e.event_type === 'virtual' ? tt("admin.eventOnline", "Online") : '-')}</td>
                         <td className={shared.hideMobile}>
-                          {e.start_date ? new Date(e.start_date).toLocaleDateString() : '-'}
+                          {e.start_date ? formatDate(e.start_date) : '-'}
                         </td>
                         <td>
                           <div className={shared.actGroup}>
@@ -205,8 +238,15 @@ function EventsInner() {
                             <Link href={`/admin/events/${e.slug || e.id}`} className={`${shared.actBtn} ${shared.actView}`}>
                               {tt("admin.manage", "Manage")}
                             </Link>
-                            {mayEdit && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(e)} disabled={!!actionLoading[e.id]} title={tt("admin.editEventAsAdmin", "Edit this event as an admin. The organiser is told it changed.")}>
+                            {mayEdit && !e.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEditTarget(e)} disabled={!!actionLoading[e.id]} title={tt("admin.editEventAsAdmin", "Edit this event as an admin. The organiser is told it changed.")}>
                               {tt("admin.editTournament", "Edit")}
+                            </button>}
+                            {e.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
+                                    onClick={() => restoreEvent(e)}
+                                    disabled={!!actionLoading[e.id]}
+                                    title={tt('admin.restoreWho', 'Deleted by {who}')
+                                      .replace('{who}', e.deleted_by || '-')}>
+                              {tt('admin.restore', 'Restore')}
                             </button>}
                           </div>
                         </td>

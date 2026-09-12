@@ -1,10 +1,11 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import SignInToEngage from '@/components/community/SignInToEngage';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -142,6 +143,31 @@ const ThreadInner = ({
       /* ignore */
     }
   }, []);
+  // Hoisted out of the effect so the live loop can drive it. A reply posted by
+  // somebody else while this thread is open should appear, which is the entire
+  // point of a forum.
+  const fetchThread = useCallback(async ({ quiet = false } = {}) => {
+    if (!id) return;
+    if (!quiet) setLoading(true);
+    try {
+      const res = await fetch(`${apiUrl}/thread/${id}/`, {
+        headers: authHeaders
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        const t = data.data.thread || null;
+        setThread(t);
+        setReplies(t?.replies || []);
+      }
+    } catch (err) {
+      console.error('Thread fetch error:', err);
+    } finally {
+      if (!quiet) setLoading(false);
+    }
+  }, [id, apiUrl, authHeaders]);
+
+  useAutoRefresh(() => fetchThread({ quiet: true }));
+
   useEffect(() => {
     if (!id) {
       // No slug means somebody trimmed the address or followed an old
@@ -151,26 +177,8 @@ const ThreadInner = ({
       router.replace('/community?tab=forums');
       return;
     }
-    const fetchThread = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${apiUrl}/thread/${id}/`, {
-          headers: authHeaders
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          const t = data.data.thread || null;
-          setThread(t);
-          setReplies(t?.replies || []);
-        }
-      } catch (err) {
-        console.error('Thread fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchThread();
-  }, [id, apiUrl, authHeaders, router]);
+  }, [id, router, fetchThread]);
   const handleReply = async () => {
     if (!replyText.trim() || !id || thread?.is_locked) return;
     setPosting(true);
@@ -326,7 +334,9 @@ const ThreadInner = ({
                         </div>
                         <div className={styles.replyBody}>
                           <div className={styles.replyHeader}>
-                            <span className={styles.replyAuthor}>{reply.author.full_name}{reply.author.founder_badge && <FounderBadge size="sm" />}</span>
+                            <span className={styles.replyAuthor}>
+                              <UserChip user={reply.author} size={0} />
+                            </span>
                             <span className={styles.replyHandle}>@{reply.author.username}</span>
                             <span className={styles.replyTime}>{relativeTime(reply.created_at)}</span>
                           </div>

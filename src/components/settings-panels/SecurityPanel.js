@@ -1,12 +1,13 @@
 'use client';
 
 import InfoTip from '@/components/info-tip/InfoTip';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import shared from './settingsShared.module.css';
 import styles from './SecurityPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 
 // Recent sign-ins are read from the account. There used to be a fixed list of
 // ten invented ones here - a MacBook, an iPad, addresses in Lagos and Abuja -
@@ -108,33 +109,114 @@ const SecurityPanel = ({
   const [confirmPw, setConfirmPw] = useState('');
   const [submitting, setSubmitting] = useState(false);
   useEffect(() => {
-    setTwoFA(!!security.two_factor_enabled);
+    // NOT the two-factor flag: that is the stored boolean which said Enabled
+    // for accounts with nothing enrolled. The status endpoint above owns it.
     setLoginAlerts(security.login_alerts !== false);
   }, [security]);
   const strength = useMemo(() => scorePassword(newPw), [newPw]);
+  // Two-factor, for real this time.
+  //
+  // This whole block used to be theatre: the modal drew a QR out of random
+  // rectangles, offered the RFC test-vector secret JBSWY3DPEHPK3PXP as
+  // something to type in, ignored whatever was entered in the code box, and
+  // then wrote `two_factor_enabled: true` into a settings blob. No secret was
+  // generated, no factor existed, and nothing ever asked for a code at
+  // sign-in. Reading the switch from real enrolment - which is right - made it
+  // flip straight back to Disabled, so the honest half looked like the bug.
+  //
+  // Now: start creates the factor, the QR is drawn from the real provisioning
+  // URI, and the account only starts demanding codes once one has been proved.
+  const [setup, setSetup] = useState(null);      // {secret, provisioning_uri}
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [code, setCode] = useState('');
+  const [busy2FA, setBusy2FA] = useState(false);
+  const [required2FA, setRequired2FA] = useState(false);
+  const [disabling, setDisabling] = useState(false);
+
+  const api2FA = useCallback(async (path, body) => {
+    const token = session?.user?.sessionToken;
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/2fa/${path}`, {
+      method: body === undefined ? 'GET' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+    return res.json().catch(() => ({ status: 'error' }));
+  }, [session]);
+
+  // The truth about this account, from real enrolment rather than a flag.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const out = await api2FA('status/');
+      if (cancelled || out?.status !== 'success') return;
+      setTwoFA(!!out.data.enabled);
+      setRequired2FA(!!out.data.required);
+    })();
+    return () => { cancelled = true; };
+  }, [api2FA]);
+
   const handleToggle2FA = async () => {
+    if (busy2FA) return;
     if (!twoFA) {
-      // Turning ON - show QR modal first.
+      setBusy2FA(true);
+      const out = await api2FA('start/', {});
+      setBusy2FA(false);
+      if (out?.status !== 'success') {
+        return showToast?.(apiMessage(tt, out, 'api.saveFailed', 'Could not start setup'), 'error');
+      }
+      setSetup(out.data);
+      setCode('');
       setShowQR(true);
+      // A real QR of the real provisioning URI. Imported here rather than at
+      // the top of the file so the library is only fetched by somebody who
+      // actually opens this modal.
+      try {
+        const QR = (await import('qrcode')).default;
+        setQrDataUrl(await QR.toDataURL(out.data.provisioning_uri, {
+          margin: 1, width: 320,
+        }));
+      } catch {
+        // The typed key below still works. A QR that will not draw must not
+        // stop somebody setting this up.
+        setQrDataUrl('');
+      }
     } else {
-      // Turning OFF - confirm via showToast.
-      const next = false;
-      setTwoFA(next);
-      await onSave?.({
-        ...security,
-        two_factor_enabled: next
-      });
-      showToast?.('Two-factor authentication disabled', 'error');
+      setCode('');
+      setDisabling(true);
     }
   };
+
   const confirm2FA = async () => {
+    if (busy2FA) return;
+    setBusy2FA(true);
+    const out = await api2FA('confirm/', { code: code.trim() });
+    setBusy2FA(false);
+    if (out?.status !== 'success') {
+      return showToast?.(apiMessage(tt, out, 'api.badCode', 'That code is not right. Check your app and try again.'), 'error');
+    }
     setTwoFA(true);
     setShowQR(false);
-    await onSave?.({
-      ...security,
-      two_factor_enabled: true
-    });
-    showToast?.('Two-factor authentication enabled');
+    setSetup(null);
+    setQrDataUrl('');
+    setCode('');
+    showToast?.(tt('settings.twoFactorOn', 'Two-factor is on. You will be asked for a code when you sign in.'));
+  };
+
+  const disable2FA = async () => {
+    if (busy2FA) return;
+    setBusy2FA(true);
+    const out = await api2FA('disable/', { code: code.trim() });
+    setBusy2FA(false);
+    if (out?.status !== 'success') {
+      return showToast?.(apiMessage(tt, out, 'api.badCode', 'That code is not right. Check your app and try again.'), 'error');
+    }
+    setTwoFA(false);
+    setDisabling(false);
+    setCode('');
+    showToast?.(tt('settings.twoFactorOff', 'Two-factor is off.'), 'error');
   };
   const toggleLoginAlerts = async () => {
     const next = !loginAlerts;
@@ -298,44 +380,68 @@ const SecurityPanel = ({
               {tt("ui.scan.qr.code.below.bd8c", "Scan the QR code below with your authenticator app, then enter the 6-digit code to confirm.")}
             </p>
 
+            {/* A REAL QR of this account's own provisioning URI. This used to
+                be sixty rectangles at pseudo-random positions beside the RFC
+                test-vector secret, so anybody who scanned it enrolled an
+                authenticator that could never produce a matching code. */}
             <div className={styles.qrWrap}>
-              <div className={styles.qrBox} aria-label={tt("ui.qr.code.stub.4715", "QR code stub")}>
-                <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="160" height="160" fill="#fff" />
-                  {/* Three corner finder squares */}
-                  <rect x="8" y="8" width="36" height="36" stroke="#000" strokeWidth="6" fill="#fff" />
-                  <rect x="20" y="20" width="12" height="12" fill="#000" />
-                  <rect x="116" y="8" width="36" height="36" stroke="#000" strokeWidth="6" fill="#fff" />
-                  <rect x="128" y="20" width="12" height="12" fill="#000" />
-                  <rect x="8" y="116" width="36" height="36" stroke="#000" strokeWidth="6" fill="#fff" />
-                  <rect x="20" y="128" width="12" height="12" fill="#000" />
-                  {/* Random-ish data dots */}
-                  {Array.from({
-                length: 60
-              }).map((_, i) => {
-                const x = 56 + i * 7 % 88;
-                const y = 56 + Math.floor(i * 11 % 88);
-                return <rect key={i} x={x} y={y} width="6" height="6" fill="#000" />;
-              })}
-                </svg>
+              <div className={styles.qrBox}>
+                {qrDataUrl
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  ? <img src={qrDataUrl} width={160} height={160}
+                         alt={tt('settings.twoFactorQrAlt', 'QR code for setting up your authenticator app')} />
+                  : <span className={styles.qrManualLabel}>
+                      {tt('settings.twoFactorTypeKey', 'Type the key below into your app.')}
+                    </span>}
               </div>
               <div className={styles.qrManual}>
                 <span className={styles.qrManualLabel}>{tt("ui.enter.key.manually.d322", "Or enter this key manually")}</span>
-                <code className={styles.qrManualCode}>{tt("ui.jbswy.dpehpk.pxp.b57f", "JBSWY3DPEHPK3PXP")}</code>
+                <code className={styles.qrManualCode}>{setup?.secret || ''}</code>
               </div>
             </div>
 
             <div className={shared.formGroup}>
               <label className={shared.formLabel} htmlFor="totp"><span className="fieldLabelRow">{tt("ui.verification.code.80f2", "Verification code")} <InfoTip id="totpCode" /></span></label>
-              <input id="totp" type="text" inputMode="numeric" maxLength={6} placeholder="123456" className={shared.formInput} />
+              <input id="totp" type="text" inputMode="numeric" maxLength={6} placeholder="123456"
+                     className={shared.formInput} value={code} autoComplete="one-time-code"
+                     onChange={e => setCode(e.target.value.replace(/\D/g, ''))} />
             </div>
 
             <div className={shared.modalActions}>
               <button type="button" className={`${shared.btn} ${shared.ghostBTN}`} onClick={() => setShowQR(false)}>
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
-              <button type="button" className={`${shared.btn} ${shared.goldBTN}`} onClick={confirm2FA}>
-                {tt("ui.enable.fa.5f22", "Enable 2FA")}
+              {/* Disabled until six digits are in, because a button that can
+                  only fail is a button that should not be pressable. */}
+              <button type="button" className={`${shared.btn} ${shared.goldBTN}`}
+                      onClick={confirm2FA} disabled={busy2FA || code.length !== 6}>
+                {busy2FA ? tt('ui.checking', 'Checking...') : tt("ui.enable.fa.5f22", "Enable 2FA")}
+              </button>
+            </div>
+          </div>
+        </div>}
+
+      {/* Turning it OFF costs a code too. A stolen session must not be enough
+          to remove the protection that exists because sessions get stolen. */}
+      {disabling && <div className={shared.modalBackdrop} onClick={() => setDisabling(false)}>
+          <div className={shared.modal} onClick={e => e.stopPropagation()}>
+            <h3 className={shared.modalTitle}>{tt('settings.twoFactorOffTitle', 'Turn off two-factor authentication')}</h3>
+            <p className={shared.modalSub}>
+              {tt('settings.twoFactorOffSub', 'Enter a current code from your authenticator app to confirm it is you.')}
+            </p>
+            <div className={shared.formGroup}>
+              <label className={shared.formLabel} htmlFor="totpOff">{tt("ui.verification.code.80f2", "Verification code")}</label>
+              <input id="totpOff" type="text" inputMode="numeric" maxLength={6} placeholder="123456"
+                     className={shared.formInput} value={code} autoComplete="one-time-code"
+                     onChange={e => setCode(e.target.value.replace(/\D/g, ''))} />
+            </div>
+            <div className={shared.modalActions}>
+              <button type="button" className={`${shared.btn} ${shared.ghostBTN}`} onClick={() => setDisabling(false)}>
+                {tt("ui.cancel.77df", "Cancel")}
+              </button>
+              <button type="button" className={`${shared.btn} ${shared.redBTN}`}
+                      onClick={disable2FA} disabled={busy2FA || code.length !== 6}>
+                {busy2FA ? tt('ui.checking', 'Checking...') : tt('settings.twoFactorTurnOff', 'Turn it off')}
               </button>
             </div>
           </div>

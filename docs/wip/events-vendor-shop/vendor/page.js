@@ -359,7 +359,7 @@ const VendorStallContent = () => {
               <p className={styles.stockHint}>
                 {activeProduct.in_stock
                   ? `${activeProduct.stock || 'Limited'} available • Booth ${vendor.booth_number || vendor.booth}`
-                  : 'Currently sold out — check back later.'}
+                  : 'Currently sold out - check back later.'}
               </p>
               <button
                 className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`}

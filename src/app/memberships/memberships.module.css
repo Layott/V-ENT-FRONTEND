@@ -1,0 +1,354 @@
+/* The subscriber's own memberships. Filled surfaces and space, no strokes. */
+
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer {
+  width: 100%;
+}
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.25rem 1rem 6rem;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.25rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: var(--mobile-h2-size);
+  font-weight: var(--fw-extra-bold);
+  color: #fff;
+  line-height: 1.1;
+}
+
+.pageSubtitle {
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Wallet strip: what the next charge comes out of ── */
+
+.sourceStrip {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.sourceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.sourceLabel {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.sourceValue {
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.sourceLink {
+  color: var(--v-ent-success-light);
+  font-size: var(--fs-p-size-sm-mobile);
+  text-decoration: none;
+  font-weight: var(--fw-semi-bold);
+  align-self: center;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Tabs ── */
+
+.tabsRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.tabBTN {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.6);
+  border: none;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 1rem;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  transition: background-color ease-in-out 0.15s, color ease-in-out 0.15s;
+}
+
+.tabBTN[aria-pressed='true'] {
+  background-color: #3d3e45;
+  color: #fff;
+}
+
+/* ── List ── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.subFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.factLabel {
+  font-size: var(--fs-p-size-sm-mobile);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.factValue {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: var(--fw-semi-bold);
+}
+
+.warning {
+  background-color: #3a1e1f;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: var(--fs-p-size-mobile);
+  color: #ffb4b7;
+}
+
+.notice {
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Moving to another plan ── */
+
+.chooser {
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.chooserLead,
+.chooserEmpty {
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  background-color: #33343a;
+  border: none;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.choice:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.choiceName {
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.choicePrice {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Invoices ── */
+
+.invoiceWrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  background-color: #2a2b30;
+}
+
+.invoiceTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+  font-size: var(--fs-p-size-mobile);
+}
+
+.invoiceTable th {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-sm-mobile);
+}
+
+.invoiceTable td {
+  padding: 0.7rem 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Zebra fill rather than row lines. */
+.invoiceTable tbody tr:nth-child(odd) {
+  background-color: #303136;
+}
+
+.statePaid {
+  color: var(--v-ent-success-light);
+  font-weight: var(--fw-semi-bold);
+}
+
+.stateFailed {
+  color: #ff8a8e;
+  font-weight: var(--fw-semi-bold);
+}
+
+.stateRefunded {
+  color: #e8c760;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* ── Loading, empty and error ── */
+
+.skeleton {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  height: 168px;
+  margin-bottom: 1rem;
+}
+
+.empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.emptyTitle {
+  display: block;
+  color: #fff;
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  background-color: #3a1e1f;
+  border-radius: 14px;
+  padding: 1.25rem;
+  color: #ffb4b7;
+  font-size: var(--fs-p-size-mobile);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.retry {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background-color: #33343a;
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  background-color: #33343a;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  font-size: var(--fs-p-size-mobile);
+  z-index: 60;
+  max-width: calc(100vw - 2rem);
+}
+
+/* The same breakpoints and the same sidebar offsets as /wallets. The Sidebar
+   is position:fixed and out of flow, so the pane is pushed by a margin rather
+   than centred. */
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+    padding: 1.75rem 1.5rem 2rem;
+  }
+
+  .pageTitle {
+    font-size: var(--desktop-h5-size);
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2rem 2rem 2rem;
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  .rightPaneContainer {
+    padding: 2.25rem 2.5rem 2.5rem;
+  }
+}

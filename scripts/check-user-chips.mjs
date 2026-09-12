@@ -57,6 +57,13 @@ const ALLOWED = new Map([
   // The admin console is internal tooling: a table of accounts to act on,
   // where every row already links to the admin's own detail view rather than
   // to a public profile.
+  // The live participant list in a reading room. The feed sends USERNAMES, not
+  // people: it is a cursor-paged list of who is present right now, and asking
+  // it for an avatar and a founder mark per tick would be a person object per
+  // participant per two seconds. The names beside a message and on a room card
+  // ARE chips, because those are people being presented.
+  ['src/app/anime/room/[token]/RoomClient.js',
+   'a live presence list of usernames from the feed, not people to open'],
   ['ADMIN', 'internal tooling, rows link to the admin detail view'],
 ]);
 
@@ -98,6 +105,145 @@ function rendersName(line) {
   return true;
 }
 
+/**
+ * Inside a `<select>` option, where a chip is not possible.
+ *
+ * HTML says an `<option>` holds text and nothing else: a browser drops any
+ * element put inside one. So a name in an option is the only way to write it,
+ * and reporting it is asking for a change that cannot be made. That is a false
+ * positive, and a checker with false positives is one somebody eventually
+ * satisfies by breaking working code.
+ *
+ * Looks back a few lines rather than at one, because the name is usually on
+ * its own line under the opening tag. It stops at a `</option>`, so a span
+ * written after an option closes is still caught.
+ */
+function insideOption(lines, index) {
+  // What is open at the name's own position, first. An option written on one
+  // line closes on that line too, so a lookback alone misses it - which the
+  // self-test caught, in the fixture written to prove the opposite case.
+  const text = lines[index];
+  const at = text.search(NAME_EXPR);
+  const before = at >= 0 ? text.slice(0, at) : text;
+  if (before.lastIndexOf('<option') > before.lastIndexOf('</option>')) return true;
+  if (before.includes('</option>')) return false;
+
+  for (let i = index - 1; i >= Math.max(0, index - 4); i -= 1) {
+    const line = lines[i];
+    const close = line.lastIndexOf('</option>');
+    const open = line.lastIndexOf('<option');
+    if (open > close) return true;
+    if (close > -1) return false;
+  }
+  return false;
+}
+
+/**
+ * `@{x.username}`: a handle, which is a different thing from a name.
+ *
+ * The founder mark and the link belong to the NAME. A handle printed under a
+ * chipped name is right, and treating it as a fault is how a checker ends up
+ * reporting twenty-three things when about ten are real.
+ */
+function isHandle(line) {
+  const at = line.search(NAME_EXPR);
+  if (at < 0) return false;
+  return line.slice(0, at).trimEnd().endsWith('@');
+}
+
+/**
+ * Proven both ways, and with TWO instances in one fixture on purpose.
+ *
+ * A one-instance fixture passes under the right rule AND under the old
+ * first-hit-per-file rule, so it cannot tell them apart. That is exactly how
+ * this checker read clean for days while hiding nine hand-written names.
+ *
+ *   node scripts/check-user-chips.mjs --self-test
+ */
+function selfTest() {
+  const cases = [
+    {
+      name: 'two hand-written names in one file are BOTH reported',
+      chipped: false,
+      src: ["<span>{post.author.full_name}</span>",
+            "<span>{comment.author.full_name}</span>"],
+      expect: 2,
+    },
+    {
+      name: 'a name is reported even when the file imports the chip',
+      chipped: true,
+      src: ["<UserChip user={post.author} />",
+            "<span>{comment.author.full_name}</span>"],
+      expect: 1,
+    },
+    {
+      name: 'a handle beside a chipped name is fine',
+      chipped: true,
+      src: ["<UserChip user={u} />", "<span>@{u.username}</span>"],
+      expect: 0,
+    },
+    {
+      name: 'a handle standing in for the name, with no chip, is reported',
+      chipped: false,
+      src: ["<span>@{u.username}</span>"],
+      expect: 1,
+    },
+    {
+      name: 'a name inside a select option is not reportable: a chip cannot go there',
+      chipped: false,
+      src: ["<option key={m.id} value={m.user?.username}>",
+            "  {m.user?.full_name}",
+            "</option>"],
+      expect: 0,
+    },
+    {
+      name: 'a span written after an option closes is still caught',
+      chipped: false,
+      src: ["<option value=\"a\">{m.user?.full_name}</option>",
+            "<span>{other.author.full_name}</span>"],
+      expect: 1,
+    },
+    {
+      name: 'an attribute is not a rendered name',
+      chipped: false,
+      src: ["<Avatar name={u.full_name} />"],
+      expect: 0,
+    },
+    {
+      name: 'a template literal is a string, not a name on screen',
+      chipped: false,
+      src: ["const msg = `hello ${u.full_name}`;"],
+      expect: 0,
+    },
+    {
+      name: 'one level of nesting still counts',
+      chipped: false,
+      src: ["<span>{m.user?.full_name}</span>"],
+      expect: 1,
+    },
+  ];
+
+  let failures = 0;
+  for (const one of cases) {
+    let found = 0;
+    one.src.forEach((line, index) => {
+      if (!rendersName(line)) return;
+      if (isHandle(line) && one.chipped) return;
+      if (insideOption(one.src, index)) return;
+      found += 1;
+    });
+    const ok = found === one.expect;
+    if (!ok) failures += 1;
+    console.log(`${ok ? 'ok  ' : 'FAIL'}: ${one.name} (expected ${one.expect}, got ${found})`);
+  }
+  console.log(failures === 0
+    ? `${cases.length} self-test case(s) pass`
+    : `${failures} self-test case(s) FAILED`);
+  return failures === 0 ? 0 : 1;
+}
+
+if (process.argv.includes('--self-test')) process.exit(selfTest());
+
 const offenders = [];
 let checked = 0;
 
@@ -113,10 +259,32 @@ for (const file of walk(SRC)) {
   const lines = src.split('\n');
   if (!lines.some(rendersName)) continue;
   checked += 1;
-  if (src.includes('user-chip/UserChip')) continue;
 
-  const line = lines.findIndex(rendersName) + 1;
-  offenders.push(`${rel}:${line} renders a name without UserChip`);
+  // EVERY hand-written name, not the first, and no whole-file exemption for a
+  // file that happens to import the chip.
+  //
+  // Both of those made this checker go blind exactly where somebody had just
+  // worked: fixing the line it reported ADDED the import, and every other
+  // hand-written name in that file became invisible for ever. On 8 September
+  // 2026 that was hiding 23 names across 12 files, 17 of them with no founder
+  // mark, while this read clean and the CEO's 29 August bug was still shipping.
+  //
+  // A check that stops at the first hit per file counts how many FILES are
+  // dirty, and then gets quoted as how many THINGS are wrong.
+  // A file that renders the NAME through the chip may still print the handle
+  // under it, and that is correct: the founder mark belongs to the name, and
+  // "@winlola" under a chip is a handle, not a second name.
+  const chipped = src.includes('user-chip/UserChip');
+
+  lines.forEach((text, index) => {
+    if (!rendersName(text)) return;
+    // `@{x.username}` is a handle. Beside a chipped name it is fine; with no
+    // chip anywhere in the file it IS the name being shown, so it is not.
+    if (isHandle(text) && chipped) return;
+    if (insideOption(lines, index)) return;
+    const what = isHandle(text) ? 'shows a handle as the name' : 'renders a name';
+    offenders.push(`${rel}:${index + 1} ${what}, without UserChip`);
+  });
 }
 
 console.log(`files rendering a name: ${checked}`);

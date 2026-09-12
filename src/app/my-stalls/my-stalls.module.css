@@ -1,0 +1,139 @@
+/* The stalls somebody runs. Filled surfaces, no strokes, no glow. */
+
+/* Page shell, copied from events/my-tickets so this reads as the same
+   designer's work. The sidebar is FIXED, so the pane offsets it with a margin
+   at each breakpoint rather than sitting beside it in a flex row - a flex row
+   put the content underneath the sidebar, which is what the walk showed. */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.main { width: 100%; }
+
+.content {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem 5rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .content {
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 1.75rem 1.5rem 5rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .content {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem 2rem 5rem;
+  }
+}
+
+.title {
+  margin: 0 0 0.35rem;
+  font-size: var(--desktop-h4-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.blurb, .meta, .empty {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 70ch;
+}
+
+.blurb { margin-bottom: 1.25rem; }
+
+.error {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--v-ent-red);
+}
+
+.emptyBox {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1rem;
+  min-width: 0;
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.name {
+  font-size: 1.02rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  text-decoration: none;
+}
+
+.name:hover { color: var(--v-ent-success); }
+
+.pillOn, .pillOff {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.pillOn { background-color: rgba(76, 175, 80, 0.18); color: var(--v-ent-success); }
+.pillOff { background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); }
+
+.open, .primary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.open { background-color: #33343a; color: rgba(255, 255, 255, 0.8); }
+.primary { background-color: var(--v-ent-success); color: #fff; }
+
+@media (max-width: 720px) {
+  /* Padding is the shell's job now. Only what is genuinely about a narrow
+     screen lives here, or the two rules fight and the loser is whichever
+     comes last in the file. */
+  .card { flex-wrap: wrap; }
+  .open { width: 100%; justify-content: center; }
+}

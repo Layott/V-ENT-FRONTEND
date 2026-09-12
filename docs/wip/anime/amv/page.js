@@ -92,13 +92,13 @@ function GalleryContent() {
             <div>
               <h1 className={styles.pageTitle}>AMV Gallery</h1>
               <p className={styles.pageSub}>
-                Fan-edited drops from the V-ENT community. Discover, like, share — submit your own.
+                Fan-edited drops from the V-ENT community. Discover, like, share - submit your own.
               </p>
             </div>
             <button
               type="button"
               className={`btn redBTN ${styles.uploadBtn}`}
-              onClick={() => alert('AMV upload — coming with Phase 5 launch.')}
+              onClick={() => alert('AMV upload - coming with Phase 5 launch.')}
             >
               <FaPlus /> Upload AMV
             </button>

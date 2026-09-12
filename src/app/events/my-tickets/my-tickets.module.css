@@ -562,3 +562,105 @@
   background: #fff;
   display: block;
 }
+
+/* Checking yourself in, from the ticket itself.
+   The page existed for days with nothing linking to it. */
+.selfCheckInBtn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.92rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Giving a ticket away, inside the QR panel.
+   A filled surface one step off the panel, no strokes, matching .qrFact
+   above and the radius scale used across the modal. */
+.giveBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0.75rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.giveHint {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.giveLabel {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.giveInput {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.giveInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* 44px minimum on anything pressable, on a phone which is where this is used. */
+.giveBtn {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.giveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.giveCancel {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.55rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  background: none;
+}
+
+/* A refusal has to read as a refusal, not as a hint. */
+.giveError {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--v-ent-red);
+}
+
+.giveDone {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--v-ent-success);
+}

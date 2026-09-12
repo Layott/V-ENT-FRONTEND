@@ -32,6 +32,10 @@ const protectedRoutes = [
   "/events/my-events",
   "/events/my-tickets",
   "/events/attendees",
+  // The door. The whole page is an action: it downloads a ticket list and
+  // checks people in. Signed out it rendered a scanner that could do neither
+  // and said only "Could not load this event."
+  "/events/scan",
   "/events/register-event",
   "/tournaments/create-tournament",
   "/tournaments/drafts",
@@ -44,6 +48,11 @@ const protectedRoutes = [
   "/community/dm",
   "/community/scrim/create",
   "/wallets",
+  // Somebody's own memberships and every payment they have made. The
+  // whole page means "mine", so it is gated as a page rather than
+  // control by control. The plans themselves live at /plans/<name>,
+  // which is a different prefix and stays public and indexed.
+  "/memberships",
   "/settings",
   "/notifications",
   "/disputes",

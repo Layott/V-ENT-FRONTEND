@@ -1,0 +1,105 @@
+/* C1b, the desk lower third.
+ *
+ * Every number is `desk_lower_third()` in the pack's `stream_extra.py`: left
+ * 96px, bottom 112px, plates 86px tall stacked with a 12px gap, the role cell
+ * padded 0 26px and the name cell 0 38px, and the name cell's trailing edge
+ * cut back to 97% so it leans the way the pack's plates lean. The frame is
+ * 1920x1080 because an OBS browser source is that size.
+ *
+ * The two hexes are the pack's own and are not tokens: #00A032 is the desk
+ * accent, a shade off the series green, and #30483C the desk plate fill, a
+ * shade off the Head 2 Head panel. Both were sampled for this graphic and
+ * changing either to the nearest token would change the approved artwork.
+ */
+
+.wrap {
+  align-items: flex-start;
+  bottom: 112px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  left: 96px;
+  position: absolute;
+}
+
+.plate {
+  align-items: stretch;
+  display: flex;
+  height: 86px;
+}
+
+/* The pack stacks the desk in sequence, 80ms then 130ms apart, so two casters
+ * arrive one after the other rather than as a block. Held above the shared
+ * `wipeIn` by specificity, which is what keeps the delay through the
+ * shorthand. */
+.root .plate:nth-child(1) { animation-delay: 80ms; }
+.root .plate:nth-child(2) { animation-delay: 210ms; }
+.root .plate:nth-child(3) { animation-delay: 340ms; }
+
+/* Role first and in the accent block, because on a desk the role is what
+   identifies the person: half the audience has never heard the name. The
+   pack's own comment, kept with the rule it explains. */
+.role {
+  align-items: center;
+  background: #00A032;
+  color: #fff;
+  display: flex;
+  font-family: var(--bc);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  padding: 0 26px;
+  text-transform: uppercase;
+}
+
+.name {
+  align-items: center;
+  background: #30483C;
+  clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%);
+  color: #fff;
+  display: flex;
+  font-family: var(--monu);
+  font-size: 40px;
+  font-weight: 800;
+  padding: 0 38px;
+  /* Set in capitals like every plate in the pack, so a name typed in sentence
+     case on the night still matches the artwork that was approved. */
+  text-transform: uppercase;
+}
+
+/* Nobody named yet. The desk's own corner, the pack's panel and its type, so
+ * an operator can see the source is alive. Never a spinner, never the word
+ * loading. */
+.empty {
+  background: var(--panel);
+  border-radius: 3px;
+  bottom: 112px;
+  left: 96px;
+  padding: 18px 26px;
+  position: absolute;
+}
+
+.emptyK {
+  color: var(--panel-edge);
+  font-family: var(--bc);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.emptyLine {
+  color: #fff;
+  font-family: var(--monu);
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root .plate:nth-child(1),
+  .root .plate:nth-child(2),
+  .root .plate:nth-child(3) {
+    animation-delay: 0ms;
+  }
+}

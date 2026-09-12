@@ -19,7 +19,7 @@ const MOCK_USER_ID = 'user_001';
 
 const AMBIENT_MESSAGES = [
   { id: 'amb1', user: 'reader_glow', avatar: 'https://i.pravatar.cc/60?img=24', text: 'That last panel is wild.' },
-  { id: 'amb2', user: 'kira_san', avatar: 'https://i.pravatar.cc/60?img=15', text: 'Wait — is that the same blade from ch.4?' },
+  { id: 'amb2', user: 'kira_san', avatar: 'https://i.pravatar.cc/60?img=15', text: 'Wait - is that the same blade from ch.4?' },
   { id: 'amb3', user: 'voltage_x', avatar: 'https://i.pravatar.cc/60?img=42', text: 'Yo, the colour palette here is unreal.' },
   { id: 'amb4', user: 'shoji_ko', avatar: 'https://i.pravatar.cc/60?img=27', text: 'Crying lowkey.' },
   { id: 'amb5', user: 'editor_glow', avatar: 'https://i.pravatar.cc/60?img=34', text: 'Pacing has been *immaculate* this arc.' },
@@ -95,7 +95,7 @@ function RoomContent() {
     run();
   }, [room?.series_id, room?.current_chapter, apiUrl, authHeaders]);
 
-  // Ambient mock chat — every 6-9s, drop in a message
+  // Ambient mock chat - every 6-9s, drop in a message
   useEffect(() => {
     if (loading) return;
     let i = 0;
@@ -167,7 +167,7 @@ function RoomContent() {
                   {loading ? 'Loading room...' : room?.name || 'Co-read room'}
                 </h1>
                 <p className={styles.topSub}>
-                  {series?.title ? `${series.title} · ` : ''}Ch. {room?.current_chapter} · host @{room?.host?.username || '—'}
+                  {series?.title ? `${series.title} · ` : ''}Ch. {room?.current_chapter} · host @{room?.host?.username || ' - '}
                 </p>
               </div>
             </div>
@@ -199,7 +199,7 @@ function RoomContent() {
           </div>
 
           <div className={styles.roomLayout}>
-            {/* Left — viewer */}
+            {/* Left - viewer */}
             <div className={styles.viewerPane}>
               <Link href="/anime/my-list" className={styles.backLink}>
                 <FiArrowLeft /> Back to my list
@@ -224,7 +224,7 @@ function RoomContent() {
                 <div
                   className={styles.pageImage}
                   style={{ backgroundImage: currentPageUrl ? `url(${currentPageUrl})` : undefined }}
-                  aria-label={`Page ${currentPage + 1} of ${totalPages || '—'}`}
+                  aria-label={`Page ${currentPage + 1} of ${totalPages || ' - '}`}
                 />
                 <button
                   type="button"
@@ -241,7 +241,7 @@ function RoomContent() {
               </p>
             </div>
 
-            {/* Right — participants + chat */}
+            {/* Right - participants + chat */}
             <aside className={styles.sidePane}>
               <div className={styles.sideSection}>
                 <h4 className={styles.sideHeader}>
@@ -295,7 +295,7 @@ function RoomContent() {
                     </div>
                   ))}
                   {!loading && chat.length === 0 && (
-                    <p className={styles.sideState}>No messages yet — say hi!</p>
+                    <p className={styles.sideState}>No messages yet - say hi!</p>
                   )}
                   <div ref={chatEndRef} />
                 </div>

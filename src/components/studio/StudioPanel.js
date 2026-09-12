@@ -28,7 +28,9 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
+import TextLayerEditor from './TextLayerEditor';
 import styles from './studio-panel.module.css';
+import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -45,6 +47,21 @@ const PREVIEW_REPLAY_MS = 10000;
 // Every key here is a literal. `tt(`studio.field.${kind}.${f.key}`)` would be
 // invisible to `check-keys.mjs`, which is how a screen ends up permanently
 // English in French while every checker reports clean.
+//: The parts of the console, in the order somebody running a broadcast wants
+//: them. Graphics first: it is what the operator came for, and everything else
+//: is set up once at the start of the day.
+//: Written as `key` and `fallback` rather than a bare tuple so check-keys can
+//: see them. A label held in a table and read as `tt(row.key, row.fallback)`
+//: was invisible to it twice; that shape is the one it now understands.
+const SECTIONS = [
+  // First, because once the four sources are pasted this is the whole job.
+  { id: 'layers', key: 'studio.secLayers', fallback: 'Layers' },
+  { id: 'graphics', key: 'studio.secGraphics', fallback: 'Graphics' },
+  { id: 'look', key: 'studio.secLook', fallback: 'Look' },
+  { id: 'media', key: 'studio.secMedia', fallback: 'Clips and pictures' },
+  { id: 'past', key: 'studio.secPast', fallback: 'Earlier' },
+];
+
 const fieldsFor = (tt) => ({
   scorebar: [
     { key: 'home', label: tt('studio.f.home', 'Home team'), placeholder: 'Nigeria' },
@@ -52,8 +69,37 @@ const fieldsFor = (tt) => ({
     { key: 'home_score', label: tt('studio.f.homeScore', 'Home score'), placeholder: '0', numeric: true },
     { key: 'away_score', label: tt('studio.f.awayScore', 'Away score'), placeholder: '0', numeric: true },
     { key: 'caption', label: tt('studio.f.caption', 'Caption'), placeholder: 'Aggregate, leg 2' },
+    // The running aggregate beside the live score, and which of the two
+    // match-ups this is. Both are left blank by default and worked out from
+    // the fixture that is live, because during a fixture that is the answer
+    // the operator wants and typing it again every twenty minutes is how a
+    // wrong seat number ends up on air.
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+    { key: 'show_aggregate',
+      label: tt('studio.f.showAggregate', 'Show the aggregate'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
   ],
   standings: [
+    // Which of the two live tables. An aggregate format keeps a nations table
+    // and a players table at once and they are different shapes, so this is a
+    // choice rather than a text box: an operator mid-broadcast should not be
+    // able to mistype the name of a table.
+    { key: 'table',
+      label: tt('studio.f.whichTable', 'Which table'),
+      choices: [
+        { value: 'nations', label: tt('studio.opt.nations', 'Nations') },
+        { value: 'players', label: tt('studio.opt.players', 'Players') },
+      ] },
     { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Group standings' },
     { key: 'limit', label: tt('studio.f.rows', 'How many rows'), placeholder: '10', numeric: true },
   ],
@@ -84,6 +130,69 @@ const fieldsFor = (tt) => ({
   doors: [],
   ticker: [],
   bracket: [],
+  explainer: [],
+  // The Rivalry Series set. Every fixture field is optional on purpose: blank
+  // means the fixture that is live, which is what somebody with one hand on
+  // the mixer wants, and what the graphics work out for themselves.
+  fixture_card: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'title', label: tt('studio.f.heading', 'Heading'), placeholder: 'Matchday 3' },
+  ],
+  fixture_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+  ],
+  match_result: [
+    { key: 'fixture_id', label: tt('studio.f.fixture', 'Which fixture'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'seat',
+      label: tt('studio.f.seat', 'Which seat'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: '1', label: tt('studio.opt.seat1', 'Seat 1') },
+        { value: '2', label: tt('studio.opt.seat2', 'Seat 2') },
+      ] },
+  ],
+  head_to_head: [
+    { key: 'left', label: tt('studio.f.leftPlayer', 'Player on the left'), placeholder: 'demo_zainab' },
+    { key: 'right', label: tt('studio.f.rightPlayer', 'Player on the right'), placeholder: 'demo_kwame' },
+  ],
+  // The four off the CEO's stream elements sheet, 4 September. The desk names a
+  // caster rather than a competitor, so the role comes first: on a desk the
+  // role is what identifies the person.
+  desk_lower_third: [
+    { key: 'role', label: tt('studio.f.role', 'Role'), placeholder: 'Analyst' },
+    { key: 'name', label: tt('studio.f.name', 'Name'), placeholder: 'Temi Adeyemi' },
+    { key: 'nation', label: tt('studio.f.nation', 'Where they are from'), placeholder: 'Nigeria' },
+  ],
+  matchday: [
+    { key: 'day', label: tt('studio.f.whichDay', 'Which day'), placeholder: tt('studio.opt.auto', 'Work it out') },
+    { key: 'results',
+      label: tt('studio.f.showResults', 'With the results'),
+      choices: [
+        { value: '', label: tt('studio.opt.auto', 'Work it out') },
+        { value: 'yes', label: tt('studio.opt.yes', 'Yes') },
+        { value: 'no', label: tt('studio.opt.no', 'No') },
+      ] },
+    { key: 'rows', label: tt('studio.f.rows', 'How many rows'), placeholder: '5', numeric: true },
+  ],
+  analyst_desk: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'The desk' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Analysts' },
+  ],
+  play_area: [
+    { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'Live play' },
+    { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Seat 1' },
+  ],
+  break_screen: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
+    { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
+    { key: 'until', label: tt('studio.f.until', 'Counting down to'), placeholder: '2026-09-04T18:30' },
+  ],
+  award: [
+    { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Player of the day' },
+    { key: 'name', label: tt('studio.f.awardName', 'Who won it'), placeholder: 'Temi Adeyemi' },
+    { key: 'detail', label: tt('studio.f.awardDetail', 'Why they won it'), placeholder: '7 goals, 3 wins' },
+    { key: 'picture', label: tt('studio.f.awardPicture', 'Picture address'), placeholder: 'https://' },
+  ],
   intro: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Rivalry Series' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Day 1' },
@@ -109,6 +218,21 @@ const labelsFor = (tt) => ({
   programme: tt('studio.kind.programme', 'Programme'),
   doors: tt('studio.kind.doors', 'Doors'),
   media: tt('studio.kind.media', 'Clip or picture'),
+  fixture_card: tt('studio.kind.fixtureCard', 'Fixture card'),
+  fixture_result: tt('studio.kind.fixtureResult', 'Fixture result'),
+  match_result: tt('studio.kind.matchResult', 'Match result'),
+  head_to_head: tt('studio.kind.headToHead', 'Head to head'),
+  break_screen: tt('studio.kind.breakScreen', 'Break screen'),
+  award: tt('studio.kind.award', 'Award'),
+  explainer: tt('studio.kind.explainer', 'Aggregate rule'),
+  // The four off the CEO's stream elements sheet. They had payload editors and
+  // no NAMES, so the console listed them as desk_lower_third and play_area
+  // among Score bar and Now and next, which is a machine name in front of an
+  // operator mid-show.
+  desk_lower_third: tt('studio.kind.deskLowerThird', 'Desk lower third'),
+  matchday: tt('studio.kind.matchday', 'Matchday'),
+  analyst_desk: tt('studio.kind.analystDesk', 'Analyst desk'),
+  play_area: tt('studio.kind.playArea', 'Play area'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
@@ -167,6 +291,7 @@ const autoFor = (tt) => ({
   doors: tt('studio.auto.doors', 'Reads the door: how many are in, how many the room holds.'),
   ticker: tt('studio.auto.ticker', 'Reads the table, or the programme.'),
   bracket: tt('studio.auto.bracket', 'Reads the matches in progress.'),
+  explainer: tt('studio.auto.explainer', 'Explains how a fixture is decided. Reads how many matches make one.'),
 });
 
 export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentRef }) {
@@ -183,6 +308,24 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
+  // Which part of the console is showing.
+  //
+  // CEO, 4 September 2026: "right now its just a page that you scroll a lot to
+  // find anything you want, no sub categories or options for a page that has a
+  // lot to manage". It was 1300 lines of one column: every graphic with its
+  // URL, its preview, its fields, four presentation controls and its text
+  // layers, then the house style, then the media library, then the uploads.
+  //
+  // Graphics first because that is what somebody with one hand on the mixer
+  // came for.
+  const [section, setSection] = useState('graphics');
+  // Which graphic is open. One at a time: the operator is looking at a match,
+  // not at this page, and twenty three open cards is the thing being fixed.
+  // Opening one does not put it on air and closing one does not take it off.
+  const [openKind, setOpenKind] = useState('');
+  // Show only what is on air. Off by default, because setting a graphic up is
+  // done before it goes on and the list would be empty exactly then.
+  const [onlyOnAir, setOnlyOnAir] = useState(false);
 
   // The preview loop. Same rule as the uploaded overlays: the feed keeps the
   // numbers live by itself, but the load-in only happens on a load, and how a
@@ -313,10 +456,29 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     { method: 'POST', body: JSON.stringify(patch) },
   ));
 
+  // Cueing one of the four layers.
+  //
+  // The operator pastes four browser sources into OBS once, stacked bottom to
+  // top, and from then on this is the only thing they touch. What occupies a
+  // layer and whether it is on air are separate presses on purpose: load the
+  // next graphic while the layer is dark, take it up on the cue. That is how a
+  // gallery works, and it is why this is not just an on/off per graphic.
+  const cue = (role, patch) => run(() => call(
+    `/sessions/${live.id}/slot/${role}/`,
+    { method: 'POST', body: JSON.stringify(patch) },
+  ));
+
   // The broadcast's house style. Any one graphic may still differ.
   const setDefaults = (patch) => run(() => call(`/sessions/${live.id}/`, {
     method: 'POST',
     body: JSON.stringify({ defaults: { ...(live.defaults || {}), ...patch } }),
+  }));
+
+  // Which look the graphics are drawn in. One press, and every source already
+  // pasted into OBS redraws on its next poll: the look is part of the feed
+  // version, so nothing has to be reloaded at the machine.
+  const setTheme = (value) => run(() => call(`/sessions/${live.id}/`, {
+    method: 'POST', body: JSON.stringify({ theme: value }),
   }));
 
   // One press from the media library: point the clip graphic at this asset and
@@ -333,7 +495,15 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
       setCopied(elementKind);
       setTimeout(() => setCopied(''), 2000);
     } catch {
-      // Blocked outside a secure context. The URL is on screen and selectable.
+      // Blocked: outside a secure context, or the window does not have focus,
+      // which is the ordinary case when somebody copies from a second monitor.
+      //
+      // The row is opened rather than nothing happening, because the URL is
+      // only rendered while the row is open. The comment here used to claim it
+      // was "on screen and selectable", which was true only if it happened to
+      // be expanded already. A press that does nothing visible is the same as
+      // a dead button.
+      setOpenKind(elementKind);
     }
   };
 
@@ -361,7 +531,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             {tt('studio.noneLive', 'No broadcast running. Starting one gives you a fresh set of URLs, which stop working when you end it.')}
           </p>
           <button type="button" className={styles.primary} disabled={busy}
-                  onClick={() => start(new Date().toLocaleDateString())}>
+                  onClick={() => start(formatDate(new Date()))}>
             {tt('studio.start', 'Start a broadcast')}
           </button>
         </div>
@@ -376,24 +546,132 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             </span>
             <span className={styles.liveMeta}>
               {tt('studio.since', 'since {t}').replace(
-                '{t}', new Date(live.started_at).toLocaleTimeString())}
+                '{t}', formatTime(live.started_at))}
             </span>
             <button type="button" className={styles.ghost} disabled={busy} onClick={end}>
               {tt('studio.end', 'End broadcast')}
             </button>
           </div>
 
-          <h3 className={styles.section}>{tt('studio.urls', 'Browser source URLs')}</h3>
+          {/* The sections. Filled chips with `aria-pressed`, the same shape
+              every other tab strip on this platform uses, rather than an
+              underline or a ring. */}
+          <div className={styles.sections} role="group"
+               aria-label={tt('studio.sections', 'Parts of the studio')}>
+            {SECTIONS.map((row) => (
+              <button key={row.id} type="button"
+                      className={section === row.id ? styles.sectionOn : styles.sectionOff}
+                      aria-pressed={section === row.id}
+                      onClick={() => setSection(row.id)}>
+                {tt(row.key, row.fallback)}
+              </button>
+            ))}
+          </div>
+
+          {/* THE FOUR LAYERS.
+              CEO, 6 September 2026, sending the RIVALRY control room: V-ENT
+              should do "this kind of setup for production, except that this
+              one will be online and people can upload anything they want and
+              use to run overlays that will be updating in realtime based off
+              the tournament data and results."
+
+              Before this, going on air with twenty graphics meant twenty
+              browser sources added and removed by hand DURING a show. Four
+              sources, stacked once, and everything after is a press here. */}
+          {section === 'layers' && <div className={styles.layers}>
+            <p className={styles.hint}>
+              {tt('studio.layersHint', 'Four browser sources, added to your scene once and never touched again. Stack them in this order from the back: background, full frame, lower third, corner. Then put whatever you like in each, and take it up when you want it.')}
+            </p>
+
+            {Object.values(live.slots || {}).map((layer) => (
+              <div key={layer.role} className={styles.layer}>
+                <div className={styles.layerHead}>
+                  <span className={styles.layerName}>{layer.label}</span>
+                  <button type="button"
+                          className={layer.active ? styles.layerOn : styles.layerOff}
+                          aria-pressed={!!layer.active}
+                          disabled={busy || !layer.holds}
+                          onClick={() => cue(layer.role, { active: !layer.active })}>
+                    {layer.active
+                      ? tt('studio.layerTakeDown', 'Take it down')
+                      : tt('studio.layerTakeUp', 'Take it up')}
+                  </button>
+                </div>
+
+                {/* What is in it. One control listing both what V-ENT draws
+                    and what this organiser uploaded, because to an operator
+                    they are the same decision: what goes in this layer. */}
+                <select className={styles.layerPick}
+                        value={layer.holds === 'overlay'
+                          ? `overlay:${layer.overlay_id}` : `kind:${layer.item_kind}`}
+                        disabled={busy}
+                        onChange={(e) => {
+                          const [what, which] = e.target.value.split(':');
+                          cue(layer.role, what === 'overlay'
+                            ? { overlay_id: which }
+                            : { item_kind: which });
+                        }}>
+                  <option value="kind:">{tt('studio.layerEmpty', 'Nothing')}</option>
+                  <optgroup label={tt('studio.layerHouse', 'V-ENT graphics')}>
+                    {orderedKinds.map((k) => (
+                      <option key={k} value={`kind:${k}`}>{LABELS[k] || k}</option>
+                    ))}
+                  </optgroup>
+                  {(live.overlays || []).length > 0 && (
+                    <optgroup label={tt('studio.layerUploaded', 'Your uploads')}>
+                      {live.overlays.map((o) => (
+                        <option key={o.id} value={`overlay:${o.id}`}>{o.name}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+
+                {/* The address for this layer, copied once. */}
+                <div className={styles.layerUrlRow}>
+                  <p className={styles.elUrl}>{live.slot_urls?.[layer.role]}</p>
+                  <button type="button" className={styles.copyBtn}
+                          onClick={() => copy(`slot-${layer.role}`, live.slot_urls?.[layer.role])}>
+                    {copied === `slot-${layer.role}`
+                      ? tt('studio.copied', 'Copied')
+                      : tt('studio.copyUrl', 'Copy URL')}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>}
+
+          {section === 'graphics' && <>
           <p className={styles.hint}>
             {tt('studio.urlsHint', 'One per graphic. Add each as a browser source at 1920 by 1080 with a transparent background. They show nothing until you put that graphic on air below.')}
           </p>
 
+          {/* Everything, or only what a viewer is looking at right now. */}
+          <div className={styles.sections}>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOff : styles.sectionOn}
+                    aria-pressed={!onlyOnAir}
+                    onClick={() => setOnlyOnAir(false)}>
+              {tt('studio.allGraphics', 'All graphics')}
+            </button>
+            <button type="button"
+                    className={onlyOnAir ? styles.sectionOn : styles.sectionOff}
+                    aria-pressed={onlyOnAir}
+                    onClick={() => setOnlyOnAir(true)}>
+              {tt('studio.onAirOnly', 'On air now')}
+            </button>
+          </div>
+
           <div className={styles.elements}>
-            {orderedKinds.map((elementKind) => {
+            {orderedKinds
+              .filter((k) => !onlyOnAir || live.elements?.[k]?.active)
+              .map((elementKind) => {
               const el = live.elements?.[elementKind] || {};
               const fields = FIELDS[elementKind] || [];
               const values = { ...(el.payload || {}), ...(draft[elementKind] || {}) };
               const dirty = Boolean(draft[elementKind] && Object.keys(draft[elementKind]).length);
+              // A graphic with something typed and not yet saved stays open, or
+              // pressing another one would look like it threw the typing away.
+              const open = openKind === elementKind || dirty;
 
               return (
                 <div key={elementKind} className={styles.element}>
@@ -418,8 +696,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                         ? tt('studio.take', 'Take off')
                         : tt('studio.put', 'Put on air')}
                     </button>
+                    <button type="button" className={styles.foldBtn}
+                            aria-expanded={open}
+                            onClick={() => setOpenKind(open ? '' : elementKind)}>
+                      {open ? tt('studio.close', 'Close') : tt('studio.open', 'Open')}
+                    </button>
                   </div>
 
+                  {open && <>
                   <p className={styles.elUrl}>{live.urls[elementKind]}</p>
 
                   {/* What it looks like right now, at the size it will be on
@@ -445,14 +729,32 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                           <span className={styles.fieldLabel}>
                             {f.label}
                           </span>
-                          <input className={styles.input}
-                                 inputMode={f.numeric ? 'numeric' : undefined}
-                                 placeholder={f.placeholder}
-                                 value={values[f.key] ?? ''}
-                                 onChange={(e) => setDraft((d) => ({
-                                   ...d,
-                                   [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
-                                 }))} />
+                          {/* A field with a fixed set of answers is a choice,
+                              not a text box. An operator mid-broadcast should
+                              not be able to put "playerz" in a payload and
+                              spend the next two minutes wondering why the
+                              graphic will not change. */}
+                          {f.choices ? (
+                            <select className={styles.select}
+                                    value={values[f.key] ?? ''}
+                                    onChange={(e) => setDraft((d) => ({
+                                      ...d,
+                                      [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                    }))}>
+                              {f.choices.map((c) => (
+                                <option key={c.value} value={c.value}>{c.label}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input className={styles.input}
+                                   inputMode={f.numeric ? 'numeric' : undefined}
+                                   placeholder={f.placeholder}
+                                   value={values[f.key] ?? ''}
+                                   onChange={(e) => setDraft((d) => ({
+                                     ...d,
+                                     [elementKind]: { ...(d[elementKind] || {}), [f.key]: e.target.value },
+                                   }))} />
+                          )}
                         </label>
                       ))}
                       <div className={styles.fieldActions}>
@@ -543,18 +845,54 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                       <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
                     </label>
                   </div>
+
+                  {/* Words on top of this graphic. CEO, 4 September: "also
+                      should be able to add text, change the font size, color,
+                      position, animation of that text also on any overlay."
+                      The same control serves an uploaded overlay, in
+                      OverlaysPanel, because the two differ only in the
+                      address they save to. */}
+                  <TextLayerEditor
+                    ownerKind={kind}
+                    ownerRef={ref}
+                    sessionId={live.id}
+                    elementKind={elementKind}
+                    positions={live.presentation_options?.positions}
+                    entrances={live.presentation_options?.entrances}
+                    exits={live.presentation_options?.exits}
+                  />
+                  </>}
                 </div>
               );
             })}
           </div>
 
+          {orderedKinds.filter((k) => !onlyOnAir || live.elements?.[k]?.active).length === 0 && (
+            <p className={styles.hint}>
+              {tt('studio.noneOnAir', 'Nothing is on air. Every graphic is still here under All graphics.')}
+            </p>
+          )}
+          </>}
+
           {/* The house style, set once for the whole broadcast. */}
-          <div className={styles.defaults}>
+          {section === 'look' && <div className={styles.defaults}>
             <h3 className={styles.section}>{tt('studio.house', 'How graphics behave by default')}</h3>
             <p className={styles.hint}>
               {tt('studio.houseHint', 'Every graphic starts from this. Change one above and it keeps its own.')}
             </p>
             <div className={styles.look}>
+              {/* Which design the graphics are drawn in. The list comes from
+                  the server, so a look added there appears here without a
+                  second change. */}
+              <label className={styles.lookField}>
+                <span className={styles.fieldLabel}>{tt('studio.theme', 'Design')}</span>
+                <select className={styles.select} value={live.theme || 'vent'}
+                        onChange={(e) => setTheme(e.target.value)}>
+                  {(live.themes || []).map((row) => (
+                    <option key={row.value} value={row.value}>{row.label}</option>
+                  ))}
+                </select>
+              </label>
               <label className={styles.lookField}>
                 <span className={styles.fieldLabel}>{tt('studio.entry', 'Arrives')}</span>
                 <select className={styles.select} value={live.defaults?.entry || 'rise'}
@@ -606,16 +944,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                 <span>{tt('studio.hold', 'Leave the surface on screen')}</span>
               </label>
             </div>
-          </div>
+          </div>}
         </>
       )}
 
       {/* Clips and pictures live with the studio rather than with one
           broadcast, so this shows whether or not one is running. */}
-      <StudioMedia kind={kind} ownerRef={ref} token={token}
-                   live={Boolean(live)} onPlay={playAsset} />
+      {(!live || section === 'media') && (
+        <StudioMedia kind={kind} ownerRef={ref} token={token}
+                     live={Boolean(live)} onPlay={playAsset} />
+      )}
 
-      {past.length > 0 && (
+      {past.length > 0 && (!live || section === 'past') && (
         <>
           <h3 className={styles.section}>{tt('studio.past', 'Earlier broadcasts')}</h3>
           <div className={styles.pastRows}>
@@ -625,7 +965,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   {s.name || tt('studio.broadcast', 'Broadcast')}
                 </span>
                 <span className={styles.muted}>
-                  {new Date(s.started_at).toLocaleString()}
+                  {formatDateTime(s.started_at)}
                 </span>
                 <span className={styles.muted}>
                   {tt('studio.urlsRetired', 'URLs retired')}

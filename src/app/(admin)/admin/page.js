@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { LuUsers, LuActivity, LuTrophy, LuBanknote, LuCoins, LuShield, LuGavel } from 'react-icons/lu';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -83,9 +84,9 @@ function OverviewInner() {
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const fetchAll = useCallback(async () => {
-    setDataLoading(true);
-    setError('');
+  const fetchAll = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
     try {
       const [kpisRes, chartsRes, activityRes] = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/metrics/`, {
@@ -126,6 +127,11 @@ function OverviewInner() {
       setDataLoading(false);
     }
   }, [tt]);
+
+  // Keeps itself current. One line, because fetchAll already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchAll({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchAll();
   }, [authLoading, admin, fetchAll]);
@@ -209,6 +215,19 @@ function OverviewInner() {
                     </div>
                   </li>)}
               </ul>}
+          </div>
+
+          {/* What this console deliberately does NOT manage, said in a
+              sentence rather than shipped as four empty tabs.
+              CEO, 7 September 2026, in the admin dashboard spec: "An admin
+              screen for managing a marketplace that does not exist is a screen
+              with nothing behind it. Those sections wait for their feature,
+              and saying so is better than shipping empty tabs." */}
+          <div className={styles.notBuilt}>
+            <p className={shared.sectionTitle}>{tt('admin.notBuiltTitle', 'Not here yet')}</p>
+            <p className={styles.notBuiltText}>
+              {tt('admin.notBuiltBody', 'There is no marketplace section, no wager section and no shop section in this console, because none of those features is built on the platform. The marketplace is Phase 4, the shop is Phase 3, the wager system is Phase 6 and needs a legal review first, and manga and AMV review arrives with the anime module in Phase 5. Each one gets its console section on the day it has something to manage. The Marketplace Manager and Wager Manager roles can already be assigned and grant nothing until then.')}
+            </p>
           </div>
         </main>
       </div>

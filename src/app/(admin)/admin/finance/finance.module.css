@@ -1,0 +1,48 @@
+/* Money, in the console.
+ *
+ * Surfaces and space, never a stroke. The page ground is #131316, a panel is
+ * #212225 and a panel inside a panel is #2a2b30, which is the whole depth
+ * scale this console uses.
+ */
+
+.streams {
+  margin-bottom: 1.75rem;
+}
+
+.streamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.stream {
+  background-color: #212225;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.streamValue {
+  font-size: 1.15rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  line-height: 1.2;
+}
+
+.streamNote {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.3rem;
+}
+
+/* Direction carries meaning, so it carries colour. Green for money arriving,
+ * red for money leaving, and nothing else on the row is coloured. */
+.credit { color: var(--v-ent-success); font-weight: var(--fw-bold); }
+.debit { color: var(--v-ent-red); font-weight: var(--fw-bold); }
+
+@media only screen and (max-width: 767px) {
+  .streamGrid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  /* A grid child sizes to its content unless it is told not to, and then the
+   * container scrolls the whole page sideways. */
+  .stream { min-width: 0; }
+}

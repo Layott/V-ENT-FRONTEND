@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import LeagueScoring from '@/components/view-tournament/standings/LeagueScoring';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
@@ -21,14 +22,20 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
+import StagesPanel from '@/components/tournament-manage/StagesPanel';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
-import SquadReviewPanel from '@/components/cards/SquadReviewPanel';
+import DiscordChannels from '@/components/discord/DiscordChannels';
+import SquadRulesPanel from '@/components/cards/SquadRulesPanel';
+import SubmittedLineups from '@/components/cards/SubmittedLineups';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
+import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import Tag from '@/components/tag/Tag';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -56,6 +63,12 @@ const TABS = [{
 }, {
   id: 'brackets',
   label: 'Brackets'
+}, {
+  // The minute by minute for the day. Beside Production because it is the
+  // document the gallery and the desk both read off, and the same panel an
+  // event console renders.
+  id: 'run-of-show',
+  label: 'Run of show'
 }, {
   id: 'production',
   label: 'Production'
@@ -136,13 +149,13 @@ const ManageContent = ({ slug }) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!id) {
       setError(tt("msg.noTournamentSelected", "No tournament selected."));
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const headers = token ? {
@@ -168,6 +181,10 @@ const ManageContent = ({ slug }) => {
       setLoading(false);
     }
   }, [id, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
   useEffect(() => {
     if (viewer.loading) return;
     load();
@@ -275,7 +292,7 @@ const ManageContent = ({ slug }) => {
               <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
               <h1 className={styles.pageTitle}>{tournament.name || tournament.tournament_title}</h1>
               <div className={styles.headerMeta}>
-                <span className={styles.gameTag}>{tournament.game || tx("Unknown game")}</span>
+                <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
                 <span className={styles.statusBadge}><LuRadio /> {statusLabel}</span>
                 <span className={styles.metaText}>
                   {tournament.current_participants ?? 0}/{tournament.max_participants ?? 0} {tt("ui.participants.a94a", "participants")}
@@ -303,7 +320,7 @@ const ManageContent = ({ slug }) => {
               .map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
-          <div className={styles.panelArea}>
+          <div>
             {tab === 'actions' && <ActionsPanel slug={slug} embedded />}
             {tab === 'match-control' && <>
               {/* Entering results, and who may. A league tie is one game per
@@ -323,11 +340,23 @@ const ManageContent = ({ slug }) => {
                                   token={token} showToast={showToast}
                                   onChanged={() => setLineupEpoch((n) => n + 1)} />
               )}
-              {/* The other half of the organiser's job: the rules a squad has
-                  to satisfy, and accepting or sending back what comes in.
-                  Both endpoints existed with no screen until 4 September. */}
+              {/* And WHAT a squad must satisfy, which is a different thing from
+                  when it is due. Until this is saved once, the API refuses
+                  every submission and says the organiser has not set the rules
+                  yet - so with no screen here, EAFC squads could not be
+                  submitted on any tournament at all. */}
               {access?.can_manage && (
-                <SquadReviewPanel key={`squads-${lineupEpoch}`}
+                <SquadRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
+                                 token={token} showToast={showToast} />
+              )}
+              {/* Who has submitted and who has not, which is the question worth
+                  asking in the hour before a deadline, and accepting or sending
+                  back what came in. `key` so a decision here reopens the
+                  organiser's own picker below: an organiser who also plays
+                  would otherwise go on seeing "waiting for the organiser" after
+                  they had just decided it. */}
+              {access?.can_manage && (
+                <SubmittedLineups key={`squads-${lineupEpoch}`}
                                   tournamentRef={tournament.slug || tournament.tournament_id}
                                   token={token} showToast={showToast}
                                   onDecided={() => setLineupEpoch((n) => n + 1)} />
@@ -348,7 +377,21 @@ const ManageContent = ({ slug }) => {
                   organiser deciding who is in. */}
               <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
             </>}
-            {tab === 'brackets' && <BracketsPanel rounds={rounds} />}
+            {tab === 'brackets' && <>
+              {/* What shape the whole thing is, above the bracket it produces:
+                  groups into a playoff, Swiss into a top cut. The backend has
+                  composed tournaments out of stages since the catalogue learned
+                  which format can feed which, and no screen ever read it. */}
+              <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
+                           token={token} canManage={Boolean(access?.can_manage)}
+                           showToast={showToast} />
+              <BracketsPanel rounds={rounds} />
+            </>}
+            {tab === 'run-of-show' && (
+              <RunOfShowPanel kind="tournament"
+                              ownerRef={tournament.slug || tournament.tournament_id}
+                              token={token} showToast={showToast} />
+            )}
             {tab === 'production' && <>
               {/* The studio. V-ENT's own graphics, bound to this tournament,
                   each with a URL for a browser source. Replaces a panel that
@@ -360,7 +403,17 @@ const ManageContent = ({ slug }) => {
                   where somebody is already setting up their stream. */}
               <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
-            {tab === 'reminders' && <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />}
+            {tab === 'reminders' && <>
+              <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />
+              {/* Discord announcements, beside the reminders, because they are
+                  the same job: telling people something is happening. Same
+                  component the event console mounts. */}
+              {access?.can_manage && (
+                <DiscordChannels kind="tournament"
+                                 reference={tournament.slug || tournament.tournament_id}
+                                 token={token} showToast={showToast} />
+              )}
+            </>}
             {tab === 'stats' && <>
                 {/* How the league table is worked out, above the MVP metrics:
                     the table is what everybody looks at, the awards are what
@@ -405,7 +458,7 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
   const [overrideTo, setOverrideTo] = useState('');
   const [overrideWhy, setOverrideWhy] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentId) return;
     try {
       const [m, v] = await Promise.all([
@@ -425,6 +478,10 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
       setMetrics([]);
     }
   }, [tournamentId, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => { load(); }, [load]);
 
@@ -662,7 +719,7 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
     subject: '', body: '',
   });
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentId) return;
     const auth = { Authorization: `Bearer ${token}` };
     try {
@@ -681,6 +738,10 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
       setAudience(null);
     }
   }, [tournamentId, token]);
+
+  // The organiser console during a live tournament. Scores, registrations
+  // and check-ins all move while this is open, and it only ever loaded once.
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => { load(); }, [load]);
 
@@ -992,12 +1053,12 @@ const MatchControlPanel = ({
           them. Scoring it as a single number would throw away the seats and
           give the wrong winner, so it gets its own screen. */}
       {isLeague ? (
-        <div className={styles.scoreboardWrap}>
+        <div>
           <TieScoring tie={{ tie_id: live.id }} token={token}
                       showToast={showToast} onRecorded={onSaved} />
         </div>
       ) : (
-      <div className={styles.scoreboardWrap}>
+      <div>
         <h2 className={styles.panelTitle}>{tt("ui.live.scoring.e82b", "Live Scoring")}</h2>
         <div className={styles.scoreboardCard}>
           <div className={styles.sbHeader}>
@@ -1010,7 +1071,7 @@ const MatchControlPanel = ({
               <div className={styles.sbAvatar}>{nameOf(live.p1).charAt(0)}</div>
               <p className={styles.sbTeamName}>{nameOf(live.p1)}</p>
               <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>−</button>
+                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>-</button>
                 <span className={styles.scoreValue}>{scoreA}</span>
                 <button className={styles.scoreBtn} onClick={() => updateScore(1, 'a')}>+</button>
               </div>
@@ -1022,7 +1083,7 @@ const MatchControlPanel = ({
               <div className={styles.sbAvatar}>{nameOf(live.p2).charAt(0)}</div>
               <p className={styles.sbTeamName}>{nameOf(live.p2)}</p>
               <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>−</button>
+                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>-</button>
                 <span className={styles.scoreValue}>{scoreB}</span>
                 <button className={styles.scoreBtn} onClick={() => updateScore(1, 'b')}>+</button>
               </div>
@@ -1135,7 +1196,33 @@ const Manage = () => <Suspense fallback={<div style={{
 }} />}>
     <ManageContent />
   </Suspense>;
-export default Manage;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/tournaments/[slug]/manage` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ManageLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      const body = await res.json().catch(() => null);
+      // Two shapes, because the two endpoints answer differently: an event
+      // nests under `data.event`, a tournament sits directly on `data`.
+      // Reading only the nested one sent every tournament to the fallback
+      // listing instead of to the tournament, which is a redirect that looks
+      // like it worked.
+      return body?.data?.slug || body?.data?.tournament?.slug || null;
+      }}
+      to={slug => `/tournaments/${encodeURIComponent(slug)}/manage`}
+      fallback="/tournaments/my-tournaments"
+    />
+  </Suspense>
+);
+
+export default ManageLegacy;
 
 // Rendered by `/tournaments/<slug>/manage`, which is where every organiser link
 // in the app actually points.

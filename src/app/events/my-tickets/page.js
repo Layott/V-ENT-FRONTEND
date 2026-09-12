@@ -3,6 +3,7 @@
 import { appLocale } from '@/lib/appLocale';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { apiMessage } from '@/lib/apiMessage';
 import Link from 'next/link';
 import { FaTicketAlt, FaQrcode, FaCheckCircle, FaTimesCircle, FaRegClock } from 'react-icons/fa';
 import { IoCalendarOutline, IoLocationOutline } from 'react-icons/io5';
@@ -15,6 +16,7 @@ import styles from './my-tickets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import VendorOrders from '@/components/vendor-orders/VendorOrders';
 const STATUS_FILTERS = [{
   id: 'all'
 }, {
@@ -105,7 +107,10 @@ const normaliseTicket = t => ({
   event_date: t.event?.start_date || t.event?.event_date || null,
   location: t.event?.location || t.event?.event_link || '',
   price_vc: t.price_vc,
-  attendee_name: t.attendee_name || ''
+  attendee_name: t.attendee_name || '',
+  // Whether this event lets people admit themselves, so the control below is
+  // offered only where pressing it will work.
+  self_check_in: !!t.event?.self_check_in
 });
 const MyTickets = () => {
   const tx = useTx();
@@ -113,6 +118,53 @@ const MyTickets = () => {
   const {
     data: session
   } = useSession();
+
+  const closeTicket = () => {
+    setActiveTicket(null);
+    setGiveOpen(false);
+    setGiveTo('');
+    setGiveName('');
+    setGiveError('');
+    setGiveDone('');
+  };
+
+  const giveItAway = async () => {
+    if (!activeTicket || !giveTo.trim()) return;
+    setGiveBusy(true);
+    setGiveError('');
+    let body = {};
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/event/ticket/${encodeURIComponent(activeTicket.code)}/transfer/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.user?.sessionToken}`
+          },
+          body: JSON.stringify({ to: giveTo.trim(), name: giveName.trim() })
+        });
+      body = await res.json();
+      if (!res.ok || body.status !== 'success') {
+        setGiveError(apiMessage(tt, body, 'api.couldNotTransfer',
+          'That ticket could not be transferred.'));
+        setGiveBusy(false);
+        return;
+      }
+    } catch {
+      setGiveError(tt('api.networkProblem', 'The network is not answering. Try again.'));
+      setGiveBusy(false);
+      return;
+    }
+    setGiveBusy(false);
+    setGiveDone(tt('tickets.gaveItAway', 'It is theirs now, and it has a new code. Yours no longer opens the gate.'));
+    // The ticket is somebody else's, so it leaves this list. Reloading rather
+    // than editing the row in place: a ticket given to an address that is not
+    // this account is gone, and a row edited in place would still be sitting
+    // there looking usable.
+    await fetchTicketsRef.current({ quiet: true });
+  };
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -121,6 +173,15 @@ const MyTickets = () => {
   // The counts the API computed from the same rows it sent. Kept apart from
   // the list so the two can never disagree about how many there are.
   const [serverCounts, setServerCounts] = useState(null);
+  // Giving a ticket away. Held here rather than in the modal so the panel
+  // closes when the modal does, and a half-typed address never survives to
+  // reappear against a different ticket.
+  const [giveOpen, setGiveOpen] = useState(false);
+  const [giveTo, setGiveTo] = useState('');
+  const [giveName, setGiveName] = useState('');
+  const [giveBusy, setGiveBusy] = useState(false);
+  const [giveError, setGiveError] = useState('');
+  const [giveDone, setGiveDone] = useState('');
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
     'Content-Type': 'application/json'
@@ -151,10 +212,17 @@ const MyTickets = () => {
   // is the moment somebody wants the truth, and a slow poll covers the case of
   // watching it while a friend is scanned in. Both are quiet: a refresh that
   // blanks the list to a spinner would be worse than a stale number.
+  // Through a ref: naming `fetchTickets` here re-armed the 30 second interval
+  // on every render, so it rarely reached 30 seconds and the page's own
+  // comment about a slow poll was not describing what ran. Found by
+  // `scripts/check-live-updates.mjs`.
+  const fetchTicketsRef = useRef(fetchTickets);
+  useEffect(() => { fetchTicketsRef.current = fetchTickets; }, [fetchTickets]);
+
   useEffect(() => {
     if (!session?.user?.sessionToken) return undefined;
     const again = () => {
-      if (document.visibilityState === 'visible') fetchTickets({ quiet: true });
+      if (document.visibilityState === 'visible') fetchTicketsRef.current({ quiet: true });
     };
     document.addEventListener('visibilitychange', again);
     window.addEventListener('focus', again);
@@ -164,7 +232,7 @@ const MyTickets = () => {
       window.removeEventListener('focus', again);
       clearInterval(timer);
     };
-  }, [fetchTickets, session?.user?.sessionToken]);
+  }, [session?.user?.sessionToken]);
   const filtered = useMemo(() => {
     let out = [...tickets];
     if (statusFilter !== 'all') {
@@ -285,7 +353,7 @@ const MyTickets = () => {
                       <p className={styles.attendee}>
                         {tt("ui.attendee.7124", "Attendee:")}{' '}
                         {t.holder
-                          ? <UserChip user={t.holder} size={0} />
+                          ? <UserChip user={t.holder} size={20} />
                           : (t.attendee_name || '-')}
                       </p>
 
@@ -294,6 +362,11 @@ const MyTickets = () => {
                   </button>;
           })}
             </div>}
+
+          {/* What was bought at the stalls, under the tickets, because it is
+              the same question asked at the same moment: what am I holding for
+              this event. It draws nothing when there are no orders. */}
+          <VendorOrders token={session?.user?.sessionToken} />
         </div>
       </main>
 
@@ -301,7 +374,7 @@ const MyTickets = () => {
 
       {/* Full QR modal */}
       {activeTicket && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setActiveTicket(null);
+      if (e.target === e.currentTarget) closeTicket();
     }}>
           <div className={styles.qrModal}>
             <div className={styles.qrModalHeader}>
@@ -311,7 +384,7 @@ const MyTickets = () => {
                   {formatDateTime(activeTicket.event_date)} • {activeTicket.location}
                 </p>
               </div>
-              <button className={styles.qrModalClose} onClick={() => setActiveTicket(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
+              <button className={styles.qrModalClose} onClick={closeTicket} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
                 <MdOutlineClose />
               </button>
             </div>
@@ -336,7 +409,12 @@ const MyTickets = () => {
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>{tt("ui.attendee.aabc", "Attendee")}</span>
                   <span className={styles.qrFactValue}>
-                    {activeTicket.holder?.full_name || activeTicket.attendee_name || '-'}
+                    {/* A ticket holder may be a guest with no account at all,
+                        and UserChip draws exactly that: plain text, no link,
+                        because there is no profile to open. */}
+                    {activeTicket.holder
+                      ? <UserChip user={activeTicket.holder} size={24} />
+                      : (activeTicket.attendee_name || '-')}
                   </span>
                 </div>
                 <div className={styles.qrFact}>
@@ -345,6 +423,19 @@ const MyTickets = () => {
                     {formatDate(activeTicket.purchased_at)}
                   </span>
                 </div>
+
+              {/* CHECKING YOURSELF IN.
+                  The page at /events/check-in/<code> has been built and
+                  correct for days and nothing linked to it, so in practice
+                  nobody could reach it. Same fault as the scanner staff could
+                  not find. It is offered only where the organiser has turned
+                  self check-in on, and only while the ticket is still unused. */}
+              {activeTicket.self_check_in && activeTicket.status === 'active' && (
+                <Link href={`/events/check-in/${encodeURIComponent(activeTicket.code)}`}
+                      className={`${styles.selfCheckInBtn} grnBTN`}>
+                  {tt('tickets.checkMyselfIn', 'Check myself in')}
+                </Link>
+              )}
                 <div className={styles.qrFact}>
                   <span className={styles.qrFactLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.qrFactValue}>
@@ -352,6 +443,49 @@ const MyTickets = () => {
                   </span>
                 </div>
               </div>
+
+              {/* Giving it away. Only while it is still unused: a ticket
+                  that has already been through a gate cannot move, because
+                  moving it would make the attendance figures name somebody who
+                  was not there. */}
+              {activeTicket.status !== 'checked_in' && activeTicket.status !== 'cancelled' && <div className={styles.giveBlock}>
+                {giveDone
+                  ? <p className={styles.giveDone}>{giveDone}</p>
+                  : giveOpen
+                    ? <>
+                      <p className={styles.giveHint}>
+                        {tt('tickets.giveHint', 'They get a new code by email and yours stops working straight away, so tell them before you send any screenshot you have already shared.')}
+                      </p>
+                      <label className={styles.giveLabel} htmlFor="give-to">
+                        {tt('tickets.giveTo', 'Their email address or @username')}
+                      </label>
+                      <input id="give-to" name="give-to" className={styles.giveInput}
+                             value={giveTo} autoComplete="off"
+                             onChange={e => setGiveTo(e.target.value)}
+                             placeholder="ada@example.com" />
+                      <label className={styles.giveLabel} htmlFor="give-name">
+                        {tt('tickets.giveName', 'The name for the door (optional)')}
+                      </label>
+                      <input id="give-name" name="give-name" className={styles.giveInput}
+                             value={giveName} autoComplete="off"
+                             onChange={e => setGiveName(e.target.value)} />
+                      {giveError && <p className={styles.giveError}>{giveError}</p>}
+                      <button type="button" className={`${styles.giveBtn} redBTN`}
+                              disabled={giveBusy || !giveTo.trim()} onClick={giveItAway}>
+                        {giveBusy
+                          ? tt('tickets.giving', 'Transferring...')
+                          : tt('tickets.giveConfirm', 'Give it to them')}
+                      </button>
+                      <button type="button" className={styles.giveCancel}
+                              onClick={() => { setGiveOpen(false); setGiveError(''); }}>
+                        {tt('ui.cancel', 'Cancel')}
+                      </button>
+                    </>
+                    : <button type="button" className={styles.giveBtn}
+                              onClick={() => setGiveOpen(true)}>
+                        {tt('tickets.giveAway', 'Give this ticket to somebody else')}
+                      </button>}
+              </div>}
 
               <Link href={`/events/${activeTicket.slug || activeTicket.event_id}`} className={`${styles.viewEventBtn} redBTN`}>
                 {tt("ui.view.event.7c27", "View event")}

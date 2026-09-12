@@ -18,6 +18,10 @@ export default function robots() {
           '/admin',           // staff only, and its own login
           '/api/',            // never useful to a crawler
           '/wallets',         // money, and personal by definition
+          '/memberships',     // what somebody pays for and every payment
+                              // they have made. The plans themselves live
+                              // at /plans/<name> and ARE public
+
           '/settings',
           '/notifications',
           '/edit-user-profile',
@@ -34,7 +38,10 @@ export default function robots() {
           '/tournaments/drafts',   // unpublished by definition
           '/tournaments/overlay',  // a broadcast surface, not a page
           '/production',           // a personal list of what you run
+          '/logout',               // an action, not a page
           '/events/my-events',     // a personal list, including unlisted events
+          '/my-stalls',            // your own stalls, your own orders and
+                                   // the delivery addresses on them
           '/events/edit-event',    // a form, and only the organiser may submit it
           '/events/*/edit',
           '/events/*/manage',      // promo codes and who may run the event
@@ -42,13 +49,34 @@ export default function robots() {
           '/events/check-in/',     // a ticket code in a URL; indexing one would
                                    // hand a stranger somebody's admission
           '/events/find-ticket',   // a lookup form, and nothing to rank for
+          '/home',            // a signed-in member's own dashboard. A visitor
+                              // is redirected away from it, so indexing it
+                              // would rank a redirect
+          '/disputes',        // somebody's own disputes, and the other side's
           '/organizations/invites',  // somebody's own invitations
           '/organizations/*/manage', // roles, invites, and the profile form
           '/studio/',         // broadcast graphics: transparent pages meant
                               // for a browser source, meaningless in search
+          '/run-of-show/',    // the share address for a run of show. The
+                              // public one lives on its event and is in the
+                              // sitemap; this token address is unlisted by
+                              // definition and indexing it would publish
+                              // every link only sheet anybody has shared
           '/s/',              // a shortened link is a second address for a page
                               // that already has one; indexing it splits the
                               // ranking between the two
+          '/marketplace/create',     // a form, and only its author may submit it
+          '/marketplace/dashboard',  // somebody's own listings and their numbers
+          '/marketplace/purchase',   // an order: what somebody bought, from whom,
+                                     // for how much. Personal by definition
+          '/anime/read/',     // a chapter is the paid thing. The comic, its
+                              // synopsis and its chapter list are public and in
+                              // the sitemap; indexing the reader would rank an
+                              // address most readers are refused at
+          '/anime/room/',     // a room's token IS its invitation. Indexing one
+                              // posts the invitation publicly
+          '/anime/my-list',   // one reader's own place in every comic
+          '/anime/studio',    // an author's own unpublished work
         ],
       },
       {
@@ -58,7 +86,11 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
-                   '/events/check-in/', '/s/', '/studio/', '/production'],
+                   '/events/check-in/', '/s/', '/studio/', '/production',
+                   '/run-of-show/', '/logout', '/marketplace/create',
+                   '/marketplace/dashboard', '/marketplace/purchase',
+                   '/anime/read/', '/anime/room/', '/anime/my-list',
+                   '/anime/studio'],
       },
     ],
     sitemap: absolute('/sitemap.xml'),

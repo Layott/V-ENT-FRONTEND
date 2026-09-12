@@ -36,7 +36,7 @@ const EditTeamProfileBanner = ({
   return <div className={styles.editProfileBannerContainer}>
       <div className={styles.editProfileBannerImageContainer}>
         <Image src={mediaUrl(uploadedBannerImage || bannerImage || defaultBanner)} // Fallback to default banner
-      alt={tt("ui.banner.edited.1be7", "Banner to be Edited")} className={styles.bannerImage} width={1256} height={256} // Ensure dimensions are correct
+      alt={tt("ui.banner.edited.1be7", "Banner to be Edited")} width={1256} height={256} // Ensure dimensions are correct
       />
 
         <div className={`${bioStyles.bannerUploader} ${styles.bannerUploader}`}>

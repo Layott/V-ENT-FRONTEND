@@ -22,6 +22,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { apiMessage } from '@/lib/apiMessage';
+import { sameUser } from '@/lib/gating';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import styles from './team-roster-manager.module.css';
@@ -40,6 +41,11 @@ const TeamRosterManager = ({ team, onToast }) => {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
   const [invitee, setInvitee] = useState('');
+  // Handing the team over. Held here rather than in the row, because it is one
+  // decision about the whole team and not a property of a member.
+  const [handTo, setHandTo] = useState('');
+  const [myNewRole, setMyNewRole] = useState('member');
+  const [confirmHand, setConfirmHand] = useState(false);
   const [inviteRole, setInviteRole] = useState('member');
   const [linkUses, setLinkUses] = useState('');
   const [linkDays, setLinkDays] = useState('');
@@ -275,6 +281,85 @@ const TeamRosterManager = ({ team, onToast }) => {
               </div>
             );
           })}
+
+          {/* Handing the team over.
+              Only the owner sees this, because only the owner may do it: the
+              endpoint answers NOT_OWNER to anybody else, and offering a
+              control that will be refused is the thing the rules here forbid. */}
+          {/* `my_role`, because that is what the roster actually sends. There
+              is no is_owner field and reading one would have drawn nothing at
+              all, silently, which is how a control ships and never appears. */}
+          {roster?.my_role === 'owner' && (roster.members || []).some(m => m.role !== 'owner') && (
+            <div className={styles.handOver}>
+              <h4 className={styles.handTitle}>
+                {tt('team.handOver', 'Hand the team over')}
+              </h4>
+              <p className={styles.hint}>
+                {tt('team.handOverHint',
+                  'The person you choose becomes the owner and you keep the role you pick. Only somebody already in the team can be chosen, and this cannot be undone by you afterwards.')}
+              </p>
+
+              <select className={styles.select} value={handTo} disabled={busy}
+                      onChange={e => { setHandTo(e.target.value); setConfirmHand(false); }}>
+                <option value="">{tt('team.handOverPick', 'Choose a member')}</option>
+                {(roster.members || [])
+                  // Not the owner's own row. `role` here is the ROSTER role,
+                  // and the roster calls the owner a member, so the role test
+                  // alone let the owner offer the team to themselves: found by
+                  // walking it, where the first name in the list was mine.
+                  .filter(m => m.role !== 'owner'
+                    && !sameUser(m.user?.username, session?.user?.username))
+                  .map(m => (
+                    <option key={m.id} value={m.user?.username || ''}>
+                      {m.user?.username}
+                    </option>
+                  ))}
+              </select>
+
+              <select className={styles.select} value={myNewRole} disabled={busy}
+                      onChange={e => setMyNewRole(e.target.value)}>
+                {roles.filter(r => r.role !== 'owner').map(r => (
+                  <option key={r.role} value={r.role}>
+                    {tt('team.handOverMine', 'I become {role}')
+                      .replace('{role}', roleLabel(r))}
+                  </option>
+                ))}
+              </select>
+
+              {confirmHand ? (
+                <div className={styles.handConfirm}>
+                  <p className={styles.handAsk}>
+                    {tt('team.handOverConfirm',
+                      'Hand {team} to {who}? They become the owner and you become {role}.')
+                      .replace('{team}', team?.team_name || team?.name || '')
+                      .replace('{who}', handTo)
+                      .replace('{role}', roleName(myNewRole))}
+                  </p>
+                  <button type="button" className={styles.danger} disabled={busy}
+                          onClick={async () => {
+                            const done = await send('transfer-ownership/', {
+                              team_name: team?.team_name || team?.name,
+                              new_owner_username: handTo,
+                              prev_owner_new_role: myNewRole,
+                            }, tt('team.handedOver', '{who} owns the team now.')
+                              .replace('{who}', handTo));
+                            if (done) { setConfirmHand(false); setHandTo(''); }
+                          }}>
+                    {tt('team.handOverYes', 'Yes, hand it over')}
+                  </button>
+                  <button type="button" className={styles.quietBtn} disabled={busy}
+                          onClick={() => setConfirmHand(false)}>
+                    {tt('ui.cancel.0f8e', 'Cancel')}
+                  </button>
+                </div>
+              ) : (
+                <button type="button" className={styles.handBtn} disabled={busy || !handTo}
+                        onClick={() => setConfirmHand(true)}>
+                  {tt('team.handOverStart', 'Hand the team over')}
+                </button>
+              )}
+            </div>
+          )}
 
           <details className={styles.details}>
             <summary className={styles.summary}>

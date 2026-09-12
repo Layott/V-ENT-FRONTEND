@@ -18,7 +18,7 @@ const TABS = [
   { id: 'dropped', label: 'Dropped' },
 ];
 
-// Mock per-user list — kept locally; persists across tab switches in the session.
+// Mock per-user list - kept locally; persists across tab switches in the session.
 const initialListBySeries = (series) =>
   series.slice(0, 8).map((s, i) => ({
     series_id: s.id,

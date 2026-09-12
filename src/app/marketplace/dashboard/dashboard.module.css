@@ -393,3 +393,11 @@
 
   .title { font-size: var(--desktop-h4-size); }
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .iconBtn {
+    min-height: 44px;
+  }
+}

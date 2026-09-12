@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -10,6 +11,9 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './payouts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatDate, formatNumber } from '@/lib/datetime';
+import Avatar from '@/components/avatar/Avatar';
+import { mediaUrl } from '@/lib/mediaUrl';
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -47,12 +51,12 @@ function PayoutsInner() {
   // "Connection error." over a table that had already loaded correctly. Each
   // run takes a ticket; only the newest one is allowed to touch state.
   const requestRef = useRef(0);
-  const fetchPayouts = useCallback(async () => {
+  const fetchPayouts = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
     const token = localStorage.getItem('adminToken');
-    setDataLoading(true);
-    setError('');
+    if (!quiet) setDataLoading(true);
+    if (!quiet) setError('');
     try {
       const params = new URLSearchParams({
         page,
@@ -81,6 +85,11 @@ function PayoutsInner() {
       setDataLoading(false);
     }
   }, [page, search, statusFilter, sortBy]);
+
+  // Keeps itself current. One line, because fetchPayouts already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchPayouts({ quiet: true }));
   useEffect(() => {
     if (!authLoading && admin) fetchPayouts();
   }, [authLoading, admin, fetchPayouts]);
@@ -222,7 +231,7 @@ function PayoutsInner() {
                 <option value="-amount_vc">{tt("ui.amount.high.low.13a9", "Amount (High-Low)")}</option>
                 <option value="amount_vc">{tt("ui.amount.low.high.56f4", "Amount (Low-High)")}</option>
               </select>
-              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countPayoutsOne', '{n} payout') : tt('admin.countPayoutsMany', '{n} payouts')).replace('{n}', total.toLocaleString())}</span>
+              <span className={shared.resultsCount}>{(total === 1 ? tt('admin.countPayoutsOne', '{n} payout') : tt('admin.countPayoutsMany', '{n} payouts')).replace('{n}', formatNumber(total))}</span>
             </div>
 
             {/* Bulk action bar */}
@@ -263,7 +272,7 @@ function PayoutsInner() {
                         <td>
                           <div className={shared.userCell}>
                             <div className={shared.userAvatar}>
-                              {(p.username || 'U').slice(0, 2).toUpperCase()}
+                              <Avatar src={mediaUrl(p.avatar)} name={p.username} size={36} />
                             </div>
                             <span>{p.username}</span>
                           </div>
@@ -275,7 +284,7 @@ function PayoutsInner() {
                           <code className={styles.code}>{p.account_number || '-'}</code>
                         </td>
                         <td className={shared.hideMobile}>
-                          {p.submitted_at ? new Date(p.submitted_at).toLocaleDateString() : '-'}
+                          {p.submitted_at ? formatDate(p.submitted_at) : '-'}
                         </td>
                         <td>
                           <span className={`${shared.badge} ${statusBadgeClass(p.status)}`}>{p.status}</span>

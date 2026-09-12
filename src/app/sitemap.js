@@ -76,7 +76,31 @@ export default async function sitemap() {
     entry('/organizations', { changeFrequency: 'daily', priority: 0.7 }),
     entry('/community', { changeFrequency: 'hourly', priority: 0.7 }),
     entry('/rankings', { changeFrequency: 'daily', priority: 0.6 }),
+    // Modules that are announced but not open yet. They are listed because
+    // each one says plainly what it will be and when, and somebody searching
+    // for "V-ENT shop" should reach that rather than nothing at all. Low
+    // priority: they are promises, not content.
+    // The anime module is BUILT and closed. Its public pages are listed
+    // because each says plainly what it is, and somebody searching for
+    // "V-ENT manga" should reach that rather than nothing. The reader and the
+    // rooms are NOT listed: a chapter is the paid thing and a room is a
+    // private address that doubles as its own invitation.
+    entry('/anime', { changeFrequency: 'weekly', priority: 0.4 }),
+    entry('/anime/manga', { changeFrequency: 'daily', priority: 0.5 }),
+    entry('/anime/battles', { changeFrequency: 'weekly', priority: 0.4 }),
+    entry('/anime/rooms', { changeFrequency: 'daily', priority: 0.3 }),
+    entry('/marketplace', { changeFrequency: 'monthly', priority: 0.3 }),
+    entry('/shop', { changeFrequency: 'monthly', priority: 0.3 }),
+    entry('/wager', { changeFrequency: 'monthly', priority: 0.2 }),
     entry('/partners', { changeFrequency: 'monthly', priority: 0.4 }),
+    // What V-ENT costs, and where to say what is wrong. Both are things
+    // somebody searches for by name before they commit to a platform.
+    entry('/pricing', { changeFrequency: 'monthly', priority: 0.6 }),
+    // What premium costs and what it switches on. Public for the same reason
+    // /pricing is: the person deciding whether to pay is the whole audience,
+    // and a price behind a sign-in wall reaches none of them.
+    entry('/premium', { changeFrequency: 'weekly', priority: 0.6 }),
+    entry('/feedback', { changeFrequency: 'monthly', priority: 0.3 }),
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.
     entry('/partners/docs', { changeFrequency: 'monthly', priority: 0.5 }),
@@ -86,12 +110,13 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
     readList('/club/list/'),
     readList('/organization/list/'),
+    readList('/billing/plans/public/'),
   ]);
 
   const tournamentPages = tournaments
@@ -110,18 +135,34 @@ export default async function sitemap() {
       lastModified: e.last_updated || e.event_date,
     }));
 
+  // The run of show, where an organiser has published one. Its own address
+  // rather than a fragment of the event page, because it is a document people
+  // search for by name ("rivalry series run of show") and share on its own.
+  // Only `public` sheets carry the flag; a link only one is unlisted by
+  // definition and must never reach a sitemap.
+  const runOfShowPages = [
+    ...tournaments
+      .filter((t) => t?.slug && !t.is_draft && t.has_run_of_show)
+      .map((t) => entry(`/tournaments/${t.slug}/run-of-show`, {
+        changeFrequency: 'daily',
+        priority: 0.5,
+      })),
+    ...events
+      .filter((e) => e?.slug && e.is_active !== false && e.has_run_of_show)
+      .map((e) => entry(`/events/${e.slug}/run-of-show`, {
+        changeFrequency: 'daily',
+        priority: 0.5,
+      })),
+  ];
+
   const teamPages = teams
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
 
-  // A club is a public conversation, so it is worth finding. A private one is
-  // readable only from the inside and has no business in a sitemap.
-  const clubPages = clubs
-    .filter((c) => c?.slug && !c.is_private)
-    .map((c) => entry(`/community/club/${c.slug}`, {
-      changeFrequency: 'daily',
-      priority: 0.6,
-    }));
+  // Clubs are withdrawn (CEO, 7 September 2026), so there is nothing at
+  // /community/club to find. Listing a route that 404s is worse than listing
+  // nothing.
+  const clubPages = [];
 
   const orgPages = organizations
     .filter((o) => o?.slug)
@@ -130,7 +171,18 @@ export default async function sitemap() {
       priority: 0.6,
     }));
 
+  // A membership an organiser sells. Public and worth finding: somebody
+  // deciding whether to join is exactly the reader a search result reaches,
+  // and the endpoint only ever returns plans that are actually public.
+  const planPages = plans
+    .filter((p) => p?.slug)
+    .map((p) => entry(`/plans/${p.slug}`, {
+      changeFrequency: 'weekly',
+      priority: 0.5,
+      lastModified: p.updated_at,
+    }));
+
   // entry() returns one row per language, so the lists arrive nested.
-  return [...staticPages, ...tournamentPages, ...eventPages, ...teamPages,
-          ...clubPages, ...orgPages].flat();
+  return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
+          ...teamPages, ...clubPages, ...orgPages, ...planPages].flat();
 }

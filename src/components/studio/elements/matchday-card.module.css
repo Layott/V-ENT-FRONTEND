@@ -1,0 +1,288 @@
+/* B10 matchday, ported from `matchday()` in `stream_client.py`.
+ *
+ * Every number here is the number the original uses inside its own 1920x1080
+ * frame. It is not a re-layout: the block widths, the notches, the row gap and
+ * the entrance delays are read off the approved pack rather than chosen again.
+ *
+ * The card carries no ground. `stream.py` sets `GROUND_IN_FILE = False` and
+ * strips the background image out of every delivered element, on Layo's note of
+ * 4 September: "let all the overlays be made transparent they can load up on
+ * any bg we want to use." The operator puts the paper underneath in OBS, which
+ * is also how the studio composites every other element.
+ */
+
+/* CLIENT_CSS: the colours measured off the client's own Standings.png rather
+ * than picked. Their comments. Only the ones this card actually draws, so
+ * nothing here is a second copy of a token `rivalry.module.css` already holds
+ * (`--ink`, the fonts and the frame all come from there). */
+.matchday {
+  --chip: #FFFFFF;        /* the tile a team mark sits on */
+  --code: #5A6069;        /* the origin code beside a block */
+  --dash: #8A9095;        /* the hyphen between two figures */
+  --mark: #90000B;        /* the red their sponsor and day lines carry */
+  --on-row: #FFFFFF;      /* type on a filled block */
+  --pts: #00A032;         /* the points block, and a side that won its tie */
+  --row: #30483C;         /* the row block */
+  /* The three stops of their title gradient, top to bottom. */
+  --ttl-1: #5FE87A;
+  --ttl-2: #12A94E;
+  --ttl-3: #007033;
+}
+
+/* Their header on a full screen card: the CADE lockup over the series mark,
+ * stacked and centred, in the top left corner the original sets. Both are drawn
+ * far under their own resolution (1400x404 and 1600x826 sources). */
+.stack {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  left: 96px;
+  position: absolute;
+  top: 44px;
+}
+
+.cade {
+  height: auto;
+  width: 104px;
+}
+
+.rmk {
+  height: auto;
+  width: 212px;
+}
+
+/* Their title: a vertical green gradient with a darker face under it, flat.
+ * No bloom, and their own artwork does not carry one either.
+ *
+ * THREE stops, and deliberately not the two stop `.headline` in
+ * `rivalry.module.css`: that one is the shell's, this one is what the full
+ * screen client cards use, and they are visibly different greens. */
+.title {
+  -webkit-background-clip: text;
+  animation: mdDropIn 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  background: linear-gradient(180deg, var(--ttl-1) 0%, var(--ttl-2) 58%, var(--ttl-3) 100%);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--astro);
+  font-size: 104px;
+  font-weight: 900;
+  left: 0;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 104px;
+}
+
+/* Which day, and its date. Drawn only when the feed has actually placed the
+ * fixtures on a day. See the note at the top of `MatchdayCard.js`. */
+.daytag {
+  animation: mdDropIn 520ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
+  color: var(--mark);
+  font-family: var(--bc);
+  font-size: 27px;
+  font-weight: 800;
+  left: 0;
+  letter-spacing: 0.24em;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 238px;
+}
+
+.fxlist {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 308px;
+}
+
+.fx {
+  align-items: center;
+  animation: mdGrowW 460ms cubic-bezier(0.7, 0, 0.2, 1) both;
+  display: flex;
+  gap: 14px;
+}
+
+/* The two halves of a fixture, notched into each other. Filled shapes, never a
+ * stroke: the arrow between them is a clip on the block itself. */
+.side {
+  align-items: center;
+  background: var(--row);
+  display: flex;
+  gap: 12px;
+  height: 106px;
+  justify-content: center;
+  width: 344px;
+}
+
+.sideA {
+  clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+}
+
+.sideB {
+  clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+
+.won {
+  background: var(--pts);
+}
+
+.vs {
+  color: var(--ink);
+  font-family: var(--astro);
+  font-size: 32px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  width: 96px;
+}
+
+/* The aggregate, in the same 96px the VS occupies so a row does not move when
+ * the scores go up at the wrap.
+ *
+ * The figures are left in the `i` the original wraps them in, with no
+ * `font-style` reset, so they carry the same synthesised slant the approved
+ * card does. Every other `i` in the pack IS reset and this one is not, which
+ * looks like an oversight, but the file the CEO signed off has slanted figures
+ * here and matching it is the job. Correcting it is a design decision for them
+ * to take on the original, not one to smuggle in on the port. */
+.sc {
+  align-items: center;
+  color: var(--ink);
+  display: flex;
+  font-family: var(--bc);
+  font-size: 44px;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  width: 96px;
+}
+
+/* Both children are spelled out rather than left to inherit from `.sc`.
+ * `globals.css` sets `font-family` and `color` on `*`, and a rule that MATCHES
+ * an element always beats a value inherited from its parent however specific
+ * the parent's rule is. A bare `<i>` therefore came out white in Clash Grotesk,
+ * which on this card is white figures on nothing: the scoreline was in the DOM
+ * and invisible on air. The dash never showed it because `.sc b` was written. */
+.sc i {
+  color: var(--ink);
+  font-family: var(--bc);
+  /* Italic on purpose. The pack leaves these in a bare `<i>` and its own shell
+   * has no `*` rule, so the approved card carries synthesised slanted figures.
+   * See the note above `.sc`: matching it is the job, not correcting it. */
+  font-style: italic;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.sc b {
+  color: var(--dash);
+  font-family: var(--bc);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+/* The origin code outside the block, two letters in 62px. `Code` cuts a longer
+ * tag down, so nothing here ever has to clip or shrink. */
+.cc {
+  color: var(--code);
+  font-family: var(--bc);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  width: 62px;
+}
+
+.ccR {
+  text-align: right;
+}
+
+/* A mark on the tile their own fixture overlay carries it on. */
+.mini {
+  align-items: center;
+  background: var(--chip);
+  border-radius: 3px;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  width: 64px;
+}
+
+.miniImg {
+  display: block;
+  height: auto;
+  max-height: 46px;
+  max-width: 54px;
+  width: auto;
+}
+
+/* A side whose players have no org badge and whose own logo is empty. The pack
+ * has no such case because every nation in it had artwork, and an empty white
+ * tile is still a white tile going out on air, so the name takes the block. */
+.sname {
+  color: var(--on-row);
+  font-family: var(--monu);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  max-width: 258px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Nothing to draw. Built out of the card's own furniture, at the height the
+ * first fixture row would have taken, so the frame still reads as finished. */
+.plate {
+  align-items: center;
+  animation: mdDropIn 520ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+  background: var(--row);
+  color: var(--on-row);
+  display: flex;
+  font-family: var(--bc);
+  font-size: 34px;
+  font-weight: 600;
+  height: 106px;
+  justify-content: center;
+  left: 0;
+  letter-spacing: 0.04em;
+  /* Centred on the margins rather than on a transform: the entrance animates
+     `transform` and would land on `none`, which would drop the centering on
+     the last frame. */
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  top: 308px;
+  width: 812px;
+}
+
+/* The original's two entrances. Nothing loops, nothing breathes. */
+@keyframes mdDropIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes mdGrowW {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .daytag,
+  .fx,
+  .plate {
+    animation: none;
+  }
+}

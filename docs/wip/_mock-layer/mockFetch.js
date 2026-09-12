@@ -47,7 +47,7 @@ import {
   mockTicketTypes,
   mockTickets,
   mockVendors,
-  // Extended (v2) entities — see mockData.js extension block.
+  // Extended (v2) entities - see mockData.js extension block.
   mockTransactionsExtended,
   mockWithdrawalRequests,
   mockKycStatus,
@@ -203,7 +203,7 @@ const shouldIntercept = (url, init) => {
     if (apiUrl && url.startsWith(apiUrl)) return true;
 
     // Skip Next.js RSC payload fetches (`?_rsc=...` or RSC header). These are
-    // page-navigation requests, not API calls — letting them through is what
+    // page-navigation requests, not API calls - letting them through is what
     // actually triggers client-side routing.
     if (u.searchParams.has('_rsc')) return false;
     const headers = init?.headers || {};
@@ -221,7 +221,7 @@ const shouldIntercept = (url, init) => {
       // Originals
       'auth', 'tournament', 'event', 'teams', 'team', 'admin', 'organization',
       'marketplace', 'shop', 'anime', 'community', 'wager', 'ticket',
-      // Extended (v2) — first segments for parallel-build mock layer.
+      // Extended (v2) - first segments for parallel-build mock layer.
       'org', 'product', 'order', 'cart', 'listing', 'purchase',
       'manga', 'chapter', 'amv', 'room', 'bet', 'match',
       'notification', 'post', 'thread', 'forum', 'club', 'dm', 'scrim',
@@ -248,7 +248,7 @@ const shouldIntercept = (url, init) => {
 
 const handleAuthRoutes = async ({ method, pathname, body }) => {
   // Login (credentials or username). authOptions looks for data.session_token
-  // or data.data.session_token — we return both shapes via the standard
+  // or data.data.session_token - we return both shapes via the standard
   // envelope and also a top-level session_token so NextAuth picks it up
   // however it reads the response.
   if (method === 'POST' && pathname.endsWith('/auth/login/')) {
@@ -265,7 +265,7 @@ const handleAuthRoutes = async ({ method, pathname, body }) => {
           admin_role: 'super',
           admin_role_label: 'Super Admin',
         },
-        // Legacy top-level fields — some pages read these directly.
+        // Legacy top-level fields - some pages read these directly.
         session_token: mockUser.session_token,
         user_id: mockUser.id,
         message: '',
@@ -416,12 +416,12 @@ const handleAuthRoutes = async ({ method, pathname, body }) => {
     return successResponse({ favorite_games: body?.game_ids || [] }, 'Favorite games updated');
   }
 
-  // Legacy favorite games save (POST /auth/edit-favorite-games/ — token in body).
+  // Legacy favorite games save (POST /auth/edit-favorite-games/ - token in body).
   if (pathname.endsWith('/auth/edit-favorite-games/')) {
     return successResponse({ game_ids: body?.game_ids || [], games: body?.games || [] }, 'Favorite games updated');
   }
 
-  // Gaming accounts save (BE-GAP — endpoint may not exist yet server-side).
+  // Gaming accounts save (BE-GAP - endpoint may not exist yet server-side).
   if (pathname.endsWith('/auth/update-gaming-accounts/')) {
     return successResponse({ accounts: body?.accounts || [] }, 'Gaming accounts updated');
   }
@@ -564,7 +564,7 @@ const findBracketMatch = (matchId) => {
 };
 
 const handleTournamentRoutes = async ({ method, pathname, searchParams, body }) => {
-  // Listing — real contract shape { featured, new, by_game }. `tournaments`
+  // Listing - real contract shape { featured, new, by_game }. `tournaments`
   // kept alongside for any consumer still reading the flat shape.
   if (method === 'GET' && pathname.endsWith('/tournament/get-all-tournaments/')) {
     const all = applyQueryParams(mockTournaments, searchParams);
@@ -581,7 +581,7 @@ const handleTournamentRoutes = async ({ method, pathname, searchParams, body }) 
     });
   }
 
-  // Search — server-filtered list with pagination envelope.
+  // Search - server-filtered list with pagination envelope.
   if (method === 'GET' && pathname.endsWith('/tournament/search-tournament/')) {
     let list = [...mockTournaments];
     const q = (searchParams.get('q') || '').toLowerCase();
@@ -706,7 +706,7 @@ const handleTournamentRoutes = async ({ method, pathname, searchParams, body }) 
     }, 'Bracket updated');
   }
 
-  // Participant reports a match score — mutates the in-memory bracket so the
+  // Participant reports a match score - mutates the in-memory bracket so the
   // demo can drive report → confirm → completed. Body: {score_p1, score_p2, screenshot_url?}.
   const reportScoreMatch = matchPath('/tournament/match/:id/report-score/', pathname) ||
     matchPath('/tournament/match/:id/report-score', pathname);
@@ -860,7 +860,7 @@ const handleEventRoutes = async ({ method, pathname, searchParams, body }) => {
     });
   }
 
-  // Generic /event/* fallback — list returns all, anything else returns empty.
+  // Generic /event/* fallback - list returns all, anything else returns empty.
   if (pathname.startsWith('/event/')) {
     return successResponse({ events: mockEvents });
   }
@@ -1069,7 +1069,7 @@ const handleTeamRoutes = async ({ method, pathname, searchParams, body }) => {
     return successResponse({ teams: mockTeams.slice(0, 3) });
   }
 
-  // GET /team/my-teams/ — teams the user owns or belongs to (registration
+  // GET /team/my-teams/ - teams the user owns or belongs to (registration
   // picker). Emits every field-name variant the real serializer produces
   // (teams-map §3.1) so the FE's `a || b || c` fallbacks all resolve.
   if (method === 'GET' && pathname.endsWith('/team/my-teams/')) {
@@ -1498,7 +1498,7 @@ const handleAdminRoutes = async ({ method, pathname, searchParams, body }) => {
     persistAdminMutation('payout', payoutReject.id, { status: 'rejected' });
     prependAuditEntry({
       action: 'payout_rejected',
-      description: `Payout for ${p?.username || payoutReject.id} rejected — ${body?.reason || 'Unspecified'}`,
+      description: `Payout for ${p?.username || payoutReject.id} rejected - ${body?.reason || 'Unspecified'}`,
       target_type: 'payout',
       target_id: payoutReject.id,
     });
@@ -1553,7 +1553,7 @@ const handleAdminRoutes = async ({ method, pathname, searchParams, body }) => {
     persistAdminMutation('kyc', kycReject.id, patch);
     prependAuditEntry({
       action: 'kyc_rejected',
-      description: `KYC rejected for ${k?.username || kycReject.id} — ${body?.reason || 'Document unclear'}`,
+      description: `KYC rejected for ${k?.username || kycReject.id} - ${body?.reason || 'Document unclear'}`,
       target_type: 'kyc',
       target_id: kycReject.id,
     });
@@ -1716,7 +1716,7 @@ const handleOrganizationRoutes = async ({ method, pathname, searchParams, body }
     return successResponse({ organization });
   }
 
-  // Fallback for any other organization route — empty success so pages don't crash.
+  // Fallback for any other organization route - empty success so pages don't crash.
   return successResponse({ organizations: mockOrganizations });
 };
 
@@ -1865,7 +1865,7 @@ const handleCommunityRoutes = async ({ method, pathname, searchParams, body }) =
     return successResponse({ post: newPost });
   }
 
-  // GET /community/threads/ (list) — must come BEFORE the :id match below.
+  // GET /community/threads/ (list) - must come BEFORE the :id match below.
   if (method === 'GET' && (pathname.endsWith('/community/threads/') || pathname.endsWith('/community/threads'))) {
     const category = searchParams.get('category');
     let list = mockThreads;
@@ -1941,7 +1941,7 @@ const handleCommunityRoutes = async ({ method, pathname, searchParams, body }) =
 const handleMarketplaceRoutes = async ({ method, pathname, searchParams, body }) => {
   if (!pathname.startsWith('/marketplace/')) return null;
 
-  // GET /marketplace/listings/ — full filter/sort/tab support driven off mockListingsV2.
+  // GET /marketplace/listings/ - full filter/sort/tab support driven off mockListingsV2.
   if (method === 'GET' && (pathname.endsWith('/marketplace/listings/') || pathname.endsWith('/marketplace/listings'))) {
     let list = [...mockListingsV2].filter((l) => l.status === 'active');
     const tab = searchParams.get('tab') || 'all';
@@ -1990,7 +1990,7 @@ const handleMarketplaceRoutes = async ({ method, pathname, searchParams, body })
     return successResponse({ listings: list, total: list.length });
   }
 
-  // GET /marketplace/my-listings/  — seller dashboard (current user only).
+  // GET /marketplace/my-listings/ - seller dashboard (current user only).
   if (method === 'GET' && (pathname.endsWith('/marketplace/my-listings/') || pathname.endsWith('/marketplace/my-listings'))) {
     const mine = mockListingsV2.filter((l) => l.seller?.user_id === mockUser.id || l.seller?.id === mockUser.id);
     // If the demo user only owns 1 listing, surface a few extras as "mine" so the dashboard isn't empty.
@@ -2209,7 +2209,7 @@ const handleMarketplaceRoutes = async ({ method, pathname, searchParams, body })
     return successResponse({ following: true });
   }
 
-  // GET /marketplace/listings/:id/  — listing detail (must come last to avoid catching action paths).
+  // GET /marketplace/listings/:id/ - listing detail (must come last to avoid catching action paths).
   const detailMatch = matchPath('/marketplace/listings/:id/', pathname) ||
     matchPath('/marketplace/listings/:id', pathname);
   if (method === 'GET' && detailMatch) {
@@ -2280,7 +2280,7 @@ const handleShopRoutes = async ({ method, pathname, searchParams, body }) => {
     return successResponse({
       order_number: orderNumber,
       status: 'paid',
-      estimated_delivery: '3–5 business days',
+      estimated_delivery: '3-5 business days',
     });
   }
 
@@ -2297,7 +2297,7 @@ const handleShopRoutes = async ({ method, pathname, searchParams, body }) => {
 };
 
 /* ==========================================================================
- * EXTENDED HANDLERS — parallel-build mock layer v2
+ * EXTENDED HANDLERS - parallel-build mock layer v2
  * --------------------------------------------------------------------------
  * Each block below covers one module. Patterns:
  *   GET  /<entity>/list/                    → paginated list (q, category, status, game)
@@ -2332,7 +2332,7 @@ const _paginate = (list, searchParams) => applyQueryParams(list, searchParams);
 const handleWalletExtRoutes = async ({ method, pathname, searchParams, body }) => {
   if (!pathname.startsWith('/wallet/') && !pathname.startsWith('/auth/wallet/')) return null;
 
-  // GET /wallet/transactions/ (extended) — supports ?type= ?status=
+  // GET /wallet/transactions/ (extended) - supports ?type= ?status=
   if (method === 'GET' && (pathname.endsWith('/wallet/transactions/') || pathname.endsWith('/wallet/transactions/extended/'))) {
     let list = [...mockTransactionsExtended];
     const type = searchParams.get('type');
@@ -2342,7 +2342,7 @@ const handleWalletExtRoutes = async ({ method, pathname, searchParams, body }) =
     return successResponse({ transactions: _paginate(list, searchParams), total: list.length });
   }
 
-  // GET /wallet/withdrawals/ — pending withdrawal requests
+  // GET /wallet/withdrawals/ - pending withdrawal requests
   if (method === 'GET' && pathname.endsWith('/wallet/withdrawals/')) {
     return successResponse({ withdrawals: mockWithdrawalRequests });
   }
@@ -2524,7 +2524,7 @@ const handleCartRoutes = async ({ method, pathname, body }) => {
   if (method === 'POST' && pathname.endsWith('/cart/checkout/')) {
     const orderNumber = `VENT-${Date.now().toString().slice(-8)}`;
     mockCart.items = [];
-    return successResponse({ order_number: orderNumber, status: 'paid', estimated_delivery: '3–5 business days' });
+    return successResponse({ order_number: orderNumber, status: 'paid', estimated_delivery: '3-5 business days' });
   }
 
   return null;
@@ -3403,7 +3403,7 @@ const handleSettingRoutes = async ({ method, pathname, body }) => {
   }
 
   if (method === 'POST' && pathname.endsWith('/setting/update/')) {
-    // Mutate properties in place — ES module bindings can't be reassigned.
+    // Mutate properties in place - ES module bindings can't be reassigned.
     Object.keys(body || {}).forEach((k) => { mockSettingsState[k] = body[k]; });
     return successResponse({ settings: mockSettingsState });
   }
@@ -3654,7 +3654,7 @@ const handleHomeRoutes = async ({ method, pathname }) => {
         type: m.status === 'live' ? 'match_live' : 'match_result',
         title: m.status === 'live'
           ? `${m.team_a.name} vs ${m.team_b.name} is live`
-          : `${m.team_a.name} ${m.score_a}–${m.score_b} ${m.team_b.name}`,
+          : `${m.team_a.name} ${m.score_a} - ${m.score_b} ${m.team_b.name}`,
         message: m.tournament_name,
         at: m.status === 'live' ? m.started_at : m.ended_at || m.scheduled_at,
         target_url: `/tournaments/view-tournament?id=${m.tournament_id}`,
@@ -3672,7 +3672,7 @@ const handleHomeRoutes = async ({ method, pathname }) => {
       .sort((a, b) => new Date(b.at) - new Date(a.at))
       .slice(0, 10);
 
-    // ── Recommendations — tournaments matching favorite_games ──
+    // ── Recommendations - tournaments matching favorite_games ──
     const favoriteGames = (mockUser.favorite_games || []).map((g) => g.toLowerCase());
     const recommendations = mockTournaments
       .filter((t) => {
@@ -3753,11 +3753,11 @@ export function installMockFetch() {
         handleEventRoutes,
         handleWagerRoutes,
         handleTeamRoutes,
-        // Primary admin handler — runs first so the v2 mock state is used for
+        // Primary admin handler - runs first so the v2 mock state is used for
         // /admin/users/, /admin/tournaments/, /admin/payouts/, /admin/kyc/,
         // /admin/audit-log/, /admin/settings/, /admin/auth/login/, etc.
         handleAdminRoutes,
-        // Legacy / extended admin handlers — fall-through aliases (e.g.
+        // Legacy / extended admin handlers - fall-through aliases (e.g.
         // /admin/metrics/timeline/, /admin/kyc/queue/, /admin/user/:id/ban/).
         handleAdminExtRoutes,
         handleOrganizationRoutes,
@@ -3765,7 +3765,7 @@ export function installMockFetch() {
         handleCommunityRoutes,
         handleMarketplaceRoutes,
         handleShopRoutes,
-        // ── Extended (v2) handlers — parallel-build mock layer ──
+        // ── Extended (v2) handlers - parallel-build mock layer ──
         handleWalletExtRoutes,
         handleOrgExtRoutes,
         handleProductRoutes,
@@ -3808,10 +3808,10 @@ export function installMockFetch() {
         if (response) return response;
       }
 
-      // Fallback — no handler matched but the URL looked like a V-ENT API call.
+      // Fallback - no handler matched but the URL looked like a V-ENT API call.
       // Return an empty success envelope so pages don't hard-crash.
       // eslint-disable-next-line no-console
-      console.warn('[mockFetch] Unhandled API route:', method, pathname, '— returning empty success.');
+      console.warn('[mockFetch] Unhandled API route:', method, pathname, ' - returning empty success.');
       return successResponse({});
     } catch (err) {
       // eslint-disable-next-line no-console

@@ -65,7 +65,7 @@ const BRAND_STRIP = [
   'NIGERIA FIRST',
 ];
 
-// Cart count helper – reads localStorage (mirrors /shop/cart logic)
+// Cart count helper - reads localStorage (mirrors /shop/cart logic)
 const readCartCount = () => {
   if (typeof window === 'undefined') return 0;
   try {
@@ -156,7 +156,7 @@ const Shop = () => {
   const [newsletterStatus, setNewsletterStatus] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
 
-  // Fetch products from /product/list/ (v2 mock — full schema with sale_price)
+  // Fetch products from /product/list/ (v2 mock - full schema with sale_price)
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -245,7 +245,7 @@ const Shop = () => {
     setNewsletterStatus(
       `Thanks! We&apos;ll send drops to ${newsletterEmail.replace(/&/g, '&amp;')}.`,
     );
-    // Use plain text — but escape since it shows back on page
+    // Use plain text - but escape since it shows back on page
     setNewsletterStatus(`Thanks! Drops will land in ${newsletterEmail}.`);
     setNewsletterEmail('');
   };
@@ -263,7 +263,7 @@ const Shop = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          {/* Top action bar — title + cart icon */}
+          {/* Top action bar - title + cart icon */}
           <div className={styles.topBar}>
             <div>
               <h1 className={styles.pageTitle}>V-ENT Shop</h1>
@@ -365,7 +365,7 @@ const Shop = () => {
               <div>
                 <h2 className={styles.sectionTitle}>Shop by category</h2>
                 <p className={styles.sectionSub}>
-                  Pick a vibe — apparel for every-day, gear for tournament day.
+                  Pick a vibe - apparel for every-day, gear for tournament day.
                 </p>
               </div>
               {activeCategory && (

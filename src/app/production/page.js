@@ -14,6 +14,7 @@
 // the acting happens on the console it links to.
 
 import { useCallback, useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -48,9 +49,9 @@ export default function ProductionHub() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
+  const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
+    if (!quiet) setError('');
     try {
       const [tRes, eRes] = await Promise.all([
         ventFetch(API.TOURNAMENT.ORGANIZER_LIST, { token: viewer.token }),
@@ -75,6 +76,11 @@ export default function ProductionHub() {
     if (!viewer.signedIn) { setLoading(false); return; }
     load();
   }, [viewer.loading, viewer.signedIn, load]);
+
+  // Keeps itself current. One line, because load already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => load({ quiet: true }));
 
   const running = tournaments.filter((t) => {
     const s = tournamentStatus(t);

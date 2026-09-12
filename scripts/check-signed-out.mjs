@@ -182,7 +182,28 @@ const authedHandlers = (src) => {
         if (depth === 0) { end = k; break; }
       }
     }
-    if (/Authorization:\s*`Bearer/.test(src.slice(open, end))) names.add(m[1]);
+    const body = src.slice(open, end);
+    if (!/Authorization:\s*`Bearer/.test(body)) continue;
+    // A header sent ONLY WHEN there is a token is a request already written for
+    // a signed-out reader:
+    //
+    //   headers: token ? { Authorization: `Bearer ${token}` } : {}
+    //
+    // That shape cannot "fail on press after the person has committed", which
+    // is the harm this rule exists to stop; it is how a public page loads more
+    // when the viewer happens to be the organiser. Counting it made the checker
+    // report a read retry button on a public run of show as a write control,
+    // and a checker that reports things nobody can act on stops being read.
+    //
+    // An UNCONDITIONAL Bearer in the same body still counts, so a real write
+    // sitting beside a conditional read is not excused by its neighbour.
+    // Bounded and lazy, because the header's own value carries braces:
+    // `Bearer ${token}` closes one before the object does.
+    const conditional = /\?\s*\{[\s\S]{0,60}?Authorization:\s*`Bearer[\s\S]{0,80}?\}\s*:/;
+    const unconditional = body
+      .replace(new RegExp(conditional.source, 'g'), '')
+      .match(/Authorization:\s*`Bearer/);
+    if (unconditional) names.add(m[1]);
   }
   return names;
 };
@@ -236,6 +257,26 @@ const enclosedByGuard = (src, at) => {
   }
   return false;
 };
+
+/**
+ * An early return that fires when signed out, above the control.
+ *
+ * Different from a ternary in the one way that matters: nothing after it
+ * renders at all, so a control below cannot reach a signed-out reader through
+ * any branch. `SharedWallet` is written this way and the proximity rule
+ * reported both its controls, neither of which a stranger can see.
+ *
+ * The return has to look like a RENDER return - `return <jsx` or `return null`
+ * - because the same condition inside a loader (`{ setLoading(false); return; }`)
+ * stops a fetch and not a screen. That distinction is the whole safety of this
+ * exception, and there is a fixture for both sides of it.
+ */
+const SIGNED_OUT_RETURN = new RegExp(
+  'if\\s*\\(\\s*(?:!\\s*(?:token|session|viewer\\.signedIn|signedIn|isAuthed)'
+  + '|status\\s*!==\\s*.authenticated.)[^)]*\\)\\s*(?:\\{\\s*)?return\\s*(?:<|null|\\()',
+  'm');
+
+const returnedBefore = (src, at) => SIGNED_OUT_RETURN.test(src.slice(0, at));
 
 let unguarded = 0;
 
@@ -301,6 +342,7 @@ for (const file of files) {
         const near = src.slice(Math.max(0, m.index - 220), m.index + 60);
         if (GUARD.test(near)) continue;
         if (enclosedByGuard(src, m.index)) continue;
+        if (returnedBefore(src, m.index)) continue;
         unguarded += 1;
         const line = src.slice(0, m.index).split('\n').length;
         report.push(`${rel}:${line}\n  a control calling ${m[1]}() sends an Authorization header and is`
@@ -340,6 +382,42 @@ const FIXTURES = [
   );`,
   },
   {
+    // 4 September 2026. A public run of show has a Try again button on its
+    // error state. Its loader sends the header ONLY when the reader happens to
+    // be the organiser, which is how a public page shows more to the person who
+    // owns it. Nothing here can fail on press for a stranger.
+    name: 'a read retry whose header is conditional',
+    shouldFlag: false,
+    src: `
+  const load = async () => {
+    const res = await fetch(url, {
+      headers: authToken ? { Authorization: \`Bearer \${authToken}\` } : {},
+    });
+  };
+  const view = () => (
+    <button type="button" onClick={() => load()}>Try again</button>
+  );`,
+  },
+  {
+    // And the same file with a real write beside it: still flagged, so the
+    // exception above cannot be used as cover.
+    name: 'a conditional read beside an unconditional write',
+    shouldFlag: true,
+    src: `
+  const save = async () => {
+    await fetch(url, {
+      headers: authToken ? { Authorization: \`Bearer \${authToken}\` } : {},
+    });
+    await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: \`Bearer \${authToken}\` },
+    });
+  };
+  const view = () => (
+    <button type="button" onClick={() => save()}>Save</button>
+  );`,
+  },
+  {
     name: 'the same control, guarded next to itself',
     shouldFlag: false,
     src: `
@@ -351,6 +429,38 @@ const FIXTURES = [
       {!viewer.signedIn ? <Link href={"/login"}>Sign in to join</Link>
         : <button type="button" onClick={() => handleApply(orgId)}>Join</button>}
     </div>
+  );`,
+  },
+  {
+    // The shape SharedWallet is written in. Nothing below the return renders,
+    // so there is no branch a stranger can be in.
+    name: 'a whole component behind an early return',
+    shouldFlag: false,
+    src: `
+  const post = async (body) => {
+    await fetch(url, { method: 'POST', headers: { Authorization: \`Bearer \${token}\` } });
+  };
+  if (!token) return <p>Sign in to see this wallet.</p>;
+  const view = () => (
+    <button type="button" onClick={() => post({ action: 'send' })}>Send</button>
+  );`,
+  },
+  {
+    // And the same condition where it stops a FETCH rather than a screen. The
+    // control below is still live to a stranger, so this must still be caught:
+    // it is the one way the exception above could hide a real fault.
+    name: 'the same condition inside a loader, not a render',
+    shouldFlag: true,
+    src: `
+  const load = async () => {
+    if (!token) { setLoading(false); return; }
+    await fetch(url);
+  };
+  const post = async (body) => {
+    await fetch(url, { method: 'POST', headers: { Authorization: \`Bearer \${token}\` } });
+  };
+  const view = () => (
+    <button type="button" onClick={() => post({ action: 'send' })}>Send</button>
   );`,
   },
   {
@@ -375,6 +485,7 @@ const flagsFound = (src) => {
     const near = src.slice(Math.max(0, m.index - 220), m.index + 60);
     if (GUARD.test(near)) continue;
     if (enclosedByGuard(src, m.index)) continue;
+    if (returnedBefore(src, m.index)) continue;
     n += 1;
   }
   return n;

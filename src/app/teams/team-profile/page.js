@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -20,6 +21,7 @@ import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, usernameOf } from '@/lib/gating';
+import SharedWallet from '@/components/shared-wallet/SharedWallet';
 const ALL_TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -35,6 +37,12 @@ const ALL_TABS = [{
 }, {
   id: 'stats',
   label: 'Stats'
+}, {
+  // The team's own money. Everybody who belongs sees where it went - a team
+  // whose members cannot see that is worse than no wallet - and the API
+  // decides who may SEND, so this tab is not owner-only.
+  id: 'wallet',
+  label: 'Wallet'
 }, {
   id: 'requests',
   label: 'Requests',
@@ -59,7 +67,7 @@ export const TeamProfileContent = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [requestState, setRequestState] = useState(null); // 'pending' | 'success' | null
   const [toast, setToast] = useState('');
-  const fetchTeam = useCallback(async () => {
+  const fetchTeam = useCallback(async ({ quiet = false } = {}) => {
     // A team page is public and is in the sitemap, so this must not wait for a
     // token that is never coming. It returned here before `loading` was ever
     // cleared, so a signed-out visitor got "Loading the team..." for ever. The
@@ -72,7 +80,7 @@ export const TeamProfileContent = ({
       return;
     }
     try {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -97,6 +105,11 @@ export const TeamProfileContent = ({
       setLoading(false);
     }
   }, [teamId, session, sessionStatus, router]);
+
+  // Keeps itself current. One line, because fetchTeam already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => fetchTeam({ quiet: true }));
   useEffect(() => {
     fetchTeam();
   }, [fetchTeam]);
@@ -202,6 +215,7 @@ export const TeamProfileContent = ({
                 {activeTab === 'tournaments' && <TeamProfileTournaments team={team} />}
                 {activeTab === 'events' && <TeamProfileEvents team={team} />}
                 {activeTab === 'stats' && <TeamProfileStats team={team} />}
+                {activeTab === 'wallet' && <SharedWallet kind="team" reference={team.slug || slug} name={team.team_name || team.name} />}
                 {activeTab === 'requests' && isOwner && <TeamProfileRequests team={team} onToast={showToast} />}
               </div>
             </>}

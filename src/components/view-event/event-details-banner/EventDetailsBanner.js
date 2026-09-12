@@ -148,7 +148,7 @@ const EventDetailsBanner = ({
         }} type="button">
               {tt("ui.book.now.a4fb", "Book now")}
             </button>}
-          <Link href={`/events/${event.event_id || event.id}?tab=tickets`} className={bannerDetailsStyles.joinTournamentBTN}>
+          <Link href={`/events/${event.slug || event.event_id || event.id}?tab=tickets`} className={bannerDetailsStyles.joinTournamentBTN}>
             {tt("ui.register.event.20c0", "Register for Event")}
           </Link>
         </div>

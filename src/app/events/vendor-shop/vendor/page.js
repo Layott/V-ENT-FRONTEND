@@ -1,12 +1,14 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { track } from '@/lib/track';
 import { useSession } from 'next-auth/react';
 import { FaStore, FaCheckCircle, FaShoppingCart, FaStar, FaMapPin } from 'react-icons/fa';
 import { IoArrowBack, IoLocationOutline, IoChatbubblesOutline } from 'react-icons/io5';
@@ -47,14 +49,32 @@ const VendorStallContent = () => {
   }), [session?.user?.sessionToken]);
 
   // Fetch vendor
+  // Keeps itself current. The loader lives inside its effect and shares a
+  // closure with it, so the loop bumps a counter the effect depends on rather
+  // than the loader being hoisted out. `quiet` is the important half: without
+  // it a refresh would put the loading state back over content somebody is
+  // reading, every interval, for ever.
+  const [refreshTick, setRefreshTick] = useState(0);
+  useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 30000 });
+
+  // Which stall people actually walked to. Recorded HERE rather than on each
+  // link that reaches it: there are three of those already (the event's vendor
+  // tab, the shop listing, and a product card), and instrumenting links means
+  // the fourth one somebody adds is silently uncounted.
+  useEffect(() => {
+    if (!eventId || !vendorId) return;
+    track(eventId, 'vendor_stall', { ref: vendorId, fromEffect: true });
+  }, [eventId, vendorId]);
+
   useEffect(() => {
     if (!vendorId) {
       setError(tt("msg.vendorIdMissing", "Vendor ID missing"));
       setLoading(false);
       return;
     }
+    const quiet = refreshTick > 0;
     const fetchVendor = async () => {
-      setLoading(true);
+      if (!quiet) setLoading(true);
       setError(null);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendor/${vendorId}/`, {
@@ -74,7 +94,7 @@ const VendorStallContent = () => {
       }
     };
     fetchVendor();
-  }, [eventId, vendorId, authHeaders]);
+  }, [eventId, vendorId, authHeaders, refreshTick]);
 
   // Hydrate cart for this event.
   const cartHydrated = useRef(false);
@@ -404,7 +424,7 @@ const VendorStallContent = () => {
                   {cart.map(i => <li key={i.id} className={styles.orderLine}>
                       <span className={styles.cartItemName}>{i.name}</span>
                       <span className={styles.qtyControls}>
-                        <button type="button" onClick={() => changeQty(i.id, -1)} aria-label={tt("ui.remove.one.afbc", "Remove one")}>−</button>
+                        <button type="button" onClick={() => changeQty(i.id, -1)} aria-label={tt("ui.remove.one.afbc", "Remove one")}>-</button>
                         <span>{i.qty}</span>
                         <button type="button" onClick={() => changeQty(i.id, 1)} aria-label={tt("ui.add.one.bb49", "Add one")}>+</button>
                       </span>

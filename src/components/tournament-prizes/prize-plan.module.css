@@ -1,0 +1,225 @@
+/* The prize plan.
+
+   Filled surfaces and space, no strokes: the panel is a step off the page and
+   each row a step off the panel, which is enough to read a table by. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.state,
+.problem {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.problem {
+  color: var(--v-ent-red);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.position {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  font-weight: var(--fw-semi-bold);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.rowProblem {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  font-weight: var(--fw-semi-bold);
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+}
+
+.already {
+  font-size: 0.75rem;
+  font-weight: var(--fw-regular);
+  color: var(--v-ent-success);
+}
+
+.total {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.pay,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+}
+
+.pay {
+  /* `--v-ent-success`, not `--v-ent-grn`: the second has never existed in
+     globals.css, and an undefined variable makes the whole declaration drop.
+     The button rendered transparent with near-black text on a dark panel, and
+     it was found by looking at it rather than by reading the CSS. */
+  background-color: var(--v-ent-success);
+  color: #0d0f0d;
+}
+
+.pay:disabled,
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ghost {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.autoTitle {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.autoFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.fieldLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.number {
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 560px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .amount {
+    align-items: flex-start;
+  }
+}
+
+/* The way out of the refusal, inline with the sentence that explains it. */
+.hintLink {
+  color: var(--v-ent-gold);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}

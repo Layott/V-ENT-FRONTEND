@@ -30,6 +30,8 @@ import SponsorEditor from '@/components/sponsor-editor/SponsorEditor';
 import styles from './edit-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -214,9 +216,14 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 {tt('eventEdit.sub', 'Change what needs changing. Only what you touch is sent, so nothing else on the event moves.')}
               </p>
             </div>
-            {ref && <Link href={`/events/${ref}`} className={styles.ghostBtn}>
-              {tt('eventEdit.view', 'View the public page')}
-            </Link>}
+            {/* Both, because an organiser on this page on the day of the
+                event is one tap from the gate. Row 168. */}
+            {ref && <div className={styles.headActions}>
+              <DoorScannerLink eventRef={ref} />
+              <Link href={`/events/${ref}`} className={styles.ghostBtn}>
+                {tt('eventEdit.view', 'View the public page')}
+              </Link>
+            </div>}
           </div>
 
           {/* One strip across both screens, Details active here. It replaces
@@ -512,4 +519,26 @@ const EditEvent = () => (
   </Suspense>
 );
 
-export default EditEvent;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]/edit` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const EditEventLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}/edit`}
+      fallback="/events/my-events"
+    />
+  </Suspense>
+);
+
+export default EditEventLegacy;

@@ -5,6 +5,37 @@
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig = {
+  // DEV builds into their own directory, so a production build can never
+  // overwrite what a running dev server is serving from.
+  //
+  // `next build` and `next dev` both write to `.next` by default. Run a build
+  // while `pnpm dev` is up and the dev server keeps serving from a directory
+  // whose vendor chunks have just been replaced, so every page 500s with
+  // "Cannot find module './vendor-chunks/react-icons@5.4.0_react@18.3.1.js'".
+  // It has cost this project a debugging round more than once, most recently on
+  // 7 September 2026 while walking the studio slots in OBS, where it looked for
+  // several minutes like the slot pages themselves were broken.
+  //
+  // Keyed off NODE_ENV rather than off a script flag, because `next dev` sets
+  // it to development and `next build` sets it to production, so this holds
+  // however either one is started - pnpm, a hook, an IDE, or by hand.
+  //
+  // PRODUCTION stays at `.next` deliberately: the VPS unit serves
+  // `.next/standalone/server.js`, and moving that would break the deploy to fix
+  // a local annoyance. Two directories that never collide is the fix; which one
+  // moves is just which one is cheaper to move.
+  //
+  // In development the port goes in the NAME. Two dev servers on one checkout
+  // write the same directory and overwrite each other's chunks, and what the
+  // browser then says is "Cannot find module './vendor-chunks/next-auth@...'",
+  // which names webpack and next-auth and points at neither. That cost three
+  // restarts on 8 September while several people worked in this repo at once.
+  // `next dev -p 3001` puts 3001 in PORT before the config is read, so this is
+  // enough to keep them apart; with no PORT it falls back to the old name, so
+  // a single server behaves exactly as before.
+  distDir: process.env.NODE_ENV === 'development'
+    ? (process.env.PORT ? `.next-dev-${process.env.PORT}` : '.next-dev')
+    : '.next',
   // next-auth's browser bundle reads process.env.NEXTAUTH_URL to work out its
   // own origin. Next only inlines NEXT_PUBLIC_* into client code, so in the
   // browser that read is undefined and next-auth falls back to its built-in
@@ -54,28 +85,24 @@ const nextConfig = {
       ...(mediaHost
         ? [{ protocol: 'https', hostname: mediaHost, port: '', pathname: '/**' }]
         : []),
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '',
-        pathname: '/**',
-      },
-      // Local dev backend served over IPv4 loopback (the Chrome walkthrough uses
-      // 127.0.0.1 because Chrome resolves `localhost` to ::1, which Django's
-      // dev server doesn't bind). Media URLs come back as http://127.0.0.1:8000/media/*.
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8000',
-        pathname: '/**',
-      },
-      // Alt dev port for the backend (used when :8000 is taken locally).
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8100',
-        pathname: '/**',
-      },
+      // Any loopback port, and only in development.
+      //
+      // Next matches a pattern's port with `if (pattern.port !== undefined)`,
+      // so OMITTING port matches any port and `port: ''` means "must have no
+      // port at all". This list used to pin 8000 and 8100, which had the same
+      // shape as the CORS origin list: it was extended once per port somebody
+      // happened to use, and a backend on any other port made `next/image`
+      // throw "Invalid src prop". That throw is not a broken picture, it takes
+      // the whole page down to its error boundary, which on 8 September read as
+      // "This page did not load" while the API was answering 200.
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+            { protocol: 'http', hostname: 'localhost', pathname: '/**' },
+            { protocol: 'http', hostname: '127.0.0.1', pathname: '/**' },
+          ]
+        : [
+            { protocol: 'http', hostname: 'localhost', port: '', pathname: '/**' },
+          ]),
     ],
   },
   // Optional: Add this to help with image loading issues
@@ -104,6 +131,19 @@ const nextConfig = {
       { source: '/privacy-policy.pdf', destination: '/privacy-policy', permanent: true },
       { source: '/terms-of-use', destination: '/terms', permanent: true },
       { source: '/term-of-use', destination: '/terms', permanent: true },
+      // The CEO registered the Discord application on 7 September with its
+      // Terms of Service URL as `https://v-ent.co/terms-of-service`, which
+      // 404d. Discord shows that link on the consent screen somebody sees
+      // before granting access, so a dead link there is the worst possible
+      // place for one.
+      //
+      // Redirecting rather than asking for the entry to be retyped: this is
+      // the name most services and most people will guess, it is what every
+      // other platform calls it, and an address somebody has already written
+      // down somewhere should keep working. Same principle as SlugHistory.
+      { source: '/terms-of-service', destination: '/terms', permanent: true },
+      { source: '/tos', destination: '/terms', permanent: true },
+      { source: '/privacy', destination: '/privacy-policy', permanent: true },
     ];
   },
 };

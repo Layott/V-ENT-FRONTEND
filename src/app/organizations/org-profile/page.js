@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -21,27 +22,49 @@ import styles from './org-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { formatNumber } from '@/lib/datetime';
 import UserChip from '@/components/user-chip/UserChip';
+import Avatar from '@/components/avatar/Avatar';
 import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
+import SharedWallet from '@/components/shared-wallet/SharedWallet';
+import PlanCard from '@/components/memberships/PlanCard';
+// `needs` names the capability a tab depends on. Without it the screen said
+// "this organisation does not do events" in Key stats and "here are its
+// events" in the tab strip at the same time, which reads as a bug in the
+// stats rather than a deliberate answer about what the organisation is.
+//
+// Overview, Members and About carry no `needs`: every organisation has people
+// and a description whatever it does.
 const TABS = [{
   id: 'overview',
   label: 'Overview'
 }, {
   id: 'teams',
-  label: 'Teams'
+  label: 'Teams',
+  needs: 'teams'
 }, {
   id: 'tournaments',
-  label: 'Tournaments'
+  label: 'Tournaments',
+  needs: 'tournaments'
 }, {
   id: 'events',
-  label: 'Events'
+  label: 'Events',
+  needs: 'events'
 }, {
-  id: 'clubs',
-  label: 'Clubs'
+  // What the organisation sells as a membership. No `needs`: any organisation
+  // can sell one, including a club that runs nothing else, which is precisely
+  // the kind that has something to sell.
+  id: 'memberships',
+  label: 'Memberships'
 }, {
   id: 'members',
   label: 'Members'
+}, {
+  // The organisation's own money. Like the team wallet, everybody who belongs
+  // can read it and the API decides who may send, so it carries no `needs`.
+  id: 'wallet',
+  label: 'Wallet'
 }, {
   id: 'about',
   label: 'About'
@@ -75,6 +98,19 @@ const socialIconFor = (titleOrKey = '') => {
   }
   return FaGlobe;
 };
+const activitySentence = (tt, tx, a) => {
+  if (a?.code === 'org.activity.memberJoined') {
+    return tt('org.activity.memberJoined', '@{username} joined as {role}')
+      .replace('{username}', a.params?.username || '')
+      .replace('{role}', a.params?.role || '');
+  }
+  if (a?.code === 'org.activity.hosted') {
+    return tt('org.activity.hosted', 'Hosted {title}')
+      .replace('{title}', a.params?.title || '');
+  }
+  return tx(a?.title || a?.text || '');
+};
+
 const OrgProfileContent = ({
   slug: slugFromPath
 }) => {
@@ -93,6 +129,8 @@ const OrgProfileContent = ({
   const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
   const [clubs, setClubs] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [myPlans, setMyPlans] = useState({});
   const [members, setMembers] = useState([]);
   const [activity, setActivity] = useState([]);
   const [following, setFollowing] = useState(false);
@@ -118,12 +156,12 @@ const OrgProfileContent = ({
   const isMember = !!org?.my_role;
 
   // ── Data fetch ──
-  const loadAll = useCallback(async () => {
+  const loadAll = useCallback(async ({ quiet = false } = {}) => {
     if (!orgId) {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const headers = {
@@ -164,12 +202,35 @@ const OrgProfileContent = ({
       setActivity(actData?.data?.activity || []);
       const clubData = await clubRes.json().catch(() => null);
       setClubs(clubData?.data?.clubs || []);
+      // The memberships this organisation sells. A separate request rather
+      // than a field on the organisation, because the same endpoint feeds the
+      // organiser's console and the two must not be able to disagree about
+      // what exists.
+      const planRes = await fetch(`${API}/billing/plans/?org=${encodeURIComponent(orgId)}`, {
+        headers
+      }).catch(() => null);
+      const planData = planRes ? await planRes.json().catch(() => null) : null;
+      setPlans(planData?.data?.plans || []);
+      // What the viewer already holds, asked ONCE for the whole list.
+      // `/billing/entitlements/` answers for every plan at once; six plans
+      // asking one endpoint each would be six round trips, and from Los
+      // Angeles that is well over a second of nothing.
+      const entRes = await fetch(`${API}/billing/entitlements/`, {
+        headers
+      }).catch(() => null);
+      const entData = entRes ? await entRes.json().catch(() => null) : null;
+      setMyPlans(Object.fromEntries((entData?.data?.memberships || []).map(m => [m.plan_slug, m])));
     } catch (err) {
       setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }
   }, [orgId, session]);
+
+  // Keeps itself current. One line, because loadAll already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => loadAll({ quiet: true }));
   useEffect(() => {
     loadAll();
   }, [loadAll]);
@@ -348,6 +409,24 @@ const OrgProfileContent = ({
     title: k,
     url: v
   }));
+  // The API sends founders as people now. It sent bare usernames until today
+  // and the deployed backend may still be a version behind, so a string is
+  // read as the username it was. Rendering an object as a React child throws,
+  // and rendering a person's object shape as text would be worse than the bug
+  // being fixed.
+  // What this kind of organisation does. From the model, so the profile, the
+  // console and the API cannot disagree about it. `mixed` is the default for
+  // everything created before types existed, and it turns everything on.
+  const caps = org.capabilities || {
+    teams: true, tournaments: true, events: true, ticketing: true, vendors: true,
+  };
+  // A shared link carrying ?tab=events opens on a tab this organisation may
+  // not have. Falling back to Overview rather than rendering an empty panel:
+  // the panel would be the same contradiction the tab strip just stopped
+  // making, arrived at from the address bar instead.
+  const openTabs = TABS.filter(t => !t.needs || caps[t.needs]);
+  const shownTab = openTabs.some(t => t.id === activeTab) ? activeTab : 'overview';
+  const founders = (org.founders || []).map(f => typeof f === 'string' ? { username: f, full_name: f } : f).filter(Boolean);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -421,16 +500,16 @@ const OrgProfileContent = ({
 
           {/* ── Tabs ── */}
           <div className={styles.tabsRow}>
-            {TABS.map(t => <button key={t.id} ref={el => {
+            {openTabs.map(t => <button key={t.id} ref={el => {
             tabsRef.current[t.id] = el;
-          }} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => switchTab(t.id)}>
+          }} type="button" className={`${styles.tabBTN} ${shownTab === t.id ? styles.activeTab : ''}`} onClick={() => switchTab(t.id)}>
                 {tx(t.label)}
               </button>)}
           </div>
 
           {/* ── Tab content ── */}
           <div className={styles.tabPanel}>
-            {activeTab === 'overview' && <div className={styles.overviewGrid}>
+            {shownTab === 'overview' && <div className={styles.overviewGrid}>
                 <div className={styles.overviewLeft}>
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.bio.b31f", "Bio")}</h2>
@@ -447,46 +526,72 @@ const OrgProfileContent = ({
                           <span className={styles.statNumber}>{org.member_count}</span>
                         </div>
                       </div>
-                      <div className={styles.statCard}>
+                      {caps.teams && <div className={styles.statCard}>
                         <AiOutlineTeam className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.teams.cbfd", "Teams")}</span>
                           <span className={styles.statNumber}>{org.team_count}</span>
                         </div>
-                      </div>
+                      </div>}
+                      {/* Followers. The count has been in the payload since
+                          organisations were built and no screen drew it, so
+                          nobody running one could see how many people cared.
+                          CEO: "org owners should also be able to see their
+                          followers ... and info on like how many." */}
                       <div className={styles.statCard}>
+                        <LuUserPlus className={styles.statCardIcon} />
+                        <div>
+                          <span className={styles.statLabel}>{tt("ui.followers.7c31", "Followers")}</span>
+                          <span className={styles.statNumber}>{formatNumber(org.follower_count ?? 0)}</span>
+                        </div>
+                      </div>
+                      {/* What this KIND of organisation actually does. A club
+                          that only fields a squad is not asked about ticketing
+                          or shown a count of events it will never run.
+                          `capabilities` comes from the model, so this screen
+                          and the console read one table rather than each
+                          keeping a copy. */}
+                      {caps.tournaments && <div className={styles.statCard}>
                         <FaTrophy className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.tournaments.fee2", "Tournaments")}</span>
                           <span className={styles.statNumber}>{org.total_tournaments_hosted ?? org.tournaments_hosted}</span>
                         </div>
-                      </div>
-                      <div className={styles.statCard}>
+                      </div>}
+                      {caps.events && <div className={styles.statCard}>
                         <MdOutlineEvent className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.events.c549", "Events")}</span>
                           <span className={styles.statNumber}>{org.events_hosted}</span>
                         </div>
-                      </div>
-                      <div className={styles.statCard}>
+                      </div>}
+                      {caps.tournaments && <div className={styles.statCard}>
                         <FaCoins className={styles.statCardIcon} />
                         <div>
                           <span className={styles.statLabel}>{tt("ui.prize.pool.e9b1", "Prize pool")}</span>
                           <span className={styles.statNumber}>
-                            {(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0).toLocaleString()} VC
+                            {formatNumber(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0)} VC
                           </span>
                         </div>
-                      </div>
+                      </div>}
                     </div>
                   </section>
 
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.recent.activity.72d5", "Recent activity")}</h2>
                     {activity.length === 0 ? <p className={styles.bioText}>{tt("ui.no.recent.activity.yet.5179", "No recent activity yet.")}</p> : <ul className={styles.activityList}>
-                        {activity.map(a => <li key={a.id} className={styles.activityRow}>
+                        {activity.map((a, i) => <li key={a.id || `activity_${i}`} className={styles.activityRow}>
                             <span className={styles.activityDot} />
                             <div className={styles.activityText}>
-                              <span>{tx(a.title)}</span>
+                              {/* The API sends a code and its parameters, so
+                                  the sentence can be French or Portuguese. It
+                                  also sends the English one, which is the
+                                  fallback while a deployed backend is still a
+                                  version behind. It used to send only `text`
+                                  while this read `title`, so every row drew an
+                                  empty span and the panel was a column of
+                                  bare timestamps. */}
+                              <span>{activitySentence(tt, tx, a)}</span>
                               <span className={styles.activityTime}>{formatDate(a.at)}</span>
                             </div>
                           </li>)}
@@ -497,12 +602,21 @@ const OrgProfileContent = ({
                 <div className={styles.overviewRight}>
                   <section className={styles.panel}>
                     <h2 className={styles.panelTitle}>{tt("ui.founders.9a7f", "Founders")}</h2>
-                    {(org.founders || []).length === 0 ? <p className={styles.bioText}>-</p> : <ul className={styles.founderList}>
-                        {(org.founders || []).map((name, i) => <li key={`${name}_${i}`} className={styles.founderRow}>
-                            <div className={styles.founderAvatar}>
-                              {name.split(' ').map(p => p[0]).join('').slice(0, 2)}
-                            </div>
-                            <span className={styles.founderName}>{name}</span>
+                    {/* Founders are people, so they go through UserChip like
+                        every other name on the platform: their face, their
+                        founder mark, and a link to their profile. This panel
+                        used to draw initials in a grey circle from a bare
+                        username, which is how the CEO's own picture and badge
+                        went missing under their organisation.
+
+                        `founders` was a list of strings before today and the
+                        deployed API may still be sending that shape, so a
+                        string is turned back into the smallest person we can
+                        honestly describe rather than rendering an object and
+                        blanking the panel. */}
+                    {founders.length === 0 ? <p className={styles.bioText}>{tt('ui.org.noFounders.4b13', 'Not recorded.')}</p> : <ul className={styles.founderList}>
+                        {founders.map((person, i) => <li key={`${person.username || person.full_name}_${i}`} className={styles.founderRow}>
+                            <UserChip user={person} size={36} secondary nameClassName={styles.founderName} />
                           </li>)}
                       </ul>}
                   </section>
@@ -525,7 +639,7 @@ const OrgProfileContent = ({
                 </div>
               </div>}
 
-            {activeTab === 'teams' && <div className={styles.cardGridSm}>
+            {shownTab === 'teams' && <div className={styles.cardGridSm}>
                 {teams.map(team => <Link key={team.id} href={`/teams/${team.slug || team.id}`} className={styles.miniCard}>
                     <div className={styles.miniBanner}>
                       {team.banner && <Image src={mediaUrl(team.banner)} alt={`${team.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" style={{
@@ -546,7 +660,7 @@ const OrgProfileContent = ({
                 {teams.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.teams.under.org.2f9f", "No teams under this org yet.")}</div>}
               </div>}
 
-            {activeTab === 'clubs' && <div className={styles.cardGridSm}>
+            {shownTab === 'clubs' && <div className={styles.cardGridSm}>
                 {clubs.map(club => <Link key={club.slug || club.id} href={`/community/club/${club.slug}`} className={styles.miniCard}>
                     <div className={styles.miniBanner}>
                       {club.banner && <Image src={mediaUrl(club.banner)} alt={`${club.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" style={{
@@ -567,7 +681,7 @@ const OrgProfileContent = ({
                 {clubs.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.clubs.under.org.3b57", "No clubs under this org yet.")}</div>}
               </div>}
 
-            {activeTab === 'tournaments' && <div className={styles.tableWrap}>
+            {shownTab === 'tournaments' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -601,7 +715,7 @@ const OrgProfileContent = ({
                 {tournaments.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.tournaments.hosted.yet.345e", "No tournaments hosted yet.")}</div>}
               </div>}
 
-            {activeTab === 'events' && <div className={styles.tableWrap}>
+            {shownTab === 'events' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -635,7 +749,7 @@ const OrgProfileContent = ({
                 {events.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.events.hosted.yet.8ef6", "No events hosted yet.")}</div>}
               </div>}
 
-            {activeTab === 'members' && <div className={styles.tableWrap}>
+            {shownTab === 'members' && <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -652,8 +766,14 @@ const OrgProfileContent = ({
                   return <tr key={m.id}>
                           <td>
                             <div className={styles.memberCell}>
+                              {/* Through Avatar, which falls back to initials.
+                                  This was a bare next/image behind a truthy
+                                  check, so a member with no uploaded picture
+                                  got an empty circle and nothing identifying
+                                  them at all. Most accounts here have no
+                                  uploaded picture. */}
                               <div className={styles.memberAvatar}>
-                                {m.user?.avatar && <Image src={mediaUrl(m.user.avatar)} alt={m.user.full_name} width={32} height={32} />}
+                                <Avatar src={mediaUrl(m.user?.avatar)} name={m.user?.username || m.user?.full_name} size={32} />
                               </div>
                               <div className={styles.memberText}>
                                 <UserChip user={m.user} size={0} secondary
@@ -696,7 +816,13 @@ const OrgProfileContent = ({
                 {members.length === 0 && <div className={styles.sectionEmpty}>{tt("ui.no.members.yet.ea27", "No members yet.")}</div>}
               </div>}
 
-            {activeTab === 'about' && <div className={styles.aboutGrid}>
+            {shownTab === 'memberships' && (plans.length ? <div className={styles.membershipList}>
+                {plans.map(plan => <PlanCard key={plan.slug} plan={plan} href={`/plans/${plan.slug}`} showSeller={false} mine={myPlans[plan.slug] || null} />)}
+              </div> : <div className={styles.sectionEmpty}>
+                {tt("billing.orgNoPlans", "This organisation does not sell a membership yet.")}
+              </div>)}
+            {shownTab === 'wallet' && <SharedWallet kind="org" reference={org.slug || orgId} name={org.org_name || org.name} />}
+            {shownTab === 'about' && <div className={styles.aboutGrid}>
                 <section className={styles.panel}>
                   <h2 className={styles.panelTitle}>{tt("ui.about.6b21", "About")}</h2>
                   <dl className={styles.aboutList}>

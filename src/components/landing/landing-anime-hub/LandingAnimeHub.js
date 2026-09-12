@@ -19,7 +19,7 @@ const LandingAnimeHub = ({ scrollToForm }) => {
     const [refText, isTextVisible] = useIntersectionObserver({ threshold: 0.2 })
 
   return (
-    <div className={`${landingStyles.landingAnimeHubContainer} ${styles.landingAnimeHubContainer}`}>
+    <div className={`${landingStyles.landingAnimeHubContainer}`}>
         <div className={`${landingStyles.innerLandingAnimeHubContainer} ${styles.innerLandingAnimeHubContainer}`}>
 
             <div className={styles.landingAnimeHubLeftContainer}>

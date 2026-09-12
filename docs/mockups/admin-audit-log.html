@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT Admin — Audit Log (Mockup)</title>
+  <title>V-ENT Admin - Audit Log (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -39,7 +39,7 @@
       font-weight: 700; font-display: swap;
     }
 
-    /* ── CSS Variables — exact copies from globals.css + project ──── */
+    /* ── CSS Variables - exact copies from globals.css + project ──── */
     :root {
       --v-ent-red:        #ED1C24;
       --v-ent-light-red:  #FF3B45;
@@ -83,7 +83,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       SIDEBAR — matches Sidebar.module.css exactly
+       SIDEBAR - matches Sidebar.module.css exactly
     ════════════════════════════════════════════════════════════════ */
     .sidebar {
       background-color: var(--page-bg);
@@ -1092,7 +1092,7 @@
     </ul>
   </nav>
 
-  <!-- Footer — logged-in user -->
+  <!-- Footer - logged-in user -->
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="s-avatar">SA</div>
@@ -1296,7 +1296,7 @@
       </div>
     </div>
     <div class="pagination-row">
-      <span class="pagination-info">Showing <strong id="pg-showing">1–30</strong> of <strong>1,847</strong> entries</span>
+      <span class="pagination-info">Showing <strong id="pg-showing">1-30</strong> of <strong>1,847</strong> entries</span>
       <div class="pagination-btns">
         <button class="pg-btn" disabled>← Prev</button>
         <button class="pg-btn active">1</button>
@@ -1311,13 +1311,13 @@
 
   <!-- Mockup notes -->
   <div class="mockup-notes">
-    <strong>MOCKUP NOTES — Track B · Awaiting CEO approval</strong><br>
-    · <strong>Read-only:</strong> No approve/reject/edit actions — this page is purely a compliance record viewer<br>
-    · <strong>Backend model:</strong> AdminAuditLog — fields: id, admin_user, action_type, target_id, target_type, detail, ip_address, created_at (immutable)<br>
-    · <strong>Export CSV:</strong> Streams all filtered rows server-side — no client-side limit<br>
+    <strong>MOCKUP NOTES - Track B · Awaiting CEO approval</strong><br>
+    · <strong>Read-only:</strong> No approve/reject/edit actions - this page is purely a compliance record viewer<br>
+    · <strong>Backend model:</strong> AdminAuditLog - fields: id, admin_user, action_type, target_id, target_type, detail, ip_address, created_at (immutable)<br>
+    · <strong>Export CSV:</strong> Streams all filtered rows server-side - no client-side limit<br>
     · <strong>Sorting:</strong> Default timestamp DESC; all columns sortable client-side on current page data<br>
     · <strong>IP addresses:</strong> Nigerian ranges shown (105.x.x.x = Airtel, 197.x.x.x = MTN)<br>
-    · <strong>Access:</strong> Super Admin only — Finance and Moderator roles do not see this nav item<br>
+    · <strong>Access:</strong> Super Admin only - Finance and Moderator roles do not see this nav item<br>
     · <strong>References used:</strong> sidebar → admin-overview.html · cards → admin-overview metric-card · table → admin-overview payouts table · filters → tournament listing page
   </div>
 
@@ -1356,7 +1356,7 @@
 
 <script>
   /* ════════════════════════════════════════════════════════════════
-     AUDIT LOG DATA — 30 sample rows
+     AUDIT LOG DATA - 30 sample rows
   ════════════════════════════════════════════════════════════════ */
   const ALL_ROWS = [
     // Mar 22 2026 (today)
@@ -1365,35 +1365,35 @@
     { ts: "Mar 22 2026", time: "13:55", admin: "superadmin",   role: "super",   action: "User Banned",      target: "spam_user99",       detail: "Banned for repeated promotional spam in tournament chat", ip: "105.112.14.88" },
     { ts: "Mar 22 2026", time: "13:41", admin: "mod_chidi",    role: "mod",     action: "KYC Approved",     target: "ngozi_gamer",       detail: "NIN + BVN verified. Withdrawal limit raised to ₦500,000", ip: "105.58.240.107" },
     { ts: "Mar 22 2026", time: "13:12", admin: "superadmin",   role: "super",   action: "Role Assigned",    target: "mod_chidi",         detail: "Role changed from User to Moderator by superadmin", ip: "105.112.14.88" },
-    { ts: "Mar 22 2026", time: "12:47", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "bk_esports",        detail: "Rejected — bank account details do not match KYC record", ip: "197.210.65.33" },
+    { ts: "Mar 22 2026", time: "12:47", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "bk_esports",        detail: "Rejected - bank account details do not match KYC record", ip: "197.210.65.33" },
     { ts: "Mar 22 2026", time: "12:05", admin: "mod_chidi",    role: "mod",     action: "Score Override",   target: "PUBG Masters Qtr-F",detail: "Score corrected: Team A 14pts → 18pts after screenshot review", ip: "105.58.240.107" },
     { ts: "Mar 22 2026", time: "11:39", admin: "superadmin",   role: "super",   action: "Dispute Resolved", target: "femtech_pro",       detail: "Dispute #47 closed in favour of femtech_pro after evidence review", ip: "105.112.14.88" },
-    { ts: "Mar 22 2026", time: "10:58", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "tolu_plays",        detail: "Rejected — ID document appears altered/edited. User notified.", ip: "105.58.240.107" },
+    { ts: "Mar 22 2026", time: "10:58", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "tolu_plays",        detail: "Rejected - ID document appears altered/edited. User notified.", ip: "105.58.240.107" },
     { ts: "Mar 22 2026", time: "10:22", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "oluwaseun_a",       detail: "Approved ₦42,000 payout for COD Warzone Cup (1st place)", ip: "197.210.65.33" },
     { ts: "Mar 22 2026", time: "09:50", admin: "superadmin",   role: "super",   action: "User Unbanned",    target: "sola_off",          detail: "7-day ban expired. Account restored to active status.", ip: "105.112.14.88" },
     { ts: "Mar 22 2026", time: "09:14", admin: "mod_chidi",    role: "mod",     action: "Tournament Cancelled", target: "Tekken 8 Lagos Open", detail: "Cancelled due to insufficient registrations (min 8, got 3)", ip: "105.58.240.107" },
 
     // Mar 21 2026 (yesterday)
     { ts: "Mar 21 2026", time: "22:14", admin: "superadmin",   role: "super",   action: "Payout Approved",  target: "ktech_gamer",       detail: "Approved ₦12,000 payout for Tekken 8 Open (2nd place)", ip: "105.112.14.88" },
-    { ts: "Mar 21 2026", time: "21:30", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "chike_fps",         detail: "Rejected — wallet address unverified. Follow-up required.", ip: "197.210.65.33" },
+    { ts: "Mar 21 2026", time: "21:30", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "chike_fps",         detail: "Rejected - wallet address unverified. Follow-up required.", ip: "197.210.65.33" },
     { ts: "Mar 21 2026", time: "20:05", admin: "mod_chidi",    role: "mod",     action: "User Banned",      target: "toxic_abioye",      detail: "Banned 30 days for harassment and abusive language in Discord", ip: "105.58.240.107" },
     { ts: "Mar 21 2026", time: "18:47", admin: "superadmin",   role: "super",   action: "KYC Approved",     target: "bk_esports",        detail: "Passport + utility bill verified. Full withdrawal enabled.", ip: "105.112.14.88" },
-    { ts: "Mar 21 2026", time: "17:22", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "PUBG Masters QF-3", detail: "Dispute #45 closed — no score change, original result stands", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "17:22", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "PUBG Masters QF-3", detail: "Dispute #45 closed - no score change, original result stands", ip: "105.58.240.107" },
     { ts: "Mar 21 2026", time: "16:10", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "emeka_gg",          detail: "Approved ₦8,500 payout for FIFA Weekend (3rd place bonus)", ip: "197.210.65.33" },
     { ts: "Mar 21 2026", time: "15:03", admin: "superadmin",   role: "super",   action: "Score Override",   target: "COD Warzone Cup SF",detail: "Match 6 score adjusted after replay file review. 11-9 → 11-10", ip: "105.112.14.88" },
-    { ts: "Mar 21 2026", time: "14:28", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "gamer_musa_11",     detail: "Rejected — NIN not found in NIMC database. User asked to resubmit.", ip: "105.58.240.107" },
+    { ts: "Mar 21 2026", time: "14:28", admin: "mod_chidi",    role: "mod",     action: "KYC Rejected",     target: "gamer_musa_11",     detail: "Rejected - NIN not found in NIMC database. User asked to resubmit.", ip: "105.58.240.107" },
     { ts: "Mar 21 2026", time: "13:11", admin: "superadmin",   role: "super",   action: "Role Assigned",    target: "finance_tunde",     detail: "Role changed from Moderator to Finance Admin", ip: "105.112.14.88" },
     { ts: "Mar 21 2026", time: "11:55", admin: "mod_chidi",    role: "mod",     action: "User Unbanned",    target: "chike_fps",         detail: "14-day ban served. Account restored. Warning note added.", ip: "105.58.240.107" },
     { ts: "Mar 21 2026", time: "10:38", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "femtech_pro",       detail: "Approved ₦18,750 payout for Tekken 8 Open (1st place)", ip: "197.210.65.33" },
 
     // Mar 20 2026
-    { ts: "Mar 20 2026", time: "23:01", admin: "superadmin",   role: "super",   action: "Tournament Cancelled", target: "VALORANT Open Beta", detail: "Cancelled — organizer withdrew. All registrants refunded automatically.", ip: "105.112.14.88" },
-    { ts: "Mar 20 2026", time: "21:14", admin: "mod_chidi",    role: "mod",     action: "User Banned",      target: "bet_rigger_01",     detail: "Permanent ban — confirmed match manipulation attempt", ip: "105.58.240.107" },
+    { ts: "Mar 20 2026", time: "23:01", admin: "superadmin",   role: "super",   action: "Tournament Cancelled", target: "VALORANT Open Beta", detail: "Cancelled - organizer withdrew. All registrants refunded automatically.", ip: "105.112.14.88" },
+    { ts: "Mar 20 2026", time: "21:14", admin: "mod_chidi",    role: "mod",     action: "User Banned",      target: "bet_rigger_01",     detail: "Permanent ban - confirmed match manipulation attempt", ip: "105.58.240.107" },
     { ts: "Mar 20 2026", time: "19:45", admin: "finance_tunde",role: "finance", action: "Payout Approved",  target: "david_fps_ng",      detail: "Approved ₦30,000 payout for COD Warzone Cup (1st place)", ip: "197.210.65.33" },
     { ts: "Mar 20 2026", time: "17:32", admin: "superadmin",   role: "super",   action: "KYC Approved",     target: "tolu_plays",        detail: "NIN re-verified successfully after resubmission. Account unlocked.", ip: "105.112.14.88" },
-    { ts: "Mar 20 2026", time: "16:18", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "FIFA Weekend Final", detail: "Dispute #43 — lag compensation review complete. Score stands.", ip: "105.58.240.107" },
+    { ts: "Mar 20 2026", time: "16:18", admin: "mod_chidi",    role: "mod",     action: "Dispute Resolved", target: "FIFA Weekend Final", detail: "Dispute #43 - lag compensation review complete. Score stands.", ip: "105.58.240.107" },
     { ts: "Mar 20 2026", time: "14:50", admin: "superadmin",   role: "super",   action: "Score Override",   target: "PUBG Masters SF-2", detail: "Score corrected: Team C 22pts → 24pts per match admin review #112", ip: "105.112.14.88" },
-    { ts: "Mar 20 2026", time: "12:03", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "emeka_gg",          detail: "Rejected — duplicate payout request. Original already processed.", ip: "197.210.65.33" },
+    { ts: "Mar 20 2026", time: "12:03", admin: "finance_tunde",role: "finance", action: "Payout Rejected",  target: "emeka_gg",          detail: "Rejected - duplicate payout request. Original already processed.", ip: "197.210.65.33" },
     { ts: "Mar 20 2026", time: "09:27", admin: "mod_chidi",    role: "mod",     action: "User Unbanned",    target: "ngozi_gamer",       detail: "24-hour cooling-off ban lifted. User warned about repeat offences.", ip: "105.58.240.107" },
   ];
 
@@ -1479,7 +1479,7 @@
     const date   = document.getElementById('filter-date').value;
 
     let rows = ALL_ROWS.filter(row => {
-      /* Text search — action, admin, target, detail */
+      /* Text search - action, admin, target, detail */
       if (q) {
         const haystack = [row.action, row.admin, row.target, row.detail, row.ip].join(' ').toLowerCase();
         if (!haystack.includes(q)) return false;
@@ -1488,10 +1488,10 @@
       if (action && row.action !== action) return false;
       /* Admin */
       if (admin && row.admin !== admin) return false;
-      /* Date range — uses index position in ALL_ROWS as proxy for age */
+      /* Date range - uses index position in ALL_ROWS as proxy for age */
       if (date === '24h' && !row.ts.includes('Mar 22 2026')) return false;
       if (date === '7d'  && row.ts.includes('Mar 20 2026') && row.time < '09:00') return false; // simplistic demo
-      /* All time — no filter */
+      /* All time - no filter */
       return true;
     });
 
@@ -1607,7 +1607,7 @@
     }, 3500);
   }
 
-  /* ── Init — render default (timestamp desc) ─────────────────── */
+  /* ── Init - render default (timestamp desc) ─────────────────── */
   (function init() {
     /* Set default sort header indicator */
     const headers = document.querySelectorAll('thead th');

@@ -110,3 +110,17 @@
 @media only screen and (max-width: 767px) {
   .twoCol { grid-template-columns: 1fr; }
 }
+
+/* What the console deliberately does not manage. On the page ground, in
+ * words, rather than four tabs with nothing behind them. */
+.notBuilt {
+  margin-top: 2rem;
+  max-width: 52rem;
+}
+
+.notBuiltText {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  margin-top: 0.5rem;
+}

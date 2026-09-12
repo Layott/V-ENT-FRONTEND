@@ -312,7 +312,7 @@ async function walkRoute(page, route, allRoutes) {
       });
       j = await step2.json().catch(() => ({}));
     } else {
-      console.error('[audit] admin 2FA: no secret available — set ADMIN_TOTP_SECRET');
+      console.error('[audit] admin 2FA: no secret available - set ADMIN_TOTP_SECRET');
     }
     const tok = j?.data?.session_token;
     const adminObj = j?.data?.admin || {};
@@ -379,7 +379,7 @@ async function walkRoute(page, route, allRoutes) {
 
   // markdown summary
   const md = [];
-  md.push(`# Audit walk — ${VIEW} · ${AS} (${authNote})`, '');
+  md.push(`# Audit walk - ${VIEW} · ${AS} (${authNote})`, '');
   md.push('| Route | Btn | Link | Input | Console err | Net 4xx/5xx | Overflow | Dead links | Empty |');
   md.push('|---|---|---|---|---|---|---|---|---|');
   for (const r of results) {

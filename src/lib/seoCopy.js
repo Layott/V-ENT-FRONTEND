@@ -231,6 +231,15 @@ export const PRIVATE_TITLES = {
   home: { en: 'Home', fr: 'Accueil', pt: 'Início' },
   'user-profile': { en: 'Profile', fr: 'Profil', pt: 'Perfil' },
   partners: { en: 'Partners', fr: 'Partenaires', pt: 'Parceiros' },
+  memberships: { en: 'My memberships', fr: 'Mes abonnements', pt: 'As minhas subscrições' },
+  // Vermillion City's three private screens. A form, somebody's own listings
+  // and their numbers, and an order with what somebody bought and from whom.
+  'marketplace-create': { en: 'List something', fr: 'Mettre en ligne', pt: 'Colocar um anuncio' },
+  'marketplace-dashboard': { en: 'What I am selling', fr: 'Ce que je vends', pt: 'O que estou a vender' },
+  'marketplace-purchase': { en: 'Your order', fr: 'Votre commande', pt: 'A sua encomenda' },
+  // Signing out. Noindex like the rest of these: it is an action, not
+  // something anybody should reach from a search result.
+  logout: { en: 'Sign out', fr: 'Se déconnecter', pt: 'Terminar sessão' },
 };
 
 export const sectionCopy = (section, locale) => {

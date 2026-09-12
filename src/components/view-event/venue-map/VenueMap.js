@@ -28,6 +28,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
+import { track } from '@/lib/track';
 import styles from './venue-map.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
@@ -234,16 +235,22 @@ export default function VenueMap({
         <div className={styles.mapHolder} ref={holder} aria-label={
           tt('event.map.label', 'Map of the venue')} role="img" />
       ) : (
+        /* What "not pinned" means, in words somebody reading it can act on.
+           CEO, 4 September 2026: "what does it also mean by organizer has not
+           pinned?" It meant the coordinate was unset, which the sentence never
+           said, and there was nothing anybody could do about it either way.
+           A reader wants the address; an organiser wants to know to fix it. */
         <p className={styles.noPoint}>
           {tt('event.map.noCoordinate',
-            'The organiser has not pinned this venue on a map yet.')}
+            'There is no map of this venue. The address below is what the organiser has given.')}
         </p>
       )}
 
       <div className={styles.row}>
         {(mapLink) && (
           <a className={styles.openIn} href={mapLink}
-             target="_blank" rel="noopener noreferrer">
+             target="_blank" rel="noopener noreferrer"
+             onClick={() => track(eventSlug, 'directions')}>
             {tt('event.openInMaps', 'Open in maps')}
           </a>
         )}

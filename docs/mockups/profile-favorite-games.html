@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V-ENT — Edit Profile · Favorite Games (Mockup)</title>
+  <title>V-ENT - Edit Profile · Favorite Games (Mockup)</title>
   <link rel="icon" href="../../public/images/logo_mark_red.svg" type="image/svg+xml" />
   <style>
     @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,600,700,800&f[]=editorial-new@200,400,500,700,800&display=swap");
@@ -272,7 +272,7 @@
     }
     .game-card:hover .game-cover-wrap img { transform:scale(1.04); }
 
-    /* Remove (X) icon — top-right of cover */
+    /* Remove (X) icon - top-right of cover */
     .game-remove {
       position:absolute;
       top:0.5rem; right:0.5rem;
@@ -289,7 +289,7 @@
     }
     .game-remove:hover { background:rgba(237,28,36,0.85); border-color:var(--v-ent-red); }
 
-    /* Main badge — top-left of cover */
+    /* Main badge - top-left of cover */
     .main-badge {
       position:absolute;
       top:0.5rem; left:0.5rem;
@@ -307,7 +307,7 @@
     }
     .main-badge svg { width:11px; height:11px; }
 
-    /* Card body — title, platforms, gamertag */
+    /* Card body - title, platforms, gamertag */
     .game-body {
       padding:0.85rem 0.85rem 0.95rem;
       display:flex; flex-direction:column; gap:0.55rem;
@@ -1149,7 +1149,7 @@
   function checkEmpty() {
     const grid = document.getElementById('games-grid');
     if (!grid.querySelector('.game-card')) {
-      grid.innerHTML = '<div class="games-empty">No favorite games yet — click <strong>Add game</strong> to pick from the V-ENT catalog.</div>';
+      grid.innerHTML = '<div class="games-empty">No favorite games yet - click <strong>Add game</strong> to pick from the V-ENT catalog.</div>';
     }
   }
 
@@ -1165,7 +1165,7 @@
   function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
 
   function saveChanges() {
-    alert('Save changes — would PATCH /api/users/me/favorite-games/ in the real app.');
+    alert('Save changes - would PATCH /api/users/me/favorite-games/ in the real app.');
   }
 
   // Close modal on backdrop click

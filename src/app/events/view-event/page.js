@@ -1,11 +1,12 @@
 'use client';
 
-import { withLocalDatesAsISO } from '@/lib/datetime';
+import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { usePrice } from '@/lib/money';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { recordArrival, refFor } from '@/lib/referral';
+import { track } from '@/lib/track';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -54,6 +55,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import TradeHere from '@/components/vendor-slots/TradeHere';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -131,7 +134,16 @@ const normaliseTier = t => {
     // cards reading "Day 1" and "Day 2" and nothing that says which dates
     // those are, so somebody buys the wrong one and finds out at the gate.
     day: t.day || null,
-    day_label: t.day_label || ''
+    day_label: t.day_label || '',
+    // What moves the price. The organiser has been able to set all three since
+    // the tier model was written and no buyer screen read any of them, so a
+    // group rate was charged without ever being offered.
+    group_min: Number(t.group_min || 0),
+    group_price: t.group_price_vc == null ? null : Number(t.group_price_vc),
+    early_bird_quantity: Number(t.early_bird_quantity || 0),
+    early_bird_price: t.early_bird_price_vc == null ? null : Number(t.early_bird_price_vc),
+    sold: Number(t.sold || 0),
+    is_hidden: !!t.is_hidden
   };
 };
 const VENUE_BOOTHS = [{
@@ -252,6 +264,10 @@ export const ViewEventContent = ({
   useEffect(() => {
     if (!id) return;
     recordArrival(id, process.env.NEXT_PUBLIC_API_URL);
+    // Everybody who opened the page, not only the ones who arrived through
+    // somebody's link. Most people who open an event never reach a checkout,
+    // and the organiser needs that number more than any other.
+    track(id, 'page_open', { fromEffect: true });
   }, [id]);
   const tabParam = searchParams.get('tab');
   const {
@@ -259,6 +275,7 @@ export const ViewEventContent = ({
     status: sessionStatus
   } = useSession();
   const [event, setEvent] = useState(null);
+  const [fee, setFee] = useState({ bearer: 'organiser', pct: 0 });
   const [linkedTournaments, setLinkedTournaments] = useState([]);
   const [tournamentsLoading, setTournamentsLoading] = useState(true);
   const [linkable, setLinkable] = useState([]);
@@ -392,6 +409,16 @@ export const ViewEventContent = ({
   // Ticket tiers (real, from the ticketing endpoint)
   const [tiers, setTiers] = useState([]);
   const [tiersLoading, setTiersLoading] = useState(true);
+  // A presale code. It is held here rather than in the panel because the LIST
+  // is what it changes: a hidden tier does not appear until somebody types it.
+  const [codeDraft, setCodeDraft] = useState('');
+  const [unlockCode, setUnlockCode] = useState('');
+  const [unlocked, setUnlocked] = useState(null);
+  // What this purchase costs, answered by the server. The panel used to work
+  // it out as price times quantity, which is not the question the checkout
+  // answers once a group rate or an early bird price is set.
+  const [quote, setQuote] = useState(null);
+  const [quoteError, setQuoteError] = useState(false);
   const [buyPin, setBuyPin] = useState('');
 
   // Buy flow modal state
@@ -711,6 +738,15 @@ export const ViewEventContent = ({
     };
   }, [activeTab, tiersLoading, tiers.length]);
 
+  // Which tabs people actually walk to. `page_open` says they arrived;
+  // `ticket_open` says they went looking for a price, which is a different
+  // person, and the gap between the two is the first place an event leaks.
+  useEffect(() => {
+    if (!id) return;
+    if (activeTab === 'tickets') track(id, 'ticket_open', { fromEffect: true });
+    if (activeTab === 'vendors') track(id, 'vendor_open', { fromEffect: true });
+  }, [id, activeTab]);
+
   // Only the organizer gets the door list (the endpoint enforces it too).
   const isOrganizer = useMemo(() => {
     const me = session?.user;
@@ -785,11 +821,21 @@ export const ViewEventContent = ({
     (async () => {
       setTiersLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${id}/ticket-types/`, {
-          signal: controller.signal
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/ticket-types/`
+          + (unlockCode ? `?code=${encodeURIComponent(unlockCode)}` : ''),
+          { signal: controller.signal });
         const body = await res.json();
         setTiers(body?.data?.tiers || []);
+        // Whether the code did anything, so the screen can say so. Somebody who
+        // types a code and sees no change cannot tell a wrong code from a page
+        // that ignored them.
+        if (unlockCode) setUnlocked(body?.data?.unlocked || []);
+        // Who bears the platform fee, alongside the prices rather than
+        // discovered at the checkout. The panel has to say the number before
+        // somebody commits to a quantity, never as a surprise afterwards.
+        setFee({ bearer: body?.data?.fee_bearer || 'organiser',
+                 pct: Number(body?.data?.fee_pct || 0) });
       } catch {
         setTiers([]);
       } finally {
@@ -797,8 +843,58 @@ export const ViewEventContent = ({
       }
     })();
     return () => controller.abort();
-  }, [id, tierRefresh]);
+  }, [id, tierRefresh, unlockCode]);
+
+  // How many are left, kept current without anybody reloading.
+  //
+  // CEO, 6 September 2026: "i want all pages on the site to be updating
+  // automatically on its own without users having to refresh." This is the
+  // page where staleness actually costs something: somebody reads "12 left",
+  // decides, fills in the form, and the tier sold out four minutes ago. Worse
+  // in the other direction too - a tier that reads sold out when seats were
+  // released is a sale that never happens.
+  //
+  // Quiet on purpose. Sixty seconds, backing off to five minutes, stopping
+  // while the tab is hidden, and it only ever bumps the same counter the
+  // existing loader already watches, so there is one fetch and one code path
+  // rather than a second copy of it.
+  useEffect(() => {
+    if (!id) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 60000;
+    const tick = () => {
+      if (stopped) return;
+      if (typeof document === 'undefined' || !document.hidden) {
+        setTierRefresh((n) => n + 1);
+        wait = Math.min(Math.round(wait * 1.5), 300000);
+      }
+      timer = setTimeout(tick, wait);
+    };
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = 60000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [id]);
   const openBuy = tier => {
+    // A deliberate tap, so no revisit window: somebody who opens the buy panel
+    // twice really did want a ticket twice, and `people` still counts them
+    // once.
+    track(id, 'buy_tap');
     setBuyTier(tier);
     setBuyPin('');
     setBuyQty(1);
@@ -824,16 +920,67 @@ export const ViewEventContent = ({
     (person, i) => (i === index
       ? { ...person, answers: { ...person.answers, [id]: value } }
       : person)));
-  const totalCost = buyTier ? buyTier.price * buyQty : 0;
+  // What this purchase costs, from the endpoint that reads the same function
+  // the checkout charges with. The panel used to multiply the tier price by the
+  // quantity, and on a tier with a group rate of 16 VC at four or more it said
+  // "20 VC x 4, total 80" while the server took 64. Both were right about
+  // different questions, which is the fault that once read as "sold out" with
+  // 4814 tickets left.
+  useEffect(() => {
+    if (!buyOpen || !buyTier || !id) return undefined;
+    const controller = new AbortController();
+    setQuoteError(false);
+    (async () => {
+      try {
+        const params = new URLSearchParams({ tier: String(buyTier.id),
+                                             quantity: String(buyQty) });
+        if (unlockCode) params.set('code', unlockCode);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/quote/?${params}`,
+          { signal: controller.signal });
+        const body = await res.json();
+        if (body?.status === 'success') setQuote(body.data);
+        else setQuoteError(true);
+      } catch (err) {
+        // An abort is this effect being replaced, not a failure.
+        if (err?.name !== 'AbortError') setQuoteError(true);
+      }
+    })();
+    return () => controller.abort();
+  }, [buyOpen, buyTier, buyQty, id, unlockCode]);
+
+  // Only a quote for THIS tier at THIS quantity may price the screen. A stale
+  // one from the previous quantity is worse than none, because it looks right.
+  const priced = (quote && buyTier && quote.tier_id === buyTier.id
+                  && quote.quantity === buyQty) ? quote : null;
+  const unitCost = priced ? priced.unit_vc : (buyTier ? buyTier.price : 0);
+  const ticketsCost = priced ? priced.tickets_vc : (buyTier ? buyTier.price * buyQty : 0);
+  // Rounded DOWN, matching the server exactly. A panel that rounds the other
+  // way shows a total the checkout then refuses.
+  const feeCost = priced ? priced.fee_vc
+    : ((fee.bearer === 'buyer' && fee.pct > 0)
+      ? Math.floor(ticketsCost * fee.pct / 100)
+      : 0);
+  const totalCost = priced ? priced.total_vc : ticketsCost + feeCost;
   const handleBuy = async () => {
     if (!buyTier) return;
     setBuyError('');
+    if (quoteError && !priced) {
+      // Never charge against a number nobody confirmed.
+      setBuyError(tt('buy.quoteFailed',
+        'We could not confirm the price just now. Try again in a moment.'));
+      return;
+    }
     if (totalCost > 0 && buyPin.length < 4) {
-      setBuyError('Enter your 4-digit wallet PIN to authorise this payment.');
+      setBuyError(tt('buy.pinNeeded',
+        'Enter your 4-digit wallet PIN to authorise this payment.'));
       return;
     }
     if (walletBalance !== null && totalCost > walletBalance) {
-      setBuyError(`Insufficient wallet balance. Need ${totalCost.toLocaleString()} VC, have ${walletBalance.toLocaleString()} VC.`);
+      setBuyError(tt('buy.shortBalance',
+        'This costs {need} VC and your balance is {have} VC.')
+        .replace('{need}', formatNumber(totalCost))
+        .replace('{have}', formatNumber(walletBalance)));
       return;
     }
     setBuyLoading(true);
@@ -844,6 +991,10 @@ export const ViewEventContent = ({
         body: JSON.stringify({
           tier_id: buyTier.id,
           quantity: buyQty,
+          // A hidden tier is checked again at the purchase, so the code has to
+          // travel with it. Without this the listing could unlock a presale
+          // that the checkout then refused.
+          ...(unlockCode ? { code: unlockCode } : {}),
           pin: buyPin,
           answers: buyAnswers,
           attendees: buyPeople.map(person => ({ answers: person.answers })),
@@ -863,7 +1014,7 @@ export const ViewEventContent = ({
         setBuyError(apiMessage(tt, data, "api.failedToPurchaseTicket", "Failed to purchase ticket."));
       }
     } catch (err) {
-      setBuyError('Network error. Please try again.');
+      setBuyError(tt('buy.networkError', 'Network error. Please try again.'));
     } finally {
       setBuyLoading(false);
     }
@@ -1133,6 +1284,7 @@ export const ViewEventContent = ({
                       .replace('{name}', event.name || '')}
                     label={tt('share.event', 'Share this event')}
                     shorten={isOrganizer ? shortenTicketLink : null}
+                    onShare={() => track(id, 'share')}
                   />
 
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
@@ -1160,19 +1312,24 @@ export const ViewEventContent = ({
                       </Link>
                     </div>}
 
+                  {/* The organiser's own face and their founder badge, from
+                      UserChip, which is the one place a name is written.
+                      This drew a hardcoded crown in place of the picture and
+                      then wrote the handle out by hand underneath, with
+                      `size={0}` telling the chip not to draw an avatar at all.
+                      So the picture could never appear however good the
+                      payload was, and the badge had nowhere to sit. */}
                   <div className={styles.organizerRow}>
-                    <div className={styles.organizerAvatar}>
-                      <FaCrown />
-                    </div>
-                    <div>
-                      {event.organizer
-                        ? <UserChip user={event.organizer} size={0}
-                                    nameClassName={styles.organizerName} />
-                        : <p className={styles.organizerName}>{tx("V-ENT Live")}</p>}
-                      <p className={styles.organizerSub}>
-                        @{event.organizer?.username || 'v-ent'}
-                      </p>
-                    </div>
+                    {event.organizer
+                      ? <UserChip user={event.organizer} size={44} secondary
+                                  nameClassName={styles.organizerName}
+                                  handleClassName={styles.organizerSub} />
+                      : <>
+                        <div className={styles.organizerAvatar}>
+                          <FaCrown />
+                        </div>
+                        <p className={styles.organizerName}>{tx("V-ENT Live")}</p>
+                      </>}
                   </div>
 
                   {[{
@@ -1240,6 +1397,17 @@ export const ViewEventContent = ({
             {activeTab === 'schedule' && <div className={styles.scheduleTab}>
                 <h2 className={styles.sectionTitle}>{tt("ui.event.schedule.1878", "Event schedule")}</h2>
                 <EventSchedule eventRef={id} />
+                {/* The run of show, when the organiser has published one. It
+                    is a different document to the schedule above: minute by
+                    minute, who owns each cue, what is on air right now. The
+                    link appears only when there is something behind it, and
+                    only when it is public - a link only sheet is unlisted by
+                    definition and must not be advertised by its own event. */}
+                {event?.has_run_of_show && (event?.slug || id) && <Link
+                  className={styles.runOfShowLink}
+                  href={`/events/${event?.slug || id}/run-of-show`}>
+                  {tt('ros.openFromEvent', 'Open the run of show, minute by minute')}
+                </Link>}
               </div>}
 
             {/* TICKETS */}
@@ -1247,6 +1415,15 @@ export const ViewEventContent = ({
                 <div className={styles.ticketHeaderRow}>
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.buy.tickets.029a", "Buy tickets")}</h2>
+                    {/* Said here, beside the prices, and not only in the panel.
+                        Somebody deciding between two tiers is deciding on the
+                        number they can see, and finding out about a fee after
+                        they have picked one is the kind of surprise that loses
+                        the sale and the trust with it. */}
+                    {fee.bearer === 'buyer' && fee.pct > 0 && <p className={styles.body}>
+                      {tt('buy.feeNotice', 'A {pct}% service fee is added at checkout.')
+                        .replace('{pct}', fee.pct)}
+                    </p>}
                     <p className={styles.body}>
                       {countdown?.ended
                   ? tx("This event has ended, so tickets are no longer on sale.")
@@ -1261,6 +1438,31 @@ export const ViewEventContent = ({
                       {tt("ui.wallet.9ab9", "Wallet:")} <strong>{walletBalance.toLocaleString()} VC</strong>
                     </div>}
                 </div>
+
+                {/* A presale code. The organiser has been able to hide a tier
+                    behind one since tiers were written, the listing endpoint has
+                    always read `?code=`, and there was nowhere to type it, so
+                    every hidden tier was unbuyable by everybody. */}
+                <div className={styles.codeRow}>
+                  <label className={styles.codeLabel} htmlFor="tier-code">
+                    {tt('buy.codeLabel', 'Have an access code?')}
+                  </label>
+                  <input id="tier-code" className={styles.codeInput} type="text"
+                    value={codeDraft} autoComplete="off"
+                    placeholder={tt('buy.codePlaceholder', 'Enter it here')}
+                    onChange={e => setCodeDraft(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') setUnlockCode(codeDraft.trim()); }} />
+                  <button className={`${styles.codeBtn} grnBTN`} type="button"
+                    disabled={!codeDraft.trim() || codeDraft.trim() === unlockCode}
+                    onClick={() => setUnlockCode(codeDraft.trim())}>
+                    {tt('buy.codeApply', 'Apply')}
+                  </button>
+                </div>
+                {unlocked !== null && <p className={styles.codeResult}>
+                    {unlocked.length > 0
+                      ? tt('buy.codeUnlocked', 'Unlocked: {names}').replace('{names}', unlocked.join(', '))
+                      : tt('buy.codeNothing', 'That code does not open anything on this event.')}
+                  </p>}
 
                 {/* Sold out is where somebody needs the queue, so it is offered
                     here rather than on a page they would have to find. It draws
@@ -1279,6 +1481,7 @@ export const ViewEventContent = ({
                 {!session?.user?.sessionToken && guestTier && <GuestCheckout
                   eventRef={id}
                   tier={guestTier}
+                  code={unlockCode}
                   onDone={() => setTierRefresh(n => n + 1)}
                   onClose={() => setGuestTier(null)}
                 />}
@@ -1303,7 +1506,7 @@ export const ViewEventContent = ({
                           though something had failed to load. */}
                       <p className={styles.tierDay}>{ticketWhen(t)}</p>
                       <p className={styles.tierPrice}>
-                        {t.price.toLocaleString()} VC
+                        {formatNumber(t.price)} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>
                         {/* What that is worth in the reader's own money. Shown as
                             an approximation on purpose: the charge is settled in
@@ -1313,7 +1516,7 @@ export const ViewEventContent = ({
                     const {
                       converted
                     } = price(t.price_ngn, 'NGN', language);
-                    return converted ? <span className={styles.tierApprox}>
+                    return converted ? <span>
                               {tt("money.approx", "about {amount}").replace('{amount}', converted)}
                             </span> : null;
                   })()}
@@ -1323,8 +1526,24 @@ export const ViewEventContent = ({
                             <FaCheckCircle className={styles.perkIcon} /> {p}
                           </li>)}
                       </ul>
+                      {/* An offer nobody is told about is not an offer. Both
+                          of these were settable by the organiser and readable
+                          by no screen until 8 September. */}
+                      {t.group_min > 0 && t.group_price != null && <p className={styles.tierOffer}>
+                          {tt('tier.groupOffer', '{n} or more: {price} VC each')
+                            .replace('{n}', t.group_min)
+                            .replace('{price}', formatNumber(t.group_price))}
+                        </p>}
+                      {t.early_bird_quantity > 0 && t.early_bird_price != null
+                        && t.sold < t.early_bird_quantity && <p className={styles.tierOffer}>
+                          {tt('tier.earlyBird', '{n} left at this price, then {price} VC')
+                            .replace('{n}', Math.max(0, t.early_bird_quantity - t.sold))
+                            .replace('{price}', formatNumber(t.early_bird_price))}
+                        </p>}
                       <p className={styles.tierStock}>
-                        {t.available > 0 ? `${t.available} remaining` : tx("Sold out")}
+                        {t.available > 0
+                          ? tt('tier.remaining', '{n} remaining').replace('{n}', formatNumber(t.available))
+                          : tx("Sold out")}
                       </p>
                       <button className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
                   // Which checkout somebody gets must not depend on a race.
@@ -1345,6 +1564,12 @@ export const ViewEventContent = ({
 
             {/* VENDORS */}
             {activeTab === 'vendors' && <div className={styles.vendorTab}>
+                {/* Pitches the organiser is SELLING, above the stalls that
+                    already exist. Somebody on this tab is either shopping or
+                    thinking about trading here, and the second group had no
+                    way in at all before today. Draws nothing when there is
+                    nothing on sale. */}
+                <TradeHere eventRef={event?.slug || id} eventName={event?.name} />
                 <div className={styles.ticketHeaderRow}>
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.vendor.zone.2061", "Vendor zone")}</h2>
@@ -1358,7 +1583,7 @@ export const ViewEventContent = ({
                 </div>
 
                 {vendors.length === 0 ? <p className={styles.body}>{tt("ui.no.vendors.confirmed.yet.d9c7", "No vendors confirmed yet.")}</p> : <div className={styles.vendorGrid}>
-                    {vendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${event.id}&vendor=${v.id}`} className={styles.vendorCard}>
+                    {vendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${event.slug || event.id}&vendor=${v.slug || v.id}`} className={styles.vendorCard}>
                         <div className={styles.vendorLogoWrap}>
                           {v.logo ? <Image src={mediaUrl(v.logo)} alt={v.name} width={56} height={56} className={styles.vendorLogo} unoptimized /> : <div className={styles.vendorLogoFallback}><FaStore /></div>}
                         </div>
@@ -1530,7 +1755,7 @@ export const ViewEventContent = ({
             {buyStep === 1 && <div className={styles.modalBody}>
                 <p className={styles.modalLabel}>{tt("ui.quantity.44f6", "Quantity")}</p>
                 <div className={styles.qtyRow}>
-                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">−</button>
+                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">-</button>
                   <span className={styles.qtyValue}>{buyQty}</span>
                   <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.min(10, q + 1))} type="button">+</button>
                 </div>
@@ -1549,15 +1774,53 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.confirmValue}>
-                    {buyTier.price.toLocaleString()} VC × {buyQty}
+                    {formatNumber(unitCost)} VC x {buyQty}
                   </span>
                 </div>
+                {/* Why the unit price is not the one on the card. A discount
+                    applied in silence is indistinguishable from a mistake. */}
+                {priced?.price_reason === 'group' && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.groupApplied', 'Group rate')}</span>
+                    <span className={styles.confirmValue}>
+                      {tt('buy.groupSaving', 'Saves {amount} VC')
+                        .replace('{amount}', formatNumber(
+                          Math.max(0, (priced.list_unit_vc - priced.unit_vc) * buyQty)))}
+                    </span>
+                  </div>}
+                {priced?.price_reason === 'early_bird' && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.earlyBirdOver', 'Early price')}</span>
+                    <span className={styles.confirmValue}>{tt('buy.earlyBirdEnded', 'Ended')}</span>
+                  </div>}
+                {/* A membership discount, on its own row rather than folded
+                    into `price_reason`, because it stacks on top of whatever
+                    the tier rule already decided. Somebody paying for a
+                    membership should see it working; a discount that arrives
+                    silently reads as the price having been wrong before. */}
+                {priced?.member_discount_pct > 0 && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>
+                      {tt('buy.memberDiscount', 'Member discount')}
+                    </span>
+                    <span className={styles.confirmValue}>
+                      {tt('buy.memberSaving', '{pct}% off, saves {amount} VC')
+                        .replace('{pct}', formatNumber(priced.member_discount_pct))
+                        .replace('{amount}', formatNumber(
+                          Math.max(0, priced.member_saving_vc || 0)))}
+                    </span>
+                  </div>}
+                {fee.bearer === 'buyer' && feeCost > 0 && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.serviceFee', 'Service fee')}</span>
+                    <span className={styles.confirmValue}>{formatNumber(feeCost)} VC</span>
+                  </div>}
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.total.b259", "Total")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
-                    {totalCost.toLocaleString()} VC
+                    {formatNumber(totalCost)} VC
                   </span>
                 </div>
+                {quoteError && !priced && <p className={styles.modalError}>
+                    {tt('buy.quoteFailed',
+                      'We could not confirm the price just now. Try again in a moment.')}
+                  </p>}
                 {walletBalance !== null && <div className={styles.confirmRow}>
                     <span className={styles.confirmLabel}>{tt("ui.wallet.balance.f6c5", "Wallet balance")}</span>
                     <span className={styles.confirmValue}>
@@ -1588,6 +1851,10 @@ export const ViewEventContent = ({
                 return;
               }
               setBuyError('');
+              // Past the questions and looking at the price. Everything before
+              // this is interest; this is intent, and the drop from here to a
+              // ticket is a checkout problem rather than a marketing one.
+              track(id, 'checkout_start');
               setBuyStep(2);
             }} type="button">
                   {tt("ui.continue.2e02", "Continue")}
@@ -1600,6 +1867,16 @@ export const ViewEventContent = ({
           }}>
                   {tt("ui.confirm.payment.19b4", "Confirm payment for")} <strong>{event.name}</strong> - {buyTier.name} × {buyQty}.
                 </p>
+                {feeCost > 0 && <>
+                  <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.ticketsLine', 'Tickets')}</span>
+                    <span className={styles.confirmValue}>{ticketsCost.toLocaleString(appLocale())} VC</span>
+                  </div>
+                  <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{tt('buy.serviceFee', 'Service fee')}</span>
+                    <span className={styles.confirmValue}>{feeCost.toLocaleString(appLocale())} VC</span>
+                  </div>
+                </>}
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.pay.2d77", "You pay")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
@@ -1668,4 +1945,26 @@ const ViewEvent = () => {
     <ViewEventContent />
   </Suspense>;
 };
-export default ViewEvent;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ViewEventLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}`}
+      fallback="/events"
+    />
+  </Suspense>
+);
+
+export default ViewEventLegacy;

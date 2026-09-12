@@ -78,3 +78,12 @@
   width: 25px;
   height: 25px;
 }
+
+/* The Discord join link, inline in the direct-message row. Underlined rather
+   than boxed: it sits inside a sentence, and a button here would compete with
+   the real control on the right. */
+.inviteLink {
+  color: var(--v-ent-success);
+  text-decoration: underline;
+  font-weight: var(--fw-medium);
+}

@@ -201,3 +201,10 @@
   font-weight: 700;
   text-align: center;
 }
+
+/* A thumb is bigger than 32px. The bell and the menu are the two controls a
+ * phone user reaches for first in this header, so they are 44px there. The
+ * desktop size is unchanged. */
+@media only screen and (max-width: 767px) {
+  .iconBtn { width: 44px; height: 44px; }
+}

@@ -219,3 +219,157 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.72rem;
 }
+
+/* The scanner, reachable from here.
+   On 5 September nobody opened /events/scan at all: staff stood on this page,
+   read codes off the phone's camera app and typed them in, because there was
+   no way to get from this screen to that one. */
+.scanLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  margin-bottom: 1.25rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.scanLink:hover { background-color: #33343a; }
+
+/* Filled chips. Selected is a stronger fill and a brighter label, never a
+   ring: the hairline ban applies to filters like everything else. */
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filterChip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filterChipOn {
+  background-color: var(--v-ent-success);
+  color: #fff;
+  font-weight: var(--fw-semi-bold);
+}
+
+/* Said out loud when the answer came from the server rather than from this
+   device's copy of the list. A steward whose list was incomplete should know
+   it was, because the next person they look up may be missing too. */
+.fromServer {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+/* Admitting somebody straight from the row the search found. */
+.rowBtn {
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.rowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.rowDone {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.selfTag {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* A header a screen reader announces and nobody else sees. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Undo. A muted fill rather than a red one: taking back a mis-scan is an
+   ordinary correction at a gate, not a destructive act, and colouring it as a
+   warning makes stewards hesitate over the thing they should do immediately. */
+.undoBtn {
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.undoBtn:hover { background-color: #3d3e45; color: #fff; }
+.undoBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* The action stays reachable on a phone.
+   Found on the Android emulator, which is exactly why mobile is tested there
+   and not on a resized desktop window: the table scrolls sideways inside its
+   own box, which is correct, but it put Check in and Undo off the right edge.
+   A steward at a gate with a queue behind them should never have to scroll
+   sideways to admit somebody.
+   Pinned to the right edge of the scrolling area, with the row's own fill
+   behind it so the columns sliding underneath do not show through. */
+@media only screen and (max-width: 767px) {
+  .table th:last-child,
+  .table td:last-child {
+    position: sticky;
+    right: 0;
+    background-color: var(--overlay-gray);
+    padding-left: 0.5rem;
+    padding-right: 0.75rem;
+  }
+
+  /* The zebra fill has to be repeated here: the sticky cell paints its own
+     background, so without this every other row shows the wrong shade under
+     the button. */
+  .table tbody tr:nth-child(even) td:last-child {
+    background-color: #26272b;
+  }
+}
+
+/* Room for the scanner button under the subtitle. Without it the button sits
+   flush against the sentence above and reads as overlapping it, which is the
+   exact fault reported on the console header on 7 September - and which I
+   then reproduced here by adding a control to a header that had no room for
+   one. */
+.headAction {
+  margin-top: 0.9rem;
+}
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .rowBtn,
+  .undoBtn {
+    min-height: 44px;
+  }
+}

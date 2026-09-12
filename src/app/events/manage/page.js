@@ -14,7 +14,9 @@
 // control whose save is refused.
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { downloadWithToken } from '@/lib/download';
+import DiscordChannels from '@/components/discord/DiscordChannels';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -28,6 +30,7 @@ import { appLocale } from '@/lib/appLocale';
 import styles from './manage-event.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
+import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 import UserChip from '@/components/user-chip/UserChip';
 // The same panel the tournament console uses. An event has a programme, a
 // door count, ticket sales and sponsors, all of which somebody wants on a
@@ -35,6 +38,11 @@ import UserChip from '@/components/user-chip/UserChip';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
+import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
+import UserPicker from '@/components/user-picker/UserPicker';
+import { formatWithZone, formatNumber } from '@/lib/datetime';
+import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -43,8 +51,24 @@ const formatDateTime = value => (value
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
   : '');
+// Step keys to translation keys. A table rather than a switch because the
+// server sends step KEYS and never a sentence: a sentence built in Python
+// cannot be translated, and this list is the only place the words live.
+const FUNNEL_LABELS = {
+  page_open: ['manage.stepPageOpen', 'Opened the event'],
+  ticket_open: ['manage.stepTicketOpen', 'Looked at tickets'],
+  buy_tap: ['manage.stepBuyTap', 'Tapped Buy'],
+  checkout_start: ['manage.stepCheckoutStart', 'Reached the checkout'],
+  vendor_open: ['manage.stepVendorOpen', 'Opened the vendor list'],
+  vendor_stall: ['manage.stepVendorStall', 'Opened a stall'],
+  share: ['manage.stepShare', 'Shared the event'],
+  directions: ['manage.stepDirections', 'Asked for directions'],
+  sold: ['manage.stepSold', 'Bought a ticket'],
+};
+
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
-  'programme', 'queue', 'influencers', 'promos', 'production', 'team'];
+  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors',
+  'production', 'team'];
 // The tab used to be called overlays, before the studio existed for events.
 // Links carrying the old name still open the right place.
 const TAB_ALIASES = { overlays: 'production' };
@@ -118,7 +142,32 @@ export const ManageEventContent = ({
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
   const [canAddManagers, setCanAddManagers] = useState(false);
+  // The organisations this person may run something in the name of, and which
+  // one this event is in. Most people are in none, and then the control says
+  // so rather than showing an empty menu.
+  const [myOrgs, setMyOrgs] = useState([]);
+  const [eventOrg, setEventOrg] = useState(null);
+  const [savingOrg, setSavingOrg] = useState(false);
+  // Where the event actually is. The map on the public page says "the
+  // organiser has not pinned this venue" when there is no coordinate, and
+  // until now there was nowhere to pin one: the edit endpoint has taken
+  // `map_link` all along and no screen sent it.
+  const [venueDraft, setVenueDraft] = useState({ venue_name: '', map_link: '', directions: '' });
+  const [venueLoaded, setVenueLoaded] = useState(null);
+  // Whether people may admit themselves, and how early the window opens.
+  //
+  // The whole feature existed and could not be switched on by anybody: the
+  // column defaults to False and the settings endpoint was GET only, so 194
+  // lines of working self check-in were unreachable code. This is the control
+  // that reaches it.
+  const [selfCheckIn, setSelfCheckIn] = useState(null);
+  const [savingSelfCheckIn, setSavingSelfCheckIn] = useState(false);
+  const [savingVenue, setSavingVenue] = useState(false);
   const [metrics, setMetrics] = useState(null);
+  // Who reached the payment page and never paid. Loaded with the rest so the
+  // number is there when the tab opens rather than after a second wait.
+  const [abandoned, setAbandoned] = useState(null);
+  const [reminding, setReminding] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   const [audience, setAudience] = useState(null);
   const [draftMessage, setDraftMessage] = useState({ subject: '', body: '', audience: 'all' });
@@ -175,7 +224,9 @@ export const ManageEventContent = ({
     name: '',
     code: '',
     url: '',
-    allocation: ''
+    allocation: '',
+    commission_pct: '',
+    payee: ''
   });
   const [newPromo, setNewPromo] = useState({
     code: '',
@@ -188,6 +239,13 @@ export const ManageEventContent = ({
     username: '',
     role: 'manager'
   });
+  // Who is owed what out of every ticket sold, and what has already been paid.
+  // Separate from `money` above, which counts what the TICKETS were worth:
+  // these are the same sales seen from the other side, after the platform fee
+  // and any affiliate commission.
+  const [earnings, setEarnings] = useState(null);
+  const [settling, setSettling] = useState(false);
+  const [settleSaid, setSettleSaid] = useState('');
   const call = useCallback(async (path, options = {}) => {
     const res = await fetch(`${API}/event/${eventRef}${path}`, {
       ...options,
@@ -222,12 +280,14 @@ export const ManageEventContent = ({
     setLoading(true);
     setError('');
     setRefused(false);
-    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el] = await Promise.all([
+    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
       call('/checkout-fields/manage/'),
       call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
       call('/polls/'), call('/email-limits/'),
+      call('/earnings/'),
+      call('/abandoned/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -247,6 +307,7 @@ export const ManageEventContent = ({
     setCapacityDraft(cap?.capacity != null ? String(cap.capacity) : '');
     setCapacityModeDraft(cap?.mode || 'per_day');
     setMoney(mo.body?.data || null);
+    setEarnings(ea.body?.data || null);
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
     setQueue(qu.body?.data || null);
@@ -255,7 +316,48 @@ export const ManageEventContent = ({
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
     setCanAddManagers(!!m.body?.data?.can_add);
+    setEventOrg(m.body?.data?.organization || null);
+
+    // The venue, read from the event itself. The console asks fourteen
+    // endpoints about the tickets and none of them about where the thing is.
+    fetch(`${API}/event/view-event/${eventRef}/`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(res => res.json())
+      .then(body => {
+        const ev = body?.data?.event || body?.data || {};
+        setVenueLoaded({
+          latitude: ev.latitude ?? null,
+          longitude: ev.longitude ?? null,
+          location: ev.location || '',
+        });
+        setVenueDraft({
+          venue_name: ev.venue_name || '',
+          map_link: ev.map_link || '',
+          directions: ev.directions || '',
+        });
+      })
+      .catch(() => setVenueLoaded(null));
+
+    // The organisations this person may put an event under. A separate request
+    // because it is not about this event: it is about them, and it is the same
+    // short list both wizards fill their picker from.
+    fetch(`${API}/organization/mine/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(body => setMyOrgs(body?.data?.organizations || []))
+      // A control that cannot list them draws its empty state and the rest of
+      // the console still loads. This is never the reason a console fails.
+      .catch(() => setMyOrgs([]));
+
+    // Whether this event lets people admit themselves.
+    fetch(`${API}/event/${eventRef}/self-check-in/settings/`)
+      .then(res => res.json())
+      .then(body => setSelfCheckIn(body?.data || null))
+      .catch(() => setSelfCheckIn(null));
     setMetrics(me.body?.data || null);
+    setAbandoned(ab.ok ? ab.body?.data || null : null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
     setPolls(po.body?.data?.polls || []);
@@ -269,6 +371,96 @@ export const ManageEventContent = ({
   useEffect(() => {
     load();
   }, [load]);
+
+  // The console keeps itself current while a door is running.
+  //
+  // CEO, 6 September 2026: "i want all pages on the site to be updating
+  // automatically on its own without users having to refresh", and before that
+  // "especiallyywhen new people areregisteringfor an eventwhen checdk in is
+  // ongoing". An organiser watching the numbers during their own event should
+  // not have to reload to see them move.
+  //
+  // Through a ref and depending only on the event, so a re-render cannot tear
+  // the timer down before it fires. That fault shipped on the door list and is
+  // now caught by `scripts/check-live-updates.mjs`.
+  //
+  // Thirty seconds rather than ten: this is somebody watching a dashboard, not
+  // somebody standing at a gate, and the console pulls several endpoints per
+  // load. It backs off to two minutes when nothing is changing and stops while
+  // the tab is hidden.
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
+
+  useEffect(() => {
+    if (!token || !eventRef) return undefined;
+    let stopped = false;
+    let timer = null;
+    let wait = 30000;
+    const tick = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.hidden) {
+        timer = setTimeout(tick, wait);
+        return;
+      }
+      await loadRef.current();
+      if (stopped) return;
+      wait = Math.min(Math.round(wait * 1.5), 120000);
+      timer = setTimeout(tick, wait);
+    };
+    timer = setTimeout(tick, wait);
+    const wake = () => {
+      if (typeof document !== 'undefined' && !document.hidden && !stopped) {
+        wait = 30000;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(tick, 0);
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', wake);
+    }
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', wake);
+      }
+    };
+  }, [token, eventRef]);
+  // The one reminder. `id` sends to a single row; nothing sends to everybody
+  // still open who has not had theirs. Never automatic: the address was given
+  // in order to pay for a ticket, and a person choosing to send one message
+  // about that same purchase is the most it was given for.
+  const remindAbandoned = async (id) => {
+    setReminding(true);
+    setNotice('');
+    setError('');
+    const { ok, body } = await call('/abandoned/remind/', {
+      method: 'POST',
+      body: JSON.stringify(id ? { id } : {}),
+    });
+    setReminding(false);
+    if (!ok) {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    const sent = body?.data?.sent || 0;
+    const failed = body?.data?.failed || 0;
+    // Three outcomes, and they are not interchangeable. A send that FAILED
+    // reported as "everybody has already had theirs" is a mail outage nobody
+    // chases: both halves of that sentence are false and the row is still
+    // waiting. Only the failure needs somebody to do something, so only the
+    // failure gets said loudly.
+    if (failed) {
+      setError(tt('manage.abandonedFailed', 'The mail did not go out for {n} of them, so they are still waiting and you can try again.').replace('{n}', String(failed)));
+    }
+    if (sent) {
+      setNotice(tt('manage.abandonedSent', '{n} reminder sent.').replace('{n}', String(sent)));
+    } else if (!failed) {
+      setNotice(tt('manage.abandonedNoneSent', 'Nothing was sent. Everybody open has already had their one reminder.'));
+    }
+    await load();
+  };
+
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');
@@ -294,29 +486,21 @@ export const ManageEventContent = ({
 
   // ------------------------------------------------------ messages and polls
 
-  // The CSV comes back as a file rather than as JSON, so it is fetched as a
-  // blob and handed to a temporary link. A plain href would send the browser
-  // without the Bearer token and be refused.
+  // The sheet comes back as a file rather than as JSON, so it is fetched with
+  // the token and saved from a blob. `downloadWithToken` is that, in one place:
+  // the tournament side had the same three buttons written as `window.open`,
+  // which cannot carry a header, and every one of them opened a tab showing a
+  // refusal.
   const downloadSheet = async sheet => {
     setBusy(true);
     setError('');
     try {
-      const res = await fetch(`${API}/event/${eventRef}/metrics/export/?sheet=${sheet}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
+      const problem = await downloadWithToken(
+        `${API}/event/${eventRef}/metrics/export/?sheet=${sheet}`,
+        token, `${eventRef}-${sheet}.csv`);
+      if (problem) {
         setError(tt('manage.downloadFailed', 'That sheet could not be downloaded.'));
-        return;
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${eventRef}-${sheet}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
     } finally {
       setBusy(false);
     }
@@ -414,14 +598,18 @@ export const ManageEventContent = ({
       method: 'POST',
       body: JSON.stringify({
         ...newReferral,
-        allocation: Number(newReferral.allocation) || 0
+        allocation: Number(newReferral.allocation) || 0,
+        commission_pct: Number(newReferral.commission_pct) || 0,
+        payee: newReferral.payee.trim()
       })
     }), 'manage.linkAdded', 'Link added.');
     if (done) setNewReferral({
       name: '',
       code: '',
       url: '',
-      allocation: ''
+      allocation: '',
+      commission_pct: '',
+      payee: ''
     });
   };
   // The organiser copies this and sends it to the influencer, so it has to be
@@ -569,6 +757,111 @@ export const ManageEventContent = ({
     await load();
   };
 
+  // Where the event is, and the pin the public map needs.
+  //
+  // CEO, 4 September 2026: "what does it also mean by organizer has not
+  // pinned?" It means latitude and longitude are unset, which nobody could do
+  // anything about: `map_link` has been accepted by the edit endpoint the
+  // whole time and no screen ever sent it. Pasting the link is the whole
+  // interaction, because `Event.save()` reads the coordinate out of it. Typing
+  // two numbers by hand is the step where a venue ends up in the Gulf of
+  // Guinea, so this asks for the link instead.
+  const saveVenue = async () => {
+    if (savingVenue) return;
+    setSavingVenue(true);
+    setNotice('');
+    setError('');
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        venue_name: venueDraft.venue_name,
+        map_link: venueDraft.map_link,
+        directions: venueDraft.directions,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingVenue(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(tt('manage.venueSaved', 'Venue saved.'));
+    await load();
+  };
+
+  /**
+   * Turning self check-in on, and choosing how early it opens.
+   *
+   * CEO, 5 September 2026: "allow useers tocheck in fro,m thheir ed, but it
+   * shold not e like the main oe, the organizer oe wherethey still have to
+   * scanned forthe perso to be checked in shouldbe there, the theyca see
+   * people, who check in themselves."
+   *
+   * Additional to the door, never a replacement. The scanner and this list are
+   * untouched; this only lets somebody holding a ticket mark themselves as
+   * arrived, and the attendee list says which of the two it was.
+   */
+  const saveSelfCheckIn = async (patch) => {
+    if (savingSelfCheckIn) return;
+    setSavingSelfCheckIn(true);
+    setNotice('');
+    setError('');
+    try {
+      const res = await fetch(`${API}/event/${eventRef}/self-check-in/settings/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+        return;
+      }
+      setSelfCheckIn(body.data);
+      setNotice(body.data.enabled
+        ? tt('manage.selfCheckInOn', 'People can now check themselves in.')
+        : tt('manage.selfCheckInOff', 'Only your door staff can check people in now.'));
+    } catch {
+      setError(tt('msg.connectionError', 'Connection error.'));
+    } finally {
+      setSavingSelfCheckIn(false);
+    }
+  };
+
+  // Move this event into an organisation.
+  //
+  // CEO, 4 September 2026: "there is no way to add events to an organization",
+  // and then "do a way to add events to an oganizatio and the whe ou add
+  // people to your organization you can then have them manage events ad they
+  // will see everyrthing". The backend has taken the field at create and at
+  // edit since organisations were built; no screen ever sent it, so an event
+  // that belonged to one person stayed that way and could be shared with
+  // nobody. That is the trap this control opens.
+  const saveOrganization = async value => {
+    if (savingOrg) return;
+    setSavingOrg(true);
+    setNotice('');
+    setError('');
+    const res = await fetch(`${API}/event/edit-event/${eventRef}/`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      // Blank means take it back out, which is a real choice and not the same
+      // as leaving it alone.
+      body: JSON.stringify({ organization: value || '' }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setSavingOrg(false);
+    if (!res.ok || body.status !== 'success') {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    setNotice(value
+      ? tt('manage.orgSaved', 'This event now runs in your organisation, and you can share it below.')
+      : tt('manage.orgCleared', 'This event is yours again.'));
+    await load();
+  };
+
   const saveLimits = () => {
     const payload = {};
     const tiersPatch = {};
@@ -693,11 +986,14 @@ export const ManageEventContent = ({
           <Link href={`/events/${eventRef}`} className={styles.backLink}>
             {tt('manage.backToEvent', '← Back to the event')}
           </Link>
-          <div className={styles.rowBetween}>
+          {/* `pageHead` rather than `rowBetween`: on a phone this wraps, and
+              `rowBetween` carries no bottom margin, so the button landed flush
+              against the sentence below it and read as overlapping text. The
+              CEO reported exactly that from an emulator screenshot on
+              7 September. */}
+          <div className={styles.pageHead}>
             <h1 className={styles.pageTitle}>{tt('manage.title', 'Manage this event')}</h1>
-            <Link href={`/events/scan?event=${eventRef}&gate=Main`} className={styles.primaryBtn}>
-              {tt('manage.openDoor', 'Open the door scanner')}
-            </Link>
+            <DoorScannerLink eventRef={eventRef} />
           </div>
           <p className={styles.pageSub}>
             {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
@@ -713,7 +1009,7 @@ export const ManageEventContent = ({
           {refused ? <p className={styles.muted}>
               {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}
               {' '}
-              <Link href={`/events/${eventRef}`} className={styles.link}>
+              <Link href={`/events/${eventRef}`}>
                 {tt('manage.backToEvent', '← Back to the event')}
               </Link>
             </p>
@@ -721,14 +1017,14 @@ export const ManageEventContent = ({
             : !eventRef ? <p className={styles.muted}>
                 {tt('manage.pickEvent', 'Open this from the event you want to manage.')}
                 {' '}
-                <Link href="/events/my-events" className={styles.link}>
+                <Link href="/events/my-events">
                   {tt('manage.myEvents', 'My events')}
                 </Link>
               </p>
             : !token ? <p className={styles.muted}>
                 {tt('manage.signIn', 'Sign in to manage an event you run.')}
                 {' '}
-                <Link href="/login" className={styles.link}>
+                <Link href="/login">
                   {tt('ui.login.7b3c', 'Log in')}
                 </Link>
               </p>
@@ -738,6 +1034,94 @@ export const ManageEventContent = ({
                   <p className={styles.cardHint}>
                     {tt('manage.tierHint', 'What people can buy. Add a type at any time, correct a price, or open more when one sells out. How many are sold is counted from the tickets themselves and cannot be typed.')}
                   </p>
+
+                  {/* Where it is, and the pin the public map needs.
+                      CEO, 4 September 2026: "what does it also mean by
+                      organizer has not pinned?" */}
+                  {venueLoaded && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.venueTitle', 'Where it is')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {venueLoaded.latitude != null && venueLoaded.longitude != null
+                        ? tt('manage.venuePinned', 'This venue is pinned, so the event page draws a map of it.')
+                        : tt('manage.venueNotPinned', 'The event page cannot draw a map yet. Paste the venue link from Google Maps below and the pin is taken from it, so nobody has to type coordinates.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <label className={styles.capacityField}>
+                        <span>{tt('manage.venueName', 'Venue name')}</span>
+                        <input className={styles.input} value={venueDraft.venue_name}
+                               placeholder={venueLoaded.location || tt('manage.venueNamePlaceholder', 'The Celebr8 Centre')}
+                               onChange={e => setVenueDraft(v => ({ ...v, venue_name: e.target.value }))} />
+                      </label>
+                      <label className={styles.capacityField}>
+                        <span>{tt('manage.venueMapLink', 'Google Maps link')}</span>
+                        <input className={styles.input} value={venueDraft.map_link}
+                               placeholder="https://maps.app.goo.gl/..."
+                               onChange={e => setVenueDraft(v => ({ ...v, map_link: e.target.value }))} />
+                      </label>
+                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                              disabled={savingVenue} onClick={saveVenue}>
+                        {savingVenue ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                      </button>
+                    </div>
+                    <label className={styles.capacityField}>
+                      <span>{tt('manage.venueDirections', 'How to find it')}</span>
+                      <input className={styles.input} value={venueDraft.directions}
+                             placeholder={tt('manage.venueDirectionsPlaceholder', 'Second gate on Vori Close, parking behind the hall')}
+                             onChange={e => setVenueDraft(v => ({ ...v, directions: e.target.value }))} />
+                    </label>
+                  </div>}
+
+                  {/* Letting people admit themselves.
+                      CEO, 5 September 2026, and it is ADDITIONAL to the door:
+                      "it shold not e like the main oe, the organizer oe
+                      wherethey still have to scanned forthe perso to be
+                      checked in shouldbe there". */}
+                  {selfCheckIn && <div className={styles.capacityBox}>
+                    <p className={styles.capacityTitle}>
+                      {tt('manage.selfCheckInTitle', 'Letting people check themselves in')}
+                    </p>
+                    <p className={styles.cardHint}>
+                      {selfCheckIn.enabled
+                        ? tt('manage.selfCheckInOnHint', 'Anybody holding a ticket can mark themselves as arrived from their own phone, inside the window below. Your door staff and the scanner carry on exactly as they do now, and the attendee list says which of the two admitted each person.')
+                        : tt('manage.selfCheckInOffHint', 'Only your door staff can admit people. Turning this on lets somebody holding a ticket mark themselves as arrived from their own phone. It does not replace the door: a guest still has to give the email their ticket was sent to.')}
+                    </p>
+                    <div className={styles.capacityRow}>
+                      <button type="button"
+                              className={`${styles.primaryBtn} ${selfCheckIn.enabled ? 'redBTN' : 'grnBTN'}`}
+                              disabled={savingSelfCheckIn}
+                              onClick={() => saveSelfCheckIn({ enabled: !selfCheckIn.enabled })}>
+                        {savingSelfCheckIn ? tt('ui.saving', 'Saving...')
+                          : selfCheckIn.enabled
+                            ? tt('manage.selfCheckInTurnOff', 'Turn it off')
+                            : tt('manage.selfCheckInTurnOn', 'Let people check themselves in')}
+                      </button>
+                      {selfCheckIn.enabled && <label className={styles.capacityField}>
+                        <span>
+                          {tt('manage.selfCheckInOpens', 'Opens this many minutes before')}
+                        </span>
+                        <input className={styles.input} type="number" min="0" max="1440"
+                               defaultValue={selfCheckIn.opens_minutes_before}
+                               onBlur={e => {
+                                 const minutes = Number(e.target.value);
+                                 if (!Number.isNaN(minutes)
+                                     && minutes !== selfCheckIn.opens_minutes_before) {
+                                   saveSelfCheckIn({ opens_minutes_before: minutes });
+                                 }
+                               }} />
+                      </label>}
+                    </div>
+                    {/* The window as real times rather than a number of
+                        minutes, because minutes are not something anybody can
+                        picture. Rendered through the timing model, so an
+                        organiser in Accra reads their own clock. */}
+                    {selfCheckIn.enabled && selfCheckIn.opens_at && <p className={styles.cardHint}>
+                      {tt('manage.selfCheckInWindow', 'People can check themselves in from {from} until {to}.')
+                        .replace('{from}', formatWithZone(selfCheckIn.opens_at))
+                        .replace('{to}', formatWithZone(selfCheckIn.closes_at))}
+                    </p>}
+                  </div>}
 
                   {capacity && <div className={capacity.over_capacity
                       ? styles.capacityWarn : styles.capacityBox}>
@@ -749,14 +1133,14 @@ export const ManageEventContent = ({
                     </p>
                     <div className={styles.capacityRow}>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.capacityField', 'Venue capacity')}</span>
+                        <span>{tt('manage.capacityField', 'Venue capacity')}</span>
                         <input className={styles.input} type="number" min="0"
                                value={capacityDraft}
                                placeholder={tt('manage.capacityNone', 'No limit')}
                                onChange={e => setCapacityDraft(e.target.value)} />
                       </label>
                       <label className={styles.capacityField}>
-                        <span className={styles.label}>{tt('manage.capacityMode', 'And that number is')}</span>
+                        <span>{tt('manage.capacityMode', 'And that number is')}</span>
                         <select className={styles.input} value={capacityModeDraft}
                                 onChange={e => setCapacityModeDraft(e.target.value)}>
                           <option value="per_day">{tt('manage.capacityPerDay', 'How many each day holds')}</option>
@@ -1173,6 +1557,118 @@ export const ManageEventContent = ({
                       </div>
                     </div>
 
+
+                    {/* CEO, 7 September 2026, from the ticketing research: who
+                        bears the platform fee, affiliates that actually get
+                        paid, and a settlement run rather than a one-at-a-time
+                        payout queue.
+
+                        `money` above counts what the TICKETS were worth. This
+                        is the same sales seen from the other side: after the
+                        platform cut and anybody commission, which is the
+                        number that reaches a bank account. */}
+                    {earnings && <>
+                      <h3 className={styles.subTitle}>{tt('manage.whoPaysTheFee', 'Who pays the service fee')}</h3>
+                      {earnings.fee_pct > 0
+                        ? <>
+                          <div className={styles.rowActions}>
+                            {[['organiser', 'manage.feeOnMe', 'I absorb it'],
+                              ['buyer', 'manage.feeOnBuyer', 'The buyer pays it on top']].map(([value, key, fallback]) => <button
+                                key={value}
+                                type="button"
+                                className={earnings.fee_bearer === value
+                                  ? `${styles.ghostBtn} ${styles.ghostBtnOn}`
+                                  : styles.ghostBtn}
+                                aria-pressed={earnings.fee_bearer === value}
+                                disabled={busy || earnings.fee_bearer === value}
+                                onClick={() => run(() => call('/fee-bearer/', {
+                                  method: 'POST',
+                                  body: JSON.stringify({ fee_bearer: value }),
+                                }), 'manage.feeBearerSaved', 'Saved. It applies to tickets sold from now on.')}>
+                                {tt(key, fallback)}
+                              </button>)}
+                          </div>
+                          <p className={styles.cardHint}>
+                            {tt('manage.feeExplained', 'V-ENT takes {pct}% of each ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
+                              .replace('{pct}', earnings.fee_pct)}
+                          </p>
+                        </>
+                        : <p className={styles.muted}>{tt('manage.noFeeAtAll', 'V-ENT is not taking a fee on tickets, so there is nothing to pass on.')}</p>}
+
+                      <h3 className={styles.subTitle}>{tt('manage.settlement', 'Paying it out')}</h3>
+                      <div className={styles.rows}>
+                        <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.owedToYou', 'Waiting to be paid to you')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.organiser_owed_vc).toLocaleString(appLocale())} VC</span>
+                        </div>
+                        <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.alreadyPaidYou', 'Already paid to you')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.organiser_paid_vc).toLocaleString(appLocale())} VC</span>
+                        </div>
+                        {earnings.affiliates_owed_vc > 0 && <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.owedToAffiliates', 'Waiting to be paid to affiliates')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.affiliates_owed_vc).toLocaleString(appLocale())} VC</span>
+                        </div>}
+                        {earnings.platform_fee_vc > 0 && <div className={styles.row}>
+                          <div className={styles.rowMain}>
+                            <strong className={styles.rowName}>{tt('manage.platformTook', 'V-ENT service fee')}</strong>
+                          </div>
+                          <span className={styles.code}>{Number(earnings.platform_fee_vc).toLocaleString(appLocale())} VC</span>
+                        </div>}
+                      </div>
+
+                      {earnings.unclaimed_vc > 0 && <p className={styles.cardHint}>
+                        {tt('manage.unclaimedCommission', '{n} VC is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a settlement will not include it before then.')
+                          .replace('{n}', Number(earnings.unclaimed_vc).toLocaleString(appLocale()))}
+                      </p>}
+
+                      <div className={styles.rowActions}>
+                        <button
+                          type="button"
+                          className={`${styles.ghostBtn} grnBTN`}
+                          disabled={busy || settling
+                            || (earnings.organiser_owed_vc <= 0 && earnings.affiliates_owed_vc <= 0)}
+                          onClick={async () => {
+                            setSettling(true);
+                            setSettleSaid('');
+                            const { ok, body } = await call('/settle/', { method: 'POST', body: JSON.stringify({}) });
+                            setSettling(false);
+                            if (ok) {
+                              setSettleSaid(tt('manage.settledSaid', 'Paid {n} VC across {lines} line(s).')
+                                .replace('{n}', Number(body?.data?.amount_vc || 0).toLocaleString(appLocale()))
+                                .replace('{lines}', body?.data?.lines_paid ?? 0));
+                              await load();
+                            } else {
+                              setError(apiMessage(tt, body, 'api.couldNotSettle', 'Could not pay this out.'));
+                            }
+                          }}>
+                          {settling ? tt('manage.settling', 'Paying...') : tt('manage.settleNow', 'Pay everybody now')}
+                        </button>
+                      </div>
+                      {settleSaid && <p className={styles.cardHint}>{settleSaid}</p>}
+                      <p className={styles.cardHint}>
+                        {tt('manage.settleExplained', 'One pass pays you and every affiliate into your V-ENT wallets. Running it again pays nothing twice, so it is safe to press if you are unsure whether it went through.')}
+                      </p>
+
+                      {earnings.settlements.filter(paid => paid.lines_paid > 0).length > 0 && <>
+                        <h3 className={styles.subTitle}>{tt('manage.pastSettlements', 'Paid out so far')}</h3>
+                        <div className={styles.rows}>
+                          {earnings.settlements.filter(paid => paid.lines_paid > 0).map(paid => <div key={paid.id} className={styles.row}>
+                            <div className={styles.rowMain}>
+                              <strong className={styles.rowName}>{formatDateTime(paid.at)}</strong>
+                            </div>
+                            <span className={styles.code}>{Number(paid.amount_vc).toLocaleString(appLocale())} VC</span>
+                          </div>)}
+                        </div>
+                      </>}
+                    </>}
+
                     <h3 className={styles.subTitle}>{tt('manage.moneyByType', 'By ticket type')}</h3>
                     <div className={styles.rows}>
                       {money.by_tier.map(row => <div key={row.id} className={styles.row}>
@@ -1387,6 +1883,125 @@ export const ManageEventContent = ({
                           section stays visible at zero rather than disappearing:
                           a block that vanishes when empty makes the page jump
                           and reads as broken. */}
+                      {/* CEO, 7 September 2026: "how many clicks, how many
+                          people opened it up, how many tapped buy, how many
+                          check out vendor".
+
+                          Everything else on this tab counts what happened.
+                          This counts what nearly happened, which is the only
+                          half that says WHERE the event is losing people:
+                          nine tickets from forty taps is a checkout problem,
+                          nine from eleven opens is a marketing problem, and
+                          the tickets table reads identically in both.
+
+                          The last row is the only one that did not come from
+                          a browser. It is said on the page rather than left
+                          for somebody to work out, because a reader who
+                          treats all six as equally solid will over-trust the
+                          top five. */}
+                      {metrics.funnel && <>
+                        <h3 className={styles.subTitle}>{tt('manage.funnel', 'Before the ticket')}</h3>
+                        {metrics.funnel.steps.every(step => step.count === 0)
+                          ? <p className={styles.muted}>{tt('manage.funnelEmpty', 'Nothing counted yet. Numbers appear here as people open the event page, look at prices and reach the checkout.')}</p>
+                          : <>
+                            <div className={styles.funnel}>
+                              {metrics.funnel.steps.map(step => {
+                                const top = Math.max(...metrics.funnel.steps.map(x => x.count), 1);
+                                return <div key={step.step} className={`${styles.funnelRow} ${step.step === 'sold' ? styles.funnelRowSold : ''}`}>
+                                    <span className={styles.funnelFill} style={{ width: Math.round(step.count * 100 / top) + '%' }} aria-hidden="true" />
+                                    <span className={styles.funnelLabel}>
+                                      {FUNNEL_LABELS[step.step] ? tt(FUNNEL_LABELS[step.step][0], FUNNEL_LABELS[step.step][1]) : step.step}
+                                      {step.step === 'sold' && <span className={styles.funnelHint}>{tt('manage.funnelCounted', 'Counted from the tickets that exist')}</span>}
+                                    </span>
+                                    <span className={styles.funnelCount}>
+                                      {Number(step.count).toLocaleString(appLocale())}
+                                      {step.people > 0 && step.step !== 'sold' && <span className={styles.funnelPeople}>
+                                        {tt('manage.funnelPeople', '{n} first time').replace('{n}', Number(step.people).toLocaleString(appLocale()))}
+                                      </span>}
+                                    </span>
+                                  </div>;
+                              })}
+                            </div>
+                            {metrics.funnel.sales_predate_tracking && <p className={styles.cardHint}>
+                              {tt('manage.funnelPredates', 'More tickets exist than page opens counted, so some of these sales happened before this counting started, or through a link that never opened the event page. The rates below read high because of it.')}
+                            </p>}
+                            <div className={styles.figureGrid}>
+                              {[['open_to_buy', 'manage.rateOpenBuy', 'Opened, then tapped Buy'],
+                                ['buy_to_checkout', 'manage.rateBuyCheckout', 'Tapped Buy, then reached checkout'],
+                                ['checkout_to_sold', 'manage.rateCheckoutSold', 'Reached checkout, then paid'],
+                                ['open_to_sold', 'manage.rateOpenSold', 'Opened, then paid']].map(([key, tkey, fallback]) => <div key={key} className={styles.figure}>
+                                  <strong className={styles.figureValue}>
+                                    {metrics.funnel.conversion[key] === null
+                                      ? tt('manage.notYetKnown', 'Not yet')
+                                      : `${metrics.funnel.conversion[key]}%`}
+                                  </strong>
+                                  <span className={styles.figureLabel}>{tt(tkey, fallback)}</span>
+                                </div>)}
+                            </div>
+                          </>}
+
+                        {metrics.funnel.stalls.length > 0 && <>
+                          <h3 className={styles.subTitle}>{tt('manage.stallsWalkedTo', 'Stalls people opened')}</h3>
+                          <div className={styles.rows}>
+                            {metrics.funnel.stalls.map(stall => <div key={stall.stall} className={styles.row}>
+                                <div className={styles.rowMain}>
+                                  <span className={styles.rowName}>{stall.name}</span>
+                                </div>
+                                <div className={styles.rowStats}>
+                                  {tt('manage.stallVisits', '{n} opens').replace('{n}', Number(stall.visits).toLocaleString(appLocale()))}
+                                </div>
+                              </div>)}
+                          </div>
+                        </>}
+                      </>}
+
+                      {/* The bottom of the funnel, made actionable. An organiser
+                          reading "412 reached the checkout, 88 bought" is
+                          already asking who the other 324 were. */}
+                      {abandoned && (abandoned.open > 0 || abandoned.recovered > 0) && <>
+                        <h3 className={styles.subTitle}>{tt('manage.abandoned', 'Started paying and stopped')}</h3>
+                        <p className={styles.cardHint}>
+                          {tt('manage.abandonedWhat', '{n} people reached the payment page and never paid, worth {ngn}. {r} came back on their own. Each address gets one reminder, only when you send it, and the list is deleted after {d} days.')
+                            .replace('{n}', Number(abandoned.open).toLocaleString(appLocale()))
+                            .replace('{ngn}', formatNumber(abandoned.open_ngn) + ' NGN')
+                            .replace('{r}', Number(abandoned.recovered).toLocaleString(appLocale()))
+                            .replace('{d}', String(abandoned.kept_days))}
+                        </p>
+
+                        {abandoned.open === 0
+                          ? <p className={styles.muted}>{tt('manage.abandonedNoneOpen', 'Nobody is waiting. Everybody who started paying finished.')}</p>
+                          : <>
+                            <div className={styles.rows}>
+                              {abandoned.results.map(row => <div key={row.id} className={styles.row}>
+                                  <div className={styles.rowMain}>
+                                    <span className={styles.rowName}>{row.email}</span>
+                                    <span className={styles.rowStats}>
+                                      {row.tier ? `${row.tier} x${row.quantity}` : `x${row.quantity}`}
+                                      {' \u00b7 '}
+                                      {formatDateTime(row.started_at)}
+                                    </span>
+                                  </div>
+                                  <div className={styles.rowActions}>
+                                    {row.reminded_at
+                                      ? <span className={styles.rowStats}>{tt('manage.abandonedReminded', 'Reminded')}</span>
+                                      : <button type="button" className={styles.ghostBtn} disabled={reminding}
+                                                onClick={() => remindAbandoned(row.id)}>
+                                          {tt('manage.abandonedRemindOne', 'Remind them')}
+                                        </button>}
+                                  </div>
+                                </div>)}
+                            </div>
+
+                            <button type="button" className={styles.primaryBtn}
+                                    disabled={reminding || abandoned.remindable === 0}
+                                    onClick={() => remindAbandoned()}>
+                              {abandoned.remindable === 0
+                                ? tt('manage.abandonedAllReminded', 'Everybody has had their one reminder')
+                                : tt('manage.abandonedRemindAll', 'Remind all {n}').replace('{n}', String(abandoned.remindable))}
+                            </button>
+                          </>}
+                      </>}
+
                       {metrics.arrivals_by_hour && <>
                         <h3 className={styles.subTitle}>{tt('manage.whenTheyCame', 'When they arrived')}</h3>
                         {metrics.arrivals_by_hour.length === 0
@@ -1488,11 +2103,19 @@ export const ManageEventContent = ({
                         <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('sales')}>
                           {tt('manage.sheetSales', 'Sales by day')}
                         </button>
+                        <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => downloadSheet('funnel')}>
+                          {tt('manage.sheetFunnel', 'What people did, by day')}
+                        </button>
                       </div>
                     </>}
                 </section>}
 
               {/* ---------------------------------------------------- messages */}
+              {tab === 'messages' && event && (
+                <DiscordChannels kind="event"
+                                 reference={event.slug || event.event_id}
+                                 token={token} showToast={setNotice} />
+              )}
               {tab === 'messages' && <section className={styles.card}>
                   <p className={styles.cardHint}>
                     {tt('manage.messagesHint', 'One email to everybody holding a ticket, guests included. Each person is written to on their own, so nobody sees anybody else on the list, and somebody holding four tickets is told once.')}
@@ -1708,7 +2331,7 @@ export const ManageEventContent = ({
               {/* ------------------------------------------------ influencers */}
               {tab === 'influencers' && <section className={styles.card}>
                   <p className={styles.cardHint}>
-                    {tt('manage.influencerHint', 'Give somebody a code and their link becomes /events/…?ref=CODE. Set an allocation to hold a number of tickets for them, or leave it at zero to just track what they sell.')}
+                    {tt('manage.influencerHint2', 'Give somebody a code and their link becomes /events/…?ref=CODE. An allocation holds tickets for them; a commission pays them a share of every ticket their link sells, into their V-ENT wallet when you settle. Leave both at zero and the link only tracks.')}
                   </p>
 
                   {referrals.length === 0 ? <p className={styles.muted}>{tt('manage.noInfluencers', 'Nobody is selling for you yet.')}</p> : <div className={styles.rows}>
@@ -1735,6 +2358,16 @@ export const ManageEventContent = ({
                             <span>
                               {tt('manage.allocation', 'Allocation')}:{' '}
                               <strong>{row.allocation ? `${row.remaining} / ${row.allocation}` : tt('manage.uncapped', 'No cap')}</strong>
+                              {row.commission_pct > 0 && <>
+                                {' · '}
+                                {tt('manage.commission', 'Commission')}:{' '}
+                                <strong>{row.commission_pct}%</strong>
+                                {!row.has_payee && <> {' · '}
+                                  <span className={styles.muted}>
+                                    {tt('manage.noPayeeYet', 'nobody to pay yet')}
+                                  </span>
+                                </>}
+                              </>}
                             </span>
                           </div>
                           {row.share_url && <div className={styles.shareRow}>
@@ -1777,6 +2410,14 @@ export const ManageEventContent = ({
                   ...p,
                   url: e.target.value
                 }))} />
+                    <input className={styles.input} type="number" min={0} max={100} step="0.5" placeholder={tt('manage.commissionPlaceholder', 'Commission % (0 = tracking only)')} value={newReferral.commission_pct} onChange={e => setNewReferral(p => ({
+                ...p,
+                commission_pct: e.target.value
+              }))} />
+                    <input className={styles.input} placeholder={tt('manage.payeePlaceholder', 'Pay it to (email or @username)')} value={newReferral.payee} onChange={e => setNewReferral(p => ({
+                ...p,
+                payee: e.target.value
+              }))} autoComplete="off" />
                     <input className={styles.input} type="number" min={0} placeholder={tt('manage.allocationPlaceholder', 'Tickets held (0 = none)')} value={newReferral.allocation} onChange={e => setNewReferral(p => ({
                   ...p,
                   allocation: e.target.value
@@ -1858,6 +2499,21 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- team */}
+              {tab === 'run-of-show' && <RunOfShowPanel
+                kind="event"
+                ownerRef={eventRef}
+                token={token}
+                showToast={setNotice}
+              />}
+
+              {/* Pitches for sale. Somebody who buys one gets a shop on
+                  V-ENT straight away; inviting a trader directly is the other
+                  door into the same room. */}
+              {tab === 'vendors' && <section className={styles.card}>
+                  <h3>{tt('console.tabVendors', 'Vendor pitches')}</h3>
+                  <VendorSlotsPanel eventRef={eventRef} token={token} onNotice={setNotice} />
+                </section>}
+
               {tab === 'production' && <section className={styles.card}>
                 {/* The studio: V-ENT's own graphics for an event, bound to the
                     programme and the door, each with a URL for a browser
@@ -1879,9 +2535,39 @@ export const ManageEventContent = ({
               {tab === 'team' && (
                 <EventTournamentsPanel eventRef={eventRef} token={token} canManage />
               )}
+              {/* Whose name this event runs in.
+                  CEO, 4 September 2026: "there is no way to add events to an
+                  organization". The field has been on the model and accepted
+                  by the edit endpoint since organisations were built, and no
+                  screen ever sent it, so an event that belonged to one person
+                  stayed that way and could be shared with nobody. */}
+              {tab === 'team' && <section className={styles.card}>
+                  <h3>
+                    {tt('manage.orgTitle', 'Who runs this event')}
+                  </h3>
+                  {myOrgs.length === 0 ? <p className={styles.muted}>
+                      {tt('manage.noOrgsYet', 'This event is yours. Once you belong to an organisation you can move it there, and everybody in that organisation who runs events will see it.')}
+                    </p> : <>
+                      <p className={styles.cardHint}>
+                        {tt('manage.orgHint', 'An event in an organisation is run by everybody in it who handles events: they see it in their own list, work the door and read the numbers, with nothing to set up per person.')}
+                      </p>
+                      <div className={styles.newRow}>
+                        <select className={styles.input}
+                                value={eventOrg?.id || ''}
+                                disabled={savingOrg}
+                                onChange={e => saveOrganization(e.target.value)}>
+                          <option value="">{tt('manage.orgNone', 'Just me')}</option>
+                          {myOrgs.map(org => (
+                            <option key={org.id} value={org.id}>{org.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>}
+                </section>}
+
               {tab === 'team' && <section className={styles.card}>
                   {!canAddManagers ? <p className={styles.muted}>
-                      {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with other people. Move it to an organisation to give somebody else the door list and the codes.')}
+                      {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with one person at a time. Move it to an organisation above, then everybody there who runs events can help.')}
                     </p> : <p className={styles.cardHint}>
                       {tt('manage.teamHint', 'A manager can do everything here except delete the event or add more managers. Door staff can only check tickets in.')}
                     </p>}
@@ -1889,7 +2575,7 @@ export const ManageEventContent = ({
                   {managers.length === 0 ? <p className={styles.muted}>{tt('manage.noManagers', 'Nobody else is helping run this yet.')}</p> : <div className={styles.rows}>
                       {managers.map(row => <div key={row.id} className={styles.row}>
                           <div className={styles.rowMain}>
-                            <UserChip user={row} size={0}
+                            <UserChip user={row} size={32}
                                       nameClassName={styles.rowName} />
                             <span className={styles.code}>
                               {row.role === 'door' ? tt('manage.roleDoor', 'Door staff') : tt('manage.roleManager', 'Manager')}
@@ -1904,10 +2590,15 @@ export const ManageEventContent = ({
                     </div>}
 
                   {canAddManagers && <div className={styles.newRow}>
-                      <input className={styles.input} placeholder={tt('manage.username', 'Username')} value={newManager.username} onChange={e => setNewManager(p => ({
-                  ...p,
-                  username: e.target.value
-                }))} />
+                      {/* Picked from the platform, with their picture. Door
+                          staff typed one letter wrong is somebody who cannot
+                          open the scanner on the morning of the show. */}
+                      <UserPicker
+                        value={newManager.username}
+                        onChange={value => setNewManager(p => ({ ...p, username: value }))}
+                        token={token}
+                        placeholder={tt('picker.findSomeone', 'Start typing a name or handle')}
+                      />
                       <select className={styles.input} value={newManager.role} onChange={e => setNewManager(p => ({
                   ...p,
                   role: e.target.value
@@ -1932,4 +2623,26 @@ const ManageEventPage = () => <Suspense fallback={<div style={{
 }} />}>
     <ManageEventContent />
   </Suspense>;
-export default ManageEventPage;
+// The old `?id=` address. It renders nothing itself any more: it resolves the
+// record, learns its name, and replaces itself with the named address. The
+// component above is still the one implementation - `/events/[slug]/manage` imports it.
+//
+// Kept rather than deleted because this address has been shared and
+// bookmarked, and the slug rule says every address a thing has ever had keeps
+// working. See src/components/legacy-id-route/LegacyIdRoute.js.
+const ManageEventPageLegacy = () => (
+  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <LegacyIdRoute
+      resolve={async id => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`);
+      const body = await res.json().catch(() => null);
+      // See the tournament note below: an event nests under `data.event`.
+      return body?.data?.event?.slug || body?.data?.slug || null;
+      }}
+      to={slug => `/events/${encodeURIComponent(slug)}/manage`}
+      fallback="/events/my-events"
+    />
+  </Suspense>
+);
+
+export default ManageEventPageLegacy;

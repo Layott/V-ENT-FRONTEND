@@ -2,7 +2,10 @@
 
 .page {
   min-height: 100vh;
-  background: var(--primary-bg, #131316);
+  /* #131316 is the page ground everywhere on this site. `--primary-bg`
+     is #FFFFFF and `--primary-text` is #000000: they are the TEXT
+     colours, and pure black is banned as a page ground anyway. */
+  background: #131316;
 }
 
 .main {

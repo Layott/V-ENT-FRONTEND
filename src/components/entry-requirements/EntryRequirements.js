@@ -15,6 +15,7 @@
 // offers fewer.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   LuArrowDown, LuArrowUp, LuCheck, LuPlus, LuX,
 } from 'react-icons/lu';
@@ -31,6 +32,8 @@ const base = () => `${process.env.NEXT_PUBLIC_API_URL}/tournament`;
 const FIELDS = {
   country: ['countries'],
   min_age: ['min_age'],
+  penalty_points: ['max_points'],
+  ranking: ['mode', 'position', 'region'],
   social_follow: ['links', 'help'],
   download: ['url', 'field_label', 'help'],
   custom_field: ['field_label', 'help'],
@@ -48,6 +51,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
 
   const [rows, setRows] = useState(null);
   const [catalogue, setCatalogue] = useState([]);
+  const [hasPremium, setHasPremium] = useState(false);
   const [queue, setQueue] = useState([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -67,6 +71,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
       if (res.ok && body.status === 'success') {
         setRows(body.data.requirements || []);
         setCatalogue(body.data.catalogue || []);
+        setHasPremium(Boolean(body.data.has_premium));
       } else {
         setError(apiMessage(tt, body, 'api.requirementsLoadFailed',
           'Could not load the entry requirements.'));
@@ -196,6 +201,11 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
   if (!rows) return <p className={styles.state}>{error}</p>;
 
   const unused = catalogue.filter(c => !rows.some(r => r.kind === c.kind));
+  // Split rather than hidden. Somebody has to be able to see what premium is
+  // for, and pressing something that then refuses is the fault the signed-out
+  // rule names: tell them what they need BEFORE they spend the effort.
+  const canAdd = unused.filter(c => !c.premium || hasPremium);
+  const locked = unused.filter(c => c.premium && !hasPremium);
 
   return (
     <div className={styles.editor}>
@@ -234,6 +244,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
                     onChange={v => setConfig(index, key, v)}
                     disabled={!canEdit}
                     tt={tt}
+                    options={catalogue.find(c => c.kind === row.kind)?.options}
                   />
                 ))}
 
@@ -269,7 +280,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
       {canEdit && unused.length > 0 && (
         adding ? (
           <div className={styles.picker}>
-            {unused.map(spec => (
+            {canAdd.map(spec => (
               <button key={spec.kind} type="button" className={styles.pick}
                       onClick={() => add(spec.kind)}>
                 <span className={styles.pickLabel}>{kindLabel(tt, spec.kind, spec.label)}</span>
@@ -278,6 +289,26 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
                 </span>
               </button>
             ))}
+
+            {locked.length > 0 && (
+              <div className={styles.locked}>
+                <span className={styles.lockedTitle}>
+                  {tt('req.premiumTitle', 'On a premium account')}
+                </span>
+                <span className={styles.lockedWhat}>
+                  {locked.map(spec => kindLabel(tt, spec.kind, spec.label)).join(', ')}
+                </span>
+                <span className={styles.lockedWhy}>
+                  {tt('req.premiumWhy', 'Turn premium on for this account and these become available on every tournament you run.')}
+                </span>
+                {/* A refusal that names a person to go and find is a dead end
+                    with instructions. This one goes somewhere that can act. */}
+                <Link href="/premium" className={styles.lockedLink}>
+                  {tt('premium.seeWhatItCosts', 'See what premium costs')}
+                </Link>
+              </div>
+            )}
+
             <button type="button" className={styles.ghost} onClick={() => setAdding(false)}>
               {tt('ui.cancel.77df', 'Cancel')}
             </button>
@@ -312,7 +343,7 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
           ) : queue.map(item => (
             <div key={item.id} className={styles.submission}>
               <div className={styles.subHead}>
-                <UserChip user={item.user} size={0} nameClassName={styles.subWho} />
+                <UserChip user={item.user} size={28} nameClassName={styles.subWho} />
                 <span className={styles.subWhat}>{kindLabel(tt, item.requirement?.kind, item.requirement?.label)}</span>
               </div>
               <pre className={styles.subValue}>
@@ -359,10 +390,14 @@ export default function EntryRequirements({ tournamentId, token, canEdit = true 
 // One config field. `countries` and `links` are lists an organiser types one
 // per line, because a comma-separated box is a way to lose an entry to a
 // trailing space.
-function RequirementField({ fieldKey, value, onChange, disabled, tt }) {
+function RequirementField({ fieldKey, value, onChange, disabled, tt, options }) {
   const LABELS = {
     countries: ['req.f.countries', 'Countries, one per line (NG, GH, KE)'],
     min_age: ['req.f.minAge', 'Minimum age'],
+    max_points: ['req.f.maxPoints', 'Most penalty points allowed'],
+    mode: ['req.f.mode', 'Which players'],
+    position: ['req.f.position', 'The position'],
+    region: ['req.f.region', 'Ranked within (blank means the whole platform)'],
     links: ['req.f.links', 'Accounts to follow, one link per line'],
     url: ['req.f.url', 'Where they download it'],
     field_label: ['req.f.fieldLabel', 'What to call the field you are asking for'],
@@ -386,17 +421,54 @@ function RequirementField({ fieldKey, value, onChange, disabled, tt }) {
     );
   }
 
-  if (fieldKey === 'min_age') {
+  if (fieldKey === 'mode') {
+    return (
+      <label className={styles.field}>
+        <span className={styles.fieldLabel}>{tt(key, fallback)}</span>
+        <select
+          className={styles.text}
+          disabled={disabled}
+          value={value || 'top'}
+          onChange={e => onChange(e.target.value)}>
+          <option value="top">{tt('req.f.modeTop', 'Ranked at or above the position')}</option>
+          <option value="below">{tt('req.f.modeBelow', 'Ranked below it, or not ranked yet')}</option>
+        </select>
+      </label>
+    );
+  }
+
+  if (fieldKey === 'region') {
+    // The regions the platform knows, from the catalogue rather than typed.
+    // A typo used to mean "no region", which is a silently wider tournament
+    // than the organiser asked for.
+    return (
+      <label className={styles.field}>
+        <span className={styles.fieldLabel}>{tt(key, fallback)}</span>
+        <select
+          className={styles.text}
+          disabled={disabled}
+          value={value || ''}
+          onChange={e => onChange(e.target.value)}>
+          <option value="">{tt('req.f.regionAny', 'The whole platform')}</option>
+          {(options?.regions || []).map(name => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
+  if (fieldKey === 'min_age' || fieldKey === 'max_points' || fieldKey === 'position') {
     return (
       <label className={styles.field}>
         <span className={styles.fieldLabel}>{tt(key, fallback)}</span>
         <input
           className={styles.number}
           type="number"
-          min="1"
-          max="99"
+          min={fieldKey === 'max_points' ? '0' : '1'}
+          max={fieldKey === 'min_age' ? '99' : '1000'}
           disabled={disabled}
-          value={value ?? 18}
+          value={value ?? (fieldKey === 'min_age' ? 18 : 0)}
           onChange={e => onChange(Number(e.target.value) || 0)}
         />
       </label>

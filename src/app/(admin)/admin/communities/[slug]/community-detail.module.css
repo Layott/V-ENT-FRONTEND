@@ -1,0 +1,84 @@
+/* One community, in the console. Surfaces and space, no strokes. */
+
+.back {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  margin-bottom: 1.1rem;
+  min-height: 44px;
+  line-height: 44px;
+}
+
+.back:hover { color: #fff; }
+
+.spaced { margin-top: 2rem; }
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+/* Zebra by surface rather than a rule between rows. */
+.message {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  min-width: 0;
+}
+
+.messageHead {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.messageWho { color: #fff; font-size: 0.85rem; }
+
+.messageTopic {
+  background-color: #3a3b42;
+  border-radius: 6px;
+  padding: 0.1rem 0.45rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.72rem;
+}
+
+.messageWhen {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.72rem;
+  margin-left: auto;
+}
+
+.messageBody {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 0.65rem;
+  overflow-wrap: anywhere;
+}
+
+.people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  color: #fff;
+  font-size: 0.82rem;
+  min-width: 0;
+}
+
+@media only screen and (max-width: 767px) {
+  .messageWhen { margin-left: 0; width: 100%; }
+}

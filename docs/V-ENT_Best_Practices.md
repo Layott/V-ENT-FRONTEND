@@ -23,7 +23,7 @@ Claude Code is an AI coding agent that runs in your terminal. It reads your code
 
 ### Requirements
 - A paid Anthropic account (Claude Pro $20/month or Claude Max $100-200/month)
-- Node.js 18+ (for npm install method) OR use the native installer (no Node.js needed)
+- Node.js 18+ (for the pnpm install method) OR use the native installer (no Node.js needed)
 
 ### Installation (Recommended: Native Installer)
 
@@ -44,7 +44,7 @@ curl -fsSL https://code.claude.com/install | sh
 
 **Alternative (npm):**
 ```bash
-npm install -g @anthropic-ai/claude-code
+pnpm add -g @anthropic-ai/claude-code
 ```
 
 ### First Run
@@ -60,7 +60,7 @@ claude
 /init
 ```
 
-The `/init` command generates a `CLAUDE.md` file in your project root — this gives Claude persistent context about your codebase (build commands, conventions, architecture). Keep it under 100 lines and commit it to git.
+The `/init` command generates a `CLAUDE.md` file in your project root - this gives Claude persistent context about your codebase (build commands, conventions, architecture). Keep it under 100 lines and commit it to git.
 
 ### Daily Workflow with Antigravity + Claude Code
 1. Open your project in Antigravity (code editor) for browsing/viewing files
@@ -70,23 +70,23 @@ The `/init` command generates a `CLAUDE.md` file in your project root — this g
 5. Claude reads your codebase, makes changes, runs tests, and can commit
 
 ### Key Commands
-- `/init` — Analyze codebase and generate CLAUDE.md
-- `/help` — Show all available commands
-- `/bug` — Report an issue with Claude Code
-- `claude doctor` — Diagnose configuration issues
+- `/init` - Analyze codebase and generate CLAUDE.md
+- `/help` - Show all available commands
+- `/bug` - Report an issue with Claude Code
+- `claude doctor` - Diagnose configuration issues
 
 ---
 
 ## 2. UI/UX Design Best Practices
 
 ### Design System Fundamentals
-- **Maintain a single source of truth:** All colors, typography, spacing, and components should be defined in Figma and mirrored in code via CSS custom properties in `globals.css`. **This project uses CSS Modules + CSS variables — not Tailwind.**
+- **Maintain a single source of truth:** All colors, typography, spacing, and components should be defined in Figma and mirrored in code via CSS custom properties in `globals.css`. **This project uses CSS Modules + CSS variables - not Tailwind.**
 - **Use an 8px grid system:** All spacing, padding, and sizing should be multiples of 8px (8, 16, 24, 32, 40, 48, etc.)
 - **Limit your color palette:** Primary, secondary, accent, background, surface, and semantic colors (success, warning, error, info). No one-off hex values
 - **Typography scale:** Define a type scale (e.g., 12, 14, 16, 18, 20, 24, 28, 32, 40, 48px) and stick to it. No custom font sizes outside the scale
 
 ### Component Design
-- **Build atomic components first:** Buttons, inputs, badges, avatars, pills/tags — then compose them into larger patterns
+- **Build atomic components first:** Buttons, inputs, badges, avatars, pills/tags - then compose them into larger patterns
 - **Design all states:** Default, hover, active, focused, disabled, loading, error, empty, and skeleton/loading for every interactive component
 - **Maintain consistent border radius:** Pick 2-3 values (e.g., 4px, 8px, 16px) and use them everywhere
 - **Use consistent shadows:** Define 3-4 elevation levels and reuse them
@@ -104,7 +104,7 @@ The `/init` command generates a `CLAUDE.md` file in your project root — this g
 - **Semantic HTML:** Use proper heading hierarchy (h1 > h2 > h3), button for actions, anchor for navigation
 
 ### V-ENT Specific
-- **Dark theme:** Your Figma designs use a dark theme — ensure all components work in dark mode with sufficient contrast
+- **Dark theme:** Your Figma designs use a dark theme - ensure all components work in dark mode with sufficient contrast
 - **Dual breakpoints:** Always design both web (1440px) and mobile (375px) versions
 - **Empty states:** Every list/grid/table must have an empty state design (what does the user see when there's no data?)
 - **Loading states:** Design skeleton screens for every page that fetches data
@@ -163,8 +163,8 @@ public/
 3. **Global utility classes** in `globals.css`: `.btn`, `.grnBTN`, `.redBTN`
 
 Rules:
-- Never use one-off hex values — use the CSS variables from `globals.css`
-- Never recreate button styles — use `.btn`, `.grnBTN`, `.redBTN`
+- Never use one-off hex values - use the CSS variables from `globals.css`
+- Never recreate button styles - use `.btn`, `.grnBTN`, `.redBTN`
 - Every new component gets its own `.module.css` in the same folder
 - Page-level CSS Modules live either next to the page or in `public/styles/` (imported via `@/styles/*`)
 
@@ -200,12 +200,12 @@ For authenticated requests, include: `Authorization: Bearer ${session.user.sessi
 All API responses follow: `{ status: "success" | "error", data: {...}, message: "..." }`
 
 ### Performance
-- **Lazy load heavy browser-only libraries** with `dynamic()` — this is critical for `react-quill` which requires the browser and will hydration-error if imported directly:
+- **Lazy load heavy browser-only libraries** with `dynamic()` - this is critical for `react-quill` which requires the browser and will hydration-error if imported directly:
   ```js
   const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
   ```
 - Use `next/image` for images where possible
-- Use `React.memo()` sparingly — only for components that re-render frequently with the same props
+- Use `React.memo()` sparingly - only for components that re-render frequently with the same props
 
 ### Forms
 
@@ -240,18 +240,18 @@ Auth pages use `<AuthHeader />` instead.
 
 ### Critical: Keep Next.js Updated
 - **Update to the latest Next.js version immediately** when security patches are released
-- In late 2025, critical vulnerabilities (CVE-2025-29927, CVE-2025-66478) affected all Next.js versions — staying current is non-negotiable
+- In late 2025, critical vulnerabilities (CVE-2025-29927, CVE-2025-66478) affected all Next.js versions - staying current is non-negotiable
 - Run `npm audit` regularly and fix vulnerabilities
 
 ### Authentication (Defense in Depth)
 - **Never rely solely on middleware for auth.** Middleware can be bypassed. Always re-verify authentication at the data access layer
 - **Verify auth in every Server Action** and every API route handler
-- **Use HttpOnly, Secure, SameSite cookies** for session tokens — never store tokens in localStorage
+- **Use HttpOnly, Secure, SameSite cookies** for session tokens - never store tokens in localStorage
 - **Implement proper session expiration:** Short-lived access tokens (15-30 min) + refresh tokens
 - **Rate limit authentication endpoints** aggressively (login, register, password reset)
 
 ### Environment Variables
-- **Never commit `.env` files to git.** Add `.env*` to `.gitignore` (Note: your V-ENT-FRONTEND repo currently has a `.env` file committed — this needs to be fixed immediately)
+- **Never commit `.env` files to git.** Add `.env*` to `.gitignore` (Note: your V-ENT-FRONTEND repo currently has a `.env` file committed - this needs to be fixed immediately)
 - **Only prefix with `NEXT_PUBLIC_` for values that are safe to expose to the browser**
 - **API keys, database credentials, and secrets must never be prefixed with `NEXT_PUBLIC_`**
 
@@ -273,7 +273,7 @@ const cspHeader = `
 ```
 
 ### Input Validation
-- **Validate all user input on both client and server** — client validation is for UX, server validation is for security
+- **Validate all user input on both client and server** - client validation is for UX, server validation is for security
 - **Use Zod schemas** to validate Server Action inputs and API route parameters
 - **Sanitize user-generated content** before rendering (especially if using dangerouslySetInnerHTML)
 
@@ -335,14 +335,14 @@ vent/                       # Django project root
 ```
 
 ### Django REST Framework (DRF) Patterns
-- **Use ModelSerializer** and explicitly list fields — never use `fields = '__all__'` (it exposes everything)
+- **Use ModelSerializer** and explicitly list fields - never use `fields = '__all__'` (it exposes everything)
 - **Create separate serializers for read and write** operations when the shape differs
 - **Use ViewSets** for standard CRUD operations, APIView for custom logic
-- **Implement proper pagination** — never return unbounded querysets
+- **Implement proper pagination** - never return unbounded querysets
 - **Use DRF's permission classes** (IsAuthenticated, IsAdminUser, custom permissions per view)
 
 ### Database (MySQL)
-- **Use Django migrations exclusively** — never modify the database schema manually
+- **Use Django migrations exclusively** - never modify the database schema manually
 - **Add database indexes** on fields you frequently filter or sort by (e.g., `created_at`, `user_id`, `status`)
 - **Use `select_related()` and `prefetch_related()`** to avoid N+1 queries
 - **Never use raw SQL unless absolutely necessary.** The ORM prevents SQL injection automatically; raw SQL doesn't
@@ -350,21 +350,21 @@ vent/                       # Django project root
 
 ### Models
 - **Create a base model** with common fields (id, created_at, updated_at) and inherit from it
-- **Use UUIDs for public-facing IDs** — don't expose sequential integer IDs in URLs or APIs
+- **Use UUIDs for public-facing IDs** - don't expose sequential integer IDs in URLs or APIs
 - **Define `__str__` methods** on all models for readable admin and logging
 - **Use Django's built-in validators** and add custom validators where needed
 - **Use choices/enums** for status fields rather than magic strings
 
 ### Testing
-- **Write tests for every view and serializer** — aim for 80%+ coverage on business logic
+- **Write tests for every view and serializer** - aim for 80%+ coverage on business logic
 - **Use factory_boy or model_bakery** for test data generation
-- **Test authentication and permissions** — verify unauthorized users get 401/403
+- **Test authentication and permissions** - verify unauthorized users get 401/403
 - **Test edge cases:** empty inputs, max-length inputs, duplicate data, concurrent requests
 
 ### Deployment
 - **Use environment variables** for all secrets (SECRET_KEY, DATABASE_URL, API keys)
-- **Use gunicorn or uvicorn** as the WSGI/ASGI server — never use Django's development server in production
-- **Set up proper logging** — log errors and security events, but never log passwords or tokens
+- **Use gunicorn or uvicorn** as the WSGI/ASGI server - never use Django's development server in production
+- **Set up proper logging** - log errors and security events, but never log passwords or tokens
 - **Use a reverse proxy** (Nginx) in front of Django for static file serving and SSL termination
 
 ---
@@ -377,7 +377,7 @@ vent/                       # Django project root
 DEBUG = False
 ALLOWED_HOSTS = ['v-ent.co', 'app.v-ent.co', 'api.v-ent.co']
 
-# Generate a new secret key for production — NEVER use the default
+# Generate a new secret key for production - NEVER use the default
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # HTTPS enforcement
@@ -401,7 +401,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 ```
 
 ### Authentication Security
-- **Use Django's built-in auth system** as the foundation — don't roll your own
+- **Use Django's built-in auth system** as the foundation - don't roll your own
 - **Use a custom user model** (you should have done this from the start with `AbstractUser`)
 - **Enforce strong passwords** using Django's password validators
 - **Implement account lockout** after failed login attempts (use `django-axes`)
@@ -411,8 +411,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 ### API Security
 - **Use token-based authentication** (JWT via djangorestframework-simplejwt) for the API
 - **Set short token expiration times:** Access tokens: 15-30 minutes. Refresh tokens: 7-14 days
-- **Validate all input** in serializers — don't trust anything from the client
-- **Rate limit API endpoints** — especially wallet, auth, and tournament registration
+- **Validate all input** in serializers - don't trust anything from the client
+- **Rate limit API endpoints** - especially wallet, auth, and tournament registration
 - **Use CORS properly:** Only allow your frontend domain, not `*`
 
 ```python
@@ -444,13 +444,13 @@ class IPAddressMiddleware:
 ```
 
 ### Database Security
-- **Never use root database credentials** in the application — create a dedicated database user with limited privileges
+- **Never use root database credentials** in the application - create a dedicated database user with limited privileges
 - **Use parameterized queries** (Django ORM does this by default)
 - **Encrypt sensitive data at rest** (wallet balances, KYC data, financial records)
-- **Regular database backups** — hourly incremental, daily full
+- **Regular database backups** - hourly incremental, daily full
 
 ### File Upload Security
-- **Validate file types** — check both the extension and MIME type
+- **Validate file types** - check both the extension and MIME type
 - **Limit file sizes** (set `DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE`)
 - **Serve user uploads from a separate domain** to prevent XSS via uploaded HTML files
 - **Scan uploaded files** for malware if handling user-uploaded executables or documents
@@ -461,7 +461,7 @@ class IPAddressMiddleware:
 - **Restrict admin access by IP** in production
 - **Require 2FA for admin accounts**
 - **Use strong passwords** for all admin accounts
-- **Audit admin actions** — log who did what
+- **Audit admin actions** - log who did what
 
 ---
 
@@ -506,8 +506,8 @@ main (production-ready)
 
 ### Rules
 1. **`main` is always deployable.** Never commit directly to main
-2. **Create a branch for every feature or fix** — name it descriptively
-3. **Open a Pull Request** when ready for review — even if you're reviewing your own code
+2. **Create a branch for every feature or fix** - name it descriptively
+3. **Open a Pull Request** when ready for review - even if you're reviewing your own code
 4. **Write meaningful commit messages:** `feat: add tournament bracket visualization` not `update stuff`
 5. **Squash merge** feature branches into main to keep history clean
 6. **Delete branches** after merging
@@ -553,6 +553,6 @@ security: patch CVE-2025-29927
 
 8. **`react-quill` must be dynamically imported.** It requires the browser and will cause hydration errors if imported normally. Always use `dynamic(() => import('react-quill'), { ssr: false })`.
 
-9. **`src/constants/vent.js` has dead NextAuth exports.** The `GET`/`POST` handler exports in that file do nothing — the file is not under `src/app/api/`. Only the `VENTT` constants object is used. Clean this up before it causes confusion.
+9. **`src/constants/vent.js` has dead NextAuth exports.** The `GET`/`POST` handler exports in that file do nothing - the file is not under `src/app/api/`. Only the `VENTT` constants object is used. Clean this up before it causes confusion.
 
-10. **Tournament listing components use hardcoded mock data.** `fifaTournamentsList.js`, `pubgTournamentsList.js`, etc. are static arrays — not API calls. Real data integration is required before launch.
+10. **Tournament listing components use hardcoded mock data.** `fifaTournamentsList.js`, `pubgTournamentsList.js`, etc. are static arrays - not API calls. Real data integration is required before launch.

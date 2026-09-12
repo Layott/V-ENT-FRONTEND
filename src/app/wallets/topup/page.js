@@ -62,6 +62,9 @@ const TopupPage = () => {
   const [authorizationUrl, setAuthorizationUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('paystack');
+  // Cards this person has already saved. Read from the server rather than from
+  // a settings blob, because a saved card is an authorization Paystack holds.
+  const [savedCards, setSavedCards] = useState([]);
   const [polling, setPolling] = useState(false);
   const [newBalance, setNewBalance] = useState(null);
   const authHeaders = () => ({
@@ -70,6 +73,26 @@ const TopupPage = () => {
       Authorization: `Bearer ${session.user.sessionToken}`
     } : {})
   });
+  useEffect(() => {
+    const token = session?.user?.sessionToken;
+    if (!token) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/cards/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (!cancelled) setSavedCards(body?.data?.cards || []);
+      } catch {
+        // No cards read is the same as no cards saved: the page still offers
+        // the ordinary Paystack path.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [session?.user?.sessionToken]);
+
   const numericVc = Number(vc) || 0;
   const ngn = ngnFromVc(numericVc);
   const handleQuickPick = val => {
@@ -91,6 +114,37 @@ const TopupPage = () => {
   const handlePayNow = async () => {
     setSubmitting(true);
     setError('');
+
+    // A saved card is charged where it stands: one request, no redirect, and
+    // no second entry of a number the platform already holds an authorization
+    // for. That endpoint has existed since cards were built and nothing called
+    // it, so saving a card did nothing.
+    if (paymentMethod.startsWith('card:')) {
+      const cardId = paymentMethod.slice('card:'.length);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/cards/charge/`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ card_id: cardId, amount_ngn: ngn }),
+        });
+        const data = await res.json();
+        if (data?.status === 'success') {
+          setNewBalance(data.data?.balance ?? null);
+          setReference(data.data?.reference || '');
+          setStep(3);
+        } else {
+          setError(apiMessage(tt, data, 'api.cardChargeFailed',
+            'That card could not be charged. Nothing was taken.'));
+        }
+      } catch (err) {
+        setError(tt('api.cardChargeNetwork',
+          'The payment could not be reached. Nothing was taken.'));
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/topup/initiate/`, {
         method: 'POST',
@@ -214,15 +268,41 @@ const TopupPage = () => {
                   {tt("ui.v.ent.supports.paystack.9dc0", "V-ENT supports Paystack for top-ups. More methods coming soon.")}
                 </p>
 
-                <div className={styles.bankRow + ' ' + styles.bankRowActive} style={{
-              cursor: 'default'
-            }}>
+                {savedCards.map(card => {
+              const key = `card:${card.id}`;
+              const chosen = paymentMethod === key;
+              return (
+                <button type="button" key={card.id}
+                  className={styles.bankRow + (chosen ? ' ' + styles.bankRowActive : '')}
+                  onClick={() => setPaymentMethod(key)}>
+                  <div>
+                    <div className={styles.bankName}>
+                      {tt('topup.savedCard', '{brand} ending {last4}')
+                        .replace('{brand}', card.brand || 'Card')
+                        .replace('{last4}', card.last4 || '')}
+                    </div>
+                    <div className={styles.bankHolder}>
+                      {tt('topup.savedCardHint', 'Charged where it stands, with nothing to type')}
+                    </div>
+                  </div>
+                  {chosen
+                    ? <span className={styles.bankDefault}>{tt("ui.selected.b0ec", "✓ Selected")}</span>
+                    : null}
+                </button>
+              );
+            })}
+
+                <button type="button"
+                  className={styles.bankRow + (paymentMethod === 'paystack' ? ' ' + styles.bankRowActive : '')}
+                  onClick={() => setPaymentMethod('paystack')}>
                   <div>
                     <div className={styles.bankName}>{tt("ui.paystack.c851", "Paystack")}</div>
                     <div className={styles.bankHolder}>{tt("ui.card.bank.transfer.ussd.334b", "Card • Bank Transfer • USSD")}</div>
                   </div>
-                  <span className={styles.bankDefault}>{tt("ui.selected.b0ec", "✓ Selected")}</span>
-                </div>
+                  {paymentMethod === 'paystack'
+                    ? <span className={styles.bankDefault}>{tt("ui.selected.b0ec", "✓ Selected")}</span>
+                    : null}
+                </button>
 
                 <div className={styles.summaryList}>
                   <div className={styles.summaryRow}>

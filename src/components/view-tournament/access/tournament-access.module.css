@@ -204,3 +204,57 @@
 
 .error { color: #e5636a; font-size: 0.85rem; line-height: 1.5; }
 .notice { color: var(--v-ent-success-light, #66bb6a); font-size: 0.85rem; }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .copyBtn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Three sheets, four formats each.
+
+   A row per sheet rather than twelve buttons in a heap: the sheet is the
+   decision and the format is a detail of it. Stacks on a phone, where the
+   formats wrap under their own name. */
+.sheets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sheetRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.sheetName {
+  min-width: 7.5rem;
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.sheetFormats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 560px) {
+  .sheetName {
+    min-width: 100%;
+  }
+}
+
+/* The way out of a premium refusal, inline with the message. */
+.errorLink {
+  color: var(--v-ent-gold);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}

@@ -7,66 +7,66 @@ const TournamentDetailsRulesLeft = () => {
             <h3 className={styles.headerH3}>Tournament Rules</h3>
 
             <div className={styles.rules}>
-                <div className={styles.respectConduct}>
-                    <p className={styles.respectConductParagraph}>
-                        <span className={styles.respectConductTitle}>Respect Conduct:</span> &nbsp;
-                        <span className={styles.respectConductText}>No toxic behavior or harassment. Be respectful to all participants.</span>
+                <div>
+                    <p>
+                        <span>Respect Conduct:</span> &nbsp;
+                        <span>No toxic behavior or harassment. Be respectful to all participants.</span>
                     </p>
                 </div>
 
-                <div className={styles.gameSettings}>
-                    <p className={styles.gameSettingsParagraph}>
-                        <span className={styles.gameSettingsTitle}>Game Settings:</span> &nbsp;
-                        <span className={styles.gameSettingsText}>Matches are 5v5 on Counter-Strike 2 with standard competitive settings.</span>
+                <div>
+                    <p>
+                        <span>Game Settings:</span> &nbsp;
+                        <span>Matches are 5v5 on Counter-Strike 2 with standard competitive settings.</span>
                     </p>
                 </div>
 
                 <div className={styles.matchFormat}>
                     <h4>Match Format:</h4>
-                    <p className={styles.mapSelectionParagraph}>
-                        <span className={styles.mapSelectionTitle}>Map Selection:</span> &nbsp;
-                        <span className={styles.mapSelectionText}>Chosen via veto process.</span>
+                    <p>
+                        <span>Map Selection:</span> &nbsp;
+                        <span>Chosen via veto process.</span>
                     </p>
 
-                    <p className={styles.overtimeParagraph}>
-                        <span className={styles.overtimeTitle}>Overtime:</span> &nbsp;
-                        <span className={styles.overtimeText}>Played if tied after 30 rounds.</span>
-                    </p>
-                </div>
-
-
-                <div className={styles.cheating}>
-                    <p className={styles.cheatingParagraph}>
-                        <span className={styles.cheatingTitle}>Cheating:</span> &nbsp;
-                        <span className={styles.cheatingText}>Any form of cheating or using exploits leads to immediate disqualification.</span>
+                    <p>
+                        <span>Overtime:</span> &nbsp;
+                        <span>Played if tied after 30 rounds.</span>
                     </p>
                 </div>
 
-                <div className={styles.accountUse}>
-                    <p className={styles.accountUseParagraph}>
-                        <span className={styles.accountUseTitle}>Account Use:</span> &nbsp;
-                        <span className={styles.accountUseText}>Only one account per player is allowed.</span>
+
+                <div>
+                    <p>
+                        <span>Cheating:</span> &nbsp;
+                        <span>Any form of cheating or using exploits leads to immediate disqualification.</span>
                     </p>
                 </div>
 
-                <div className={styles.reporting}>
-                    <p className={styles.reportingParagraph}>
-                        <span className={styles.reportingTitle}>Reporting:</span> &nbsp;
-                        <span className={styles.reportingText}>Report rule violations using the Report Form.</span>
+                <div>
+                    <p>
+                        <span>Account Use:</span> &nbsp;
+                        <span>Only one account per player is allowed.</span>
                     </p>
                 </div>
 
-                <div className={styles.prize}>
-                    <p className={styles.prizeParagraph}>
-                        <span className={styles.prizeTitle}>Prize:</span> &nbsp;
-                        <span className={styles.prizeText}>Awarded based on final standings.</span>
+                <div>
+                    <p>
+                        <span>Reporting:</span> &nbsp;
+                        <span>Report rule violations using the Report Form.</span>
                     </p>
                 </div>
 
-                <div className={styles.tiebreakers}>
-                    <p className={styles.tiebreakersParagraph}>
-                        <span className={styles.tiebreakersTitle}>Tiebreakers:</span> &nbsp;
-                        <span className={styles.tiebreakersText}>In case of two or more teams having the same total score in the final match the winner will be decided using the following tiebreaker rules in order:</span>
+                <div>
+                    <p>
+                        <span>Prize:</span> &nbsp;
+                        <span>Awarded based on final standings.</span>
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        <span>Tiebreakers:</span> &nbsp;
+                        <span>In case of two or more teams having the same total score in the final match the winner will be decided using the following tiebreaker rules in order:</span>
                     </p>
                     <ul>
                         <li>Total kills in the match.</li>

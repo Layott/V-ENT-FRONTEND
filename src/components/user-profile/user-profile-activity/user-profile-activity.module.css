@@ -636,3 +636,21 @@
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* A thumb needs 44px. Raised only on a phone, so nothing moves on
+   a desktop where a mouse is doing the pointing. */
+@media (max-width: 720px) {
+  .eventBTN,
+  .tournamentBTN {
+    min-height: 44px;
+  }
+
+  /* Square by design: widened as well, or a round icon button
+     becomes a pill. */
+  .navIconBTN,
+  .navBTN,
+  .pageBTN {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

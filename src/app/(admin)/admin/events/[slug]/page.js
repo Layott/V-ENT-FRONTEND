@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -74,7 +75,7 @@ function AdminEventDetailInner() {
     Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
   }), []);
 
-  const loadDetail = useCallback(async () => {
+  const loadDetail = useCallback(async ({ quiet = false } = {}) => {
     try {
       const res = await fetch(`${api}/auth/admin/events/${slug}/`, { headers: headers() });
       const body = await res.json();
@@ -83,13 +84,18 @@ function AdminEventDetailInner() {
         return;
       }
       setDetail(body.data);
-      setError('');
+      if (!quiet) setError('');
     } catch {
       setError(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'));
     } finally {
       setLoading(false);
     }
   }, [api, slug, headers, tt]);
+
+  // Keeps itself current. One line, because loadDetail already exists and the
+  // loop lives in useAutoRefresh. `quiet` is what stops a refresh flashing
+  // the loading state over content somebody is reading.
+  useAutoRefresh(() => loadDetail({ quiet: true }));
 
   useEffect(() => { if (!authLoading) loadDetail(); }, [authLoading, loadDetail]);
 
@@ -349,7 +355,10 @@ function AdminEventDetailInner() {
               </div>}
             </div>}
 
-            {tab === 'sent' && <WhatWasSent tt={tt} sent={sent} loading={sentLoading} />}
+            {tab === 'sent' && <WhatWasSent tt={tt} sent={sent} loading={sentLoading}
+              slug={slug} toast={toast}
+              may={!!admin?.permissions?.manage_events}
+              onSent={() => { setSent(null); loadSent(); }} />}
           </>}
         </main>
       </div>
@@ -362,7 +371,15 @@ const Overview = ({ tt, numbers, detail }) => (
     <div className={styles.stats}>
       <Stat label={tt('admin.ticketsIssued', 'Tickets issued')} value={numbers.tickets} />
       <Stat label={tt('admin.ticketValid', 'Valid')} value={numbers.valid} />
-      <Stat label={tt('admin.ticketCheckedIn', 'Checked in')} value={numbers.checked_in} />
+      {/* Verified is the figure that means somebody came. The old single
+          "Checked in" number silently included self check-ins, which are
+          people telling their followers they are at the event rather than
+          people a steward admitted. Both are shown, neither is disguised as
+          the other. */}
+      <Stat label={tt('admin.ticketVerified', 'Verified at the door')}
+            value={numbers.verified ?? numbers.at_door ?? numbers.checked_in} />
+      <Stat label={tt('admin.ticketSelfSaid', 'Said they are here')}
+            value={numbers.self_reported ?? numbers.by_self ?? 0} />
       <Stat label={tt('admin.ticketComped', 'Given free')} value={numbers.comped} />
       <Stat label={tt('admin.ticketRefunded', 'Refunded')} value={numbers.refunded} />
       <Stat label={tt('admin.ticketVoid', 'Void')} value={numbers.cancelled} />
@@ -413,7 +430,78 @@ const Overview = ({ tt, numbers, detail }) => (
   </>
 );
 
-const WhatWasSent = ({ tt, sent, loading }) => {
+/** Composing one, beside the record of every one already sent.
+ *
+ *  It posts to the event's OWN announcement endpoint, so there is one
+ *  EventAnnouncement model and one send. A second console-only endpoint would
+ *  mean two places to look for "what was sent about this event", which is the
+ *  question this whole tab exists to answer.
+ */
+const ComposeAnnouncement = ({ tt, slug, toast, onSent }) => {
+  const [open, setOpen] = useState(false);
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [audience, setAudience] = useState('all');
+  const [sending, setSending] = useState(false);
+
+  const send = async () => {
+    const token = localStorage.getItem('adminToken');
+    setSending(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${slug}/announcements/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: subject.trim(), body: body.trim(), audience }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.status !== 'success') {
+        toast.push(apiMessage(tt, data, 'api.failed', 'Failed.'), 'error');
+        return;
+      }
+      toast.push(tt('admin.announcementSent', 'Sent. It is in their inbox and their email.'), 'success');
+      setSubject(''); setBody(''); setOpen(false);
+      onSent();
+    } catch {
+      toast.push(tt('msg.connectionError', 'Connection error.'), 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (!open) {
+    return <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+      onClick={() => setOpen(true)}>
+      {tt('admin.announceEvent', 'Message ticket holders')}
+    </button>;
+  }
+
+  return <div className={styles.composePanel}>
+    <select className={shared.filterSelect} value={audience}
+      onChange={e => setAudience(e.target.value)}>
+      <option value="all">{tt('admin.audienceAll', 'everybody holding a ticket')}</option>
+      <option value="checked_in">{tt('admin.audienceArrived', 'people marked as checked in')}</option>
+      <option value="not_checked_in">{tt('admin.audienceNotArrived', 'people not marked as checked in')}</option>
+    </select>
+    <input className={shared.filterSelect} value={subject} maxLength={140}
+      placeholder={tt('admin.announceSubject', 'What it is about')}
+      onChange={e => setSubject(e.target.value)} />
+    <textarea className={styles.composeBody} rows={4} value={body} maxLength={2000}
+      placeholder={tt('admin.announceBody', 'What you need them to know')}
+      onChange={e => setBody(e.target.value)} />
+    <div className={styles.composeActions}>
+      <button type="button" className={`${shared.actBtn} ${shared.actView}`}
+        onClick={() => setOpen(false)}>
+        {tt('ui.cancel.77df', 'Cancel')}
+      </button>
+      <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+        disabled={sending || !subject.trim() || !body.trim()} onClick={send}>
+        {sending ? tt('admin.sending', 'Sending...') : tt('ui.send.9bc2', 'Send')}
+      </button>
+    </div>
+  </div>;
+};
+
+const WhatWasSent = ({ tt, sent, loading, slug, toast, may, onSent }) => {
   if (loading || !sent) return <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading...')}</p>;
   return <>
     <div className={shared.card}>
@@ -421,6 +509,7 @@ const WhatWasSent = ({ tt, sent, loading }) => {
       <p className={styles.cardSub}>
         {tt('admin.announcementsSub', 'Messages the organiser sent to everybody holding a ticket. These cannot be edited, here or anywhere: the recipients already have the text in their inbox.')}
       </p>
+      {may ? <ComposeAnnouncement tt={tt} slug={slug} toast={toast} onSent={onSent} /> : null}
       {sent.announcements.length === 0
         ? <p className={shared.stateText}>{tt('admin.noAnnouncements', 'Nothing has been sent about this event.')}</p>
         : <ul className={styles.plainList}>
@@ -506,8 +595,10 @@ const ticketStatusWord = (tt, s) => ({
 
 const audienceWord = (tt, a) => ({
   all: tt('admin.audienceAll', 'everybody holding a ticket'),
-  checked_in: tt('admin.audienceArrived', 'people who had arrived'),
-  not_checked_in: tt('admin.audienceNotArrived', 'people who had not arrived'),
+  // "arrived" was a claim the data does not support: this audience includes
+  // anybody who tapped "I am here" without being scanned.
+  checked_in: tt('admin.audienceArrived', 'people marked as checked in'),
+  not_checked_in: tt('admin.audienceNotArrived', 'people not marked as checked in'),
 }[a] || a);
 
 export default function AdminEventDetail() {

@@ -58,3 +58,11 @@
     width: 43px;
   }
 }
+
+/* Measured on the emulator at 411 CSS px. Sized by padding, so the stylesheet
+   checker cannot see them; the device reported 30px. A thumb needs 44px. */
+@media (max-width: 720px) {
+  .logoLink {
+    min-height: 44px;
+  }
+}

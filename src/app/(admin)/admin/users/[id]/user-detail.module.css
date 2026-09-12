@@ -173,3 +173,25 @@
   .summary { flex-direction: column; }
   .avatar { width: 60px; height: 60px; font-size: 1.2rem; }
 }
+
+/* The detail somebody typed when they filed the report. It is the part that
+ * decides whether the report is actionable, so it is on the row and not
+ * hidden behind a click. */
+.reportDetail {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-top: 0.3rem;
+  max-width: 32rem;
+}
+
+/* The reason an account has premium, beside the badge that says it does.
+
+   Quieter than the value it sits next to: the badge is the answer and this is
+   the footnote, and somebody scanning the summary should read the answer
+   first. */
+.premiumNote {
+  margin-left: 0.5rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}

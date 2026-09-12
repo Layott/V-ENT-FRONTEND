@@ -66,9 +66,15 @@ const QrCanvas = ({ value }) => {
  * this event's links, so the button is absent rather than present-and-refused
  * for everybody else. A control that renders live and fails on press is the
  * thing the community feed shipped once and had to take back.
+ *
+ * `onShare`, when given, is called once each time somebody actually shares:
+ * copying the address, opening the phone's share sheet, or saving the code.
+ * It is a callback rather than this component knowing what it is sharing,
+ * because it sits on events and on tournaments and only the caller knows which
+ * thing is being counted.
  */
 export default function ShareCard({ url, title, text, label, compact = false,
-                                    shorten = null }) {
+                                    shorten = null, onShare = null }) {
   const tt = useT();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -145,11 +151,12 @@ export default function ShareCard({ url, title, text, label, compact = false,
     try {
       await navigator.clipboard.writeText(showing);
       setCopied(true);
+      onShare?.();
     } catch {
       // Clipboard is blocked outside a secure context and in some in-app
       // browsers. The address is on screen and selectable either way.
     }
-  }, [showing]);
+  }, [showing, onShare]);
 
   // The phone's own share sheet, where there is one. It reaches WhatsApp,
   // which is where this is actually going, without this page having to guess
@@ -158,10 +165,11 @@ export default function ShareCard({ url, title, text, label, compact = false,
     if (typeof navigator === 'undefined' || !navigator.share) return;
     try {
       await navigator.share({ title, text, url: showing });
+      onShare?.();
     } catch {
       // Dismissing the sheet throws. That is a person changing their mind.
     }
-  }, [showing, title, text]);
+  }, [showing, title, text, onShare]);
 
   const saveQr = useCallback(() => {
     const canvas = canvasWrapRef.current?.querySelector('canvas');
@@ -171,20 +179,26 @@ export default function ShareCard({ url, title, text, label, compact = false,
       link.download = `${(title || 'v-ent').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-qr.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      onShare?.();
     } catch {
       // Some browsers refuse toDataURL. The code is still on screen to
       // photograph, which is how most people would use it anyway.
     }
-  }, [title]);
+  }, [title, onShare]);
 
   const canNativeShare = typeof navigator !== 'undefined' && Boolean(navigator.share);
 
   return (
     <>
+      {/* Compact draws the icon alone, so the name has to be carried by the
+          attribute instead. Without it a screen reader announces "button" and
+          nothing else, and a hover says nothing either. */}
       <button
         type="button"
         className={compact ? styles.triggerCompact : styles.trigger}
         onClick={() => setOpen(true)}
+        aria-label={compact ? (label || tt('share.button', 'Share')) : undefined}
+        title={compact ? (label || tt('share.button', 'Share')) : undefined}
       >
         <IoShareSocialOutline aria-hidden="true" />
         {!compact && <span>{label || tt('share.button', 'Share')}</span>}

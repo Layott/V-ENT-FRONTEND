@@ -13,7 +13,7 @@ const LandingBrands = () => {
     const [ref, isVisible] = useIntersectionObserver({ threshold: 0.01 })
 
   return (
-    <div className={`${landingStyles.brandsContainer} ${styles.brandsContainer}`}>
+    <div className={`${landingStyles.brandsContainer}`}>
         <div className={`${landingStyles.innerBrandsContainer} ${styles.innerBrandsContainer}`}>
             <div className={styles.brandHeader}>
                 <h2>{tt('landing.brands', 'Brands that work with us')}</h2>

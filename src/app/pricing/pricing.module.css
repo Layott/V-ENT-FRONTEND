@@ -1,0 +1,262 @@
+/* Pricing.
+ *
+ * CEO, 7 September 2026, on the first version: "the pricing and feedback pages
+ * are ugly please look at the UI and rethink them."
+ *
+ * They were right. It was five identical grey rounded boxes stacked down the
+ * page with a two-by-three card grid inside one of them: the card-grid cliche,
+ * and one radius applied uniformly to everything, both of which the house rules
+ * ban by name. Nothing had any weight, so nothing read as more important than
+ * anything else, on a page whose whole job is to land ONE sentence.
+ *
+ * What changed:
+ *
+ *   - The message is at SCALE. "Everything is free right now" is the thing to
+ *     remember, so it is the size of the thing to remember.
+ *   - The six things that will cost money are a numbered LIST, not cards. A
+ *     name on the left, a sentence on the right, separated by space and a
+ *     background step. Reads down, like a list of facts, because that is what
+ *     it is.
+ *   - The promise is a full-width band on a different ground, not another card
+ *     in the stack. It is a different kind of statement and it looks like one.
+ *   - What stays free is inline chips, not six more boxes.
+ *   - The radius scale is used with intent: 8px on a chip, 12px on a row,
+ *     20px on the band. Not one number everywhere.
+ */
+
+/* The page ground is #131316, and `--primary-bg` on this site is WHITE:
+   it is used as a TEXT colour on dark surfaces (see globals.css, where
+   `color: var(--primary-bg)` appears throughout). Using it as a background
+   painted these two pages white, which is exactly what the CEO saw, and left
+   every heading inheriting a dark colour it could not be read against. */
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+.mainContainer { display: flex; }
+
+.rightPaneContainer {
+  width: 100%;
+  padding: 1.25rem 1rem 6rem;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  padding: 1.5rem 0 2.5rem;
+  max-width: 760px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--v-ent-gold, #d4af37);
+  margin-bottom: 1.1rem;
+}
+
+/* The sentence, at the size of the sentence. Tight leading so a two-line
+   statement reads as one object rather than as two lines of a paragraph. */
+.headline {
+  color: var(--white);
+  font-size: 2.15rem;
+  line-height: 1.08;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.015em;
+  margin: 0 0 1.1rem;
+}
+
+/* The half that matters, in the brand hue. Colour carrying meaning, once. */
+.headlineFree { color: var(--v-ent-success); }
+
+.lede {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.62);
+  margin: 0;
+  max-width: 56ch;
+}
+
+/* ------------------------------------------------------- what will be paid */
+
+.section { padding: 2.5rem 0 0; }
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.h2 {
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.sectionNote {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 1.5rem;
+  max-width: 62ch;
+}
+
+/* A list of facts, read downwards. Rows on a filled surface, separated by a
+   background step rather than by rules or by six separate cards. */
+.list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 0.35rem 1rem;
+  align-items: baseline;
+  padding: 1.15rem 1.15rem;
+  background-color: var(--overlay-gray);
+}
+
+/* Zebra, so a long list stays readable without a single hairline. */
+.row:nth-child(even) { background-color: #26272b; }
+
+.rowNum {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.rowTitle {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  margin: 0;
+}
+
+.rowLine {
+  grid-column: 2;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.58);
+  margin: 0;
+  max-width: 64ch;
+}
+
+/* ---------------------------------------------------------------- promise */
+
+/* A different KIND of statement, so a different ground and a bigger radius.
+   Not another card in the stack. */
+.promise {
+  margin: 2.75rem 0 0;
+  background-color: #16171a;
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+}
+
+.promiseH {
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold);
+  margin: 0 0 0.85rem;
+  color: var(--v-ent-success);
+}
+
+.promiseBody {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  max-width: 62ch;
+}
+
+/* --------------------------------------------------------------- free now */
+
+.freeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.freeChip {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.88rem;
+}
+
+/* -------------------------------------------------------------------- cta */
+
+.cta { padding: 2.75rem 0 0; }
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.ctaQuiet {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.ctaQuiet:hover { background-color: #33343a; color: #fff; }
+
+/* ------------------------------------------------------------ breakpoints */
+
+@media only screen and (min-width: 768px) {
+  .headline { font-size: 3rem; }
+  .row {
+    grid-template-columns: 2.5rem minmax(0, 15rem) minmax(0, 1fr);
+    align-items: baseline;
+    padding: 1.35rem 1.5rem;
+  }
+  /* The description moves beside the name rather than under it: two columns
+     of the same fact, which is what a list of definitions wants. */
+  .rowLine { grid-column: 3; margin: 0; }
+  .promise { padding: 2.5rem 2.25rem; }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 2.5rem 2.5rem 4rem;
+    max-width: 1100px;
+  }
+  .headline { font-size: 3.4rem; }
+  .lede { font-size: 1.08rem; }
+}
+
+@media only screen and (min-width: 1440px) {
+  .rightPaneContainer { padding: 3rem 3rem 5rem; }
+}
