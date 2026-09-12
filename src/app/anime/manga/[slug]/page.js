@@ -1,7 +1,8 @@
 import JsonLd from '@/components/seo/JsonLd';
 import {
   SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale,
-  fetchForMetadata,
+  fetchRecordForMetadata,
+  unavailableMetadata,
 } from '@/lib/seo';
 import SeriesClient from './SeriesClient';
 
@@ -18,13 +19,14 @@ import SeriesClient from './SeriesClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/anime/series/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/anime/series/${encodeURIComponent(slug)}/`);
 
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);
   const locale = currentLocale();
   const series = await load(slug);
 
+  if (series?.__failed) return unavailableMetadata(slug, `/anime/manga/${slug}`);
   if (!series || series.__moved || !series.title) {
     return buildMetadata({
       title: 'Comic not found',

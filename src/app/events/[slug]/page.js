@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  breadcrumbLd, buildMetadata, clamp, eventLd, eventMetadata, fetchForMetadata,
+  breadcrumbLd, buildMetadata, clamp, eventLd, eventMetadata, fetchRecordForMetadata,
 } from '@/lib/seo';
 import EventBySlugClient from './EventBySlugClient';
 
@@ -12,7 +12,7 @@ import EventBySlugClient from './EventBySlugClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/event/view-event/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/event/view-event/${encodeURIComponent(slug)}/`);
 
 const pick = (data) => (data?.__moved ? data : (data?.event || data));
 

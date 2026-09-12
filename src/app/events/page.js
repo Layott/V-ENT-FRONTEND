@@ -413,7 +413,7 @@ const EventsListingContent = () => {
                 {TABS.find(t => t.id === activeTab)?.label || 'All'} {tt("ui.events.82d5", "events")}
               </h2>
               <span className={styles.resultCount}>
-                {loading ? tx("Loading…") : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
+                {loading ? tx("Loading…") : loadError && events.length === 0 ? '' : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
               </span>
             </div>
 

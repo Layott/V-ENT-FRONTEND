@@ -1,6 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  breadcrumbLd, buildMetadata, clamp, currentLocale, fetchForMetadata,
+  breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata,
+  unavailableMetadata,
 } from '@/lib/seo';
 import BattleClient from './BattleClient';
 
@@ -12,13 +13,14 @@ import BattleClient from './BattleClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/anime/battles/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/anime/battles/${encodeURIComponent(slug)}/`);
 
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);
   const locale = currentLocale();
   const battle = await load(slug);
 
+  if (battle?.__failed) return unavailableMetadata(slug, `/anime/battles/${slug}`);
   if (!battle || battle.__moved || !battle.title) {
     return buildMetadata({
       title: 'Battle not found',
