@@ -1,7 +1,8 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useEffect, useState, Suspense } from 'react';
+import ErrorState from '@/components/error-state/ErrorState';
+import { useCallback, useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/header/Header';
@@ -37,38 +38,37 @@ const RegisterTournamentContent = ({
   const token = tokenFrom(session);
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
+  // `notFound` is a tournament that does not exist; `loadError` is a request
+  // that did not come back. One used to stand in for the other.
+  const [notFound, setNotFound] = useState('');
   const [loadError, setLoadError] = useState('');
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!id) {
       setLoading(false);
-      setLoadError('No tournament specified.');
-      return undefined;
+      setNotFound(tt("registerTournament.noneNamed", "No tournament was named in this address."));
+      return;
     }
     // Wait for the session to resolve so the view request carries a token
     // when one is available (some tournaments may require auth to view).
-    if (sessionStatus === 'loading') return undefined;
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setLoadError('');
-      try {
-        const data = await ventFetch(API.TOURNAMENT.VIEW(id), {
-          token
-        });
-        if (cancelled) return;
-        const t = toTournament(data);
-        if (t) setTournament(t);else setLoadError('Tournament not found.');
-      } catch (err) {
-        if (cancelled) return;
-        setLoadError(apiMessage(tt, err, "api.failedToLoadTournament", "Failed to load tournament."));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, token, sessionStatus]);
+    if (sessionStatus === 'loading') return;
+    setLoading(true);
+    setLoadError('');
+    setNotFound('');
+    try {
+      const data = await ventFetch(API.TOURNAMENT.VIEW(id), {
+        token
+      });
+      const t = toTournament(data);
+      if (t) setTournament(t);
+      else setNotFound(tt("registerTournament.notFound", "That tournament does not exist."));
+    } catch (err) {
+      if (err?.status === 404) setNotFound(tt("registerTournament.notFound", "That tournament does not exist."));
+      else setLoadError(apiMessage(tt, err, "api.failedToLoadTournament", "Failed to load tournament."));
+    } finally {
+      setLoading(false);
+    }
+  }, [id, token, sessionStatus, tt]);
+  useEffect(() => { load(); }, [load]);
   const goToTournament = () => {
     router.push(id ? `/tournaments/${id}` : '/tournaments');
   };
@@ -86,7 +86,7 @@ const RegisterTournamentContent = ({
                   .replace("{name}", tournament.tournament_title)
               : tt("registerTournament.title", "Tournament registration")}
           </h1>
-          {loading ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : !tournament ? <p className={styles.errText}>{loadError || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} />}
+          {loading ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : loadError && !tournament ? <ErrorState message={loadError} onRetry={load} /> : !tournament ? <p className={styles.errText}>{notFound || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} />}
         </div>
       </main>
 

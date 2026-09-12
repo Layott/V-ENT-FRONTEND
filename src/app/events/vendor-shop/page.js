@@ -2,6 +2,8 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -36,6 +38,7 @@ const VendorShopContent = ({
   const [eventId, setEventId] = useState(initialEventId);
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
 
@@ -84,27 +87,36 @@ const VendorShopContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load vendors for selected event
-  useEffect(() => {
+  // Load vendors for selected event.
+  //
+  // `quiet` used to be read here from the OTHER effect's scope, where it was a
+  // local const, so this threw "ReferenceError: quiet is not defined" on every
+  // mount and the list sat on "Loading vendors..." for ever, on production,
+  // since the refresh loop landed. The loader is a callback now, with its own
+  // `quiet`, so a retry can call it and a failure has a sentence.
+  const fetchVendors = useCallback(async (quiet = false) => {
     if (!eventId) return;
-    const fetchVendors = async () => {
-      if (!quiet) setLoading(true);
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendors/`, {
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          setVendors(data.data.vendors || []);
-        }
-      } catch (err) {
-        console.error('Vendors fetch error:', err);
-      } finally {
-        setLoading(false);
+    if (!quiet) setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/vendors/`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setVendors(data.data.vendors || []);
+        setLoadError(null);
+      } else {
+        setLoadError(apiMessage(tt, data, 'vendorShop.loadFailed', 'The stalls did not load.'));
       }
-    };
-    fetchVendors();
-  }, [eventId, authHeaders, refreshTick]);
+    } catch (err) {
+      setLoadError(apiMessage(tt, err, 'vendorShop.loadFailed', 'The stalls did not load.'));
+    } finally {
+      setLoading(false);
+    }
+  }, [eventId, authHeaders, tt]);
+  useEffect(() => {
+    fetchVendors(refreshTick > 0);
+  }, [fetchVendors, refreshTick]);
 
   // Hydrate cart from localStorage
   useEffect(() => {
@@ -285,7 +297,7 @@ const VendorShopContent = ({
               </span>
             </div>
 
-            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading vendors…")}</p> : filteredVendors.length === 0 ? <div className={styles.emptyState}>
+            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading vendors…")}</p> : loadError && vendors.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchVendors()} /> : filteredVendors.length === 0 ? <div className={styles.emptyState}>
                 <FaStore className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No vendors match.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.different.category.clear.1b19", "Try a different category or clear the search.")}</p>

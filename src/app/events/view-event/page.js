@@ -4,6 +4,7 @@ import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { usePrice } from '@/lib/money';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { recordArrival, refFor } from '@/lib/referral';
 import { track } from '@/lib/track';
@@ -286,6 +287,9 @@ export const ViewEventContent = ({
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // `error` is "this event does not exist"; `loadError` is "the request did not
+  // come back". A server that is down is not an event that was deleted.
+  const [loadError, setLoadError] = useState(null);
   const [activeTab, setActiveTab] = useState(tabParam || 'overview');
 
   // Where the tabs live, so a button that opens one can put it under the
@@ -461,62 +465,68 @@ export const ViewEventContent = ({
   // The page then sits on "Loading event..." for ever. It only looked
   // fine because whether the session resolves before the first effect
   // is a race, and signed-in visitors change authHeaders anyway.
-  useEffect(() => {
+  const fetchEvent = useCallback(async () => {
     if (!id) {
       setError(tt("msg.eventIdMissing", "Event ID missing"));
       setLoading(false);
       return;
     }
     if (sessionStatus === 'loading') return;
-    const fetchEvent = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
+    setLoadError(null);
+    try {
+      // Primary: dedicated single-event endpoint. A 404 here means the event
+      // does not exist; anything else that is not ok is a failure to report.
+      let found = null;
+      let failed = null;
       try {
-        // Primary: dedicated single-event endpoint. The mock layer serves this;
-        // the real backend does not have it yet (Phase 2), so this may 404.
-        let found = null;
-        try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`, {
-            headers: authHeaders()
-          });
-          if (res.ok) {
-            const data = await res.json();
-            // Renamed since this link was shared. Swap the address for the
-            // current one; the page reloads against it.
-            if (data.status === 'moved' && data.data?.url) {
-              router.replace(data.data.url);
-              return;
-            }
-            if (data.status === 'success') {
-              found = normalizeEvent(data.data.event || data.data);
-            }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${id}/`, {
+          headers: authHeaders()
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Renamed since this link was shared. Swap the address for the
+          // current one; the page reloads against it.
+          if (data.status === 'moved' && data.data?.url) {
+            router.replace(data.data.url);
+            return;
           }
-        } catch {
-          /* fall through to the list-based lookup below */
-        }
-
-        // Fallback: locate the event inside `get-all-events` (real backend has
-        // no single-event route). Also covers the thin real field shape.
-        if (!found) {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
-            headers: authHeaders()
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === 'success') {
-              found = findEventInList(data.data, id);
-            }
+          if (data.status === 'success') {
+            found = normalizeEvent(data.data.event || data.data);
           }
+        } else if (res.status !== 404) {
+          failed = await res.json().catch(() => ({}));
         }
-        if (found) setEvent(found);else setError(tt("msg.thisEventDoesnTExist", "This event doesn\u2019t exist or is no longer available."));
       } catch (err) {
-        setError(tt("msg.networkError", "Network error"));
-      } finally {
-        setLoading(false);
+        failed = err;
       }
-    };
-    fetchEvent();
-  }, [id, authHeaders, sessionStatus]);
+
+      // Fallback: locate the event inside `get-all-events`. Also covers the
+      // thin real field shape.
+      if (!found) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
+          headers: authHeaders()
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'success') {
+            found = findEventInList(data.data, id);
+          }
+        } else {
+          failed = failed || await res.json().catch(() => ({}));
+        }
+      }
+      if (found) setEvent(found);
+      else if (failed) setLoadError(apiMessage(tt, failed, 'events.eventLoadFailed', 'This event did not load.'));
+      else setError(tt("msg.thisEventDoesnTExist", "This event doesn\u2019t exist or is no longer available."));
+    } catch (err) {
+      setLoadError(apiMessage(tt, err, 'events.eventLoadFailed', 'This event did not load.'));
+    } finally {
+      setLoading(false);
+    }
+  }, [id, authHeaders, sessionStatus, router, tt]);
+  useEffect(() => { fetchEvent(); }, [fetchEvent]);
 
   // Fetch wallet balance for ticket flow
   useEffect(() => {
@@ -1029,6 +1039,7 @@ export const ViewEventContent = ({
       <BottomMenu />
     </div>;
   if (loading) return renderPage(<p className={styles.stateText}>{tt("ui.loading.event.8f12", "Loading event…")}</p>);
+  if (loadError && !event) return renderPage(<ErrorState message={loadError} onRetry={fetchEvent} />);
   if (error || !event) return renderPage(<div className={styles.errorState}>
         <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.event.e418", "Couldn't load event")}</h2>
         <p className={styles.errorSub}>{error || tx("Event not found.")}</p>
