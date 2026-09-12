@@ -464,24 +464,6 @@
   gap: 1rem;
 }
 
-/* Why the stats read "-", and the one press that asks again. */
-.statsProblem {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #B2B3BD;
-}
-
-.statsRetry {
-  background-color: #33343a;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  min-height: 44px;
-  padding: 0 0.9rem;
-}
-
 .statsDetailsContainer {
   display: flex;
   flex-direction: row;
