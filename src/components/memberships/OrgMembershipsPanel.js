@@ -113,7 +113,8 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
     setOpen(slug);
     setView(which);
     setDetail(null);
-    const path = which === 'payments' ? 'invoices' : 'members';
+    const path = which === 'payments' ? 'invoices'
+      : which === 'earnings' ? 'earnings' : 'members';
     try {
       const res = await fetch(
         `${API}/billing/plan/${encodeURIComponent(slug)}/${path}/`,
@@ -578,6 +579,12 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
             </button>
             {canManage ? (
               <button type="button" className={`${styles.action} ${styles.actionQuiet}`}
+                      onClick={() => openPlan(plan.slug, 'earnings')}>
+                {tt('billing.seeEarnings', 'Earnings')}
+              </button>
+            ) : null}
+            {canManage ? (
+              <button type="button" className={`${styles.action} ${styles.actionQuiet}`}
                       onClick={() => startEdit(plan)}>
                 {tt('common.edit', 'Edit')}
               </button>
@@ -722,6 +729,89 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
                 {tt('billing.noPaymentsYet', 'No payments have been taken yet.')}
               </div>
             )
+          ) : null}
+
+          {/* What the plan has earned, and every run that paid it out. The
+              endpoint answered this from the day it was written; until
+              12 September nothing asked it, so an organiser had the owed
+              figure on the card and no way to see how it was arrived at. */}
+          {open === plan.slug && detail && view === 'earnings' ? (
+            <div className={styles.earnings}>
+              <div className={styles.numbers}>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>
+                    {tt('billing.collected', 'Collected')}
+                  </span>
+                  <span className={styles.statValue}>
+                    {formatNumber(detail.collected_vc)} VC
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>
+                    {tt('billing.refunded', 'Refunded')}
+                  </span>
+                  <span className={styles.statValue}>
+                    {formatNumber(detail.refunded_vc)} VC
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>
+                    {tt('billing.platformFee', 'V-ENT fee')}
+                  </span>
+                  <span className={styles.statValue}>
+                    {formatNumber(detail.platform_fee_vc)} VC
+                    {' '}
+                    <span className={styles.planMeta}>
+                      ({formatNumber(detail.fee_pct)}%)
+                    </span>
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>
+                    {tt('billing.paidOut', 'Paid into the wallet')}
+                  </span>
+                  <span className={styles.statValue}>
+                    {formatNumber(detail.paid_vc)} VC
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>
+                    {tt('billing.owedToYou', 'Waiting to be paid out')}
+                  </span>
+                  <span className={styles.statValue}>
+                    {formatNumber(detail.owed_vc)} VC
+                  </span>
+                </div>
+              </div>
+              {(detail.settlements || []).length ? (
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>{tt('billing.invoiceWhen', 'When')}</th>
+                        <th>{tt('billing.invoiceAmount', 'Amount')}</th>
+                        <th>{tt('billing.linesPaid', 'Payments covered')}</th>
+                        <th>{tt('billing.settlementNote', 'Note')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detail.settlements.map((run) => (
+                        <tr key={run.id}>
+                          <td>{formatDate(run.at)}</td>
+                          <td>{formatNumber(run.amount_vc)} VC</td>
+                          <td>{formatNumber(run.lines_paid)}</td>
+                          <td>{run.note || ''}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.sectionEmpty}>
+                  {tt('billing.noSettlementsYet', 'Nothing has been paid out yet.')}
+                </div>
+              )}
+            </div>
           ) : null}
         </div>
       ))}

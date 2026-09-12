@@ -522,6 +522,13 @@
   overflow-x: auto;
 }
 
+/* The row scrolls, so its children must keep their width or four bars
+   squeeze into the row and nothing scrolls. Written as its own rule so
+   check-tabstrips can see it. */
+.hourBars > * {
+  flex-shrink: 0;
+}
+
 .hourBar {
   display: flex;
   flex-direction: column;

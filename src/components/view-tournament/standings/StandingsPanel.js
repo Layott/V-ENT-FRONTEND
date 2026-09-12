@@ -227,8 +227,110 @@ export default function StandingsPanel({ tournamentId }) {
         rows={data.player_table}
       />
 
+      <HeadToHead tournamentId={tournamentId} tt={tt}
+                  names={[...(data.team_table || []), ...(data.player_table || [])]
+                    .map(r => r.name)} />
+
       {picked && <PlayerCard row={picked} tt={tt} onClose={() => setPicked(null)} />}
     </div>
+  );
+}
+
+/**
+ * The record between two entrants, as the sheet's Head2Head does.
+ *
+ * `GET /tournament/<id>/head-to-head/?a=&b=` answered this from the day the
+ * league stats shipped, and until 12 September nothing on the site asked it:
+ * the whole-frontend caller check saw "head" and "to" somewhere and called it
+ * covered. Two pickers and a press, because that is the question.
+ */
+function HeadToHead({ tournamentId, tt, names }) {
+  const [a, setA] = useState('');
+  const [b, setB] = useState('');
+  const [record, setRecord] = useState(null);
+  const [problem, setProblem] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  if (names.length < 2) return null;
+
+  const compare = async () => {
+    setBusy(true);
+    setProblem('');
+    setRecord(null);
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentId}/head-to-head/?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') setRecord(body.data);
+      else setProblem(tt('table.h2hFailed', 'Could not work that out.'));
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE',
+        'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const side = (name) => {
+    const row = record?.[name];
+    if (!row) {
+      return (
+        <p className={styles.blockSub}>
+          {tt('table.h2hNothing', '{name} has not played the other.').replace('{name}', name)}
+        </p>
+      );
+    }
+    return (
+      <p className={styles.blockSub}>
+        <strong>{name}</strong>
+        {' '}
+        {tt('table.h2hLine', '{w} won, {d} drawn, {l} lost, {gf} for, {ga} against, {p} points')
+          .replace('{w}', row.won ?? row.wins ?? 0)
+          .replace('{d}', row.drawn ?? row.draws ?? 0)
+          .replace('{l}', row.lost ?? row.losses ?? 0)
+          .replace('{gf}', row.goals_for ?? 0)
+          .replace('{ga}', row.goals_against ?? 0)
+          .replace('{p}', row.points ?? 0)}
+      </p>
+    );
+  };
+
+  return (
+    <section className={styles.block}>
+      <h3 className={styles.blockTitle}>{tt('table.h2h', 'Head to head')}</h3>
+      <div className={styles.controls}>
+        <select className={styles.pick} value={a} onChange={e => setA(e.target.value)}
+                aria-label={tt('table.h2hFirst', 'First')}>
+          <option value="">{tt('table.h2hFirst', 'First')}</option>
+          {names.map(n => <option key={n} value={n}>{n}</option>)}
+        </select>
+        <select className={styles.pick} value={b} onChange={e => setB(e.target.value)}
+                aria-label={tt('table.h2hSecond', 'Second')}>
+          <option value="">{tt('table.h2hSecond', 'Second')}</option>
+          {names.map(n => <option key={n} value={n}>{n}</option>)}
+        </select>
+        <button type="button" className={styles.toggleOff}
+                disabled={busy || !a || !b || a === b} onClick={compare}>
+          {tt('table.h2hCompare', 'Compare')}
+        </button>
+      </div>
+      {problem && <p className={styles.empty}>{problem}</p>}
+      {record && (
+        record.matches === 0
+          ? <p className={styles.empty}>{tt('table.h2hNoMatches', 'They have not met yet.')}</p>
+          : (
+            <>
+              <p className={styles.blockSub}>
+                {(record.matches === 1
+                  ? tt('table.h2hOneMatch', 'One match between them.')
+                  : tt('table.h2hMatches', '{n} matches between them.'))
+                  .replace('{n}', record.matches)}
+              </p>
+              {side(a)}
+              {side(b)}
+            </>
+          )
+      )}
+    </section>
   );
 }
 

@@ -22,6 +22,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/anime';
 import { formatDate, localInputToISO } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
@@ -101,7 +102,7 @@ const Studio = () => {
       setMine(data.series || []);
       setPicked(p => data.series?.find(s => s.slug === p?.slug) || data.series?.[0] || null);
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed', 'We could not load your comics.'));
+      setError(apiMessage(tt, err, 'anime.loadFailed', 'We could not load your comics.'));
     } finally {
       setLoading(false);
     }
@@ -136,7 +137,7 @@ const Studio = () => {
       await load();
       setPicked(made);
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -167,7 +168,7 @@ const Studio = () => {
       setToast(tt('anime.chapterUploaded', 'Chapter uploaded.'));
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -185,7 +186,7 @@ const Studio = () => {
       setToast(tt('anime.volumeSaved', 'Volume saved.'));
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -204,7 +205,7 @@ const Studio = () => {
         : tt('anime.nowPublic', 'It is public. Anybody can find it.'));
       await load();
     } catch (err) {
-      setToast(err.message);
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -226,7 +227,7 @@ const Studio = () => {
           { n: Number(editPrice) || 0 }));
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }

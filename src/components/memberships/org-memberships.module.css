@@ -352,3 +352,12 @@
   outline: 2px solid var(--v-ent-success);
   outline-offset: 2px;
 }
+
+/* ── Earnings ── */
+
+.earnings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}

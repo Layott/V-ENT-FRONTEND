@@ -145,6 +145,72 @@ const MembershipsContent = () => {
     }
   };
 
+  // Moving to another plan from the same organiser. The plan page has
+  // promised since it was written that "if you move to a different plan from
+  // this organiser, the change starts at the beginning of your next period",
+  // and until 12 September there was no control anywhere that could do it:
+  // the endpoint existed, the promise was on screen, and the button was not.
+  const [changing, setChanging] = useState(null);   // token of the sub being moved
+  const [choices, setChoices] = useState([]);
+  const [choicesError, setChoicesError] = useState('');
+
+  const openChooser = async (sub) => {
+    if (changing === sub.token) { setChanging(null); return; }
+    setChanging(sub.token);
+    setChoices([]);
+    setChoicesError('');
+    const seller = sub.plan?.seller || {};
+    const query = seller.org_slug
+      ? `org=${encodeURIComponent(seller.org_slug)}`
+      : `owner=${encodeURIComponent(seller.username || '')}`;
+    try {
+      const res = await fetch(`${API}/billing/plans/?${query}`, {
+        headers: { Authorization: `Bearer ${viewer.token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (body?.status !== 'success') {
+        setChoicesError(apiMessage(tt, body, 'billing.couldNotLoad',
+          'Your memberships could not be loaded.'));
+        return;
+      }
+      setChoices((body.data?.plans || []).filter(
+        p => p.status === 'public' && p.slug !== sub.plan?.slug));
+    } catch (err) {
+      setChoicesError(apiMessage(tt, err, 'billing.couldNotLoad',
+        'Your memberships could not be loaded.'));
+    }
+  };
+
+  const changePlan = async (sub, plan) => {
+    setBusy(`${sub.token}:change`);
+    try {
+      const res = await fetch(`${API}/billing/subscription/${sub.token}/change/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${viewer.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan: plan.slug }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (body?.status !== 'success') {
+        say(apiMessage(tt, body, 'billing.couldNotDoThat',
+          'That could not be done.'));
+        return;
+      }
+      say(tt('billing.changeQueued',
+        'Moving to {plan} on {when}. Nothing extra is charged now.')
+        .replace('{plan}', plan.name)
+        .replace('{when}', formatDate(sub.period_end)));
+      setChanging(null);
+      await load();
+    } catch (err) {
+      say(apiMessage(tt, err, 'billing.couldNotDoThat', 'That could not be done.'));
+    } finally {
+      setBusy('');
+    }
+  };
+
   const act = async (token, action, message) => {
     setBusy(`${token}:${action}`);
     try {
@@ -397,6 +463,14 @@ const MembershipsContent = () => {
                       </button>
                     ) : null}
 
+                    {sub.renews && !sub.pending_plan ? (
+                      <button type="button" className={`${planStyles.action} ${planStyles.actionQuiet}`}
+                              aria-expanded={changing === sub.token}
+                              onClick={() => openChooser(sub)}>
+                        {tt('billing.changePlan', 'Move to another plan')}
+                      </button>
+                    ) : null}
+
                     {!sub.renews && sub.state === 'cancelled' && sub.has_access ? (
                       <button type="button" className={planStyles.action}
                               disabled={busy === `${sub.token}:resume`}
@@ -407,6 +481,43 @@ const MembershipsContent = () => {
                       </button>
                     ) : null}
                   </div>
+
+                  {changing === sub.token ? (
+                    <div className={styles.chooser}>
+                      <p className={styles.chooserLead}>
+                        {tt('billing.changeLead',
+                          'The move starts on {when}. Nothing extra is charged '
+                          + 'on the day you change and nothing is refunded.')
+                          .replace('{when}', formatDate(sub.period_end))}
+                      </p>
+                      {choicesError ? (
+                        <p className={styles.chooserEmpty}>{choicesError}</p>
+                      ) : choices.length === 0 ? (
+                        <p className={styles.chooserEmpty}>
+                          {tt('billing.noOtherPlans',
+                            'This organiser has no other plan open to join.')}
+                        </p>
+                      ) : (
+                        <div className={styles.choiceRow}>
+                          {choices.map(plan => (
+                            <button key={plan.slug} type="button"
+                                    className={styles.choice}
+                                    disabled={busy === `${sub.token}:change`}
+                                    onClick={() => changePlan(sub, plan)}>
+                              <span className={styles.choiceName}>{plan.name}</span>
+                              <span className={styles.choicePrice}>
+                                {plan.is_free
+                                  ? tt('billing.free', 'Free')
+                                  : `${formatNumber(plan.price_vc)} VC / ${plan.interval === 'yearly'
+                                    ? tt('billing.year', 'year')
+                                    : tt('billing.month', 'month')}`}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
 
                   {open ? (
                     <div className={styles.invoiceWrap}>

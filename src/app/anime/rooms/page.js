@@ -15,6 +15,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/anime';
 import { useViewer, signInHref } from '@/lib/gating';
 import styles from '../studio/studio.module.css';
@@ -52,7 +53,7 @@ const Rooms = () => {
       setSeries(comics.series || []);
       setPick(p => p || comics.series?.[0]?.slug || '');
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed', 'We could not load the rooms.'));
+      setError(apiMessage(tt, err, 'anime.loadFailed', 'We could not load the rooms.'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ const Rooms = () => {
       });
       window.location.href = `/anime/room/${room.token}`;
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
       setBusy(false);
     }
   };

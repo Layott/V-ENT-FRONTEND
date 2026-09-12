@@ -18,6 +18,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDate } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
@@ -44,7 +45,7 @@ const MyList = () => {
     try {
       setData(await call('/my-list/', { token }));
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed', 'We could not load your list.'));
+      setError(apiMessage(tt, err, 'anime.loadFailed', 'We could not load your list.'));
     } finally {
       setLoading(false);
     }

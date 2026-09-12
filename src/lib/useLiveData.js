@@ -64,6 +64,8 @@
  *   { changed: (next, prev) => next.asked_at !== prev?.asked_at }
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from './apiMessage';
 
 export const DEFAULT_INTERVAL = 15000;
 export const DEFAULT_MAX_INTERVAL = 60000;
@@ -80,6 +82,12 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // `error` is a sentence for the person in front of the page, in their
+  // language, from the API's CODE. The server's own message is written for
+  // the log and is only ever English.
+  const tt = useT();
+  const ttRef = useRef(tt);
+  useEffect(() => { ttRef.current = tt; });
 
   // Everything the loop CALLS lives in a ref, so changing identity on a render
   // cannot restart the timer. This is the fix, and it is the reason this hook
@@ -108,7 +116,10 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
     } catch (err) {
       if (signal?.aborted || err?.name === 'AbortError') return false;
       // A failed REFRESH is not a failed page.
-      if (first) setError(err?.message || 'error');
+      if (first) {
+        setError(apiMessage(ttRef.current, err, 'api.thatDidNotWork',
+          'That did not go through.'));
+      }
       return false;
     } finally {
       if (first && !signal?.aborted) setLoading(false);

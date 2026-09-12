@@ -21,6 +21,7 @@ import ComingSoon from '@/components/coming-soon/ComingSoon';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, priceLine, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDate } from '@/lib/datetime';
 import { useViewer } from '@/lib/gating';
@@ -56,7 +57,7 @@ const SeriesClient = ({ slug }) => {
       }
       setError(err.code === 'NOT_FOUND'
         ? tt('anime.noSuchComic', 'There is no comic here.')
-        : (err.message || tt('anime.loadFailed', 'We could not load it.')));
+        : (apiMessage(tt, err, 'anime.loadFailed', 'We could not load it.')));
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ const SeriesClient = ({ slug }) => {
       setToast(said);
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }

@@ -123,8 +123,35 @@ function FinanceInner() {
     }
   }, []);
 
+  // Money the marketplace is holding between a buyer and a seller. The
+  // endpoint lists every open hold; while Vermillion City is shut it answers
+  // 503 MARKETPLACE_OFF, which is a state to say rather than an error.
+  // `null` is not asked yet, `{closed: true}` is the module shut, otherwise
+  // the payload.
+  const [holds, setHolds] = useState(null);
+  const loadHolds = useCallback(async () => {
+    if (!token()) return;
+    try {
+      const res = await fetch(`${API}/marketplace/admin/holds/`, {
+        headers: { Authorization: `Bearer ${token()}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 503 || body.code === 'MARKETPLACE_OFF') {
+        setHolds({ closed: true });
+        return;
+      }
+      if (res.ok && body.status === 'success') setHolds(body.data);
+      else setHolds({ failed: apiMessage(tt, body, 'adminFinance.holdsFailed',
+        'The marketplace holds could not be loaded.') });
+    } catch (err) {
+      setHolds({ failed: apiMessage(tt, err, 'adminFinance.holdsFailed',
+        'The marketplace holds could not be loaded.') });
+    }
+  }, [tt]);
+
   useEffect(() => { load(); }, [load, tick]);
   useEffect(() => { loadSummary(); }, [loadSummary, tick]);
+  useEffect(() => { loadHolds(); }, [loadHolds, tick]);
 
   // The ledger keeps itself current. A payout approved by somebody else, or a
   // ticket sold while this is open, should appear without a reload.
@@ -271,6 +298,72 @@ function FinanceInner() {
               </div>
             </div>
           </div> : null}
+
+          <div className={styles.streams}>
+            <h2 className={shared.sectionTitle}>
+              {tt('adminFinance.holds', 'Held by the marketplace')}
+            </h2>
+            {holds === null ? (
+              <p className={shared.stateText}>{tt('common.loading', 'Loading...')}</p>
+            ) : holds.closed ? (
+              <p className={shared.stateText}>
+                {tt('adminFinance.holdsClosed',
+                  'Vermillion City is closed, so nothing is being held.')}
+              </p>
+            ) : holds.failed ? (
+              <p className={shared.stateText}>{holds.failed}</p>
+            ) : (
+              <>
+                <div className={styles.streamGrid}>
+                  <div className={styles.stream}>
+                    <p className={shared.metricLabel}>{tt('adminFinance.totalHeld', 'Held right now')}</p>
+                    <p className={styles.streamValue}>{formatNumber(holds.total_held || 0)} VC</p>
+                    <p className={styles.streamNote}>
+                      {tt('adminFinance.holdsCount', '{n} open purchases')
+                        .replace('{n}', formatNumber((holds.holds || []).length))}
+                    </p>
+                  </div>
+                  <div className={styles.stream}>
+                    <p className={shared.metricLabel}>{tt('adminFinance.commission', 'Commission')}</p>
+                    <p className={styles.streamValue}>{formatNumber(holds.commission_rate || 0)}%</p>
+                    <p className={styles.streamNote}>
+                      {tt('adminFinance.commissionNote', 'taken when a hold settles')}
+                    </p>
+                  </div>
+                </div>
+                {(holds.holds || []).length ? (
+                  <div className={shared.tableWrap}>
+                    <table className={shared.table}>
+                      <thead>
+                        <tr>
+                          <th>{tt('adminFinance.when', 'When')}</th>
+                          <th>{tt('adminFinance.listing', 'Listing')}</th>
+                          <th>{tt('adminFinance.buyer', 'Buyer')}</th>
+                          <th>{tt('adminFinance.seller', 'Seller')}</th>
+                          <th>{tt('adminFinance.amount', 'Amount')}</th>
+                          <th>{tt('adminFinance.state', 'State')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {holds.holds.map((h) => (
+                          <tr key={h.token}>
+                            <td>{formatDateTime(h.created_at)}</td>
+                            <td>{h.listing?.title || h.listing?.slug || ''}</td>
+                            <td>{h.buyer?.username || ''}</td>
+                            <td>{h.seller?.username || ''}</td>
+                            <td>{formatNumber(h.amount)} VC</td>
+                            <td>{h.status}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className={shared.stateText}>{tt('adminFinance.noHolds', 'Nothing is being held.')}</p>
+                )}
+              </>
+            )}
+          </div>
 
           <div className={shared.filtersRow}>
             <select className={shared.filterSelect} value={kind}

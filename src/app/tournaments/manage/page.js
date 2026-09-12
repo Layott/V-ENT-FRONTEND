@@ -142,6 +142,9 @@ const ManageContent = ({ slug }) => {
     window.history.replaceState(null, '', url.toString());
   }, []);
   const [toast, setToast] = useState(null);
+  // Bumped when the organiser changes the lineup deadline, so the picker below
+  // remounts and reads the new window instead of the one it loaded on mount.
+  const [lineupEpoch, setLineupEpoch] = useState(0);
   const showToast = msg => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
@@ -334,7 +337,8 @@ const ManageContent = ({ slug }) => {
                   picker because the deadline governs it. */}
               {access?.can_manage && (
                 <LineupRulesPanel tournamentRef={tournament.slug || tournament.tournament_id}
-                                  token={token} showToast={showToast} />
+                                  token={token} showToast={showToast}
+                                  onChanged={() => setLineupEpoch((n) => n + 1)} />
               )}
               {/* And WHAT a squad must satisfy, which is a different thing from
                   when it is due. Until this is saved once, the API refuses
@@ -346,13 +350,24 @@ const ManageContent = ({ slug }) => {
                                  token={token} showToast={showToast} />
               )}
               {/* Who has submitted and who has not, which is the question worth
-                  asking in the hour before a deadline. */}
+                  asking in the hour before a deadline, and accepting or sending
+                  back what came in. `key` so a decision here reopens the
+                  organiser's own picker below: an organiser who also plays
+                  would otherwise go on seeing "waiting for the organiser" after
+                  they had just decided it. */}
               {access?.can_manage && (
-                <SubmittedLineups tournamentRef={tournament.slug || tournament.tournament_id}
-                                  token={token} />
+                <SubmittedLineups key={`squads-${lineupEpoch}`}
+                                  tournamentRef={tournament.slug || tournament.tournament_id}
+                                  token={token} showToast={showToast}
+                                  onDecided={() => setLineupEpoch((n) => n + 1)} />
               )}
-              <LineupPicker tournamentRef={tournament.slug || tournament.tournament_id}
-                            token={token} showToast={showToast} />
+              {/* `key` so turning lineups on above genuinely reopens this,
+                  rather than leaving a picker that says the tournament is not
+                  using lineups next to the switch that just enabled them. */}
+              <LineupPicker key={`lineup-${lineupEpoch}`}
+                            tournamentRef={tournament.slug || tournament.tournament_id}
+                            token={token} showToast={showToast}
+                            onSubmitted={() => setLineupEpoch((n) => n + 1)} />
             </>}
             {tab === 'participants' && <ParticipantsPanel participants={participants} />}
             {tab === 'invitations' && <>

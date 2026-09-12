@@ -53,6 +53,11 @@ const StallPage = ({ params }) => {
   const [editing, setEditing] = useState(null);
   const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
+  // The order being marked as sent, and the tracking number typed for it.
+  // In place rather than window.prompt: the browser draws that one in its
+  // own words, and it cannot be translated or styled.
+  const [sending, setSending] = useState(null);
+  const [tracking, setTracking] = useState('');
 
   const say = (message) => {
     setNotice(message);
@@ -430,15 +435,33 @@ const StallPage = ({ params }) => {
                                 </button>
                               )}
                               {o.fulfilment === 'deliver' && ['paid', 'ready'].includes(o.status) && (
-                                <button type="button" className={styles.primary} disabled={busy}
-                                        onClick={() => {
-                                          const tracking = window.prompt(
-                                            tt('stall.trackingPrompt',
-                                              'Tracking number, if you have one. Leave empty if not.')) || '';
-                                          moveOrder(o, 'sent', tracking.trim());
-                                        }}>
-                                  {tt('stall.markSent', 'Sent')}
-                                </button>
+                                sending === o.id ? (
+                                  <>
+                                    <input className={styles.input} value={tracking}
+                                           onChange={e => setTracking(e.target.value)}
+                                           placeholder={tt('stall.trackingPrompt',
+                                             'Tracking number, if you have one. Leave empty if not.')}
+                                           aria-label={tt('stall.trackingPrompt',
+                                             'Tracking number, if you have one. Leave empty if not.')} />
+                                    <button type="button" className={styles.primary} disabled={busy}
+                                            onClick={() => {
+                                              moveOrder(o, 'sent', tracking.trim());
+                                              setSending(null);
+                                              setTracking('');
+                                            }}>
+                                      {tt('stall.markSent', 'Sent')}
+                                    </button>
+                                    <button type="button" className={styles.ghost} disabled={busy}
+                                            onClick={() => { setSending(null); setTracking(''); }}>
+                                      {tt('ui.cancel.77df', 'Cancel')}
+                                    </button>
+                                  </>
+                                ) : (
+                                  <button type="button" className={styles.primary} disabled={busy}
+                                          onClick={() => { setSending(o.id); setTracking(''); }}>
+                                    {tt('stall.markSent', 'Sent')}
+                                  </button>
+                                )
                               )}
                               {o.status === 'sent' && (
                                 <button type="button" className={styles.primary} disabled={busy}

@@ -180,6 +180,9 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
         {tt('media.sub', 'Upload a player b-roll, a walk-on, a highlight or a still once, and put it on air whenever you need it. Give it words you will reach for in a hurry: a team tag, a player, or anything you will remember.')}
       </p>
       <p className={styles.sub}>
+        {tt('media.fontHint', 'You can upload a font here too. Give it a name and your overlays can use it straight away as that font family, with no @font-face of their own. A font pasted into the HTML file as a data URI also works and always will: that one needs nothing from us.')}
+      </p>
+      <p className={styles.sub}>
         {tt('media.slotHint', 'Give it a name and your own uploaded overlays can pull it in: a designer writes data-vent-src="asset.hero" and whatever you name hero appears there. A picture of a player also shows up on that player, alongside their profile photo.')}
       </p>
 
@@ -196,17 +199,37 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
                 {tt('media.nothingYet', 'Nothing here yet.')}
               </p>
             )}
+            {/* The uploaded faces, registered on THIS page under the same
+                name the overlay runtime gives them, which is the bare slot
+                (`font-family: 'hero'`). Without this the preview below draws
+                "Aa" in the page's own font and proves nothing. */}
+            {assets.some((a) => a.kind === 'font' && a.slot && a.url) && (
+              <style>
+                {assets.filter((a) => a.kind === 'font' && a.slot && a.url).map((a) => (
+                  `@font-face { font-family: "${a.slot.replace(/"/g, '')}"; src: url("${a.url}"); }`
+                )).join(' ')}
+              </style>
+            )}
             {assets.map((a) => (
               <div key={a.id} className={styles.row}>
                 <div className={styles.thumb}>
                   {a.kind === 'video'
                     ? <video className={styles.thumbMedia} src={a.url} muted playsInline preload="metadata" />
-                    : <img className={styles.thumbMedia} src={a.url} alt="" />}
+                    : a.kind === 'font'
+                      // A font has no picture. The only preview worth anything
+                      // is the typeface itself, so the name is drawn IN it.
+                      ? <span className={styles.thumbFont}
+                              style={{ fontFamily: a.slot ? `"${a.slot}"` : 'inherit' }}>
+                          Aa
+                        </span>
+                      : <img className={styles.thumbMedia} src={a.url} alt="" />}
                 </div>
                 <div className={styles.rowMain}>
                   <span className={styles.rowName}>{a.name}</span>
                   <span className={styles.rowMeta}>
-                    {[a.kind === 'video' ? tt('media.clip', 'Clip') : tt('media.picture', 'Picture'),
+                    {[a.kind === 'video' ? tt('media.clip', 'Clip')
+                      : a.kind === 'font' ? tt('media.font', 'Font')
+                      : tt('media.picture', 'Picture'),
                       mb(a.size_bytes),
                       a.duration_ms ? `${Math.round(a.duration_ms / 1000)}s` : null,
                       a.slot ? `asset.${a.slot}` : null,
@@ -267,7 +290,7 @@ export default function StudioMedia({ kind = 'tournament', ownerRef, token, onPl
             </div>
             <div className={styles.addRow}>
               <input ref={fileRef} className={styles.file} type="file" disabled={busy}
-                     accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp,image/gif"
+                     accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp,image/gif,.woff2,.woff,.ttf,.otf"
                      onChange={(e) => upload(e.target.files?.[0])} />
               <span className={styles.muted}>
                 {tt('media.limits', 'Up to {file} a file, {total} in all. {used} used.')

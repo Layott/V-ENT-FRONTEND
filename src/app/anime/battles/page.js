@@ -15,6 +15,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import styles from '../studio/studio.module.css';
 
@@ -35,7 +36,7 @@ const Battles = () => {
       const data = await call('/battles/', { token });
       setBattles(data.battles || []);
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed', 'We could not load the battles.'));
+      setError(apiMessage(tt, err, 'anime.loadFailed', 'We could not load the battles.'));
     } finally {
       setLoading(false);
     }

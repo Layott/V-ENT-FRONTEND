@@ -27,6 +27,7 @@ import { LuBookmark, LuChevronLeft, LuChevronRight, LuSettings } from 'react-ico
 import Header from '@/components/header/Header';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, refusalLine, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { useViewer } from '@/lib/gating';
 import { mediaUrl } from '@/lib/mediaUrl';
@@ -82,7 +83,7 @@ const ReaderClient = ({ slug }) => {
       }
       setError(err.code === 'NOT_FOUND'
         ? tt('anime.noSuchChapter', 'There is no chapter here.')
-        : (err.message || tt('anime.loadFailed', 'We could not load it.')));
+        : (apiMessage(tt, err, 'anime.loadFailed', 'We could not load it.')));
     } finally {
       setLoading(false);
     }
@@ -117,7 +118,7 @@ const ReaderClient = ({ slug }) => {
       setSettings(await call('/reader-settings/', {
         method: 'POST', body: { mode: next }, token }));
     } catch (err) {
-      setToast(err.message);
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     }
   };
 
@@ -144,7 +145,7 @@ const ReaderClient = ({ slug }) => {
       setToast(tt('anime.bought', 'It is yours to read.'));
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -162,7 +163,7 @@ const ReaderClient = ({ slug }) => {
         { token });
       setBookmarks(marks.bookmarks || []);
     } catch (err) {
-      setToast(err.message);
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     }
   };
 
@@ -314,10 +315,10 @@ const ReaderClient = ({ slug }) => {
             </p>
           ) : mode === 'vertical' ? (
             <div className={styles.stripWrap}>
-              {pages.map(p => (
+              {pages.map(p => (mediaUrl(p.image) ? (
                 <img key={p.number} className={styles.stripImage}
                      src={mediaUrl(p.image)} alt={p.alt || ''} loading="lazy" />
-              ))}
+              ) : null))}
             </div>
           ) : (
             <div className={`${styles.viewer} ${mode === 'double'
@@ -337,9 +338,11 @@ const ReaderClient = ({ slug }) => {
                     // all, and the designed sheet expects a sizing class beside
                     // it. With only the first the image collapsed to a thin
                     // band on a phone, which is how this was found.
-                    <img key={p.number}
-                         className={`${styles.pageImage} ${styles.pageImageWidth}`}
-                         src={mediaUrl(p.image)} alt={p.alt || ''} />
+                    mediaUrl(p.image) ? (
+                      <img key={p.number}
+                           className={`${styles.pageImage} ${styles.pageImageWidth}`}
+                           src={mediaUrl(p.image)} alt={p.alt || ''} />
+                    ) : null
                   ))}
                 </div>
               </div>

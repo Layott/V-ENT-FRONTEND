@@ -18,6 +18,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/anime';
 import { formatDateTime } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
@@ -60,7 +61,7 @@ const BattleClient = ({ slug }) => {
       }
       setError(err.code === 'NOT_FOUND'
         ? tt('anime.noSuchBattle', 'There is no battle here.')
-        : (err.message || tt('anime.loadFailed', 'We could not load it.')));
+        : (apiMessage(tt, err, 'anime.loadFailed', 'We could not load it.')));
     } finally {
       setLoading(false);
     }
@@ -81,7 +82,7 @@ const BattleClient = ({ slug }) => {
       setToast(said);
       await load();
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     } finally {
       setBusy(false);
     }
@@ -90,6 +91,24 @@ const BattleClient = ({ slug }) => {
   const vote = (character, attribute, score) =>
     post('vote/', { character, scores: { [attribute]: score } },
       tt('anime.voted', 'Voted.'));
+
+  // The admin's half. The state moves by PATCH on the battle itself, and a
+  // name enters or leaves by POST to approve/. Until 12 September neither had
+  // a control: `may_run` came back in the payload and nothing read it.
+  const setState = state => {
+    setBusy(true);
+    setToast(null);
+    return call(`/battles/${encodeURIComponent(slug)}/`, {
+      method: 'PATCH', token, body: { state } })
+      .then(() => { setToast(tt('anime.stateMoved', 'Done.')); return load(); })
+      .catch(err => setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.')))
+      .finally(() => setBusy(false));
+  };
+  const decide = (name, approved) =>
+    post('approve/', { name, approved },
+      approved
+        ? tt('anime.letIn', '{name} is in the battle.').replace('{name}', name)
+        : tt('anime.takenOut', '{name} is out of the battle.').replace('{name}', name));
 
   if (open === null) return null;
   if (open === false) {
@@ -168,9 +187,66 @@ const BattleClient = ({ slug }) => {
         </p>
       </section>
 
+      {battle.may_run && (
+        <section className={styles.card}>
+          <h2 className={styles.cardTitle}>{tt('anime.runBattle', 'Run this battle')}</h2>
+          <div className={styles.actions}>
+            {battle.state !== 'nominating' && (
+              <button type="button" className={styles.quietBtn} disabled={busy}
+                      onClick={() => setState('nominating')}>
+                {tt('anime.backToNominating', 'Take nominations again')}
+              </button>
+            )}
+            {battle.state !== 'voting' && (
+              <button type="button" className={styles.primaryBtn} disabled={busy}
+                      onClick={() => setState('voting')}>
+                {tt('anime.openVoting', 'Open voting')}
+              </button>
+            )}
+            {battle.state !== 'closed' && (
+              <button type="button" className={styles.quietBtn} disabled={busy}
+                      onClick={() => setState('closed')}>
+                {tt('anime.closeVoting', 'Close it and decide')}
+              </button>
+            )}
+          </div>
+          <h3 className={styles.label}>{tt('anime.waitingNames', 'Waiting on you')}</h3>
+          {(battle.pending || []).length === 0 ? (
+            <p className={styles.rowMeta}>
+              {tt('anime.nobodyWaiting', 'Nothing is waiting to be decided.')}
+            </p>
+          ) : (
+            <ul className={styles.list}>
+              {battle.pending.map(n => (
+                <li key={n.name} className={styles.rowMeta}>
+                  <span className={styles.rowTitle}>{n.name}</span>
+                  {n.source ? ` ${n.source}` : ''}
+                  {n.nominated_by
+                    ? ` ${tt('anime.nominatedBy', 'from {who}').replace('{who}', n.nominated_by)}`
+                    : ''}
+                  {' '}
+                  <button type="button" className={styles.quietBtn} disabled={busy}
+                          onClick={() => decide(n.name, true)}>
+                    {tt('anime.intoTheBattle', 'Into the battle')}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
       {(battle.characters || []).map(character => (
         <section key={character.id} className={styles.card}>
           <h2 className={styles.cardTitle}>{character.name}</h2>
+          {battle.may_run && (
+            <div className={styles.actions}>
+              <button type="button" className={styles.quietBtn} disabled={busy}
+                      onClick={() => decide(character.name, false)}>
+                {tt('anime.takeOut', 'Take out of the battle')}
+              </button>
+            </div>
+          )}
           <p className={styles.rowMeta}>
             {character.source}
             {' '}

@@ -50,6 +50,13 @@ const CALL = /\b(?:tt|t)\(\s*(?:"([^"]+)"|'([^']+)')/g;
 // a generic property called key.
 const TABLE = /\bkey:\s*(?:"([^"]+)"|'([^']+)')\s*,\s*fallback:/g;
 
+// The THIRD shape that hid a key: `apiMessage(tt, err, 'mk.notListed', '...')`.
+// The key is the third argument, so CALL above never sees it, and a refusal
+// then falls back to English in French and Portuguese without anybody
+// noticing. Found on 12 September when 25 raw server strings were moved
+// through apiMessage and two of the keys written for them did not exist.
+const API_MESSAGE = /\bapiMessage\(\s*\w+\s*,\s*[^,]+,\s*(?:"([^"]+)"|'([^']+)')/g;
+
 // A key written inside a comment is documentation, not a call. Without this
 // the checker reports its own examples as missing translations, which is how a
 // checker teaches people to ignore it.
@@ -68,7 +75,7 @@ let gaps = 0;
 let checked = 0;
 for (const file of files) {
   const src = stripComments(fs.readFileSync(file, 'utf8'));
-  for (const m of [...src.matchAll(CALL), ...src.matchAll(TABLE)]) {
+  for (const m of [...src.matchAll(CALL), ...src.matchAll(TABLE), ...src.matchAll(API_MESSAGE)]) {
     const key = m[1] ?? m[2];
     // A key is a dotted identifier with no whitespace: `ui.x.y`, `api.CODE`,
     // `tEdit.name`. A sentence caught by the regex is some other function

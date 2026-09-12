@@ -161,6 +161,60 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
+/* ── Moving to another plan ── */
+
+.chooser {
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.chooserLead,
+.chooserEmpty {
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  background-color: #33343a;
+  border: none;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.choice:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.choiceName {
+  font-weight: var(--fw-semi-bold);
+  font-size: var(--fs-p-size-mobile);
+}
+
+.choicePrice {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 /* ── Invoices ── */
 
 .invoiceWrap {

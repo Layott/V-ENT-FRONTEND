@@ -1,0 +1,62 @@
+/* Where a squad stands against the organiser's rules.
+
+   Filled surfaces, a background step between blocks, no strokes and no rules
+   drawn as lines. Status is carried by a text colour and the words themselves,
+   never by a dot that pulses. */
+
+.wrap {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 12px 0 16px;
+}
+
+.heading {
+  margin: 14px 0 6px;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold, 600);
+  color: #fff;
+}
+
+.heading:first-child { margin-top: 0; }
+
+.state {
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  font-weight: var(--fw-semi-bold, 600);
+  color: #d6d7db;
+}
+
+.draft { color: #b9bac0; }
+.submitted { color: #e0b341; }
+.accepted { color: var(--v-ent-success, #4caf50); }
+.rejected { color: var(--v-ent-red, #ED1C24); }
+
+.by {
+  font-weight: var(--fw-regular, 400);
+  color: #9a9ba1;
+}
+
+.note {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: #2c2d32;
+  color: #e4e5e9;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.rule,
+.problem,
+.muted,
+.spend {
+  margin: 0 0 5px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.rule { color: #c6c7cc; }
+.muted { color: #94959b; }
+.spend { color: #d6d7db; font-weight: var(--fw-semi-bold, 600); margin-top: 8px; }
+.problem { color: var(--v-ent-red, #ED1C24); }

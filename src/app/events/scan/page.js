@@ -452,6 +452,39 @@ function ScanContent() {
    * the same second", which is one person holding their phone up, not a second
    * attempt.
    */
+  /**
+   * Ask about a code WITHOUT admitting anybody.
+   *
+   * `lookup/` answers whether a code is real, whose it is, whether it is for
+   * today and whether it has been used, and records that the door asked. It
+   * shipped on 6 September beside `door-search`, and until 12 September the
+   * scan page never called it: the only way to find out about a code was to
+   * check it in, which is exactly the thing a steward asking a question does
+   * not want to do.
+   */
+  const lookUp = useCallback(async (code) => {
+    const key = String(code || '').trim().toUpperCase();
+    if (!key) return;
+    setLast({ kind: 'checking', code: key });
+    try {
+      const res = await fetch(
+        `${API}/event/ticket/${encodeURIComponent(key)}/lookup/?gate=${encodeURIComponent(gate)}`,
+        { headers: { Authorization: `Bearer ${token}` } });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setLast({ kind: 'looked', code: key, ...body.data });
+      } else if (res.status === 409 && body.code === 'TICKET_TRANSFERRED') {
+        setLast({ kind: 'transferred', code: key, moved: body.data || {} });
+      } else if (res.status === 403) {
+        setLast({ kind: 'notYours', code: key });
+      } else {
+        setLast({ kind: 'unknown', code: key });
+      }
+    } catch {
+      setLast({ kind: 'unknown', code: key });
+    }
+  }, [gate, token]);
+
   const decide = useCallback((code, { fromCamera = false } = {}) => {
     const key = String(code || '').trim().toUpperCase();
     if (!key) return;
@@ -625,7 +658,8 @@ function ScanContent() {
             : last.kind === 'checking' ? styles.resultChecking
               : last.kind === 'wrongDay' ? styles.resultDuplicate
                 : last.kind === 'transferred' ? styles.resultDuplicate
-                  : styles.resultUnknown}>
+                  : last.kind === 'looked' ? (last.admissible ? styles.resultChecking : styles.resultDuplicate)
+                    : styles.resultUnknown}>
         {last.kind === 'checking' && <>
           <strong>{tt('scan.checking', 'Checking with V-ENT')}</strong>
           <span className={styles.resultSub}>{last.code}</span>
@@ -697,6 +731,38 @@ function ScanContent() {
           </span>}
         </>}
 
+        {/* Looked up, not admitted. The answer a steward wanted before
+            deciding, with the deciding facts and nothing written to the
+            ticket. */}
+        {last.kind === 'looked' && <>
+          <strong>
+            {last.already_checked_in
+              ? tt('scan.alreadyUsed', 'Already used')
+              : last.wrong_day
+                ? tt('scan.wrongDay', 'Wrong day')
+                : last.admissible
+                  ? tt('scan.wouldBeAdmitted', 'Real, and good for today')
+                  : tt('scan.notAdmissible', 'Real, but not admissible')}
+          </strong>
+          <span>{last.ticket?.attendee_name || last.ticket?.username || last.code}</span>
+          {last.ticket?.tier && <span className={styles.resultSub}>{last.ticket.tier}</span>}
+          {last.already_checked_in && last.ticket?.checked_in_at && <span className={styles.resultSub}>
+            {last.ticket.checked_in_gate
+              ? tt('scan.firstUsedAt', 'First used at {time} on {gate}')
+                .replace('{time}', shortTime(last.ticket.checked_in_at))
+                .replace('{gate}', last.ticket.checked_in_gate)
+              : tt('scan.firstUsedTime', 'First used at {time}')
+                .replace('{time}', shortTime(last.ticket.checked_in_at))}
+          </span>}
+          {last.wrong_day && last.ticket?.tier_day && <span className={styles.resultSub}>
+            {tt('scan.ticketIsFor', 'This ticket is for {day}.')
+              .replace('{day}', dayName(last.ticket.tier_day))}
+          </span>}
+          <span className={styles.resultSub}>
+            {tt('scan.notAdmittedYet', 'Not checked in. Press Check to admit them.')}
+          </span>
+        </>}
+
         {last.kind === 'unknown' && <>
           <LuTriangleAlert aria-hidden="true" />
           <strong>{tt('scan.notOnTheList', 'Not on the list')}</strong>
@@ -723,6 +789,10 @@ function ScanContent() {
                aria-label={tt('scan.typeCode', 'Or type the code')} />
         <button type="submit" className={styles.ghost} disabled={!typed.trim()}>
           {tt('scan.check', 'Check')}
+        </button>
+        <button type="button" className={styles.ghost} disabled={!typed.trim() || !online}
+                onClick={() => { lookUp(typed); }}>
+          {tt('scan.lookUp', 'Look up only')}
         </button>
       </form>
 

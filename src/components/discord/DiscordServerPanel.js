@@ -189,6 +189,31 @@ function ServerRow({ server, base, tt, capabilities, authHeaders, showToast,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, server.id]);
 
+  // What the bot has done here, from the same log every action writes to.
+  // The endpoint has answered since the day the server panel was built;
+  // until 12 September nothing on the panel asked it, so "what did V-ENT do
+  // in my server" was a question only the database could answer.
+  const [log, setLog] = useState(null);       // null = not asked yet
+  const [logError, setLogError] = useState('');
+  const [showLog, setShowLog] = useState(false);
+  const loadLog = async () => {
+    setLogError('');
+    try {
+      const res = await fetch(`${base}/servers/${server.id}/log/`,
+                              { headers: authHeaders });
+      const body = await res.json().catch(() => ({}));
+      if (body?.status !== 'success') {
+        setLogError(apiMessage(tt, body, 'dserver.logFailed',
+          'The log could not be loaded.'));
+        return;
+      }
+      setLog(body.data?.actions || []);
+    } catch (err) {
+      setLogError(apiMessage(tt, err, 'dserver.logFailed',
+        'The log could not be loaded.'));
+    }
+  };
+
   const act = async (path, payload, label) => {
     setWorking(label);
     try {
@@ -247,6 +272,11 @@ function ServerRow({ server, base, tt, capabilities, authHeaders, showToast,
                 onClick={() => { const next = !open; setOpen(next); if (next) loadTargets(); }}>
           {open ? tt('dserver.hide', 'Hide controls') : tt('dserver.show', 'Use the bot')}
         </button>
+        <button type="button" className={styles.ghost}
+                aria-expanded={showLog}
+                onClick={() => { const next = !showLog; setShowLog(next); if (next) loadLog(); }}>
+          {showLog ? tt('dserver.hideLog', 'Hide the log') : tt('dserver.showLog', 'What the bot did')}
+        </button>
         <button type="button" className={styles.ghost} onClick={onDisconnect}
                 disabled={busy}>
           {busy ? tt('dserver.working', 'Working...') : tt('dserver.disconnect', 'Disconnect')}
@@ -255,6 +285,38 @@ function ServerRow({ server, base, tt, capabilities, authHeaders, showToast,
 
       {open && <Controls server={server} targets={targets} tt={tt} act={act}
                         working={working} />}
+
+      {showLog && (
+        <div className={styles.controls}>
+          <div className={styles.block}>
+            <span className={styles.blockTitle}>{tt('dserver.log', 'What V-ENT has done here')}</span>
+            {logError ? (
+              <p className={styles.muted}>{logError}</p>
+            ) : log === null ? (
+              <p className={styles.muted}>{tt('common.loading', 'Loading...')}</p>
+            ) : log.length === 0 ? (
+              <p className={styles.muted}>{tt('dserver.logEmpty', 'Nothing yet.')}</p>
+            ) : (
+              <ul className={styles.log}>
+                {log.map((a, i) => (
+                  <li key={`${a.at}-${i}`} className={a.ok ? styles.logRow : styles.logRowBad}>
+                    <span className={styles.logWhen}>{formatDateTime(a.at)}</span>
+                    <span className={styles.logWhat}>
+                      {tt(`dserver.act.${a.kind}`, a.kind)}
+                      {a.target ? ` ${a.target}` : ''}
+                      {a.detail && typeof a.detail === 'object'
+                        ? ` ${Object.entries(a.detail).map(([k, v]) => `${k}: ${v}`).join(', ')}`
+                        : ''}
+                      {a.actor ? ` (${a.actor})` : ''}
+                      {!a.ok && a.error ? ` ${a.error}` : ''}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
     </li>
   );
 }

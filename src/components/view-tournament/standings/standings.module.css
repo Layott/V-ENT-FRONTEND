@@ -152,6 +152,20 @@
 
 .toggleOff:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
 
+/* The two pickers in the head-to-head block. A filled control, same shape
+   as the toggles beside it, and 44px tall for a thumb. */
+.pick {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  max-width: 100%;
+}
+
 .how {
   color: rgba(255, 255, 255, 0.45);
   font-size: 0.78rem;

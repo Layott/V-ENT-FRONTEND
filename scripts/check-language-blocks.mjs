@@ -23,6 +23,9 @@ const MIN_LENGTH = 12;
 
 //: Keys that hold an example rather than a sentence.
 const EXAMPLE_KEY = /(^|\.)e\.g(\.|$)/;
+//: A string with no word of four or more letters once its placeholders are
+//: removed is units and abbreviations, which languages share.
+const UNITS_ONLY = (text) => !/[a-zà-ÿ]{4,}/i.test(text.replace(/\{[^}]*\}/g, ''));
 
 export function findingsIn(dicts) {
   const { en = {}, fr = {}, pt = {} } = dicts;
@@ -40,6 +43,12 @@ export function findingsIn(dicts) {
     // that reports five things nobody should act on is a checker people stop
     // reading.
     if (EXAMPLE_KEY.test(key)) continue;
+    // Units and abbreviations. "{h} h {m} min" is the same in French and
+    // Portuguese because both abbreviate hours and minutes the same way, and
+    // once the placeholders are taken out there is no word left long enough
+    // to have been translated. Found the day the checker was wired into
+    // check-all (12 September), on the one such key in the dictionaries.
+    if (UNITS_ONLY(a)) continue;
     // Identical to English as well means simply untranslated, which is a
     // different and much louder problem that other checks already cover.
     if (a === en[key]) continue;
@@ -74,6 +83,16 @@ if (process.argv.includes('--self-test')) {
       en: { 'squad.hint': 'A side made of players from different clubs.' },
       fr: { 'squad.hint': "Une équipe composée de joueurs de clubs différents." },
       pt: { 'squad.hint': "Une équipe composée de joueurs de clubs différents." },
+    }, 1],
+    ['units and abbreviations shared by both languages', {
+      en: { 'ros.hoursMins': '{h}h {m}m' },
+      fr: { 'ros.hoursMins': '{h} h {m} min' },
+      pt: { 'ros.hoursMins': '{h} h {m} min' },
+    }, 0],
+    ['a sentence with a placeholder in it is still checked', {
+      en: { 'x.left': '{n} places are left on this side.' },
+      fr: { 'x.left': 'Il reste {n} places de ce côté.' },
+      pt: { 'x.left': 'Il reste {n} places de ce côté.' },
     }, 1],
     ['untranslated in all three, which is a different check', {
       en: { a: 'That squad was not created.' },

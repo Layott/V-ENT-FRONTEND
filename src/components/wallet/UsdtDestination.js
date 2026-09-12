@@ -84,7 +84,7 @@ export default function UsdtDestination({ styles, token, selected, onSelect,
         return false;
       }
       setRows(body.data.addresses || []);
-      setNotice(body.message || '');
+      setNotice(tt('wallet.usdtSaved', 'Saved.'));
       if (then) then(body);
       return true;
     } catch {

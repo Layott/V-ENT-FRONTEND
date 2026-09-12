@@ -201,3 +201,39 @@
   .panel { padding: 1rem; }
   .caps, .controls { grid-template-columns: 1fr; }
 }
+
+/* The action log. Zebra rows rather than lines between them. */
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logRow, .logRowBad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.log li:nth-child(odd) { background-color: #2a2b30; }
+
+.logRowBad { color: #ff8a8e; }
+
+.logWhen {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.logWhat {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+

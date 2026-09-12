@@ -43,6 +43,42 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // The other door. The blurb below has always said "you can still invite
+  // people directly instead", and until 12 September nothing on the panel
+  // could: the endpoint that adds a stall by hand had no caller. `owner` is an
+  // email address or a username, as every invite on the platform takes.
+  const [stall, setStall] = useState({ name: '', owner: '', booth: '' });
+  const [stallBusy, setStallBusy] = useState(false);
+  const [stallError, setStallError] = useState('');
+  const addStall = async () => {
+    setStallBusy(true);
+    setStallError('');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventRef}/vendors/create/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(stall),
+      });
+      const body = await res.json().catch(() => ({ status: 'error' }));
+      if (body.status !== 'success') {
+        setStallError(apiMessage(tt, body, 'slots.stallFailed', 'That stall was not added.'));
+        return;
+      }
+      onNotice?.(body.data?.invite
+        ? tt('slots.stallInvited', 'Invited. The stall opens when {email} joins V-ENT.')
+          .replace('{email}', body.data.invite.email)
+        : tt('slots.stallAdded', '{name} is in.').replace('{name}', body.data?.vendor?.name || stall.name));
+      setStall({ name: '', owner: '', booth: '' });
+    } catch (err) {
+      setStallError(apiMessage(tt, err, 'slots.stallFailed', 'That stall was not added.'));
+    } finally {
+      setStallBusy(false);
+    }
+  };
+
   const api = useCallback(async (path, options = {}) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventRef}/slots/${path}`, {
       headers: {
@@ -238,6 +274,41 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                 onClick={save}>
           {busy ? tt('ui.saving', 'Saving...')
             : editing ? tt('ui.save', 'Save') : tt('slots.put', 'Put it on sale')}
+        </button>
+      </div>
+
+      <h4 className={styles.formTitle}>
+        {tt('slots.addStallTitle', 'Or add a stall yourself')}
+      </h4>
+      <p className={styles.muted}>
+        {tt('slots.addStallBlurb', 'For a trader you have already agreed with. Give them the '
+          + 'stall by email or username and it is theirs the moment they are on V-ENT.')}
+      </p>
+      {stallError && <p className={styles.error}>{stallError}</p>}
+      <div className={styles.form}>
+        <label className={styles.field}>
+          <span className={styles.label}>{tt('slots.stallName', 'Stall name')}</span>
+          <input className={styles.input} value={stall.name}
+                 onChange={e => setStall({ ...stall, name: e.target.value })}
+                 placeholder={tt('slots.stallNamePlaceholder', 'Mama Put Grill')} />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{tt('slots.stallOwner', 'Who runs it')}</span>
+          <input className={styles.input} value={stall.owner}
+                 onChange={e => setStall({ ...stall, owner: e.target.value })}
+                 placeholder={tt('slots.stallOwnerPlaceholder', 'Email or @username, or leave it empty')} />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{tt('slots.stallBooth', 'Pitch or booth')}</span>
+          <input className={styles.input} value={stall.booth}
+                 onChange={e => setStall({ ...stall, booth: e.target.value })}
+                 placeholder={tt('slots.stallBoothPlaceholder', 'B4')} />
+        </label>
+      </div>
+      <div className={styles.formActions}>
+        <button type="button" className={styles.primary}
+                disabled={stallBusy || !stall.name.trim()} onClick={addStall}>
+          {stallBusy ? tt('ui.saving', 'Saving...') : tt('slots.addStall', 'Add the stall')}
         </button>
       </div>
     </div>

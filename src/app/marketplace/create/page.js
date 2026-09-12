@@ -21,6 +21,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, useCatalogue, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from './create.module.css';
 
@@ -93,7 +94,7 @@ const CreateListing = () => {
 
       setMadeSlug(slug);
     } catch (err) {
-      setProblem(err.message);
+      setProblem(apiMessage(tt, err, 'mk.notListed', 'That listing was not created.'));
       // Send them back to the step the refusal is about, rather than leaving
       // them looking at a review screen with an error about a field two steps
       // behind it.

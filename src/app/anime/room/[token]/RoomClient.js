@@ -20,6 +20,7 @@ import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDateTime } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
@@ -68,6 +69,15 @@ const RoomClient = ({ roomToken }) => {
       setJoined(Boolean(data.joined));
       setPage(data.page_number || 1);
       setDriver(data.driver || '');
+      // A host coming back to a room they closed sees what it did. Closing
+      // returns the figures inline, but the numbers only lived in that one
+      // response: reopen the page and they were gone, and the endpoint that
+      // keeps them had no screen until 12 September.
+      if (data.mine && !data.open) {
+        try {
+          setAnalytics(await call(`/rooms/${roomToken}/analytics/`, { token }));
+        } catch { setAnalytics(null); }
+      }
       if (data.chapter) {
         try {
           setChapter(await call(`/chapters/${data.chapter}/`, { token }));
@@ -76,7 +86,7 @@ const RoomClient = ({ roomToken }) => {
     } catch (err) {
       setError(err.code === 'NOT_FOUND'
         ? tt('anime.noSuchRoom', 'There is no room here.')
-        : (err.message || tt('anime.loadFailed', 'We could not load the room.')));
+        : (apiMessage(tt, err, 'anime.loadFailed', 'We could not load the room.')));
     } finally {
       setLoading(false);
     }
@@ -144,7 +154,7 @@ const RoomClient = ({ roomToken }) => {
       await call(`/rooms/${roomToken}/${path}`, { method: 'POST', token, body });
       if (said) setToast(said);
     } catch (err) {
-      setToast(err.message || tt('anime.didNotWork', 'That did not work.'));
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     }
   };
 
@@ -202,7 +212,7 @@ const RoomClient = ({ roomToken }) => {
       setToast(tt('anime.sessionClosed', 'Session closed.'));
       await loadRoom();
     } catch (err) {
-      setToast(err.message);
+      setToast(apiMessage(tt, err, 'anime.didNotWork', 'That did not work.'));
     }
   };
 
@@ -259,6 +269,27 @@ const RoomClient = ({ roomToken }) => {
   const pages = chapter?.page_list || [];
   const image = pages.find(p => p.number === page)?.image;
   const iAmDriving = driver === viewer.username;
+
+  const figures = analytics ? (
+    <section className={styles.sideSection}>
+      <p className={styles.sideHeader}>
+        {tt('anime.whatHappened', 'What the session did')}
+      </p>
+      <p className={styles.chatText}>
+        {fill(tt('anime.sessionLine',
+          '{m} minutes, {p} people, {c} messages, {r} reactions.'),
+        { m: analytics.minutes, p: analytics.people,
+          c: analytics.messages, r: analytics.reactions })}
+      </p>
+      {analytics.most_reacted_page && (
+        <p className={styles.chatText}>
+          {fill(tt('anime.mostReacted',
+            'Page {p} got the most reactions.'),
+          { p: analytics.most_reacted_page.page })}
+        </p>
+      )}
+    </section>
+  ) : null;
   const iAmHost = room.mine;
 
   return (
@@ -310,6 +341,13 @@ const RoomClient = ({ roomToken }) => {
                     className={styles.hostBtn}>
                 {tt('needsAccount.signIn', 'Log in')}
               </Link>
+            </div>
+          ) : !joined && !room.open ? (
+            // A closed room takes nobody in, so there is no Join to offer.
+            // The host sees what it did; anybody else sees that it is over.
+            <div className={styles.sideState}>
+              <p>{tt('anime.roomClosed', 'The host closed the room.')}</p>
+              {figures}
             </div>
           ) : !joined ? (
             <div className={styles.sideState}>
@@ -506,26 +544,7 @@ const RoomClient = ({ roomToken }) => {
                   </form>
                 </section>
 
-                {analytics && (
-                  <section className={styles.sideSection}>
-                    <p className={styles.sideHeader}>
-                      {tt('anime.whatHappened', 'What the session did')}
-                    </p>
-                    <p className={styles.chatText}>
-                      {fill(tt('anime.sessionLine',
-                        '{m} minutes, {p} people, {c} messages, {r} reactions.'),
-                      { m: analytics.minutes, p: analytics.people,
-                        c: analytics.messages, r: analytics.reactions })}
-                    </p>
-                    {analytics.most_reacted_page && (
-                      <p className={styles.chatText}>
-                        {fill(tt('anime.mostReacted',
-                          'Page {p} got the most reactions.'),
-                        { p: analytics.most_reacted_page.page })}
-                      </p>
-                    )}
-                  </section>
-                )}
+                {figures}
               </div>
             </div>
           )}

@@ -23,6 +23,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime } from '@/lib/datetime';
 import { call, fill, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from '../purchase.module.css';
@@ -82,7 +83,7 @@ const PurchasePage = ({ params }) => {
       if (!found) setProblem(tt('mk.orderGone', 'That order is not one of yours.'));
       setPurchase(found || null);
     } catch (err) {
-      setProblem(err.message);
+      setProblem(apiMessage(tt, err, 'mk.orderFailed', 'That order could not be loaded.'));
     } finally {
       setLoading(false);
     }

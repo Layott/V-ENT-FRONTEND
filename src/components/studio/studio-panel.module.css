@@ -267,7 +267,7 @@
 /* --------------------------------------------------- how a graphic behaves */
 
 .look {
-  align-items: end;
+  align-items: flex-end;
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem;

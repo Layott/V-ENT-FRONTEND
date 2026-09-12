@@ -66,24 +66,29 @@ const PaymentsPanel = ({
       saved_banks: savedBanks
     });
   };
+  // The default card lives on the server, on the SavedCard row, because it is
+  // what the next renewal charges. Until 12 September this wrote the choice
+  // into the settings blob and left the row alone: the badge moved, the page
+  // reloaded from the server, and the badge moved back. The endpoint that
+  // actually sets it had no caller.
   const setDefaultCard = async id => {
-    const next = savedCards.map(c => ({
-      ...c,
-      is_default: c.id === id
-    }));
-    setSavedCards(next);
-    await persist({
-      ...payments,
-      saved_cards: next
-    });
-    showToast?.('Default card updated');
+    const {
+      res,
+      body
+    } = await cardAction(`/auth/wallet/cards/${id}/default/`);
+    showToast?.(body.message || (res.ok
+      ? tt('payments.defaultCardSet', 'Default card updated')
+      : tt('payments.defaultCardFailed', 'That card could not be made the default')));
+    if (res.ok) await loadCards();
   };
   const removeCard = async id => {
     const {
       res,
       body
     } = await cardAction(`/auth/wallet/cards/${id}/remove/`);
-    showToast?.(body.message || (res.ok ? 'Card removed' : 'Could not remove it'));
+    showToast?.(body.message || (res.ok
+      ? tt('payments.cardRemoved', 'Card removed')
+      : tt('payments.cardRemoveFailed', 'Could not remove it')));
     if (res.ok) await loadCards();
   };
 

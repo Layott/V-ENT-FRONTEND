@@ -18,6 +18,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/anime';
 import { SeriesCard } from '../page';
 import styles from './manga.module.css';
@@ -71,7 +72,7 @@ function BrowseInner() {
       const data = await call(`/series/?${query.toString()}`, { token });
       setSeries(data.series || []);
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed',
+      setError(apiMessage(tt, err, 'anime.loadFailed',
         'We could not load the comics just now.'));
     } finally {
       setLoading(false);

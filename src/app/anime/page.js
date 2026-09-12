@@ -30,6 +30,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ComingSoon from '@/components/coming-soon/ComingSoon';
 import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import Banner from '@/components/banner/Banner';
 import { mediaUrl } from '@/lib/mediaUrl';
@@ -68,7 +69,7 @@ const AnimeHub = () => {
         setReading([]);
       }
     } catch (err) {
-      setError(err.message || tt('anime.loadFailed',
+      setError(apiMessage(tt, err, 'anime.loadFailed',
         'We could not load the anime hub just now.'));
     } finally {
       setLoading(false);
