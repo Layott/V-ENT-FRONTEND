@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  breadcrumbLd, buildMetadata, clamp, fetchForMetadata, tournamentLd,
+  breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, tournamentLd,
   tournamentMetadata,
 } from '@/lib/seo';
 import TournamentBySlugClient from './TournamentBySlugClient';
@@ -19,7 +19,7 @@ import TournamentBySlugClient from './TournamentBySlugClient';
 export const revalidate = 900;
 
 const load = (slug) =>
-  fetchForMetadata(`/tournament/view-tournament/${encodeURIComponent(slug)}/`);
+  fetchRecordForMetadata(`/tournament/view-tournament/${encodeURIComponent(slug)}/`);
 
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);

@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  breadcrumbLd, buildMetadata, clamp, fetchForMetadata, teamLd,
+  breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, teamLd, unavailableMetadata,
 } from '@/lib/seo';
 import TeamBySlugClient from './TeamBySlugClient';
 
@@ -12,7 +12,7 @@ import TeamBySlugClient from './TeamBySlugClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/team/view-team/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/team/view-team/${encodeURIComponent(slug)}/`);
 
 const pick = (data) => (data?.__moved ? data : (data?.team || data));
 
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);
   const team = pick(await load(slug));
 
+  if (team?.__failed) return unavailableMetadata(slug, `/teams/${slug}`);
   if (!team) {
     return buildMetadata({
       title: 'Team not found',

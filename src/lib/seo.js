@@ -243,9 +243,33 @@ export const privateMetadata = (title) =>
  * rather than cached forever so a rename shows up in search within the hour.
  */
 export async function fetchForMetadata(path, { revalidate = 900 } = {}) {
+  const got = await fetchRecordForMetadata(path, { revalidate });
+  return got?.__failed ? null : got;
+}
+
+/**
+ * What a record page gets when the API could not be asked.
+ *
+ * `fetchForMetadata` answers `null` for both "the record does not exist" and
+ * "the request never came back", and every record route read `null` as the
+ * first: an API outage described every event, tournament, team and player as
+ * "not found" and marked the page noindex, which is how a search engine is
+ * told to drop it. The client half of that fault is `check-spinner-forever`;
+ * this is the server half.
+ *
+ * So a route that describes ONE record asks through this and gets `FAILED`
+ * back for a request that failed, and describes the page as unavailable
+ * rather than missing: a title from the address, no noindex, and the canonical
+ * URL still in place. The record is still there; it is this answer that is
+ * not. A 4xx stays `null`, because a 404 is the record's own word.
+ */
+export const FAILED = Object.freeze({ __failed: true });
+
+export async function fetchRecordForMetadata(path, { revalidate = 900 } = {}) {
   if (!API) return null;
   try {
     const res = await fetch(`${API}${path}`, { next: { revalidate } });
+    if (res.status >= 500) return FAILED;
     if (!res.ok) return null;
     const body = await res.json();
     // A renamed thing answers `moved`; the caller canonicalises to the new URL.
@@ -253,8 +277,22 @@ export async function fetchForMetadata(path, { revalidate = 900 } = {}) {
     if (body?.status !== 'success') return null;
     return body.data ?? null;
   } catch {
-    return null;
+    return FAILED;
   }
+}
+
+/** A readable title from an address segment: `naija-free-fire-weekly-12`. */
+export const titleFromSlug = (slug = '') =>
+  String(slug).split(/[-_]+/).filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+/** Metadata for a record page whose record could not be fetched just now. */
+export function unavailableMetadata(slug, path) {
+  return buildMetadata({
+    title: titleFromSlug(slug) || SITE.name,
+    description: 'This page could not be loaded just now. Try again in a moment.',
+    path,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -279,6 +317,7 @@ const dateLabel = (value) => (value
 
 /** Metadata for one event. `slug` is the address it was asked for. */
 export function eventMetadata(e, slug, { path } = {}) {
+  if (e?.__failed) return unavailableMetadata(slug, path || `/events/${slug}`);
   if (!e) {
     return buildMetadata({
       title: 'Event not found',
@@ -328,6 +367,7 @@ export function eventMetadata(e, slug, { path } = {}) {
 
 /** Metadata for one tournament. */
 export function tournamentMetadata(t, slug, { path } = {}) {
+  if (t?.__failed) return unavailableMetadata(slug, path || `/tournaments/${slug}`);
   if (!t) {
     return buildMetadata({
       title: 'Tournament not found',

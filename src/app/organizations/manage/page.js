@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -165,7 +166,14 @@ const ManageOrgContent = ({
       }), fetch(`${API}/organization/${orgId}/clubs/`, {
         headers
       })]);
-      const orgData = await orgRes.json();
+      const orgData = await orgRes.json().catch(() => ({}));
+      // A 404 is "no such organisation" and falls through to that sentence.
+      // Anything else that is not ok is a failure to say out loud, not a
+      // reason to tell the owner their organisation does not exist.
+      if (!orgRes.ok && orgRes.status !== 404) {
+        setError(apiMessage(tt, orgData, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
+        return;
+      }
       setOrg(orgData?.data?.organization || null);
       const memData = await memRes.json();
       setMembers(memData?.data?.members || []);
@@ -202,7 +210,7 @@ const ManageOrgContent = ({
     } finally {
       setLoading(false);
     }
-  }, [orgId, session]);
+  }, [orgId, session, tt]);
   useEffect(() => {
     loadAll();
   }, [loadAll]);
@@ -568,10 +576,10 @@ const ManageOrgContent = ({
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <p className={styles.statusText}>
-              {error || tx("Organization not found.")}{' '}
+            {error ? <ErrorState message={error} onRetry={loadAll} /> : <p className={styles.statusText}>
+              {tx("Organization not found.")}{' '}
               <Link href="/organizations" className={styles.backLink}>{tt("ui.back.list.747f", "Back to list")}</Link>
-            </p>
+            </p>}
           </div>
         </main>
         <BottomMenu />

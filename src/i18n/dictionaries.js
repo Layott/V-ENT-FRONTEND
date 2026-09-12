@@ -17,6 +17,22 @@ export const LANGUAGES = [
 
 export const dictionaries = {
   en: {
+    // A failed load says so on the page, where the loading state was (inbox
+    // row 258, the spinner-for-ever debt). One sentence per surface, so the
+    // reader knows WHAT did not load, and the shared fallback for the rest.
+    "error.loadFailed": "That did not load. Check your connection and try again.",
+    "wallet.loadFailed": "Your wallet did not load. Check your connection and try again.",
+    "community.postLoadFailed": "This post did not load.",
+    "community.threadLoadFailed": "This thread did not load.",
+    "editProfile.loadFailed": "Your profile did not load.",
+    "tickets.loadFailed": "Your tickets did not load.",
+    "events.loadFailed": "The events did not load.",
+    "events.eventLoadFailed": "This event did not load.",
+    "vendorShop.loadFailed": "The stalls did not load.",
+    "partners.loadFailed": "The partner programme did not load.",
+    "api.teamNotFound": "That team does not exist.",
+    "registerTournament.notFound": "That tournament does not exist.",
+    "registerTournament.noneNamed": "No tournament was named in this address.",
     "billing.refundConfirm": "Give it back",
     // Organiser subscriptions and memberships (inbox row 202), added with the
     // feature in all three languages. The dunning and payment strings matter
@@ -8342,6 +8358,22 @@ export const dictionaries = {
   },
 
   fr: {
+    // A failed load says so on the page, where the loading state was (inbox
+    // row 258, the spinner-for-ever debt). One sentence per surface, so the
+    // reader knows WHAT did not load, and the shared fallback for the rest.
+    "error.loadFailed": "Le chargement a échoué. Vérifiez votre connexion et réessayez.",
+    "wallet.loadFailed": "Votre portefeuille n'a pas pu être chargé. Vérifiez votre connexion et réessayez.",
+    "community.postLoadFailed": "Cette publication n'a pas pu être chargée.",
+    "community.threadLoadFailed": "Cette discussion n'a pas pu être chargée.",
+    "editProfile.loadFailed": "Votre profil n'a pas pu être chargé.",
+    "tickets.loadFailed": "Vos billets n'ont pas pu être chargés.",
+    "events.loadFailed": "Les événements n'ont pas pu être chargés.",
+    "events.eventLoadFailed": "Cet événement n'a pas pu être chargé.",
+    "vendorShop.loadFailed": "Les stands n'ont pas pu être chargés.",
+    "partners.loadFailed": "Le programme partenaires n'a pas pu être chargé.",
+    "api.teamNotFound": "Cette équipe n'existe pas.",
+    "registerTournament.notFound": "Ce tournoi n'existe pas.",
+    "registerTournament.noneNamed": "Aucun tournoi n'est indiqué dans cette adresse.",
     "billing.refundConfirm": "Rembourser",
     // Organiser subscriptions and memberships (inbox row 202), added with the
     // feature in all three languages. The dunning and payment strings matter
@@ -16667,6 +16699,22 @@ export const dictionaries = {
   },
 
   pt: {
+    // A failed load says so on the page, where the loading state was (inbox
+    // row 258, the spinner-for-ever debt). One sentence per surface, so the
+    // reader knows WHAT did not load, and the shared fallback for the rest.
+    "error.loadFailed": "Isso não carregou. Verifique a ligação e tente outra vez.",
+    "wallet.loadFailed": "A sua carteira não carregou. Verifique a ligação e tente outra vez.",
+    "community.postLoadFailed": "Esta publicação não carregou.",
+    "community.threadLoadFailed": "Este tópico não carregou.",
+    "editProfile.loadFailed": "O seu perfil não carregou.",
+    "tickets.loadFailed": "Os seus bilhetes não carregaram.",
+    "events.loadFailed": "Os eventos não carregaram.",
+    "events.eventLoadFailed": "Este evento não carregou.",
+    "vendorShop.loadFailed": "As bancas não carregaram.",
+    "partners.loadFailed": "O programa de parceiros não carregou.",
+    "api.teamNotFound": "Essa equipa não existe.",
+    "registerTournament.notFound": "Esse torneio não existe.",
+    "registerTournament.noneNamed": "Nenhum torneio foi indicado neste endereço.",
     "billing.refundConfirm": "Devolver",
     // Organiser subscriptions and memberships (inbox row 202), added with the
     // feature in all three languages. The dunning and payment strings matter

@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -45,6 +46,9 @@ const PartnersPage = () => {
   const [selfServe, setSelfServe] = useState([]);
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
+  // A failed load used to toast, in English, and then show the APPLY form to
+  // a partner whose own record simply had not come back.
+  const [loadError, setLoadError] = useState(null);
   const [toast, setToast] = useState('');
   const [issuedSecret, setIssuedSecret] = useState('');
   const [saving, setSaving] = useState(false);
@@ -69,12 +73,16 @@ const PartnersPage = () => {
     window.setTimeout(() => setToast(''), 4000);
   };
   const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
     try {
       const cat = await fetch(`${apiBase}/partners/scopes/`);
       if (cat.ok) {
         const body = await cat.json();
         setScopes(body?.data?.scopes || {});
         setSelfServe(body?.data?.self_serve || []);
+      } else {
+        setLoadError(apiMessage(tt, await cat.json().catch(() => ({})), 'partners.loadFailed', 'The partner programme did not load.'));
+        return;
       }
       if (token) {
         const mine = await fetch(`${apiBase}/partners/mine/`, {
@@ -83,13 +91,18 @@ const PartnersPage = () => {
           }
         });
         if (mine.ok) setPartners((await mine.json())?.data?.partners || []);
+        else {
+          setLoadError(apiMessage(tt, await mine.json().catch(() => ({})), 'partners.loadFailed', 'The partner programme did not load.'));
+          return;
+        }
       }
-    } catch {
-      say('Could not load the partner programme. Try again shortly.');
+      setLoadError(null);
+    } catch (err) {
+      setLoadError(apiMessage(tt, err, 'partners.loadFailed', 'The partner programme did not load.'));
     } finally {
       setLoading(false);
     }
-  }, [apiBase, token]);
+  }, [apiBase, token, tt]);
 
   // Keeps itself current. See useAutoRefresh: quiet stops a refresh
   // flashing the loading state over content somebody is reading.
@@ -251,7 +264,9 @@ const PartnersPage = () => {
 
           {loading && <p className={styles.muted}>{tt("ui.loading.b04b", "Loading...")}</p>}
 
-          {!loading && status === 'unauthenticated' && <div className={styles.card}>
+          {!loading && loadError && <ErrorState message={loadError} onRetry={() => load()} />}
+
+          {!loading && !loadError && status === 'unauthenticated' && <div className={styles.card}>
               <h2 className={styles.cardTitle}>{tt("ui.sign.apply.5c22", "Sign in to apply")}</h2>
               <p className={styles.muted}>
                 {tt("ui.partner.account.belongs.v.55de", "A partner account belongs to a V-ENT account, so applications start from a signed-in\n                session.")}
@@ -259,7 +274,7 @@ const PartnersPage = () => {
               <Link href="/login" className={styles.primaryBtn}>{tt("ui.sign.ada2", "Sign in")}</Link>
             </div>}
 
-          {!loading && partner && <>
+          {!loading && !loadError && partner && <>
               <div className={styles.card}>
                 <div className={styles.rowBetween}>
                   <h2 className={styles.cardTitle}>{partner.name}</h2>
@@ -352,7 +367,7 @@ const PartnersPage = () => {
                 </div>}
             </>}
 
-          {!loading && !partner && status === 'authenticated' && <form className={styles.card} onSubmit={apply} method="post">
+          {!loading && !loadError && !partner && status === 'authenticated' && <form className={styles.card} onSubmit={apply} method="post">
               <h2 className={styles.cardTitle}>{tt("ui.apply.access.e551", "Apply for access")}</h2>
 
               <div className={styles.formGrid}>

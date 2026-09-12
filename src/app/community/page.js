@@ -25,6 +25,7 @@ import { COUNTRIES } from '@/constants/countries';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import ErrorState from '@/components/error-state/ErrorState';
 const TABS = [{
   id: 'feed',
   label: 'Feed',
@@ -191,18 +192,30 @@ const CommunityInner = () => {
   // A feed that never refreshed. Somebody else's post arriving is the entire
   // reason this page exists, and it needed a reload.
   const [feedTick, setFeedTick] = useState(0);
+  // One failure sentence per tab. Each tab falls through to its own empty
+  // state when a list is empty, and a request that never came back used to
+  // fall through to the same sentence: "No threads in this category." for a
+  // network that was down. The sentence is now the server's own, translated,
+  // and it stays until the retry succeeds.
+  const [loadErrors, setLoadErrors] = useState({});
+  const loadFailed = (which, err, key, english) => setLoadErrors(e => ({
+    ...e, [which]: apiMessage(tt, err, key, english) }));
+  const loadCleared = (which) => setLoadErrors(e => (e[which] ? { ...e, [which]: null } : e));
+  const loadError = loadErrors[activeTab] || null;
   useAutoRefresh(() => setFeedTick(t => t + 1), [], { interval: 20000 });
 
   const loadPosts = async (quiet = false) => {
     if (!quiet) setFeedLoading(true);
+    loadCleared('feed');
     try {
       const res = await fetch(`${apiUrl}/post/list/`, {
         headers: authHeaders()
       });
       const data = await res.json();
       if (data.status === 'success') setPosts(data.data.posts || []);
+      else loadFailed('feed', data, 'community.feedLoadFailed', 'The feed did not load.');
     } catch (err) {
-      console.error('Posts fetch error:', err);
+      loadFailed('feed', err, 'community.feedLoadFailed', 'The feed did not load.');
     } finally {
       setFeedLoading(false);
     }
@@ -317,14 +330,16 @@ const CommunityInner = () => {
   const [newThreadCategory, setNewThreadCategory] = useState('General');
   const loadThreads = async () => {
     setThreadsLoading(true);
+    loadCleared('forums');
     try {
       const res = await fetch(`${apiUrl}/thread/list/`, {
         headers: authHeaders()
       });
       const data = await res.json();
       if (data.status === 'success') setThreads(data.data.threads || []);
+      else loadFailed('forums', data, 'community.threadsLoadFailed', 'The threads did not load.');
     } catch (err) {
-      console.error('Threads fetch error:', err);
+      loadFailed('forums', err, 'community.threadsLoadFailed', 'The threads did not load.');
     } finally {
       setThreadsLoading(false);
     }
@@ -368,14 +383,16 @@ const CommunityInner = () => {
   const [clubQuery, setClubQuery] = useState('');
   const loadClubs = async () => {
     setClubsLoading(true);
+    loadCleared('clubs');
     try {
       const res = await fetch(`${apiUrl}/club/list/`, {
         headers: authHeaders()
       });
       const data = await res.json();
       if (data.status === 'success') setClubs(data.data.clubs || []);
+      else loadFailed('clubs', data, 'community.clubsLoadFailed', 'The clubs did not load.');
     } catch (err) {
-      console.error('Clubs fetch error:', err);
+      loadFailed('clubs', err, 'community.clubsLoadFailed', 'The clubs did not load.');
     } finally {
       setClubsLoading(false);
     }
@@ -471,14 +488,16 @@ const CommunityInner = () => {
   const [dmError, setDmError] = useState('');
   const loadDms = async () => {
     setDmsLoading(true);
+    loadCleared('dms');
     try {
       const res = await fetch(`${apiUrl}/dm/list/`, {
         headers: authHeaders()
       });
       const data = await res.json();
       if (data.status === 'success') setDmThreads(data.data.conversations || []);
+      else loadFailed('dms', data, 'community.dmsLoadFailed', 'Your conversations did not load.');
     } catch (err) {
-      console.error('DMs fetch error:', err);
+      loadFailed('dms', err, 'community.dmsLoadFailed', 'Your conversations did not load.');
     } finally {
       setDmsLoading(false);
     }
@@ -637,6 +656,7 @@ const CommunityInner = () => {
   const [scrimError, setScrimError] = useState('');
   const loadScrims = async () => {
     setScrimsLoading(true);
+    loadCleared('scrims');
     try {
       const params = new URLSearchParams();
       if (scrimFilters.game) params.set('game', scrimFilters.game);
@@ -648,8 +668,9 @@ const CommunityInner = () => {
       });
       const data = await res.json();
       if (data.status === 'success') setScrims(data.data.scrims || []);
+      else loadFailed('scrims', data, 'community.scrimsLoadFailed', 'The challenges did not load.');
     } catch (err) {
-      console.error('Scrims fetch error:', err);
+      loadFailed('scrims', err, 'community.scrimsLoadFailed', 'The challenges did not load.');
     } finally {
       setScrimsLoading(false);
     }
@@ -781,7 +802,7 @@ const CommunityInner = () => {
                 </div>
               </div>}
 
-              {feedLoading ? <p className={styles.stateText}>{tt("ui.loading.feed.5ee0", "Loading feed...")}</p> : filteredPosts.length === 0 ? <p className={styles.stateText}>
+              {feedLoading ? <p className={styles.stateText}>{tt("ui.loading.feed.5ee0", "Loading feed...")}</p> : loadError ? <ErrorState message={loadError} onRetry={() => loadPosts()} /> : filteredPosts.length === 0 ? <p className={styles.stateText}>
                   {feedQuery ? tx("No posts match your search.") : tx("No posts yet. Be the first.")}
                 </p> : filteredPosts.map(post => <article key={post.id} className={styles.postCard}>
                     <div className={styles.postHeader}>
@@ -885,7 +906,7 @@ const CommunityInner = () => {
                   </div>}
 
                 <div className={styles.threadList}>
-                  {threadsLoading ? <p className={styles.stateText}>{tt("ui.loading.threads.4648", "Loading threads...")}</p> : filteredThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.threads.category.0175", "No threads in this category.")}</p> : filteredThreads.map(thread => <Link key={thread.id} href={`/community/thread/${thread.slug || thread.id}`} className={styles.threadRow}>
+                  {threadsLoading ? <p className={styles.stateText}>{tt("ui.loading.threads.4648", "Loading threads...")}</p> : loadError ? <ErrorState message={loadError} onRetry={loadThreads} /> : filteredThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.threads.category.0175", "No threads in this category.")}</p> : filteredThreads.map(thread => <Link key={thread.id} href={`/community/thread/${thread.slug || thread.id}`} className={styles.threadRow}>
                         <div className={styles.threadAvatar}>
                           <Avatar src={thread.author.avatar} name={thread.author.username} size={36} />
                         </div>
@@ -972,7 +993,7 @@ const CommunityInner = () => {
               </form>}
 
               <div className={styles.clubsGrid}>
-                {clubsLoading ? <p className={styles.stateText}>{tt("ui.loading.clubs.0f67", "Loading clubs...")}</p> : filteredClubs.length === 0 ? <p className={styles.stateText}>{clubQuery.trim()
+                {clubsLoading ? <p className={styles.stateText}>{tt("ui.loading.clubs.0f67", "Loading clubs...")}</p> : loadError ? <ErrorState message={loadError} onRetry={loadClubs} /> : filteredClubs.length === 0 ? <p className={styles.stateText}>{clubQuery.trim()
                   ? tt("ui.no.clubs.match.search.31f3", "No clubs match your search.")
                   // Nothing was searched for. "No clubs match your search"
                   // told the first person to open this tab that they had
@@ -1027,7 +1048,7 @@ const CommunityInner = () => {
                   </div>}
 
                 <div className={styles.dmConvoList}>
-                  {dmsLoading ? <p className={styles.stateText}>{tt("ui.loading.conversations.05af", "Loading conversations...")}</p> : dmThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.conversations.yet.start.8620", "No conversations yet. Start one above.")}</p> : filteredDmThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.conversations.match.search.559a", "No conversations match that search.")}</p> : filteredDmThreads.map(convo => {
+                  {dmsLoading ? <p className={styles.stateText}>{tt("ui.loading.conversations.05af", "Loading conversations...")}</p> : loadError ? <ErrorState message={loadError} onRetry={loadDms} /> : dmThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.conversations.yet.start.8620", "No conversations yet. Start one above.")}</p> : filteredDmThreads.length === 0 ? <p className={styles.stateText}>{tt("ui.no.conversations.match.search.559a", "No conversations match that search.")}</p> : filteredDmThreads.map(convo => {
                 const other = otherOf(convo);
                 return <div key={convo.id} className={`${styles.dmConvoItem} ${activeDm?.id === convo.id ? styles.dmConvoActive : ''}`} onClick={() => openDm(convo)} role="button" tabIndex={0} onKeyDown={e => {
                   if (e.key === 'Enter') openDm(convo);
@@ -1148,7 +1169,7 @@ const CommunityInner = () => {
               }}>{tt("ui.action.97c8", "Action")}</div>
                 </div>
 
-                {scrimsLoading ? <p className={styles.stateText}>{tt("ui.loading.challenges.5a29", "Loading challenges...")}</p> : scrims.length === 0 ? <p className={styles.stateText}>{scrimFilters.status === 'past' ? tt("ui.no.past.matches.9c04", "No matches have been played and agreed yet.") : tt("ui.no.challenges.match.filters.75cc", "No challenges match your filters.")}</p> : scrims.map(scrim => {
+                {scrimsLoading ? <p className={styles.stateText}>{tt("ui.loading.challenges.5a29", "Loading challenges...")}</p> : loadError ? <ErrorState message={loadError} onRetry={loadScrims} /> : scrims.length === 0 ? <p className={styles.stateText}>{scrimFilters.status === 'past' ? tt("ui.no.past.matches.9c04", "No matches have been played and agreed yet.") : tt("ui.no.challenges.match.filters.75cc", "No challenges match your filters.")}</p> : scrims.map(scrim => {
               const oppBlock = scrim.opponent_open_or_team_b;
               const opponent = oppBlock?.opponent;
               const isOpen = oppBlock?.open || scrim.status === 'open';

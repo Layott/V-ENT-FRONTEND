@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import {
   SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale,
-  fetchForMetadata,
+  fetchRecordForMetadata,
+  unavailableMetadata,
 } from '@/lib/seo';
 import PlanPageClient from './PlanPageClient';
 
@@ -21,7 +22,7 @@ import PlanPageClient from './PlanPageClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/billing/plan/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/billing/plan/${encodeURIComponent(slug)}/`);
 
 const priceSentence = (plan) => {
   if (!plan) return '';
@@ -44,6 +45,7 @@ export async function generateMetadata({ params }) {
   const locale = currentLocale();
   const plan = await load(slug);
 
+  if (plan?.__failed) return unavailableMetadata(slug, `/plans/${slug}`);
   if (!plan || plan.__moved) {
     return buildMetadata({
       title: 'Membership not found',

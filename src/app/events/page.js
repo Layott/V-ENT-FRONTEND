@@ -2,6 +2,8 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -133,6 +135,9 @@ const EventsListingContent = () => {
   } = useSession();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  // "No events match these filters" is for an empty list, never for a request
+  // that did not come back.
+  const [loadError, setLoadError] = useState(null);
   const initialTab = searchParams.get('tab') || 'all';
   const initialType = searchParams.get('type') || '';
   const initialQuery = searchParams.get('q') || '';
@@ -162,30 +167,32 @@ const EventsListingContent = () => {
   const [refreshTick, setRefreshTick] = useState(0);
   useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 30000 });
 
-  useEffect(() => {
-    const quiet = refreshTick > 0;
-    const fetchEvents = async () => {
-      if (!quiet) setLoading(true);
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          // Handles both the mock shape ({ events, featured, upcoming, by_game })
-          // and the real backend shape ({ featured, upcoming, by_game } with thin
-          // field names). extractEventList merges + normalizes to the canonical
-          // shape the cards below expect.
-          setEvents(extractEventList(data.data));
-        }
-      } catch (err) {
-        console.error('Events fetch error:', err);
-      } finally {
-        setLoading(false);
+  const fetchEvents = useCallback(async (quiet = false) => {
+    if (!quiet) setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/get-all-events/`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        // Handles both the mock shape ({ events, featured, upcoming, by_game })
+        // and the real backend shape ({ featured, upcoming, by_game } with thin
+        // field names). extractEventList merges + normalizes to the canonical
+        // shape the cards below expect.
+        setEvents(extractEventList(data.data));
+        setLoadError(null);
+      } else {
+        setLoadError(apiMessage(tt, data, 'events.loadFailed', 'The events did not load.'));
       }
-    };
-    fetchEvents();
-  }, [authHeaders, refreshTick]);
+    } catch (err) {
+      setLoadError(apiMessage(tt, err, 'events.loadFailed', 'The events did not load.'));
+    } finally {
+      setLoading(false);
+    }
+  }, [authHeaders, tt]);
+  useEffect(() => {
+    fetchEvents(refreshTick > 0);
+  }, [fetchEvents, refreshTick]);
 
   // Sync URL params when filters change
   useEffect(() => {
@@ -406,7 +413,7 @@ const EventsListingContent = () => {
                 {TABS.find(t => t.id === activeTab)?.label || 'All'} {tt("ui.events.82d5", "events")}
               </h2>
               <span className={styles.resultCount}>
-                {loading ? tx("Loading…") : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
+                {loading ? tx("Loading…") : loadError && events.length === 0 ? '' : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
               </span>
             </div>
 
@@ -414,7 +421,7 @@ const EventsListingContent = () => {
                 {Array.from({
               length: 6
             }).map((_, i) => <div key={i} className={styles.skeletonCard} />)}
-              </div> : filtered.length === 0 ? <div className={styles.emptyState}>
+              </div> : loadError && events.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchEvents()} /> : filtered.length === 0 ? <div className={styles.emptyState}>
                 <MdOutlineEvent className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.events.match.these.5242", "No events match these filters.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.clearing.filters.pick.db0d", "Try clearing filters or pick a different tab.")}</p>

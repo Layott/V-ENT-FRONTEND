@@ -1,6 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
 import {
-  absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchForMetadata,
+  absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata,
+  unavailableMetadata,
 } from '@/lib/seo';
 import ReaderClient from './ReaderClient';
 
@@ -17,13 +18,14 @@ import ReaderClient from './ReaderClient';
 
 export const revalidate = 900;
 
-const load = (slug) => fetchForMetadata(`/anime/chapters/${encodeURIComponent(slug)}/`);
+const load = (slug) => fetchRecordForMetadata(`/anime/chapters/${encodeURIComponent(slug)}/`);
 
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params.slug);
   const locale = currentLocale();
   const chapter = await load(slug);
 
+  if (chapter?.__failed) return unavailableMetadata(slug, `/anime/read/${slug}`);
   if (!chapter || chapter.__moved || !chapter.series_title) {
     return buildMetadata({
       title: 'Chapter not found',

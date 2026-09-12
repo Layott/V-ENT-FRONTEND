@@ -2,7 +2,7 @@
 
 import { KYC_REQUIRED } from '@/lib/features';
 import { useAutoRefresh } from '@/lib/useLiveData';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -16,6 +16,8 @@ import ConvertPanel from '@/components/wallet/ConvertPanel';
 import { formatNumber, ngnFromVc, isCreditType, normalizeType, normalizeStatus } from '@/components/wallet/walletHelpers';
 import styles from './wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 
 // ── Stat helpers ────────────────────────────────────────────────────────────
 
@@ -109,15 +111,37 @@ const WalletsContent = () => {
   // its loading state, and on every later pass it must not, or a wallet
   // balance somebody is reading would blink to a spinner every fifteen
   // seconds.
+  //
+  // A timed refresh is quiet. A first load, or a press on Try again, is not:
+  // the ref carries which one the tick is, because the effect it triggers is
+  // the only place that can read it.
   const [refreshTick, setRefreshTick] = useState(0);
-  useAutoRefresh(() => setRefreshTick(t => t + 1), [], { interval: 20000 });
+  const [loadError, setLoadError] = useState(null);
+  const quietRef = useRef(false);
+  useAutoRefresh(() => {
+    quietRef.current = true;
+    setRefreshTick(t => t + 1);
+  }, [], { interval: 20000 });
+  const retry = () => {
+    quietRef.current = false;
+    setLoadError(null);
+    setRefreshTick(t => t + 1);
+  };
 
   useEffect(() => {
     // Wait for the session token before hitting protected endpoints -
     // firing without a Bearer header returns 400s (tokenless race).
     if (!session?.user?.sessionToken) return;
-    const quiet = refreshTick > 0;
+    const quiet = quietRef.current;
+    quietRef.current = false;
     let cancelled = false;
+    // A failed first load says so where the numbers would be. A failed quiet
+    // refresh keeps the numbers the page already has: a balance somebody is
+    // reading must not turn into an alert because one request dropped.
+    const failed = (dataOrError) => {
+      if (cancelled || quiet) return;
+      setLoadError(apiMessage(tt, dataOrError, 'wallet.loadFailed', 'Your wallet did not load. Check your connection and try again.'));
+    };
     const loadBalance = async () => {
       if (!quiet) setBalanceLoading(true);
       try {
@@ -129,9 +153,12 @@ const WalletsContent = () => {
           setBalance(Number(data.data?.balance ?? 0));
           setKycVerified(data.data?.kyc_verified ?? true);
           setHasPin(data.data?.has_pin ?? null);
+        } else {
+          failed(data);
         }
       } catch (err) {
         console.error('Balance fetch error:', err);
+        failed(err);
       } finally {
         if (!cancelled) setBalanceLoading(false);
       }
@@ -145,9 +172,12 @@ const WalletsContent = () => {
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
           setTransactions(data.data?.transactions || []);
+        } else {
+          failed(data);
         }
       } catch (err) {
         console.error('Transactions fetch error:', err);
+        failed(err);
       } finally {
         if (!cancelled) setTxLoading(false);
       }
@@ -217,12 +247,12 @@ const WalletsContent = () => {
               <p className={styles.balanceLabel}>{tt("ui.available.balance.396a", "Available Balance")}</p>
               <div className={styles.balanceAmountRow}>
                 <span className={styles.balanceNumber}>
-                  {balanceLoading ? '-' : formatNumber(balance ?? 0)}
+                  {balance === null ? '-' : formatNumber(balance)}
                 </span>
                 <span className={styles.balanceUnit}>{tt("ui.vent.coins.536d", "VENT COINS")}</span>
               </div>
               <p className={styles.balanceNaira}>
-                ≈ <span>₦{formatNumber(ngnBalance)}</span>
+                ≈ <span>₦{balance === null ? '-' : formatNumber(ngnBalance)}</span>
               </p>
               <p className={styles.balanceRate}>{tt("ui.exchange.rate.vent.coin.d09e", "Exchange rate: ₦1,000 = 1 VENT COIN")}</p>
 
@@ -304,6 +334,7 @@ const WalletsContent = () => {
             </div>
           </div>
 
+          {loadError ? <ErrorState message={loadError} onRetry={retry} /> : <>
           {/* Stat tiles */}
           <div className={styles.statRow}>
             <div className={styles.statTile}>
@@ -352,6 +383,7 @@ const WalletsContent = () => {
             scroll: false
           });
         }} emptyText={tt("wallet.noTransactions", "No transactions yet. Top up your wallet to get started.")} />
+          </>}
         </div>
       </main>
 

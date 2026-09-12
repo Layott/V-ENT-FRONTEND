@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import JsonLd from '@/components/seo/JsonLd';
-import { breadcrumbLd, buildMetadata, clamp, fetchForMetadata } from '@/lib/seo';
+import {
+  breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata,
+} from '@/lib/seo';
 import ProfileClient from './ProfileClient';
 
 // `/u/temi` - a person's profile at their username, which is the readable,
@@ -18,12 +20,13 @@ import ProfileClient from './ProfileClient';
 export const revalidate = 900;
 
 const load = (username) =>
-  fetchForMetadata(`/user/${encodeURIComponent(username)}/profile/`);
+  fetchRecordForMetadata(`/user/${encodeURIComponent(username)}/profile/`);
 
 export async function generateMetadata({ params }) {
   const username = decodeURIComponent(params.username);
   const profile = await load(username);
 
+  if (profile?.__failed) return unavailableMetadata(username, `/u/${username}`);
   if (!profile) {
     return buildMetadata({
       title: 'Player not found',
@@ -55,7 +58,7 @@ export default async function ProfileByUsername({ params }) {
 
   return (
     <>
-      {profile && (
+      {profile && !profile.__failed && (
         <JsonLd
           data={[
             {
