@@ -307,7 +307,8 @@ const MyTickets = () => {
             <div className={styles.filterRow}>
               {STATUS_FILTERS.map(f => <button key={f.id} className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`} onClick={() => setStatusFilter(f.id)} type="button">
                   {filterLabel(f.id)}
-                  <span className={styles.filterCount}>{counts[f.id] || 0}</span>
+                  {/* A count is a fact about the tickets; a failed load has none to state. */}
+                  {!(loadError && tickets.length === 0) && <span className={styles.filterCount}>{counts[f.id] || 0}</span>}
                 </button>)}
             </div>
             <input type="text" placeholder={tt("ui.search.event.code.venue.0a2f", "Search by event, code, venue…")} className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} />
