@@ -158,6 +158,19 @@ function SettingsInner() {
                   <label className={styles.label}><span className="fieldLabelRow">{tt("ui.listing.fee.e232", "Listing fee (%)")} <InfoTip id="adminListingFee" /></span></label>
                   <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.listing_fee_pct} onChange={e => patch('platform_fees', 'listing_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
+                {/* The ticket fee: a percentage of the price plus a flat amount per
+                    paid ticket, both stamped on the ledger at the sale. Settable
+                    through the API since the ledger was built and never drawn
+                    here, so 5% + 100 naira (CEO, 12 September) had no field. */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeePct', 'Ticket fee (% of the price)')}</span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_pct ?? 5} onChange={e => patch('platform_fees', 'ticket_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeeFlat', 'Ticket fee, flat (naira per paid ticket)')}</span></label>
+                  <input type="number" step="1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_flat_ngn ?? 100} onChange={e => patch('platform_fees', 'ticket_fee_flat_ngn', parseFloat(e.target.value || '0'))} />
+                  <p className={styles.sectionSub}>{tt('admin.ticketFeeHint', 'Applies to tickets sold from now on; what an event already sold keeps the numbers it sold under. Free tickets carry no fee.')}</p>
+                </div>
                 <div className={styles.formGroup}>
                   <label className={styles.label}><span className="fieldLabelRow">{tt("ui.min.payout.vc.4d43", "Min payout (VC)")} <InfoTip id="adminMinPayout" /></span></label>
                   <input type="number" className={styles.input} value={settings.platform_fees.payout_min_vc} onChange={e => patch('platform_fees', 'payout_min_vc', parseInt(e.target.value || '0', 10))} />

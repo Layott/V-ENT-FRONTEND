@@ -186,12 +186,12 @@ const MyEventsPage = () => {
           {links && links.count > 0 && <section className={styles.linksSection} aria-labelledby="my-links-title">
               <h2 id="my-links-title" className={styles.sectionTitle}>{tt('myLinks.title', 'Links you sell through')}</h2>
               <p className={styles.pageSub}>
-                {tt('myLinks.sub', 'Every link an organiser gave you, what it brought in, and what you are owed. Commission is paid into your wallet when the organiser settles the event.')}
+                {tt('myLinks.subNgn', 'Every link an organiser gave you, what it brought in, and what you are owed. Commission is kept in naira and paid into your wallet in whole VENT COINS when the organiser settles the event; the rest waits for the next payout.')}
               </p>
               <div className={styles.linkTotals}>
                 <span>{tt('myLinks.sold', 'Tickets sold: {n}').replace('{n}', formatNumber(links.tickets_sold))}</span>
-                <span>{tt('myLinks.owed', '{n} VC owed to you').replace('{n}', formatNumber(links.owed_vc))}</span>
-                <span>{tt('myLinks.paid', '{n} VC paid so far').replace('{n}', formatNumber(links.paid_vc))}</span>
+                <span>{tt('myLinks.owedNgn', '{n} naira owed to you').replace('{n}', formatNumber(links.owed_ngn))}</span>
+                <span>{tt('myLinks.paidNgn', '{n} VC paid so far').replace('{n}', formatNumber(links.paid_vc))}</span>
               </div>
               <div className={styles.list}>
                 {links.results.map(link => <div key={link.id} className={`${styles.card} ${link.is_active ? '' : styles.retired}`}>
@@ -206,7 +206,7 @@ const MyEventsPage = () => {
                         {link.event.start_date && <span><LuCalendar /> {formatDate(link.event.start_date)}</span>}
                         <span><LuTicket /> {tt('myLinks.row', 'Visits {visits}, sold {sold}').replace('{visits}', formatNumber(link.visits)).replace('{sold}', formatNumber(link.tickets_sold))}</span>
                         <span>{tt('myLinks.commission', '{pct}% of each ticket').replace('{pct}', String(link.commission_pct))}</span>
-                        <span>{tt('myLinks.owedRow', '{owed} VC owed, {paid} VC paid').replace('{owed}', formatNumber(link.owed_vc)).replace('{paid}', formatNumber(link.paid_vc))}</span>
+                        <span>{tt('myLinks.owedRowNgn', '{owed} naira owed, {paid} VC paid').replace('{owed}', formatNumber(link.owed_ngn)).replace('{paid}', formatNumber(link.paid_vc))}</span>
                         {link.allocation > 0 && <span>{tt('myLinks.allocation', '{left} of {all} set aside for you').replace('{left}', formatNumber(link.remaining)).replace('{all}', formatNumber(link.allocation))}</span>}
                       </div>
                       <p className={styles.linkUrl}>{link.url}</p>
