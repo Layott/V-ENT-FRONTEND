@@ -12,6 +12,8 @@ import FavoriteGamesEditPanel from '@/components/edit-profile-panels/FavoriteGam
 import GamingAccountsPanel from '@/components/edit-profile-panels/GamingAccountsPanel';
 import SocialLinksEditPanel from '@/components/edit-profile-panels/SocialLinksEditPanel';
 import { jsonHeaders, multipartHeaders } from '@/lib/authHeader';
+import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import shared from '@/components/edit-profile-panels/editProfileShared.module.css';
 import styles from './edit-user-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -46,6 +48,9 @@ const EditUserProfileContent = () => {
   const searchParams = useSearchParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  // A profile that did not load is not an empty profile. Editing blank fields
+  // over a failed fetch and saving them is how a real profile gets wiped.
+  const [loadError, setLoadError] = useState(null);
   const [toast, setToast] = useState('');
   const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
   const activePanel = (() => {
@@ -66,29 +71,29 @@ const EditUserProfileContent = () => {
       router.push('/login?callbackUrl=/edit-user-profile');
     }
   }, [status, router]);
-  useEffect(() => {
+  const fetchProfile = useCallback(async () => {
     if (status !== 'authenticated' || !session?.user?.sessionToken) return;
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        const userId = session.user.id;
-        const res = await fetch(`${apiBase}/auth/get-user-informations/?user_id=${userId}`, {
-          headers: jsonHeaders(session.user.sessionToken)
-        });
-        const data = await res.json();
-        const raw = data.data || data;
-        setProfileData(raw);
-      } catch (err) {
-        try {
-          const stored = localStorage.getItem('userProfile');
-          if (stored) setProfileData(JSON.parse(stored));
-        } catch {}
-      } finally {
-        setLoading(false);
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const userId = session.user.id;
+      const res = await fetch(`${apiBase}/auth/get-user-informations/?user_id=${userId}`, {
+        headers: jsonHeaders(session.user.sessionToken)
+      });
+      const data = await res.json();
+      if (!res.ok || data.status === 'error') {
+        setLoadError(apiMessage(tt, data, 'editProfile.loadFailed', 'Your profile did not load.'));
+        return;
       }
-    };
-    fetchProfile();
-  }, [status, session, apiBase]);
+      const raw = data.data || data;
+      setProfileData(raw);
+    } catch (err) {
+      setLoadError(apiMessage(tt, err, 'editProfile.loadFailed', 'Your profile did not load.'));
+    } finally {
+      setLoading(false);
+    }
+  }, [status, session, apiBase, tt]);
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
   const handleCancel = () => {
     router.push('/user-profile');
   };
@@ -278,6 +283,20 @@ const EditUserProfileContent = () => {
                 <div className={styles.loadingState}>{tt("ui.loading.editor.a31c", "Loading editor…")}</div>
               </section>
             </div>
+          </div>
+        </main>
+        <BottomMenu />
+      </div>;
+  }
+  if (loadError) {
+    return <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            <h1 className={shared.pageTitle}>{tt("editProfile.title", "Edit your profile")}</h1>
+            <ErrorState message={loadError} onRetry={fetchProfile} />
           </div>
         </main>
         <BottomMenu />
