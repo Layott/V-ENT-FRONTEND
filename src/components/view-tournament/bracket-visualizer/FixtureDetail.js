@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import styles from './fixture-detail.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -24,19 +25,32 @@ export default function FixtureDetail({ match, onClose }) {
   const tt = useT();
   const [tie, setTie] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   const load = useCallback(async () => {
     if (!match?.match_id) { setLoading(false); return; }
+    setLoadError('');
     try {
       const res = await fetch(`${API}/tournament/tie/${match.match_id}/`);
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') setTie(body.data);
-    } catch {
+      // A 404 is a fixture that is one match and has no tie under it, which
+      // the copy below says. Anything else is a failure, and used to render
+      // as "One match, and that is the result" for a 2v2 tie whose seats
+      // simply did not arrive.
+      else if (res.status !== 404) {
+        setLoadError(apiMessage(tt, body, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
+      }
+    } catch (err) {
       // The scoreline from the fixture list is already on screen, so a failed
-      // detail costs the seats and not the result.
+      // detail costs the seats and not the result. It says so.
+      setLoadError(apiMessage(tt, err, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
     } finally {
       setLoading(false);
     }
+    // `tt` is read for the error sentence only; naming it would refetch the
+    // tie on most renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [match]);
 
   useEffect(() => { load(); }, [load]);
@@ -80,7 +94,17 @@ export default function FixtureDetail({ match, onClose }) {
 
         {loading && <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>}
 
-        {!loading && seats.length > 0 && (
+        {!loading && loadError && (
+          <p className={styles.state} role="alert">
+            {loadError}
+            {' '}
+            <button type="button" className={styles.retry} onClick={load}>
+              {tt('common.tryAgain', 'Try again')}
+            </button>
+          </p>
+        )}
+
+        {!loading && !loadError && seats.length > 0 && (
           <>
             <p className={styles.seatsTitle}>
               {tt('fixture.seats', 'The matches inside it')}
@@ -122,7 +146,7 @@ export default function FixtureDetail({ match, onClose }) {
           </>
         )}
 
-        {!loading && seats.length === 0 && (
+        {!loading && !loadError && seats.length === 0 && (
           <p className={styles.state}>
             {done
               ? tt('fixture.single', 'One match, and that is the result.')

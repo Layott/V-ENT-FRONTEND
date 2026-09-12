@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { ImStatsDots } from "react-icons/im";
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 
 /**
  * Player stats card.
@@ -23,9 +24,15 @@ const UserProfileStats = ({
   } = useSession();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  // A failed load used to render "Unranked" and three zeros, which are
+  // numbers, and wrong ones. Now every cell reads "-" and the panel says why.
+  const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
+    setLoading(true);
+    setLoadError('');
     (async () => {
       try {
         const headers = session?.user?.sessionToken ? {
@@ -35,13 +42,18 @@ const UserProfileStats = ({
           headers,
           signal: controller.signal
         });
-        if (!res.ok) throw new Error(String(res.status));
-        const body = await res.json();
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || body?.status !== 'success') {
+          throw Object.assign(new Error('load failed'), { code: body?.code, status: res.status });
+        }
         const players = body?.data?.players || [];
         const target = username ? players.find(p => p.username === username || p.name === username) : players.find(p => p.is_session_user);
         if (!cancelled) setStats(target || null);
-      } catch {
-        if (!cancelled) setStats(null);
+      } catch (err) {
+        if (!cancelled && err?.name !== 'AbortError') {
+          setStats(null);
+          setLoadError(apiMessage(tt, err, 'stats.loadFailed', 'The stats could not be loaded.'));
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -50,14 +62,28 @@ const UserProfileStats = ({
       cancelled = true;
       controller.abort();
     };
-  }, [session?.user?.sessionToken, username]);
+    // `tt` is read for the error sentence only; naming it would refetch on
+    // most renders. `attempt` is the Try again press.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.sessionToken, username, attempt]);
   const played = stats ? (stats.wins || 0) + (stats.losses || 0) : 0;
-  const show = v => loading ? '-' : v;
+  const show = v => (loading || loadError ? '-' : v);
   return <div className={`${profileStyles.statsContainer} ${profileStyles.middleLayerColor}`}>
 
       <h4 className={profileStyles.profileH4Header}>
         <ImStatsDots className={profileStyles.profileH4Icons} />{tt("ui.stats.be76", "Stats")}
       </h4>
+
+      {loadError && (
+        <p className={profileStyles.statsProblem} role="alert">
+          {loadError}
+          {' '}
+          <button type="button" className={profileStyles.statsRetry}
+                  onClick={() => setAttempt(n => n + 1)}>
+            {tt('common.tryAgain', 'Try again')}
+          </button>
+        </p>
+      )}
 
       <div className={profileStyles.statsDetailsContainer}>
 
@@ -67,7 +93,7 @@ const UserProfileStats = ({
             <Link href="/rankings" className={profileStyles.viewTable}>{tt("ui.view.table.fed8", "View Table")}</Link>
           </div>
           <p className={profileStyles.profileDetailValue}>
-            {loading ? '-' : stats?.rank ? `#${stats.rank}` : 'Unranked'}
+            {loading || loadError ? '-' : stats?.rank ? `#${stats.rank}` : tt('stats.unranked', 'Unranked')}
           </p>
         </div>
 

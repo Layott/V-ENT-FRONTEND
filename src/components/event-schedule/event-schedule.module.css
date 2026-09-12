@@ -12,6 +12,18 @@
   font-size: 0.88rem;
 }
 
+/* The one control a failed load offers. A filled chip, 44px for a thumb. */
+.retry {
+  background-color: #2a2b30;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font: inherit;
+  min-height: 44px;
+  padding: 0 0.9rem;
+}
+
 .day {
   display: flex;
   flex-direction: column;

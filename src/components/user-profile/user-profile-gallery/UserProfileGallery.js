@@ -6,6 +6,7 @@ import { MdDeleteForever } from "react-icons/md";
 import profileStyles from "@/styles/profile/profile-page.module.css";
 import styles from "./user-profile-gallery.module.css";
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { useTx } from '@/i18n/LanguageProvider';
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 const UserProfileGallery = () => {
@@ -85,16 +86,17 @@ const UserProfileGallery = () => {
         }));
         setGalleryData(transformedData);
       } else {
-        const errorData = await response.text();
-        console.error("Failed to fetch gallery:", response.status, errorData);
-        setFetchError(`Failed to load gallery: ${response.status} ${response.statusText}`);
+        const body = await response.json().catch(() => ({}));
+        setFetchError(apiMessage(tt, body, 'gallery.loadFailed', 'We could not load this gallery just now.'));
       }
     } catch (error) {
-      console.error("Error fetching gallery:", error);
-      setFetchError("We could not load this gallery just now.");
+      setFetchError(apiMessage(tt, error, 'gallery.loadFailed', 'We could not load this gallery just now.'));
     } finally {
       setIsLoading(false);
     }
+    // `tt` is read for the error sentence only. It changes identity on most
+    // renders, and naming it here would refetch the gallery on every one.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, status]);
 
   // Fetch gallery images when component mounts or session changes
@@ -431,36 +433,21 @@ const UserProfileGallery = () => {
         </div>
       </div>
 
-      {/* {fetchError && (
-                <div style={{
-                    color: 'red',
-                    padding: '10px',
-                    marginBottom: '10px',
-                    backgroundColor: '#fee',
-                    borderRadius: '4px',
-                }}>
-                    {fetchError}
-                    <button 
-                        onClick={() => {
-                            setFetchError(null)
-                            fetchGalleryImages()
-                        }}
-                        style={{
-                            marginLeft: '10px',
-                            background: '#007bff',
-                            border: 'none',
-                            color: 'white',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Retry
-                    </button>
-                </div>
-            )} */}
+      {/* Rendered, not commented out. This block sat behind a comment for
+          months while fetchError was set on every failure and shown on none:
+          the gallery simply read "No images in your gallery yet". */}
+      {fetchError && (
+        <div className={styles.errorMessage} role="alert">
+          {fetchError}
+          {' '}
+          <button type="button" className={styles.retryButton}
+                  onClick={() => { setFetchError(null); fetchGalleryImages(); }}>
+            {tt('common.tryAgain', 'Try again')}
+          </button>
+        </div>
+      )}
 
-      {isLoading ? <div className={styles.loadingMessage}>{tt("ui.loading.gallery.187a", "Loading gallery...")}</div> : galleryData.length === 0 && status === "authenticated" ? <div className={styles.emptyMessage}>
+      {isLoading ? <div className={styles.loadingMessage}>{tt("ui.loading.gallery.187a", "Loading gallery...")}</div> : !fetchError && galleryData.length === 0 && status === "authenticated" ? <div className={styles.emptyMessage}>
           {tt("ui.no.images.gallery.yet.a5df", "No images in your gallery yet. Upload your first image!")}
         </div> : null}
 

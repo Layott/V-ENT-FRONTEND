@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import styles from './user-picker.module.css';
@@ -60,6 +61,9 @@ const UserPicker = ({
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // A search that could not reach the server said "Nobody on V-ENT matches
+  // that", which sends somebody retyping a name that exists.
+  const [searchError, setSearchError] = useState('');
   const [highlight, setHighlight] = useState(-1);
   const [picked, setPicked] = useState(null);
   const wrapRef = useRef(null);
@@ -77,6 +81,7 @@ const UserPicker = ({
     const controller = new AbortController();
     abortRef.current = controller;
     setLoading(true);
+    setSearchError('');
     try {
       const res = await fetch(
         `${apiBase}/user/search/?q=${encodeURIComponent(query.trim().replace(/^@/, ''))}`,
@@ -85,15 +90,26 @@ const UserPicker = ({
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         },
       );
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       if (controller.signal.aborted) return;
+      if (!res.ok || body?.status !== 'success') {
+        setResults([]);
+        setSearchError(apiMessage(t, body, 'dm.searchFailed', 'The search did not reach the server.'));
+        return;
+      }
       setResults(body?.data?.users || []);
       setHighlight(-1);
     } catch (err) {
-      if (err?.name !== 'AbortError') setResults([]);
+      if (err?.name !== 'AbortError') {
+        setResults([]);
+        setSearchError(apiMessage(t, err, 'dm.searchFailed', 'The search did not reach the server.'));
+      }
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
+    // `t` is read for the error sentence only; it changes identity on most
+    // renders and naming it would rebuild the debounced search each time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiBase, token]);
 
   // The debounce fires through a ref, so it restarts when what somebody TYPED
@@ -189,7 +205,11 @@ const UserPicker = ({
         <ul className={styles.list} id={listId} role="listbox">
           {loading && <li className={styles.note}>{t('dm.searching', 'Searching…')}</li>}
 
-          {!loading && results.length === 0 && (
+          {!loading && searchError && (
+            <li className={styles.note}>{searchError}</li>
+          )}
+
+          {!loading && !searchError && results.length === 0 && (
             <li className={styles.note}>
               {t('dm.noMatches', 'Nobody on V-ENT matches that.')}
             </li>

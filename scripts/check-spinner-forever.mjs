@@ -86,21 +86,30 @@ const showsLoading = (src) => pageLoadingLines(src).length > 0;
  * A toast does not count, deliberately: it is gone in four seconds and the
  * page behind it is still blank. Neither does a bare `console.error`.
  */
+// What an error variable is called here: `error`, `loadError`, `fetchError`,
+// `loginsError`, `searchError`, `problem`. NOT `errors`, which is a form's
+// field validation and says nothing about whether the page loaded: the word
+// boundary after `rror` is what keeps `errors.password &&` out.
+const ERR = String.raw`(\w*[eE]rror|problem|failed|err)\b`;
 const showsError = (src) => (
-  /\{\s*(error|problem|loadError|failed|err)\b[^}]{0,40}&&/i.test(src)
+  new RegExp(String.raw`\{\s*${ERR}[^}]{0,40}&&`, 'i').test(src)
   || /errorText|inlineError|inlineErrorCard|styles\.problem|styles\.error\b/.test(src)
   || /\bErrorState\b|<ErrorCard/.test(src)
   // An early return is the commonest shape in this codebase, and the first
   // version of this checker missed every one of them: it reported 47 files
   // where the real number was far smaller. `if (error) return <p>{error}</p>;`
-  || /if\s*\(\s*(error|problem|loadError)\b[^)]*\)\s*return\s*[(<]/i.test(src)
+  || new RegExp(String.raw`if\s*\(\s*${ERR}[^)]*\)\s*\{?\s*return\s*[(<]`, 'i').test(src)
   // And the ternary: `{error ? <div>{error}</div> : null}`. Same thing on
   // screen as `{error && ...}`, and the first version missed it too.
-  || /\{\s*(error|problem|loadError)\s*\?/i.test(src)
+  || new RegExp(String.raw`\{\s*${ERR}\s*\?`, 'i').test(src)
   // And in the middle of a chain: `{!loading && error && <p>{error}</p>}`.
   // The first shape above needs the error to open the brace, and this one
   // was reported as having no error branch while drawing it on line 265.
-  || /&&\s*(error|problem|loadError)\b[^}]{0,40}&&/i.test(src)
+  || new RegExp(String.raw`&&\s*${ERR}[^}]{0,40}&&`, 'i').test(src)
+  // A state machine with an error state, and the error rendered bare as an
+  // element's whole text: `if (state === 'error') return <p>{error}</p>`.
+  || /state\s*===\s*['"]error['"]/.test(src)
+  || new RegExp(String.raw`>\{\s*${ERR}\s*\}<`, 'i').test(src)
 );
 
 /**
@@ -202,6 +211,27 @@ function selfTest() {
             {loading && <p>Loading…</p>}
             {!loading && error && <p className={shared.cardSub}>{error}</p>}`,
       expect: false,
+    },
+    {
+      name: 'a state machine with an error state, rendered bare',
+      src: `try { await fetch(url); } catch { setState('error'); setError('no'); }
+            if (state === 'loading') return <span className={styles.skelRow} />;
+            if (state === 'error') return <div><p>{error}</p></div>;`,
+      expect: false,
+    },
+    {
+      name: 'a named error variable counts, whatever it is called',
+      src: `try { await fetch(url); } catch (err) { setLoginsError(apiMessage(tt, err, 'k', 'f')); }
+            {loginsLoading && <tr><td>Loading…</td></tr>}
+            {!loginsLoading && loginsError && <tr><td>{loginsError}</td></tr>}`,
+      expect: false,
+    },
+    {
+      name: "a form's field errors say nothing about whether the page loaded",
+      src: `try { await fetch(url); } catch { toast.push('failed'); }
+            if (loading) return <p>Loading…</p>;
+            {errors.password && <p className={g.errorMessage}>{errors.password}</p>}`,
+      expect: true,
     },
     {
       name: 'no fetch is not this fault',
