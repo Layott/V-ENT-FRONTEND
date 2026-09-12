@@ -52,6 +52,21 @@ const src = fs.readFileSync(
   path.join(HERE, '..', 'src', 'components', 'page-help', 'pageGuides.js'), 'utf8');
 const patterns = [...src.matchAll(/^\s{2}'(\/[^']*)':\s*\{/gm)].map((m) => m[1]);
 
+// Routes PageHelp itself never draws a button on, read from its SILENT list so
+// the two cannot drift: a studio browser source is pasted into OBS and a
+// shortened ticket link redirects before anybody reads it. Asking for a guide
+// on those would be asking for a button on a broadcast.
+const helpSrc = fs.readFileSync(
+  path.join(HERE, '..', 'src', 'components', 'page-help', 'PageHelp.js'), 'utf8');
+const silentBlock = helpSrc.match(/const SILENT = \[([\s\S]*?)\];/);
+const SILENT = silentBlock
+  ? silentBlock[1].split(String.fromCharCode(10))
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('/'))
+    // One entry per line: the text between the first slash and the last one.
+    .map((line) => new RegExp(line.slice(1, line.lastIndexOf('/'))))
+  : [];
+
 /** The same matching the component does: exact, then most-literal pattern. */
 function guideFor(route) {
   if (patterns.includes(route)) return route;
@@ -73,6 +88,7 @@ const normalise = (r) => r.replace(/\[\.{3}([^\]]+)\]/g, ':$1').replace(/\[([^\]
 
 const missing = [];
 for (const route of routes) {
+  if (SILENT.some((re) => re.test(normalise(route)))) continue;
   if (!guideFor(normalise(route))) missing.push(route);
 }
 
