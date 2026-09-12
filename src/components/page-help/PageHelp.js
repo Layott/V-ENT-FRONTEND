@@ -23,7 +23,19 @@ import styles from './page-help.module.css';
 
 // Pages that are already an explanation, or where a floating button would sit
 // on top of the thing somebody is trying to use.
-const SILENT = [/^\/onboarding/, /^\/tournaments\/overlay/, /^\/events\/scan/];
+//
+// `/studio/...` is a browser source pasted into OBS: anything drawn on it is
+// drawn on the broadcast. `/s/...` is a shortened ticket link that redirects
+// before anybody reads it. Neither is a page a person learns, and
+// scripts/check-guides.mjs reads this list so it does not ask for a guide on
+// them. Keep each entry on one line, because that script reads it as text.
+const SILENT = [
+  /^\/onboarding/,
+  /^\/tournaments\/overlay/,
+  /^\/events\/scan/,
+  /^\/studio(\/|$)/,
+  /^\/s\/[^/]+$/,
+];
 
 export default function PageHelp() {
   const tt = useT();

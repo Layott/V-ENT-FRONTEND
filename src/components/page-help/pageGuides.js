@@ -679,6 +679,272 @@ export const GUIDES = {
     does: ['Wait a moment - this confirms the payment and credits your coins'],
     note: 'Closing this page does not lose the money. The payment is confirmed on our side too.',
   },
+
+  // ----------------------------------------------------- written 12 September
+  // The guides catcher was wired into check-all on 12 September 2026 and read
+  // 38 screens with no entry. These are those screens. Same rules as above:
+  // what the page is FOR, then what a person can actually do on it.
+  '/admin/admins': {
+    title: 'Administrators',
+    what: 'Everybody who can open this console, and what each of them may do.',
+    does: [
+      'Give somebody a role, or take one away',
+      'See who has an authenticator set up, and when each person was last here',
+    ],
+    note: 'Every grant and every removal lands in the audit log with who did it. A role that names a thing not built yet grants nothing until it is.',
+  },
+  '/admin/communities': {
+    title: 'Communities',
+    what: 'Every club on the platform, with how many people are in it and how much they say.',
+    does: ['Open a club to read what it holds'],
+  },
+  '/admin/communities/:slug': {
+    title: 'One club',
+    what: 'A single club as the console sees it: its members, its topics, its discussions and how far they reach.',
+    does: ['Read the discussions', 'See who started each one and how many people it reached'],
+  },
+  '/admin/content': {
+    title: 'Reports and content',
+    what: 'What people told us about, and what they posted, over the last seven days.',
+    does: [
+      'Decide a report: dismiss it, remove the content, or remove it and ban the account',
+      'See the queue of reports still waiting',
+    ],
+    note: 'A ban decided here is the same ban as on the users page. It shows on the account the moment it is pressed.',
+  },
+  '/admin/events/:slug': {
+    title: 'One event, for admins',
+    what: 'A single event with its numbers, and the two things only an admin does to it.',
+    does: [
+      'Cancel the event with a reason, or restore it',
+      'Void a ticket and return its seat, or reinstate one',
+    ],
+    note: 'Cancelling needs a reason and keeps it. The organiser sees the same reason.',
+  },
+  '/admin/finance': {
+    title: 'Money',
+    what: 'Every movement of VENT COINS on the platform, whoever holds the wallet.',
+    does: [
+      'Filter by wallet kind, by kind of movement, by state and by date',
+      'Download the filtered lines as a report',
+      'Move funds between two wallets, which lands on both statements',
+      'See the last 30 days by stream, and what the marketplace is holding',
+    ],
+    note: 'The marketplace line says closed while Vermillion City is shut. That is the switch doing its job, not a failure.',
+  },
+  '/admin/organizations': {
+    title: 'Organisations',
+    what: 'Every organisation on the platform, what it holds, and who runs it.',
+    does: ['Create an organisation on behalf of somebody', 'Open one'],
+  },
+  '/admin/organizations/:slug': {
+    title: 'One organisation, for admins',
+    what: 'A single organisation: who runs it, what it holds, and whether it is verified.',
+    does: [
+      'Edit its details',
+      'Verify it, or remove verification',
+      'Download its statement',
+    ],
+    note: 'Verified shows on the public page as a mark beside the name. Removing it removes the mark the same moment.',
+  },
+  '/anime/battles': {
+    title: 'Character battles',
+    what: 'Fans nominate characters and score them on five attributes. The averages decide it.',
+    does: ['Open a battle to see where it stands, or to vote'],
+    note: 'A battle takes nominations first, then opens for voting, then is decided. The state is written on each one.',
+  },
+  '/anime/battles/:slug': {
+    title: 'One battle',
+    what: 'One question, several characters, and where the scores stand.',
+    does: [
+      'Nominate a character while nominations are open',
+      'Score each attribute from 2 to 10 while voting is open',
+      'Argue about it below',
+    ],
+    note: 'Each attribute is the average of the votes on it, and a character total is the five averages added up. A tie is a real answer here.',
+  },
+  '/anime/manga': {
+    title: 'Comics',
+    what: 'Every comic published on V-ENT, by status and in the order you choose.',
+    does: ['Filter by status', 'Open a comic'],
+  },
+  '/anime/manga/:slug': {
+    title: 'One comic',
+    what: 'A comic, its chapters, and how to keep up with it.',
+    does: [
+      'Start reading, or carry on where you stopped',
+      'Follow it to be told when a chapter lands',
+      'Subscribe by the month, if the author charges for chapters',
+    ],
+    note: 'A subscription is paid in VENT COINS and runs until the date shown. A single chapter can also be bought on its own.',
+  },
+  '/anime/my-list': {
+    title: 'My list',
+    what: 'Everything you are reading, following, subscribed to or have bookmarked, in one place.',
+    does: ['Carry on reading from the exact page you left', 'Open anything you follow'],
+  },
+  '/anime/read/:slug': {
+    title: 'The reader',
+    what: 'One chapter, page by page, in the reading mode you prefer.',
+    does: [
+      'Turn pages, or scroll a vertical strip',
+      'Bookmark the page you are on',
+      'Change the reading mode and the theme in the settings',
+    ],
+    note: 'A paid chapter asks for the coins once and is then yours. Some themes are premium.',
+  },
+  '/anime/room/:token': {
+    title: 'A reading room',
+    what: 'Several people reading the same chapter at once, with one of them turning the page.',
+    does: [
+      'Join, with the password if the host set one',
+      'Read along as the driver turns the page',
+      'Say something, or stick a note on a page',
+    ],
+    note: 'The host closes the session, and afterwards sees how long it ran, how many came and what got the most reactions.',
+  },
+  '/anime/rooms': {
+    title: 'Reading rooms',
+    what: 'The rooms open right now, and where to start your own.',
+    does: ['Join a room that is open', 'Open a room: name it, pick what to read, say who may join and who turns the page'],
+  },
+  '/anime/studio': {
+    title: 'Your comics',
+    what: 'Where an author publishes: comics, chapters, prices and readers.',
+    does: [
+      'Create a comic, which stays private until you publish it',
+      'Upload a chapter as a set of page files',
+      'Set a price per chapter, or per month, or keep it free',
+      'Boost a comic so it shows first, and send a note to your readers',
+    ],
+    note: 'Boosting is a premium feature. Coins from paid chapters and subscriptions land in your wallet.',
+  },
+  '/community/challenge/:slug': {
+    title: 'One challenge',
+    what: 'A match somebody is looking for, and where it stands between the two sides.',
+    does: [
+      'Accept it, with a team if it is a team challenge',
+      'Agree the details, then record your score beside theirs',
+      'Call it off',
+    ],
+    note: 'A result counts once both sides have agreed it. Talk to the other side to arrange the when and where.',
+  },
+  '/events/:slug/run-of-show': {
+    title: 'Run of show',
+    what: 'The programme of the event, minute by minute, as the organiser published it.',
+    does: ['Read what is on now and what comes next'],
+    note: 'Times are shown in your own time zone. A physical event names the venue clock beside them.',
+  },
+  '/feedback': {
+    title: 'Send feedback',
+    what: 'Telling us what is wrong, or what is missing, in your own words.',
+    does: ['Say what it is about, what kind of thing it is, and what happened', 'Leave an email if you want an answer'],
+    note: 'It is logged the moment you send it, whether or not you leave an email.',
+  },
+  '/logout': {
+    title: 'Sign out',
+    what: 'Ending your session on this device.',
+    does: ['Sign out', 'Stay signed in and go back'],
+    note: 'Signing out here does not touch any other device you are signed in on.',
+  },
+  '/marketplace/create': {
+    title: 'List something',
+    what: 'Putting something up for sale, a service, or a swap, in Vermillion City.',
+    does: ['Say what it is, what it costs, and how it is handed over'],
+    note: 'A free account keeps one listing live at a time. Money from a sale is held until the buyer says it arrived.',
+  },
+  '/marketplace/dashboard': {
+    title: 'What I am selling',
+    what: 'Everything you have listed, and everything people have done about it.',
+    does: ['See what you have earned, what is live, and how many people looked', 'List something new'],
+  },
+  '/marketplace/listing/:slug': {
+    title: 'One listing',
+    what: 'One thing for sale, who is selling it, and how to buy it.',
+    does: ['Buy it with VENT COINS', 'Open the seller to see their sales and rating'],
+    note: 'The coins are held by V-ENT and paid to the seller when you say it arrived. If something is wrong, say so on the order instead.',
+  },
+  '/marketplace/purchase/:token': {
+    title: 'One order',
+    what: 'A purchase between you and the other side, and what happens to the money.',
+    does: [
+      'Say it arrived, which pays the seller',
+      'Call it off, or refund the buyer',
+      'Say something is wrong, which holds the money until it is looked at',
+    ],
+  },
+  '/marketplace/seller/:username': {
+    title: 'A seller',
+    what: 'Somebody who sells in Vermillion City: their sales, their rating and what they have live.',
+    does: ['Read their reviews', 'Open anything they are selling', 'Open their V-ENT profile'],
+  },
+  '/memberships': {
+    title: 'My memberships',
+    what: 'Every membership you have joined, what it costs you, and where the payment comes from.',
+    does: [
+      'Cancel a membership, or keep it after all',
+      'Move to another plan from the same organiser',
+      'Read every payment that was taken, and why one failed',
+    ],
+    note: 'Payments come from your VENT COINS first, then your saved card if the balance is short. A move to another plan starts at the beginning of your next period; nothing extra is charged on the day.',
+  },
+  '/my-stalls': {
+    title: 'My stalls',
+    what: 'The stalls you run at events, whether you bought the pitch or were invited.',
+    does: ['Open a stall to add what you sell and see its orders'],
+    note: 'You get a stall by buying a pitch on an event page, or when an organiser adds you by email or username.',
+  },
+  '/my-stalls/:slug': {
+    title: 'One stall',
+    what: 'Your shop at one event: what you sell, what people ordered, and where each order is.',
+    does: [
+      'Open or close the stall',
+      'Add what you sell, with a picture, a price and stock',
+      'Move an order along: ready, collected, sent with a tracking number, arrived',
+    ],
+    note: 'A stall waits for the organiser until they approve it, if that event asks for approval.',
+  },
+  '/plans/:slug': {
+    title: 'A membership',
+    what: 'One membership an organiser sells: what you get, what it costs, and how to join.',
+    does: ['Join, or start the free trial if there is one', 'Manage it once you are a member'],
+    note: 'The first payment is taken when you join. You can cancel in one press and keep it to the end of the period you paid for.',
+  },
+  '/premium': {
+    title: 'V-ENT premium',
+    what: 'What premium switches on, what it costs, and how to turn it on.',
+    does: ['Turn it on for a month, three, six or a year, paid from your wallet', 'Say you want it, if it is not on sale yet'],
+    note: 'While it is not on sale the page records who wants it rather than charging anybody.',
+  },
+  '/pricing': {
+    title: 'Pricing',
+    what: 'What V-ENT costs. Right now: nothing.',
+    does: ['Read what will cost money later, and what will stay free', 'See what premium costs'],
+  },
+  '/run-of-show/:token': {
+    title: 'The crew link',
+    what: 'The run of show as the crew sees it, at an address made to be pasted into a group chat.',
+    does: ['Read what is on now and what is next, on a phone, without an account'],
+    note: 'Only the people the organiser sent the link to have it. It is not listed anywhere.',
+  },
+  '/teams/join/:token': {
+    title: 'Join a team',
+    what: 'An invitation link from a team, and the role you would join as.',
+    does: ['Join the team'],
+    note: 'A link can expire or be used up. If it does not work, ask whoever sent it for a new one.',
+  },
+  '/tournaments/:slug/edit': {
+    title: 'Editing a tournament',
+    what: 'Changing a tournament you run, step by step, the same way it was created.',
+    does: ['Change any step and save', 'Set which organisation runs it'],
+    note: 'A tournament that is renamed gets a new address, and every old address keeps working.',
+  },
+  '/tournaments/:slug/run-of-show': {
+    title: 'Run of show',
+    what: 'The programme of the tournament, minute by minute, as the organiser published it.',
+    does: ['Read what is on now and what comes next'],
+    note: 'Times are shown in your own time zone.',
+  },
 };
 
 /** The translation key for a route: `/community/club` -> `community.club`.

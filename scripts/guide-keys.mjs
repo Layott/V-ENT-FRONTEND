@@ -86,7 +86,9 @@ if (process.argv[1] && process.argv[1].endsWith('guide-keys.mjs')) {
     const dict = fs.readFileSync(DICT, 'utf8');
     const missing = [];
     for (const [key] of pairs) {
-      const n = (dict.match(new RegExp(`^ {4}'${key.replace(/\./g, '\\.')}':`, 'gm')) || []).length;
+      // Either quote style: the dictionaries carry both, and a key written
+      // double-quoted was invisible to this check on 12 September.
+      const n = (dict.match(new RegExp(`^ {4}['"]${key.replace(/\./g, '\\.')}['"]:`, 'gm')) || []).length;
       if (n !== 3) missing.push(`${key} appears ${n} times, wanted 3`);
     }
     console.log(`guide strings: ${pairs.length}`);
