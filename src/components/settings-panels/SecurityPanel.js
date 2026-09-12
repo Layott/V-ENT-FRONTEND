@@ -77,6 +77,9 @@ const SecurityPanel = ({
   } = useSession();
   const [logins, setLogins] = useState([]);
   const [loginsLoading, setLoginsLoading] = useState(true);
+  // A failed load said "No sign-ins recorded yet", which on a security
+  // panel is the one sentence that must never be wrong.
+  const [loginsError, setLoginsError] = useState('');
   useEffect(() => {
     const token = session?.user?.sessionToken;
     if (!token) return;
@@ -88,11 +91,17 @@ const SecurityPanel = ({
             Authorization: `Bearer ${token}`
           }
         });
-        if (!res.ok) throw new Error(`status ${res.status}`);
-        const body = await res.json();
-        if (!cancelled) setLogins(body?.data?.events || []);
-      } catch {
-        if (!cancelled) setLogins([]);
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || body?.status !== 'success') {
+          throw Object.assign(new Error('load failed'), { code: body?.code, status: res.status });
+        }
+        if (!cancelled) { setLogins(body?.data?.events || []); setLoginsError(''); }
+      } catch (err) {
+        if (!cancelled) {
+          setLogins([]);
+          setLoginsError(apiMessage(tt, err, 'security.loginsFailed',
+            'Your recent sign-ins could not be loaded.'));
+        }
       } finally {
         if (!cancelled) setLoginsLoading(false);
       }
@@ -100,6 +109,10 @@ const SecurityPanel = ({
     return () => {
       cancelled = true;
     };
+    // `tt` is read for the error sentence and deliberately not a dependency:
+    // it changes identity on most renders, and naming it here would refetch
+    // the sign-in list on every one of them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
   const [twoFA, setTwoFA] = useState(!!security.two_factor_enabled);
   const [loginAlerts, setLoginAlerts] = useState(security.login_alerts !== false);
@@ -346,7 +359,10 @@ const SecurityPanel = ({
               {loginsLoading && <tr>
                   <td colSpan={4}>{tt("ui.loading.recent.sign.ins.71e3", "Loading your recent sign-ins...")}</td>
                 </tr>}
-              {!loginsLoading && logins.length === 0 && <tr>
+              {!loginsLoading && loginsError && <tr>
+                  <td colSpan={4}>{loginsError}</td>
+                </tr>}
+              {!loginsLoading && !loginsError && logins.length === 0 && <tr>
                   <td colSpan={4}>{tt("ui.no.sign.ins.recorded.798f", "No sign-ins recorded yet. This fills in from your next sign-in.")}</td>
                 </tr>}
               {!loginsLoading && logins.map(row => <tr key={row.id}>

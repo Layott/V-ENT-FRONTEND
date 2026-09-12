@@ -33,12 +33,52 @@ const SRC = join(ROOT, 'src');
 /** Does this file load something asynchronously? */
 const fetches = (src) => /await fetch\(|\bventFetch\(/.test(src);
 
-/** Does it render a loading state a person would sit in front of? */
-const showsLoading = (src) => (
-  /loading\s*(&&|\?)/i.test(src)
-  || /\bLoading[.…]/.test(src)
-  || /Skeleton|skeletonRow/.test(src)
-);
+/**
+ * Does it render a loading state a person would sit in front of?
+ *
+ * Page-level only. Two shapes look like one and are not, and the first
+ * version of this checker counted both, which is how 15 of its 42 findings
+ * on 12 September were files with no fault in them:
+ *
+ *   1. A BUTTON spinner. `{loading ? <CircularProgress/> : 'Sign in'}` gates
+ *      one control while a request is in flight. The form stays on screen
+ *      with its own errors; nobody is stranded.
+ *   2. A Suspense FALLBACK. `<Suspense fallback={<p>Loading…</p>}>` is what
+ *      React draws until a client component mounts, not a fetch, and it
+ *      resolves whether or not the API answers.
+ */
+// Case matters on the second one: `Loading…` is copy on screen, while
+// `ui.loading.challenge` is a dictionary key and matches nothing a person sees.
+const LOADING_LINE = {
+  test: (line) => /loading\s*(&&|\?)/i.test(line)
+    || /\bLoading[.…]/.test(line)
+    || /Skeleton|skeletonRow/.test(line),
+};
+const BUTTON_LINE = /CircularProgress|<button|\bbtn\b|Btn\b|disabled=/i;
+const FALLBACK_OPEN = /<Suspense|fallback=/;
+
+const pageLoadingLines = (src) => {
+  const lines = src.split('\n');
+  const out = [];
+  lines.forEach((line, i) => {
+    if (!LOADING_LINE.test(line)) return;
+    if (BUTTON_LINE.test(line)) return;
+    // A value being worked out, not a state being drawn:
+    // `const decided = !viewer.loading && ...`.
+    if (/^\s*(const|let|var)\s/.test(line)) return;
+    // Inside a fallback: the attribute opened on this line or one of the
+    // twelve above it, which is as far as a `fallback={<p style={{...}}>`
+    // with a multi-line style object runs in this codebase (ten lines on
+    // the wallet pages).
+    for (let k = Math.max(0, i - 12); k <= i; k += 1) {
+      if (FALLBACK_OPEN.test(lines[k])) return;
+    }
+    out.push(i + 1);
+  });
+  return out;
+};
+
+const showsLoading = (src) => pageLoadingLines(src).length > 0;
 
 /**
  * Is there an error the RENDER can show?
@@ -46,17 +86,30 @@ const showsLoading = (src) => (
  * A toast does not count, deliberately: it is gone in four seconds and the
  * page behind it is still blank. Neither does a bare `console.error`.
  */
+// What an error variable is called here: `error`, `loadError`, `fetchError`,
+// `loginsError`, `searchError`, `problem`. NOT `errors`, which is a form's
+// field validation and says nothing about whether the page loaded: the word
+// boundary after `rror` is what keeps `errors.password &&` out.
+const ERR = String.raw`(\w*[eE]rror|problem|failed|err)\b`;
 const showsError = (src) => (
-  /\{\s*(error|problem|loadError|failed|err)\b[^}]{0,40}&&/i.test(src)
+  new RegExp(String.raw`\{\s*${ERR}[^}]{0,40}&&`, 'i').test(src)
   || /errorText|inlineError|inlineErrorCard|styles\.problem|styles\.error\b/.test(src)
   || /\bErrorState\b|<ErrorCard/.test(src)
   // An early return is the commonest shape in this codebase, and the first
   // version of this checker missed every one of them: it reported 47 files
   // where the real number was far smaller. `if (error) return <p>{error}</p>;`
-  || /if\s*\(\s*(error|problem|loadError)\b[^)]*\)\s*return\s*[(<]/i.test(src)
+  || new RegExp(String.raw`if\s*\(\s*${ERR}[^)]*\)\s*\{?\s*return\s*[(<]`, 'i').test(src)
   // And the ternary: `{error ? <div>{error}</div> : null}`. Same thing on
   // screen as `{error && ...}`, and the first version missed it too.
-  || /\{\s*(error|problem|loadError)\s*\?/i.test(src)
+  || new RegExp(String.raw`\{\s*${ERR}\s*\?`, 'i').test(src)
+  // And in the middle of a chain: `{!loading && error && <p>{error}</p>}`.
+  // The first shape above needs the error to open the brace, and this one
+  // was reported as having no error branch while drawing it on line 265.
+  || new RegExp(String.raw`&&\s*${ERR}[^}]{0,40}&&`, 'i').test(src)
+  // A state machine with an error state, and the error rendered bare as an
+  // element's whole text: `if (state === 'error') return <p>{error}</p>`.
+  || /state\s*===\s*['"]error['"]/.test(src)
+  || new RegExp(String.raw`>\{\s*${ERR}\s*\}<`, 'i').test(src)
 );
 
 /**
@@ -125,6 +178,60 @@ function selfTest() {
             {error ? <div className={styles.notice}>{error}</div> : null}
             {loading && <p>Loading…</p>}`,
       expect: false,
+    },
+    {
+      name: 'a button spinner gates one control, not the page',
+      src: `const [loading, setLoading] = useState(false);
+            try { await fetch(url); } catch { setSnackbar('failed'); } finally { setLoading(false); }
+            <button type="submit" disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : tt('ui.signIn', 'Sign in')}
+            </button>`,
+      expect: false,
+    },
+    {
+      name: 'a Suspense fallback is React waiting for a component, not a fetch',
+      src: `await fetch(url);
+            const Page = () => <Suspense fallback={<p style={{
+              padding: '2rem'
+            }}>{tt('ui.loading', 'Loading…')}</p>}>
+              <Inner />
+            </Suspense>;`,
+      expect: false,
+    },
+    {
+      name: 'a page-level loading line beside a button spinner still counts',
+      src: `try { await fetch(url); } catch { toast.push('failed'); }
+            if (loading) return <p>Loading…</p>;
+            <button disabled={saving}>{saving ? <CircularProgress /> : 'Save'}</button>`,
+      expect: true,
+    },
+    {
+      name: 'an error in the middle of a chain is still an error on screen',
+      src: `try { await fetch(url); } catch (err) { setError(apiMessage(tt, err, 'k', 'f')); }
+            {loading && <p>Loading…</p>}
+            {!loading && error && <p className={shared.cardSub}>{error}</p>}`,
+      expect: false,
+    },
+    {
+      name: 'a state machine with an error state, rendered bare',
+      src: `try { await fetch(url); } catch { setState('error'); setError('no'); }
+            if (state === 'loading') return <span className={styles.skelRow} />;
+            if (state === 'error') return <div><p>{error}</p></div>;`,
+      expect: false,
+    },
+    {
+      name: 'a named error variable counts, whatever it is called',
+      src: `try { await fetch(url); } catch (err) { setLoginsError(apiMessage(tt, err, 'k', 'f')); }
+            {loginsLoading && <tr><td>Loading…</td></tr>}
+            {!loginsLoading && loginsError && <tr><td>{loginsError}</td></tr>}`,
+      expect: false,
+    },
+    {
+      name: "a form's field errors say nothing about whether the page loaded",
+      src: `try { await fetch(url); } catch { toast.push('failed'); }
+            if (loading) return <p>Loading…</p>;
+            {errors.password && <p className={g.errorMessage}>{errors.password}</p>}`,
+      expect: true,
     },
     {
       name: 'no fetch is not this fault',

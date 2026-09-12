@@ -62,13 +62,17 @@ function UserDetailInner() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTyped, setDeleteTyped] = useState('');
   const [busy, setBusy] = useState(false);
+  // Why the page has nothing, when it has nothing. Without this a network
+  // failure rendered as "User not found", which sends an admin looking for a
+  // deleted account that is sitting in the database.
+  const [error, setError] = useState('');
   const userId = params?.id;
   const fetchDetail = useCallback(async ({ quiet = false } = {}) => {
     if (!userId) {
       setLoading(false);
       return;
     }
-    if (!quiet) setLoading(true);
+    if (!quiet) { setLoading(true); setError(''); }
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/`, {
@@ -89,14 +93,17 @@ function UserDetailInner() {
         };
         setDetail(safeDetail);
         setNewRole(safeDetail.user?.role || 'user');
-      } else {
-        // Mock layer or backend returned not-found - leave detail null; UI handles it below.
+      } else if (res.status === 404) {
+        // Genuinely no such user: the not-found copy below is the right answer.
         setDetail(null);
+      } else {
+        setDetail(null);
+        setError(apiMessage(tt, data, 'msg.failedToLoadUser', 'Failed to load user.'));
       }
     } catch (err) {
       console.error('Admin user detail fetch error:', err);
-      toast.push(tt("msg.failedToLoadUser", "Failed to load user."), 'error');
       setDetail(null);
+      setError(apiMessage(tt, err, 'msg.failedToLoadUser', 'Failed to load user.'));
     } finally {
       setLoading(false);
     }
@@ -261,7 +268,7 @@ function UserDetailInner() {
             </div>
           </div>
 
-          {loading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : !detail || !detail.user ? <p className={shared.stateText}>{tt("ui.user.not.found.9c98", "User not found.")}</p> : <>
+          {loading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : error ? <p className={shared.errorText} role="alert">{error}</p> : !detail || !detail.user ? <p className={shared.stateText}>{tt("ui.user.not.found.9c98", "User not found.")}</p> : <>
               {/* Profile summary */}
               <div className={`${shared.card} ${styles.summary}`}>
                 <div className={styles.avatar}>

@@ -172,6 +172,26 @@
   color: #666;
 }
 
+.errorMessage {
+  padding: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+  background-color: #2a2b30;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.retryButton {
+  background-color: #33343a;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  min-height: 44px;
+  padding: 0 0.9rem;
+}
+
 .deleteButton {
   position: absolute;
   top: 5px;
