@@ -2,6 +2,8 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import { mediaUrl } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
@@ -80,6 +82,9 @@ const PostInner = ({
   };
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  // A request that never came back is not a post that does not exist. Only a
+  // 404 keeps the "not found" sentence; everything else says what happened.
+  const [loadError, setLoadError] = useState(null);
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
 
@@ -117,13 +122,16 @@ const PostInner = ({
         setPost(real);
         // The detail endpoint returns the real thread (with_comments=True).
         setComments(real?.comments || []);
+        setLoadError(null);
+      } else if (res.status !== 404) {
+        setLoadError(apiMessage(tt, data, 'community.postLoadFailed', 'This post did not load.'));
       }
     } catch (err) {
-      console.error('Post fetch error:', err);
+      setLoadError(apiMessage(tt, err, 'community.postLoadFailed', 'This post did not load.'));
     } finally {
       if (!quiet) setLoading(false);
     }
-  }, [id, apiUrl]);
+  }, [id, apiUrl, tt]);
 
   useAutoRefresh(() => fetchPost({ quiet: true }));
 
@@ -213,7 +221,7 @@ const PostInner = ({
               <FiArrowLeft /> {tt("ui.back.feed.ded1", "Back to feed")}
             </button>
 
-            {loading ? <p className={styles.stateText}>{tt("ui.loading.post.958b", "Loading post...")}</p> : !post ? <p className={styles.stateText}>{tt("ui.post.not.found.9c5a", "Post not found.")}</p> : <>
+            {loading ? <p className={styles.stateText}>{tt("ui.loading.post.958b", "Loading post...")}</p> : loadError && !post ? <ErrorState message={loadError} onRetry={() => fetchPost()} /> : !post ? <p className={styles.stateText}>{tt("ui.post.not.found.9c5a", "Post not found.")}</p> : <>
                 <article className={styles.postCard}>
                   <div className={styles.postHeader}>
                     <Link href={`/u/${encodeURIComponent(post.author.username)}`} className={styles.avatarLink}>

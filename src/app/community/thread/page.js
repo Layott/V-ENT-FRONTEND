@@ -3,6 +3,7 @@
 import { appLocale } from '@/lib/appLocale';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import SignInToEngage from '@/components/community/SignInToEngage';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -118,6 +119,8 @@ const ThreadInner = ({
   const [thread, setThread] = useState(null);
   const [replies, setReplies] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Only a 404 keeps the "not found" sentence; everything else says what happened.
+  const [loadError, setLoadError] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [posting, setPosting] = useState(false);
   const [replyError, setReplyError] = useState('');
@@ -158,13 +161,16 @@ const ThreadInner = ({
         const t = data.data.thread || null;
         setThread(t);
         setReplies(t?.replies || []);
+        setLoadError(null);
+      } else if (res.status !== 404) {
+        setLoadError(apiMessage(tt, data, 'community.threadLoadFailed', 'This thread did not load.'));
       }
     } catch (err) {
-      console.error('Thread fetch error:', err);
+      setLoadError(apiMessage(tt, err, 'community.threadLoadFailed', 'This thread did not load.'));
     } finally {
       if (!quiet) setLoading(false);
     }
-  }, [id, apiUrl, authHeaders]);
+  }, [id, apiUrl, authHeaders, tt]);
 
   useAutoRefresh(() => fetchThread({ quiet: true }));
 
@@ -277,7 +283,7 @@ const ThreadInner = ({
               <FiArrowLeft /> {tt("ui.back.forums.0221", "Back to forums")}
             </button>
 
-            {loading ? <p className={styles.stateText}>{tt("ui.loading.thread.3510", "Loading thread...")}</p> : !thread ? <p className={styles.stateText}>{tt("ui.thread.not.found.c823", "Thread not found.")}</p> : <>
+            {loading ? <p className={styles.stateText}>{tt("ui.loading.thread.3510", "Loading thread...")}</p> : loadError && !thread ? <ErrorState message={loadError} onRetry={() => fetchThread()} /> : !thread ? <p className={styles.stateText}>{tt("ui.thread.not.found.c823", "Thread not found.")}</p> : <>
                 <article className={styles.parentPost}>
                   <div className={styles.postHead}>
                     <Link href={`/u/${encodeURIComponent(thread.author.username)}`} className={styles.avatarLink}>
