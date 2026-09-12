@@ -268,7 +268,12 @@ export const ManageEventContent = ({
       body
     };
   }, [eventRef, token]);
-  const load = useCallback(async () => {
+  // `quiet` is what the refresh loop passes. Without it every tick put the
+  // loading line back over the whole console (unmounting the form somebody
+  // was typing into), wiped the refusal they had just been shown, and threw
+  // away the draft limits. Seen in Chrome on 12 September: a price refused
+  // as not whole coins, and thirty seconds later no refusal and no form.
+  const load = useCallback(async ({ quiet = false } = {}) => {
     // Returning here without clearing the spinner is how a page hangs on
     // "Loading..." forever: the flag starts true and nothing ever turns it
     // off. Somebody who opened this without an event, or before signing in,
@@ -277,9 +282,11 @@ export const ManageEventContent = ({
       setLoading(false);
       return;
     }
-    setLoading(true);
-    setError('');
-    setRefused(false);
+    if (!quiet) {
+      setLoading(true);
+      setError('');
+      setRefused(false);
+    }
     const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
@@ -364,8 +371,9 @@ export const ManageEventContent = ({
     setLimits(el.body?.data || null);
     // Cleared on every load so a saved value is read back from the server
     // rather than from what somebody typed. A draft that survives its own save
-    // is how a field goes on showing a number the database refused.
-    setLimitDraft({});
+    // is how a field goes on showing a number the database refused. Not on a
+    // quiet refresh, which is nobody's save.
+    if (!quiet) setLimitDraft({});
     setLoading(false);
   }, [call, token, eventRef]);
   useEffect(() => {
@@ -402,7 +410,7 @@ export const ManageEventContent = ({
         timer = setTimeout(tick, wait);
         return;
       }
-      await loadRef.current();
+      await loadRef.current({ quiet: true });
       if (stopped) return;
       wait = Math.min(Math.round(wait * 1.5), 120000);
       timer = setTimeout(tick, wait);
@@ -483,6 +491,14 @@ export const ManageEventContent = ({
     setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
     return false;
   };
+
+  // The refusal is printed at the top of the page and the form that was
+  // refused is often a screen below it. Bring the sentence to the person,
+  // once it is on the page.
+  useEffect(() => {
+    if (!error) return;
+    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [error]);
 
   // ------------------------------------------------------ messages and polls
 
@@ -687,13 +703,13 @@ export const ManageEventContent = ({
         perks: newTier.perks,
       }),
     }), 'manage.tierAdded', 'Ticket type added.')
-      .then(() => setNewTier({ name: '', price: '', quantity: '', perks: '' }));
+      .then(ok => { if (ok) setNewTier({ name: '', price: '', quantity: '', perks: '' }); });
   };
 
   const saveTier = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
-  }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setEditing(null));
+  }), 'manage.tierUpdated', 'Ticket type updated.').then(ok => { if (ok) setEditing(null); });
 
   const removeTier = row => run(() => call(`/tiers/${row.id}/delete/`, {
     method: 'DELETE',
@@ -702,7 +718,7 @@ export const ManageEventContent = ({
   const savePricing = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
-  }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setPricing(null));
+  }), 'manage.tierUpdated', 'Ticket type updated.').then(ok => { if (ok) setPricing(null); });
 
   // ------------------------------------------------- tickets per email address
   //
@@ -928,7 +944,7 @@ export const ManageEventContent = ({
         tier: newHold.tier || null,
       }),
     }), 'manage.holdAdded', 'Tickets held.')
-      .then(() => setNewHold({ name: '', quantity: '', tier: '', kind: 'guest' }));
+      .then(ok => { if (ok) setNewHold({ name: '', quantity: '', tier: '', kind: 'guest' }); });
   };
 
   const releaseHold = row => run(() => call(`/holds/${row.id}/release/`, {
@@ -956,7 +972,7 @@ export const ManageEventContent = ({
         capacity: newSession.capacity || 0,
       }),
     }), 'manage.sessionAdded', 'Added to the programme.')
-      .then(() => setNewSession({ title: '', starts_at: '', stage: '', capacity: '' }));
+      .then(ok => { if (ok) setNewSession({ title: '', starts_at: '', stage: '', capacity: '' }); });
   };
 
   const removeSession = row => run(() => call(`/sessions/${row.id}/`, {
@@ -1002,9 +1018,12 @@ export const ManageEventContent = ({
           {/* The same strip the edit page draws, with Details as its first
               tab. Two screens that manage one event should not look like two
               places, and nothing here led back to the details form. */}
-          <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />
+          {/* Not to somebody the console refuses: fifteen tabs above a
+              sentence saying they may not open any of them is fifteen
+              controls they cannot use. */}
+          {!refused && <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />}
 
-          {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={styles.error} role="alert" data-console-error>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
           {refused ? <p className={styles.muted}>
               {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}

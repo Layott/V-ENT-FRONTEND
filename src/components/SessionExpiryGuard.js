@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { clearSessionCookies } from '@/lib/logout';
+import { isGatedPath } from '@/lib/gatedRoutes';
 
 /**
  * Global session-expiry handler.
@@ -85,8 +86,16 @@ export default function SessionExpiryGuard() {
             // `session` cookie. signOut() alone leaves it, and the middleware
             // accepts it on its own, so an expired token used to leave the
             // browser still holding a credential the app would take.
+            // A dead token on a PUBLIC page leaves the reader on the page,
+            // as a stranger. Only a page that needs an account goes to the
+            // sign-in, and it says why and where to come back to. Found on
+            // the emulator: a stale cookie turned the event page into
+            // "Your session expired".
+            const back = isGatedPath(path)
+              ? `${window.location.origin}/login?expired=1&next=${encodeURIComponent(path)}`
+              : window.location.href;
             clearSessionCookies().then(() => {
-              signOut({ callbackUrl: `${window.location.origin}/login?expired=1` });
+              signOut({ callbackUrl: back });
             });
           }
         }

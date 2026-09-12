@@ -181,6 +181,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   padding: 0.65rem 1.4rem;
   border-radius: 6px;
   font-size: var(--fs-p-size-mobile);
@@ -192,6 +193,7 @@
 .heroSecondaryBtn {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   padding: 0.65rem 1.25rem;
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.1);
@@ -238,6 +240,7 @@
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
+  min-height: 44px;
   padding: 0.7rem 1.05rem;
   cursor: pointer;
   position: relative;
@@ -247,20 +250,12 @@
 
 .tabBtn:hover { color: var(--primary-bg); }
 
+/* The chosen tab is the white one, as on the tournament page. It carried a
+   red underline until 12 September, the one tab strip on the site that did,
+   and the design rule says never an underline. */
 .tabBtnActive {
   color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
-}
-
-.tabBtnActive::after {
-  content: '';
-  position: absolute;
-  left: 0.85rem;
-  right: 0.85rem;
-  bottom: -1px;
-  height: 2px;
-  background-color: var(--v-ent-red);
-  border-radius: 1px;
 }
 
 .tabContent {
@@ -599,6 +594,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .tierBuyBtn {
   width: 100%;
+  min-height: 44px;
   padding: 0.65rem;
   border-radius: 6px;
   border: none;
@@ -1614,6 +1610,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .pollCode {
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 9px;
+  min-height: 44px;
   padding: 10px 12px;
   color: #fff;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

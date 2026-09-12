@@ -5,68 +5,13 @@ import {
   DEFAULT_LOCALE, LOCALES as LOCALE_CODES, LOCALE_COOKIE, LOCALE_HEADER, PREFIXED,
   localeForCountry, localePath, preferredLocale, splitLocale,
 } from "@/lib/locale";
+import { PROTECTED_PATTERNS, PROTECTED_ROUTES } from "@/lib/gatedRoutes";
 
-// Matched with startsWith, so a bare "/events" here would also gate
-// "/events/lagos-anime-con". That is what it used to do, and it meant every
-// event and team page - the pages carrying the structured data, the ones the
-// sitemap advertises - answered a crawler with a redirect to /login. Public
-// content nobody outside can read is content that never ranks.
-//
-// So browsing is public, in line with tournaments, which were already public.
-// Doing anything is not: creating, registering, editing and anything with money
-// or personal data on it stays listed below.
-//
-// The test for this list is "does visiting it do something, or show somebody
-// else's private data". A profile, a team, a storefront, a thread and a
-// placeholder page all fail that test and are public - they are also the pages
-// worth being found in a search, which is the other half of the same decision.
-// A wallet, an inbox, a draft and every create form pass it and stay here.
-const protectedRoutes = [
-  "/home",
-  "/edit-user-profile",
-  "/onboarding",
-  "/edit-team-profile",
-  "/teams/create-team",
-  "/events/create-event",
-  "/events/edit-event",
-  "/events/my-events",
-  "/events/my-tickets",
-  "/events/attendees",
-  // The door. The whole page is an action: it downloads a ticket list and
-  // checks people in. Signed out it rendered a scanner that could do neither
-  // and said only "Could not load this event."
-  "/events/scan",
-  "/events/register-event",
-  "/tournaments/create-tournament",
-  "/tournaments/drafts",
-  "/tournaments/register-tournament",
-  "/tournaments/my-tournaments",
-  "/tournaments/manage",
-  "/organizations/create",
-  "/organizations/manage",
-  "/organizations/invites",
-  "/community/dm",
-  "/community/scrim/create",
-  "/wallets",
-  // Somebody's own memberships and every payment they have made. The
-  // whole page means "mine", so it is gated as a page rather than
-  // control by control. The plans themselves live at /plans/<name>,
-  // which is a different prefix and stays public and indexed.
-  "/memberships",
-  "/settings",
-  "/notifications",
-  "/disputes",
-];
-// Routes whose slug sits in the middle, so a prefix match cannot reach them.
-// `/events/lagos-anime-con/edit` performs an action and so is gated; the event
-// page under it is public and stays public.
-const protectedPatterns = [
-  /^\/events\/[^/]+\/(edit|manage|attendees)$/,
-  /^\/tournaments\/[^/]+\/manage$/,
-  // Registering IS the action. Signed out, this handed somebody the whole
-  // wizard and refused them at the end, after they had chosen an entry type.
-  /^\/tournaments\/[^/]+\/register$/,
-];
+// The gated lists live in src/lib/gatedRoutes.js, shared with the
+// session-expiry guard so both answer "does this page need an account"
+// the same way.
+const protectedRoutes = PROTECTED_ROUTES;
+const protectedPatterns = PROTECTED_PATTERNS;
 
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
