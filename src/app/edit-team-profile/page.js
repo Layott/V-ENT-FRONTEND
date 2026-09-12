@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -43,6 +44,10 @@ const EditTeamProfileContent = ({
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // `error` is "this team does not exist"; `loadError` is "the request did not
+  // come back". They used to share one card headed "Team not found", which is
+  // the wrong sentence for a network that was down.
+  const [loadError, setLoadError] = useState(null);
   const [toast, setToast] = useState('');
   const fetchTeam = useCallback(async () => {
     // Nothing is decided until the session has resolved. This page used to
@@ -60,6 +65,7 @@ const EditTeamProfileContent = ({
     }
     try {
       setLoading(true);
+      setLoadError(null);
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -69,10 +75,17 @@ const EditTeamProfileContent = ({
       });
       const data = await res.json();
       const t = data?.data?.team ?? data?.data;
-      if (!t) throw new Error('Team not found');
+      if (res.status === 404 || (res.ok && !t)) {
+        setError(apiMessage(tt, data, 'api.teamNotFound', 'That team does not exist.'));
+        return;
+      }
+      if (!res.ok || !t) {
+        setLoadError(apiMessage(tt, data, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
+        return;
+      }
       setTeam(t);
     } catch (err) {
-      setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
+      setLoadError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'));
     } finally {
       setLoading(false);
     }
@@ -103,6 +116,19 @@ const EditTeamProfileContent = ({
           <Sidebar />
           <div className={styles.rightPaneContainer}>
             <p className={styles.stateText}>{tt("ui.loading.33ce", "Loading…")}</p>
+          </div>
+        </main>
+        <BottomMenu />
+      </div>;
+  }
+  if (loadError) {
+    return <div className={styles.pageContainer}>
+        <Header />
+        <MobileHeader />
+        <main className={styles.mainContainer}>
+          <Sidebar />
+          <div className={styles.rightPaneContainer}>
+            <ErrorState message={loadError} onRetry={fetchTeam} />
           </div>
         </main>
         <BottomMenu />

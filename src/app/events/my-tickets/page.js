@@ -4,6 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { apiMessage } from '@/lib/apiMessage';
+import ErrorState from '@/components/error-state/ErrorState';
 import Link from 'next/link';
 import { FaTicketAlt, FaQrcode, FaCheckCircle, FaTimesCircle, FaRegClock } from 'react-icons/fa';
 import { IoCalendarOutline, IoLocationOutline } from 'react-icons/io5';
@@ -186,6 +187,9 @@ const MyTickets = () => {
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
     'Content-Type': 'application/json'
   }), [session?.user?.sessionToken]);
+  // A request that did not come back is not "No tickets yet." The empty state
+  // is for a real empty list; a failure says so and offers the loader again.
+  const [loadError, setLoadError] = useState(null);
   const fetchTickets = useCallback(async ({ quiet = false } = {}) => {
     if (!session?.user?.sessionToken) return;
     if (!quiet) setLoading(true);
@@ -197,13 +201,16 @@ const MyTickets = () => {
       if (data.status === 'success') {
         setTickets((data.data.tickets || []).map(normaliseTicket));
         setServerCounts(data.data.counts || null);
+        setLoadError(null);
+      } else {
+        setLoadError(apiMessage(tt, data, 'tickets.loadFailed', 'Your tickets did not load.'));
       }
     } catch (err) {
-      console.error('My tickets fetch error:', err);
+      setLoadError(apiMessage(tt, err, 'tickets.loadFailed', 'Your tickets did not load.'));
     } finally {
       if (!quiet) setLoading(false);
     }
-  }, [authHeaders, session?.user?.sessionToken]);
+  }, [authHeaders, session?.user?.sessionToken, tt]);
   useEffect(() => {
     fetchTickets();
   }, [fetchTickets]);
@@ -306,7 +313,7 @@ const MyTickets = () => {
             <input type="text" placeholder={tt("ui.search.event.code.venue.0a2f", "Search by event, code, venue…")} className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} />
           </div>
 
-          {loading ? <p className={styles.stateText}>{tt("ui.loading.tickets.7d1b", "Loading your tickets…")}</p> : filtered.length === 0 ? <div className={styles.emptyState}>
+          {loading ? <p className={styles.stateText}>{tt("ui.loading.tickets.7d1b", "Loading your tickets…")}</p> : loadError && tickets.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchTickets()} /> : filtered.length === 0 ? <div className={styles.emptyState}>
               <FaTicketAlt className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>
                 {tickets.length === 0 ? tx("No tickets yet.") : tx("No tickets match.")}
