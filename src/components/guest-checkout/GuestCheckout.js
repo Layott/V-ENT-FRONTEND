@@ -65,8 +65,11 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
     const controller = new AbortController();
     (async () => {
       try {
+        // A guest pays naira at the card, so the quote is asked for that
+        // channel: with the fee on the buyer it rides on top there, exactly.
         const params = new URLSearchParams({ tier: String(tier.id),
-                                             quantity: String(quantity) });
+                                             quantity: String(quantity),
+                                             channel: 'naira' });
         if (code) params.set('code', code);
         const res = await fetch(`${API}/event/${eventRef}/quote/?${params}`,
                                 { signal: controller.signal });
@@ -261,11 +264,23 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
         </div>
       ))}
 
-      {/* The number, before the payment page rather than on it. */}
+      {/* The number, before the payment page rather than on it. A guest pays
+          naira, so the fee (when the organiser has put it on the buyer) is a
+          line of its own and the total is what the card is charged. */}
+      {priced && priced.buyer_pays_fee && priced.fee_ngn > 0 && <div className={styles.totalRow}>
+        <span className={styles.label}>
+          {tt('checkout.serviceFee', 'Service fee ({pct}% + {flat} naira a ticket)')
+            .replace('{pct}', String(priced.fee_pct))
+            .replace('{flat}', formatNumber(priced.fee_flat_ngn))}
+        </span>
+        <span className={styles.totalValue}>{formatNumber(priced.fee_ngn)} NGN</span>
+      </div>}
       {priced && <div className={styles.totalRow}>
         <span className={styles.label}>{tt('ui.total.b259', 'Total')}</span>
         <strong className={styles.totalValue}>
-          {formatNumber(priced.total_vc)} VC
+          {priced.total_ngn > 0
+            ? `${formatNumber(priced.total_ngn)} NGN`
+            : `${formatNumber(priced.total_vc)} VC`}
         </strong>
       </div>}
       {priced?.price_reason === 'group' && <p className={styles.help}>

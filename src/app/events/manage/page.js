@@ -469,6 +469,10 @@ export const ManageEventContent = ({
     await load();
   };
 
+  // Money on this tab is NAIRA (the ledger keeps it exact) with the whole
+  // coins beside it, which is what a payout can actually move.
+  const moneyLine = (ngn, vc) => `${formatNumber(Number(ngn || 0))} NGN (${formatNumber(Number(vc || 0))} VC)`;
+
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');
@@ -1588,7 +1592,7 @@ export const ManageEventContent = ({
                         number that reaches a bank account. */}
                     {earnings && <>
                       <h3 className={styles.subTitle}>{tt('manage.whoPaysTheFee', 'Who pays the service fee')}</h3>
-                      {earnings.fee_pct > 0
+                      {(earnings.fee_pct > 0 || earnings.fee_flat_ngn > 0)
                         ? <>
                           <div className={styles.rowActions}>
                             {[['organiser', 'manage.feeOnMe', 'I absorb it'],
@@ -1608,8 +1612,11 @@ export const ManageEventContent = ({
                               </button>)}
                           </div>
                           <p className={styles.cardHint}>
-                            {tt('manage.feeExplained', 'V-ENT takes {pct}% of each ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
-                              .replace('{pct}', earnings.fee_pct)}
+                            {tt('manage.feeExplainedFlat', 'V-ENT takes {pct}% plus {flat} naira on each paid ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
+                              .replace('{pct}', earnings.fee_pct)
+                              .replace('{flat}', formatNumber(earnings.fee_flat_ngn))}
+                            {' '}
+                            {tt('manage.feeWalletNote', 'A wallet pays in whole VENT COINS, which cannot carry the fee, so for wallet buyers it comes out of your share either way; a card payment can add it on top.')}
                           </p>
                         </>
                         : <p className={styles.muted}>{tt('manage.noFeeAtAll', 'V-ENT is not taking a fee on tickets, so there is nothing to pass on.')}</p>}
@@ -1620,31 +1627,34 @@ export const ManageEventContent = ({
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.owedToYou', 'Waiting to be paid to you')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.organiser_owed_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.organiser_owed_ngn, earnings.organiser_owed_vc)}</span>
                         </div>
                         <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.alreadyPaidYou', 'Already paid to you')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.organiser_paid_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.organiser_paid_ngn, earnings.organiser_paid_vc)}</span>
                         </div>
-                        {earnings.affiliates_owed_vc > 0 && <div className={styles.row}>
+                        {earnings.affiliates_owed_ngn > 0 && <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.owedToAffiliates', 'Waiting to be paid to affiliates')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.affiliates_owed_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.affiliates_owed_ngn, earnings.affiliates_owed_vc)}</span>
                         </div>}
-                        {earnings.platform_fee_vc > 0 && <div className={styles.row}>
+                        {earnings.platform_fee_ngn > 0 && <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.platformTook', 'V-ENT service fee')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.platform_fee_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{formatNumber(earnings.platform_fee_ngn)} NGN</span>
                         </div>}
                       </div>
+                      <p className={styles.cardHint}>
+                        {tt('manage.carryExplained', 'The ledger keeps naira. A payout moves the whole VENT COINS the naira has reached into the wallet, and the rest waits for the next payout; nothing under a coin is lost.')}
+                      </p>
 
-                      {earnings.unclaimed_vc > 0 && <p className={styles.cardHint}>
-                        {tt('manage.unclaimedCommission', '{n} VC is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a settlement will not include it before then.')
-                          .replace('{n}', Number(earnings.unclaimed_vc).toLocaleString(appLocale()))}
+                      {earnings.unclaimed_ngn > 0 && <p className={styles.cardHint}>
+                        {tt('manage.unclaimedCommissionNgn', '{n} naira is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a payout will not include it before then.')
+                          .replace('{n}', formatNumber(earnings.unclaimed_ngn))}
                       </p>}
 
                       <div className={styles.rowActions}>
@@ -1653,6 +1663,8 @@ export const ManageEventContent = ({
                           className={`${styles.ghostBtn} grnBTN`}
                           disabled={busy || settling
                             || (earnings.organiser_owed_vc <= 0 && earnings.affiliates_owed_vc <= 0)}
+                          title={earnings.organiser_owed_vc <= 0 && earnings.organiser_owed_ngn > 0
+                            ? tt('manage.underACoin', 'Under one VENT COIN so far; it is paid when it reaches one.') : undefined}
                           onClick={async () => {
                             setSettling(true);
                             setSettleSaid('');
