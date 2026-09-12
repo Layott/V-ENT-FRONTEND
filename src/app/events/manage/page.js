@@ -268,7 +268,12 @@ export const ManageEventContent = ({
       body
     };
   }, [eventRef, token]);
-  const load = useCallback(async () => {
+  // `quiet` is what the refresh loop passes. Without it every tick put the
+  // loading line back over the whole console (unmounting the form somebody
+  // was typing into), wiped the refusal they had just been shown, and threw
+  // away the draft limits. Seen in Chrome on 12 September: a price refused
+  // as not whole coins, and thirty seconds later no refusal and no form.
+  const load = useCallback(async ({ quiet = false } = {}) => {
     // Returning here without clearing the spinner is how a page hangs on
     // "Loading..." forever: the flag starts true and nothing ever turns it
     // off. Somebody who opened this without an event, or before signing in,
@@ -277,9 +282,11 @@ export const ManageEventContent = ({
       setLoading(false);
       return;
     }
-    setLoading(true);
-    setError('');
-    setRefused(false);
+    if (!quiet) {
+      setLoading(true);
+      setError('');
+      setRefused(false);
+    }
     const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
       call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
       call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
@@ -364,8 +371,9 @@ export const ManageEventContent = ({
     setLimits(el.body?.data || null);
     // Cleared on every load so a saved value is read back from the server
     // rather than from what somebody typed. A draft that survives its own save
-    // is how a field goes on showing a number the database refused.
-    setLimitDraft({});
+    // is how a field goes on showing a number the database refused. Not on a
+    // quiet refresh, which is nobody's save.
+    if (!quiet) setLimitDraft({});
     setLoading(false);
   }, [call, token, eventRef]);
   useEffect(() => {
@@ -402,7 +410,7 @@ export const ManageEventContent = ({
         timer = setTimeout(tick, wait);
         return;
       }
-      await loadRef.current();
+      await loadRef.current({ quiet: true });
       if (stopped) return;
       wait = Math.min(Math.round(wait * 1.5), 120000);
       timer = setTimeout(tick, wait);
@@ -461,6 +469,10 @@ export const ManageEventContent = ({
     await load();
   };
 
+  // Money on this tab is NAIRA (the ledger keeps it exact) with the whole
+  // coins beside it, which is what a payout can actually move.
+  const moneyLine = (ngn, vc) => `${formatNumber(Number(ngn || 0))} NGN (${formatNumber(Number(vc || 0))} VC)`;
+
   const run = async (fn, successKey, successText) => {
     setBusy(true);
     setNotice('');
@@ -483,6 +495,14 @@ export const ManageEventContent = ({
     setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
     return false;
   };
+
+  // The refusal is printed at the top of the page and the form that was
+  // refused is often a screen below it. Bring the sentence to the person,
+  // once it is on the page.
+  useEffect(() => {
+    if (!error) return;
+    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [error]);
 
   // ------------------------------------------------------ messages and polls
 
@@ -687,13 +707,13 @@ export const ManageEventContent = ({
         perks: newTier.perks,
       }),
     }), 'manage.tierAdded', 'Ticket type added.')
-      .then(() => setNewTier({ name: '', price: '', quantity: '', perks: '' }));
+      .then(ok => { if (ok) setNewTier({ name: '', price: '', quantity: '', perks: '' }); });
   };
 
   const saveTier = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
-  }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setEditing(null));
+  }), 'manage.tierUpdated', 'Ticket type updated.').then(ok => { if (ok) setEditing(null); });
 
   const removeTier = row => run(() => call(`/tiers/${row.id}/delete/`, {
     method: 'DELETE',
@@ -702,7 +722,7 @@ export const ManageEventContent = ({
   const savePricing = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
-  }), 'manage.tierUpdated', 'Ticket type updated.').then(() => setPricing(null));
+  }), 'manage.tierUpdated', 'Ticket type updated.').then(ok => { if (ok) setPricing(null); });
 
   // ------------------------------------------------- tickets per email address
   //
@@ -928,7 +948,7 @@ export const ManageEventContent = ({
         tier: newHold.tier || null,
       }),
     }), 'manage.holdAdded', 'Tickets held.')
-      .then(() => setNewHold({ name: '', quantity: '', tier: '', kind: 'guest' }));
+      .then(ok => { if (ok) setNewHold({ name: '', quantity: '', tier: '', kind: 'guest' }); });
   };
 
   const releaseHold = row => run(() => call(`/holds/${row.id}/release/`, {
@@ -956,7 +976,7 @@ export const ManageEventContent = ({
         capacity: newSession.capacity || 0,
       }),
     }), 'manage.sessionAdded', 'Added to the programme.')
-      .then(() => setNewSession({ title: '', starts_at: '', stage: '', capacity: '' }));
+      .then(ok => { if (ok) setNewSession({ title: '', starts_at: '', stage: '', capacity: '' }); });
   };
 
   const removeSession = row => run(() => call(`/sessions/${row.id}/`, {
@@ -1002,9 +1022,12 @@ export const ManageEventContent = ({
           {/* The same strip the edit page draws, with Details as its first
               tab. Two screens that manage one event should not look like two
               places, and nothing here led back to the details form. */}
-          <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />
+          {/* Not to somebody the console refuses: fifteen tabs above a
+              sentence saying they may not open any of them is fifteen
+              controls they cannot use. */}
+          {!refused && <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />}
 
-          {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={styles.error} role="alert" data-console-error>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
           {refused ? <p className={styles.muted}>
               {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}
@@ -1569,7 +1592,7 @@ export const ManageEventContent = ({
                         number that reaches a bank account. */}
                     {earnings && <>
                       <h3 className={styles.subTitle}>{tt('manage.whoPaysTheFee', 'Who pays the service fee')}</h3>
-                      {earnings.fee_pct > 0
+                      {(earnings.fee_pct > 0 || earnings.fee_flat_ngn > 0)
                         ? <>
                           <div className={styles.rowActions}>
                             {[['organiser', 'manage.feeOnMe', 'I absorb it'],
@@ -1589,8 +1612,11 @@ export const ManageEventContent = ({
                               </button>)}
                           </div>
                           <p className={styles.cardHint}>
-                            {tt('manage.feeExplained', 'V-ENT takes {pct}% of each ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
-                              .replace('{pct}', earnings.fee_pct)}
+                            {tt('manage.feeExplainedFlat', 'V-ENT takes {pct}% plus {flat} naira on each paid ticket. Whichever you pick applies to tickets sold from now on, never to what has already sold. Free tickets carry no fee either way.')
+                              .replace('{pct}', earnings.fee_pct)
+                              .replace('{flat}', formatNumber(earnings.fee_flat_ngn))}
+                            {' '}
+                            {tt('manage.feeWalletNote', 'A wallet pays in whole VENT COINS, which cannot carry the fee, so for wallet buyers it comes out of your share either way; a card payment can add it on top.')}
                           </p>
                         </>
                         : <p className={styles.muted}>{tt('manage.noFeeAtAll', 'V-ENT is not taking a fee on tickets, so there is nothing to pass on.')}</p>}
@@ -1601,31 +1627,34 @@ export const ManageEventContent = ({
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.owedToYou', 'Waiting to be paid to you')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.organiser_owed_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.organiser_owed_ngn, earnings.organiser_owed_vc)}</span>
                         </div>
                         <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.alreadyPaidYou', 'Already paid to you')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.organiser_paid_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.organiser_paid_ngn, earnings.organiser_paid_vc)}</span>
                         </div>
-                        {earnings.affiliates_owed_vc > 0 && <div className={styles.row}>
+                        {earnings.affiliates_owed_ngn > 0 && <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.owedToAffiliates', 'Waiting to be paid to affiliates')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.affiliates_owed_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{moneyLine(earnings.affiliates_owed_ngn, earnings.affiliates_owed_vc)}</span>
                         </div>}
-                        {earnings.platform_fee_vc > 0 && <div className={styles.row}>
+                        {earnings.platform_fee_ngn > 0 && <div className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.platformTook', 'V-ENT service fee')}</strong>
                           </div>
-                          <span className={styles.code}>{Number(earnings.platform_fee_vc).toLocaleString(appLocale())} VC</span>
+                          <span className={styles.code}>{formatNumber(earnings.platform_fee_ngn)} NGN</span>
                         </div>}
                       </div>
+                      <p className={styles.cardHint}>
+                        {tt('manage.carryExplained', 'The ledger keeps naira. A payout moves the whole VENT COINS the naira has reached into the wallet, and the rest waits for the next payout; nothing under a coin is lost.')}
+                      </p>
 
-                      {earnings.unclaimed_vc > 0 && <p className={styles.cardHint}>
-                        {tt('manage.unclaimedCommission', '{n} VC is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a settlement will not include it before then.')
-                          .replace('{n}', Number(earnings.unclaimed_vc).toLocaleString(appLocale()))}
+                      {earnings.unclaimed_ngn > 0 && <p className={styles.cardHint}>
+                        {tt('manage.unclaimedCommissionNgn', '{n} naira is owed to an affiliate link nobody has claimed yet. It is paid the day they make an account, and a payout will not include it before then.')
+                          .replace('{n}', formatNumber(earnings.unclaimed_ngn))}
                       </p>}
 
                       <div className={styles.rowActions}>
@@ -1634,6 +1663,8 @@ export const ManageEventContent = ({
                           className={`${styles.ghostBtn} grnBTN`}
                           disabled={busy || settling
                             || (earnings.organiser_owed_vc <= 0 && earnings.affiliates_owed_vc <= 0)}
+                          title={earnings.organiser_owed_vc <= 0 && earnings.organiser_owed_ngn > 0
+                            ? tt('manage.underACoin', 'Under one VENT COIN so far; it is paid when it reaches one.') : undefined}
                           onClick={async () => {
                             setSettling(true);
                             setSettleSaid('');

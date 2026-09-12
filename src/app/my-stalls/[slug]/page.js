@@ -138,21 +138,17 @@ const StallPage = ({ params }) => {
       form.append('description', draft.description);
       form.append('price', String(Number(draft.price || 0)));
       form.append('stock', String(Number(draft.stock || 0)));
+      // One call carries the whole product. Until 12 September the create
+      // endpoint read name, price and stock only: the picture sent here was
+      // dropped, and choices and deliverability went in a second PATCH whose
+      // failure nobody saw.
+      form.append('variants', draft.variants);
+      form.append('can_deliver', draft.can_deliver ? 'true' : 'false');
       if (image) form.append('image', image);
       out = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/event/vendor/${encodeURIComponent(slug)}/products/`,
         { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form },
       ).then((r) => r.json()).catch(() => ({ status: 'error' }));
-      // Variants and deliverability are not on the create endpoint, so a new
-      // product that has them is created and then completed. One extra call,
-      // and it keeps the create endpoint as it was for everything already
-      // calling it.
-      if (out?.status === 'success' && (draft.variants.trim() || draft.can_deliver)) {
-        await api(`/products/${out.data.product.id}/`, {
-          method: 'PATCH',
-          body: JSON.stringify({ variants: draft.variants, can_deliver: draft.can_deliver }),
-        });
-      }
     }
     setBusy(false);
     if (out?.status !== 'success') {
@@ -339,7 +335,8 @@ const StallPage = ({ params }) => {
                     <label className={styles.field}>
                       <span className={styles.label}>{tt('stall.pPrice', 'Price in naira')}</span>
                       <input className={styles.input} inputMode="numeric" value={draft.price}
-                             onChange={set('price')} placeholder="2500" />
+                             onChange={set('price')} placeholder="2000" step="1000" />
+                      <span className={styles.help}>{tt('stall.pPriceHint', 'Whole thousands: one VENT COIN is 1,000 naira.')}</span>
                     </label>
                     <label className={styles.field}>
                       <span className={styles.label}>{tt('stall.pStock', 'How many you have')}</span>
