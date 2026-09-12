@@ -193,8 +193,6 @@ export const dictionaries = {
     "gallery.loadFailed": "We could not load this gallery just now.",
     "schedule.loadFailed": "The programme could not be loaded.",
     "security.loginsFailed": "Your recent sign-ins could not be loaded.",
-    "stats.loadFailed": "The stats could not be loaded.",
-    "stats.unranked": "Unranked",
     "common.edit": "Edit",
     // The admin dashboard, 8 September 2026. Row 191, seven roles.
     // Written in all three languages in the same change: a key present
@@ -8520,8 +8518,6 @@ export const dictionaries = {
     "gallery.loadFailed": "Nous n'avons pas pu charger cette galerie pour le moment.",
     "schedule.loadFailed": "Le programme n'a pas pu être chargé.",
     "security.loginsFailed": "Vos connexions récentes n'ont pas pu être chargées.",
-    "stats.loadFailed": "Les statistiques n'ont pas pu être chargées.",
-    "stats.unranked": "Non classé",
     "common.edit": "Modifier",
     // The admin dashboard, 8 September 2026. Row 191, seven roles.
     // Written in all three languages in the same change: a key present
@@ -16847,8 +16843,6 @@ export const dictionaries = {
     "gallery.loadFailed": "Não foi possível carregar esta galeria agora.",
     "schedule.loadFailed": "Não foi possível carregar o programa.",
     "security.loginsFailed": "Não foi possível carregar os seus inícios de sessão recentes.",
-    "stats.loadFailed": "Não foi possível carregar as estatísticas.",
-    "stats.unranked": "Sem classificação",
     "common.edit": "Editar",
     // The admin dashboard, 8 September 2026. Row 191, seven roles.
     // Written in all three languages in the same change: a key present
