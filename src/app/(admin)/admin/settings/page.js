@@ -142,42 +142,61 @@ function SettingsInner() {
               </button>
             </div>
           : loading || !settings ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : <div className={styles.grid}>
-              {/* Platform fees */}
+              {/* Every rate the platform charges, in one card. A key here
+                  has a default in DEFAULT_ADMIN_SETTINGS, a reader in the
+                  code that charges it, and this field; tools/check-pricing.py
+                  fails when any of the three is missing. No fallback numbers
+                  on this screen: the server always serves every key. */}
               <div className={shared.card}>
-                <h2 className={styles.sectionTitle}>{tt("ui.platform.fees.8467", "Platform Fees")}</h2>
-                <p className={styles.sectionSub}>{tt("ui.percentage.limits.applied.across.f4e2", "Percentage and limits applied across all transactions.")}</p>
+                <h2 className={styles.sectionTitle}>{tt('admin.feesTitle', 'What V-ENT takes')}</h2>
+                <p className={styles.sectionSub}>{tt('admin.feesSub', 'Every rate the platform charges. A change applies to the next sale; what was already sold keeps the numbers it was sold under.')}</p>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.tournament.fee.b8c9", "Tournament fee (%)")} <InfoTip id="adminTournamentFee" /></span></label>
-                  <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.tournament_fee_pct} onChange={e => patch('platform_fees', 'tournament_fee_pct', parseFloat(e.target.value || '0'))} />
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeePct', 'Tickets and stalls: % of the price')} <InfoTip id="adminTicketFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_pct} onChange={e => patch('platform_fees', 'ticket_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.withdrawal.fee.8715", "Withdrawal fee (%)")} <InfoTip id="adminWithdrawalFee" /></span></label>
-                  <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.withdrawal_fee_pct} onChange={e => patch('platform_fees', 'withdrawal_fee_pct', parseFloat(e.target.value || '0'))} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}><span className="fieldLabelRow">{tt("ui.listing.fee.e232", "Listing fee (%)")} <InfoTip id="adminListingFee" /></span></label>
-                  <input type="number" step="0.1" className={styles.input} value={settings.platform_fees.listing_fee_pct} onChange={e => patch('platform_fees', 'listing_fee_pct', parseFloat(e.target.value || '0'))} />
-                </div>
-                {/* The ticket fee: a percentage of the price plus a flat amount per
-                    paid ticket, both stamped on the ledger at the sale. Settable
-                    through the API since the ledger was built and never drawn
-                    here, so 5% + 100 naira (CEO, 12 September) had no field. */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeePct', 'Ticket fee (% of the price)')}</span></label>
-                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_pct ?? 5} onChange={e => patch('platform_fees', 'ticket_fee_pct', parseFloat(e.target.value || '0'))} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeeFlat', 'Ticket fee, flat (naira per paid ticket)')}</span></label>
-                  <input type="number" step="1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_flat_ngn ?? 100} onChange={e => patch('platform_fees', 'ticket_fee_flat_ngn', parseFloat(e.target.value || '0'))} />
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.ticketFeeFlat', 'Tickets and stalls: flat naira per paid unit')}</span></label>
+                  <input type="number" step="1" min="0" className={styles.input} value={settings.platform_fees.ticket_fee_flat_ngn} onChange={e => patch('platform_fees', 'ticket_fee_flat_ngn', parseFloat(e.target.value || '0'))} />
                   <p className={styles.sectionSub}>{tt('admin.ticketFeeHint', 'Applies to tickets sold from now on; what an event already sold keeps the numbers it sold under. Free tickets carry no fee.')}</p>
                 </div>
                 <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.subscriptionFeePct', 'Memberships: % of what a member pays')} <InfoTip id="adminSubscriptionFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.subscription_fee_pct} onChange={e => patch('platform_fees', 'subscription_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.listingFeePct', 'Marketplace: % of a sale')} <InfoTip id="adminListingFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.listing_fee_pct} onChange={e => patch('platform_fees', 'listing_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.animeFeePct', 'Comics: % of a chapter or series sale')} <InfoTip id="adminAnimeFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.anime_fee_pct} onChange={e => patch('platform_fees', 'anime_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.withdrawalFeePct', 'Payouts: % of the naira sent')} <InfoTip id="adminWithdrawalFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.withdrawal_fee_pct} onChange={e => patch('platform_fees', 'withdrawal_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.withdrawalFeeFlat', 'Payouts: flat naira per payout')}</span></label>
+                  <input type="number" step="1" min="0" className={styles.input} value={settings.platform_fees.withdrawal_fee_flat_ngn} onChange={e => patch('platform_fees', 'withdrawal_fee_flat_ngn', parseFloat(e.target.value || '0'))} />
+                  <p className={styles.sectionSub}>{tt('admin.withdrawalFeeHint', 'Comes off the naira the bank receives; the coins leave the wallet in full. Both at 0 and payouts are sent whole.')}</p>
+                </div>
+              </div>
+
+              {/* Floors and ceilings on money moving. */}
+              <div className={shared.card}>
+                <h2 className={styles.sectionTitle}>{tt('admin.limitsTitle', 'Limits')}</h2>
+                <p className={styles.sectionSub}>{tt('admin.limitsSub', 'Floors and ceilings on money moving. A ceiling at 0 means none.')}</p>
+                <div className={styles.formGroup}>
                   <label className={styles.label}><span className="fieldLabelRow">{tt("ui.min.payout.vc.4d43", "Min payout (VC)")} <InfoTip id="adminMinPayout" /></span></label>
-                  <input type="number" className={styles.input} value={settings.platform_fees.payout_min_vc} onChange={e => patch('platform_fees', 'payout_min_vc', parseInt(e.target.value || '0', 10))} />
+                  <input type="number" min="0" className={styles.input} value={settings.platform_fees.payout_min_vc} onChange={e => patch('platform_fees', 'payout_min_vc', parseInt(e.target.value || '0', 10))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.payoutDailyMax', 'Most one account may withdraw in a day (VC)')} <InfoTip id="adminPayoutDailyMax" /></span></label>
+                  <input type="number" min="0" className={styles.input} value={settings.platform_fees.payout_daily_max_vc} onChange={e => patch('platform_fees', 'payout_daily_max_vc', parseInt(e.target.value || '0', 10))} />
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.label}><span className="fieldLabelRow">{tt("ui.daily.top.up.cap.f3e9", "Daily top-up cap (₦)")} <InfoTip id="adminDailyCap" /></span></label>
-                  <input type="number" className={styles.input} value={settings.platform_fees.topup_max_ngn_per_day} onChange={e => patch('platform_fees', 'topup_max_ngn_per_day', parseInt(e.target.value || '0', 10))} />
+                  <input type="number" min="0" className={styles.input} value={settings.platform_fees.topup_max_ngn_per_day} onChange={e => patch('platform_fees', 'topup_max_ngn_per_day', parseInt(e.target.value || '0', 10))} />
                 </div>
               </div>
 

@@ -303,8 +303,8 @@ const StallPage = ({ params }) => {
                   </div>
                   <p className={styles.help}>
                     {tt('stall.feeExplained', 'V-ENT takes {pct}% plus {flat} naira on every unit you sell. A buyer pays in whole VENT COINS, so with the fee on the buyer the whole coins of it are added to their total and the part under a coin still comes out of yours. You are paid the whole coins your takings have reached at each order; the rest waits on the stall.')
-                      .replace('{pct}', String(stall.fee_pct ?? 5))
-                      .replace('{flat}', formatNumber(stall.fee_flat_ngn ?? 100))}
+                      .replace('{pct}', String(stall.fee_pct ?? 0))
+                      .replace('{flat}', formatNumber(stall.fee_flat_ngn ?? 0))}
                   </p>
                 </div>
               )}

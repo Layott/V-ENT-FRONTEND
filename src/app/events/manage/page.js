@@ -1616,7 +1616,7 @@ export const ManageEventContent = ({
                               .replace('{pct}', earnings.fee_pct)
                               .replace('{flat}', formatNumber(earnings.fee_flat_ngn))}
                             {' '}
-                            {tt('manage.feeWalletNote', 'A wallet pays in whole VENT COINS, which cannot carry the fee, so for wallet buyers it comes out of your share either way; a card payment can add it on top.')}
+                            {tt('manage.feeWalletNote', 'A wallet pays in whole VENT COINS, so with the fee on the buyer the whole coins of it are added to their total and the part under a coin still comes out of yours. A card payment adds the whole fee.')}
                           </p>
                         </>
                         : <p className={styles.muted}>{tt('manage.noFeeAtAll', 'V-ENT is not taking a fee on tickets, so there is nothing to pass on.')}</p>}

@@ -471,17 +471,29 @@ export const TIPS = {
   partnerDataContact:
     'The person to write to about a data question or a deletion request. A '
     + 'named human, not a shared inbox that nobody reads.',
-  adminTournamentFee:
-    'The share V-ENT takes from each tournament entry fee, as a percentage. '
-    + 'Applied at registration, not at payout.',
+  adminTicketFee:
+    'What V-ENT takes on every ticket and on everything a stall sells at an '
+    + 'event: this percentage of the price plus the flat naira below, per paid '
+    + 'unit. Whether the buyer or the seller bears it is each event\'s and '
+    + 'each stall\'s own choice.',
+  adminSubscriptionFee:
+    'The share V-ENT takes of an organisation\'s membership payments, as a '
+    + 'percentage of what each member pays.',
+  adminAnimeFee:
+    'The share V-ENT takes of a comic chapter or series sale, in whole coins '
+    + 'off the author\'s credit. The reader pays the price on the label.',
   adminWithdrawalFee:
-    'The share taken when somebody withdraws to a bank, as a percentage. Shown '
-    + 'to them before they confirm.',
+    'The share taken off the naira a payout is sent as, as a percentage. Shown '
+    + 'to them before they confirm; the coins leave the wallet in full.',
   adminListingFee:
     'The share taken on a marketplace sale, as a percentage.',
   adminMinPayout:
     'The smallest withdrawal allowed, in VENT COINS. Set to cover the bank '
     + 'transfer cost, otherwise small payouts cost more than they move.',
+  adminPayoutDailyMax:
+    'The most one account may ask to withdraw in a day, in VENT COINS, counted '
+    + 'from requests rather than approvals. What caps a stolen account before '
+    + 'anybody looks at the queue. 0 means no ceiling.',
   adminDailyCap:
     'The most one account may top up in a day, in naira. A fraud limit rather '
     + 'than a business one.',

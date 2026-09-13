@@ -34,7 +34,8 @@
 .input {
   width: 100%;
   background: #303136;
-
+  /* A number somebody taps on a phone: 44px, like every other control. */
+  min-height: 44px;
   border-radius: 5px;
   padding: 0.55rem 0.8rem;
   color: #fff;
