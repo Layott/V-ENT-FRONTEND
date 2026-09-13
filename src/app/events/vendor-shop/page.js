@@ -76,7 +76,7 @@ const VendorShopContent = ({
           const list = data.data.events || data.data.upcoming || (Array.isArray(data.data) ? data.data : []);
           setEvents(list);
           if (!eventId && list.length) {
-            setEventId(list[0].id);
+            setEventId(list[0].slug || String(list[0].id));
           }
         }
       } catch (err) {
@@ -135,16 +135,14 @@ const VendorShopContent = ({
     localStorage.setItem(CART_STORAGE_KEY(eventId), JSON.stringify(cart));
   }, [cart, eventId]);
 
-  // Sync ?id= param when changing events
-  useEffect(() => {
-    if (!eventId) return;
-    const params = new URLSearchParams();
-    params.set('id', eventId);
-    router.replace(`/events/vendor-shop?${params.toString()}`, {
-      scroll: false
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  // The address follows the selection, by name. Only when it CHANGES: the
+  // first version rewrote it on mount too, which turned every
+  // /events/<slug>/vendor-shop visit into /events/vendor-shop?id=<slug> (the
+  // slug rule bans that shape) and mounted the page a second time.
+  const changeEvent = ref => {
+    setEventId(ref);
+    router.replace(`/events/${encodeURIComponent(ref)}/vendor-shop`, { scroll: false });
+  };
   const allProducts = useMemo(() => {
     const items = [];
     vendors.forEach(v => {
@@ -203,7 +201,12 @@ const VendorShopContent = ({
     setCart(prev => prev.filter(p => p.id !== id));
   };
   const clearCart = () => setCart([]);
-  const currentEvent = events.find(e => e.id === eventId);
+  // Events are addressed by slug here and by id in links shared before slugs
+  // existed, so both resolve. Matching on `id` alone left the selector on the
+  // first event in the list whenever the page was opened by name.
+  const sameEvent = e => e.slug === eventId || String(e.id) === String(eventId);
+  const currentEvent = events.find(sameEvent);
+  const selectValue = currentEvent ? (currentEvent.slug || String(currentEvent.id)) : eventId;
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -236,8 +239,8 @@ const VendorShopContent = ({
             {events.length > 0 && <div className={styles.eventPicker}>
                 <label className={styles.eventLabel}>{tt("ui.event.ad89", "Event")}</label>
                 <div className={styles.selectWrap}>
-                  <select className={styles.eventSelect} value={eventId} onChange={e => setEventId(e.target.value)}>
-                    {events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                  <select className={styles.eventSelect} value={selectValue} onChange={e => changeEvent(e.target.value)} aria-label={tt("ui.event.ad89", "Event")}>
+                    {events.map(e => <option key={e.id} value={e.slug || String(e.id)}>{e.name}</option>)}
                   </select>
                   <TiArrowSortedDown className={styles.selectCaret} />
                 </div>

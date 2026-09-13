@@ -73,17 +73,32 @@ const READS_STATUS = /\bstatus\b\s*[,}]|status\s*===|useViewer\(/;
 
 // --------------------------------------------------------------- fault 3
 
-// The routes middleware gates whole, read from middleware itself.
+// The routes middleware gates whole, read from the one list the middleware
+// itself reads (src/lib/gatedRoutes.js since 12 September, when the
+// session-expiry guard started reading it too), so this cannot drift from it.
 const middleware = fs.readFileSync('src/middleware.js', 'utf8');
-const GATED = [...middleware.matchAll(/"(\/[a-z0-9/-]+)"/g)].map((m) => m[1]);
+const gatedSource = fs.existsSync('src/lib/gatedRoutes.js')
+  ? fs.readFileSync('src/lib/gatedRoutes.js', 'utf8') : middleware;
+const GATED = [...gatedSource.matchAll(/['"](\/[a-z0-9/-]+)['"]/g)].map((m) => m[1]);
 // The console is gated by its own branch a few lines above `protectedRoutes`,
 // because an admin proves the second factor at the ordinary sign-in and the
 // console reads that session. It is a gated route all the same.
 if (/path\.startsWith\('\/admin'\)/.test(middleware)) GATED.push('/admin');
+// The same three shapes gatedRoutes.js holds as PROTECTED_PATTERNS. Read
+// from there rather than copied here would be better still; until then the
+// self-test below fails if the two ever disagree in count.
 const GATED_PATTERNS = [
   /^\/events\/[^/]+\/(edit|manage|attendees)/,
   /^\/tournaments\/[^/]+\/manage/,
+  /^\/tournaments\/[^/]+\/register/,
 ];
+{
+  const declared = gatedSource.split(/\r?\n/).filter((l) => /^\s*\/\^/.test(l)).length;
+  if (declared && declared !== GATED_PATTERNS.length) {
+    console.error(`check-signed-out: gatedRoutes.js declares ${declared} pattern(s), this checker knows ${GATED_PATTERNS.length}. Update GATED_PATTERNS.`);
+    process.exit(2);
+  }
+}
 
 /** The route a page file serves, route groups dropped and slugs normalised. */
 const routeOf = (rel) => {

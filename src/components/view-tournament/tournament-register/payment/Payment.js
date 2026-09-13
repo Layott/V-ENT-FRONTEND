@@ -20,7 +20,7 @@ import styles from './payment.module.css';
 import { API, entryFeeVc, tokenFrom, ventFetch } from '@/components/tournament-lib/tournamentApi';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { formatDateTime } from '@/lib/datetime';
+import { formatDateTime, formatNumber } from '@/lib/datetime';
 const EMPTY_PIN = ['', '', '', ''];
 const CoinIcon = ({
   size = 16
@@ -54,7 +54,14 @@ const PaymentModal = ({
   // no PIN. Treat it as a zero-cost registration here, but say why.
   const listedFee = entryFeeVc(tournament);
   const coveredByTicket = Boolean(tournament?.entry_covered_by_ticket) && listedFee > 0;
-  const fee = coveredByTicket ? 0 : listedFee;
+  // What entering actually costs, from the server's quote: the entry plus
+  // whatever of V-ENT's fee the organiser put on the player (the whole coins
+  // of it, from a wallet). Until the quote arrives the listed entry stands.
+  // The screen never computes the fee; it draws what `/entry-quote/` says.
+  const [quote, setQuote] = useState(null);
+  const chargeFor = q => (q && q.total_vc != null ? Number(q.total_vc) : listedFee);
+  const fee = coveredByTicket ? 0 : chargeFor(quote);
+  const feeOnTop = !coveredByTicket && quote && quote.buyer_pays_fee ? Number(quote.buyer_fee_vc || 0) : 0;
   const prizePool = Number(tournament?.prize_pool ?? tournament?.prize_pool_vc ?? 0) || 0;
   const mode = registrationData?.type === 'team' ? 'team' : 'individual';
   const team = selectedTeam || registrationData?.team || null;
@@ -134,7 +141,10 @@ const PaymentModal = ({
       if (onComplete) {
         onComplete({
           paymentMethod: coveredByTicket ? 'event_ticket' : fee === 0 ? 'free' : 'wallet',
-          amount: fee,
+          // What actually left the wallet, from the server's answer: the
+          // entry plus any fee the organiser put on the player.
+          amount: Number(data?.coins_deducted ?? fee),
+          feeOnTop: Number(data?.fee_vc || 0),
           coveredByTicket,
           eventName: tournament?.event?.name || null,
           registrationId: data?.id,
@@ -172,13 +182,14 @@ const PaymentModal = ({
     }
   };
   const gateAndProceed = async (w, {
-    afterTopup = false
+    afterTopup = false,
+    charge = fee
   } = {}) => {
     if (prizePool > 0 && w.kyc_verified === false) {
       setPhase('kyc');
       return;
     }
-    if (fee === 0) {
+    if (charge === 0) {
       if (autoRegisteredRef.current) return;
       autoRegisteredRef.current = true;
       setLoadingLabel(coveredByTicket ? `Your ${tournament?.event?.name || 'event'} ticket covers entry. Registering you for ${tournamentName}…` : `Registering you for ${tournamentName}…`);
@@ -186,7 +197,7 @@ const PaymentModal = ({
       await doRegister(null);
       return;
     }
-    if (w.balance < fee) {
+    if (w.balance < charge) {
       setPhase('insufficient');
       return;
     }
@@ -199,6 +210,20 @@ const PaymentModal = ({
     setPhase('loading');
     setLoadingLabel('Loading payment details…');
     try {
+      // The quote first, so the balance is checked against what is actually
+      // charged rather than the listed entry.
+      let q = null;
+      if (listedFee > 0 && !coveredByTicket) {
+        try {
+          const ref = tournament?.slug || tournament?.id;
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/${ref}/entry-quote/`);
+          const body = await res.json();
+          if (res.ok && body.status === 'success') q = body.data;
+        } catch {
+          q = null;
+        }
+        setQuote(q);
+      }
       const data = await ventFetch(API.WALLET.BALANCE, {
         token
       });
@@ -208,7 +233,8 @@ const PaymentModal = ({
       };
       setWallet(w);
       await gateAndProceed(w, {
-        afterTopup
+        afterTopup,
+        charge: coveredByTicket ? 0 : chargeFor(q)
       });
     } catch (err) {
       setLoadError(apiMessage(tt, err, "api.couldNotLoadWalletBalance", "Could not load wallet balance."));
@@ -372,6 +398,13 @@ const PaymentModal = ({
           }}>{fee.toLocaleString()} VC</span>
             </> : 'FREE'}
         </span>
+        {feeOnTop > 0 && <span className={styles.feeLine}>
+          {tt('register.feeOnTop', 'Entry {entry} VC + service fee ({pct}% + {flat} naira) {fee} VC')
+            .replace('{entry}', formatNumber(Number(quote.entry_vc)))
+            .replace('{pct}', String(quote.fee_pct))
+            .replace('{flat}', formatNumber(Number(quote.fee_flat_ngn)))
+            .replace('{fee}', formatNumber(feeOnTop))}
+        </span>}
       </div>
     </div>;
   let body = null;

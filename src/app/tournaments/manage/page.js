@@ -31,6 +31,7 @@ import SubmittedLineups from '@/components/cards/SubmittedLineups';
 import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import MoneyPanel from '@/components/tournament-manage/MoneyPanel';
 import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -75,6 +76,11 @@ const TABS = [{
 }, {
   id: 'reminders',
   label: 'Reminders'
+}, {
+  // What the entries earned, who bears the fee, and paying it out. The
+  // same panel the event console has as its Money tab (13 September 2026).
+  id: 'money',
+  label: 'Money'
 }, {
   id: 'stats',
   label: 'Player stats'
@@ -414,6 +420,11 @@ const ManageContent = ({ slug }) => {
                                  token={token} showToast={showToast} />
               )}
             </>}
+            {tab === 'money' && (
+              access?.can_manage
+                ? <MoneyPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
+                : <p className={styles.panelSub}>{tt('money.organiserOnly', 'Only the organiser can see the money on this tournament.')}</p>
+            )}
             {tab === 'stats' && <>
                 {/* How the league table is worked out, above the MVP metrics:
                     the table is what everybody looks at, the awards are what

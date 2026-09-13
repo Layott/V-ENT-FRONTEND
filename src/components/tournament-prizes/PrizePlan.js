@@ -20,7 +20,7 @@ import { LuTrophy, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
-import { formatWithZone, localInputToISO } from '@/lib/datetime';
+import { formatNumber, formatWithZone, localInputToISO } from '@/lib/datetime';
 import styles from './prize-plan.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -41,6 +41,11 @@ const PLAN_PROBLEMS = {
   no_prize_configured: ['prizes.noPrize', 'This tournament awards no prizes.'],
   prize_distribution_missing: ['prizes.noTable',
     'No prize positions have been set, so there is nothing to pay.'],
+  // The entries did not cover the prizes and neither does the organiser's
+  // wallet. Filled in with the numbers below, because "top up" with no
+  // amount is a sentence nobody can act on.
+  pool_short: ['prizes.poolShort',
+    'The entries cover {pool} VC of these prizes. The other {wallet} VC comes from your wallet, which holds {balance} VC. Top it up first.'],
 };
 
 export default function PrizePlan({ tournamentRef, token, onClose, showToast }) {
@@ -191,7 +196,10 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
 
       {(plan?.problems || []).map(code => (
         <p key={code} className={styles.problem}>
-          {tt(...(PLAN_PROBLEMS[code] || [`prizes.problem.${code}`, code]))}
+          {tt(...(PLAN_PROBLEMS[code] || [`prizes.problem.${code}`, code]))
+            .replace('{pool}', formatNumber(plan?.from_pool_vc || 0))
+            .replace('{wallet}', formatNumber(plan?.from_wallet_vc || 0))
+            .replace('{balance}', formatNumber(plan?.organiser_balance_vc || 0))}
         </p>
       ))}
 
@@ -230,11 +238,20 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
           {tt('prizes.total', '{total} VENT COINS go out to {n} winners.')
             .replace('{total}', plan.total)
             .replace('{n}', payable.length)}
+          {' '}
+          {/* Where it comes from. Entries build the pool; the organiser's
+              own wallet covers the rest, and it is said here, before the
+              press, rather than discovered as a debit afterwards. */}
+          {plan.from_wallet_vc > 0
+            ? tt('prizes.fundingSplit', '{pool} VC of it from the entries and {wallet} VC from your wallet.')
+                .replace('{pool}', formatNumber(plan.from_pool_vc || 0))
+                .replace('{wallet}', formatNumber(plan.from_wallet_vc || 0))
+            : tt('prizes.fundingPool', 'All of it from what the entries brought in.')}
         </p>
       )}
 
       <div className={styles.actions}>
-        <button type="button" className={styles.pay} disabled={busy || !payable.length}
+        <button type="button" className={styles.pay} disabled={busy || !payable.length || blocked}
                 onClick={payNow}>
           <LuTrophy aria-hidden="true" /> {busy
             ? tt('prizes.paying', 'Paying…')

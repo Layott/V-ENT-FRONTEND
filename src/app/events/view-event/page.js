@@ -125,7 +125,11 @@ const normaliseTier = t => {
     id: t.id,
     name,
     tier,
-    price: Number(t.price_vc ?? t.price ?? 0),
+    // What one ticket costs NOW: the list price until an early bird ends,
+    // then the standard price. The checkout quotes the same function.
+    price: Number(t.price_now_vc ?? t.price_vc ?? t.price ?? 0),
+    list_price: Number(t.price_vc ?? t.price ?? 0),
+    early_bird_ended: !!t.early_bird_ended,
     // VENT COINS
     price_ngn: Number(t.price_ngn ?? 0),
     available: Number(t.remaining ?? 0),
@@ -276,7 +280,7 @@ export const ViewEventContent = ({
     status: sessionStatus
   } = useSession();
   const [event, setEvent] = useState(null);
-  const [fee, setFee] = useState({ bearer: 'organiser', pct: 0 });
+  const [fee, setFee] = useState({ bearer: 'organiser', pct: 0, flat: 0 });
   const [linkedTournaments, setLinkedTournaments] = useState([]);
   const [tournamentsLoading, setTournamentsLoading] = useState(true);
   const [linkable, setLinkable] = useState([]);
@@ -845,7 +849,8 @@ export const ViewEventContent = ({
         // discovered at the checkout. The panel has to say the number before
         // somebody commits to a quantity, never as a surprise afterwards.
         setFee({ bearer: body?.data?.fee_bearer || 'organiser',
-                 pct: Number(body?.data?.fee_pct || 0) });
+                 pct: Number(body?.data?.fee_pct || 0),
+                 flat: Number(body?.data?.fee_flat_ngn || 0) });
       } catch {
         setTiers([]);
       } finally {
@@ -965,12 +970,12 @@ export const ViewEventContent = ({
                   && quote.quantity === buyQty) ? quote : null;
   const unitCost = priced ? priced.unit_vc : (buyTier ? buyTier.price : 0);
   const ticketsCost = priced ? priced.tickets_vc : (buyTier ? buyTier.price * buyQty : 0);
-  // Rounded DOWN, matching the server exactly. A panel that rounds the other
-  // way shows a total the checkout then refuses.
-  const feeCost = priced ? priced.fee_vc
-    : ((fee.bearer === 'buyer' && fee.pct > 0)
-      ? Math.floor(ticketsCost * fee.pct / 100)
-      : 0);
+  // This panel pays from the wallet, in whole VENT COINS, and a coin cannot
+  // carry the fee (5% + 100 naira on a 2,000 naira ticket is 200 naira). So a
+  // wallet buyer never pays it on top, whoever the organiser put it on; the
+  // quote says so (`buyer_pays_fee`) and the guest checkout, which pays naira
+  // at the card, is where it can ride on top.
+  const feeCost = priced && priced.buyer_pays_fee ? priced.fee_vc : 0;
   const totalCost = priced ? priced.total_vc : ticketsCost + feeCost;
   const handleBuy = async () => {
     if (!buyTier) return;
@@ -1432,8 +1437,9 @@ export const ViewEventContent = ({
                         they have picked one is the kind of surprise that loses
                         the sale and the trust with it. */}
                     {fee.bearer === 'buyer' && fee.pct > 0 && <p className={styles.body}>
-                      {tt('buy.feeNotice', 'A {pct}% service fee is added at checkout.')
-                        .replace('{pct}', fee.pct)}
+                      {tt('buy.feeNoticeCard', 'Paying by card adds a {pct}% + {flat} naira service fee a ticket; paying from your wallet does not.')
+                        .replace('{pct}', fee.pct)
+                        .replace('{flat}', formatNumber(fee.flat))}
                     </p>}
                     <p className={styles.body}>
                       {countdown?.ended

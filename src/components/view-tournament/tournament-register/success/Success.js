@@ -63,7 +63,12 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
                 {registrationData?.paymentMethod === 'event_ticket'
                   ? `${entryFeeVc(tournament).toLocaleString()} VC, covered`
                   : entryFeeVc(tournament) > 0
-                    ? `${entryFeeVc(tournament).toLocaleString()} VC`
+                    ? (registrationData?.feeOnTop > 0
+                      ? tt('register.paidWithFee', '{total} VC ({entry} VC entry + {fee} VC service fee)')
+                          .replace('{total}', String(registrationData.amount))
+                          .replace('{entry}', String(entryFeeVc(tournament)))
+                          .replace('{fee}', String(registrationData.feeOnTop))
+                      : `${entryFeeVc(tournament).toLocaleString()} VC`)
                     : 'FREE'}
               </span>
             </div>
