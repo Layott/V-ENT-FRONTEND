@@ -160,6 +160,14 @@ function SettingsInner() {
                   <p className={styles.sectionSub}>{tt('admin.ticketFeeHint', 'Applies to tickets sold from now on; what an event already sold keeps the numbers it sold under. Free tickets carry no fee.')}</p>
                 </div>
                 <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.tournamentFeePct', 'Tournament entries: % of the entry fee')} <InfoTip id="adminTournamentFee" /></span></label>
+                  <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.tournament_fee_pct} onChange={e => patch('platform_fees', 'tournament_fee_pct', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}><span className="fieldLabelRow">{tt('admin.tournamentFeeFlat', 'Tournament entries: flat naira per paid entry')}</span></label>
+                  <input type="number" step="1" min="0" className={styles.input} value={settings.platform_fees.tournament_fee_flat_ngn} onChange={e => patch('platform_fees', 'tournament_fee_flat_ngn', parseFloat(e.target.value || '0'))} />
+                </div>
+                <div className={styles.formGroup}>
                   <label className={styles.label}><span className="fieldLabelRow">{tt('admin.subscriptionFeePct', 'Memberships: % of what a member pays')} <InfoTip id="adminSubscriptionFee" /></span></label>
                   <input type="number" step="0.1" min="0" className={styles.input} value={settings.platform_fees.subscription_fee_pct} onChange={e => patch('platform_fees', 'subscription_fee_pct', parseFloat(e.target.value || '0'))} />
                 </div>
