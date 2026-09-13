@@ -46,6 +46,10 @@ const StallPage = ({ params }) => {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [summary, setSummary] = useState({ open: 0, to_deliver: 0 });
+  // The money over every order that was not cancelled, in naira, from the
+  // orders endpoint: what the platform took, what the stall kept, the whole
+  // coins paid into the wallet so far, and what waits under a coin.
+  const [money, setMoney] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState('');
@@ -96,6 +100,9 @@ const StallPage = ({ params }) => {
     if (out?.status === 'success') {
       setOrders(out.data.orders || []);
       setSummary({ open: out.data.open || 0, to_deliver: out.data.to_deliver || 0 });
+      setMoney({ items_ngn: out.data.items_ngn || 0, fees_ngn: out.data.fees_ngn || 0,
+                 kept_ngn: out.data.kept_ngn || 0, paid_vc: out.data.paid_vc || 0,
+                 carry_ngn: out.data.carry_ngn || 0 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api]);
@@ -188,6 +195,20 @@ const StallPage = ({ params }) => {
     loadOrders();
   };
 
+  // Who bears the platform's fee on this stall: the same choice the
+  // organiser has on tickets. CEO, 13 September: "same for vendors".
+  const setFeeBearer = async (next) => {
+    if (busy) return;
+    setBusy(true);
+    const out = await api('/', { method: 'PATCH', body: JSON.stringify({ fee_bearer: next }) });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return say(apiMessage(tt, out, 'api.saveFailed', 'Could not change it'));
+    }
+    say(tt('stall.feeBearerSaved', 'Saved. It applies to orders from now on.'));
+    loadStall();
+  };
+
   const setOpen = async (next) => {
     const out = await api('/', { method: 'PATCH', body: JSON.stringify({ status: next }) });
     if (out?.status !== 'success') {
@@ -264,6 +285,29 @@ const StallPage = ({ params }) => {
                         : tt('stall.close', 'Close the stall')}
                     </button>}
               </div>
+
+              {stall.status !== 'pending' && (
+                <div className={styles.feeBox}>
+                  <p className={styles.label}>{tt('stall.whoPaysFee', 'Who pays the service fee')}</p>
+                  <div className={styles.rowActions}>
+                    {[['vendor', 'stall.feeOnMe', 'I absorb it'],
+                      ['buyer', 'stall.feeOnBuyer', 'The buyer pays it on top']].map(([value, key, fallback]) => (
+                      <button key={value} type="button"
+                              className={stall.fee_bearer === value ? styles.chipOn : styles.ghost}
+                              aria-pressed={stall.fee_bearer === value}
+                              disabled={busy || stall.fee_bearer === value}
+                              onClick={() => setFeeBearer(value)}>
+                        {tt(key, fallback)}
+                      </button>
+                    ))}
+                  </div>
+                  <p className={styles.help}>
+                    {tt('stall.feeExplained', 'V-ENT takes {pct}% plus {flat} naira on every unit you sell. A buyer pays in whole VENT COINS, so with the fee on the buyer the whole coins of it are added to their total and the part under a coin still comes out of yours. You are paid the whole coins your takings have reached at each order; the rest waits on the stall.')
+                      .replace('{pct}', String(stall.fee_pct ?? 5))
+                      .replace('{flat}', formatNumber(stall.fee_flat_ngn ?? 100))}
+                  </p>
+                </div>
+              )}
 
               <div className={styles.tabs} role="tablist">
                 <button type="button" aria-pressed={tab === 'shop'}
@@ -385,6 +429,15 @@ const StallPage = ({ params }) => {
 
               {tab === 'orders' && (
                 <>
+                  {money && (money.items_ngn > 0 || money.carry_ngn > 0) && (
+                    <div className={styles.moneyRow}>
+                      <span>{tt('stall.moneySold', 'Sold: {n} naira').replace('{n}', formatNumber(money.items_ngn))}</span>
+                      <span>{tt('stall.moneyFees', 'Service fee: {n} naira').replace('{n}', formatNumber(money.fees_ngn))}</span>
+                      <span>{tt('stall.moneyKept', 'Yours: {n} naira').replace('{n}', formatNumber(money.kept_ngn))}</span>
+                      <span>{tt('stall.moneyPaid', 'Paid to your wallet: {n} VC').replace('{n}', formatNumber(money.paid_vc))}</span>
+                      <span>{tt('stall.moneyCarry', 'Waiting under a coin: {n} naira').replace('{n}', formatNumber(money.carry_ngn))}</span>
+                    </div>
+                  )}
                   {summary.to_deliver > 0 && (
                     <p className={styles.muted}>
                       {tt('stall.toDeliver', '{n} waiting to be sent')
@@ -407,6 +460,17 @@ const StallPage = ({ params }) => {
                               <span className={styles.muted}>
                                 {o.buyer_name} · {formatNumber(o.total_vc)} VC · {formatDateTime(o.created_at)}
                               </span>
+                              {o.status !== 'cancelled' && (o.fee_ngn > 0 || o.vendor_ngn > 0) && (
+                                <span className={styles.muted}>
+                                  {tt('stall.orderMoney', 'Fee {fee} naira{onBuyer}, yours {kept} naira, {paid} VC paid')
+                                    .replace('{fee}', formatNumber(o.fee_ngn))
+                                    .replace('{onBuyer}', o.buyer_fee_vc > 0
+                                      ? tt('stall.orderFeeOnBuyer', ' ({n} VC of it paid by the buyer)').replace('{n}', formatNumber(o.buyer_fee_vc))
+                                      : '')
+                                    .replace('{kept}', formatNumber(o.vendor_ngn))
+                                    .replace('{paid}', formatNumber(o.vendor_paid_vc))}
+                                </span>
+                              )}
                               <span className={styles.muted}>
                                 {o.items.map((i) => `${i.quantity} x ${i.product}${i.variant ? ` (${i.variant})` : ''}`).join(', ')}
                               </span>
@@ -464,6 +528,12 @@ const StallPage = ({ params }) => {
                                 <button type="button" className={styles.primary} disabled={busy}
                                         onClick={() => moveOrder(o, 'delivered')}>
                                   {tt('stall.markDelivered', 'Arrived')}
+                                </button>
+                              )}
+                              {['paid', 'ready'].includes(o.status) && (
+                                <button type="button" className={styles.ghost} disabled={busy}
+                                        onClick={() => moveOrder(o, 'cancelled')}>
+                                  {tt('stall.cancelOrder', 'Cancel and refund')}
                                 </button>
                               )}
                             </div>
