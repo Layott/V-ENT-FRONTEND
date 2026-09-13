@@ -256,7 +256,7 @@ function PayoutsInner() {
                         </th>}
                       <th>{tt("ui.user.9f8a", "User")}</th>
                       <th>{tt("ui.amount.vc.7f67", "Amount VC")}</th>
-                      <th className={shared.hideMobile}>{tt("ui.ngn.equiv.8b0d", "NGN equiv.")}</th>
+                      <th className={shared.hideMobile}>{tt('admin.payoutSend', 'Send (naira)')}</th>
                       <th className={shared.hideMobile}>{tt("ui.bank.9e89", "Bank")}</th>
                       <th className={shared.hideMobile}>{tt("ui.account.85df", "Account")}</th>
                       <th className={shared.hideMobile}>{tt("ui.submitted.2e00", "Submitted")}</th>
@@ -278,7 +278,15 @@ function PayoutsInner() {
                           </div>
                         </td>
                         <td><strong>{Number(p.amount_vc).toLocaleString()} VC</strong></td>
-                        <td className={shared.hideMobile}>₦{Number(p.amount_ngn).toLocaleString()}</td>
+                        {/* What the bank receives: the coins' worth less the
+                            fee stamped on the request. A row from before the
+                            fee carries no payout_ngn and is sent whole. */}
+                        <td className={shared.hideMobile}>
+                          ₦{formatNumber(p.payout_ngn > 0 ? p.payout_ngn : p.amount_ngn)}
+                          {p.fee_ngn > 0 && <div className={styles.feeNote}>
+                            {tt('admin.payoutAfterFee', 'after a {fee} naira fee').replace('{fee}', formatNumber(p.fee_ngn))}
+                          </div>}
+                        </td>
                         <td className={shared.hideMobile}>{p.bank_name || '-'}</td>
                         <td className={shared.hideMobile}>
                           <code className={styles.code}>{p.account_number || '-'}</code>

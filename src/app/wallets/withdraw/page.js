@@ -11,7 +11,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
-import { formatNumber, ngnFromVc, calcWithdrawFee, calcNetPayout, NIGERIAN_BANKS } from '@/components/wallet/walletHelpers';
+import { formatNumber, ngnFromVc, NIGERIAN_BANKS } from '@/components/wallet/walletHelpers';
 import PinPrompt from '@/components/wallet/PinPrompt';
 import UsdtDestination from '@/components/wallet/UsdtDestination';
 import styles from '../wallets.module.css';
@@ -81,6 +81,11 @@ const WithdrawPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [reference, setReference] = useState('');
+  // What the server says this payout lands as. The screen used to compute
+  // "2% + 50 naira" itself while the server took nothing, so the number a
+  // person saw was not the number they got. The rate is an admin setting and
+  // only the server knows it; this asks, a moment after the amount settles.
+  const [quote, setQuote] = useState(null);
   const authHeaders = () => ({
     'Content-Type': 'application/json',
     ...(session?.user?.sessionToken ? {
@@ -140,8 +145,36 @@ const WithdrawPage = () => {
 
   const numericVc = Number(vc) || 0;
   const grossNgn = ngnFromVc(numericVc);
-  const fee = calcWithdrawFee(grossNgn);
-  const netNgn = calcNetPayout(grossNgn);
+  const fee = quote && quote.amount_vc === numericVc ? quote.fee_ngn : 0;
+  const netNgn = quote && quote.amount_vc === numericVc ? quote.payout_ngn : grossNgn;
+  const feeLabel = quote && (quote.fee_pct > 0 || quote.fee_flat_ngn > 0)
+    ? tt('wallet.withdrawFeeRate', 'Service fee ({pct}% + {flat} naira)')
+        .replace('{pct}', String(quote.fee_pct)).replace('{flat}', formatNumber(quote.fee_flat_ngn))
+    : tt('ui.withdrawal.fee.ebcf', 'Withdrawal fee');
+
+  useEffect(() => {
+    if (!session?.user?.sessionToken || !numericVc || numericVc < 1) {
+      setQuote(null);
+      return undefined;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/withdraw/quote/?amount=${numericVc}`, {
+          headers: authHeaders()
+        });
+        const data = await res.json();
+        if (!cancelled && data.status === 'success') setQuote(data.data);
+      } catch {
+        if (!cancelled) setQuote(null);
+      }
+    }, 250);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numericVc, session?.user?.sessionToken]);
   const activeBank = tab === 'saved' ? savedBanks[selectedBankIdx] : {
     bank_name: bank,
     account_number: accNum,
@@ -365,10 +398,10 @@ const WithdrawPage = () => {
                       <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
                       <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
                     </div>
-                    <div className={styles.summaryRow}>
-                      <span className={styles.summaryKey}>{tt("ui.withdrawal.fee.e039", "Withdrawal fee (2% + ₦50)")}</span>
+                    {fee > 0 && <div className={styles.summaryRow}>
+                      <span className={styles.summaryKey}>{feeLabel}</span>
                       <span className={`${styles.summaryVal} ${styles.summaryRed}`}>-₦{formatNumber(fee)}</span>
-                    </div>
+                    </div>}
                     <div className={styles.summaryHr} />
                     <div className={styles.summaryRow}>
                       <span className={styles.summaryKey}>{tt("ui.will.receive.4eef", "You will receive")}</span>
@@ -504,10 +537,10 @@ const WithdrawPage = () => {
                     <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
                     <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
                   </div>
-                  <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>{tt("ui.withdrawal.fee.ebcf", "Withdrawal fee")}</span>
+                  {fee > 0 && <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>{feeLabel}</span>
                     <span className={`${styles.summaryVal} ${styles.summaryRed}`}>-₦{formatNumber(fee)}</span>
-                  </div>
+                  </div>}
                   <div className={styles.summaryHr} />
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.net.payout.ba12", "Net payout")}</span>

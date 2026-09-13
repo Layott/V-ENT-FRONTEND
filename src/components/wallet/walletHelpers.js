@@ -10,17 +10,10 @@ export const NGN_PER_VC = 1000;
 export const ngnFromVc = (vc) => Math.round((Number(vc) || 0) * NGN_PER_VC);
 export const vcFromNgn = (ngn) => Math.floor((Number(ngn) || 0) / NGN_PER_VC);
 
-// Withdrawal fee: 2% of NGN payout + 50 NGN flat.
-export const calcWithdrawFee = (ngn) => {
-  const n = Number(ngn) || 0;
-  if (n <= 0) return 0;
-  return Math.round(n * 0.02) + 50;
-};
-
-export const calcNetPayout = (ngn) => {
-  const n = Number(ngn) || 0;
-  return Math.max(n - calcWithdrawFee(n), 0);
-};
+// There is deliberately no fee helper here. The withdrawal fee is a rate an
+// admin sets on the dashboard and only the server knows it; the withdraw
+// screen asks GET /auth/wallet/withdraw/quote/ for the number. A helper here
+// once said "2% + 50 naira" for months while the server took nothing.
 
 // ── Type / status normalisation ──
 const CREDIT_TYPES = ['top_up', 'topup', 'prize', 'receive', 'credit', 'refund'];
