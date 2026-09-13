@@ -46,6 +46,10 @@ const VendorStallContent = () => {
   const [contactError, setContactError] = useState('');
   const [pickedVariant, setPickedVariant] = useState('');
   const [fulfilment, setFulfilment] = useState('collect');
+  // What this basket would cost, from the same function the order charges
+  // through: the platform's fee on every unit and, when the stallholder has
+  // put it on the buyer, the whole coins of it added to the total.
+  const [quote, setQuote] = useState(null);
   const [delivery, setDelivery] = useState({ name: '', phone: '', address: '', note: '' });
   const [cartOpen, setCartOpen] = useState(false);
   const [pin, setPin] = useState('');
@@ -156,6 +160,26 @@ const VendorStallContent = () => {
   // Delivery is offered only when every line can be delivered: an order is
   // fulfilled once, and the API refuses a delivery carrying a collect-only item.
   const deliverable = cart.length > 0 && cart.every(i => i.can_deliver);
+  const viewerToken = viewer.token;
+  useEffect(() => {
+    if (!cartOpen || !cart.length || !viewerToken || !vendorId) { setQuote(null); return undefined; }
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/vendor/${encodeURIComponent(vendorId)}/quote/`, {
+          method: 'POST', signal: controller.signal,
+          headers: { Authorization: `Bearer ${viewerToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: cart.map(i => ({ product_id: i.id, quantity: i.qty, variant: i.variant || '' })) })
+        });
+        const body = await res.json().catch(() => ({}));
+        setQuote(body?.status === 'success' ? body.data : null);
+      } catch (err) {
+        if (err?.name !== 'AbortError') setQuote(null);
+      }
+    })();
+    return () => controller.abort();
+  }, [cartOpen, cart, viewerToken, vendorId]);
+  const payTotalVc = quote ? quote.total_vc : cartTotalVc;
   const changeQty = (key, delta) => {
     setCart(prev => prev.map(i => lineKey(i) === key ? {
       ...i,
@@ -164,7 +188,7 @@ const VendorStallContent = () => {
   };
   const placeOrder = async () => {
     if (!cart.length) return;
-    if (cartTotalVc > 0 && pin.length < 4) {
+    if (payTotalVc > 0 && pin.length < 4) {
       setOrderError(tt('stall.pinNeeded', 'Enter your 4-digit wallet PIN to authorise this payment.'));
       return;
     }
@@ -475,6 +499,12 @@ const VendorStallContent = () => {
                       <span>{formatNumber(i.line_vc)} VC</span>
                     </li>)}
                 </ul>
+                {placedOrder.buyer_fee_vc > 0 && (
+                  <div className={styles.cartTotalRow}>
+                    <span>{tt('stall.cartFeePaid', 'Service fee')}</span>
+                    <span>{formatNumber(placedOrder.buyer_fee_vc)} VC</span>
+                  </div>
+                )}
                 <div className={styles.cartTotalRow}>
                   <span>{tt("ui.paid.dc9d", "Paid")}</span>
                   <span className={styles.cartTotalVal}>{formatNumber(placedOrder.total_vc)} VC</span>
@@ -494,9 +524,16 @@ const VendorStallContent = () => {
                     </li>)}
                 </ul>
 
+                {quote && quote.buyer_fee_vc > 0 && (
+                  <div className={styles.cartTotalRow}>
+                    <span>{tt('stall.cartFee', 'Service fee ({pct}% + {flat} naira a unit)')
+                      .replace('{pct}', String(quote.fee_pct)).replace('{flat}', formatNumber(quote.fee_flat_ngn))}</span>
+                    <span>{formatNumber(quote.buyer_fee_vc)} VC</span>
+                  </div>
+                )}
                 <div className={styles.cartTotalRow}>
                   <span>{tt("ui.total.b259", "Total")}</span>
-                  <span className={styles.cartTotalVal}>{formatNumber(cartTotalVc)} VC</span>
+                  <span className={styles.cartTotalVal}>{formatNumber(payTotalVc)} VC</span>
                 </div>
 
                 {/* Paying needs a wallet, so a stranger is told that here rather
@@ -525,7 +562,7 @@ const VendorStallContent = () => {
                   {orderError && <p className={styles.orderError} role="alert">{orderError}</p>}
 
                   <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
-                    {placing ? tx("Placing order…") : `${tt('stall.pay', 'Pay')} ${formatNumber(cartTotalVc)} VC`}
+                    {placing ? tx("Placing order…") : `${tt('stall.pay', 'Pay')} ${formatNumber(payTotalVc)} VC`}
                   </button>
                 </NeedsAccount>
               </div>}
