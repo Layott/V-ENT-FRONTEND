@@ -476,6 +476,11 @@ export const TIPS = {
     + 'event: this percentage of the price plus the flat naira below, per paid '
     + 'unit. Whether the buyer or the seller bears it is each event\'s and '
     + 'each stall\'s own choice.',
+  adminTournamentFee:
+    'What V-ENT takes on every paid tournament entry: this percentage plus the '
+    + 'flat naira below, per entry. Entries build the prize pool; the organiser '
+    + 'keeps what is left after prizes and chooses whether the player bears '
+    + 'the fee on top.',
   adminSubscriptionFee:
     'The share V-ENT takes of an organisation\'s membership payments, as a '
     + 'percentage of what each member pays.',
