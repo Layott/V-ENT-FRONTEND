@@ -18,6 +18,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import styles from './payment.module.css';
 import { API, entryFeeVc, tokenFrom, ventFetch } from '@/components/tournament-lib/tournamentApi';
+import PayShortfall from '@/components/pay/PayShortfall';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
@@ -453,6 +454,18 @@ const PaymentModal = ({
           </div>
         </div>
         {topUpError && <div className={styles.paymentError}>{topUpError}</div>}
+        {/* The shared way to pay a shortfall by card, which this screen used
+            to be the only one to have, hand-built (CEO, 13 September 2026:
+            "that option must always be vaailable"). A saved card charges in
+            place and the registration carries straight on; without one it is
+            the same trip to Paystack and back that `saveDraft` resumes. */}
+        <PayShortfall needVc={fee} purpose="tournament_entry"
+          token={token}
+          resume={{ door: 'tournament' }}
+          onPaid={async () => {
+            setTopUpError('');
+            await loadWallet({ afterTopup: true });
+          }} />
       </>;
     footerPrimary = <button className={styles.payButton} onClick={handleTopUp} disabled={toppingUp}>
         {toppingUp ? tx("Redirecting…") : `Top up & pay ${fee.toLocaleString()} VC`}

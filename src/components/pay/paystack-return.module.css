@@ -1,0 +1,49 @@
+/* What happened to the payment somebody just came back from.
+
+   Sits above the page, out of the way of the bottom navigation on a phone. */
+
+.note {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: min(92vw, 30rem);
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.good {
+  background-color: #1e2a1f;
+}
+
+.bad {
+  background-color: #2f2323;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -0.6rem -0.6rem -0.6rem 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@media (min-width: 721px) {
+  .note {
+    bottom: 24px;
+  }
+}

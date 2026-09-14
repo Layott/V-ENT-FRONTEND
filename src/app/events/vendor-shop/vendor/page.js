@@ -7,6 +7,7 @@ import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
+import PayShortfall from '@/components/pay/PayShortfall';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -560,6 +561,13 @@ const VendorStallContent = () => {
                     </div>}
 
                   {orderError && <p className={styles.orderError} role="alert">{orderError}</p>}
+
+                  {/* CEO, 13 September 2026: nobody has to go and buy VENT
+                      COINS before they can buy from a stall. */}
+                  <PayShortfall needVc={payTotalVc} purpose="stall_order"
+                    token={session?.user?.sessionToken}
+                    resume={{ door: 'stall' }}
+                    onPaid={() => setOrderError('')} />
 
                   <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
                     {placing ? tx("Placing order…") : `${tt('stall.pay', 'Pay')} ${formatNumber(payTotalVc)} VC`}

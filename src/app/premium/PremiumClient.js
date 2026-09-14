@@ -23,6 +23,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { useViewer, signInHref, signUpHref } from '@/lib/gating';
+import PayShortfall from '@/components/pay/PayShortfall';
 import styles from './premium.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -328,18 +329,29 @@ const PremiumClient = () => {
                       + 'there is nothing to buy.')}
                   </p>
                 ) : (
-                  <div className={styles.actions}>
-                    <button type="button" className={styles.action}
-                            disabled={busy || !canAfford} onClick={buy}>
-                      {tt('premium.buy', 'Turn premium on')}
-                    </button>
-                    {!canAfford ? (
-                      <Link href="/wallets"
-                            className={`${styles.action} ${styles.actionQuiet}`}>
-                        {tt('premium.topUp', 'Top up your wallet')}
-                      </Link>
-                    ) : null}
-                  </div>
+                  <>
+                    {/* CEO, 13 September 2026: nobody has to go and buy VENT
+                        COINS first. The card covers what the wallet is short
+                        and premium is turned on here, rather than sending
+                        somebody to the wallet and hoping they come back. */}
+                    <PayShortfall needVc={cost} purpose="premium"
+                      token={viewer.token}
+                      resume={{ door: 'premium', months }}
+                      onPaid={() => { setError(null); load(); }} />
+
+                    <div className={styles.actions}>
+                      <button type="button" className={styles.action}
+                              disabled={busy || !canAfford} onClick={buy}>
+                        {tt('premium.buy', 'Turn premium on')}
+                      </button>
+                      {!canAfford ? (
+                        <Link href="/wallets"
+                              className={`${styles.action} ${styles.actionQuiet}`}>
+                          {tt('premium.topUp', 'Top up your wallet')}
+                        </Link>
+                      ) : null}
+                    </div>
+                  </>
                 )}
               </>
             )}

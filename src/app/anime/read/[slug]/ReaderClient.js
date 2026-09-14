@@ -30,6 +30,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, refusalLine, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { useViewer } from '@/lib/gating';
+import PayShortfall from '@/components/pay/PayShortfall';
 import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './read.module.css';
 
@@ -297,11 +298,18 @@ const ReaderClient = ({ slug }) => {
             <div className={styles.emptyText}>
               <p>{refusalLine(tt, chapter.refusal)}</p>
               {viewer.signedIn && chapter.refusal?.needs_coins > 0 && (
-                <button type="button" className={styles.bottomNavBtn}
-                        disabled={busy} onClick={buy}>
-                  {fill(tt('anime.payToRead', 'Pay {n} VENT COINS'),
-                    { n: chapter.refusal.needs_coins })}
-                </button>
+                <>
+                  {/* CEO, 13 September 2026: a reader with no coins can still
+                      pay for the chapter, with a card, here. */}
+                  <PayShortfall needVc={chapter.refusal.needs_coins} purpose="comic"
+                    token={token} resume={{ door: 'chapter', slug }}
+                    onPaid={() => load()} />
+                  <button type="button" className={styles.bottomNavBtn}
+                          disabled={busy} onClick={buy}>
+                    {fill(tt('anime.payToRead', 'Pay {n} VENT COINS'),
+                      { n: chapter.refusal.needs_coins })}
+                  </button>
+                </>
               )}
               {!viewer.signedIn && (
                 <Link href="/login" className={styles.bottomNavBtn}>
