@@ -26,6 +26,7 @@ import { call, fill, priceLine, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDate } from '@/lib/datetime';
 import { useViewer } from '@/lib/gating';
 import Banner from '@/components/banner/Banner';
+import PayShortfall from '@/components/pay/PayShortfall';
 import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './series.module.css';
 
@@ -157,6 +158,15 @@ const SeriesClient = ({ slug }) => {
             </button>
           ) : (
             <NeedsAccount action={tt('anime.followAction', 'follow a comic')} />
+          )}
+
+          {/* CEO, 13 September 2026: a card covers what the wallet is short,
+              so nobody has to go and buy coins to subscribe to a comic. */}
+          {series.pricing === 'subscription' && viewer.signedIn && !series.mine
+            && !series.subscribed_until && (
+            <PayShortfall needVc={series.subscription_price_vc} purpose="comic"
+              token={viewer.token} resume={{ door: 'series', slug: series.slug }}
+              onPaid={() => load()} />
           )}
 
           {series.pricing === 'subscription' && viewer.signedIn && !series.mine && (

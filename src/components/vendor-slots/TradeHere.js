@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
+import PayShortfall from '@/components/pay/PayShortfall';
 import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
@@ -206,6 +207,13 @@ const TradeHere = ({ eventRef, eventName }) => {
           </label>}
 
           {problem && <p className={styles.problem}>{problem}</p>}
+
+          {/* CEO, 13 September 2026: a trader with no coins can still take a
+              pitch; the card covers what the wallet is short. */}
+          <PayShortfall needVc={open.price_vc} purpose="stall_pitch"
+            token={viewer.token}
+            resume={{ door: 'pitch', slot: open.id }}
+            onPaid={() => setProblem('')} />
 
           <div className={styles.actions}>
             <button type="button" className={styles.ghost} onClick={() => setOpen(null)}>

@@ -1,0 +1,48 @@
+/* Paying a shortfall by card, drawn the same wherever it is mounted.
+
+   Filled surface a step off whatever panel it sits in, no strokes. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.hint,
+.problem,
+.said {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.problem {
+  color: var(--v-ent-red);
+}
+
+.said {
+  color: var(--v-ent-success);
+}
+
+.pay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  background-color: var(--v-ent-success);
+  color: #0d0f0d;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+}
+
+.pay:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'rea
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
+import PayShortfall from '@/components/pay/PayShortfall';
 import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
@@ -533,23 +534,24 @@ export const ViewEventContent = ({
   useEffect(() => { fetchEvent(); }, [fetchEvent]);
 
   // Fetch wallet balance for ticket flow
-  useEffect(() => {
+  // Named, because a card payment inside the buy panel has to be able to ask
+  // again once the coins land rather than waiting for a reload.
+  const loadWallet = useCallback(async () => {
     if (!session?.user?.sessionToken) return;
-    const fetchBalance = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          setWalletBalance(Number(data.data.balance || 0));
-        }
-      } catch (err) {
-        console.error('Balance fetch error:', err);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/balance/`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setWalletBalance(Number(data.data.balance || 0));
       }
-    };
-    fetchBalance();
+    } catch (err) {
+      console.error('Balance fetch error:', err);
+    }
   }, [session?.user?.sessionToken, authHeaders]);
+
+  useEffect(() => { loadWallet(); }, [loadWallet]);
 
   // Fetch vendors (same session gate as above)
   useEffect(() => {
@@ -1911,6 +1913,19 @@ export const ViewEventContent = ({
                     <input id="event-buy-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={buyPin} onChange={e => setBuyPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
                   </div>}
                 {buyError && <p className={styles.modalError}>{buyError}</p>}
+
+                {/* CEO, 13 September 2026: nobody has to go and buy VENT COINS
+                    before they can buy a ticket. The card covers whatever the
+                    wallet is short, at the price confirmed above, and the buy
+                    carries on here. */}
+                <PayShortfall needVc={totalCost} purpose="ticket"
+                  token={session?.user?.sessionToken}
+                  resume={{ door: 'ticket', tier: buyTier?.id, qty: buyQty }}
+                  onPaid={() => {
+                    setBuyError('');
+                    loadWallet();
+                  }} />
+
                 <button className={`${styles.modalPrimaryBtn} redBTN`} onClick={handleBuy} disabled={buyLoading} type="button">
                   {buyLoading ? tx("Processing…") : tx("Pay with wallet")}
                 </button>

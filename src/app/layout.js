@@ -4,6 +4,7 @@ import SessionWrapper from "@/components/SessionWrapper";
 import JsonLd from "@/components/seo/JsonLd";
 import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
 import PageHelp from "@/components/page-help/PageHelp";
+import PaystackReturn from "@/components/pay/PaystackReturn";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -101,6 +102,12 @@ export default function RootLayout({ children }) {
                 page a new person got stuck on. It renders nothing on a route
                 with no guide written for it. */}
             <PageHelp />
+            {/* Coming back from a card payment, on whatever page they land
+                on. Mounted once here because the verify used to live inside
+                the buy modal, and a modal is shut on a fresh page load: the
+                reference sat in the address doing nothing and the money was
+                at Paystack with nothing to show for it. */}
+            <PaystackReturn />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>
