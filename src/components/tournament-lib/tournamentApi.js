@@ -57,7 +57,7 @@ export const API = {
 
 // ── ApiError ───────────────────────────────────────────────────────────────
 // Thrown on any non-success. Carries the machine-readable `code`, HTTP `status`
-// and the raw `data` so callers can switch on it (KYC_REQUIRED, WRONG_PIN,
+// and the raw `data` so callers can switch on it (KYC_REQUIRED, INVALID_PIN, PIN_LOCKED,
 // INSUFFICIENT_BALANCE, …) or detect a missing endpoint via `status === 404`.
 export class ApiError extends Error {
   constructor(message, { code = 'INTERNAL_ERROR', status = 0, data = {} } = {}) {
