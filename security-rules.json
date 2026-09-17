@@ -1,0 +1,35 @@
+{
+  "$comment": "How V-ENT's frontend meets owner rules R55 to R61 (17 September 2026). Read by ~/.claude/skills/security-rules/scripts/check-security.mjs. The mapping table is 'Owner rules 55 to 61 in V-ENT' in ../CLAUDE.md. This app holds no database and no paid SDK: every record lives behind the Django API (../V-ENT-BACKEND), whose own security-rules.json and security/idor-cases.json carry R57 to R60 for the platform. The four API routes here are listed below with what each one is.",
+
+  "frontend": [],
+  "server": [],
+  "ignore": [".next", ".next-dev-3001", ".next-dev-3005", "node_modules", "public/fonts"],
+
+  "db": null,
+  "migrations": [],
+  "rls": null,
+
+  "rateLimit": {
+    "middleware": [],
+    "edge": [],
+    "live": null
+  },
+
+  "ownership": {
+    "markers": [],
+    "cases": "security/idor-cases.json"
+  },
+
+  "billing": {
+    "register": "security/billing-caps.md",
+    "maxAgeDays": 90,
+    "na": "no paid service is called from this app; Paystack is reached from the backend, and the site is served from the InterServer VPS whose register is ../V-ENT-BACKEND/security/billing-caps.md"
+  },
+
+  "allow": [
+    { "rule": "R58", "path": "src/app/api/auth/[...nextauth]/route.js", "reason": "NextAuth's own handler; it reads no record by id, it forwards a credential or a Google id_token to the backend's /auth/login/ and /auth/social-auth/, which decide" },
+    { "rule": "R58", "path": "src/app/api/auth/clear-session/route.js", "reason": "clears this browser's own session cookie; no record, no id" },
+    { "rule": "R58", "path": "src/app/api/health/route.js", "reason": "answers which build this instance serves; no record, no id" },
+    { "rule": "R58", "path": "src/app/api/og/route.js", "reason": "a link-preview image proxy restricted to the configured media host and path (allowedOrigins()); it serves public banners only and cannot be pointed anywhere else" }
+  ]
+}
