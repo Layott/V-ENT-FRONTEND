@@ -2,7 +2,7 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import styles from './tournament-details-bracket.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -171,15 +171,13 @@ const TournamentDetailsBracket = ({
   const [bracketType, setBracketType] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    if (!tournament?.id) return;
-    fetchBracket();
-  }, [tournament?.id]);
-  const fetchBracket = async () => {
+  const tournamentId = tournament?.id;
+  const fetchBracket = useCallback(async () => {
+    if (!tournamentId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-brackets/${tournament.id}/`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-brackets/${tournamentId}/`);
       const data = await res.json();
       if (data.status === 'success') {
         const payload = data.data;
@@ -193,7 +191,8 @@ const TournamentDetailsBracket = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [tournamentId, tt]);
+  useEffect(() => { fetchBracket(); }, [fetchBracket]);
   const allPositions = useMemo(() => computeAllPositions(rounds), [rounds]);
   const bracketHeight = useMemo(() => totalBracketHeight(rounds[0]?.matches?.length || 0), [rounds]);
   if (loading) {

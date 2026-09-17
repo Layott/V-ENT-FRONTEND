@@ -67,7 +67,7 @@ const MyEventsPage = () => {
     } catch {
       /* the section stays as it was */
     }
-  }, [token]);
+  }, [token, tt]);
   const copyLink = async link => {
     try {
       await navigator.clipboard.writeText(link.url);

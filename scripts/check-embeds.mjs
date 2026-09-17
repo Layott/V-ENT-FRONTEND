@@ -18,7 +18,22 @@
  */
 import sharp from 'sharp';
 
-const BASE = process.argv[2] || 'http://127.0.0.1:3001';
+// This machine runs the dev server on 3001 or 3005 (the build directory
+// carries the port, see reference_local_dev_stack). With no address given,
+// whichever one answers is the one under test.
+async function firstAlive(candidates) {
+  for (const base of candidates) {
+    try {
+      const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(4000) });
+      if (res.ok) return base;
+    } catch {
+      // not this one
+    }
+  }
+  return candidates[0];
+}
+const BASE = process.argv[2]
+  || await firstAlive(['http://127.0.0.1:3001', 'http://127.0.0.1:3005']);
 
 // One of each kind: the front page, a listing, a record with its own image, a
 // legal page, and a record whose image comes from the media host.
@@ -101,8 +116,25 @@ for (const route of ROUTES) {
   // says nothing when it rejects an image, so the only way to know is to
   // fetch it the way a scraper does.
   if (image) {
+    // The tags name the canonical site (https://v-ent.co/api/og?src=...),
+    // because a scraper has to be handed a public address. Against a dev
+    // server that address points at production, whose /api/og will not
+    // proxy a 127.0.0.1 media host, so the check read "could not be
+    // fetched" for weeks and the ledger held a number nobody could act
+    // on. The image is fetched from the server under test instead: same
+    // path, same query, this origin. On production the two are the same.
+    let target = image;
     try {
-      const img = await fetch(image, { redirect: 'follow' });
+      const u = new URL(image);
+      const base = new URL(BASE);
+      if (u.origin !== base.origin && u.pathname.startsWith('/api/og')) {
+        target = `${base.origin}${u.pathname}${u.search}`;
+      }
+    } catch {
+      // not a URL; the fetch below will say so
+    }
+    try {
+      const img = await fetch(target, { redirect: 'follow' });
       const servedType = (img.headers.get('content-type') || '').split(';')[0].trim();
       const declaredType = meta(html, 'og:image:type');
       if (!img.ok) {
@@ -151,12 +183,17 @@ for (const route of ROUTES) {
 
 console.log(`pages checked: ${checked}`);
 if (checked === 0) {
-  console.log('\nNOTHING WAS CHECKED. Is the dev server running on ' + BASE + '?');
+  // No digits in this line: the debt ledger reads numbers off a summary
+  // line, and the port in an address once became 3128 units of debt.
+  console.log('\nNOTHING WAS CHECKED. Is the dev server running? Looked at '
+    + BASE.replace(/[0-9]/g, '#') + '; pass its address as the first argument.');
   process.exit(2);
 }
 if (problems.length) {
   console.log(`\nINCOMPLETE LINK PREVIEW (${problems.length}):`);
   for (const p of problems) console.log(`  ${p}`);
-  process.exit(1);
 }
-console.log('every page has a complete image card');
+// One summary line in the shape the debt ledger reads: the fault count
+// first, the page count behind a preposition so it is not counted.
+console.log(`${problems.length} incomplete link preview(s) across ${checked} page(s)`);
+process.exit(problems.length ? 1 : 0);

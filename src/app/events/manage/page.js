@@ -375,7 +375,7 @@ export const ManageEventContent = ({
     // quiet refresh, which is nobody's save.
     if (!quiet) setLimitDraft({});
     setLoading(false);
-  }, [call, token, eventRef]);
+  }, [call, token, eventRef, tt]);
   useEffect(() => {
     load();
   }, [load]);
