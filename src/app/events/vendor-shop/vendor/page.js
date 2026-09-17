@@ -108,7 +108,7 @@ const VendorStallContent = () => {
       }
     };
     fetchVendor();
-  }, [eventId, vendorId, authHeaders, refreshTick]);
+  }, [eventId, vendorId, authHeaders, refreshTick, tt]);
 
   // Hydrate cart for this event.
   const cartHydrated = useRef(false);

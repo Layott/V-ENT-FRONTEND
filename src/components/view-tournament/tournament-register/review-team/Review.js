@@ -1,12 +1,13 @@
 // ./src/components/view-tournament/tournament-register/ReviewModal.js
-import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { formatDateRange, formatNumber } from '@/lib/datetime';
+import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
+import { formatLabel } from '@/lib/formatLabel';
 import Image from 'next/image';
 import styles from './review.module.css';
 import image from '@/images/signed_in_user_big.webp';
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
 const ReviewModal = ({
@@ -18,7 +19,6 @@ const ReviewModal = ({
   selectedTeam,
   teamMembers
 }) => {
-  const tx = useTx();
   const tt = useT();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTeamMembers, setShowTeamMembers] = useState(true);
@@ -52,19 +52,33 @@ const ReviewModal = ({
   const toggleTeamMembers = () => {
     setShowTeamMembers(!showTeamMembers);
   };
-  const formatDate = dateString => {
-    if (!dateString) return "1st Oct - 21st Oct 2024";
-    const startDate = new Date(dateString);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 20); // Assuming 20 days duration
-
-    const options = {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    };
-    return `${startDate.toLocaleDateString(appLocale(), options)} - ${endDate.toLocaleDateString(appLocale(), options)}`;
-  };
+  // What entering costs, from the same quote the payment step charges.
+  //
+  // This step used to draw a dollar sign and a hard-coded coin placeholder
+  // from before the wallet existed, while the payment step one press later
+  // drew the real number. Two screens, one fact: both read
+  // `/tournament/<ref>/entry-quote/`, and neither computes a fee itself.
+  const listedFee = entryFeeVc(tournament);
+  const coveredByTicket = Boolean(tournament?.entry_covered_by_ticket) && listedFee > 0;
+  const [quote, setQuote] = useState(null);
+  useEffect(() => {
+    if (!isOpen || listedFee <= 0 || coveredByTicket) return undefined;
+    let cancelled = false;
+    const ref = tournament?.slug || tournament?.id;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/${ref}/entry-quote/`)
+      .then(res => res.json().then(body => ({ ok: res.ok, body })))
+      .then(({ ok, body }) => {
+        if (!cancelled && ok && body.status === 'success') setQuote(body.data);
+      })
+      .catch(() => {
+        // The listed entry stands until the quote arrives; the payment
+        // step asks again and refuses nothing on this screen's account.
+      });
+    return () => { cancelled = true; };
+  }, [isOpen, listedFee, coveredByTicket, tournament?.slug, tournament?.id]);
+  const feeOnTop = quote && quote.buyer_pays_fee ? Number(quote.buyer_fee_vc || 0) : 0;
+  const charge = coveredByTicket ? 0
+    : quote && quote.total_vc != null ? Number(quote.total_vc) : listedFee;
   if (!isOpen) return null;
   return <div className={styles.modalOverlay} onClick={handleClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -86,10 +100,10 @@ const ReviewModal = ({
           {/* Tournament Header */}
           <div className={styles.tournamentHeader}>
             <div className={styles.tournamentImage}>
-              <Image src={mediaUrl(tournament?.tournament_banner || image)} alt={tournament?.tournament_title || tx("Counter strike battle - Unilag")} width={60} height={60} />
+              <Image src={mediaUrl(tournament?.tournament_banner || image)} alt={tournament?.tournament_title || ''} width={60} height={60} />
             </div>
             <h3 className={styles.tournamentTitle}>
-              {tournament?.tournament_title || tx("Counter strike battle - Unilag")}
+              {tournament?.tournament_title || tournament?.name || ''}
             </h3>
           </div>
 
@@ -108,7 +122,7 @@ const ReviewModal = ({
                   </svg>
                   <span className={styles.detailLabel}>{tt("ui.format.041a", "Format")}</span>
                 </div>
-                <span className={styles.detailValue}>{tt("ui.single.elimination.7001", "Single Elimination")}</span>
+                <span className={styles.detailValue}>{formatLabel(tt, tournament?.bracket_type)}</span>
               </div>
 
               <div className={styles.detailItem}>
@@ -121,7 +135,7 @@ const ReviewModal = ({
                   <span className={styles.detailLabel}>{tt("ui.game.e3e8", "Game")}</span>
                 </div>
                 <span className={styles.detailValue}>
-                  {tournament?.game || selectedTeam?.game || tx("Counter Strike")}
+                  {tournament?.game || selectedTeam?.game || '-'}
                 </span>
               </div>
 
@@ -134,14 +148,18 @@ const ReviewModal = ({
                   <span className={styles.detailLabel}>{tt("ui.entry.fee.a428", "Entry Fee")}</span>
                 </div>
                 <span className={styles.detailValue}>
-                  {tournament?.entry_fee_price === 0 || tournament?.entry_fee_price === "0.00" ? <>
-                      <svg className={styles.coinIcon} width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" />
-                        <point cx="12" cy="17" stroke="currentColor" strokeWidth="2" />
-                      </svg>
-                      {tt("ui.vent.coins.8e4f", "40 vent coins")}
-                    </> : `$${tournament?.entry_fee_price || "0.00"}`}
+                  {charge > 0
+                    ? `${formatNumber(charge)} VC`
+                    : coveredByTicket
+                      ? tt('register.coveredByTicket', 'Covered by your ticket')
+                      : tt('register.free', 'Free')}
+                  {feeOnTop > 0 && <span className={styles.feeLine}>
+                    {tt('register.feeOnTop', 'Entry {entry} VC + service fee ({pct}% + {flat} naira) {fee} VC')
+                      .replace('{entry}', formatNumber(Number(quote.entry_vc)))
+                      .replace('{pct}', String(quote.fee_pct))
+                      .replace('{flat}', formatNumber(Number(quote.fee_flat_ngn)))
+                      .replace('{fee}', formatNumber(feeOnTop))}
+                  </span>}
                 </span>
               </div>
 
@@ -156,7 +174,7 @@ const ReviewModal = ({
                   <span className={styles.detailLabel}>{tt("ui.date.eb9a", "Date")}</span>
                 </div>
                 <span className={styles.detailValue}>
-                  {formatDate(tournament?.start_date_and_time)}
+                  {formatDateRange(tournament?.start_date_and_time, tournament?.end_date_and_time)}
                 </span>
               </div>
 
@@ -169,7 +187,7 @@ const ReviewModal = ({
                   <span className={styles.detailLabel}>{tt("ui.location.d219", "Location")}</span>
                 </div>
                 <span className={styles.detailValue}>
-                  {tournament?.location || tx("Landmark Beach, Water Corporation Drive, Lagos, Nigeria.")}
+                  {tournament?.tournament_location || tournament?.location || tt('review.type.online', 'Online')}
                 </span>
               </div>
             </div>
@@ -179,12 +197,10 @@ const ReviewModal = ({
           <div className={styles.registrantsSection}>
             <div className={styles.registrantsHeader}>
               <h4 className={styles.sectionTitle}>{tt("ui.registrants.ffde", "Registrants")}</h4>
+              {/* Entering commits the team as it is; the only change on offer
+                  is a different team. */}
               <button type="button" className={styles.editRosterButton} onClick={onBack}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" />
-                </svg>
-                {tt("ui.edit.roster.fad8", "Edit Roster")}
+                {tt('register.changeTeam', 'Change team')}
               </button>
             </div>
 
@@ -202,7 +218,7 @@ const ReviewModal = ({
                   }} />
                   </div>
                   <div className={styles.teamDetails}>
-                    <h5 className={styles.teamName}>{selectedTeam?.name || tx("Kill Streak Team")}</h5>
+                    <h5 className={styles.teamName}>{selectedTeam?.name || ''}</h5>
                     <div className={styles.teamMeta}>
                       <span className={styles.gameInfo}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -210,7 +226,7 @@ const ReviewModal = ({
                           <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="2" />
                           <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2" />
                         </svg>
-                        {selectedTeam?.game || tx("Counter Strike")}
+                        {selectedTeam?.game || tournament?.game || '-'}
                       </span>
                       <span className={styles.membersInfo}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -219,7 +235,7 @@ const ReviewModal = ({
                           <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" />
                           <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" />
                         </svg>
-                        {teamMembers?.length || 4} {tt("ui.members.1cb4", "Members")}
+                        {teamMembers?.length || selectedTeam?.members || 0} {tt("ui.members.1cb4", "Members")}
                       </span>
                     </div>
                   </div>
@@ -233,27 +249,7 @@ const ReviewModal = ({
 
               {/* Team Members */}
               {showTeamMembers && <div className={styles.teamMembersList}>
-                  {(teamMembers || [{
-                id: 1,
-                name: "Nathan Drake",
-                username: "@frostbite",
-                avatar: "/api/placeholder/32/32"
-              }, {
-                id: 2,
-                name: "Nathan Drake",
-                username: "@frostbite",
-                avatar: "/api/placeholder/32/32"
-              }, {
-                id: 3,
-                name: "Nathan Drake",
-                username: "@frostbite",
-                avatar: "/api/placeholder/32/32"
-              }, {
-                id: 4,
-                name: "Nathan Drake",
-                username: "@frostbite",
-                avatar: "/api/placeholder/32/32"
-              }]).map(member => <div key={member.id} className={styles.memberItem}>
+                  {(teamMembers || []).map(member => <div key={member.id} className={styles.memberItem}>
                       <div className={styles.memberAvatar}>
                         <Avatar src={mediaUrl(member.avatar)} name={member.username || member.name} size={32} />
                       </div>

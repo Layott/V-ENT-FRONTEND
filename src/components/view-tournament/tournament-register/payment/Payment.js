@@ -321,11 +321,11 @@ const PaymentModal = ({
       });
       await doRegister(code);
     } catch (err) {
-      if (err?.code === 'WRONG_PIN' || err?.status === 403) {
-        setPinError('Incorrect PIN');
-      } else {
-        setPinError(apiMessage(tt, err, "api.couldNotVerifyPinPlease", "Could not verify PIN. Please try again."));
-      }
+      // By code, the same as every other wallet door: a wrong PIN says how
+      // many tries are left and a locked wallet says how long. This used to
+      // read every 403 as "Incorrect PIN", which is what a locked wallet
+      // would have been told too.
+      setPinError(apiMessage(tt, err, "api.couldNotVerifyPinPlease", "Could not verify PIN. Please try again."));
       setPin(EMPTY_PIN);
       pinRefs.current[0]?.focus();
     } finally {

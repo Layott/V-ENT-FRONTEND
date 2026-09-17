@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from '../tournament-register/tournament-register.module.css';
 import ChooseTeamModal from '../tournament-register/team/Team';
-import EditTeamRosterModal from './edit-team/EditTeam';
+import { useSession } from 'next-auth/react';
+import { ventFetch, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import ReviewModal from './review-team/Review';
 import PaymentModal from './payment/Payment';
 import SuccessModal from './success/Success';
@@ -16,9 +17,10 @@ const TournamentRegistrationModal = ({
 }) => {
   const tx = useTx();
   const tt = useT();
+  const { data: session } = useSession();
+  const token = tokenFrom(session);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
-  const [showEditRosterModal, setShowEditRosterModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -51,7 +53,6 @@ const TournamentRegistrationModal = ({
       members: draft?.members || []
     });
     setShowTeamModal(false);
-    setShowEditRosterModal(false);
     setShowReviewModal(false);
     setShowSuccessModal(false);
     setShowPaymentModal(true);
@@ -96,7 +97,6 @@ const TournamentRegistrationModal = ({
   const resetAllState = () => {
     setSelectedOption(null);
     setShowTeamModal(false);
-    setShowEditRosterModal(false);
     setShowReviewModal(false);
     setShowPaymentModal(false);
     setShowSuccessModal(false); // Add this
@@ -114,32 +114,40 @@ const TournamentRegistrationModal = ({
       onClose();
     }
   };
-  const handleTeamProceed = team => {
+  // The team's real members, for the review step.
+  //
+  // There used to be an "Edit Team Roster" step between choosing the team
+  // and reviewing: four copies of "Nathan Drake @frostbite" from a mock
+  // array, with Remove and Restore buttons whose result was posted as
+  // `roster` and read by nothing on the server. Walked on 17 September
+  // 2026 and found drawing four strangers over a two-person team. Entering
+  // a tournament commits the team as it is, so the review shows the team
+  // as it is, from the same roster endpoint the team page reads.
+  const handleTeamProceed = async team => {
     setSelectedTeam(team);
     setShowTeamModal(false);
-    setShowEditRosterModal(true);
-  };
-  const handleEditRosterBack = () => {
-    setShowEditRosterModal(false);
-    setShowTeamModal(true);
-  };
-  const handleEditRosterClose = () => {
-    resetAllState();
-    if (onClose) {
-      onClose();
+    let members = [];
+    try {
+      const ref = team?.slug || team?.id;
+      const data = await ventFetch(`/team/${ref}/roster/`, { token });
+      members = (data?.members || []).map(row => ({
+        ...row.user,
+        id: row.user?.id ?? row.id,
+        name: row.user?.full_name || row.user?.username || '',
+        role: row.role
+      }));
+    } catch {
+      // The review says how many members the card said; the server
+      // decides eligibility at registration either way.
     }
-  };
-  const handleEditRosterProceed = (team, members, action) => {
-    setSelectedTeam(team);
     setTeamMembers(members);
-    setShowEditRosterModal(false);
     setShowReviewModal(true);
   };
 
   // Review Modal Handlers
   const handleReviewBack = () => {
     setShowReviewModal(false);
-    setShowEditRosterModal(true);
+    setShowTeamModal(true);
   };
   const handleReviewClose = () => {
     resetAllState();
@@ -191,7 +199,7 @@ const TournamentRegistrationModal = ({
   if (!isOpen) return null;
   return <>
       
-      {!showTeamModal && !showEditRosterModal && !showReviewModal && !showPaymentModal && !showSuccessModal && <div className={styles.modalOverlay} onClick={handleCancel}>
+      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && <div className={styles.modalOverlay} onClick={handleCancel}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.register.tournament.0b66", "Register For Tournament")}</h2>
@@ -245,9 +253,6 @@ const TournamentRegistrationModal = ({
 
       {/* Choose Team Modal */}
       <ChooseTeamModal isOpen={showTeamModal} onClose={handleTeamModalClose} onBack={handleTeamModalBack} onProceed={handleTeamProceed} />
-
-      {/* Edit Team Roster Modal */}
-      <EditTeamRosterModal isOpen={showEditRosterModal} onClose={handleEditRosterClose} onBack={handleEditRosterBack} onProceed={handleEditRosterProceed} selectedTeam={selectedTeam} />
 
       {/* Review Modal */}
       <ReviewModal isOpen={showReviewModal} onClose={handleReviewClose} onBack={handleReviewBack} onProceed={handleReviewProceed} tournament={tournament} selectedTeam={selectedTeam} teamMembers={teamMembers} />

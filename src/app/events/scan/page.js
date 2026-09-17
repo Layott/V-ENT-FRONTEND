@@ -50,7 +50,7 @@
 // ref is the same object however stale the closure around it is.
 
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useViewer } from '@/lib/gating';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
@@ -61,6 +61,9 @@ import { appLocale } from '@/lib/appLocale';
 import styles from './scan.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
+// Answers the server will give again however many times a check-in is
+// resent: the queue drops those rather than retrying them for ever.
+const SETTLED = new Set([400, 401, 403, 404, 409, 410, 422]);
 const local = key => `vent-scan-${key}`;
 
 /** Today, as the calendar reads it here, not as UTC does. */
@@ -83,6 +86,8 @@ const shortTime = value => (value
 function ScanContent() {
   const tt = useT();
   const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   // Who is on the door.
   //
   // STATUS, not data: `data` alone cannot tell "signed out" from "still
@@ -120,6 +125,21 @@ function ScanContent() {
   const signedIn = Boolean(token);
   const eventRef = params.get('event') || '';
   const gate = params.get('gate') || '';
+  // The gate name stays in the address, where it always was: a link shared
+  // with the next steward carries it and a reload keeps it. What changed is
+  // how it gets there. The page used to tell the steward to put the name into
+  // the address by hand, which asks somebody holding a phone at a door to edit
+  // a URL. Now it is a field, and the field writes the address.
+  const [gateDraft, setGateDraft] = useState(gate);
+  useEffect(() => { setGateDraft(gate); }, [gate]);
+  const commitGate = () => {
+    const next = gateDraft.trim().slice(0, 40);
+    if (next === gate) return;
+    const q = new URLSearchParams(params.toString());
+    if (next) q.set('gate', next); else q.delete('gate');
+    const qs = q.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  };
   // Which day this door admits for.
   //
   // CEO, 4 September 2026: "so that people dont come and show day 2 tickets on
@@ -268,7 +288,6 @@ function ScanContent() {
   const inFlightRef = useRef(false);
   const backoffRef = useRef(0);
 
-  const SETTLED = new Set([400, 401, 403, 404, 409, 410, 422]);
 
   const flush = useCallback(async () => {
     if (!online || !token || inFlightRef.current) return;
@@ -598,10 +617,20 @@ function ScanContent() {
       <header className={styles.head}>
         <div>
           <h1 className={styles.title}>{tt('scan.title', 'Door')}</h1>
+          <form className={styles.gateRow}
+            onSubmit={e => { e.preventDefault(); commitGate(); e.currentTarget.querySelector('input')?.blur(); }}>
+            <label className={styles.gateLabel} htmlFor="scan-gate">
+              {tt('scan.gateLabel', 'Gate')}
+            </label>
+            <input id="scan-gate" className={styles.gateField} value={gateDraft}
+              onChange={e => setGateDraft(e.target.value)} onBlur={commitGate}
+              placeholder={tt('scan.gatePlaceholder', 'Main')} maxLength={40}
+              autoComplete="off" enterKeyHint="done" />
+          </form>
           <p className={styles.sub}>
             {gate
               ? tt('scan.atGate', 'Scanning at {gate}').replace('{gate}', gate)
-              : tt('scan.noGate', 'No gate name set. Add ?gate=Main to the address so a duplicate can say where it was first used.')}
+              : tt('scan.noGate', 'Name this gate so a duplicate can say where it was first used.')}
           </p>
           {/* WHICH DAY, stated. At a two day event this is the difference
               between a door and a door somebody has already walked through

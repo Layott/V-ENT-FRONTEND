@@ -35,6 +35,39 @@
   margin-top: 0.2rem;
 }
 
+/* The gate name, typed rather than pasted into the address. A filled field
+   at 44px, because the person typing it is standing at a door. */
+.gateRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.gateLabel {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.gateField {
+  min-height: 44px;
+  width: 12rem;
+  max-width: 100%;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  outline: none;
+}
+
+.gateField:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .online,
 .offline {
   display: inline-flex;

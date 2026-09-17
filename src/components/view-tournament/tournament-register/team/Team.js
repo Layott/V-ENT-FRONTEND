@@ -69,7 +69,7 @@ const ChooseTeamModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, token]);
+  }, [isOpen, token, tt]);
   const filteredTeams = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return teams;

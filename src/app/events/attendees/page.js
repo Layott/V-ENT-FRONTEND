@@ -342,7 +342,9 @@ const AttendeesContent = ({
 
   // What is actually on screen: this device's matches, or the server's when
   // this device has none. A steward must not be able to tell which is which.
-  const found = local.length > 0 ? local : (remote?.rows || []);
+  const found = useMemo(
+    () => (local.length > 0 ? local : (remote?.rows || [])),
+    [local, remote]);
   const fromServer = local.length === 0 && (remote?.rows || []).length > 0;
 
   // Four ways to read the list, and the CEO named three of them:

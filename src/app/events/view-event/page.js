@@ -612,11 +612,11 @@ export const ViewEventContent = ({
       }
     } catch (err) {
       setLinkable([]);
-      setLinkError('Network error while loading your tournaments.');
+      setLinkError(tt('msg.networkError', 'Network error'));
     } finally {
       setLinkableLoading(false);
     }
-  }, [id, authHeaders]);
+  }, [id, authHeaders, tt]);
   const openLinkPanel = () => {
     setLinkPanelOpen(true);
     loadLinkable();

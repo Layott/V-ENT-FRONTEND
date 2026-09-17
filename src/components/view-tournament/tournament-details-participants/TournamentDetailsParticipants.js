@@ -1,7 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
@@ -59,15 +59,13 @@ const TournamentDetailsParticipants = ({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState('');
   const [showGalleryView, setShowGalleryView] = useState(false);
-  useEffect(() => {
-    if (!tournament?.id) return;
-    fetchParticipants();
-  }, [tournament?.id]);
-  const fetchParticipants = async () => {
+  const tournamentId = tournament?.id;
+  const fetchParticipants = useCallback(async () => {
+    if (!tournamentId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-participants/${tournament.id}/`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-participants/${tournamentId}/`);
       const data = await res.json();
       if (data.status === 'success') {
         const raw = Array.isArray(data.data) ? data.data : data.data?.participants || data.data?.results || [];
@@ -81,7 +79,8 @@ const TournamentDetailsParticipants = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [tournamentId, tt]);
+  useEffect(() => { fetchParticipants(); }, [fetchParticipants]);
 
   // Client-side search filter
   const filtered = useMemo(() => {
