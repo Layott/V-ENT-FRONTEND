@@ -1,6 +1,7 @@
 'use client';
 
 import { appLocale } from '@/lib/appLocale';
+import { formatDate as libFormatDate } from '@/lib/datetime';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { apiMessage } from '@/lib/apiMessage';
@@ -27,6 +28,9 @@ const STATUS_FILTERS = [{
 }, {
   id: 'refunded'
 }];
+// A calendar date (the day a ticket admits) is the same day everywhere;
+// the shared formatter knows a date-only string and draws it in UTC.
+const formatCalendarDate = day => libFormatDate(day, { fallback: '-' });
 const formatDate = iso => {
   if (!iso) return '-';
   return new Date(iso).toLocaleDateString(appLocale(), {
@@ -106,6 +110,10 @@ const normaliseTicket = t => ({
   event_name: t.event?.name || '',
   // start_date carries the time; event_date is the legacy date-only column.
   event_date: t.event?.start_date || t.event?.event_date || null,
+  // The day THIS ticket admits, when the tier is for one day of several.
+  // A Day 2 pass read the event's first day here (18 September 2026).
+  ticket_day: t.tier?.day || null,
+  ticket_day_label: t.tier?.day_label || '',
   location: t.event?.location || t.event?.event_link || '',
   price_vc: t.price_vc,
   attendee_name: t.attendee_name || '',
@@ -356,7 +364,9 @@ const MyTickets = () => {
 
                       <div className={styles.metaRow}>
                         <span className={styles.metaItem}>
-                          <IoCalendarOutline /> {formatDate(t.event_date)}
+                          <IoCalendarOutline /> {t.ticket_day
+                            ? `${formatCalendarDate(t.ticket_day)}${t.ticket_day_label ? ` · ${t.ticket_day_label}` : ''}`
+                            : formatDate(t.event_date)}
                         </span>
                         <span className={styles.metaItem}>
                           <IoLocationOutline /> {t.location}
@@ -394,7 +404,9 @@ const MyTickets = () => {
               <div>
                 <p className={styles.qrModalTitle}>{activeTicket.event_name}</p>
                 <p className={styles.qrModalSub}>
-                  {formatDateTime(activeTicket.event_date)} • {activeTicket.location}
+                  {activeTicket.ticket_day
+                    ? `${formatCalendarDate(activeTicket.ticket_day)}${activeTicket.ticket_day_label ? ` · ${activeTicket.ticket_day_label}` : ''}`
+                    : formatDateTime(activeTicket.event_date)} • {activeTicket.location}
                 </p>
               </div>
               <button className={styles.qrModalClose} onClick={closeTicket} type="button" aria-label={tt("ui.close.bbfa", "Close")}>

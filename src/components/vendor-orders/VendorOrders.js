@@ -96,7 +96,7 @@ export default function VendorOrders({ token }) {
               {(order.items || []).map(item => (
                 <li key={item.product_id} className={styles.item}>
                   <span className={styles.itemName}>
-                    <LuPackage aria-hidden="true" /> {item.name}
+                    <LuPackage aria-hidden="true" /> {item.name}{item.variant ? ` (${item.variant})` : ''}
                   </span>
                   <span className={styles.itemQty}>x{item.quantity}</span>
                   <span className={styles.itemPrice}>

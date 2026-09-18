@@ -27,6 +27,9 @@ export default function SponsorEditor({ eventRef, token }) {
   const [notice, setNotice] = useState('');
   const [draft, setDraft] = useState({ name: '', kind: 'sponsor', website: '' });
   const [logo, setLogo] = useState(null);
+  // Which row is one press from going. Remove was a single press and it
+  // takes the uploaded logo with it (walk, 18 September 2026).
+  const [removing, setRemoving] = useState(null);
   const fileRef = useRef(null);
 
   const load = useCallback(async () => {
@@ -93,6 +96,7 @@ export default function SponsorEditor({ eventRef, token }) {
   };
 
   const remove = async row => {
+    setRemoving(null);
     setBusy(true);
     setError('');
     try {
@@ -179,10 +183,21 @@ export default function SponsorEditor({ eventRef, token }) {
                       <input type="file" accept="image/*" hidden disabled={busy}
                              onChange={e => replaceLogo(row, e.target.files?.[0])} />
                     </label>
-                    <button type="button" className={styles.removeBtn} disabled={busy}
-                            onClick={() => remove(row)}>
-                      {tt('sponsors.remove', 'Remove')}
-                    </button>
+                    {removing === row.id
+                      ? <>
+                          <button type="button" className={styles.removeBtn} disabled={busy}
+                                  onClick={() => remove(row)}>
+                            {tt('sponsors.removeConfirm', 'Remove {name}?').replace('{name}', row.name)}
+                          </button>
+                          <button type="button" className={styles.replaceBtn}
+                                  onClick={() => setRemoving(null)}>
+                            {tt('sponsors.keep', 'Keep it')}
+                          </button>
+                        </>
+                      : <button type="button" className={styles.removeBtn} disabled={busy}
+                                onClick={() => setRemoving(row.id)}>
+                          {tt('sponsors.remove', 'Remove')}
+                        </button>}
                   </span>
                 </li>
               ))}

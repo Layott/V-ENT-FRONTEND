@@ -718,6 +718,14 @@
   cursor: pointer;
 }
 .qtyControls button:hover { background-color: #3a3b41; }
+/* A thumb target on the phone, like every other stepper on the site
+   (32x32 in the order panel, 18 September 2026). */
+@media (max-width: 719px) {
+  .qtyControls button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
 
 .cartTotalRow {
   display: flex;

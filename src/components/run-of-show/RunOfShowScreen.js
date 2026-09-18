@@ -44,7 +44,7 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
                   <ShareCard
                     compact
                     url={sharePath}
-                    title={sheet.name || sheet.owner?.name || ''}
+                    title={sheet.owner?.name || sheet.name || ''}
                     text={tt('ros.shareText', 'The run of show')}
                     label={tt('ros.shareLabel', 'Share the run of show')}
                   />

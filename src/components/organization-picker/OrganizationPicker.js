@@ -25,7 +25,9 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * @param value     the current organisation, a slug or an id or ''
- * @param onChange  called with the new slug, or '' for "just me"
+ * @param onChange  called with the new slug, or '' for "just me", and the
+ *                  organisation's name as a second argument so a review step
+ *                  can say whose name the thing runs in
  * @param kind      'tournament' or 'event', for the wording
  */
 export default function OrganizationPicker({ value, onChange, kind = 'tournament' }) {
@@ -72,7 +74,10 @@ export default function OrganizationPicker({ value, onChange, kind = 'tournament
         id="vent-org-picker"
         className={styles.select}
         value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(
+          e.target.value,
+          orgs.find((o) => String(o.slug || o.id) === e.target.value)?.name || '',
+        )}
       >
         <option value="">{tt('org.justMe', 'Just me')}</option>
         {orgs.map((o) => (

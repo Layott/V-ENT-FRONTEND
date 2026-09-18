@@ -78,6 +78,10 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
   const [replay, setReplay] = useState(0);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showFields, setShowFields] = useState(false);
+  // Which row is one press from losing its URL, and how. Remove and New
+  // URL both retire the address sitting in somebody's OBS scene, and each
+  // was a single press (walk, 18 September 2026).
+  const [confirming, setConfirming] = useState(null);
   const picker = useRef(null);
 
   const base = `${API}/${kind}/${ownerRef}/overlays/`;
@@ -167,6 +171,7 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
   };
 
   const act = async (id, what) => {
+    setConfirming(null);
     setBusy(true);
     try {
       await fetch(`${base}${id}/${what === 'rotate' ? 'rotate/' : ''}`, {
@@ -424,14 +429,29 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                         ? tt('overlay.copied', 'Copied')
                         : tt('overlay.copyUrl', 'Copy the URL')}
                     </button>
-                    <button type="button" className={styles.ghostSmall} disabled={busy}
-                            onClick={() => act(row.id, 'rotate')}>
-                      {tt('overlay.rotate', 'New URL')}
-                    </button>
-                    <button type="button" className={styles.ghostSmall} disabled={busy}
-                            onClick={() => act(row.id, 'delete')}>
-                      {tt('overlay.remove', 'Remove')}
-                    </button>
+                    {confirming?.id === row.id
+                      ? <>
+                          <button type="button" className={styles.copySmall} disabled={busy}
+                                  onClick={() => act(row.id, confirming.what)}>
+                            {confirming.what === 'rotate'
+                              ? tt('overlay.rotateConfirm', 'New URL? The old one stops working.')
+                              : tt('overlay.removeConfirm', 'Remove it? Its URL stops working.')}
+                          </button>
+                          <button type="button" className={styles.ghostSmall}
+                                  onClick={() => setConfirming(null)}>
+                            {tt('overlay.keep', 'Keep it')}
+                          </button>
+                        </>
+                      : <>
+                          <button type="button" className={styles.ghostSmall} disabled={busy}
+                                  onClick={() => setConfirming({ id: row.id, what: 'rotate' })}>
+                            {tt('overlay.rotate', 'New URL')}
+                          </button>
+                          <button type="button" className={styles.ghostSmall} disabled={busy}
+                                  onClick={() => setConfirming({ id: row.id, what: 'delete' })}>
+                            {tt('overlay.remove', 'Remove')}
+                          </button>
+                        </>}
                   </div>
 
                   {/* Where it sits on the frame. Only the places, and only

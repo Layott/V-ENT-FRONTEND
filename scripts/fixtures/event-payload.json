@@ -1,0 +1,114 @@
+{
+  "id": 21,
+  "event_id": 21,
+  "slug": "walk-con-wizard-18-sept",
+  "name": "Walk Con Wizard 18 Sept",
+  "description": "Two days of Call of Duty: Mobile, a stall row and a cosplay stage at Celebr8 Centre.",
+  "desc": "Two days of Call of Duty: Mobile, a stall row and a cosplay stage at Celebr8 Centre.",
+  "event_type": "hybrid",
+  "category": "esports",
+  "start_date": "2026-09-26T09:00:00Z",
+  "end_date": "2026-09-27T17:00:00Z",
+  "location": "Celebr8 Centre, Ogba, Lagos",
+  "venue_name": "Celebr8 Centre",
+  "map_link": "https://maps.app.goo.gl/abc123",
+  "map_search_url": "https://www.google.com/maps/search/?api=1&query=Celebr8+Centre%2C+Celebr8+Centre%2C+Ogba%2C+Lagos",
+  "latitude": 6.632608,
+  "longitude": 3.340775,
+  "directions": "Second gate on Vori Close, parking behind the hall",
+  "virtual_link": "https://twitch.tv/walkcon",
+  "self_check_in": false,
+  "self_check_in_opens_minutes": 30,
+  "entry_fee": "0.00",
+  "capacity": 160,
+  "is_listed": true,
+  "banner": "http://127.0.0.1:8000/media/event_banners/walk-banner.png",
+  "banner_image": "http://127.0.0.1:8000/media/event_banners/walk-banner.png",
+  "logo": "http://127.0.0.1:8000/media/event_logos/walk-logo.png",
+  "status": "upcoming",
+  "is_featured": false,
+  "featured": false,
+  "attendees_count": 2,
+  "interaction_count": 110,
+  "game": "Call of Duty: Mobile",
+  "ticket_types": [
+    {
+      "id": 75,
+      "name": "General Admission",
+      "price": "3000.00",
+      "quantity": 180,
+      "sold": 0,
+      "available": 180,
+      "perks": "All-day entry \u00e2\u20ac\u00a2 Standing area"
+    },
+    {
+      "id": 76,
+      "name": "VIP",
+      "price": "5000.00",
+      "quantity": 20,
+      "sold": 0,
+      "available": 20,
+      "perks": "Front row \u00e2\u20ac\u00a2 Meet the casters"
+    },
+    {
+      "id": 81,
+      "name": "Press",
+      "price": "0.00",
+      "quantity": 10,
+      "sold": 2,
+      "available": 8,
+      "perks": ""
+    },
+    {
+      "id": 79,
+      "name": "Day 2 pass",
+      "price": "1000.00",
+      "quantity": 40,
+      "sold": 0,
+      "available": 40,
+      "perks": "Sunday only, standing"
+    }
+  ],
+  "has_run_of_show": true,
+  "created_at": "2026-09-17T22:50:58.261170Z",
+  "last_updated": "2026-09-18T01:00:16.253637Z",
+  "reg_start_date": "2026-09-17T22:50:58.259157Z",
+  "reg_end_date": "2026-09-26T09:00:00Z",
+  "organizer": {
+    "id": 54,
+    "user_id": 54,
+    "username": "walk_organiser",
+    "full_name": "Organiser",
+    "avatar": null,
+    "founder_badge": false
+  },
+  "max_tickets_per_email": 6,
+  "currency": "NGN",
+  "sponsors": [
+    {
+      "id": 34,
+      "name": "Walk Sponsor",
+      "kind": "sponsor",
+      "logo": "http://127.0.0.1:8000/media/sponsor_logos/walk-sponsor-logo.png",
+      "website": "https://example.com/walk",
+      "links": []
+    }
+  ],
+  "partners": [
+    {
+      "id": 33,
+      "name": "Lagos Gamers Guild",
+      "kind": "partner",
+      "logo": "http://127.0.0.1:8000/media/sponsor_logos/walk-logo.png",
+      "website": "https://example.com/lgg",
+      "links": []
+    }
+  ],
+  "social_links": {
+    "twitter": "https://twitter.com/walkcon",
+    "instagram": "https://instagram.com/walkcon",
+    "youtube": "https://youtube.com/@walkcon"
+  },
+  "linked_tournaments": [],
+  "vendors_count": 1
+}

@@ -1031,6 +1031,14 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   margin: 0.5rem 0 0.25rem;
 }
 
+/* Why the quantity stops where it does. Under the box, in the muted
+   weight, so the limit is read before the PIN and not after. */
+.modalHint {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0.25rem 0 0.5rem;
+}
+
 .qtyRow {
   display: flex;
   align-items: center;
@@ -1296,6 +1304,26 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 }
 
 .pinInput:focus { outline: none; border-color: var(--v-ent-red); }
+
+/* A short text field inside the buy modal (the promo code). Same surface as
+   the PIN box, without the PIN's letter spacing. */
+.modalField {
+  display: block;
+  margin: 0.5rem 0;
+}
+.modalInput {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  background: #1a1b1f;
+  color: #fff;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+.modalInput::placeholder { text-transform: none; color: rgba(255, 255, 255, 0.35); }
+.modalInput:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 /* Organizer-only shortcut to the door list. */
 .doorListLink {

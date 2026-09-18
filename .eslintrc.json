@@ -1,3 +1,12 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "event",
+        "message": "window.event is the deprecated global. Name the record you mean (eventRef, the loaded event) or the handler's own argument."
+      }
+    ]
+  }
 }

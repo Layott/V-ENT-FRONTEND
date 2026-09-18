@@ -155,6 +155,25 @@ export default async function sitemap() {
       })),
   ];
 
+  // Every open stall, at its named address. A stall is a page people search
+  // for by the trader's name, and it was reachable only through a query
+  // string that canonicalised every stall to one URL (18 September 2026).
+  // One request per listed event, capped.
+  const stallPages = (await Promise.all(
+    events
+      .filter((e) => e?.slug && e.is_active !== false)
+      .slice(0, 60)
+      .map(async (e) => {
+        const got = await readList(`/event/${encodeURIComponent(e.slug)}/vendors/`);
+        return got
+          .filter((v) => v?.slug)
+          .map((v) => entry(`/events/${e.slug}/stall/${v.slug}`, {
+            changeFrequency: 'daily',
+            priority: 0.5,
+          }));
+      }),
+  )).flat();
+
   const teamPages = teams
     .filter((t) => t?.slug)
     .map((t) => entry(`/teams/${t.slug}`, { changeFrequency: 'weekly', priority: 0.6 }));
@@ -184,5 +203,5 @@ export default async function sitemap() {
 
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...teamPages, ...clubPages, ...orgPages, ...planPages].flat();
+          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...planPages].flat();
 }

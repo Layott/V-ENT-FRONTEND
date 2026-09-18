@@ -74,6 +74,19 @@ const ReviewBasicInfo = ({ formData = {} }) => {
         </div>
       ))}
 
+      {/* Whose name it runs in: the one field the review used to leave out
+          (walk, 18 September). */}
+      <div className={`${styles.infoContainer} ${styles.staticInfoContainer}`}>
+        <div className={styles.leftSideContainer}>
+          <h3>{t('org.runningAs', 'Running this as')}</h3>
+        </div>
+        <div className={styles.rightSideContainer}>
+          <p>{formData.organization
+            ? (formData.organization_name || formData.organization)
+            : t('org.justMe', 'Just me')}</p>
+        </div>
+      </div>
+
       {formData.linked_event_name && (
         <div className={`${styles.infoContainer} ${styles.staticInfoContainer}`}>
           <div className={styles.leftSideContainer}>

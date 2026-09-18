@@ -667,6 +667,24 @@
    Matches .addBtn, which is what the rest of the page already uses for a
    primary action. Filled, no stroke, no glow. */
 
+/* A destructive second press: the platform's red, filled, so it reads as
+   the one that does the thing rather than the one that backs out. */
+.dangerBtn {
+  align-items: center;
+  background-color: var(--v-ent-red);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
+.dangerBtn:hover { background-color: var(--v-ent-light-red); }
+
 .primaryBtn {
   align-items: center;
   background-color: #E5B94E;

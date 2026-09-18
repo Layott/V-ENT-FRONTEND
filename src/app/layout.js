@@ -5,6 +5,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
 import PageHelp from "@/components/page-help/PageHelp";
 import PaystackReturn from "@/components/pay/PaystackReturn";
+import ClientTimezone from "@/components/timing/ClientTimezone";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -108,6 +109,9 @@ export default function RootLayout({ children }) {
                 reference sat in the address doing nothing and the money was
                 at Paystack with nothing to show for it. */}
             <PaystackReturn />
+            {/* The browser's zone on every API request, so a time typed with
+                no zone lands where the person meant it. */}
+            <ClientTimezone />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>

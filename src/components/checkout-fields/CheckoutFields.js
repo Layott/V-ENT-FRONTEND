@@ -19,6 +19,24 @@ import styles from './checkout-fields.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// How many of a tier one order may take, and which rule says so. The
+// smallest of: the tier's own per-address limit, the event's, what is left,
+// and ten. Both forms cap their quantity box with this, so nobody picks a
+// number the server will refuse after they have filled everything in (the
+// signed-in modal let a buyer pick 4 of a tier capped at 1, 18 September
+// 2026).
+export function quantityCeiling(tier, maxPerEmail) {
+  const tierMax = Number(tier?.max_tickets_per_email || 0) || null;
+  const eventMax = Number(maxPerEmail || 0) || null;
+  const left = Number(tier?.remaining ?? tier?.available ?? 0) || null;
+  let max = 10;
+  let reason = null;
+  if (eventMax && eventMax < max) { max = eventMax; reason = 'event'; }
+  if (tierMax && tierMax < max) { max = tierMax; reason = 'tier'; }
+  if (left && left < max) { max = left; reason = 'left'; }
+  return { max: Math.max(1, max), reason };
+}
+
 /** What this event asks for, split the way the two forms need it. */
 export function useCheckoutFields(eventRef) {
   const [fields, setFields] = useState([]);

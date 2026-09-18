@@ -651,6 +651,14 @@ export const GUIDES = {
     what: 'One seller at an event, and what they have on sale.',
     does: ['Browse their products', 'Buy and collect at their booth'],
   },
+  // The stall's named address (18 September 2026); the query address
+  // above still resolves and carries the same guide.
+  '/events/:slug/stall/:stall': {
+    title: 'A stall',
+    what: 'One seller at an event, and what they have on sale.',
+    does: ['Browse their products', 'Pick an option, add to your order and pay from your wallet',
+           'Collect at their booth, or have it delivered where the stall offers that'],
+  },
   '/production': {
     title: 'Production',
     what: 'What you can put on a stream, and the console of each thing you run.',

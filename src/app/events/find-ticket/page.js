@@ -44,7 +44,7 @@ export default function FindTicket() {
         setTicket(body.data.ticket);
         return;
       }
-      setError(apiMessage(tt, body, 'api.NOT_FOUND',
+      setError(apiMessage(tt, body, 'api.TICKET_NOT_FOUND',
         'No ticket found for that code and email address.'));
     } catch {
       setError(tt('api.NETWORK_UNREACHABLE',

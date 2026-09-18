@@ -87,7 +87,10 @@ const BasicInfo = ({
       <OrganizationPicker
         kind="tournament"
         value={formData.organization || ''}
-        onChange={(next) => updateFormData('organization', next)}
+        onChange={(next, name) => {
+          updateFormData('organization', next);
+          updateFormData('organization_name', name || '');
+        }}
       />
       <CreateTournamentLogo updateFileData={updateFileData} logoFile={logoFile} bannerFile={bannerFile} />
 

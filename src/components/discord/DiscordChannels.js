@@ -35,6 +35,9 @@ export default function DiscordChannels({ kind, reference, token, showToast }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [url, setUrl] = useState('');
+  // The channel whose Remove has been pressed once (two presses, like
+  // every destructive control since 18 September 2026).
+  const [removing, setRemoving] = useState(null);
   const [label, setLabel] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -168,10 +171,20 @@ export default function DiscordChannels({ kind, reference, token, showToast }) {
                         onClick={() => patch(row.id, { active: !row.active })}>
                   {row.active ? tt('discord.pause', 'Pause') : tt('discord.resume', 'Resume')}
                 </button>
-                <button type="button" className={styles.ghost}
-                        onClick={() => remove(row.id)}>
+                {removing !== row.id && <button type="button" className={styles.ghost}
+                        onClick={() => setRemoving(row.id)}>
                   {tt('discord.remove', 'Remove')}
-                </button>
+                </button>}
+                {removing === row.id && <>
+                  <button type="button" className={styles.ghost}
+                          onClick={() => { setRemoving(null); remove(row.id); }}>
+                    {tt('discord.removeConfirm', 'Remove this channel?')}
+                  </button>
+                  <button type="button" className={styles.ghost}
+                          onClick={() => setRemoving(null)}>
+                    {tt('discord.keep', 'Keep it')}
+                  </button>
+                </>}
               </div>
             </li>
           ))}

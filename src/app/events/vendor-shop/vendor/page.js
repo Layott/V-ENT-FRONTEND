@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { plural } from '@/lib/plural';
 import { formatNumber } from '@/lib/datetime';
 import { useViewer } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
@@ -25,16 +26,19 @@ import styles from './vendor.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
-const VendorStallContent = () => {
+// `eventSlug` and `stallSlug` come from the named address
+// (/events/<event>/stall/<stall>); the query string is the address links
+// carried before 18 September 2026, and it still resolves.
+export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
   const tx = useTx();
   const tt = useT();
   const {
     data: session
   } = useSession();
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('event') || '';
+  const eventId = eventSlug || searchParams.get('event') || '';
   const viewer = useViewer();
-  const vendorId = searchParams.get('vendor') || searchParams.get('id') || '';
+  const vendorId = stallSlug || searchParams.get('vendor') || searchParams.get('id') || '';
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,23 +114,26 @@ const VendorStallContent = () => {
     fetchVendor();
   }, [eventId, vendorId, authHeaders, refreshTick, tt]);
 
-  // Hydrate cart for this event.
-  const cartHydrated = useRef(false);
+  // Hydrate cart for this event. The persist effect runs in the SAME commit
+  // with the first render's empty cart; a flag set here and consumed there
+  // skips exactly that write. The older "hydrated" flag was set before the
+  // persist ran, so it still wrote [] under React's development double-run.
+  const skipPersist = useRef(false);
   useEffect(() => {
     if (!eventId || typeof window === 'undefined') return;
+    skipPersist.current = true;
     try {
       const raw = localStorage.getItem(CART_STORAGE_KEY(eventId));
       setCart(raw ? JSON.parse(raw) : []);
     } catch {
       setCart([]);
     }
-    cartHydrated.current = true;
   }, [eventId]);
 
-  // Persist cart - only after hydration, otherwise the first render's empty
-  // cart overwrites the stored one and every reload loses the basket.
+  // Persist cart, except on the commit that hydrated it.
   useEffect(() => {
-    if (!eventId || typeof window === 'undefined' || !cartHydrated.current) return;
+    if (!eventId || typeof window === 'undefined') return;
+    if (skipPersist.current) { skipPersist.current = false; return; }
     localStorage.setItem(CART_STORAGE_KEY(eventId), JSON.stringify(cart));
   }, [cart, eventId]);
   // A line is one product in one option: a medium hoodie and a large one are
@@ -321,9 +328,17 @@ const VendorStallContent = () => {
               <div>
                 <div className={styles.titleRow}>
                   <h1 className={styles.vendorName}>{vendor.name}</h1>
-                  <span className={`${styles.statusPill} ${styles['status_' + vendor.status]}`}>
-                    {vendor.status}
-                  </span>
+                  {/* Only a stall that is NOT open wears a word: a shopper
+                      landing on a closed stall's link should be told. An
+                      open one wore "APPROVED", the organiser's word, until
+                      18 September 2026. */}
+                  {vendor.status !== 'approved' && vendor.status !== 'live' && (
+                    <span className={`${styles.statusPill} ${styles['status_' + vendor.status]}`}>
+                      {vendor.status === 'pending'
+                        ? tt('stall.notOpenYet', 'Not open yet')
+                        : tt('stall.closed', 'Closed')}
+                    </span>
+                  )}
                 </div>
                 <div className={styles.metaRow}>
                   <span className={styles.metaItem}>
@@ -401,8 +416,10 @@ const VendorStallContent = () => {
               {activeProduct.description && <p className={styles.productModalDesc}>{activeProduct.description}</p>}
               <p className={styles.stockHint}>
                 {activeProduct.in_stock
-                  ? tt('stall.availableAtBooth', '{n} available at booth {booth}')
-                      .replace('{n}', formatNumber(Number(activeProduct.stock || 0)))
+                  ? plural(tt, Number(activeProduct.stock || 0),
+                      'stall.availableAtBoothOne', '{n} available at booth {booth}',
+                      'stall.availableAtBooth', '{n} available at booth {booth}',
+                      formatNumber(Number(activeProduct.stock || 0)))
                       .replace('{booth}', vendor.booth_number || vendor.booth || '-')
                   : tx("Currently sold out - check back later.")}
                 {activeProduct.in_stock && activeProduct.can_deliver && ` · ${tt('stall.canDeliver', 'Can be delivered')}`}

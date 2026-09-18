@@ -363,7 +363,7 @@ export default function RunOfShowPanel({ kind, ownerRef, token, showToast }) {
                     row of settings is a control nobody presses. */}
                 <ShareCard
                   url={sheet.visibility === 'public' && publicUrl ? publicUrl : shareUrl}
-                  title={sheet.name || sheet.owner?.name || ''}
+                  title={sheet.owner?.name || sheet.name || ''}
                   text={tt('ros.shareText', 'The run of show')}
                   label={tt('ros.shareLabel', 'Share the run of show')}
                 />
@@ -469,9 +469,15 @@ export default function RunOfShowPanel({ kind, ownerRef, token, showToast }) {
                           <input className={styles.input} value={editDraft.activity}
                                  placeholder={tt('ros.fieldActivity', 'What happens')}
                                  onChange={(e) => setEditDraft((v) => ({ ...v, activity: e.target.value }))} />
+                          <input className={styles.input} value={editDraft.phase}
+                                 placeholder={tt('ros.fieldPhase', 'Which part of the day')}
+                                 onChange={(e) => setEditDraft((v) => ({ ...v, phase: e.target.value }))} />
                           <input className={styles.input} value={editDraft.owner}
                                  placeholder={tt('ros.fieldOwner', 'Who owns it')}
                                  onChange={(e) => setEditDraft((v) => ({ ...v, owner: e.target.value }))} />
+                          <input className={styles.input} value={editDraft.match}
+                                 placeholder={tt('ros.fieldMatch', 'Which match, if any')}
+                                 onChange={(e) => setEditDraft((v) => ({ ...v, match: e.target.value }))} />
                           <input className={styles.input} value={editDraft.starts_at}
                                  placeholder={tt('ros.fieldStarts', 'Starts, 14:30')}
                                  onChange={(e) => setEditDraft((v) => ({ ...v, starts_at: e.target.value }))} />
@@ -499,9 +505,16 @@ export default function RunOfShowPanel({ kind, ownerRef, token, showToast }) {
                           <button type="button" className={styles.ghostBtn}
                                   onClick={() => {
                                     setEditing(item.id);
+                                    // Every field the row holds, so a save
+                                    // of one of them does not send the
+                                    // others blank. Starting from BLANK_CUE
+                                    // wiped the phase and the match on
+                                    // every change (walk, 18 September 2026).
                                     setEditDraft({
                                       ...BLANK_CUE,
                                       activity: item.activity || '',
+                                      phase: item.phase || '',
+                                      match: item.match || '',
                                       owner: item.owner || '',
                                       starts_at: item.starts_at || '',
                                       ends_at: item.ends_at || '',

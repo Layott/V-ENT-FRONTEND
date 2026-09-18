@@ -306,6 +306,9 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   const [kinds, setKinds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  // End broadcast is two presses. One slip mid-show blanks every browser
+  // source and retires the URLs for good (walk, 18 September 2026).
+  const [ending, setEnding] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState('');
   // Which part of the console is showing.
@@ -447,9 +450,12 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
     method: 'POST', body: JSON.stringify({ name }),
   }));
 
-  const end = () => run(() => call(`/sessions/${live.id}/`, {
-    method: 'POST', body: JSON.stringify({ end: true }),
-  }));
+  const end = () => {
+    setEnding(false);
+    return run(() => call(`/sessions/${live.id}/`, {
+      method: 'POST', body: JSON.stringify({ end: true }),
+    }));
+  };
 
   const push = (elementKind, patch) => run(() => call(
     `/sessions/${live.id}/element/${elementKind}/`,
@@ -548,9 +554,18 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               {tt('studio.since', 'since {t}').replace(
                 '{t}', formatTime(live.started_at))}
             </span>
-            <button type="button" className={styles.ghost} disabled={busy} onClick={end}>
-              {tt('studio.end', 'End broadcast')}
-            </button>
+            {ending
+              ? <>
+                  <button type="button" className={styles.primary} disabled={busy} onClick={end}>
+                    {tt('studio.endConfirm', 'End it? Every graphic goes off and these URLs stop working.')}
+                  </button>
+                  <button type="button" className={styles.ghost} onClick={() => setEnding(false)}>
+                    {tt('studio.endKeep', 'Keep going')}
+                  </button>
+                </>
+              : <button type="button" className={styles.ghost} disabled={busy} onClick={() => setEnding(true)}>
+                  {tt('studio.end', 'End broadcast')}
+                </button>}
           </div>
 
           {/* The sections. Filled chips with `aria-pressed`, the same shape

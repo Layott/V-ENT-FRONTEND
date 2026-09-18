@@ -17,7 +17,7 @@ import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
 import ShareCard from '@/components/share/ShareCard';
-import { useCheckoutFields, CheckoutFieldList, missingRequired }
+import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -134,6 +134,9 @@ const normaliseTier = t => {
     // VENT COINS
     price_ngn: Number(t.price_ngn ?? 0),
     available: Number(t.remaining ?? 0),
+    // The tier's own per-address limit, so the quantity box stops where
+    // the server will (walk, 18 September 2026).
+    max_tickets_per_email: t.max_tickets_per_email == null ? null : Number(t.max_tickets_per_email),
     sold_out: !!t.sold_out,
     perks: Array.isArray(t.perks) ? t.perks : [],
     // Which day this ticket is for. Without it a multi-day event shows two
@@ -428,6 +431,10 @@ export const ViewEventContent = ({
   // answers once a group rate or an early bird price is set.
   const [quote, setQuote] = useState(null);
   const [quoteError, setQuoteError] = useState(false);
+  // A promo code, typed in the modal and quoted live. The organiser's
+  // promo tab had no door on the buying side at all until 18 September
+  // 2026: no checkout took a code.
+  const [promoCode, setPromoCode] = useState('');
   const [buyPin, setBuyPin] = useState('');
 
   // Buy flow modal state
@@ -437,7 +444,8 @@ export const ViewEventContent = ({
   // The organiser's questions. A signed-in buyer answers the same list a guest
   // does, drawn by the same component, because the questions belong to the
   // event and not to the way somebody happened to arrive at it.
-  const { fields: askFields, perOrder: askPerOrder, perTicket: askPerTicket } =
+  const { fields: askFields, perOrder: askPerOrder, perTicket: askPerTicket,
+          maxPerEmail: askMaxPerEmail } =
     useCheckoutFields(id);
   const [buyAnswers, setBuyAnswers] = useState({});
   const [buyPeople, setBuyPeople] = useState([{ answers: {} }]);
@@ -706,6 +714,9 @@ export const ViewEventContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
   const countdown = useCountdown(event?.start_date, event?.end_date);
+  // Cancelled by an admin. The payload says it twice (status and the flag)
+  // so a stale card shape still reads right.
+  const cancelled = event?.status === 'cancelled' || event?.is_active === false;
   const tickets = useMemo(() => tiers.map(normaliseTier), [tiers]);
 
   // After the commit, and again as the panel fills.
@@ -837,10 +848,14 @@ export const ViewEventContent = ({
     (async () => {
       setTiersLoading(true);
       try {
+        // Asked for AS the viewer: a seat their own waitlist offer holds is
+        // theirs to see and buy, and is sold out to everybody else.
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/ticket-types/`
           + (unlockCode ? `?code=${encodeURIComponent(unlockCode)}` : ''),
-          { signal: controller.signal });
+          { signal: controller.signal,
+            headers: session?.user?.sessionToken
+              ? { Authorization: `Bearer ${session.user.sessionToken}` } : {} });
         const body = await res.json();
         setTiers(body?.data?.tiers || []);
         // Whether the code did anything, so the screen can say so. Somebody who
@@ -860,7 +875,7 @@ export const ViewEventContent = ({
       }
     })();
     return () => controller.abort();
-  }, [id, tierRefresh, unlockCode]);
+  }, [id, tierRefresh, unlockCode, session?.user?.sessionToken]);
 
   // How many are left, kept current without anybody reloading.
   //
@@ -952,6 +967,7 @@ export const ViewEventContent = ({
         const params = new URLSearchParams({ tier: String(buyTier.id),
                                              quantity: String(buyQty) });
         if (unlockCode) params.set('code', unlockCode);
+        if (promoCode.trim()) params.set('promo', promoCode.trim());
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/event/${id}/quote/?${params}`,
           { signal: controller.signal });
@@ -964,7 +980,7 @@ export const ViewEventContent = ({
       }
     })();
     return () => controller.abort();
-  }, [buyOpen, buyTier, buyQty, id, unlockCode]);
+  }, [buyOpen, buyTier, buyQty, id, unlockCode, promoCode]);
 
   // Only a quote for THIS tier at THIS quantity may price the screen. A stale
   // one from the previous quantity is worse than none, because it looks right.
@@ -1012,6 +1028,9 @@ export const ViewEventContent = ({
           // travel with it. Without this the listing could unlock a presale
           // that the checkout then refused.
           ...(unlockCode ? { code: unlockCode } : {}),
+          // Only a code the quote accepted is sent: the server refuses a
+          // dead one, and the modal has already said so.
+          ...(priced?.promo?.applied ? { promo: promoCode.trim() } : {}),
           pin: buyPin,
           answers: buyAnswers,
           attendees: buyPeople.map(person => ({ answers: person.answers })),
@@ -1136,7 +1155,7 @@ export const ViewEventContent = ({
                 </span>
               </div>
 
-              {countdown && !countdown.live && !countdown.ended && <div className={styles.countdown}>
+              {countdown && !countdown.live && !countdown.ended && !cancelled && <div className={styles.countdown}>
                   <span className={styles.countdownLabel}>{tt("ui.starts.4ce3", "Starts in")}</span>
                   <div className={styles.countdownValues}>
                     <div className={styles.countdownCell}>
@@ -1157,15 +1176,21 @@ export const ViewEventContent = ({
                     </div>
                   </div>
                 </div>}
-              {countdown?.live && <div className={styles.liveBadge}>
+              {countdown?.live && !cancelled && <div className={styles.liveBadge}>
                   <span className={styles.liveDot} /> {tt("ui.event.live.now.178b", "Event is live now")}
                 </div>}
-              {countdown?.ended && <div className={styles.endedBadge}>{tt("ui.event.has.ended.2027", "This event has ended")}</div>}
+              {countdown?.ended && !cancelled && <div className={styles.endedBadge}>{tt("ui.event.has.ended.2027", "This event has ended")}</div>}
+              {/* Cancelled by an admin: the page keeps answering so ticket
+                  holders find out here rather than at the door, and nothing
+                  on it sells (walk, 18 September). */}
+              {cancelled && <div className={styles.endedBadge}>
+                {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody.')}
+              </div>}
 
               <div className={styles.heroActions}>
-                <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
+                {!cancelled && <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
                   <IoTicketOutline /> {tt("ui.get.tickets.0b90", "Get tickets")}
-                </button>
+                </button>}
                 <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
                   {tt("ui.my.tickets.5394", "My tickets")}
                 </Link>
@@ -1405,7 +1430,11 @@ export const ViewEventContent = ({
                       <span>{tt("ui.status.bae7", "Status")}</span>
                       <strong style={{
                     textTransform: 'capitalize'
-                  }}>{event.status}</strong>
+                  }}>{event.status === 'cancelled' ? tt('event.cancelledTitle', 'Cancelled')
+                    : event.status === 'live' ? tt('event.statusLive', 'Live')
+                      : event.status === 'ended' ? tt('event.statusEnded', 'Ended')
+                        : event.status === 'upcoming' ? tt('event.statusUpcoming', 'Upcoming')
+                          : event.status}</strong>
                     </div>
                   </div>
                 </aside>
@@ -1429,7 +1458,13 @@ export const ViewEventContent = ({
               </div>}
 
             {/* TICKETS */}
-            {activeTab === 'tickets' && <div className={styles.ticketTab}>
+            {activeTab === 'tickets' && cancelled && <div className={styles.ticketTab}>
+                <h2 className={styles.sectionTitle}>{tt('event.cancelledTitle', 'Cancelled')}</h2>
+                <p className={styles.body}>
+                  {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody.')}
+                </p>
+              </div>}
+            {activeTab === 'tickets' && !cancelled && <div className={styles.ticketTab}>
                 <div className={styles.ticketHeaderRow}>
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.buy.tickets.029a", "Buy tickets")}</h2>
@@ -1548,12 +1583,15 @@ export const ViewEventContent = ({
                       {/* An offer nobody is told about is not an offer. Both
                           of these were settable by the organiser and readable
                           by no screen until 8 September. */}
-                      {t.group_min > 0 && t.group_price != null && <p className={styles.tierOffer}>
+                      {/* Offers are for tickets that can still be bought. A
+                          sold-out type read "9 left at this price" (18
+                          September 2026). */}
+                      {t.available > 0 && t.group_min > 0 && t.group_price != null && <p className={styles.tierOffer}>
                           {tt('tier.groupOffer', '{n} or more: {price} VC each')
                             .replace('{n}', t.group_min)
                             .replace('{price}', formatNumber(t.group_price))}
                         </p>}
-                      {t.early_bird_quantity > 0 && t.early_bird_price != null
+                      {t.available > 0 && t.early_bird_quantity > 0 && t.early_bird_price != null
                         && t.sold < t.early_bird_quantity && <p className={styles.tierOffer}>
                           {tt('tier.earlyBird', '{n} left at this price, then {price} VC')
                             .replace('{n}', Math.max(0, t.early_bird_quantity - t.sold))
@@ -1602,7 +1640,7 @@ export const ViewEventContent = ({
                 </div>
 
                 {vendors.length === 0 ? <p className={styles.body}>{tt("ui.no.vendors.confirmed.yet.d9c7", "No vendors confirmed yet.")}</p> : <div className={styles.vendorGrid}>
-                    {vendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${event.slug || event.id}&vendor=${v.slug || v.id}`} className={styles.vendorCard}>
+                    {vendors.map(v => <Link key={v.id} href={`/events/${event.slug || event.id}/stall/${v.slug || v.id}`} className={styles.vendorCard}>
                         <div className={styles.vendorLogoWrap}>
                           {v.logo ? <Image src={mediaUrl(v.logo)} alt={v.name} width={56} height={56} className={styles.vendorLogo} unoptimized /> : <div className={styles.vendorLogoFallback}><FaStore /></div>}
                         </div>
@@ -1773,11 +1811,34 @@ export const ViewEventContent = ({
 
             {buyStep === 1 && <div className={styles.modalBody}>
                 <p className={styles.modalLabel}>{tt("ui.quantity.44f6", "Quantity")}</p>
-                <div className={styles.qtyRow}>
-                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">-</button>
-                  <span className={styles.qtyValue}>{buyQty}</span>
-                  <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.min(10, q + 1))} type="button">+</button>
-                </div>
+                {/* Capped where the server will refuse: the tier's own
+                    per-address limit, the event's, or what is left. */}
+                {(() => {
+                  const ceiling = quantityCeiling(buyTier, askMaxPerEmail);
+                  return (
+                    <>
+                      <div className={styles.qtyRow}>
+                        <button className={styles.qtyBtn} onClick={() => setBuyQty(q => Math.max(1, q - 1))} type="button">-</button>
+                        <span className={styles.qtyValue}>{buyQty}</span>
+                        <button className={styles.qtyBtn} disabled={buyQty >= ceiling.max}
+                                onClick={() => setBuyQty(q => Math.min(ceiling.max, q + 1))} type="button">+</button>
+                      </div>
+                      {ceiling.reason === 'tier' && <p className={styles.modalHint}>
+                        {ceiling.max === 1
+                          ? tt('guest.oneOfTierHint', 'One {tier} ticket per email address.').replace('{tier}', buyTier.name)
+                          : tt('guest.maxOfTierHint', 'Up to {n} {tier} tickets per email address.').replace('{n}', ceiling.max).replace('{tier}', buyTier.name)}
+                      </p>}
+                      {ceiling.reason === 'event' && <p className={styles.modalHint}>
+                        {ceiling.max === 1
+                          ? tt('guest.oneEachHint', 'One ticket per email address for this event.')
+                          : tt('guest.maxEachHint', 'Up to {n} per email address for this event.').replace('{n}', ceiling.max)}
+                      </p>}
+                      {ceiling.reason === 'left' && <p className={styles.modalHint}>
+                        {tt('guest.onlyLeftHint', 'Only {n} left.').replace('{n}', ceiling.max)}
+                      </p>}
+                    </>
+                  );
+                })()}
 
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.tier.5bd4", "Tier")}</span>
@@ -1826,6 +1887,26 @@ export const ViewEventContent = ({
                           Math.max(0, priced.member_saving_vc || 0)))}
                     </span>
                   </div>}
+                {/* The promo code. Quoted as it is typed; the row says what it
+                    took off, or why it did not take. */}
+                <label className={styles.modalField}>
+                  <span className={styles.modalLabel}>{tt('buy.promoLabel', 'Promo code')}</span>
+                  <input className={styles.modalInput} value={promoCode}
+                         placeholder={tt('buy.promoPlaceholder', 'If you have one')}
+                         autoCapitalize="characters" autoCorrect="off" spellCheck={false}
+                         onChange={e => setPromoCode(e.target.value)} />
+                </label>
+                {priced?.promo?.applied && <div className={styles.confirmRow}>
+                    <span className={styles.confirmLabel}>{priced.promo.code}</span>
+                    <span className={styles.confirmValue}>
+                      {priced.promo.saving_vc > 0
+                        ? tt('buy.promoSaving', 'Saves {amount} VC').replace('{amount}', formatNumber(priced.promo.saving_vc))
+                        : tt('buy.promoNoCoin', '{ngn} naira off, under a whole coin at this quantity').replace('{ngn}', formatNumber(priced.promo.saving_ngn))}
+                    </span>
+                  </div>}
+                {priced?.promo && !priced.promo.applied && <p className={styles.modalHint}>
+                    {tt(`api.${priced.promo.error}`, tt('buy.promoNotTaken', 'That code cannot be used here.'))}
+                  </p>}
                 {fee.bearer === 'buyer' && feeCost > 0 && <div className={styles.confirmRow}>
                     <span className={styles.confirmLabel}>{tt('buy.serviceFee', 'Service fee')}</span>
                     <span className={styles.confirmValue}>{formatNumber(feeCost)} VC</span>

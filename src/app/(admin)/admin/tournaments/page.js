@@ -1,6 +1,7 @@
 'use client';
 
 import {formatDate, withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
+import { plural } from '@/lib/plural';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import InfoTip from '@/components/info-tip/InfoTip';
@@ -1021,7 +1022,8 @@ function DisqualifyModal({
                   <span className={styles.matchSides}>{p.name}</span>
                   <span className={styles.matchScore}>
                     {p.live_matches
-                      ? tt("admin.dqWillForfeit", "{n} match(es) will be forfeited").replace('{n}', p.live_matches)
+                      ? plural(tt, p.live_matches, 'admin.dqWillForfeitOne', '{n} match will be forfeited',
+                          'admin.dqWillForfeit', '{n} matches will be forfeited')
                       : tt("admin.dqNoMatches", "no matches to come")}
                   </span>
                 </button>)}

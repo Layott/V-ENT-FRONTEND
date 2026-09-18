@@ -74,12 +74,17 @@ export default function EventWaitlist({ eventRef, token, soldOut }) {
     }
   };
 
-  // Nothing to offer somebody who can just buy a ticket, or who is signed out.
-  if (!token || !soldOut) return null;
+  if (!token) return null;
   if (loading) return null;
 
   const entry = place?.entry;
   const offered = entry?.status === 'offered';
+  // Nothing to offer somebody who can just buy a ticket. But somebody IN
+  // the queue is told where they stand whatever the page says about
+  // stock: the moment a ticket comes back the page stops being sold out,
+  // and that is exactly when the person holding the offer needs to read
+  // it (18 September 2026).
+  if (!soldOut && !offered && entry?.status !== 'waiting') return null;
 
   return (
     <div className={offered ? styles.wrapOffered : styles.wrap}>

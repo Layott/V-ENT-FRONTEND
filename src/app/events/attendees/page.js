@@ -1,7 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
-import { formatDateTime } from '@/lib/datetime';
+import { formatDateTime, formatDate } from '@/lib/datetime';
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -69,8 +69,11 @@ const AttendeesContent = ({
     if (!token || !eventId) return true;
     if (first) { setLoading(true); setError(''); }
     try {
+      // The delta is a handful of rows and this is the one screen that shows
+      // the answers, so it asks for them. `lean=1` here made every refresh
+      // wipe the shirt size off whichever row had just changed.
       const since = !first && sinceRef.current
-        ? `?since=${encodeURIComponent(sinceRef.current)}&lean=1` : '';
+        ? `?since=${encodeURIComponent(sinceRef.current)}` : '';
       const res = await fetch(`${API}/event/${eventId}/attendees/${since}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -219,13 +222,25 @@ const AttendeesContent = ({
         body: JSON.stringify({})
       });
       const body = await res.json();
+      // A wrong-day refusal carries the ticket's day; the sentence is built
+      // here so the day reads in the reader's language, the way the scanner
+      // does it. "For another day" with no day named sent a steward back to
+      // the ticket to find out which.
+      const wrongDay = body.status !== 'success' && body.code === 'WRONG_DAY' && body.data?.ticket_day;
       setScanState({
         ok: body.status === 'success',
         // A refusal carries a code, and the code is what can be translated.
         // The server's own sentence is written in the server's language.
         message: body.status === 'success'
           ? body.message
-          : apiMessage(tt, body, 'api.couldNotCheckIn', 'That ticket could not be checked in.'),
+          : wrongDay
+            ? `${tt('scan.wrongDay', 'Wrong day')}. ${body.data.ticket_day_label
+              ? tt('scan.ticketIsForNamed', 'This ticket is for {label}, {day}.')
+                .replace('{label}', body.data.ticket_day_label)
+                .replace('{day}', formatDate(body.data.ticket_day))
+              : tt('scan.ticketIsFor', 'This ticket is for {day}.')
+                .replace('{day}', formatDate(body.data.ticket_day))}`
+            : apiMessage(tt, body, 'api.couldNotCheckIn', 'That ticket could not be checked in.'),
       });
       if (body.status === 'success') {
         setCode('');
@@ -479,7 +494,15 @@ const AttendeesContent = ({
             {rows.length === 0 ? tx("No tickets sold yet.")
              : search.trim().length >= 2
                ? tt("door.noOneAnywhere", "Nobody with that name or code has a ticket. The whole list was searched, not just this device's copy.")
-               : tx("Nobody matches that search.")}
+               : search.trim()
+                 ? tx("Nobody matches that search.")
+                 // An empty FILTER, not a failed search: say what the
+                 // filter is waiting for.
+                 : gateFilter === 'self'
+                   ? tt('door.nobodySelfYet', 'Nobody has checked themselves in yet.')
+                   : gateFilter === 'door'
+                     ? tt('door.nobodyAtDoorYet', 'Nobody has been verified at the door yet.')
+                     : tt('door.nobodyInYet', 'Nobody has been checked in yet.')}
           </p> : <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
@@ -516,18 +539,37 @@ const AttendeesContent = ({
                       </span>}
                     </td>
                     <td className={styles.code}>{r.code}</td>
-                    <td>{r.tier}</td>
+                    <td>
+                      {r.tier}
+                      {/* WHICH DAY, on a ticket that is for one. The scanner
+                          judges it; the person reading this list has to be able
+                          to see it. */}
+                      {r.tier_day && <span className={styles.handle}>
+                        {r.tier_day_label ? `${r.tier_day_label} · ` : ''}{formatDate(r.tier_day)}
+                      </span>}
+                    </td>
                     {anyAnswers && <td className={styles.answers}>
                       {(r.answers || []).filter(a => a.value !== '' && a.value !== null
                         && a.value !== undefined).map(a => <span key={a.label} className={styles.answer}>
-                          <span className={styles.answerLabel}>{a.label}</span>
+                          <span className={styles.answerLabel}>
+                            {/* The platform's own keys (a comp's giver and
+                                note) read in the reader's language; the
+                                organiser's questions read as they wrote them. */}
+                            {a.key === 'comped_by' ? tt('door.compedBy', 'Comped by')
+                              : a.key === 'note' ? tt('door.compNote', 'Note from the organiser')
+                                : a.label}
+                          </span>
                           <span>{a.value === true ? tt('door.yes', 'Yes')
                             : a.value === false ? tt('door.no', 'No') : String(a.value)}</span>
                         </span>)}
                     </td>}
                     <td>
                       <span className={`${styles.badge} ${styles[`badge_${r.status}`] || ''}`}>
-                        {r.status === 'checked_in' ? tx("checked in") : r.status}
+                        {r.status === 'checked_in' ? tx("checked in")
+                          : r.status === 'valid' ? tt('door.statusValid', 'Valid')
+                            : r.status === 'refunded' ? tt('ui.refunded.d6fb', 'Refunded')
+                              : r.status === 'cancelled' ? tt('tickets.statusCancelled', 'Cancelled')
+                                : r.status}
                       </span>
                     </td>
                     <td className={styles.muted}>

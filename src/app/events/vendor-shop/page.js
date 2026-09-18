@@ -5,7 +5,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import ErrorState from '@/components/error-state/ErrorState';
 import { mediaUrl } from '@/lib/mediaUrl';
-import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -46,7 +46,6 @@ const VendorShopContent = ({
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   // What just happened, on the page rather than in a browser alert.
-  const [reserved, setReserved] = useState('');
 
   // Featured product modal
   const [activeProduct, setActiveProduct] = useState(null);
@@ -118,9 +117,15 @@ const VendorShopContent = ({
     fetchVendors(refreshTick > 0);
   }, [fetchVendors, refreshTick]);
 
-  // Hydrate cart from localStorage
+  // Hydrate cart from localStorage. The persist effect below runs in the
+  // SAME commit with the first render's empty cart, so without the flag it
+  // wrote [] over the saved basket and every visit from a stall page
+  // arrived at an empty cart (18 September 2026). The stall page had a
+  // guard; this page, the other half of the same basket, did not.
+  const skipPersist = useRef(false);
   useEffect(() => {
     if (!eventId || typeof window === 'undefined') return;
+    skipPersist.current = true;
     try {
       const raw = localStorage.getItem(CART_STORAGE_KEY(eventId));
       setCart(raw ? JSON.parse(raw) : []);
@@ -129,9 +134,10 @@ const VendorShopContent = ({
     }
   }, [eventId]);
 
-  // Persist cart
+  // Persist cart, except on the commit that hydrated it.
   useEffect(() => {
     if (!eventId || typeof window === 'undefined') return;
+    if (skipPersist.current) { skipPersist.current = false; return; }
     localStorage.setItem(CART_STORAGE_KEY(eventId), JSON.stringify(cart));
   }, [cart, eventId]);
 
@@ -150,6 +156,9 @@ const VendorShopContent = ({
         items.push({
           ...p,
           vendor_id: v.id,
+          // The stall's address is its slug; the cart links to the stall
+          // page by it and never by the id (the slug rule).
+          vendor_slug: p.vendor_slug || v.slug,
           vendor_name: v.name,
           category: p.category || v.category
         });
@@ -305,14 +314,14 @@ const VendorShopContent = ({
                 <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No vendors match.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.different.category.clear.1b19", "Try a different category or clear the search.")}</p>
               </div> : <div className={styles.vendorGrid}>
-                {filteredVendors.map(v => <Link key={v.id} href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${v.slug || v.id}`} className={styles.vendorCard}>
+                {filteredVendors.map(v => <Link key={v.id} href={`/events/${eventId}/stall/${v.slug || v.id}`} className={styles.vendorCard}>
                     <div className={styles.vendorBannerWrap}>
                       {v.banner ? <Image src={mediaUrl(v.banner)} alt={v.name} fill sizes="(min-width: 1024px) 33vw, 100vw" style={{
                   objectFit: 'cover'
                 }} unoptimized /> : <div className={styles.bannerFallback}><FaStore /></div>}
-                      <span className={`${styles.statusPill} ${styles['status_' + v.status]}`}>
-                        {v.status}
-                      </span>
+                      {/* No status badge: only open stalls are listed, and
+                          "APPROVED" is the organiser's word, not the
+                          shopper's (walk, 18 September 2026). */}
                     </div>
                     <div className={styles.vendorBody}>
                       <div className={styles.vendorHead}>
@@ -338,7 +347,6 @@ const VendorShopContent = ({
         </div>
       </main>
 
-      {reserved && <div className={styles.reservedNote} role="status">{reserved}</div>}
 
       <BottomMenu />
 
@@ -368,7 +376,7 @@ const VendorShopContent = ({
                 <button className={`${styles.addToCartBtn} goldBTN`} onClick={() => addToCart(activeProduct)} disabled={!activeProduct.in_stock} type="button">
                   {activeProduct.in_stock ? tx("Add to cart") : tx("Sold out")}
                 </button>
-                <Link href={`/events/vendor-shop/vendor?event=${eventId}&vendor=${activeProduct.vendor_slug}`} className={styles.viewVendorBtn}>
+                <Link href={`/events/${eventId}/stall/${activeProduct.vendor_slug}`} className={styles.viewVendorBtn}>
                   {tt("ui.visit.stall.f79e", "Visit stall")}
                 </Link>
               </div>
@@ -401,7 +409,7 @@ const VendorShopContent = ({
                 }} unoptimized /> : <div className={styles.featuredImgFallback}><FaStore /></div>}
                       </div>
                       <div className={styles.cartItemBody}>
-                        <p className={styles.cartItemName}>{item.name}</p>
+                        <p className={styles.cartItemName}>{item.name}{item.variant ? ` · ${item.variant}` : ''}</p>
                         <p className={styles.cartItemVendor}>{item.vendor_name}</p>
                         <div className={styles.cartItemFoot}>
                           <div className={styles.qtyControl}>
@@ -426,14 +434,18 @@ const VendorShopContent = ({
                 <span>{tt("ui.subtotal.97f7", "Subtotal")}</span>
                 <strong>{cartTotal.toLocaleString()} VC</strong>
               </div>
-              <button className={`${styles.checkoutBtn} redBTN`} disabled={cart.length === 0} onClick={() => {
-            setReserved(tt("msg.checkoutReserved", "Items reserved at the vendor booths. Pay on pickup with your V-ENT wallet."));
-            setTimeout(() => setReserved(''), 5000);
-            clearCart();
-            setCartOpen(false);
-          }} type="button">
-                <FaCheckCircle /> {tt("ui.reserve.booths.8f34", "Reserve at booths")}
-              </button>
+              {/* An order is one stall's, and the stall page's own panel places
+                  it: quote, fee, PIN. The button that stood here cleared the
+                  basket and said "reserved" having ordered nothing
+                  (18 September 2026). */}
+              {[...new Map(cart.filter(i => i.vendor_slug).map(i => [i.vendor_slug, i])).values()].map(i => (
+                <Link key={i.vendor_slug}
+                      href={`/events/${eventId}/stall/${i.vendor_slug}`}
+                      className={`${styles.checkoutBtn} redBTN`}
+                      onClick={() => setCartOpen(false)}>
+                  <FaCheckCircle /> {tt('shop.orderFrom', 'Order from {stall}').replace('{stall}', i.vendor_name || '')}
+                </Link>
+              ))}
               {cart.length > 0 && <button className={styles.clearBtn} onClick={clearCart} type="button">
                   {tt("ui.clear.cart.40b6", "Clear cart")}
                 </button>}

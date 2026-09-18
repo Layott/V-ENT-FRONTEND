@@ -56,6 +56,32 @@ select:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+/* The `hidden` attribute loses to any class that sets `display`, so a
+   `<div className={styles.list} hidden={flag}>` with `.list { display: flex }`
+   stays on screen. The wizard's tier editor did exactly that under "Free
+   entry, no tickets" (17 September 2026). This makes the attribute win. */
+[hidden] {
+  display: none !important;
+}
+
+/* Every modal's, panel's and cart's close control is a thumb target.
+   Thirteen modules draw one, as a 28px box or a 1.2rem glyph with 0.2rem of
+   padding, and the buy modal's read 26x26 on the phone, the ticket modal's
+   29x29 (18 September 2026). The glyph stays its size; the box under it is
+   44px, which is what a thumb needs. Matched by the class names in use
+   (modalClose, qrModalClose, modalCloseAbs, closeBtn, closeBTN, closeButton,
+   cartClose, cardClose, linkPanelClose), case-insensitively. */
+button[class*="modalclose" i],
+button[class*="closebtn" i],
+button[class*="closebutton" i],
+button[class*="cartclose" i],
+button[class*="cardclose" i],
+button[class*="panelclose" i] {
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+
 * {
   margin: 0;
   padding: 0;

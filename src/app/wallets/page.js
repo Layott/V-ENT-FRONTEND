@@ -1,6 +1,7 @@
 'use client';
 
 import { KYC_REQUIRED } from '@/lib/features';
+import { plural } from '@/lib/plural';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
@@ -352,7 +353,8 @@ const WalletsContent = () => {
             <div className={styles.statTile}>
               <p className={styles.statLabel}>{tt("ui.pending.payouts.e831", "Pending payouts")}</p>
               <p className={`${styles.statValue} ${styles.statWarn}`}>{formatNumber(stats.pending)} VC</p>
-              <p className={styles.statSub}>{withdrawals.filter(w => normalizeStatus(w.status) === 'pending').length} {tt("ui.request.s.1808", "request(s)")}</p>
+              <p className={styles.statSub}>{plural(tt, withdrawals.filter(w => normalizeStatus(w.status) === 'pending').length,
+                'wallet.pendingRequestOne', '{n} request', 'wallet.pendingRequests', '{n} requests')}</p>
             </div>
             <div className={styles.statTile}>
               <p className={styles.statLabel}>{tt("ui.lifetime.vc.earned.40e8", "Lifetime VC earned")}</p>

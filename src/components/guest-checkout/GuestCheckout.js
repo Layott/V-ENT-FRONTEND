@@ -21,7 +21,7 @@ import Link from 'next/link';
 import { LuCheck, LuTicket } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
-import { useCheckoutFields, CheckoutFieldList }
+import { useCheckoutFields, CheckoutFieldList, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
 import styles from './guest-checkout.module.css';
 import { refFor } from '@/lib/referral';
@@ -44,13 +44,16 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
   // guest used to see the amount for the first time on the payment page, and
   // a group rate the organiser had set was never mentioned at all.
   const [quote, setQuote] = useState(null);
+  // A promo code, quoted as it is typed and sent only once the quote took it.
+  const [promoCode, setPromoCode] = useState('');
 
 
   // One answer set per ticket, so the size on ticket two is not the size on
   // ticket one.
+  const ceiling = quantityCeiling(tier, maxPerEmail);
   useEffect(() => {
-    if (maxPerEmail && quantity > maxPerEmail) setQuantity(maxPerEmail);
-  }, [maxPerEmail, quantity]);
+    if (quantity > ceiling.max) setQuantity(ceiling.max);
+  }, [ceiling.max, quantity]);
 
   useEffect(() => {
     setPeople(prev => {
@@ -71,6 +74,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
                                              quantity: String(quantity),
                                              channel: 'naira' });
         if (code) params.set('code', code);
+        if (promoCode.trim()) params.set('promo', promoCode.trim());
         const res = await fetch(`${API}/event/${eventRef}/quote/?${params}`,
                                 { signal: controller.signal });
         const body = await res.json();
@@ -80,7 +84,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
       }
     })();
     return () => controller.abort();
-  }, [eventRef, tier?.id, quantity, code]);
+  }, [eventRef, tier?.id, quantity, code, promoCode]);
 
   const priced = (quote && quote.tier_id === tier?.id
                   && quote.quantity === quantity) ? quote : null;
@@ -105,6 +109,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
           // A hidden tier is checked again here. Without the code the guest is
           // refused at the last step, after filling the whole form in.
           ...(code ? { code } : {}),
+          ...(priced?.promo?.applied ? { promo: promoCode.trim() } : {}),
           answers: orderAnswers,
           attendees: people.map(p => ({ name: p.name, answers: p.answers })),
           callback_url: typeof window === 'undefined' ? ''
@@ -227,20 +232,31 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
       {/* One ticket allowed means there is nothing to choose, so the box is
           not drawn at all. Offering a number somebody cannot use, and refusing
           them for picking it, is the thing this replaces. */}
-      {maxPerEmail === 1
+      {ceiling.max === 1
         ? <p className={styles.help}>
-            {tt('guest.oneEachHint', 'One ticket per email address for this event.')}
+            {ceiling.reason === 'tier'
+              ? tt('guest.oneOfTierHint', 'One {tier} ticket per email address.').replace('{tier}', tier?.name || '')
+              : ceiling.reason === 'left'
+                ? tt('guest.lastOneHint', 'The last one.')
+                : tt('guest.oneEachHint', 'One ticket per email address for this event.')}
           </p>
         : <label className={styles.field}>
             <span className={styles.label}>{tt('guest.howMany', 'How many tickets')}</span>
             <input className={styles.input} type="number" min="1"
-                   max={maxPerEmail || 10}
+                   max={ceiling.max}
                    value={quantity}
                    onChange={e => setQuantity(Math.max(1, Math.min(
-                     maxPerEmail || 10, Number(e.target.value) || 1)))} />
-            {maxPerEmail > 1 && <span className={styles.help}>
+                     ceiling.max, Number(e.target.value) || 1)))} />
+            {ceiling.reason === 'tier' && <span className={styles.help}>
+              {tt('guest.maxOfTierHint', 'Up to {n} {tier} tickets per email address.')
+                .replace('{n}', ceiling.max).replace('{tier}', tier?.name || '')}
+            </span>}
+            {ceiling.reason === 'event' && <span className={styles.help}>
               {tt('guest.maxEachHint', 'Up to {n} per email address for this event.')
-                .replace('{n}', maxPerEmail)}
+                .replace('{n}', ceiling.max)}
+            </span>}
+            {ceiling.reason === 'left' && <span className={styles.help}>
+              {tt('guest.onlyLeftHint', 'Only {n} left.').replace('{n}', ceiling.max)}
             </span>}
           </label>}
 
@@ -264,6 +280,38 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
         </div>
       ))}
 
+      <label className={styles.field}>
+        <span className={styles.label}>{tt('buy.promoLabel', 'Promo code')}</span>
+        <input className={styles.input} value={promoCode}
+               placeholder={tt('buy.promoPlaceholder', 'If you have one')}
+               autoCapitalize="characters" autoCorrect="off" spellCheck={false}
+               onChange={e => setPromoCode(e.target.value)} />
+        {priced?.promo && !priced.promo.applied && <span className={styles.help}>
+          {tt(`api.${priced.promo.error}`, tt('buy.promoNotTaken', 'That code cannot be used here.'))}
+        </span>}
+      </label>
+      {priced?.promo?.applied && <div className={styles.totalRow}>
+        <span className={styles.label}>{priced.promo.code}</span>
+        <span className={styles.totalValue}>-{formatNumber(priced.promo.saving_ngn)} NGN</span>
+      </div>}
+      {/* Which ticket, how many, and what they come to, before the fee and
+          the total. The form showed a fee and a total and never named the
+          ticket they were for (walk, 18 September 2026). */}
+      {priced && <div className={styles.totalRow}>
+        <span className={styles.label}>
+          {`${priced.tier_name || tier?.name || ''} × ${formatNumber(quantity)}`}
+          {priced.price_reason === 'group'
+            ? ` · ${tt('guest.groupRate', 'group rate')}`
+            : priced.price_reason === 'early_bird'
+              ? ` · ${tt('guest.earlyBird', 'early bird')}`
+              : ''}
+        </span>
+        <span className={styles.totalValue}>
+          {priced.tickets_ngn > 0
+            ? `${formatNumber(priced.tickets_ngn)} NGN`
+            : tt('guest.free', 'Free')}
+        </span>
+      </div>}
       {/* The number, before the payment page rather than on it. A guest pays
           naira, so the fee (when the organiser has put it on the buyer) is a
           line of its own and the total is what the card is charged. */}
