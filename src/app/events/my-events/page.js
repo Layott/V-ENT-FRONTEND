@@ -22,8 +22,10 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import DeleteControl from '@/components/delete-control/DeleteControl';
+import CancelControl from '@/components/cancel-control/CancelControl';
 import styles from './my-events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 const MyEventsPage = () => {
   const tt = useT();
   const {
@@ -32,6 +34,9 @@ const MyEventsPage = () => {
   } = useSession();
   const token = session?.user?.sessionToken;
   const [rows, setRows] = useState([]);
+  // What a cancel just refunded, by event id. The control that asked is
+  // gone once the row reads cancelled, so the card says it instead.
+  const [cancelled, setCancelled] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // The links that pay this person. An influencer's own side of an event:
@@ -123,7 +128,13 @@ const MyEventsPage = () => {
                       <div className={styles.cardMain}>
                         <div className={styles.cardHead}>
                           <Link href={`/events/${ref}`} className={styles.name}>{row.name}</Link>
-                          {!row.is_active && <span className={styles.badge}>{tt('myEvents.notListed', 'Not listed')}</span>}
+                          {!row.is_active && <span className={styles.badge}>{tt('event.cancelledTitle', 'Cancelled')}</span>}
+                          {cancelled[row.id] && <span className={styles.org}>
+                            {plural(tt, cancelled[row.id].refunded || 0,
+                              'cancelEvent.refundedOne', '{n} paid ticket refunded: {vc} VC back to wallets, card payments through Paystack.',
+                              'cancelEvent.refunded', '{n} paid tickets refunded: {vc} VC back to wallets, card payments through Paystack.')
+                              .replace('{vc}', String(cancelled[row.id].coins || 0))}
+                          </span>}
                           {(row.role === 'manager' || row.role === 'org') && <span className={styles.badge}>{tt('myEvents.youHelpRun', 'You help run this')}</span>}
                           {row.role === 'door' && <span className={styles.badge}>{tt('myEvents.youWorkTheDoor', 'You work the door')}</span>}
                           {row.organization && <span className={styles.org}>{row.organization}</span>}
@@ -170,6 +181,17 @@ const MyEventsPage = () => {
                             the door for one day is not somebody who removes
                             the event, which is what permissions.py has said
                             since it was written. */}
+                        {/* Cancelling refunds everybody who paid (CEO,
+                            18 September 2026); only the owner may, and only
+                            while the event is live. */}
+                        {row.role === 'owner' && row.is_active && (
+                          <CancelControl reference={ref} name={row.name} token={token}
+                                         className={styles.ghostBtn}
+                                         onCancelled={(data) => {
+                                           setCancelled(all => ({ ...all, [row.id]: data?.refunds || {} }));
+                                           setRows(all => all.map(x => x.id === row.id ? { ...x, is_active: false } : x));
+                                         }} />
+                        )}
                         {row.role === 'owner' && (
                           <DeleteControl kind="event" reference={ref}
                                          name={row.name} token={token}

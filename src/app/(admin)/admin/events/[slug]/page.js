@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { plural } from '@/lib/plural';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -161,6 +162,31 @@ function AdminEventDetailInner() {
     else await ticketAction(code, 'void', reason);
   };
 
+  // The retry door: whatever a card network refused when the event was
+  // cancelled. Asks only about what is still live, so it is safe to press
+  // until the number reads 0.
+  const runRefunds = async () => {
+    setBusy('refunds');
+    try {
+      const res = await fetch(`${api}/auth/admin/events/${slug}/refunds/`, {
+        method: 'POST', headers: headers(), body: JSON.stringify({}),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        toast.push(apiMessage(tt, body, 'admin.thatDidNotWork', 'That did not work.'), 'error');
+        return;
+      }
+      const r = body.data?.refunds || {};
+      toast.push(tt('admin.refundsRan', 'Refunds run: {n} more refunded, {left} still owed.')
+        .replace('{n}', String(r.refunded || 0)).replace('{left}', String(body.data?.still_owed || 0)));
+      await loadDetail();
+    } catch {
+      toast.push(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'), 'error');
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const setEventState = async (action, reason = '') => {
     setBusy('state');
     try {
@@ -172,9 +198,21 @@ function AdminEventDetailInner() {
         toast.push(apiMessage(tt, body, 'admin.thatDidNotWork', 'That did not work.'), 'error');
         return;
       }
+      // The cancel answers with what came back. "Event cancelled." alone
+      // hid the part the CEO's rule is about.
+      const r = body.data?.refunds;
       toast.push(action === 'cancel'
-        ? tt('admin.eventCancelled', 'Event cancelled.')
+        ? (r ? plural(tt, r.refunded || 0,
+            'admin.eventCancelledRefundsOne', 'Event cancelled. {n} paid ticket refunded, {vc} VC to wallets, card payments through Paystack.',
+            'admin.eventCancelledRefunds', 'Event cancelled. {n} paid tickets refunded, {vc} VC to wallets, card payments through Paystack.')
+            .replace('{vc}', String(r.coins || 0))
+          : tt('admin.eventCancelled', 'Event cancelled.'))
         : tt('admin.eventRestored', 'Event restored.'));
+      if (r && (r.failed || []).length) {
+        toast.push(plural(tt, r.failed.length,
+          'admin.refundsFailedOne', '{n} card refund was refused by the gateway. Run the refunds again from this page.',
+          'admin.refundsFailed', '{n} card refunds were refused by the gateway. Run the refunds again from this page.'), 'error');
+      }
       await loadDetail();
     } catch {
       toast.push(tt('msg.couldNotReachServer', 'Could not reach the server. Try again.'), 'error');
@@ -249,7 +287,17 @@ function AdminEventDetailInner() {
             </div>
 
             {!event.is_active && <p className={styles.cancelledNote}>
-              {tt('admin.eventIsCancelled', 'This event is cancelled. It stops selling and stops being listed, and its page keeps answering so ticket holders find out what happened.')}
+              {tt('admin.eventIsCancelled', 'This event is cancelled. It stops selling and stops being listed, its page keeps answering so ticket holders find out what happened, and every paid ticket is refunded.')}
+              {(detail?.numbers?.refunds_owed || 0) > 0 && <>
+                {' '}
+                {plural(tt, detail.numbers.refunds_owed,
+                  'admin.refundsStillOwedOne', '{n} paid ticket is still owed a refund (the card network refused the first time).',
+                  'admin.refundsStillOwed', '{n} paid tickets are still owed a refund (the card network refused the first time).')}
+                {' '}
+                <button type="button" className={`${shared.actBtn} ${shared.actView}`} onClick={runRefunds} disabled={busy === 'refunds'}>
+                  {busy === 'refunds' ? tt('admin.refundsRunning', 'Running...') : tt('admin.runRefunds', 'Run the refunds again')}
+                </button>
+              </>}
             </p>}
 
             {asking && <div className={styles.askPanel}>
@@ -421,7 +469,12 @@ const Overview = ({ tt, numbers, detail }) => (
           {detail.managers.map(m => <li key={m.user?.user_id} className={styles.plainRow}>
             <span className={styles.attName}>{m.user?.full_name || m.user?.username}</span>
             <span className={styles.attMeta}>
-              {m.role === 'door' ? tt('admin.roleDoor', 'Door staff') : tt('admin.roleManager', 'Manager')}
+              {m.role === 'door' ? tt('admin.roleDoor', 'Door staff')
+                : m.role === 'org_owner' ? tt('admin.roleOrgOwner', 'Owner of the organisation')
+                  : m.role === 'org_admin' ? tt('admin.roleOrgAdmin', 'Organisation admin')
+                    : m.role === 'org_events' ? tt('admin.roleOrgEvents', 'Organisation events manager')
+                      : tt('admin.roleManager', 'Manager')}
+              {m.through ? ` · ${tt('admin.throughOrg', 'through {org}').replace('{org}', m.through)}` : ''}
               {m.added_by ? ` · ${tt('admin.addedBy', 'added by {who}').replace('{who}', m.added_by.username)}` : ''}
             </span>
           </li>)}
