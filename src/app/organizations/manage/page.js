@@ -101,6 +101,9 @@ const ManageOrgContent = ({
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'members');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // The invitation whose Cancel has been pressed once. Cancelling an
+  // invitation was one press (18 September 2026); it asks first now.
+  const [cancelling, setCancelling] = useState(null);
   const [openMenu, setOpenMenu] = useState(null);
   const [memberSearch, setMemberSearch] = useState('');
   const [teamSearch, setTeamSearch] = useState('');
@@ -857,10 +860,20 @@ const ManageOrgContent = ({
                             </span>
                           </div>
                           {i.message && <p className={styles.requestMessage}>&ldquo;{i.message}&rdquo;</p>}
-                          {i.status === 'pending' && me?.can_invite && <div className={styles.requestActions}>
+                          {i.status === 'pending' && me?.can_invite && cancelling !== i.token && <div className={styles.requestActions}>
                             <button type="button" className={`${styles.miniBtn} ${styles.miniBtnDanger}`}
-                                    onClick={() => cancelInvite(i.token)}>
+                                    onClick={() => setCancelling(i.token)}>
                               <FiX /> {tt("ui.cancel.3f11", "Cancel")}
+                            </button>
+                          </div>}
+                          {i.status === 'pending' && me?.can_invite && cancelling === i.token && <div className={styles.requestActions}>
+                            <button type="button" className={`${styles.miniBtn} ${styles.miniBtnDanger}`}
+                                    onClick={() => { setCancelling(null); cancelInvite(i.token); }}>
+                              {tt('org.inviteCancelConfirm', 'Cancel this invitation?')}
+                            </button>
+                            <button type="button" className={styles.miniBtn}
+                                    onClick={() => setCancelling(null)}>
+                              {tt('org.inviteKeep', 'Keep it')}
                             </button>
                           </div>}
                         </li>)}

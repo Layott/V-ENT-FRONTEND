@@ -21,6 +21,7 @@
 //     word for word, so an edit here never changes what was agreed then.
 
 import { useCallback, useEffect, useState } from 'react';
+import { plural } from '@/lib/plural';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
@@ -42,6 +43,10 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
   const [draft, setDraft] = useState(EMPTY);
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
+  // Which pitch is one press from being removed. Remove was a single press
+  // with nothing between the finger and the delete; the ticket tiers on
+  // the same console ask first, so this does too (walk, 18 September 2026).
+  const [removing, setRemoving] = useState(null);
 
   // The other door. The blurb below has always said "you can still invite
   // people directly instead", and until 12 September nothing on the panel
@@ -142,6 +147,21 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
     load({ quiet: true });
   };
 
+  // The way back from "Take off sale". The endpoint took is_active since
+  // the day it was written and nothing on the screen sent it, so a pitch
+  // withdrawn by mistake stayed withdrawn (walk, 18 September 2026).
+  const relist = async (slot) => {
+    if (busy) return;
+    setBusy(true);
+    const out = await api(`${slot.id}/`, { method: 'PATCH', body: JSON.stringify({ is_active: true }) });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return onNotice?.(apiMessage(tt, out, 'api.saveFailed', 'Save failed'));
+    }
+    onNotice?.(tt('slots.relisted', 'Back on sale.'));
+    load({ quiet: true });
+  };
+
   const beginEdit = (slot) => {
     setEditing(slot.id);
     setDraft({
@@ -163,6 +183,7 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
 
   return (
     <div className={styles.wrap}>
+      <h4 className={styles.formTitle}>{tt('slots.listTitle', 'Pitches for sale')}</h4>
       <p className={styles.blurb}>
         {tt('slots.blurb', 'Sell a pitch at your event. Anybody who buys one gets a '
           + 'shop on V-ENT straight away: their own stock, prices and orders. You can '
@@ -184,7 +205,7 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                   {s.is_sold_out
                     ? <span className={styles.pillGone}>{tt('slots.soldOut', 'Sold out')}</span>
                     : <span className={styles.pillLeft}>
-                        {tt('slots.left', '{n} left').replace('{n}', formatNumber(s.remaining))}
+                        {plural(tt, s.remaining, 'slots.leftOne', '{n} left', 'slots.left', '{n} left', formatNumber(s.remaining))}
                       </span>}
                   {!s.is_active && <span className={styles.pillGone}>
                     {tt('slots.withdrawn', 'Off sale')}
@@ -193,7 +214,7 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                 <p className={styles.rowMeta}>
                   {formatNumber(s.price_vc)} VC
                   {' · '}
-                  {tt('slots.soldCount', '{n} sold').replace('{n}', formatNumber(s.sold))}
+                  {plural(tt, s.sold, 'slots.soldCountOne', '{n} sold', 'slots.soldCount', '{n} sold', formatNumber(s.sold))}
                   {s.requires_approval
                     ? ` · ${tt('slots.needsApproval', 'you approve each one')}`
                     : ` · ${tt('slots.instant', 'live straight away')}`}
@@ -203,14 +224,32 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                   <button type="button" className={styles.ghost} onClick={() => beginEdit(s)}>
                     {tt('ui.edit', 'Edit')}
                   </button>
-                  <button type="button" className={styles.danger} disabled={busy}
-                          onClick={() => withdraw(s)}>
-                    {/* Says what it will actually do. A sold pitch cannot be
-                        deleted without taking somebody's record with it. */}
-                    {s.sold > 0
-                      ? tt('slots.takeOffSale', 'Take off sale')
-                      : tt('ui.remove', 'Remove')}
-                  </button>
+                  {!s.is_active
+                    ? <button type="button" className={styles.ghost} disabled={busy}
+                              onClick={() => relist(s)}>
+                        {tt('slots.relist', 'Put back on sale')}
+                      </button>
+                    : removing === s.id
+                      ? <>
+                          <button type="button" className={styles.danger} disabled={busy}
+                                  onClick={() => { setRemoving(null); withdraw(s); }}>
+                            {(s.sold > 0
+                              ? tt('slots.takeOffSaleConfirm', 'Take {name} off sale?')
+                              : tt('slots.removeConfirm', 'Remove {name}?')).replace('{name}', s.name)}
+                          </button>
+                          <button type="button" className={styles.ghost}
+                                  onClick={() => setRemoving(null)}>
+                            {tt('slots.keep', 'Keep it')}
+                          </button>
+                        </>
+                      : <button type="button" className={styles.ghost} disabled={busy}
+                                onClick={() => setRemoving(s.id)}>
+                          {/* Says what it will actually do. A sold pitch cannot be
+                              deleted without taking somebody's record with it. */}
+                          {s.sold > 0
+                            ? tt('slots.takeOffSale', 'Take off sale')
+                            : tt('ui.remove', 'Remove')}
+                        </button>}
                 </div>
               </li>
             ))}

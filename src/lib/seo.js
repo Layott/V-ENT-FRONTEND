@@ -315,6 +315,18 @@ const dateLabel = (value) => (value
   })
   : null);
 
+// The event payload's own names, with the names these builders were first
+// written against kept as fallbacks. Until 18 September 2026 they read only
+// `event_date`, `start_datetime`, `end_datetime` and `ticket_tiers`, none of
+// which the API sends, so every event's JSON-LD started at the
+// registration-open instant, ended never, and offered nothing. See
+// scripts/check-ld-shape.mjs, which builds from the real payload shape.
+const eventStart = (e) => e?.start_date || e?.start_datetime || e?.event_date || null;
+const eventEnd = (e) => e?.end_date || e?.end_datetime || null;
+const eventTiers = (e) => (Array.isArray(e?.ticket_types) ? e.ticket_types
+  : Array.isArray(e?.ticket_tiers) ? e.ticket_tiers : []);
+const tierLeft = (tier) => (tier.available ?? tier.quantity_remaining ?? 1);
+
 /** Metadata for one event. `slug` is the address it was asked for. */
 export function eventMetadata(e, slug, { path } = {}) {
   if (e?.__failed) return unavailableMetadata(slug, path || `/events/${slug}`);
@@ -335,8 +347,8 @@ export function eventMetadata(e, slug, { path } = {}) {
     });
   }
 
-  const when = dateLabel(e.event_date || e.start_datetime);
-  const tiers = Array.isArray(e.ticket_tiers) ? e.ticket_tiers : [];
+  const when = dateLabel(eventStart(e));
+  const tiers = eventTiers(e);
   const cheapest = tiers.length
     ? Math.min(...tiers.map((t) => Number(t.price || 0)))
     : Number(e.entry_fee || 0);
@@ -524,9 +536,10 @@ export function tournamentLd(t, path) {
 export function eventLd(e, path) {
   const name = e?.name || e?.title;
   if (!name) return null;
-  const start = e.start_datetime || e.event_date || e.reg_start_date;
+  const start = eventStart(e) || e.reg_start_date;
   if (!start) return null;
-  const tiers = Array.isArray(e.ticket_tiers) ? e.ticket_tiers : [];
+  const tiers = eventTiers(e);
+  const end = eventEnd(e);
   return {
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -534,7 +547,7 @@ export function eventLd(e, path) {
     description: clamp(e.desc || e.description, 300),
     url: absolute(path),
     startDate: start,
-    ...(e.end_datetime ? { endDate: e.end_datetime } : {}),
+    ...(end ? { endDate: end } : {}),
     eventStatus: e.is_active === false
       ? 'https://schema.org/EventCancelled'
       : 'https://schema.org/EventScheduled',
@@ -561,7 +574,7 @@ export function eventLd(e, path) {
           priceCurrency: 'NGN',
           url: absolute(path),
           availability:
-            (tier.quantity_remaining ?? 1) > 0
+            tierLeft(tier) > 0
               ? 'https://schema.org/InStock'
               : 'https://schema.org/SoldOut',
         })),

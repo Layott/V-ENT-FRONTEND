@@ -44,6 +44,8 @@ const PaymentsPanel = ({
   const [savedCards, setSavedCards] = useState(payments.saved_cards || []);
   const [savedBanks, setSavedBanks] = useState(payments.saved_banks || []);
   const [showAddCard, setShowAddCard] = useState(false);
+  // The card whose Remove has been pressed once.
+  const [removingCard, setRemovingCard] = useState(null);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinValue, setPinValue] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -197,9 +199,17 @@ const PaymentsPanel = ({
                   {c.is_default ? <span className={`${shared.verifyBadge} ${shared.verifyBadgeOk}`}>{tt("ui.default.808d", "Default")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`} onClick={() => setDefaultCard(c.id)}>
                       {tt("ui.set.default.cddb", "Set default")}
                     </button>}
-                  <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN} ${styles.removeBtn}`} onClick={() => removeCard(c.id)} aria-label={tt("ui.remove.card.872f", "Remove card")}>
+                  {removingCard !== c.id && <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN} ${styles.removeBtn}`} onClick={() => setRemovingCard(c.id)} aria-label={tt("ui.remove.card.872f", "Remove card")}>
                     {tt("ui.remove.e963", "Remove")}
-                  </button>
+                  </button>}
+                  {removingCard === c.id && <>
+                    <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN} ${styles.removeBtn}`} onClick={() => { setRemovingCard(null); removeCard(c.id); }}>
+                      {tt('payments.removeCardConfirm', 'Remove this card?')}
+                    </button>
+                    <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`} onClick={() => setRemovingCard(null)}>
+                      {tt('payments.keepCard', 'Keep it')}
+                    </button>
+                  </>}
                 </div>
               </div>)}
           </div>}

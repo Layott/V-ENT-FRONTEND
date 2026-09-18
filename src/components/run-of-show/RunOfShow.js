@@ -314,9 +314,14 @@ export default function RunOfShow({ sheet, compact = false }) {
       {!compact ? (
         <header className={styles.head}>
           <p className={styles.eyebrow}>{tt('ros.eyebrow', 'Run of show')}</p>
+          {/* The owner's LIVE name. A sheet made before a rename carries the
+              old name in `sheet.name`, and headed the page with it. */}
           <h1 className={styles.title}>
-            {sheet.name || sheet.owner?.name || tt('ros.eyebrow', 'Run of show')}
+            {sheet.owner?.name || sheet.name || tt('ros.eyebrow', 'Run of show')}
           </h1>
+          {sheet.name && sheet.owner?.name && sheet.name !== sheet.owner.name ? (
+            <p className={styles.subtitle}>{sheet.name}</p>
+          ) : null}
           {sheet.subtitle ? (
             <p className={styles.subtitle}>{sheet.subtitle}</p>
           ) : null}

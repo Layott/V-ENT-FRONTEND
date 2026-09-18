@@ -66,7 +66,7 @@ const forInput = value => {
 
 const FIELDS = [
   'name', 'desc', 'event_type', 'category', 'location', 'event_link',
-  'entry_fee', 'capacity', 'start_date', 'end_date', 'is_active',
+  'entry_fee', 'capacity', 'start_date', 'end_date', 'is_listed',
   'max_tickets_per_email',
 ];
 
@@ -114,6 +114,11 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const body = await res.json().catch(() => ({}));
+      if (body.status === 'moved' && body.data?.url) {
+        // Renamed since this address was shared: follow it.
+        router.replace(`${body.data.url}/edit`);
+        return;
+      }
       if (res.ok && body.status === 'success') {
         const e = body.data?.event || body.data;
         setCurrent({
@@ -131,7 +136,9 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
           capacity: e.capacity != null ? String(e.capacity) : '',
           start_date: forInput(e.start_date),
           end_date: forInput(e.end_date),
-          is_active: e.is_active !== false,
+          // "Listed publicly" is its own field. It was wired to is_active,
+          // which took the page down with the listing (18 September 2026).
+          is_listed: e.is_listed !== false,
           // Held as a string so the empty box means "no limit" rather than
           // being coerced to a 0 that the API would read the same way but the
           // form would draw as an actual zero.
@@ -404,8 +411,8 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
               </label>}
 
               <label className={styles.checkRow}>
-                <input type="checkbox" checked={form.is_active}
-                       onChange={e => set('is_active', e.target.checked)} />
+                <input type="checkbox" checked={form.is_listed}
+                       onChange={e => set('is_listed', e.target.checked)} />
                 <span>
                   {tt('eventEdit.listed', 'Listed publicly')}
                   <span className={styles.hint}>

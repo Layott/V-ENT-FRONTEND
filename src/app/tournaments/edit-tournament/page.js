@@ -18,6 +18,7 @@
 // the ten it does not know about.
 
 import { apiMessage } from '@/lib/apiMessage';
+import { plural } from '@/lib/plural';
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -613,9 +614,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                   {saving ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
                 </button>
                 {dirty && <span className={styles.hint}>
-                  {tt('tEdit.pending', '{n} change(s) not saved yet')
-                    .replace('{n}', String(changed.length + (logo ? 1 : 0)
-                      + (banner ? 1 : 0) + (rulesDoc ? 1 : 0)))}
+                  {plural(tt, changed.length + (logo ? 1 : 0) + (banner ? 1 : 0) + (rulesDoc ? 1 : 0),
+                    'tEdit.pendingOne', '{n} change not saved yet',
+                    'tEdit.pending', '{n} changes not saved yet')}
                 </span>}
               </div>
             </div>

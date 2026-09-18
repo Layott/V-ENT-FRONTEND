@@ -127,6 +127,10 @@
 
 .input { min-height: 44px; }
 
+/* The booth field sits in a row of buttons, so it takes a booth's width
+   and not the row's. */
+.booth { width: 9rem; }
+
 .textarea {
   resize: vertical;
   line-height: 1.5;
@@ -176,4 +180,5 @@
   .form { grid-template-columns: 1fr; }
   .formActions { justify-content: stretch; }
   .primary, .ghost, .danger { flex: 1; }
+  .booth { width: 100%; }
 }

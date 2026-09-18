@@ -21,6 +21,8 @@
 //      change what somebody already agreed to.
 
 import { useCallback, useEffect, useState } from 'react';
+import { plural } from '@/lib/plural';
+import Link from 'next/link';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import PayShortfall from '@/components/pay/PayShortfall';
@@ -115,8 +117,14 @@ const TradeHere = ({ eventRef, eventName }) => {
       </p>
 
       {done && <p className={styles.good}>
-        {tt('slots.bought', 'Your stall is set up. Open it from your account to add '
-          + 'what you sell.')}
+        {done.status === 'pending'
+          ? tt('slots.boughtPending', 'Your pitch is paid for. The organiser approves each stall before it opens; you can add what you sell while you wait.')
+          : tt('slots.bought', 'Your stall is set up. Open it from your account to add '
+            + 'what you sell.')}
+        {' '}
+        <Link href={`/my-stalls/${done.slug || done.id}`}>
+          {tt('slots.openStall', 'Open {name}').replace('{name}', done.name || '')}
+        </Link>
       </p>}
 
       <ul className={styles.list}>
@@ -137,7 +145,7 @@ const TradeHere = ({ eventRef, eventName }) => {
             <p className={styles.meta}>
               {s.is_sold_out
                 ? tt('slots.allTaken', 'All taken')
-                : tt('slots.left', '{n} left').replace('{n}', formatNumber(s.remaining))}
+                : plural(tt, s.remaining, 'slots.leftOne', '{n} left', 'slots.left', '{n} left', formatNumber(s.remaining))}
               {s.requires_approval
                 ? ` · ${tt('slots.organiserApproves', 'the organiser approves each one')}`
                 : ''}

@@ -18,7 +18,7 @@ import { downloadWithToken } from '@/lib/download';
 import DiscordChannels from '@/components/discord/DiscordChannels';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { FaTrash, FaPlus } from 'react-icons/fa6';
 import Header from '@/components/header/Header';
@@ -40,8 +40,9 @@ import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
+import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
-import { formatWithZone, formatNumber } from '@/lib/datetime';
+import { formatWithZone, formatNumber, isoToLocalInput, withLocalDatesAsISO } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +77,7 @@ export const ManageEventContent = ({
   slug: slugFromPath
 }) => {
   const tt = useT();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const {
     data: session
@@ -111,7 +113,7 @@ export const ManageEventContent = ({
   const [sessions, setSessions] = useState([]);
   const [newSession, setNewSession] = useState({ title: '', starts_at: '', stage: '', capacity: '' });
   const [queue, setQueue] = useState(null);
-  const [newTier, setNewTier] = useState({ name: '', price: '', quantity: '', perks: '' });
+  const [newTier, setNewTier] = useState({ name: '', price: '', quantity: '', perks: '', day: '' });
   const [pricing, setPricing] = useState(null);   // tier id being priced
   // Every rule about how many tickets one address may hold: across the event,
   // per ticket type, and per day. One payload because the three are edited on
@@ -135,6 +137,10 @@ export const ManageEventContent = ({
   const [askFields, setAskFields] = useState([]);
   const [newField, setNewField] = useState({ label: '', kind: 'text', required: false, per_ticket: true, options: '' });
   const [editing, setEditing] = useState(null);
+  // Which tier's Remove has been pressed once. A ticket type carries its
+  // price, its day and its rules, and one press used to delete it; the
+  // second press is the confirmation (no native dialogs on this platform).
+  const [removing, setRemoving] = useState(null);
   const [referrals, setReferrals] = useState([]);
   // Which link the organiser just copied, so the button can say so. Held here
   // rather than per row because only one can be the most recent.
@@ -216,6 +222,10 @@ export const ManageEventContent = ({
   // `error`, which also covers a network failure: one is a refusal and the
   // other is a retry, and the page owes a different sentence for each.
   const [refused, setRefused] = useState(false);
+  // A panel the server refused or could not answer, by name, with the
+  // sentence to show. A refusal's `data` is `{}`, and reading `.taken.count`
+  // off it took the whole console down for a manager (18 September).
+  const [panelRefused, setPanelRefused] = useState({});
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -261,7 +271,10 @@ export const ManageEventContent = ({
     try {
       body = await res.json();
     } catch {
-      body = {};
+      // Not JSON: a server error page. Carry the status as a code so the
+      // screen can say "the server hit an error" rather than "Failed",
+      // which is what a 500 on Add ticket type read as on 18 September.
+      body = { status: 'error', code: `HTTP_${res.status}` };
     }
     return {
       ok: res.ok && body.status === 'success',
@@ -313,11 +326,22 @@ export const ManageEventContent = ({
     setCapacity(cap);
     setCapacityDraft(cap?.capacity != null ? String(cap.capacity) : '');
     setCapacityModeDraft(cap?.mode || 'per_day');
-    setMoney(mo.body?.data || null);
-    setEarnings(ea.body?.data || null);
+    // Only a successful answer is a payload. Anything else stores null and
+    // the reason, so the tab can say why rather than crash or spin.
+    const payload = r => (r.ok && r.body?.status === 'success') ? (r.body.data ?? null) : null;
+    const reason = (r, key, fallback) => (r.ok && r.body?.status === 'success')
+      ? null : apiMessage(tt, r.body, key, fallback);
+    setPanelRefused({
+      money: reason(mo, 'api.couldNotLoadMoney', 'The money for this event could not be loaded.'),
+      earnings: reason(ea, 'api.couldNotLoadMoney', 'The money for this event could not be loaded.'),
+      queue: reason(qu, 'api.couldNotLoadQueue', 'The waiting list could not be loaded.'),
+      metrics: reason(me, 'api.couldNotLoadMetrics', 'The numbers for this event could not be loaded.'),
+    });
+    setMoney(payload(mo));
+    setEarnings(payload(ea));
     setHolds(ho.body?.data?.holds || []);
     setSessions(se.body?.data?.sessions || []);
-    setQueue(qu.body?.data || null);
+    setQueue(payload(qu));
     setAskFields(cf.body?.data?.fields || []);
     setReferrals(r.body?.data?.results || []);
     setPromos(p.body?.data?.results || []);
@@ -332,6 +356,14 @@ export const ManageEventContent = ({
     })
       .then(res => res.json())
       .then(body => {
+        // Renamed since this address was shared. Every endpoint below
+        // answers at the old slug regardless; this moves the address bar
+        // to the current one, as the public page does (18 September 2026).
+        if (body?.status === 'moved' && body.data?.url) {
+          const query = typeof window !== 'undefined' ? window.location.search : '';
+          router.replace(`${body.data.url}/manage${query}`);
+          return;
+        }
         const ev = body?.data?.event || body?.data || {};
         setVenueLoaded({
           latitude: ev.latitude ?? null,
@@ -363,7 +395,7 @@ export const ManageEventContent = ({
       .then(res => res.json())
       .then(body => setSelfCheckIn(body?.data || null))
       .catch(() => setSelfCheckIn(null));
-    setMetrics(me.body?.data || null);
+    setMetrics(payload(me));
     setAbandoned(ab.ok ? ab.body?.data || null : null);
     setAnnouncements(an.body?.data?.announcements || []);
     setAudience(au.body?.data || null);
@@ -705,9 +737,17 @@ export const ManageEventContent = ({
         price: newTier.price || 0,
         quantity: newTier.quantity || 0,
         perks: newTier.perks,
+        // The day it admits on, as the wizard asks at creation. The console
+        // used to take a type with no day and leave the organiser to find
+        // the day select on the edit row afterwards.
+        ...(newTier.day ? {
+          day: newTier.day,
+          day_label: tt('createEvent.dayN', 'Day {n}').replace(
+            '{n}', eventDays.find(d => d.day === newTier.day)?.n || ''),
+        } : {}),
       }),
     }), 'manage.tierAdded', 'Ticket type added.')
-      .then(ok => { if (ok) setNewTier({ name: '', price: '', quantity: '', perks: '' }); });
+      .then(ok => { if (ok) setNewTier({ name: '', price: '', quantity: '', perks: '', day: '' }); });
   };
 
   const saveTier = (row, patch) => run(() => call(`/tiers/${row.id}/`, {
@@ -979,6 +1019,21 @@ export const ManageEventContent = ({
       .then(ok => { if (ok) setNewSession({ title: '', starts_at: '', stage: '', capacity: '' }); });
   };
 
+  // Which session is being edited, and the edit. PATCH existed with no
+  // screen: moving a session by half an hour meant Remove and type it
+  // again (walk, 18 September 2026).
+  const [editingSession, setEditingSession] = useState(null);
+  const [sessionEdit, setSessionEdit] = useState({});
+  const saveSession = row => run(() => call(`/sessions/${row.id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(withLocalDatesAsISO({
+      ...(sessionEdit.title !== undefined ? { title: sessionEdit.title } : {}),
+      ...(sessionEdit.starts_at !== undefined ? { starts_at: sessionEdit.starts_at } : {}),
+      ...(sessionEdit.stage !== undefined ? { stage: sessionEdit.stage } : {}),
+      ...(sessionEdit.capacity !== undefined ? { capacity: sessionEdit.capacity || null } : {}),
+    }, ['starts_at'])),
+  }), 'manage.sessionSaved', 'Session changed.')
+    .then(ok => { if (ok) { setEditingSession(null); setSessionEdit({}); } });
   const removeSession = row => run(() => call(`/sessions/${row.id}/`, {
     method: 'DELETE',
   }), 'manage.sessionRemoved', 'Taken off the programme.');
@@ -1242,6 +1297,24 @@ export const ManageEventContent = ({
                             {row.sold_out && <span className={styles.offBadge}>
                               {tt('manage.tierSoldOut', 'Sold out')}
                             </span>}
+                            {/* The rules on it, so the organiser can see them
+                                without opening the panel. Saved rules used to
+                                leave the row reading exactly as before, which
+                                looked like the save had not happened. */}
+                            {row.early_bird_quantity > 0 && row.early_bird_price_vc != null && <span className={styles.muted}>
+                              {tt('manage.tierRuleEarly', 'First {n} at {now} VC, then {after} VC')
+                                .replace('{n}', row.early_bird_quantity)
+                                .replace('{now}', row.price_vc)
+                                .replace('{after}', row.early_bird_price_vc)}
+                            </span>}
+                            {row.group_min > 0 && row.group_price_vc != null && <span className={styles.muted}>
+                              {tt('manage.tierRuleGroup', 'Groups of {n} or more at {price} VC each')
+                                .replace('{n}', row.group_min)
+                                .replace('{price}', row.group_price_vc)}
+                            </span>}
+                            {row.is_hidden && <span className={styles.offBadge}>
+                              {tt('manage.tierRuleCode', 'Needs the access code')}
+                            </span>}
                           </div>
 
                           {pricing === row.id ? <div className={styles.editRow}>
@@ -1335,10 +1408,20 @@ export const ManageEventContent = ({
                                       onClick={() => setPricing(row.id)}>
                                 {tt('manage.tierPricing', 'Early bird, groups, access code')}
                               </button>
-                              {row.sold === 0 && <button type="button" className={styles.ghostBtn}
-                                      disabled={busy} onClick={() => removeTier(row)}>
+                              {row.sold === 0 && removing !== row.id && <button type="button" className={styles.ghostBtn}
+                                      disabled={busy} onClick={() => setRemoving(row.id)}>
                                 {tt('manage.tierRemove', 'Remove')}
                               </button>}
+                              {row.sold === 0 && removing === row.id && <>
+                                <button type="button" className={styles.dangerBtn}
+                                        disabled={busy} onClick={() => { setRemoving(null); removeTier(row); }}>
+                                  {tt('manage.tierRemoveConfirm', 'Remove {name}?').replace('{name}', row.name)}
+                                </button>
+                                <button type="button" className={styles.ghostBtn}
+                                        onClick={() => setRemoving(null)}>
+                                  {tt('manage.tierRemoveKeep', 'Keep it')}
+                                </button>
+                              </>}
                             </div>}
                         </div>)}
                     </div>}
@@ -1466,7 +1549,20 @@ export const ManageEventContent = ({
                       {askFields.map(row => <div key={row.id} className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{row.label}</strong>
-                            <span className={styles.code}>{row.kind}</span>
+                            {/* The kind by its label, not its storage word: the
+                                row read "choice" and "phone" beside the same
+                                select that says "One of a list". */}
+                            <span className={styles.muted}>
+                              {({
+                                text: tt('manage.kindText', 'Text'),
+                                phone: tt('manage.kindPhone', 'Phone number'),
+                                number: tt('manage.kindNumber', 'A number'),
+                                choice: tt('manage.kindChoice', 'One of a list'),
+                                checkbox: tt('manage.kindCheckbox', 'A yes or no'),
+                              })[row.kind] || row.kind}
+                              {row.kind === 'choice' && Array.isArray(row.options) && row.options.length > 0
+                                ? `: ${row.options.join(', ')}` : ''}
+                            </span>
                             {row.required && <span className={styles.muted}>
                               {tt('manage.fieldRequired', 'required')}
                             </span>}
@@ -1522,8 +1618,9 @@ export const ManageEventContent = ({
                     <input className={styles.input} value={newTier.name}
                            placeholder={tt('manage.tierName', 'Name, e.g. VIP')}
                            onChange={e => setNewTier(v => ({ ...v, name: e.target.value }))} />
-                    <input className={styles.input} type="number" min="0" value={newTier.price}
+                    <input className={styles.input} type="number" min="0" step="1000" value={newTier.price}
                            placeholder={tt('manage.tierPriceNgn', 'Price in naira')}
+                           title={tt('createEvent.priceWholeCoins', 'Whole thousands: 1,000 naira is one VENT COIN, and a wallet pays in whole coins.')}
                            onChange={e => setNewTier(v => ({ ...v, price: e.target.value }))} />
                     <input className={styles.input} type="number" min="0" value={newTier.quantity}
                            placeholder={tt('manage.tierQuantity', 'How many')}
@@ -1531,6 +1628,13 @@ export const ManageEventContent = ({
                     <input className={styles.input} value={newTier.perks}
                            placeholder={tt('manage.tierPerks', 'What it includes, separated by commas')}
                            onChange={e => setNewTier(v => ({ ...v, perks: e.target.value }))} />
+                    {eventDays.length > 1 && <select className={styles.input} value={newTier.day}
+                            onChange={e => setNewTier(v => ({ ...v, day: e.target.value }))}>
+                      <option value="">{tt('manage.tierAllDaysOption', 'All days (full pass)')}</option>
+                      {eventDays.map(d => <option key={d.day} value={d.day}>
+                        {tt('createEvent.dayN', 'Day {n}').replace('{n}', d.n)}{' · '}{d.day}
+                      </option>)}
+                    </select>}
                     <button type="button" className={styles.primaryBtn}
                             disabled={busy || !newTier.name.trim()} onClick={addTier}>
                       {tt('manage.addTier', 'Add ticket type')}
@@ -1543,7 +1647,7 @@ export const ManageEventContent = ({
                   <p className={styles.cardHint}>
                     {tt('manage.moneyHint', 'Counted from the tickets themselves, so it reconciles: what is owed is what was taken less what went back.')}
                   </p>
-                  {!money ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p> : <>
+                  {!money ? <p className={styles.muted}>{panelRefused.money || tt('ui.loading', 'Loading…')}</p> : <>
                     <div className={styles.rows}>
                       <div className={styles.row}>
                         <div className={styles.rowMain}>
@@ -1671,9 +1775,12 @@ export const ManageEventContent = ({
                             const { ok, body } = await call('/settle/', { method: 'POST', body: JSON.stringify({}) });
                             setSettling(false);
                             if (ok) {
-                              setSettleSaid(tt('manage.settledSaid', 'Paid {n} VC across {lines} line(s).')
+                              const linesPaid = Number(body?.data?.lines_paid ?? 0);
+                              setSettleSaid((linesPaid === 1
+                                ? tt('manage.settledSaidOne', 'Paid {n} VC, in one payout.')
+                                : tt('manage.settledSaid', 'Paid {n} VC, in {lines} payouts.'))
                                 .replace('{n}', Number(body?.data?.amount_vc || 0).toLocaleString(appLocale()))
-                                .replace('{lines}', body?.data?.lines_paid ?? 0));
+                                .replace('{lines}', linesPaid));
                               await load();
                             } else {
                               setError(apiMessage(tt, body, 'api.couldNotSettle', 'Could not pay this out.'));
@@ -1738,7 +1845,7 @@ export const ManageEventContent = ({
 
                           {issuing === row.id ? <div className={styles.editRow}>
                               <textarea className={styles.input} rows={3} value={issueNames}
-                                        placeholder={tt('manage.holdNames', 'One name per line')}
+                                        placeholder={tt('manage.holdNames', 'One per line: a name, or a name and email address (they get the ticket by mail)')}
                                         onChange={e => setIssueNames(e.target.value)} />
                               <button type="button" className={styles.primaryBtn} disabled={busy}
                                       onClick={() => issueHold(row)}>
@@ -1798,12 +1905,37 @@ export const ManageEventContent = ({
                               {tt('manage.sessionCap', 'holds {n}').replace('{n}', row.capacity)}
                             </span>}
                           </div>
-                          <div className={styles.rowActions}>
+                          {editingSession === row.id ? <div className={styles.editRow}>
+                            <input className={styles.input} defaultValue={row.title}
+                                   placeholder={tt('manage.sessionTitle', 'What is happening')}
+                                   onChange={e => setSessionEdit(v => ({ ...v, title: e.target.value }))} />
+                            <DateField withTime className={styles.input}
+                                       value={isoToLocalInput(row.starts_at)}
+                                       onChange={e => setSessionEdit(v => ({ ...v, starts_at: e.target.value }))} />
+                            <input className={styles.input} defaultValue={row.stage || ''}
+                                   placeholder={tt('manage.sessionStage', 'Where, e.g. Main Hall')}
+                                   onChange={e => setSessionEdit(v => ({ ...v, stage: e.target.value }))} />
+                            <input className={styles.input} type="number" min="1" defaultValue={row.capacity || ''}
+                                   placeholder={tt('manage.sessionCapacity', 'Room capacity')}
+                                   onChange={e => setSessionEdit(v => ({ ...v, capacity: e.target.value }))} />
+                            <button type="button" className={styles.primaryBtn} disabled={busy}
+                                    onClick={() => saveSession(row)}>
+                              {tt('manage.save', 'Save')}
+                            </button>
+                            <button type="button" className={styles.ghostBtn}
+                                    onClick={() => { setEditingSession(null); setSessionEdit({}); }}>
+                              {tt('ui.cancel.77df', 'Cancel')}
+                            </button>
+                          </div> : <div className={styles.rowActions}>
+                            <button type="button" className={styles.ghostBtn} disabled={busy}
+                                    onClick={() => { setEditingSession(row.id); setSessionEdit({}); }}>
+                              {tt('manage.sessionEdit', 'Change')}
+                            </button>
                             <button type="button" className={styles.ghostBtn} disabled={busy}
                                     onClick={() => removeSession(row)}>
                               {tt('manage.sessionRemove', 'Remove')}
                             </button>
-                          </div>
+                          </div>}
                         </div>)}
                     </div>}
 
@@ -1834,7 +1966,7 @@ export const ManageEventContent = ({
                     {tt('manage.queueHint', 'Who is waiting for a ticket to come back. When one does, the first person in the queue is offered it at the price it was always sold at, and has half a day to take it before it passes on.')}
                   </p>
 
-                  {!queue ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
+                  {!queue ? <p className={styles.muted}>{panelRefused.queue || tt('ui.loading', 'Loading…')}</p>
                     : queue.waitlist.length === 0 ? <p className={styles.muted}>
                         {tt('manage.noQueue', 'Nobody is waiting.')}
                       </p> : <div className={styles.rows}>
@@ -1856,7 +1988,7 @@ export const ManageEventContent = ({
                     {tt('manage.numbersHint', 'What sold, who turned up, and what is left. Refunded tickets are counted on their own, because a refund is not a sale that happened.')}
                   </p>
 
-                  {!metrics ? <p className={styles.muted}>{tt('ui.loading', 'Loading...')}</p>
+                  {!metrics ? <p className={styles.muted}>{panelRefused.metrics || tt('ui.loading', 'Loading...')}</p>
                     : <>
                       <div className={styles.figureGrid}>
                         <div className={styles.figure}>
@@ -2052,7 +2184,7 @@ export const ManageEventContent = ({
                       {metrics.referrals && <>
                         <h3 className={styles.subTitle}>{tt('manage.whoBroughtThem', 'Who brought them')}</h3>
                         {metrics.referrals.links.length === 0
-                          ? <p className={styles.muted}>{tt('manage.noLinksYet', 'No influencer links on this event yet. Add one on the Money tab and the visits and sales it brings will show here.')}</p>
+                          ? <p className={styles.muted}>{tt('manage.noLinksYet', 'No influencer links on this event yet. Add one on the Influencers tab and the visits and sales it brings will show here.')}</p>
                           : <>
                             <div className={styles.figureGrid}>
                               <div className={styles.figure}>
@@ -2142,9 +2274,15 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ---------------------------------------------------- messages */}
-              {tab === 'messages' && event && (
+              {/* `eventRef` is the slug in the address. This read `event`,
+                  which nothing in this component declares, so it resolved
+                  to window.event and posted to /webhooks/event/undefined/:
+                  every Connect on the events console was a 404 (walk,
+                  18 September 2026). The tournament console passes its
+                  own record; this one has the reference already. */}
+              {tab === 'messages' && eventRef && (
                 <DiscordChannels kind="event"
-                                 reference={event.slug || event.event_id}
+                                 reference={eventRef}
                                  token={token} showToast={setNotice} />
               )}
               {tab === 'messages' && <section className={styles.card}>
@@ -2336,6 +2474,20 @@ export const ManageEventContent = ({
                       {polls.map(poll => <div key={poll.id} className={styles.row}>
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{poll.question}</strong>
+                            {/* Kind, scale and branching, so a list of six
+                                questions does not read as six of the same.
+                                A poll shown only after another one used to
+                                look exactly like one shown to everybody. */}
+                            <span className={styles.muted}>
+                              {(POLL_KINDS.find(k => k.id === poll.kind) || {}).label || poll.kind}
+                              {poll.kind === 'scale' && poll.scale_min != null
+                                ? ` ${poll.scale_min}${poll.scale_min_label ? ` (${poll.scale_min_label})` : ''} to ${poll.scale_max}${poll.scale_max_label ? ` (${poll.scale_max_label})` : ''}`
+                                : ''}
+                            </span>
+                            {poll.depends_on && <span className={styles.muted}>
+                              {tt('manage.pollOnlyAfter', 'Only after: {question}')
+                                .replace('{question}', (polls.find(q => q.id === poll.depends_on) || {}).question || '')}
+                            </span>}
                             {!poll.is_open && <span className={styles.offBadge}>{tt('manage.pollClosed', 'Closed')}</span>}
                             <span className={styles.code}>
                               {tt('manage.pollAnswers', '{n} answers').replace('{n}', poll.total_votes ?? 0)}
@@ -2542,6 +2694,10 @@ export const ManageEventContent = ({
                   door into the same room. */}
               {tab === 'vendors' && <section className={styles.card}>
                   <h3>{tt('console.tabVendors', 'Vendor pitches')}</h3>
+                  {/* The stalls first: who is trading and who is waiting for
+                      a yes. "Approve each stall before it opens" had no
+                      screen until 18 September 2026. */}
+                  <StallsReviewPanel eventRef={eventRef} token={token} onNotice={setNotice} />
                   <VendorSlotsPanel eventRef={eventRef} token={token} onNotice={setNotice} />
                 </section>}
 
@@ -2597,8 +2753,13 @@ export const ManageEventContent = ({
                 </section>}
 
               {tab === 'team' && <section className={styles.card}>
+                  {/* Only the organiser adds people; a manager sees the list.
+                      CEO, 7 September 2026: people are added to an event
+                      without an organisation; an organisation is for the
+                      people who should see EVERY event without being added
+                      to each. */}
                   {!canAddManagers ? <p className={styles.muted}>
-                      {tt('manage.notAnOrgEvent', 'This event belongs to you rather than to an organisation, so it cannot be shared with one person at a time. Move it to an organisation above, then everybody there who runs events can help.')}
+                      {tt('manage.onlyOrganiserAdds', 'Only the organiser adds people to this event.')}
                     </p> : <p className={styles.cardHint}>
                       {tt('manage.teamHint', 'A manager can do everything here except delete the event or add more managers. Door staff can only check tickets in.')}
                     </p>}

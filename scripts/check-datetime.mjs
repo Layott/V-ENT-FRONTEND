@@ -250,6 +250,26 @@ function selfTest() {
 
 // -------------------------------------------------------------------- main
 
+// The way IN, for every screen at once. A timed DateField hands back a
+// naive local string; the browser names its zone on every API request
+// (components/timing/ClientTimezone.js in the root layout) and the API
+// activates it (vent_auth.middleware_timezone, allowed through CORS).
+// Nine screens sent a naive time with no conversion on 18 September 2026
+// and the rule above cannot see that shape, so this holds the two halves
+// that make the shape safe instead.
+function zoneHeaderWired() {
+  const problems = [];
+  const layout = fs.readFileSync(path.join(SRC, 'app', 'layout.js'), 'utf8');
+  if (!/<ClientTimezone\s*\/>/.test(layout)) problems.push('src/app/layout.js does not mount <ClientTimezone />, so naive times arrive with no zone');
+  const settingsPath = path.join(ROOT, '..', 'V-ENT-BACKEND', 'vent', 'settings.py');
+  if (fs.existsSync(settingsPath)) {
+    const settings = fs.readFileSync(settingsPath, 'utf8');
+    if (!/ClientTimezoneMiddleware/.test(settings)) problems.push('vent/settings.py does not list ClientTimezoneMiddleware, so the zone header is ignored');
+    if (!/x-client-timezone/.test(settings)) problems.push('vent/settings.py does not allow x-client-timezone through CORS, so the browser cannot send it');
+  }
+  return problems;
+}
+
 const RUN_DIRECTLY = process.argv[1] && process.argv[1].endsWith('check-datetime.mjs');
 
 if (RUN_DIRECTLY) {
@@ -283,6 +303,12 @@ function main() {
   try { known = new Set(JSON.parse(fs.readFileSync(BASELINE, 'utf8'))); } catch { /* none yet */ }
 
   const fresh = severe.filter((f) => !known.has(key(f)));
+  const wiring = zoneHeaderWired();
+  if (wiring.length) {
+    console.error(`${wiring.length} timing WIRING breach(es):`);
+    for (const w of wiring) console.error(`  ${w}`);
+    process.exit(1);
+  }
 
   if (fresh.length) {
     console.error(`${fresh.length} NEW timing breach(es):\n`);

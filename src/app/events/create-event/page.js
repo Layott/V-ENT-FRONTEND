@@ -4,6 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { withLocalDatesAsISO } from '@/lib/datetime';
 import { useCurrency } from '@/lib/money';
 import { apiMessage } from '@/lib/apiMessage';
+import { NGN_PER_COIN } from '@/lib/currency';
 import InfoTip from '@/components/info-tip/InfoTip';
 import OrganizationPicker from '@/components/organization-picker/OrganizationPicker';
 import ImageUpload from '@/components/image-upload/ImageUpload';
@@ -61,11 +62,15 @@ const emptyForm = {
   capacity_mode: 'per_day',
   // Whose name it runs in. Empty means the organiser's own.
   organization: '',
+  organization_name: '',
   // Step 3 - Tickets
   ticket_types: [{
     id: 'ga',
     name: 'General Admission',
-    price: 2500,
+    // A whole number of VENT COINS. It was 2,500 naira, which every price
+    // door refuses since 12 September, so the wizard's own default was a
+    // refusal waiting at Publish, two steps away from the field.
+    price: 2 * NGN_PER_COIN,
     quantity: 200,
     perks: 'All-day entry • Standing area'
   }],
@@ -131,6 +136,14 @@ const CreateEventPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [autosaved, setAutosaved] = useState(false);
+  // A draft lives in localStorage, which cannot hold a File. Coming back to
+  // a draft that had a banner or a logo used to show the empty upload box
+  // and nothing else, and an organiser who did not notice published
+  // without the art. The draft remembers THAT it had pictures, and says so.
+  const [picturesLost, setPicturesLost] = useState(false);
+  // Today, as the picker's `min`, so past days are greyed out where the
+  // person is choosing rather than refused at Publish.
+  const todayInput = formatDateInput(new Date());
 
   // Hydrate draft on mount
   useEffect(() => {
@@ -148,6 +161,7 @@ const CreateEventPage = () => {
           ...(parsed.formData || {})
         });
         setStep(parsed.step || 1);
+        if (parsed.hadPictures) setPicturesLost(true);
       }
     } catch (err) {
       console.error('Draft hydrate error:', err);
@@ -162,7 +176,8 @@ const CreateEventPage = () => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
           formData,
-          step
+          step,
+          hadPictures: Boolean(bannerFile) || Object.values(supporterLogos).some(Boolean)
         }));
         setAutosaved(true);
         setTimeout(() => setAutosaved(false), 1500);
@@ -171,7 +186,7 @@ const CreateEventPage = () => {
       }
     }, 600);
     return () => clearTimeout(id);
-  }, [formData, step, submitted]);
+  }, [formData, step, submitted, bannerFile, supporterLogos]);
   const update = (key, value) => {
     setFormData(p => ({
       ...p,
@@ -308,6 +323,10 @@ const CreateEventPage = () => {
     }
     if (s === 2) {
       if (!formData.start_date) e.start_date = 'Start date is required.';
+      // The server refuses a start in the past; said here, beside the field.
+      if (formData.start_date && new Date(formData.start_date) < new Date(Date.now() - 5 * 60 * 1000)) {
+        e.start_date = tt('createEvent.startInPast', 'The start has to be in the future.');
+      }
       if (!formData.end_date) e.end_date = 'End date is required.';
       if (formData.start_date && formData.end_date && new Date(formData.end_date) < new Date(formData.start_date)) {
         e.end_date = 'End date must be after start date.';
@@ -328,6 +347,17 @@ const CreateEventPage = () => {
       } else {
         const bad = formData.ticket_types.find(t => !t.name || t.price < 0 || t.quantity < 1);
         if (bad) e.ticket_types = tt('createEvent.tierIncomplete', 'Every tier needs a name, a price of zero or more, and at least one place.');
+        // The same rule every price door applies (PRICE_NOT_WHOLE_COINS),
+        // asked here so the answer lands beside the field rather than at
+        // Publish, two steps later.
+        const notWhole = !bad && formData.ticket_types.find(t => Number(t.price) % NGN_PER_COIN !== 0);
+        if (notWhole) {
+          const lower = Math.floor(Number(notWhole.price) / NGN_PER_COIN) * NGN_PER_COIN;
+          e.ticket_types = tt('createEvent.tierNotWholeCoins', '{name}: a price has to be a whole number of VENT COINS. The nearest are {lower} and {upper} naira.')
+            .replace('{name}', notWhole.name)
+            .replace('{lower}', String(lower))
+            .replace('{upper}', String(lower + NGN_PER_COIN));
+        }
       }
     }
     setErrors(e);
@@ -349,13 +379,27 @@ const CreateEventPage = () => {
       console.error('Save draft error:', err);
     }
   };
+  // Discard is one press from losing an hour of typing, so it asks once,
+  // inline (no native dialog on this platform). And it used to reset the
+  // form and leave the banner, the logos and the free-entry switch in
+  // place, so the next event started with the last one's pictures.
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const discardDraft = () => {
+    if (!confirmDiscard) {
+      setConfirmDiscard(true);
+      return;
+    }
     if (typeof window !== 'undefined') {
       localStorage.removeItem(DRAFT_KEY);
     }
     setFormData(emptyForm);
+    setBannerFile(null);
+    setSupporterLogos({});
+    setFreeEntry(false);
+    setPicturesLost(false);
     setStep(1);
     setErrors({});
+    setConfirmDiscard(false);
   };
   const submit = async () => {
     // Validate all steps before submit
@@ -415,13 +459,18 @@ const CreateEventPage = () => {
         setSubmitted(true);
         setTimeout(() => router.push('/events'), 2000);
       } else {
-        setErrors({
-          submit: apiMessage(tt, data, "api.failedToPublishEvent", "Failed to publish event.")
-        });
+        const message = apiMessage(tt, data, "api.failedToPublishEvent", "Failed to publish event.");
+        // A refusal about a tier belongs on the tiers step, beside the field.
+        if (data.code === 'PRICE_NOT_WHOLE_COINS' || /^tiers\b|ticket_types/.test(String(data.field || ''))) {
+          setStep(3);
+          setErrors({ ticket_types: message, submit: message });
+        } else {
+          setErrors({ submit: message });
+        }
       }
     } catch (err) {
       setErrors({
-        submit: 'Network error. Please try again.'
+        submit: tt('msg.networkError', 'Network error')
       });
     } finally {
       setSubmitting(false);
@@ -473,8 +522,13 @@ const CreateEventPage = () => {
               <button className={styles.draftBtn} onClick={saveDraft} type="button">
                 {tt("ui.save.draft.4f25", "Save draft")}
               </button>
+              {confirmDiscard && <button className={styles.draftBtn} onClick={() => setConfirmDiscard(false)} type="button">
+                {tt('createEvent.keepDraft', 'Keep it')}
+              </button>}
               <button className={styles.discardBtn} onClick={discardDraft} type="button">
-                {tt("ui.discard.36ff", "Discard")}
+                {confirmDiscard
+                  ? tt('createEvent.discardConfirm', 'Discard everything typed?')
+                  : tt("ui.discard.36ff", "Discard")}
               </button>
             </div>
           </div>
@@ -540,6 +594,9 @@ const CreateEventPage = () => {
                   <div className={styles.label}>
                     <span className="fieldLabelRow">{tt("createEvent.bannerLabel", "Event banner")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
                     <ImageUpload kind="banner" value={bannerFile} onChange={setBannerFile} />
+                    {picturesLost && !bannerFile && <span className={styles.errorMsg}>
+                      <FaExclamationCircle /> {tt('createEvent.picturesNotKept', 'A draft does not keep pictures. Choose the banner and any logos again before publishing.')}
+                    </span>}
                   </div>
 
                   <label className={styles.label}>
@@ -558,7 +615,10 @@ const CreateEventPage = () => {
               <OrganizationPicker
                 kind="event"
                 value={formData.organization}
-                onChange={(next) => update('organization', next)}
+                onChange={(next, name) => {
+                  update('organization', next);
+                  update('organization_name', name || '');
+                }}
               />
 
               </div>}
@@ -595,7 +655,7 @@ const CreateEventPage = () => {
                 <div className={styles.formRow}>
                   <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.start.date.time.8f8b", "Start date & time")} <InfoTip id="eventStart" /></span>
-                    <DateField value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} className={styles.input} withTime />
+                    <DateField value={formatDateInput(formData.start_date)} onChange={e => update('start_date', e.target.value)} className={styles.input} withTime min={todayInput} />
                     <span className={styles.tzNote}>{tt("createEvent.timesInYourZone", "Enter times in your own timezone. Everybody else sees the same moment in theirs.")}</span>
                     {errors.start_date && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.start_date}</span>}
                   </label>
@@ -681,7 +741,10 @@ const CreateEventPage = () => {
                         </label>
                         <label className={styles.label}>
                           <span className="fieldLabelRow">{tt("createEvent.priceIn", "Price ({code})").replace('{code}', formData.currency || 'NGN')} <InfoTip id="tierPrice" /></span>
-                          <input type="number" className={styles.input} value={t.price} onChange={e => updateTicket(i, 'price', Number(e.target.value))} min={0} />
+                          <input type="number" className={styles.input} value={t.price} onChange={e => updateTicket(i, 'price', Number(e.target.value))} min={0} step={NGN_PER_COIN} />
+                          <span className={styles.freeEntryHint}>
+                            {tt('createEvent.priceWholeCoins', 'Whole thousands: 1,000 naira is one VENT COIN, and a wallet pays in whole coins.')}
+                          </span>
                         </label>
                         <label className={styles.label}>
                           <span className="fieldLabelRow">{tt("ui.quantity.44f6", "Quantity")} <InfoTip id="tierQuantity" /></span>
@@ -818,6 +881,14 @@ const CreateEventPage = () => {
                     <p className={styles.reviewValue}>{formData.name || '-'}</p>
                     <p className={styles.reviewSub}>{tx(formData.description)}</p>
                     <p className={styles.reviewSub}>{tt("ui.game.b008", "Game:")} {formData.game_title || '-'}</p>
+                    {/* Whose name it runs in: the one field the review used
+                        to leave out (walk, 18 September). */}
+                    <p className={styles.reviewSub}>
+                      {tt('org.runningAs', 'Running this as')}{': '}
+                      {formData.organization
+                        ? (formData.organization_name || formData.organization)
+                        : tt('org.justMe', 'Just me')}
+                    </p>
                   </div>
 
                   <div className={styles.reviewCard}>

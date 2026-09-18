@@ -55,6 +55,7 @@ import { useViewer } from '@/lib/gating';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import Link from 'next/link';
 import { LuCheck, LuTriangleAlert, LuWifi, LuWifiOff } from 'react-icons/lu';
+import jsQR from 'jsqr';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
@@ -102,7 +103,7 @@ function ScanContent() {
   // whichever answer arrives first is used. One extra request, once, on the
   // screen where being unable to start is the most expensive failure there is.
   const viewer = useViewer();
-  const [fallback, setFallback] = useState({ asked: false, token: null });
+  const [fallback, setFallback] = useState({ asked: false, token: null, unreachable: false });
 
   useEffect(() => {
     let cancelled = false;
@@ -111,16 +112,42 @@ function ScanContent() {
         const res = await fetch('/api/auth/session', { cache: 'no-store' });
         const body = await res.json().catch(() => ({}));
         if (!cancelled) {
-          setFallback({ asked: true, token: body?.user?.sessionToken || null });
+          setFallback({ asked: true, token: body?.user?.sessionToken || null, unreachable: false });
         }
       } catch {
-        if (!cancelled) setFallback({ asked: true, token: null });
+        // No answer is not "signed out". Offline, nothing can answer.
+        if (!cancelled) setFallback({ asked: true, token: null, unreachable: true });
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const token = viewer.token || fallback.token;
+  // The door remembers who it is. With no signal nothing can answer
+  // /api/auth/session, and a door that forgets its steward the moment the
+  // network goes is a door that reads "Sign in" to somebody holding a
+  // phone at a gate with 900 people behind it. The token this page last
+  // worked with is kept on the device and used only when the session
+  // cannot be asked at all. A real sign-out (the server answered, no user)
+  // forgets it.
+  const [kept, setKept] = useState(null);
+  useEffect(() => {
+    try { setKept(window.localStorage.getItem(local('door-token')) || null); } catch { /* none */ }
+  }, []);
+  const live = viewer.token || fallback.token;
+  useEffect(() => {
+    if (!live) return;
+    try { window.localStorage.setItem(local('door-token'), live); } catch { /* full or blocked */ }
+    setKept(live);
+  }, [live]);
+  const signedOutForReal = fallback.asked && !fallback.unreachable && !fallback.token
+    && !viewer.loading && !viewer.token;
+  useEffect(() => {
+    if (!signedOutForReal) return;
+    try { window.localStorage.removeItem(local('door-token')); } catch { /* none */ }
+    setKept(null);
+  }, [signedOutForReal]);
+
+  const token = live || (fallback.unreachable ? kept : null);
   const stillAsking = viewer.loading && !fallback.asked;
   const signedIn = Boolean(token);
   const eventRef = params.get('event') || '';
@@ -132,6 +159,12 @@ function ScanContent() {
   // a URL. Now it is a field, and the field writes the address.
   const [gateDraft, setGateDraft] = useState(gate);
   useEffect(() => { setGateDraft(gate); }, [gate]);
+  const pickDay = (value) => {
+    const q = new URLSearchParams(params.toString());
+    if (value && value !== todayISO()) q.set('day', value); else q.delete('day');
+    const qs = q.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  };
   const commitGate = () => {
     const next = gateDraft.trim().slice(0, 40);
     if (next === gate) return;
@@ -156,6 +189,15 @@ function ScanContent() {
   const [tickets, setTickets] = useState(null);   // code -> ticket
   const [scanned, setScanned] = useState({});     // code -> {at, gate}
   const [pending, setPending] = useState([]);     // not yet sent up
+  // The event's days, from the door list, so the day this door admits for
+  // is a choice on screen and not `?day=` in the address.
+  const [eventDays, setEventDays] = useState([]);
+  // When the list on this phone was downloaded, so a steward can see how
+  // old it is; and whether the server answered last time we asked, which is
+  // not the same as the phone having a network (a saturated cell tower has
+  // signal and no answers). Offline, the phone decides from its own list.
+  const [listedAt, setListedAt] = useState(null);
+  const [serverDown, setServerDown] = useState(false);
   const [refused, setRefused] = useState([]);     // the server will never take
   const [online, setOnline] = useState(true);
 
@@ -190,20 +232,27 @@ function ScanContent() {
         return;
       }
       const rows = body.data?.attendees || body.data?.results || [];
+      if (Array.isArray(body.data?.event?.days)) setEventDays(body.data.event.days);
       const byCode = {};
       rows.forEach(row => {
         if (row.code) byCode[String(row.code).toUpperCase()] = row;
       });
       setTickets(byCode);
       ticketsRef.current = byCode;
+      setServerDown(false);
+      const stamp = new Date().toISOString();
+      setListedAt(stamp);
       try {
         window.localStorage.setItem(local(eventRef), JSON.stringify(byCode));
+        window.localStorage.setItem(local(`${eventRef}-listed-at`), stamp);
       } catch { /* a full or blocked store is not a reason to stop */ }
     } catch {
       // Fall back to whatever this device already downloaded. A blip must not
       // empty the door list.
+      setServerDown(true);
       try {
         const cached = window.localStorage.getItem(local(eventRef));
+        setListedAt(window.localStorage.getItem(local(`${eventRef}-listed-at`)) || null);
         if (cached) {
           const parsed = JSON.parse(cached);
           setTickets(parsed);
@@ -232,10 +281,19 @@ function ScanContent() {
   useAutoRefresh(() => download({ quiet: true }), [], { interval: 20000 });
 
   // Restore this device's own scan record, which is the thing a reload would
-  // destroy.
+  // destroy. And the list itself: it used to be read from the device only
+  // when a download FAILED, and a download needs a token, so with no signal
+  // and no session the list on the phone was never opened at all.
   useEffect(() => {
     if (!eventRef) return;
     try {
+      const held = window.localStorage.getItem(local(eventRef));
+      if (held && !ticketsRef.current) {
+        const parsed = JSON.parse(held);
+        setTickets(parsed);
+        ticketsRef.current = parsed;
+        setListedAt(window.localStorage.getItem(local(`${eventRef}-listed-at`)) || null);
+      }
       const saved = window.localStorage.getItem(local(`${eventRef}-scanned`));
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -308,8 +366,10 @@ function ScanContent() {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ gate: item.gate, day: item.day }),
+            // WHEN they walked in, not when signal came back.
+            body: JSON.stringify({ gate: item.gate, day: item.day, at: item.at }),
           });
+          setServerDown(false);
           if (res.ok) continue;
           if (SETTLED.has(res.status)) {
             // 409 is the server saying it already had this one, which is the
@@ -322,6 +382,7 @@ function ScanContent() {
           left.push(item);
           failed = true;
         } catch {
+          setServerDown(true);
           left.push(item);
           failed = true;
         }
@@ -458,9 +519,21 @@ function ScanContent() {
     } catch {
       // The network went while we were asking. The device's own copy is the
       // only answer left, and it does not have this one.
+      setServerDown(true);
       setLast({ kind: 'unknown', code: key });
     }
   }, [token, gate, day, remember]);
+
+  // The page itself opens with no signal. The list, the record and the
+  // queue already lived in localStorage; a reload without a network lost
+  // the PAGE. public/door-sw.js keeps the shell and its chunks.
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/door-sw.js').catch(() => {
+      // No worker (an old browser, a private window): the door still works
+      // while the tab is open, exactly as before.
+    });
+  }, []);
 
   /**
    * One scan.
@@ -487,7 +560,7 @@ function ScanContent() {
     setLast({ kind: 'checking', code: key });
     try {
       const res = await fetch(
-        `${API}/event/ticket/${encodeURIComponent(key)}/lookup/?gate=${encodeURIComponent(gate)}`,
+        `${API}/event/ticket/${encodeURIComponent(key)}/lookup/?gate=${encodeURIComponent(gate)}&day=${encodeURIComponent(day || '')}`,
         { headers: { Authorization: `Bearer ${token}` } });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
@@ -502,7 +575,7 @@ function ScanContent() {
     } catch {
       setLast({ kind: 'unknown', code: key });
     }
-  }, [gate, token]);
+  }, [gate, token, day]);
 
   const decide = useCallback((code, { fromCamera = false } = {}) => {
     const key = String(code || '').trim().toUpperCase();
@@ -568,10 +641,11 @@ function ScanContent() {
   }, [gate, day, remember, token, askServer]);
 
   const startCamera = useCallback(async () => {
-    if (typeof window === 'undefined' || !('BarcodeDetector' in window)) {
-      setError(tt('scan.noCamera', 'This browser cannot read QR codes. Type the code instead.'));
-      return;
-    }
+    if (typeof window === 'undefined') return;
+    // BarcodeDetector where the browser has it (Chrome on Android); jsQR on
+    // a canvas everywhere else, which is every iPhone. Before this a phone
+    // without the API could only type codes: not a door.
+    const native = 'BarcodeDetector' in window;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
@@ -585,12 +659,28 @@ function ScanContent() {
       scanningRef.current = true;
 
       // eslint-disable-next-line no-undef
-      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      const detector = native ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+      const canvas = native ? null : document.createElement('canvas');
       const tick = async () => {
         if (!scanningRef.current || !videoRef.current) return;
         try {
-          const found = await detector.detect(videoRef.current);
-          if (found.length) decide(found[0].rawValue, { fromCamera: true });
+          if (detector) {
+            const found = await detector.detect(videoRef.current);
+            if (found.length) decide(found[0].rawValue, { fromCamera: true });
+          } else {
+            const video = videoRef.current;
+            const w = video.videoWidth;
+            const h = video.videoHeight;
+            if (w && h) {
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d', { willReadFrequently: true });
+              ctx.drawImage(video, 0, 0, w, h);
+              const pixels = ctx.getImageData(0, 0, w, h);
+              const found = jsQR(pixels.data, w, h, { inversionAttempts: 'dontInvert' });
+              if (found && found.data) decide(found.data, { fromCamera: true });
+            }
+          }
         } catch { /* a frame that will not decode is not an error */ }
         // Slow enough that one code is not read six times while somebody holds
         // their phone up.
@@ -638,12 +728,33 @@ function ScanContent() {
           <p className={styles.sub}>
             {tt('scan.forDay', 'Admitting for {day}').replace('{day}', dayName(day))}
           </p>
+          {/* The event's days as chips, when it has more than one or today is
+              not one of them. Filled chips with aria-pressed, like every tab
+              strip here; never a ring. */}
+          {eventDays.length > 0 && (eventDays.length > 1 || !eventDays.includes(day)) && (
+            <div className={styles.dayRow} role="group" aria-label={tt('scan.dayGroup', 'Which day this door admits for')}>
+              {[...new Set([...eventDays, ...(eventDays.includes(day) ? [] : [day])])].map(value => (
+                <button key={value} type="button"
+                        className={value === day ? styles.dayOn : styles.dayOff}
+                        aria-pressed={value === day}
+                        onClick={() => pickDay(value)}>
+                  {dayName(value)}{value === todayISO() ? ` · ${tt('scan.today', 'today')}` : ''}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <span className={online ? styles.online : styles.offline}>
-          {online ? <LuWifi aria-hidden="true" /> : <LuWifiOff aria-hidden="true" />}
-          {online
-            ? tt('scan.online', 'Online')
-            : tt('scan.offline', 'Offline, still working')}
+        {/* Three states, not two. The phone can have signal while the server
+            is not answering (a saturated cell tower, a backend restart), and
+            "Online" then was a lie a steward acted on. Every state still
+            scans: the decision is local, the queue sends when it can. */}
+        <span className={online && !serverDown ? styles.online : styles.offline}>
+          {online && !serverDown ? <LuWifi aria-hidden="true" /> : <LuWifiOff aria-hidden="true" />}
+          {!online
+            ? tt('scan.offline', 'Offline, still working')
+            : serverDown
+              ? tt('scan.serverDown', 'Server not answering, still working')
+              : tt('scan.online', 'Online')}
         </span>
       </header>
 
@@ -661,6 +772,16 @@ function ScanContent() {
           {tt('scan.refused', '{n} the server would not take').replace('{n}', refused.length)}
         </span>}
       </div>
+
+      {/* How old the list on this phone is. A door working offline is
+          working from a download, and "Not on the list" means something
+          different at 09:00 than it does from a list pulled the night before. */}
+      {listedAt && total > 0 && <p className={styles.note}>
+        {tt('scan.listFrom', 'List downloaded {time}').replace('{time}', shortTime(listedAt))}
+        {!online || serverDown
+          ? ` · ${tt('scan.listStale', 'a ticket bought since then is not on it')}`
+          : ''}
+      </p>}
 
       {/* A door with nothing on it has three causes and they are not the same
           thing. Saying "0 on the list" to all three is how a steward stands at
@@ -832,6 +953,14 @@ function ScanContent() {
           the lock protected nothing and blocked the one case that actually
           happened: somebody who registered on the morning of the show was told
           "Not on the list" and the steward had no way to refresh. */}
+      {/* What to do BEFORE the doors, once, with signal: open this page, let
+          the list download, add it to the home screen. After that the page,
+          the list and the record all live on the phone (public/door-sw.js
+          and localStorage) and the door keeps working with no signal at all. */}
+      <p className={styles.note}>
+        {tt('scan.beforeDoors', 'Before the doors open: open this page with signal so the list downloads, then add it to your home screen (Share, or the browser menu, then Add to Home Screen). It keeps working with no signal, and sends the check-ins when signal returns.')}
+      </p>
+
       <div className={styles.footer}>
         <button type="button" className={styles.ghost} onClick={download}>
           {tt('scan.reload', 'Reload the list')}

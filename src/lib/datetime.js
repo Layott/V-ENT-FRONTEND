@@ -113,10 +113,21 @@ function asDate(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+// A calendar date with no time on it: a ticket's day, a tier's day, the
+// legacy event_date column. `new Date('2026-09-27')` is UTC midnight, and
+// rendered in a zone west of Greenwich that is 26 September: a Day 2 pass
+// read the day before to anybody in the Americas (18 September 2026). A
+// date with no instant is the same day everywhere, so it is drawn in UTC.
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+export function isDateOnly(value) {
+  return typeof value === 'string' && DATE_ONLY.test(value.trim());
+}
+
 /** Every formatter here goes through this, so there is one set of decisions. */
 function render(value, options, { zone, fallback = '-' } = {}) {
   const parsed = asDate(value);
   if (parsed === null) return fallback;
+  if (isDateOnly(value)) zone = 'UTC';
   try {
     return parsed.toLocaleString(appLocale(), {
       ...options,
@@ -184,7 +195,7 @@ export function formatDate(value, opts) {
   try {
     return parsed.toLocaleDateString(chosen.locale, {
       day: '2-digit', month: '2-digit', year: 'numeric',
-      timeZone: (opts && opts.zone) || viewerZone(),
+      timeZone: isDateOnly(value) ? 'UTC' : ((opts && opts.zone) || viewerZone()),
     });
   } catch {
     return render(value, {

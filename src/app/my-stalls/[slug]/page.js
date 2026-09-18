@@ -17,7 +17,9 @@
 // control is one big button and a tracking box that can be left empty.
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { plural } from '@/lib/plural';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
@@ -37,6 +39,7 @@ const EMPTY_PRODUCT = {
 
 const StallPage = ({ params }) => {
   const tt = useT();
+  const router = useRouter();
   const slug = decodeURIComponent(params.slug);
   const { data: session, status } = useSession();
   const token = session?.user?.sessionToken;
@@ -168,8 +171,13 @@ const StallPage = ({ params }) => {
     loadStall();
   };
 
+  // Which product is one press from going, and which order is one press
+  // from a refund. Both were a single press (walk, 18 September 2026).
+  const [removing, setRemoving] = useState(null);
+  const [cancelling, setCancelling] = useState(null);
   const removeProduct = async (p) => {
     if (busy) return;
+    setRemoving(null);
     setBusy(true);
     const out = await api(`/products/${p.id}/`, { method: 'DELETE' });
     setBusy(false);
@@ -207,6 +215,44 @@ const StallPage = ({ params }) => {
     }
     say(tt('stall.feeBearerSaved', 'Saved. It applies to orders from now on.'));
     loadStall();
+  };
+
+  // About the stall: its name, what it is, the pictures. The endpoint took
+  // all of them from the day it was written and the page read "No
+  // description yet." with nowhere to write one (walk, 18 September 2026).
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [about, setAbout] = useState({ name: '', description: '', category: '' });
+  const [aboutLogo, setAboutLogo] = useState(null);
+  const [aboutBanner, setAboutBanner] = useState(null);
+  const openAbout = () => {
+    setAbout({ name: stall?.name || '', description: stall?.description || '',
+               category: stall?.category || '' });
+    setAboutLogo(null);
+    setAboutBanner(null);
+    setAboutOpen(true);
+  };
+  const saveAbout = async () => {
+    if (busy) return;
+    if (!about.name.trim()) return say(tt('stall.nameNeeded', 'The stall needs a name.'));
+    setBusy(true);
+    const form = new FormData();
+    form.append('name', about.name.trim());
+    form.append('description', about.description.trim());
+    form.append('category', about.category.trim());
+    if (aboutLogo) form.append('logo', aboutLogo);
+    if (aboutBanner) form.append('banner', aboutBanner);
+    const out = await api('/', { method: 'PATCH', body: form });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return say(apiMessage(tt, out, 'api.saveFailed', 'Could not change it'));
+    }
+    say(tt('stall.aboutSaved', 'Saved.'));
+    setAboutOpen(false);
+    // A rename moves the address. Follow it rather than reloading a slug
+    // that has just been retired.
+    const next = out.data?.stall?.slug;
+    if (next && next !== slug) router.replace(`/my-stalls/${next}`);
+    else loadStall();
   };
 
   const setOpen = async (next) => {
@@ -273,6 +319,9 @@ const StallPage = ({ params }) => {
                 <div className={styles.headText}>
                   <h1 className={styles.title}>{stall.name}</h1>
                   <p className={styles.muted}>{stall.description || tt('stall.noDescription', 'No description yet.')}</p>
+                  <button type="button" className={styles.ghost} onClick={aboutOpen ? () => setAboutOpen(false) : openAbout}>
+                    {aboutOpen ? tt('ui.cancel.77df', 'Cancel') : tt('stall.editAbout', 'Change the name, description or pictures')}
+                  </button>
                 </div>
                 {stall.status === 'pending'
                   ? <span className={styles.pillOff}>
@@ -285,6 +334,42 @@ const StallPage = ({ params }) => {
                         : tt('stall.close', 'Close the stall')}
                     </button>}
               </div>
+
+              {aboutOpen && (
+                <div className={styles.form}>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{tt('stall.aboutName', 'Stall name')}</span>
+                    <input className={styles.input} value={about.name}
+                           onChange={e => setAbout(a => ({ ...a, name: e.target.value }))} />
+                  </label>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{tt('stall.aboutCategory', 'What kind of stall')}</span>
+                    <input className={styles.input} value={about.category}
+                           placeholder={tt('stall.aboutCategoryPlaceholder', 'Food, merch, drinks')}
+                           onChange={e => setAbout(a => ({ ...a, category: e.target.value }))} />
+                  </label>
+                  <label className={styles.fieldWide}>
+                    <span className={styles.label}>{tt('stall.aboutDescription', 'What people find here')}</span>
+                    <textarea className={styles.textarea} rows={3} value={about.description}
+                              onChange={e => setAbout(a => ({ ...a, description: e.target.value }))} />
+                  </label>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{tt('stall.aboutLogo', 'Logo')}</span>
+                    <input className={styles.input} type="file" accept="image/*"
+                           onChange={e => setAboutLogo(e.target.files?.[0] || null)} />
+                  </label>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{tt('stall.aboutBanner', 'Banner')}</span>
+                    <input className={styles.input} type="file" accept="image/*"
+                           onChange={e => setAboutBanner(e.target.files?.[0] || null)} />
+                  </label>
+                  <div className={styles.fieldWide}>
+                    <button type="button" className={styles.primary} disabled={busy} onClick={saveAbout}>
+                      {busy ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {stall.status !== 'pending' && (
                 <div className={styles.feeBox}>
@@ -346,7 +431,7 @@ const StallPage = ({ params }) => {
                                 {p.stock > 0
                                   ? tt('stall.inStock', '{n} left').replace('{n}', formatNumber(p.stock))
                                   : tt('stall.outOfStock', 'Out of stock')}
-                                {p.sold > 0 && ` · ${tt('stall.sold', '{n} sold').replace('{n}', formatNumber(p.sold))}`}
+                                {p.sold > 0 && ` · ${plural(tt, p.sold, 'stall.soldOne', '{n} sold', 'stall.sold', '{n} sold', formatNumber(p.sold))}`}
                               </span>
                               {p.variants?.length > 0 && (
                                 <span className={styles.muted}>{p.variants.join(' · ')}</span>
@@ -357,10 +442,23 @@ const StallPage = ({ params }) => {
                                       onClick={() => beginEdit(p)}>
                                 {tt('ui.edit', 'Edit')}
                               </button>
-                              <button type="button" className={styles.danger} disabled={busy}
-                                      onClick={() => removeProduct(p)}>
-                                {p.sold > 0 ? tt('stall.hide', 'Hide') : tt('ui.remove', 'Remove')}
-                              </button>
+                              {removing === p.id
+                                ? <>
+                                    <button type="button" className={styles.danger} disabled={busy}
+                                            onClick={() => removeProduct(p)}>
+                                      {(p.sold > 0
+                                        ? tt('stall.hideConfirm', 'Hide {name}?')
+                                        : tt('stall.removeConfirm', 'Remove {name}?')).replace('{name}', p.name)}
+                                    </button>
+                                    <button type="button" className={styles.ghost}
+                                            onClick={() => setRemoving(null)}>
+                                      {tt('stall.keep', 'Keep it')}
+                                    </button>
+                                  </>
+                                : <button type="button" className={styles.danger} disabled={busy}
+                                          onClick={() => setRemoving(p.id)}>
+                                    {p.sold > 0 ? tt('stall.hide', 'Hide') : tt('ui.remove', 'Remove')}
+                                  </button>}
                             </div>
                           </li>
                         ))}
@@ -454,7 +552,7 @@ const StallPage = ({ params }) => {
                                 {o.code}
                                 <span className={o.status === 'collected' || o.status === 'delivered'
                                   ? styles.pillOff : styles.pillOn}>
-                                  {o.status}
+                                  {tt(`orders.${o.status}`, o.status)}
                                 </span>
                               </span>
                               <span className={styles.muted}>
@@ -530,11 +628,26 @@ const StallPage = ({ params }) => {
                                   {tt('stall.markDelivered', 'Arrived')}
                                 </button>
                               )}
-                              {['paid', 'ready'].includes(o.status) && (
+                              {['paid', 'ready'].includes(o.status) && cancelling !== o.id && (
                                 <button type="button" className={styles.ghost} disabled={busy}
-                                        onClick={() => moveOrder(o, 'cancelled')}>
+                                        onClick={() => setCancelling(o.id)}>
                                   {tt('stall.cancelOrder', 'Cancel and refund')}
                                 </button>
+                              )}
+                              {['paid', 'ready'].includes(o.status) && cancelling === o.id && (
+                                <>
+                                  <button type="button" className={styles.danger} disabled={busy}
+                                          onClick={() => { setCancelling(null); moveOrder(o, 'cancelled'); }}>
+                                    {tt('stall.cancelConfirm', 'Cancel {code} and refund {n} VC to {buyer}?')
+                                      .replace('{code}', o.code)
+                                      .replace('{n}', formatNumber(o.total_vc || 0))
+                                      .replace('{buyer}', o.buyer_name || o.buyer || '')}
+                                  </button>
+                                  <button type="button" className={styles.ghost}
+                                          onClick={() => setCancelling(null)}>
+                                    {tt('stall.keep', 'Keep it')}
+                                  </button>
+                                </>
                               )}
                             </div>
                           </li>

@@ -68,6 +68,29 @@
   outline-offset: 2px;
 }
 
+/* Which day this door admits for: filled chips, the pressed one stronger.
+   Big enough for a thumb at a gate. */
+.dayRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dayOn,
+.dayOff {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.dayOff { background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.75); }
+.dayOn { background-color: var(--v-ent-red); color: #fff; font-weight: var(--fw-semi-bold); }
+.dayOn:focus-visible, .dayOff:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
 .online,
 .offline {
   display: inline-flex;
@@ -194,7 +217,12 @@
 
 .typeRow {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.typeRow .ghost {
+  white-space: nowrap;
 }
 
 .input {
@@ -281,6 +309,17 @@
 @media (max-width: 560px) {
   .footer .ghost {
     flex: 1 1 100%;
+  }
+
+  /* The code field takes the row; the two buttons share the next one.
+     Beside the field they squeezed to a word a line. */
+  .typeRow .input {
+    flex: 1 1 100%;
+  }
+
+  .typeRow .ghost {
+    flex: 1 1 0;
+    min-height: 44px;
   }
 }
 

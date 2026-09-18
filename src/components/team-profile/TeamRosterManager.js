@@ -39,6 +39,8 @@ const TeamRosterManager = ({ team, onToast }) => {
   const [roles, setRoles] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  // The member whose Remove has been pressed once.
+  const [removing, setRemoving] = useState(null);
   const [copied, setCopied] = useState('');
   const [invitee, setInvitee] = useState('');
   // Handing the team over. Held here rather than in the row, because it is one
@@ -271,12 +273,23 @@ const TeamRosterManager = ({ team, onToast }) => {
                 ) : (
                   <span className={styles.roleTag}>{roleName(m.role)}</span>
                 )}
-                {!isOwner && can('remove_member') && (
+                {!isOwner && can('remove_member') && removing !== m.user.username && (
                   <button type="button" className={styles.danger} disabled={busy}
-                          onClick={() => send(`${ref}/remove/`, { username: m.user.username },
-                                              tt('team.removed', 'Removed from the team.'))}>
+                          onClick={() => setRemoving(m.user.username)}>
                     {tt('team.remove', 'Remove')}
                   </button>
+                )}
+                {!isOwner && can('remove_member') && removing === m.user.username && (
+                  <>
+                    <button type="button" className={styles.danger} disabled={busy}
+                            onClick={() => { setRemoving(null); send(`${ref}/remove/`, { username: m.user.username },
+                                                tt('team.removed', 'Removed from the team.')); }}>
+                      {tt('team.removeConfirm', 'Remove {name} from the team?').replace('{name}', m.user.username)}
+                    </button>
+                    <button type="button" className={styles.roleTag} onClick={() => setRemoving(null)}>
+                      {tt('team.keepMember', 'Keep them')}
+                    </button>
+                  </>
                 )}
               </div>
             );
