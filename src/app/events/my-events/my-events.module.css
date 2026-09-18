@@ -129,6 +129,9 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
+  /* A question opened in the row (Delete, Cancel) is tall; the links
+     beside it keep their own height rather than stretching to match. */
+  align-items: flex-start;
   gap: 0.5rem;
 }
 
