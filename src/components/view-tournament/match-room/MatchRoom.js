@@ -187,7 +187,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
     () => call(`/tournament/update-bracket/${tournamentRef}/`, {
       method: 'POST', token, body: { match_id: matchId, ...resultBody() },
     }),
-    tt('match.recorded', 'Result recorded. The bracket has moved on.'));
+    tt('match.recorded', 'Result recorded.'));
 
   const scoreReady = s1 !== '' && s2 !== '' && (!needsPens || (p1 !== '' && p2 !== '' && Number(p1) !== Number(p2)));
 
@@ -241,7 +241,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               {one}{slot === 1 && <span className={styles.you}>{tt('match.you', 'You')}</span>}
             </p>
             <p className={styles.nums}>
-              {['completed', 'pending_opponent_confirm'].includes(match.status)
+              {['completed', 'pending_opponent_confirm', 'disputed'].includes(match.status)
                 ? `${match.score_p1} - ${match.score_p2}` : tt('match.vs', 'v')}
               {match.penalties_p1 != null && match.penalties_p2 != null && (
                 <span className={styles.pens}>

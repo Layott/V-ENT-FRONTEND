@@ -85,6 +85,10 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   // The stage being closed: the server's list of who goes through, which the
   // organiser may reorder before committing.
   const [closing, setClosing] = useState(null);
+  // Whether entrants must have their in-game ID (FC Mobile user ID, eFootball
+  // owner ID) on their profile to enter. The requirement already existed
+  // (`game_details`); the football preset is where an organiser needs it.
+  const [idRequired, setIdRequired] = useState(null);
 
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -111,6 +115,51 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   }, [tournamentRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+
+  const loadIdRequirement = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/requirements/`);
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        const rows = body.data.requirements || [];
+        setIdRequired({ on: rows.some(r => r.kind === 'game_details'), rows });
+      }
+    } catch {
+      // Unknown is shown as nothing, never as "not required".
+    }
+  }, [tournamentRef]);
+
+  useEffect(() => { if (canManage && preset) loadIdRequirement(); }, [canManage, preset, loadIdRequirement]);
+
+  // Adds the requirement to whatever the organiser already asks for: the set
+  // endpoint replaces the list, so the list is read first and written whole.
+  const requireGameId = async () => {
+    if (!idRequired || idRequired.on) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const requirements = [
+        ...idRequired.rows.map(r => ({ kind: r.kind, config: r.config || {}, required: r.required !== false })),
+        { kind: 'game_details', config: {}, required: true },
+      ];
+      const res = await fetch(`${API}/tournament/${tournamentRef}/requirements/set/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify({ requirements }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setIdRequired({ on: true, rows: body.data.requirements || [] });
+        if (showToast) showToast(tt('stages.idRequiredDone', 'Entrants now need their in-game ID on their profile to enter.'));
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'api.requirementsSaveFailed', 'Could not save the entry requirements.'));
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
 
   // Who is entered, for "seed straight into this stage". Only fetched when
   // somebody is composing, because nobody else needs it.
@@ -397,6 +446,23 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       </div>
 
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
+
+      {/* The in-game ID, for a game with a preset. Two players on phones
+          find each other by it, and a result is checked against it. */}
+      {canManage && preset && idRequired && (
+        <div className={styles.idRow}>
+          <p className={styles.stageLine}>
+            {idRequired.on
+              ? tt('stages.idRequiredOn', 'Entrants must have their in-game ID on their profile to enter.')
+              : tt('stages.idRequiredOff', 'Entrants are not asked for their in-game ID yet.')}
+          </p>
+          {!idRequired.on && (
+            <button type="button" className={styles.ghost} disabled={busy} onClick={requireGameId}>
+              {tt('stages.idRequire', 'Ask every entrant for their in-game ID')}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* ------------------------------------------------------ the plan */}
       {!draft && rows.length === 0 && (

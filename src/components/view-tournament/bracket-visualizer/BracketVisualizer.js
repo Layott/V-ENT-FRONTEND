@@ -321,15 +321,12 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const canRecord = Boolean(data?.you?.can_record);
 
   const rounds = useMemo(() => data?.rounds || [], [data]);
+  // A result waiting to be confirmed comes first: it is the one thing a
+  // player has to act on now, and it sat behind an unplayed earlier match.
   const myNext = useMemo(() => {
-    for (const round of rounds) {
-      for (const m of round.matches || []) {
-        if (isMine(m) && OPEN.includes(m.status) && m.participant_1 && m.participant_2) {
-          return m;
-        }
-      }
-    }
-    return null;
+    const mine = rounds.flatMap(round => round.matches || [])
+      .filter(m => isMine(m) && OPEN.includes(m.status) && m.participant_1 && m.participant_2);
+    return mine.find(m => m.status === 'pending_opponent_confirm') || mine[0] || null;
   }, [rounds, isMine]);
 
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;

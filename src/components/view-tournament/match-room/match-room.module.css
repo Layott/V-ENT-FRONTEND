@@ -204,6 +204,11 @@
   flex: 1 1 9rem;
 }
 
+/* Inside a column block a field is as tall as its content: the 9rem basis
+   above is a WIDTH for rows, and in a column it became a 9rem height, which
+   left an empty band above the Send button on a phone (27 September 2026). */
+.block > .field { flex: 0 0 auto; }
+
 .label {
   color: rgba(255, 255, 255, 0.55);
   font-size: 0.76rem;

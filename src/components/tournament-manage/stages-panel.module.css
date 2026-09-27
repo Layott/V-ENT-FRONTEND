@@ -350,3 +350,15 @@
 }
 
 .row .ghost { margin-top: 0.5rem; }
+
+.idRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}

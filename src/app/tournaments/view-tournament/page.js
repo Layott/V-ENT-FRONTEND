@@ -504,7 +504,12 @@ export const ViewTournamentContent = ({
               <LuMapPin className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>{tt("ui.format.041a", "Format")}</p>
-                <p className={styles.metaValue}>{formatLabel(tt, tournament.format || tournament.bracket_type)}</p>
+                {/* A tournament in stages is its plan, not its bracket_type:
+                    this read "Round robin" for groups into a playoff. */}
+                <p className={styles.metaValue}>{tournament.stages?.length
+                  ? tournament.stages.map(st => formatLabel(tt, st.format, st.format_label))
+                    .join(tt('stages.thenSeparator', ', then '))
+                  : formatLabel(tt, tournament.format || tournament.bracket_type)}</p>
               </div>
             </div>
           </div>
