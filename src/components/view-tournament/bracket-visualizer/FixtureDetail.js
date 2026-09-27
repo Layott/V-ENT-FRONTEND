@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import { formatWithZone } from '@/lib/datetime';
 import styles from './fixture-detail.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -151,6 +152,14 @@ export default function FixtureDetail({ match, onClose }) {
             {done
               ? tt('fixture.single', 'One match, and that is the result.')
               : tt('fixture.notYet', 'Not played yet.')}
+          </p>
+        )}
+
+        {/* When it is on, for anybody watching: the same time the players
+            see, in the reader's own zone with the zone named. */}
+        {!done && match?.status === 'scheduled' && match?.scheduled_at && (
+          <p className={styles.state}>
+            {tt('fixture.startsAt', 'Starts {time}.').replace('{time}', formatWithZone(match.scheduled_at))}
           </p>
         )}
       </div>

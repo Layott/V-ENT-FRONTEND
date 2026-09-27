@@ -30,6 +30,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
+import { formatDayShort, formatTime } from '@/lib/datetime';
 import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -74,6 +75,12 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
       {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id, handleOf(match.participant_1))}
       <span className={styles.versus} aria-hidden="true">v</span>
       {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id, handleOf(match.participant_2))}
+      {match.status === 'scheduled' && match.scheduled_at && (
+        <span className={styles.fixtureNote}>
+          {tt('bracket.startsAt', 'Starts {time}').replace('{time}',
+            `${formatDayShort(match.scheduled_at)}, ${formatTime(match.scheduled_at)}`)}
+        </span>
+      )}
       {(match.status === 'bye' || match.forfeit_reason || (decided && !winner)
         || match.status === 'disputed' || match.status === 'pending_opponent_confirm') && (
         <span className={styles.fixtureNote}>

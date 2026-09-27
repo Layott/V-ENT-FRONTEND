@@ -24,7 +24,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatWithZone } from '@/lib/datetime';
+import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
+import DateField from '@/components/date-field/DateField';
 import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
 
@@ -63,6 +64,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [shot, setShot] = useState(null);
   const [roomCode, setRoomCode] = useState('');
   const [roomPassword, setRoomPassword] = useState('');
+  const [when, setWhen] = useState('');
   const [disputing, setDisputing] = useState(false);
   const [reason, setReason] = useState('');
 
@@ -74,6 +76,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         setMatch(got.body.data);
         setRoomCode(got.body.data.room_code || '');
         setRoomPassword(got.body.data.room_password || '');
+        setWhen(got.body.data.scheduled_at ? isoToLocalInput(got.body.data.scheduled_at) : '');
       } else {
         setProblem(apiMessage(tt, got.body, 'match.loadFailed', 'This match could not be opened.'));
       }
@@ -154,6 +157,15 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
       method: 'POST', token, body: { room_code: roomCode.trim(), room_password: roomPassword.trim() },
     }),
     tt('match.roomPosted', 'Room posted. Your opponent can see it now.'));
+
+  // Staff move one match. The time typed is the organiser's own clock, so it
+  // becomes an instant here, where the zone is known.
+  const moveMatch = () => run(
+    () => call(`/tournament/match/${matchId}/time/`, {
+      method: 'POST', token, body: { scheduled_at: localInputToISO(when) },
+    }),
+    tt('match.moved', 'Match moved. Both sides have been told.'));
+  const staff = Boolean(canRecord || match?.can_record);
 
   const report = () => {
     if (shot) {
@@ -265,6 +277,10 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
           <dl className={styles.facts}>
             <div><dt>{tt('match.statusLabel', 'Status')}</dt><dd>{statusText(match.status)}</dd></div>
             <div><dt>{tt('match.formatLabel', 'Played as')}</dt><dd>{bestOfText}</dd></div>
+            {open && match.scheduled_at && (
+              <div><dt>{tt('match.startsLabel', 'Starts')}</dt>
+                <dd>{formatWithZone(match.scheduled_at)}</dd></div>
+            )}
             {match.forfeit_reason === 'no_show' && (
               <div><dt>{tt('match.forfeit', 'Forfeit')}</dt>
                 <dd>{tt('match.noShow', 'The other side did not check in in time.')}</dd></div>
@@ -273,6 +289,13 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               <div><dt>{tt('match.resultLabel', 'Result')}</dt><dd>{tt('match.draw', 'A draw')}</dd></div>
             )}
           </dl>
+
+          {open && match.scheduled_at && match.break_minutes > 0 && (
+            <p className={styles.muted}>
+              {tt('match.breakNote', 'Every side gets a {n} minute break after its last match before the next one starts.')
+                .replace('{n}', match.break_minutes)}
+            </p>
+          )}
 
           {note && <p className={styles.ok} role="status">{note}</p>}
           {problem && <p className={styles.problem} role="alert">{problem}</p>}
@@ -341,6 +364,27 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
                   </button>
                 </div>
               )}
+            </section>
+          )}
+
+          {/* ---------------------------------------------------------- time */}
+          {open && staff && (
+            <section className={styles.block}>
+              <p className={styles.blockTitle}>{tt('match.timeTitle', 'Match time')}</p>
+              <p className={styles.muted}>
+                {tt('match.timeHelp', 'Set when this match starts. Its check-in moves with it, and both sides are told.')}
+              </p>
+              <div className={styles.row}>
+                <label className={styles.field}>
+                  <span className={styles.label}>{tt('match.startsLabel', 'Starts')}</span>
+                  <DateField value={when} onChange={e => setWhen(e.target.value)} withTime
+                             className={styles.input} ariaLabel={tt('match.startsLabel', 'Starts')} />
+                </label>
+                <button type="button" className={styles.quiet}
+                        disabled={busy || !when} onClick={moveMatch}>
+                  {tt('match.move', 'Move the match')}
+                </button>
+              </div>
             </section>
           )}
 
