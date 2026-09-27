@@ -23,6 +23,9 @@ import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import StagesPanel from '@/components/tournament-manage/StagesPanel';
+import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/BracketVisualizer';
+import MatchRoom from '@/components/view-tournament/match-room/MatchRoom';
+import { statusWord as matchStatusWord } from '@/components/view-tournament/match-room/matchWords';
 import LineupPicker from '@/components/cards/LineupPicker';
 import LineupRulesPanel from '@/components/cards/LineupRulesPanel';
 import DiscordChannels from '@/components/discord/DiscordChannels';
@@ -99,6 +102,10 @@ const flattenMatches = (rounds = []) => rounds.flatMap(r => (r.matches || []).ma
   id: m.match_id,
   round: r.round,
   round_label: `R${r.round}`,
+  group: r.group_number || m.group_number || null,
+  side: r.bracket_side || m.bracket_side || 'winners',
+  pens_p1: m.penalties_p1 ?? null,
+  pens_p2: m.penalties_p2 ?? null,
   match_number: m.match_number,
   status: m.status || 'scheduled',
   score_p1: m.score_p1 ?? 0,
@@ -333,7 +340,7 @@ const ManageContent = ({ slug }) => {
                   seat and is decided on total goals, so it gets its own
                   screen; a knockout match is one score. Both are here, and a
                   scorekeeper the organiser named sees this tab and no other. */}
-              <MatchControlPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague} />
+              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague} />
               {access?.can_manage && (
                 <ResultsDesk tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
               )}
@@ -390,8 +397,9 @@ const ManageContent = ({ slug }) => {
                   which format can feed which, and no screen ever read it. */}
               <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
                            token={token} canManage={Boolean(access?.can_manage)}
-                           showToast={showToast} />
-              <BracketsPanel rounds={rounds} />
+                           showToast={showToast} onChanged={load} />
+              <BracketVisualizer tournamentId={tournament.slug || tournament.tournament_id}
+                                 tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
             </>}
             {tab === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"
@@ -973,25 +981,26 @@ const RemindersPanel = ({ tournamentId, token, showToast }) => {
 };
 
 /* ──────────────── MATCH CONTROL ──────────────── */
+/*
+ * Every match of the stage being played, and the match room for the one
+ * picked. The scoreboard that used to sit here refused a level score ("a
+ * winner is required"), so a group-stage draw could not be entered from the
+ * console, and had nowhere for penalties. The match room decides by the same
+ * rule the server does (results.py): a draw where the match allows one, a
+ * shoot-out when a knockout is level.
+ */
 const MatchControlPanel = ({
-  tournamentId,
+  tournamentRef,
   matches,
   token,
   showToast,
   onSaved,
   isLeague = false
 }) => {
-  const tx = useTx();
   const tt = useT();
-  const [selected, setSelected] = useState(matches[0]?.id ?? null);
+  const [selected, setSelected] = useState(null);
+  const [openRoom, setOpenRoom] = useState(null);
   const live = matches.find(m => m.id === selected) || matches[0] || null;
-  const [scoreA, setScoreA] = useState(live?.score_p1 ?? 0);
-  const [scoreB, setScoreB] = useState(live?.score_p2 ?? 0);
-  const [saving, setSaving] = useState(false);
-  useEffect(() => {
-    setScoreA(live?.score_p1 ?? 0);
-    setScoreB(live?.score_p2 ?? 0);
-  }, [live?.id, live?.score_p1, live?.score_p2]);
   if (!matches.length) {
     return <div>
         <h2 className={styles.panelTitle}>{tt("ui.match.control.9540", "Match Control")}</h2>
@@ -1000,63 +1009,24 @@ const MatchControlPanel = ({
         </p>
       </div>;
   }
-  const selectMatch = m => setSelected(m.id);
-  const updateScore = (delta, side) => {
-    if (side === 'a') setScoreA(s => Math.max(0, s + delta));else setScoreB(s => Math.max(0, s + delta));
-  };
-
-  // Winner is implied by the score - the backend requires it explicitly.
-  const winnerRegId = () => {
-    if (scoreA === scoreB) return null;
-    return scoreA > scoreB ? regIdOf(live.p1) : regIdOf(live.p2);
-  };
-  const saveScore = async () => {
-    const winner = winnerRegId();
-    if (!winner) {
-      showToast(tt("msg.scoresAreLevelAWinner", "Scores are level - a winner is required"));
-      return;
-    }
-    setSaving(true);
-    try {
-      const res = await fetch(`${API}/tournament/update-bracket/${tournamentId}/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? {
-            Authorization: `Bearer ${token}`
-          } : {})
-        },
-        body: JSON.stringify({
-          match_id: live.id,
-          score_p1: scoreA,
-          score_p2: scoreB,
-          winner_registration_id: winner
-        })
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok || body?.status !== 'success') {
-        showToast(body?.message || `Could not save score (${res.status})`);
-      } else {
-        showToast(tt("msg.scoreSavedBracketAdvanced", "Score saved \u00b7 bracket advanced"));
-        onSaved?.();
-      }
-    } catch {
-      showToast(tt("msg.connectionErrorScoreNotSaved", "Connection error - score not saved"));
-    } finally {
-      setSaving(false);
-    }
-  };
   return <div className={styles.matchCtrlGrid}>
       <div className={styles.matchList}>
         <h2 className={styles.panelTitle}>{tt("ui.all.matches.dfb5", "All Matches")}</h2>
-        {matches.map(m => <button key={m.id} className={`${styles.matchListItem} ${selected === m.id ? styles.matchListActive : ''}`} onClick={() => selectMatch(m)}>
+        {matches.map(m => <button key={m.id} className={`${styles.matchListItem} ${live?.id === m.id ? styles.matchListActive : ''}`}
+                                  onClick={() => { setSelected(m.id); if (!isLeague && m.p1 && m.p2) setOpenRoom(m.id); }}>
             <div className={styles.matchListTop}>
-              <span className={styles.matchRound}>{m.round_label} · M{m.match_number}</span>
-              <span className={`${styles.matchStatusBadge} ${styles[`matchStatus_${m.status}`]}`}>{m.status}</span>
+              <span className={styles.matchRound}>
+                {m.group ? `${tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + m.group))} · ` : ''}
+                {m.side === 'losers' ? 'L' : m.side === 'grand_final' ? 'GF' : 'R'}{m.round} · M{m.match_number}
+              </span>
+              <span className={`${styles.matchStatusBadge} ${styles[`matchStatus_${m.status}`]}`}>{matchStatusWord(tt, m.status)}</span>
             </div>
-            <p className={styles.matchListLabel}>{nameOf(m.p1)} vs {nameOf(m.p2)}</p>
+            <p className={styles.matchListLabel}>{nameOf(m.p1)} {tt('match.vs', 'v')} {nameOf(m.p2)}</p>
             {m.scheduled_at && <p className={styles.matchListTime}>{formatDate(m.scheduled_at)} · {formatTime(m.scheduled_at)}</p>}
-            {m.status !== 'scheduled' && <p className={styles.matchListScore}>{m.score_p1} - {m.score_p2}</p>}
+            {m.status !== 'scheduled' && <p className={styles.matchListScore}>
+              {m.score_p1} - {m.score_p2}
+              {m.pens_p1 != null && m.pens_p2 != null ? ` (${m.pens_p1}-${m.pens_p2} p)` : ''}
+            </p>}
           </button>)}
       </div>
 
@@ -1065,53 +1035,21 @@ const MatchControlPanel = ({
           give the wrong winner, so it gets its own screen. */}
       {isLeague ? (
         <div>
-          <TieScoring tie={{ tie_id: live.id }} token={token}
-                      showToast={showToast} onRecorded={onSaved} />
+          {live && <TieScoring tie={{ tie_id: live.id }} token={token}
+                      showToast={showToast} onRecorded={onSaved} />}
         </div>
       ) : (
-      <div>
-        <h2 className={styles.panelTitle}>{tt("ui.live.scoring.e82b", "Live Scoring")}</h2>
-        <div className={styles.scoreboardCard}>
-          <div className={styles.sbHeader}>
-            <span className={styles.sbRound}>{live.round_label} {tt("ui.match.b4ba", "· Match")} {live.match_number}</span>
-            <span className={`${styles.sbStatusPill} ${styles[`matchStatus_${live.status}`]}`}>{live.status}</span>
-          </div>
-
-          <div className={styles.sbScoreRow}>
-            <div className={styles.sbTeam}>
-              <div className={styles.sbAvatar}>{nameOf(live.p1).charAt(0)}</div>
-              <p className={styles.sbTeamName}>{nameOf(live.p1)}</p>
-              <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'a')}>-</button>
-                <span className={styles.scoreValue}>{scoreA}</span>
-                <button className={styles.scoreBtn} onClick={() => updateScore(1, 'a')}>+</button>
-              </div>
-            </div>
-
-            <div className={styles.sbVS}>VS</div>
-
-            <div className={styles.sbTeam}>
-              <div className={styles.sbAvatar}>{nameOf(live.p2).charAt(0)}</div>
-              <p className={styles.sbTeamName}>{nameOf(live.p2)}</p>
-              <div className={styles.scoreCounter}>
-                <button className={styles.scoreBtn} onClick={() => updateScore(-1, 'b')}>-</button>
-                <span className={styles.scoreValue}>{scoreB}</span>
-                <button className={styles.scoreBtn} onClick={() => updateScore(1, 'b')}>+</button>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.sbControls}>
-            <button className={`${styles.btn} ${styles.outlineBtn}`} onClick={saveScore} disabled={saving || live.status === 'completed' || !live.p1 || !live.p2}>
-              <LuCheck /> {saving ? tx("Saving…") : tx("Save Score")}
-            </button>
-          </div>
-          {live.status === 'completed' && <p className={styles.previewHint}>
-              {tt("ui.this.match.complete.winner.dc54", "This match is complete. Winner:")} {nameOf(live.winner)}.
-            </p>}
+        <div>
+          <h2 className={styles.panelTitle}>{tt("ui.live.scoring.e82b", "Live Scoring")}</h2>
+          <p className={styles.panelSub}>
+            {tt('match.controlHint', 'Press a match to open it: record the result, post the room, see who has checked in. A level knockout asks for the penalties.')}
+          </p>
         </div>
-      </div>
       )}
+
+      {openRoom && <MatchRoom matchId={openRoom} tournamentRef={tournamentRef} token={token}
+                              canRecord onClose={() => setOpenRoom(null)}
+                              onChanged={() => { onSaved?.(); }} />}
     </div>;
 };
 
@@ -1152,54 +1090,6 @@ const ParticipantsPanel = ({
       </p>
     </div>;
 };
-
-/* ──────────────── BRACKETS ──────────────── */
-const BracketsPanel = ({
-  rounds
-}) => {
-  const tt = useT();
-  if (!rounds.length) {
-    return <div>
-        <h2 className={styles.panelTitle}>{tt("ui.bracket.e42a", "Bracket")}</h2>
-        <p className={styles.panelSub}>
-          {tt("ui.no.bracket.generated.yet.055e", "No bracket generated yet. Generate it from the tournament page once registration closes.")}
-        </p>
-      </div>;
-  }
-  return <div>
-      <div className={styles.bracketHeader}>
-        <h2 className={styles.panelTitle}>{tt("ui.bracket.e42a", "Bracket")}</h2>
-        <p className={styles.bracketSub}>{tt("ui.live.bracket.as.scored.0802", "Live bracket as scored. Update results from Match Control.")}</p>
-      </div>
-
-      <div className={styles.bracketScroll}>
-        <div className={styles.bracketChart}>
-          {rounds.map((round, rIdx) => <div key={round.round} className={styles.roundCol} style={{
-          '--round-idx': rIdx
-        }}>
-              <div className={styles.roundLabel}>{tt("ui.round.ec7b", "Round")} {round.round}</div>
-              {(round.matches || []).map(m => {
-            const winnerId = regIdOf(m.winner);
-            const slots = [{
-              p: m.participant_1,
-              score: m.score_p1
-            }, {
-              p: m.participant_2,
-              score: m.score_p2
-            }];
-            return <div key={m.match_id} className={styles.bracketMatch}>
-                    {slots.map((slot, idx) => <div key={`${m.match_id}_${idx}`} className={`${styles.bracketTeamSlot} ${winnerId && regIdOf(slot.p) === winnerId ? styles.slotWinner : ''}`}>
-                        <span className={styles.slotName}>{nameOf(slot.p)}</span>
-                        <span className={styles.slotScore}>{slot.score ?? '-'}</span>
-                      </div>)}
-                  </div>;
-          })}
-            </div>)}
-        </div>
-      </div>
-    </div>;
-};
-
 
 const Manage = () => <Suspense fallback={<div style={{
   minHeight: '100vh',
