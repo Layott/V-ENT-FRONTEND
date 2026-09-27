@@ -300,3 +300,53 @@
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.55);
 }
+
+/* The stage builder's own switches, 27 September 2026. Filled chips with
+   aria-pressed, never a ring; a quiet heading per block of settings. */
+
+.subhead {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin-top: 1rem;
+}
+
+.note {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  flex: 1 1 100%;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+}
+
+.chip:hover { background-color: #3d3e45; color: #fff; }
+.chipOn,
+.chipOn:hover { background-color: rgba(212, 175, 55, 0.22); color: var(--v-ent-light-gold, #E8C760); }
+.chip:disabled { opacity: 0.5; cursor: not-allowed; }
+.chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.throughName {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.row .ghost { margin-top: 0.5rem; }

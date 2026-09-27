@@ -1,0 +1,281 @@
+/* One match, opened by somebody who plays or runs it. Same surfaces as the
+   public fixture view (FixtureDetail) so the two read as one family: a dark
+   panel, filled blocks a step lighter, gold for the decided score, green for
+   the one action that moves the match on. No strokes, no glow. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.72);
+}
+
+.panel {
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background-color: #1a1a1e;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.02rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-size: 1.15rem;
+}
+
+.close:hover { background-color: rgba(255, 255, 255, 0.16); color: #fff; }
+.close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.score {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.side {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.92rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.won { color: #fff; font-weight: var(--fw-semi-bold, 600); }
+
+.you {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--v-ent-light-gold, #E8C760);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nums {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--v-ent-light-gold, #E8C760);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.25rem;
+  font-weight: var(--fw-semi-bold, 600);
+  white-space: nowrap;
+}
+
+.pens {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.72rem;
+  font-weight: var(--fw-regular, 400);
+  margin-top: 0.2rem;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.86rem;
+}
+
+.facts dt { color: rgba(255, 255, 255, 0.5); }
+.facts dd { color: rgba(255, 255, 255, 0.88); margin: 0; text-align: right; }
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.blockTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.ok {
+  color: var(--v-ent-success, #4caf50);
+  font-size: 0.88rem;
+}
+
+.problem {
+  color: var(--v-ent-red, #ed1c24);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.86rem;
+}
+
+.in { color: var(--v-ent-success, #4caf50); }
+.notIn { color: rgba(255, 255, 255, 0.55); }
+
+.room {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.room strong {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  letter-spacing: 0.04em;
+  user-select: all;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.scoreInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1 1 9rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.input,
+.textarea,
+.file {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+}
+
+.textarea { padding: 0.7rem 0.8rem; resize: vertical; }
+.file { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
+
+.input:focus-visible,
+.textarea:focus-visible,
+.file:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.primary,
+.quiet {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.primary {
+  background-color: var(--v-ent-success, #4caf50);
+  color: #10231a;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.primary:hover { background-color: var(--v-ent-success-light, #66bb6a); }
+
+.quiet {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.quiet:hover { background-color: #3d3e45; color: #fff; }
+
+.primary:disabled,
+.quiet:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.primary:focus-visible,
+.quiet:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.link {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-size: 0.88rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .overlay { padding: 0; align-items: flex-end; }
+  .panel { max-width: none; max-height: 94vh; border-radius: 16px 16px 0 0; }
+  .primary, .quiet { width: 100%; }
+}

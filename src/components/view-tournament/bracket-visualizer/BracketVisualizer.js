@@ -1,24 +1,24 @@
 'use client';
 
-// Seeing the shape of a tournament, whatever shape it is.
+// Seeing the shape of a tournament, whatever shape it is, stage by stage.
 //
-// The existing bracket drawing assumes every round has half the matches of the
-// one before it, which is true of a knockout and false of everything else. Draw
-// a five-nation round robin with it and the connectors join fixtures that have
-// nothing to do with each other: the picture is confidently wrong, which is
-// worse than no picture.
+// A tournament can now run in stages (groups, then Swiss, then a double
+// elimination playoff), and each stage owns its own matches. So this reads one
+// stage at a time, with a chip per stage, and draws it the way its format
+// reads best:
 //
-// So two views, and the reader chooses:
+//   groups       a table per group, then that group's fixtures
+//   a table      (league, Swiss) the standings, then the matchdays
+//   a knockout   the winners' bracket, then the losers' bracket and the grand
+//                final as their own sections when the format has them. The old
+//                drawing merged a double elimination's losers rounds into the
+//                winners rounds, because the payload dropped which side a
+//                match was on.
 //
-//   Map   the boxes-and-lines picture. For a knockout that is the classic
-//         bracket with the lines showing who meets whom. For a league there is
-//         nothing to join, because nobody advances, so it draws the matchdays
-//         as columns and says so rather than inventing lines.
-//
-//   Grid  every entrant against every entrant. For a round robin this is the
-//         better read by a distance - you can see at a glance who somebody has
-//         left to play. For a knockout it lists the rounds, which is what
-//         actually fits on a phone.
+// Each reader sees what they can act on: the two sides of a match, and staff,
+// open it in the match room (check in, the room code, report or record the
+// result); everybody else gets the public fixture view. A reader who plays in
+// this tournament sees their next match at the top.
 //
 // Public. A bracket is the most shareable thing a tournament produces, and
 // putting it behind a sign-in is how a competition stays invisible.
@@ -26,77 +26,88 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LuLayoutGrid, LuNetwork } from 'react-icons/lu';
 import { useT } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
+import MatchRoom from '../match-room/MatchRoom';
 import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-// Formats where nobody advances out of a round, so there is nothing to join.
-const FLAT_FORMATS = new Set([
-  'round_robin', 'round-robin', 'roundrobin', 'rr',
-  'league', 'ladder', 'swiss', 'swiss_system', 'swiss-system',
-  'battle_royale', 'battle-royale', 'aggregate_2v2',
-]);
+const TABLE_FORMATS = new Set(['round_robin', 'ladder', 'aggregate_2v2', 'swiss', 'league']);
+const OPEN = ['scheduled', 'in_progress', 'pending_opponent_confirm'];
 
-const isFlat = format => FLAT_FORMATS.has(
-  String(format || '').trim().toLowerCase().replace(/\s+/g, '_'));
-
+const norm = format => String(format || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+const isTable = format => TABLE_FORMATS.has(norm(format)) || norm(format) === 'swiss_system';
+const groupLetter = n => String.fromCharCode(64 + Number(n || 1));
 const nameOf = side => side?.name || null;
 
-/** One fixture, drawn the same way in every view so nothing looks like two things. */
-const Fixture = ({ match, tt, onOpen }) => {
+/** One fixture, drawn the same way everywhere so nothing looks like two things. */
+const Fixture = ({ match, tt, onOpen, mine }) => {
   const one = nameOf(match.participant_1);
   const two = nameOf(match.participant_2);
-  const done = match.status === 'completed';
-  const winner = match.winner;
+  const decided = ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status);
+  const winner = match.winner_registration_id;
+  const pens = match.penalties_p1 != null && match.penalties_p2 != null;
 
-  const side = (label, score, isWinner) => (
-    <div className={`${styles.side} ${done && isWinner ? styles.sideWon : ''}`}>
+  const side = (label, score, pen, regId) => (
+    <div className={`${styles.side} ${decided && winner && winner === regId ? styles.sideWon : ''}`}>
       <span className={styles.sideName}>
         {label || <span className={styles.tbd}>{tt('bracket.tbd', 'To be decided')}</span>}
       </span>
-      <span className={styles.sideScore}>{done ? score : ''}</span>
+      <span className={styles.sideScore}>
+        {decided ? score : ''}
+        {decided && pens ? <span className={styles.pen}>({pen})</span> : null}
+      </span>
     </div>
   );
 
-  const wonBy = which => {
-    if (!done || winner == null) return false;
-    const id = which === 1 ? match.participant_1?.id : match.participant_2?.id;
-    return String(winner) === String(id) || winner === which;
-  };
-
   return (
-    <button type="button" className={styles.fixture}
+    <button type="button" className={`${styles.fixture} ${mine ? styles.fixtureMine : ''}`}
             onClick={() => onOpen && onOpen(match)}
             aria-label={`${one || '?'} v ${two || '?'}`}>
-      {side(one, match.score_p1, wonBy(1))}
-      {/* Reads as one fixture rather than two rows that happen to be adjacent.
-          Hidden from a screen reader, which gets the two names in order and
-          does not need a decorative letter between them. */}
+      {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id)}
       <span className={styles.versus} aria-hidden="true">v</span>
-      {side(two, match.score_p2, wonBy(2))}
+      {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id)}
+      {(match.status === 'bye' || match.forfeit_reason || (decided && !winner)
+        || match.status === 'disputed' || match.status === 'pending_opponent_confirm') && (
+        <span className={styles.fixtureNote}>
+          {match.status === 'bye' ? tt('bracket.bye', 'Through without playing')
+            : match.forfeit_reason === 'no_show' ? tt('bracket.noShow', 'Won by forfeit, no show')
+              : match.status === 'disputed' ? tt('bracket.disputed', 'Disputed')
+                : match.status === 'pending_opponent_confirm' ? tt('bracket.pending', 'Waiting to be confirmed')
+                  : tt('bracket.draw', 'Draw')}
+        </span>
+      )}
     </button>
   );
 };
 
-/** Knockout: columns that halve, with lines joining each pair to its next match. */
-const MapKnockout = ({ rounds, tt, onOpen }) => (
+const roundTitle = (tt, round, index, count, side) => {
+  if (side === 'grand_final') {
+    return count > 1 && index === count - 1
+      ? tt('bracket.grandFinalReset', 'Grand final, reset')
+      : tt('bracket.grandFinal', 'Grand final');
+  }
+  if (side === 'losers') return tt('bracket.losersRoundN', 'Losers round {n}').replace('{n}', round.round);
+  if (index === count - 1 && round.matches?.some(m => m.is_final)) return tt('bracket.final', 'Final');
+  return tt('bracket.roundN', 'Round {n}').replace('{n}', round.round);
+};
+
+/** A knockout section: columns that halve, spaced so each match sits opposite its pair. */
+const MapKnockout = ({ rounds, tt, onOpen, isMine, side }) => (
   <div className={styles.mapScroller}>
     <div className={styles.mapRow}>
       {rounds.map((round, index) => (
-        <div key={round.round} className={styles.mapCol}>
-          <p className={styles.colTitle}>
-            {index === rounds.length - 1
-              ? tt('bracket.final', 'Final')
-              : tt('bracket.roundN', 'Round {n}').replace('{n}', round.round)}
-          </p>
-          {/* Spaced so each match sits opposite the pair that feeds it. The
-              gap doubles every round, which is what makes the lines read. */}
+        <div key={`${side}-${round.round}`} className={styles.mapCol}>
+          <p className={styles.colTitle}>{roundTitle(tt, round, index, rounds.length, side)}</p>
           <div className={styles.mapStack}
-               style={{ gap: `${Math.max(12, 12 * (2 ** index))}px`,
-                        paddingTop: `${index === 0 ? 0 : 12 * ((2 ** index) - 1)}px` }}>
+               style={side === 'winners'
+                 ? { gap: `${Math.max(12, 12 * (2 ** index))}px`,
+                     paddingTop: `${index === 0 ? 0 : 12 * ((2 ** index) - 1)}px` }
+                 : { gap: '12px' }}>
             {(round.matches || []).map(match => (
-              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} />
+              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} />
             ))}
           </div>
         </div>
@@ -105,8 +116,8 @@ const MapKnockout = ({ rounds, tt, onOpen }) => (
   </div>
 );
 
-/** League or swiss: matchdays side by side. Nothing advances, so nothing joins. */
-const MapFlat = ({ rounds, tt, onOpen }) => (
+/** Matchdays side by side. Nothing advances out of a round, so nothing joins. */
+const MapFlat = ({ rounds, tt, onOpen, isMine }) => (
   <div className={styles.mapScroller}>
     <div className={styles.mapRow}>
       {rounds.map(round => (
@@ -116,7 +127,7 @@ const MapFlat = ({ rounds, tt, onOpen }) => (
           </p>
           <div className={styles.mapStack} style={{ gap: '12px' }}>
             {(round.matches || []).map(match => (
-              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} />
+              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} />
             ))}
           </div>
         </div>
@@ -125,7 +136,7 @@ const MapFlat = ({ rounds, tt, onOpen }) => (
   </div>
 );
 
-/** Round robin: everyone against everyone, so you can see who is left to play. */
+/** Everyone against everyone, so you can see who is left to play. */
 const GridCrosstab = ({ rounds, tt, onOpen }) => {
   const { names, cells } = useMemo(() => {
     const seen = new Map();
@@ -135,9 +146,11 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
         const one = nameOf(match.participant_1);
         const two = nameOf(match.participant_2);
         if (!one || !two) continue;
-        if (!seen.has(one)) seen.set(one, true);
-        if (!seen.has(two)) seen.set(two, true);
-        byPair.set(`${one}|${two}`, match);
+        seen.set(one, true);
+        seen.set(two, true);
+        // Home and away plays each pair twice; keep both.
+        const key = `${one}|${two}`;
+        byPair.set(key, [...(byPair.get(key) || []), match]);
       }
     }
     return { names: [...seen.keys()], cells: byPair };
@@ -149,7 +162,7 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
     </p>;
   }
 
-  const find = (row, col) => cells.get(`${row}|${col}`) || cells.get(`${col}|${row}`);
+  const find = (row, col) => [...(cells.get(`${row}|${col}`) || []), ...(cells.get(`${col}|${row}`) || [])];
 
   return (
     <div className={styles.gridScroller}>
@@ -169,36 +182,31 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
             <tr key={row}>
               <th className={styles.gridRowHead}>{row}</th>
               {names.map(col => {
-                if (row === col) {
-                  // Nobody plays themselves. Filled rather than left blank so
-                  // the diagonal reads as deliberate.
-                  return <td key={col} className={styles.gridSelf} aria-hidden="true" />;
+                if (row === col) return <td key={col} className={styles.gridSelf} aria-hidden="true" />;
+                const matches = find(row, col);
+                if (!matches.length) {
+                  return <td key={col} className={styles.gridNone}><span className={styles.gridDash}>-</span></td>;
                 }
-                const match = find(row, col);
-                if (!match) {
-                  return <td key={col} className={styles.gridNone}>
-                    <span className={styles.gridDash}>-</span>
-                  </td>;
-                }
-                const rowIsOne = nameOf(match.participant_1) === row;
-                const mine = rowIsOne ? match.score_p1 : match.score_p2;
-                const theirs = rowIsOne ? match.score_p2 : match.score_p1;
-                const done = match.status === 'completed';
                 return (
                   <td key={col} className={styles.gridCell}>
-                    <button type="button" className={styles.gridBtn}
-                            onClick={() => onOpen && onOpen(match)}
-                            aria-label={`${row} v ${col}`}>
-                    {done
-                      ? <span className={`${styles.gridScore} ${
-                          mine > theirs ? styles.gridWin
-                            : mine < theirs ? styles.gridLoss : styles.gridDraw}`}>
-                          {mine}-{theirs}
-                        </span>
-                      : <span className={styles.gridToPlay}>
-                          {tt('bracket.toPlay', 'to play')}
-                        </span>}
-                    </button>
+                    {matches.map(match => {
+                      const rowIsOne = nameOf(match.participant_1) === row;
+                      const mine = rowIsOne ? match.score_p1 : match.score_p2;
+                      const theirs = rowIsOne ? match.score_p2 : match.score_p1;
+                      const done = match.status === 'completed';
+                      return (
+                        <button key={match.match_id} type="button" className={styles.gridBtn}
+                                onClick={() => onOpen && onOpen(match)}
+                                aria-label={`${row} v ${col}`}>
+                          {done
+                            ? <span className={`${styles.gridScore} ${
+                                mine > theirs ? styles.gridWin : mine < theirs ? styles.gridLoss : styles.gridDraw}`}>
+                                {mine}-{theirs}
+                              </span>
+                            : <span className={styles.gridToPlay}>{tt('bracket.toPlay', 'to play')}</span>}
+                        </button>
+                      );
+                    })}
                   </td>
                 );
               })}
@@ -213,111 +221,257 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
   );
 };
 
-/** Knockout in the grid view: the rounds as a list, which is what fits a phone. */
-const GridRounds = ({ rounds, tt, onOpen }) => (
-  <div className={styles.list}>
-    {rounds.map((round, index) => (
-      <section key={round.round} className={styles.listRound}>
-        <p className={styles.colTitle}>
-          {index === rounds.length - 1
-            ? tt('bracket.final', 'Final')
-            : tt('bracket.roundN', 'Round {n}').replace('{n}', round.round)}
-        </p>
-        <div className={styles.listStack}>
-          {(round.matches || []).map(match => (
-            <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} />
+/** A stage's table, worked out on the server from its own matches. */
+const StandingsTable = ({ rows, format, advancing, tt }) => {
+  if (!rows?.length) return null;
+  const swiss = norm(format) === 'swiss';
+  const placed = ['single_elimination', 'double_elimination', 'gsl'].includes(norm(format));
+  const goingThrough = new Set(advancing || []);
+  return (
+    <div className={styles.tableScroller}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th className={styles.tableName}>{tt('bracket.col.name', 'Name')}</th>
+            {!placed && <th title={tt('bracket.col.playedLong', 'Played')}>{tt('bracket.col.played', 'P')}</th>}
+            {!placed && <th title={tt('bracket.col.winsLong', 'Won')}>{tt('bracket.col.wins', 'W')}</th>}
+            {!placed && !swiss && <th title={tt('bracket.col.drawsLong', 'Drawn')}>{tt('bracket.col.draws', 'D')}</th>}
+            {!placed && <th title={tt('bracket.col.lossesLong', 'Lost')}>{tt('bracket.col.losses', 'L')}</th>}
+            {!placed && <th title={tt('bracket.col.gdLong', 'Goal difference')}>{tt('bracket.col.gd', 'GD')}</th>}
+            {swiss && <th title={tt('bracket.col.buchholzLong', 'Strength of the opponents faced')}>{tt('bracket.col.buchholz', 'Opp')}</th>}
+            {!placed && <th title={tt('bracket.col.pointsLong', 'Points')}>{tt('bracket.col.points', 'Pts')}</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => (
+            <tr key={row.registration_id}
+                className={goingThrough.has(row.registration_id) || row.status === 'qualified'
+                  ? styles.rowThrough : row.status === 'eliminated' ? styles.rowOut : ''}>
+              <td>{row.rank ?? '-'}</td>
+              <td className={styles.tableName}>{row.name}</td>
+              {!placed && <td>{row.played}</td>}
+              {!placed && <td>{row.wins}</td>}
+              {!placed && !swiss && <td>{row.draws}</td>}
+              {!placed && <td>{row.losses}</td>}
+              {!placed && <td>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</td>}
+              {swiss && <td>{row.buchholz}</td>}
+              {!placed && <td className={styles.tablePts}>{row.points}</td>}
+            </tr>
           ))}
-        </div>
-      </section>
-    ))}
-  </div>
-);
+        </tbody>
+      </table>
+      {advancing?.length > 0 && (
+        <p className={styles.gridNote}>{tt('bracket.throughNote', 'Highlighted: going through to the next stage as things stand.')}</p>
+      )}
+    </div>
+  );
+};
 
-export default function BracketVisualizer({ tournamentId }) {
+export default function BracketVisualizer({ tournamentId, token = null, tournamentRef = null }) {
   const tt = useT();
   const [data, setData] = useState(null);
+  const [stageId, setStageId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [view, setView] = useState(null);
   const [openFixture, setOpenFixture] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
+    if (!quiet) setError('');
     try {
-      const res = await fetch(`${API}/tournament/get-tournament-brackets/${tournamentId}/`);
+      const query = stageId ? `?stage=${encodeURIComponent(stageId)}` : '';
+      const res = await fetch(`${API}/tournament/get-tournament-brackets/${tournamentId}/${query}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const body = await res.json().catch(() => ({}));
-      if (res.ok && body.status === 'success') setData(body.data);
-      else setError(tt('bracket.failed', 'Could not load the fixtures.'));
+      if (res.ok && body.status === 'success') {
+        setData(body.data);
+        setError('');
+      } else if (!quiet) {
+        setError(apiMessage(tt, body, 'bracket.failed', 'Could not load the fixtures.'));
+      }
     } catch {
-      setError(tt('api.NETWORK_UNREACHABLE',
-        'Could not reach the server. Check the connection and try again.'));
+      if (!quiet) {
+        setError(tt('api.NETWORK_UNREACHABLE',
+          'Could not reach the server. Check the connection and try again.'));
+      }
     } finally {
       setLoading(false);
     }
-  }, [tournamentId, tt]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tournamentId, token, stageId]);
 
   useEffect(() => { load(); }, [load]);
+  // Results arrive while people watch. Quiet, so a refresh never flashes the
+  // loading state over somebody reading.
+  useAutoRefresh(() => load({ quiet: true }));
 
-  const flat = isFlat(data?.bracket_type);
+  const format = data?.bracket_type;
+  const table = isTable(format);
 
-  // The default follows the format, because the better read differs: a league
-  // is easier to follow as a grid and a knockout as a map. The reader can
-  // still swap, and their choice is what the buttons are for.
   useEffect(() => {
-    if (data && view === null) setView(flat ? 'grid' : 'map');
-  }, [data, view, flat]);
+    if (data && view === null) setView(table ? 'grid' : 'map');
+  }, [data, view, table]);
+
+  const mineIds = useMemo(() => new Set(data?.you?.registration_ids || []), [data]);
+  const isMine = useCallback(match => mineIds.has(match.participant_1?.registration_id)
+    || mineIds.has(match.participant_2?.registration_id), [mineIds]);
+  const canRecord = Boolean(data?.you?.can_record);
+
+  const rounds = useMemo(() => data?.rounds || [], [data]);
+  const myNext = useMemo(() => {
+    for (const round of rounds) {
+      for (const m of round.matches || []) {
+        if (isMine(m) && OPEN.includes(m.status) && m.participant_1 && m.participant_2) {
+          return m;
+        }
+      }
+    }
+    return null;
+  }, [rounds, isMine]);
 
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
-  if (error) return <p className={styles.state}>{error}</p>;
+  if (error) {
+    return <div className={styles.state}>
+      <p>{error}</p>
+      <button type="button" className={styles.retry} onClick={() => { setLoading(true); load(); }}>
+        {tt('ui.retry.9f5c', 'Retry')}
+      </button>
+    </div>;
+  }
   if (!data) return null;
 
-  const rounds = data.rounds || [];
-  if (rounds.length === 0) {
-    return <p className={styles.state}>
-      {tt('bracket.empty', 'No fixtures yet. They appear once the organiser generates them.')}
-    </p>;
-  }
+  const stages = data.stages || [];
+  const current = view || (table ? 'grid' : 'map');
 
-  const current = view || (flat ? 'grid' : 'map');
+  // Sections: one per group, or per side of a knockout, in playing order.
+  const groups = [...new Set(rounds.map(r => r.group_number).filter(Boolean))];
+  const bySide = side => rounds.filter(r => (r.bracket_side || 'winners') === side);
+  const hasLosers = bySide('losers').length > 0;
+  const standings = data.standings || [];
+
+  const openMatch = match => setOpenFixture(match);
+  const roomFor = openFixture && (canRecord || isMine(openFixture))
+    && openFixture.participant_1 && openFixture.participant_2;
+
+  const fixtures = list => (current === 'map' || !table
+    ? (table
+      ? <MapFlat rounds={list} tt={tt} onOpen={openMatch} isMine={isMine} />
+      : <MapKnockout rounds={list} tt={tt} onOpen={openMatch} isMine={isMine} side="winners" />)
+    : <GridCrosstab rounds={list} tt={tt} onOpen={openMatch} />);
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.head}>
-        <div>
-          <p className={styles.formatName}>{data.format_label || data.bracket_type}</p>
-          <p className={styles.formatHint}>
-            {flat
-              ? tt('bracket.flatHint', 'Every entrant meets the others. Nobody is knocked out, so the table decides it.')
-              : tt('bracket.knockoutHint', 'The winner of each match moves along the line to the next one.')}
-          </p>
+      {stages.length > 1 && (
+        <div className={styles.stageChips} role="group"
+             aria-label={tt('bracket.stagesLabel', 'Stages of this tournament')}>
+          {stages.map(stage => (
+            <button key={stage.id} type="button"
+                    className={`${styles.stageChip} ${data.stage_id === stage.id ? styles.stageChipOn : ''}`}
+                    aria-pressed={data.stage_id === stage.id}
+                    onClick={() => { setStageId(stage.id); setView(null); }}>
+              <span>{stage.label}</span>
+              <span className={styles.stageChipState}>
+                {stage.status === 'complete' ? tt('bracket.stageDone', 'Finished')
+                  : stage.drawn ? tt('bracket.stageLive', 'Being played')
+                    : tt('bracket.stageLater', 'Not drawn yet')}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {myNext && (
+        <button type="button" className={styles.myNext} onClick={() => openMatch(myNext)}>
+          <span className={styles.myNextLabel}>{tt('bracket.yourMatch', 'Your match')}</span>
+          <span className={styles.myNextVs}>
+            {nameOf(myNext.participant_1)} v {nameOf(myNext.participant_2)}
+          </span>
+          <span className={styles.myNextGo}>
+            {myNext.status === 'pending_opponent_confirm'
+              ? tt('bracket.yourMatchConfirm', 'A result is waiting. Open it')
+              : tt('bracket.yourMatchOpen', 'Check in, find the room, report the result')}
+          </span>
+        </button>
+      )}
+
+      {rounds.length === 0 ? (
+        <p className={styles.state}>
+          {stages.length && !stages.find(s => s.id === data.stage_id)?.drawn
+            ? tt('bracket.stageNotDrawn', 'This stage is drawn when the one before it finishes.')
+            : tt('bracket.empty', 'No fixtures yet. They appear once the organiser generates them.')}
+        </p>
+      ) : <>
+        <div className={styles.head}>
+          <div>
+            <p className={styles.formatName}>{data.format_label || format}</p>
+            <p className={styles.formatHint}>
+              {table
+                ? tt('bracket.flatHint', 'Every entrant meets the others. Nobody is knocked out, so the table decides it.')
+                : tt('bracket.knockoutHint', 'The winner of each match moves along the line to the next one.')}
+            </p>
+          </div>
+          {table && !groups.length && (
+            <div className={styles.switch} role="group"
+                 aria-label={tt('bracket.viewLabel', 'How to show the fixtures')}>
+              <button type="button"
+                      className={`${styles.switchBtn} ${current === 'map' ? styles.switchOn : ''}`}
+                      onClick={() => setView('map')} aria-pressed={current === 'map'}>
+                <LuNetwork aria-hidden="true" />
+                {tt('bracket.viewMap', 'Map')}
+              </button>
+              <button type="button"
+                      className={`${styles.switchBtn} ${current === 'grid' ? styles.switchOn : ''}`}
+                      onClick={() => setView('grid')} aria-pressed={current === 'grid'}>
+                <LuLayoutGrid aria-hidden="true" />
+                {tt('bracket.viewGrid', 'Grid')}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Two ways to read the same fixtures. */}
-        <div className={styles.switch} role="group"
-             aria-label={tt('bracket.viewLabel', 'How to show the fixtures')}>
-          <button type="button"
-                  className={`${styles.switchBtn} ${current === 'map' ? styles.switchOn : ''}`}
-                  onClick={() => setView('map')} aria-pressed={current === 'map'}>
-            <LuNetwork aria-hidden="true" />
-            {tt('bracket.viewMap', 'Map')}
-          </button>
-          <button type="button"
-                  className={`${styles.switchBtn} ${current === 'grid' ? styles.switchOn : ''}`}
-                  onClick={() => setView('grid')} aria-pressed={current === 'grid'}>
-            <LuLayoutGrid aria-hidden="true" />
-            {flat ? tt('bracket.viewGrid', 'Grid') : tt('bracket.viewList', 'List')}
-          </button>
-        </div>
-      </div>
+        {groups.length > 0 ? groups.map(g => (
+          <section key={g} className={styles.section}>
+            <p className={styles.sectionTitle}>{tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(g))}</p>
+            <StandingsTable rows={standings.filter(r => r.group === g)} format={format}
+                            advancing={data.advancing} tt={tt} />
+            {norm(format) === 'gsl'
+              ? <MapKnockout rounds={rounds.filter(r => r.group_number === g)} tt={tt}
+                             onOpen={openMatch} isMine={isMine} side="gsl" />
+              : <MapFlat rounds={rounds.filter(r => r.group_number === g)} tt={tt}
+                         onOpen={openMatch} isMine={isMine} />}
+          </section>
+        )) : table ? (
+          <>
+            <StandingsTable rows={standings} format={format} advancing={data.advancing} tt={tt} />
+            {fixtures(rounds)}
+          </>
+        ) : (
+          <>
+            {hasLosers && <p className={styles.sectionTitle}>{tt('bracket.winnersBracket', 'Winners bracket')}</p>}
+            <MapKnockout rounds={bySide('winners')} tt={tt} onOpen={openMatch} isMine={isMine} side="winners" />
+            {hasLosers && <>
+              <p className={styles.sectionTitle}>{tt('bracket.losersBracket', 'Losers bracket')}</p>
+              <MapKnockout rounds={bySide('losers')} tt={tt} onOpen={openMatch} isMine={isMine} side="losers" />
+            </>}
+            {bySide('grand_final').length > 0 && <>
+              <p className={styles.sectionTitle}>{tt('bracket.grandFinal', 'Grand final')}</p>
+              <MapKnockout rounds={bySide('grand_final')} tt={tt} onOpen={openMatch} isMine={isMine} side="grand_final" />
+            </>}
+            {standings.some(r => r.rank) && (
+              <StandingsTable rows={standings.filter(r => r.rank)} format={format} tt={tt} />
+            )}
+          </>
+        )}
+      </>}
 
-      {current === 'map'
-        ? (flat ? <MapFlat rounds={rounds} tt={tt} onOpen={setOpenFixture} />
-          : <MapKnockout rounds={rounds} tt={tt} onOpen={setOpenFixture} />)
-        : (flat ? <GridCrosstab rounds={rounds} tt={tt} onOpen={setOpenFixture} />
-          : <GridRounds rounds={rounds} tt={tt} onOpen={setOpenFixture} />)}
-
-      {openFixture && <FixtureDetail match={openFixture}
-        onClose={() => setOpenFixture(null)} />}
+      {openFixture && (roomFor
+        ? <MatchRoom matchId={openFixture.match_id} tournamentRef={tournamentRef || tournamentId}
+                     token={token} canRecord={canRecord}
+                     onClose={() => setOpenFixture(null)} onChanged={() => load({ quiet: true })} />
+        : <FixtureDetail match={openFixture} onClose={() => setOpenFixture(null)} />)}
     </div>
   );
 }

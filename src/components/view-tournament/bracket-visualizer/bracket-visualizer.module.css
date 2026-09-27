@@ -312,3 +312,178 @@
     min-height: 44px;
   }
 }
+
+/* ── Stages, 27 September 2026 ──
+   A chip per stage (filled, never ringed), a strip for the reader's own next
+   match, a section per group or per side of a knockout, and the stage's table.
+   Same surfaces as the fixtures: overlay gray, one step lighter, gold for
+   what is decided, no strokes and no glow. */
+
+.stageChips {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+/* The row scrolls; its chips keep their width rather than squeezing. */
+.stageChips > * { flex-shrink: 0; }
+
+.stageChip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--overlay-gray, #212225);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.stageChip:hover { background-color: #2a2b30; color: #fff; }
+.stageChipOn { background-color: #33343a; color: #fff; }
+.stageChip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.stageChipState {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+}
+
+.stageChipOn .stageChipState { color: var(--v-ent-light-gold, #E8C760); }
+
+.myNext {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #2a2b30;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.myNext:hover { background-color: #33343a; }
+.myNext:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.myNextLabel {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.myNextVs {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+  overflow-wrap: anywhere;
+}
+
+.myNextGo {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.84rem;
+}
+
+.fixtureMine { background-color: #2a2b30; }
+
+.fixtureNote {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+  padding: 0.15rem 0.65rem 0.25rem;
+}
+
+.pen {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.sectionTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.98rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin-top: 0.5rem;
+}
+
+.tableScroller {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 3px;
+  font-size: 0.86rem;
+}
+
+.table th {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: var(--fw-regular, 400);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.table td {
+  background-color: var(--overlay-gray, #212225);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.55rem 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table td:first-child { border-radius: 9px 0 0 9px; }
+.table td:last-child { border-radius: 0 9px 9px 0; }
+
+.table .tableName {
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 8rem;
+}
+
+.tablePts {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.rowThrough td { background-color: rgba(212, 175, 55, 0.12); }
+.rowThrough .tableName { color: var(--v-ent-light-gold, #E8C760); }
+.rowOut td { color: rgba(255, 255, 255, 0.45); }
+
+.retry {
+  margin-top: 0.6rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.retry:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

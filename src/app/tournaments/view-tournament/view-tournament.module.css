@@ -471,14 +471,6 @@
   gap: 2rem;
 }
 
-.roundCol {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: 220px;
-  padding-top: calc(var(--round-idx) * 22px);
-}
-
 .roundHeader {
   display: flex;
   align-items: center;
@@ -505,12 +497,6 @@
 .roundBadgeDone { background: rgba(212, 175, 55,0.15); color: var(--v-ent-gold); }
 .roundBadgeLive { background: rgba(13,116,206,0.2); color: #60a5fa; }
 .roundBadgeUpcoming { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
-
-.matchList {
-  display: flex;
-  flex-direction: column;
-  gap: calc(0.6rem + var(--round-idx) * 30px);
-}
 
 .matchCard {
   background: transparent;
