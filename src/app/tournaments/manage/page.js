@@ -240,8 +240,14 @@ const ManageContent = ({ slug }) => {
     && caps !== null && access !== null;
   // A scorekeeper opens the console and sees the one tab they may use.
   const keepsScore = access?.can_record_results && !access?.can_manage;
-  const isLeague = ['round_robin', 'aggregate_2v2', 'ladder']
-    .includes(formatKey(tournament?.bracket_type || tournament?.format));
+  // The seat-by-seat screen is for a tie made of several matches (an
+  // aggregate league, or any table with more than one seat a side). A plain
+  // round robin match is one score: it was sent to the seat screen, which
+  // had nothing to enter and read a 1-1 draw as "aggregate 0-0, settled"
+  // (27 September 2026). It gets the match room like any other match.
+  const seats = Number(tournament?.players_per_team ?? tournament?.league?.players_per_team ?? 1) || 1;
+  const isLeague = formatKey(tournament?.bracket_type || tournament?.format) === 'aggregate_2v2'
+    || (seats > 1 && ['round_robin', 'ladder'].includes(formatKey(tournament?.bracket_type || tournament?.format)));
   if (loading) {
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -308,7 +314,9 @@ const ManageContent = ({ slug }) => {
                 <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
                 <span className={styles.statusBadge}><LuRadio /> {statusLabel}</span>
                 <span className={styles.metaText}>
-                  {tournament.current_participants ?? 0}/{tournament.max_participants ?? 0} {tt("ui.participants.a94a", "participants")}
+                  {/* No cap set is "16 participants", not "16/0": a zero there
+                      read as a full tournament. */}
+                  {tournament.current_participants ?? 0}{tournament.max_participants ? `/${tournament.max_participants}` : ''} {tt("ui.participants.a94a", "participants")}
                 </span>
                 <span className={styles.metaText}><LuTrophy /> {prizePool.toLocaleString()} VC</span>
               </div>
@@ -1049,7 +1057,11 @@ const MatchControlPanel = ({
 
       {openRoom && <MatchRoom matchId={openRoom} tournamentRef={tournamentRef} token={token}
                               canRecord onClose={() => setOpenRoom(null)}
-                              onChanged={() => { onSaved?.(); }} />}
+                              // Quiet, so the console refreshes underneath the
+                              // room instead of blanking to its loading state,
+                              // which unmounted the room before the person who
+                              // recorded the result could read that it went in.
+                              onChanged={() => { onSaved?.({ quiet: true }); }} />}
     </div>;
 };
 
