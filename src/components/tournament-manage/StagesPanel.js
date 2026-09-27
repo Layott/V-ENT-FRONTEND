@@ -858,6 +858,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <span className={styles.order}>{i + 1}</span>
                     <span className={styles.throughName}>
                       {entry.name}
+                      {entry.handle && entry.handle !== entry.name ? ` @${entry.handle}` : ''}
                       {entry.group ? ` (${tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(entry.group))}, ${entry.rank})` : ''}
                     </span>
                     <span className={styles.rowActions}>
