@@ -90,7 +90,8 @@ export const TIPS = {
     'How many games decide a match. Best of 3 means first to two wins. Always an odd '
     + 'number, so a match cannot end level.',
   matchInterval:
-    'How long players get between rounds. Too short and people are still finishing; too '
+    'Each player gets this long after their own last match before their next one starts, and '
+    + 'the bracket shows every player the time. Too short and people are still finishing; too '
     + 'long and the day drags.',
   requireScreenshot:
     'Players attach a picture of the final screen with every result. It turns a dispute '

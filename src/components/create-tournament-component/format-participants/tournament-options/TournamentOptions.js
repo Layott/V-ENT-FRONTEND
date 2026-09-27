@@ -185,7 +185,7 @@ const TournamentOptions = ({
               </label>}
 
             <label className={styles.field} htmlFor="match_interval_minutes">
-              <span className={styles.fieldLabel}>{tt("ui.minutes.between.rounds.06e8", "Minutes between rounds")}<InfoTip id="matchInterval" /></span>
+              <span className={styles.fieldLabel}>{tt("opts.breakMinutes", "Break between matches, in minutes")}<InfoTip id="matchInterval" /></span>
               <input id="match_interval_minutes" type="number" min="5" max="600" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.match_interval_minutes} onChange={e => number('match_interval_minutes', e.target.value, 30)} />
             </label>
 
