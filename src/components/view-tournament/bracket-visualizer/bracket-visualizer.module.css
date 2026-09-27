@@ -474,6 +474,17 @@
 .rowThrough .tableName { color: var(--v-ent-light-gold, #E8C760); }
 .rowOut td { color: rgba(255, 255, 255, 0.45); }
 
+/* The @username under a person's full name. */
+.handle {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: var(--fw-regular, 400);
+  margin-top: 0.1rem;
+  overflow-wrap: anywhere;
+}
+
 .retry {
   margin-top: 0.6rem;
   min-height: 44px;

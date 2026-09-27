@@ -97,6 +97,8 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const slot = match?.your_slot || null;
   const one = match?.participant_1?.name || tt('bracket.tbd', 'To be decided');
   const two = match?.participant_2?.name || tt('bracket.tbd', 'To be decided');
+  // The @username under a person's full name (CEO: "both").
+  const handle = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
   const bothKnown = Boolean(match?.participant_1 && match?.participant_2);
   const open = match && OPEN.includes(match.status);
   const level = s1 !== '' && s2 !== '' && Number(s1) === Number(s2);
@@ -238,7 +240,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
           <div className={styles.score}>
             <p className={`${styles.side} ${match.winner_registration_id
               && match.winner_registration_id === match.participant_1?.registration_id ? styles.won : ''}`}>
-              {one}{slot === 1 && <span className={styles.you}>{tt('match.you', 'You')}</span>}
+              {one}
+              {handle(match.participant_1) && <span className={styles.handle}>{handle(match.participant_1)}</span>}
+              {slot === 1 && <span className={styles.you}>{tt('match.you', 'You')}</span>}
             </p>
             <p className={styles.nums}>
               {['completed', 'pending_opponent_confirm', 'disputed'].includes(match.status)
@@ -252,7 +256,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             </p>
             <p className={`${styles.side} ${match.winner_registration_id
               && match.winner_registration_id === match.participant_2?.registration_id ? styles.won : ''}`}>
-              {two}{slot === 2 && <span className={styles.you}>{tt('match.you', 'You')}</span>}
+              {two}
+              {handle(match.participant_2) && <span className={styles.handle}>{handle(match.participant_2)}</span>}
+              {slot === 2 && <span className={styles.you}>{tt('match.you', 'You')}</span>}
             </p>
           </div>
 

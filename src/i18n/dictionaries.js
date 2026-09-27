@@ -9066,6 +9066,13 @@ export const dictionaries = {
     'stages.idRequiredOff': 'Entrants are not asked for their in-game ID yet.',
     'stages.idRequiredOn': 'Entrants must have their in-game ID on their profile to enter.',
     'api.CHECK_IN_OPEN': 'Some entrants never checked in. Close check-in from Actions first, so they are taken out, then draw.',
+    'api.DISPUTE_WINDOW_CLOSED': 'The time to dispute this result has passed.',
+    'opts.dispute120': '2 hours',
+    'opts.dispute1440': '24 hours',
+    'opts.dispute2880': '48 hours',
+    'opts.dispute30': '30 minutes',
+    'opts.dispute720': '12 hours',
+    'opts.disputeWindow': 'Time to dispute a result',
   },
 
   fr: {
@@ -18118,6 +18125,13 @@ export const dictionaries = {
     'stages.idRequiredOff': 'L\'identifiant de jeu n\'est pas encore demandé aux inscrits.',
     'stages.idRequiredOn': 'Les inscrits doivent avoir leur identifiant de jeu sur leur profil pour participer.',
     'api.CHECK_IN_OPEN': 'Certains inscrits ne se sont pas présentés. Fermez d\'abord la présence depuis Actions pour les retirer, puis faites le tirage.',
+    'api.DISPUTE_WINDOW_CLOSED': 'Le délai pour contester ce résultat est dépassé.',
+    'opts.dispute120': '2 heures',
+    'opts.dispute1440': '24 heures',
+    'opts.dispute2880': '48 heures',
+    'opts.dispute30': '30 minutes',
+    'opts.dispute720': '12 heures',
+    'opts.disputeWindow': 'Délai pour contester un résultat',
   },
 
   pt: {
@@ -27170,5 +27184,12 @@ export const dictionaries = {
     'stages.idRequiredOff': 'Ainda não é pedido o ID no jogo aos inscritos.',
     'stages.idRequiredOn': 'Os inscritos têm de ter o seu ID no jogo no perfil para participar.',
     'api.CHECK_IN_OPEN': 'Alguns inscritos não fizeram check-in. Feche primeiro o check-in em Ações para os retirar e depois sorteie.',
+    'api.DISPUTE_WINDOW_CLOSED': 'O prazo para contestar este resultado já passou.',
+    'opts.dispute120': '2 horas',
+    'opts.dispute1440': '24 horas',
+    'opts.dispute2880': '48 horas',
+    'opts.dispute30': '30 minutos',
+    'opts.dispute720': '12 horas',
+    'opts.disputeWindow': 'Prazo para contestar um resultado',
   },
 };

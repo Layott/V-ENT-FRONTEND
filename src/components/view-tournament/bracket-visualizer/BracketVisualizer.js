@@ -42,6 +42,10 @@ const isTable = format => TABLE_FORMATS.has(norm(format)) || norm(format) === 's
 const groupLetter = n => String.fromCharCode(64 + Number(n || 1));
 const nameOf = side => side?.name || null;
 
+// A person's @username beside their full name (CEO, 27 September 2026:
+// "both"). Nothing for a team, which has one name, or when the two match.
+const handleOf = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
+
 /** One fixture, drawn the same way everywhere so nothing looks like two things. */
 const Fixture = ({ match, tt, onOpen, mine }) => {
   const one = nameOf(match.participant_1);
@@ -50,10 +54,11 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
   const winner = match.winner_registration_id;
   const pens = match.penalties_p1 != null && match.penalties_p2 != null;
 
-  const side = (label, score, pen, regId) => (
+  const side = (label, score, pen, regId, handle) => (
     <div className={`${styles.side} ${decided && winner && winner === regId ? styles.sideWon : ''}`}>
       <span className={styles.sideName}>
         {label || <span className={styles.tbd}>{tt('bracket.tbd', 'To be decided')}</span>}
+        {label && handle && <span className={styles.handle}>{handle}</span>}
       </span>
       <span className={styles.sideScore}>
         {decided ? score : ''}
@@ -66,9 +71,9 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
     <button type="button" className={`${styles.fixture} ${mine ? styles.fixtureMine : ''}`}
             onClick={() => onOpen && onOpen(match)}
             aria-label={`${one || '?'} v ${two || '?'}`}>
-      {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id)}
+      {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id, handleOf(match.participant_1))}
       <span className={styles.versus} aria-hidden="true">v</span>
-      {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id)}
+      {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id, handleOf(match.participant_2))}
       {(match.status === 'bye' || match.forfeit_reason || (decided && !winner)
         || match.status === 'disputed' || match.status === 'pending_opponent_confirm') && (
         <span className={styles.fixtureNote}>
@@ -249,7 +254,10 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
                 className={goingThrough.has(row.registration_id) || row.status === 'qualified'
                   ? styles.rowThrough : row.status === 'eliminated' ? styles.rowOut : ''}>
               <td>{row.rank ?? '-'}</td>
-              <td className={styles.tableName}>{row.name}</td>
+              <td className={styles.tableName}>
+                {row.name}
+                {row.handle && row.handle !== row.name && <span className={styles.handle}>@{row.handle}</span>}
+              </td>
               {!placed && <td>{row.played}</td>}
               {!placed && <td>{row.wins}</td>}
               {!placed && !swiss && <td>{row.draws}</td>}

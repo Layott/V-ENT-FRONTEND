@@ -73,7 +73,7 @@ export const DEFAULT_OPTIONS = {
   require_verified_email: true,
   require_kyc: false,
   require_screenshot: false,
-  dispute_window_minutes: 30
+  dispute_window_minutes: 1440
 };
 // The whole row used to be one <button> with the InfoTip's own <button> inside
 // it. That is invalid HTML, React logs a hydration error for it on every load,
@@ -187,6 +187,20 @@ const TournamentOptions = ({
             <label className={styles.field} htmlFor="match_interval_minutes">
               <span className={styles.fieldLabel}>{tt("ui.minutes.between.rounds.06e8", "Minutes between rounds")}<InfoTip id="matchInterval" /></span>
               <input id="match_interval_minutes" type="number" min="5" max="600" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.match_interval_minutes} onChange={e => number('match_interval_minutes', e.target.value, 30)} />
+            </label>
+
+            {/* How long a player has to dispute a result once it is in. It was
+                saved as 30 minutes with no control and never read; 24 hours is
+                what players always had (CEO, 27 September 2026). */}
+            <label className={styles.field} htmlFor="dispute_window_minutes">
+              <span className={styles.fieldLabel}>{tt("opts.disputeWindow", "Time to dispute a result")}</span>
+              <select id="dispute_window_minutes" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.dispute_window_minutes} onChange={e => number('dispute_window_minutes', e.target.value, 1440)}>
+                <option value={30}>{tt("opts.dispute30", "30 minutes")}</option>
+                <option value={120}>{tt("opts.dispute120", "2 hours")}</option>
+                <option value={720}>{tt("opts.dispute720", "12 hours")}</option>
+                <option value={1440}>{tt("opts.dispute1440", "24 hours")}</option>
+                <option value={2880}>{tt("opts.dispute2880", "48 hours")}</option>
+              </select>
             </label>
           </div>
 
