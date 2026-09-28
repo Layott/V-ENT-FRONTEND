@@ -35,6 +35,12 @@ export const BARE = {
     telephone: 'téléphone', resultat: 'résultat', resultats: 'résultats', reglement: 'règlement',
     elements: 'éléments', element: 'élément', genere: 'généré', general: 'général',
     donnees: 'données', acces: 'accès', ecran: 'écran', etape: 'étape', etapes: 'étapes',
+    creer: 'créer', generer: 'générer', reessayez: 'réessayez', reessayer: 'réessayer',
+    verifiez: 'vérifiez', verifier: 'vérifier', definie: 'définie', defini: 'défini',
+    regle: 'règle', regles: 'règles', meme: 'même', desactive: 'désactivé',
+    tete: 'tête', controle: 'contrôle', reponse: 'réponse', reponses: 'réponses',
+    selectionnez: 'sélectionnez', precedent: 'précédent', prete: 'prête', pret: 'prêt',
+    fenetre: 'fenêtre', depot: 'dépôt', recu: 'reçu', recus: 'reçus', francais: 'français',
     mois: null, a: null,
   },
   pt: {
@@ -46,6 +52,10 @@ export const BARE = {
     organizacao: 'organização', organizacoes: 'organizações', inscricao: 'inscrição',
     inscricoes: 'inscrições', descricao: 'descrição', edicao: 'edição', sessao: 'sessão',
     verificacao: 'verificação', notificacoes: 'notificações', notificacao: 'notificação',
+    conteudo: 'conteúdo', ultima: 'última', ultimos: 'últimos', ultimas: 'últimas', codigos: 'códigos',
+    paginas: 'páginas', numeros: 'números', possiveis: 'possíveis', disponiveis: 'disponíveis',
+    premio: 'prémio', premios: 'prémios', sessoes: 'sessões', funcao: 'função', relatorio: 'relatório',
+    endereco: 'endereço', cartao: 'cartão', ninguem: 'ninguém', alguem: 'alguém', tres: 'três',
     equipa: null, torneio: null,
   },
 };
