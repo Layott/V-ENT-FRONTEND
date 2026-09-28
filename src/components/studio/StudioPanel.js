@@ -68,7 +68,7 @@ const fieldsFor = (tt) => ({
     { key: 'away', label: tt('studio.f.away', 'Away team'), placeholder: 'Ghana' },
     { key: 'home_score', label: tt('studio.f.homeScore', 'Home score'), placeholder: '0', numeric: true },
     { key: 'away_score', label: tt('studio.f.awayScore', 'Away score'), placeholder: '0', numeric: true },
-    { key: 'caption', label: tt('studio.f.caption', 'Caption'), placeholder: 'Aggregate, leg 2' },
+    { key: 'caption', label: tt('studio.f.captionLabel', 'Caption'), placeholder: 'Aggregate, leg 2' },
     // The running aggregate beside the live score, and which of the two
     // match-ups this is. Both are left blank by default and worked out from
     // the fixture that is live, because during a fixture that is the answer

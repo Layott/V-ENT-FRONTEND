@@ -477,7 +477,7 @@ function TournamentNumbersModal({ tournament, onCancel }) {
                 <strong>{formatNumber(data.participation.checked_in)}</strong>
               </div>
               <div className={styles.numberRow}>
-                <span>{tt('admin.disqualified', 'Disqualified')}</span>
+                <span>{tt('admin.disqualifiedLabel', 'Disqualified')}</span>
                 <strong>{formatNumber(data.participation.disqualified)}</strong>
               </div>
               <div className={styles.numberRow}>

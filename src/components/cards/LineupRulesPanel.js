@@ -110,7 +110,7 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast,
         setError(apiMessage(tt, reply, 'rules.saveFailed', 'That was not saved.'));
         return;
       }
-      showToast?.(tt('rules.saved', 'Saved.'));
+      showToast?.(tt('lineupRules.saved', 'Saved.'));
       await load();
       // The picker sits underneath and loaded its window once, on mount. Turn
       // lineups on here and it still read "This tournament is not using
@@ -128,7 +128,7 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast,
 
   return (
     <section className={styles.panel}>
-      <h3 className={styles.title}>{tt('rules.title', 'When lineups close')}</h3>
+      <h3 className={styles.title}>{tt('lineupRules.title', 'When lineups close')}</h3>
       <p className={styles.hint}>
         {tt('rules.hint', 'Set one closing time, or the same time every week for a league. Leave both empty and lineups never close. Everybody can see this before it passes.')}
       </p>
@@ -202,7 +202,7 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast,
       <div className={styles.row}>
         <button type="button" className={styles.primary} disabled={saving}
                 onClick={() => save()}>
-          {saving ? tt('rules.saving', 'Saving...') : tt('rules.save', 'Save the deadline')}
+          {saving ? tt('rules.saving', 'Saving...') : tt('lineupRules.save', 'Save the deadline')}
         </button>
         {/* The hand on the clock. Two buttons rather than a switch, because
             each is a decision somebody makes once and wants to be sure of. */}

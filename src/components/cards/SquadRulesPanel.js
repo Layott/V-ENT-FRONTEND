@@ -80,11 +80,11 @@ export default function SquadRulesPanel({ tournamentRef, token, showToast }) {
         }
         setError('');
       } else if (!quiet) {
-        setError(apiMessage(tt, body, 'squad.loadFailed', 'Could not load the squad rules.'));
+        setError(apiMessage(tt, body, 'squadRules.loadFailed', 'Could not load the squad rules.'));
       }
     } catch (err) {
       if (!quiet) {
-        setError(apiMessage(tt, err, 'squad.loadFailed', 'Could not load the squad rules.'));
+        setError(apiMessage(tt, err, 'squadRules.loadFailed', 'Could not load the squad rules.'));
       }
     } finally {
       if (!quiet) setLoading(false);
@@ -143,14 +143,14 @@ export default function SquadRulesPanel({ tournamentRef, token, showToast }) {
 
   return (
     <section className={styles.panel}>
-      <h3 className={styles.title}>{tt('squad.title', 'What a squad must satisfy')}</h3>
+      <h3 className={styles.title}>{tt('squadRules.title', 'What a squad must satisfy')}</h3>
       <p className={styles.hint}>
-        {tt('squad.hint', 'Players build to these and cannot submit an eleven that breaks one. Leave a field empty to set no limit of that kind.')}
+        {tt('squadRules.hint', 'Players build to these and cannot submit an eleven that breaks one. Leave a field empty to set no limit of that kind.')}
       </p>
 
       {exists === false && (
         <p className={styles.state} role="status">
-          {tt('squad.none', 'No squad rules are set yet, and until they are nobody can submit a squad for this tournament. Save once below, even with every field empty, to open submissions.')}
+          {tt('squadRules.none', 'No squad rules are set yet, and until they are nobody can submit a squad for this tournament. Save once below, even with every field empty, to open submissions.')}
         </p>
       )}
 

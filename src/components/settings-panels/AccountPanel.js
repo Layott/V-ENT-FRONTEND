@@ -212,7 +212,7 @@ const AccountPanel = ({
           <div className={shared.labelRow}>
             <label className={shared.formLabel} htmlFor="acc-email"><span className="fieldLabelRow">{tt("ui.email.address.c94d", "Email address")} <InfoTip id="accountEmail" /></span></label>
             <span className={`${shared.verifyBadge} ${emailVerified ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
-              {emailVerified ? 'Verified' : tx("Not verified")}
+              {emailVerified ? tx("Verified") : tx("Not verified")}
             </span>
           </div>
           <div className={shared.inputWithAction}>
@@ -239,7 +239,7 @@ const AccountPanel = ({
           <div className={shared.inputWithAction}>
             <input id="acc-fullname" type="text" className={shared.formInput} value={fullName} onChange={e => setFullName(e.target.value)} placeholder={tt("ui.full.name.d904", "Your full name")} />
             <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveField('full_name', fullName)} disabled={savingField === 'full_name' || fullName === (user.full_name || user.fullname || '')}>
-              {savingField === 'full_name' ? tx("Saving…") : 'Save'}
+              {savingField === 'full_name' ? tx("Saving…") : tx("Save")}
             </button>
           </div>
         </div>
@@ -249,7 +249,7 @@ const AccountPanel = ({
           <div className={shared.inputWithAction}>
             <input id="acc-username" type="text" className={shared.formInput} value={username} onChange={e => setUsername(e.target.value.replace(/\s+/g, ''))} placeholder={tt("ui.username.249b", "username")} />
             <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveUsername(username)} disabled={savingField === 'username' || !username || username === (user.username || '')}>
-              {savingField === 'username' ? tx("Saving…") : 'Save'}
+              {savingField === 'username' ? tx("Saving…") : tx("Save")}
             </button>
           </div>
           <span className={shared.fieldHelper}>{tt("ui.letters.numbers.underscores.characters.0bcd", "Letters, numbers and underscores, 3 to 20 characters. Case does not create a new name.")}</span>
@@ -275,7 +275,7 @@ const AccountPanel = ({
             {/* KYC is deliberately parked, so it says parked rather than
                 sitting on "Pending" while nobody is reviewing anything. */}
             <span className={`${shared.verifyBadge} ${account?.kyc_verified ?? user.kyc_verified ? shared.verifyBadgeOk : shared.verifyBadgeWarn}`}>
-              {account?.kyc_verified ?? user.kyc_verified ? 'Verified' : account?.kyc_status === 'parked' ? tx("Parked for now") : tx("Under review")}
+              {account?.kyc_verified ?? user.kyc_verified ? tx("Verified") : account?.kyc_status === 'parked' ? tx("Parked for now") : tx("Under review")}
             </span>
           </div>
           <div className={styles.metaItem}>

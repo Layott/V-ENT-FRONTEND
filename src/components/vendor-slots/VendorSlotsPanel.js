@@ -329,10 +329,10 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
       {stallError && <p className={styles.error}>{stallError}</p>}
       <div className={styles.form}>
         <label className={styles.field}>
-          <span className={styles.label}>{tt('slots.stallName', 'Stall name')}</span>
+          <span className={styles.label}>{tt('slots.stallNameLabel', 'Stall name')}</span>
           <input className={styles.input} value={stall.name}
                  onChange={e => setStall({ ...stall, name: e.target.value })}
-                 placeholder={tt('slots.stallNamePlaceholder', 'Mama Put Grill')} />
+                 placeholder={tt('slots.stallNameExample', 'Mama Put Grill')} />
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{tt('slots.stallOwner', 'Who runs it')}</span>
