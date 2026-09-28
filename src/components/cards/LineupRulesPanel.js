@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './lineup-rules.module.css';
+import DateField from '@/components/date-field/DateField';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -150,13 +151,13 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast,
       <div className={styles.grid}>
         <label className={styles.field}>
           <span className={styles.label}>{tt('rules.opensAt', 'Opens')}</span>
-          <input className={styles.input} type="datetime-local" value={draft.opens_at || ''}
-                 onChange={(e) => set('opens_at', e.target.value)} />
+          <DateField withTime className={styles.input} value={draft.opens_at || ''}
+                     onChange={(e) => set('opens_at', e.target.value)} />
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{tt('rules.closesAt', 'Closes')}</span>
-          <input className={styles.input} type="datetime-local" value={draft.closes_at || ''}
-                 onChange={(e) => set('closes_at', e.target.value)} />
+          <DateField withTime className={styles.input} value={draft.closes_at || ''}
+                     onChange={(e) => set('closes_at', e.target.value)} />
         </label>
       </div>
 
@@ -186,15 +187,15 @@ export default function LineupRulesPanel({ tournamentRef, token, showToast,
       <div className={styles.grid}>
         <label className={styles.field}>
           <span className={styles.label}>{tt('rules.changesOpen', 'Opens')}</span>
-          <input className={styles.input} type="datetime-local"
-                 value={draft.changes_open_at || ''}
-                 onChange={(e) => set('changes_open_at', e.target.value)} />
+          <DateField withTime className={styles.input}
+                     value={draft.changes_open_at || ''}
+                     onChange={(e) => set('changes_open_at', e.target.value)} />
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{tt('rules.changesClose', 'Closes')}</span>
-          <input className={styles.input} type="datetime-local"
-                 value={draft.changes_close_at || ''}
-                 onChange={(e) => set('changes_close_at', e.target.value)} />
+          <DateField withTime className={styles.input}
+                     value={draft.changes_close_at || ''}
+                     onChange={(e) => set('changes_close_at', e.target.value)} />
         </label>
       </div>
 

@@ -59,6 +59,7 @@ import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import TradeHere from '@/components/vendor-slots/TradeHere';
+import { slotsText } from '@/lib/slots';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1717,7 +1718,7 @@ export const ViewEventContent = ({
                                 <FaTrophy /> {Number(t.prize_pool || 0).toLocaleString()} VC
                               </span>
                               <span>
-                                <FaUsers /> {t.current_participants}/{t.max_participants}
+                                <FaUsers /> {slotsText(tt, t.current_participants, t.max_participants)}
                               </span>
                             </div>
                             {t.entry_covered_by_ticket ? <p className={styles.coveredNote}>

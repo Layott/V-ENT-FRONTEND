@@ -30,6 +30,9 @@ import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import { presetButton, roomText } from '@/components/view-tournament/match-room/matchWords';
+import BRSettingsFields, { defaultBR } from './br/BRSettingsFields';
+import { lobbyLabel } from './br/BRStandings';
+import { plural } from '@/lib/plural';
 import styles from './stages-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -42,17 +45,21 @@ const PLACE_WORDS = {
 };
 
 const TABLE = new Set(['round_robin', 'ladder', 'aggregate_2v2', 'swiss']);
-const KNOCKOUT = new Set(['single_elimination', 'double_elimination']);
+// A knockout for the purpose of how a match is played: a final, two legs,
+// a winner when it ends level. The placing formats are knockouts too.
+const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladder',
+  'page_playoff', 'winner_stays_on']);
 const GROUPABLE = new Set(['round_robin', 'ladder', 'aggregate_2v2']);
 const BEST_OF = [1, 2, 3, 5, 7];
 const CHECK_IN = [0, 5, 10, 15, 30];
 
-const defaultSettings = format => (TABLE.has(format)
+const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
       ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 } : { legs: 1 }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
-      ...(format === 'single_elimination' ? { third_place: false } : {}),
+      ...(format === 'single_elimination' ? { third_place: false, every_place: false } : {}),
+      ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
       ...(format === 'double_elimination' ? { grand_final: 'reset' } : {}) });
 
 /** A set of filled chips, one pressed. Never a ring. */
@@ -186,6 +193,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       return tt('stages.lineLast', '{format}. This decides the tournament.')
         .replace('{format}', name);
     }
+    if (row.format === 'battle_royale' && row.settings?.advance_by === 'lobby') {
+      return tt('stages.lineLobbies', '{format}. The top {n} of each lobby go through.')
+        .replace('{format}', name)
+        .replace('{n}', row.advances);
+    }
     if (row.format === 'gsl') {
       return tt('stages.lineGsl', '{format}. The top two of each group of four go through.')
         .replace('{format}', name);
@@ -205,6 +217,29 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   const playedAs = row => {
     const s = row.settings || {};
     const bits = [];
+    if (row.format === 'battle_royale') {
+      bits.push(tt('stages.brLobbies', 'lobbies of up to {n} squads').replace('{n}', s.lobby_size || 12));
+      bits.push(plural(tt, s.maps || 6, 'stages.brMapsOne', '{n} match each', 'stages.brMapsMany', '{n} matches each'));
+      bits.push(tt('stages.brKill', '{n} a kill').replace('{n}', s.per_kill ?? 1));
+      if (s.match_point) bits.push(tt('stages.brMatchPoint', 'match point at {n}').replace('{n}', s.match_point));
+      // The head start is part of how the stage is played, and a squad
+      // deciding whether first place is worth chasing needs to see it
+      // (walk, 28 September 2026: it was set and said nowhere).
+      const carried = Object.entries(s.carry_over || {}).filter(([, v]) => Number(v) > 0)
+        .sort((a, b) => Number(a[0]) - Number(b[0]));
+      if (carried.length) {
+        bits.push(tt('stages.brCarry', 'a head start in the next stage: {list}').replace('{list}', carried
+          .map(([place, pts]) => tt('stages.brCarryOne', 'place {n} +{pts}').replace('{n}', place).replace('{pts}', pts))
+          .join(', ')));
+      }
+      return bits.join(', ');
+    }
+    if (s.every_place) bits.push(tt('stages.everyPlaceOn', 'a match for every place'));
+    if (row.format === 'winner_stays_on') {
+      bits.push(s.streak_target
+        ? tt('stages.streakOn', 'until {n} wins in a row').replace('{n}', s.streak_target)
+        : tt('stages.onePass', 'one challenge each'));
+    }
     if (s.knockout_legs > 1) bits.push(tt('stages.twoLegs', 'two legs'));
     else bits.push(tt('stages.bestOfN', 'best of {n}').replace('{n}', s.best_of || 1));
     if (s.final_best_of) bits.push(tt('stages.finalBestOfN', 'final best of {n}').replace('{n}', s.final_best_of));
@@ -228,7 +263,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       by_record: tt('stages.placeRecord', 'By record'),
       random: tt('stages.placeRandom', 'At random'),
     }[row.placement || 'cross'];
-    const bits = [tt('stages.placedAs', 'Placed: {how}').replace('{how}', placed)];
+    // A battle royale has lobbies, not a first round: nobody "meets" anybody,
+    // they are spread across lobbies by how they finished (walk, 28 September).
+    const how = row.format === 'battle_royale' && row.placement !== 'random'
+      ? tt('stages.placeLobbies', 'Spread across the lobbies by how they finished')
+      : placed;
+    const bits = [tt('stages.placedAs', 'Placed: {how}').replace('{how}', how)];
     const invited = (row.direct_entrants_named || []).map(e => e.name).filter(Boolean);
     if (invited.length) {
       bits.push(tt('stages.invitedIn', 'Straight in: {names}').replace('{names}', invited.join(', ')));
@@ -612,7 +652,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <span className={styles.fieldLabel}>{tt('stages.format', 'Played as')}</span>
                     <select className={styles.select} value={row.format} disabled={busy}
                             onChange={e => setField(index, 'format', e.target.value)}>
-                      {catalogue.filter(f => f.key !== 'battle_royale' || draft.length === 1).map(f => (
+                      {catalogue.map(f => (
                         <option key={f.key} value={f.key}>
                           {formatLabel(tt, f.key, f.label)}
                         </option>
@@ -633,6 +673,8 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <span className={styles.fieldLabel}>
                       {last
                         ? tt('stages.advancesLast', 'Nobody advances')
+                        : row.format === 'battle_royale' && s.advance_by === 'lobby'
+                          ? tt('br.advancesLobby', 'How many go through from each lobby')
                         : row.format === 'gsl'
                           ? tt('stages.advancesGsl', 'Through, per group (fixed at two)')
                           : (Number(row.groups) > 1
@@ -657,6 +699,39 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                              options={[[false, tt('stages.no', 'No')], [true, tt('stages.yes', 'Yes')]]}
                              onChange={v => setSetting(index, 'third_place', v)} />
                     </div>
+                  )}
+                  {row.format === 'single_elimination' && (
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.everyPlace', 'Play for every place')}</span>
+                      <Chips value={Boolean(s.every_place)} disabled={busy}
+                             label={tt('stages.everyPlace', 'Play for every place')}
+                             options={[[false, tt('stages.no', 'No')], [true, tt('stages.yes', 'Yes')]]}
+                             onChange={v => setDraft(prev => prev.map((r, i) => (i === index
+                               ? { ...r, settings: { ...r.settings, every_place: v, third_place: v ? false : r.settings.third_place } }
+                               : r)))} />
+                    </div>
+                  )}
+                  {row.format === 'winner_stays_on' && <>
+                    <label className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.streakTarget', 'Wins in a row that end it (0 for one challenge each)')}</span>
+                      <input className={styles.number} type="number" min="0" max="20" disabled={busy}
+                             value={s.streak_target ?? 0}
+                             onChange={e => setSetting(index, 'streak_target', Number(e.target.value) || 0)} />
+                    </label>
+                    {Number(s.streak_target) > 0 && (
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.maxMatches', 'Most matches before it stops (0 works it out)')}</span>
+                        <input className={styles.number} type="number" min="0" max="200" disabled={busy}
+                               value={s.max_matches ?? 0}
+                               onChange={e => setSetting(index, 'max_matches', Number(e.target.value) || 0)} />
+                      </label>
+                    )}
+                  </>}
+                  {row.format === 'stepladder' && (
+                    <p className={styles.note}>{tt('stages.stepladderNote', 'The lowest seeds play first and each winner climbs to meet the next seed up; the top seed waits in the final. Seed it from the stage before.')}</p>
+                  )}
+                  {row.format === 'page_playoff' && (
+                    <p className={styles.note}>{tt('stages.pageNote', 'Exactly four: first against second for the final, third against fourth to stay alive, then the second chance.')}</p>
                   )}
                   {row.format === 'double_elimination' && (
                     <div className={styles.field}>
@@ -698,8 +773,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <p className={styles.note}>{tt('stages.gslNote', 'Groups of four, drawn automatically. Two openers, a winners match, a losers match and a decider.')}</p>
                   )}
                 </div>
+                {row.format === 'battle_royale' && (
+                  <BRSettingsFields value={s} disabled={busy} isLast={last}
+                                    onChange={next => setDraft(prev => prev.map((r, i) => (i === index ? { ...r, settings: next } : r)))} />
+                )}
 
                 {/* How a match is played. */}
+                {row.format !== 'battle_royale' && <>
                 <p className={styles.subhead}>{tt('stages.matchSettings', 'Each match')}</p>
                 {preset && (
                   <button type="button" className={styles.ghost} disabled={busy} onClick={() => applyPreset(index)}>
@@ -771,6 +851,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                          placeholder={tt('stages.roomSettingsPlaceholder', 'For example: 6 minute halves, extra time and penalties on')}
                          onChange={e => setSetting(index, 'room_settings', e.target.value)} />
                 </label>
+                </>}
 
                 {/* How people arrive in this stage. */}
                 {index > 0 && <>
@@ -889,7 +970,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <span className={styles.throughName}>
                       {entry.name}
                       {entry.handle && entry.handle !== entry.name ? ` @${entry.handle}` : ''}
-                      {entry.group ? ` (${tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(entry.group))}, ${entry.rank})` : ''}
+                      {entry.lobby_rank
+                        ? ` (${lobbyLabel(tt, { name: entry.lobby_name, number: entry.lobby })}, ${tt('br.placeN', 'Place {n}').replace('{n}', entry.lobby_rank)})`
+                        : entry.group ? ` (${tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(entry.group))}, ${entry.rank})` : ''}
+                      {Number(entry.carry) > 0
+                        ? `, ${plural(tt, entry.carry, 'stages.startsOnOne', 'starts on {n} point', 'stages.startsOnMany', 'starts on {n} points')}`
+                        : ''}
                     </span>
                     <span className={styles.rowActions}>
                       <button type="button" className={styles.iconBtn} disabled={busy || i === 0}

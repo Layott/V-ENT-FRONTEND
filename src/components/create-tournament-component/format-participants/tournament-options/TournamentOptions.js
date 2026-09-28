@@ -4,6 +4,7 @@ import createTournamentStyles from '@/styles/create-tournament/create-tournament
 import styles from './tournament-options.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatKey } from '@/lib/formatLabel';
 import { COUNTRIES, isKnownCountry } from '@/constants/countries';
 
 // The settings an organiser configures beyond the headline fields. Every one of
@@ -62,6 +63,8 @@ export const DEFAULT_OPTIONS = {
   forfeit_without_check_in: true,
   seeding_method: 'registration',
   third_place_match: false,
+  every_place: false,
+  streak_target: 0,
   best_of_mode: 'fixed',
   best_of: 1,
   best_of_final: 3,
@@ -151,7 +154,21 @@ const TournamentOptions = ({
               </button>)}
           </div>
 
-          <Toggle id="third_place_match" tip="thirdPlaceMatch" label={tt("ui.play.third.place.match.f507", "Play a third-place match")} hint="The two semi-final losers play for third. Needed if your prize table pays a third place." checked={options.third_place_match} onChange={v => set('third_place_match', v)} />
+          {!options.every_place && <Toggle id="third_place_match" tip="thirdPlaceMatch" label={tt("ui.play.third.place.match.f507", "Play a third-place match")} hint="The two semi-final losers play for third. Needed if your prize table pays a third place." checked={options.third_place_match} onChange={v => set('third_place_match', v)} />}
+
+          {/* Matches for every place: losers keep playing for fifth, seventh
+              and every place below, so every entrant finishes somewhere of
+              their own. Single elimination only (CEO, 28 September 2026). */}
+          {formatKey(formData.bracket_type) === 'single_elimination' && <Toggle id="every_place" label={tt("opts.everyPlace", "Play for every place")} hint={tt("opts.everyPlaceHint", "Losers keep playing for the places below, so every entrant finishes in a place of their own. Replaces the third-place match.")} checked={Boolean(options.every_place)} onChange={v => updateFormData('options', { ...options, every_place: v, third_place_match: v ? false : options.third_place_match })} />}
+
+          {/* Winner stays on: one pass, or run until a streak. */}
+          {formatKey(formData.bracket_type) === 'winner_stays_on' && <label className={styles.field} htmlFor="streak_target">
+              <span className={styles.fieldLabel}>{tt("opts.streakTarget", "Wins in a row that end it")}</span>
+              <select id="streak_target" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.streak_target || 0} onChange={e => number('streak_target', e.target.value, 0)}>
+                <option value={0}>{tt("opts.streakOnePass", "None: everybody gets one challenge")}</option>
+                {[2, 3, 4, 5, 7, 10].map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </label>}
         </div>
 
         {/* ----------------------------------------------------- matches */}

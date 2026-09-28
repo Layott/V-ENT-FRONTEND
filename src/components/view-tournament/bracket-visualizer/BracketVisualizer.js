@@ -30,8 +30,10 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
+import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
+import { matchName } from '@/lib/matchName';
 import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -76,6 +78,17 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
       {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id, handleOf(match.participant_1))}
       <span className={styles.versus} aria-hidden="true">v</span>
       {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id, handleOf(match.participant_2))}
+      {match.loser_place && !match.winner_place && (
+        <span className={styles.fixtureNote}>
+          {tt('bracket.loserPlace', 'The loser finishes in place {n}').replace('{n}', match.loser_place)}
+        </span>
+      )}
+      {match.winner_place && match.loser_place && match.winner_place > 1 && (
+        <span className={styles.fixtureNote}>
+          {tt('bracket.forPlaces', 'For places {a} and {b}')
+            .replace('{a}', match.winner_place).replace('{b}', match.loser_place)}
+        </span>
+      )}
       {match.status === 'scheduled' && match.scheduled_at && (
         <span className={styles.fixtureNote}>
           {tt('bracket.startsAt', 'Starts {time}').replace('{time}',
@@ -96,7 +109,13 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
   );
 };
 
-const roundTitle = (tt, round, index, count, side) => {
+const roundTitle = (tt, round, index, count, side, format) => {
+  // The formats whose matches have names share them with the console.
+  if (['stepladder', 'page_playoff', 'winner_stays_on'].includes(norm(format))) {
+    return matchName(tt, {
+      round: round.round, side, is_final: round.matches?.some(m => m.is_final),
+    }, format);
+  }
   if (side === 'grand_final') {
     return count > 1 && index === count - 1
       ? tt('bracket.grandFinalReset', 'Grand final, reset')
@@ -108,12 +127,12 @@ const roundTitle = (tt, round, index, count, side) => {
 };
 
 /** A knockout section: columns that halve, spaced so each match sits opposite its pair. */
-const MapKnockout = ({ rounds, tt, onOpen, isMine, side }) => (
+const MapKnockout = ({ rounds, tt, onOpen, isMine, side, format }) => (
   <div className={styles.mapScroller}>
     <div className={styles.mapRow}>
       {rounds.map((round, index) => (
         <div key={`${side}-${round.round}`} className={styles.mapCol}>
-          <p className={styles.colTitle}>{roundTitle(tt, round, index, rounds.length, side)}</p>
+          <p className={styles.colTitle}>{roundTitle(tt, round, index, rounds.length, side, format)}</p>
           <div className={styles.mapStack}
                style={side === 'winners'
                  ? { gap: `${Math.max(12, 12 * (2 ** index))}px`,
@@ -130,13 +149,15 @@ const MapKnockout = ({ rounds, tt, onOpen, isMine, side }) => (
 );
 
 /** Matchdays side by side. Nothing advances out of a round, so nothing joins. */
-const MapFlat = ({ rounds, tt, onOpen, isMine }) => (
+const MapFlat = ({ rounds, tt, onOpen, isMine, format }) => (
   <div className={styles.mapScroller}>
     <div className={styles.mapRow}>
       {rounds.map(round => (
         <div key={round.round} className={styles.mapCol}>
           <p className={styles.colTitle}>
-            {tt('bracket.matchday', 'Matchday {n}').replace('{n}', round.round)}
+            {norm(format) === 'winner_stays_on'
+              ? roundTitle(tt, round, 0, 0, 'winners', format)
+              : tt('bracket.matchday', 'Matchday {n}').replace('{n}', round.round)}
           </p>
           <div className={styles.mapStack} style={{ gap: '12px' }}>
             {(round.matches || []).map(match => (
@@ -238,7 +259,11 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
 const StandingsTable = ({ rows, format, advancing, tt }) => {
   if (!rows?.length) return null;
   const swiss = norm(format) === 'swiss';
-  const placed = ['single_elimination', 'double_elimination', 'gsl'].includes(norm(format));
+  // Formats whose table is final places decided by the matches, not a record
+  // of wins and goals: a stepladder's table read P0 W0 D0 L0 on every row
+  // (walk, 28 September 2026).
+  const placed = ['single_elimination', 'double_elimination', 'gsl', 'stepladder', 'page_playoff']
+    .includes(norm(format));
   const goingThrough = new Set(advancing || []);
   // A football Swiss can end level, and a row that reads P3 W1 L1 hides the
   // draw it counted (second bracket walk, 28 September 2026). The column shows
@@ -293,6 +318,81 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
       )}
     </div>
   );
+};
+
+/** Winner stays on: placed by wins, then the longest run of them. */
+const StreakTable = ({ rows, tt }) => {
+  if (!rows?.length) return null;
+  const holder = rows.find(r => r.holder);
+  const queue = rows.filter(r => r.queue_position).sort((a, b) => a.queue_position - b.queue_position);
+  return <>
+    {holder && (
+      <p className={styles.gridNote}>
+        {tt('bracket.holderNow', '{name} holds the spot.').replace('{name}', holder.name)}
+        {queue.length > 0 && ' ' + tt('bracket.queueNow', 'Next in the queue: {names}.')
+          .replace('{names}', queue.map(r => r.name).join(', '))}
+      </p>
+    )}
+    <div className={styles.tableScroller}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th className={styles.tableName}>{tt('bracket.col.name', 'Name')}</th>
+            <th title={tt('bracket.col.winsLong', 'Won')}>{tt('bracket.col.wins', 'W')}</th>
+            <th title={tt('bracket.col.lossesLong', 'Lost')}>{tt('bracket.col.losses', 'L')}</th>
+            <th title={tt('bracket.col.streakLong', 'Longest winning streak')}>{tt('bracket.col.streak', 'Streak')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => (
+            <tr key={row.registration_id} className={row.holder ? styles.rowThrough : ''}>
+              <td>{row.rank ?? '-'}</td>
+              <td className={styles.tableName}>
+                {row.name}
+                {row.holder && <span className={styles.handle}>{tt('bracket.holder', 'holding the spot')}</span>}
+                {row.challenger && <span className={styles.handle}>{tt('bracket.challenger', 'challenging now')}</span>}
+                {row.queue_position && <span className={styles.handle}>
+                  {tt('bracket.queuedN', 'number {n} in the queue').replace('{n}', row.queue_position)}
+                </span>}
+              </td>
+              <td>{row.wins}</td>
+              <td>{row.losses}</td>
+              <td className={styles.tablePts}>{row.longest_streak}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </>;
+};
+
+/** The matches below first place, one section per range of places. */
+const PlacementSections = ({ rounds, tt, onOpen, isMine, format }) => {
+  const ranges = new Map();
+  for (const round of rounds) {
+    for (const match of round.matches || []) {
+      const key = (match.places || []).join('-') || 'x';
+      if (!ranges.has(key)) ranges.set(key, { places: match.places, rounds: new Map() });
+      const bucket = ranges.get(key).rounds;
+      if (!bucket.has(round.round)) bucket.set(round.round, { ...round, matches: [] });
+      bucket.get(round.round).matches.push(match);
+    }
+  }
+  const ordered = [...ranges.values()].sort((a, b) => (a.places?.[0] || 0) - (b.places?.[0] || 0));
+  return ordered.map(range => (
+    <div key={(range.places || []).join('-')}>
+      <p className={styles.sectionTitle}>
+        {range.places
+          ? tt(range.places[1] - range.places[0] === 1 ? 'bracket.placesAandB' : 'bracket.placesAtoB',
+               range.places[1] - range.places[0] === 1 ? 'Places {a} and {b}' : 'Places {a} to {b}')
+            .replace('{a}', range.places[0]).replace('{b}', range.places[1])
+          : tt('bracket.placementMatches', 'Placement matches')}
+      </p>
+      <MapKnockout rounds={[...range.rounds.values()].sort((a, b) => a.round - b.round)} tt={tt}
+                   onOpen={onOpen} isMine={isMine} side="placement" format={format} />
+    </div>
+  ));
 };
 
 export default function BracketVisualizer({ tournamentId, token = null, tournamentRef = null,
@@ -369,6 +469,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   if (!data) return null;
 
   const stages = data.stages || [];
+  const battleRoyale = norm(format) === 'battle_royale';
+  const streak = norm(format) === 'winner_stays_on';
   const current = view || (table ? 'grid' : 'map');
 
   // Sections: one per group, or per side of a knockout, in playing order.
@@ -408,7 +510,12 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
         </div>
       )}
 
-      {myNext && (
+      {battleRoyale && (
+        <BattleRoyaleBoard key={data.stage_id || 'br'} tournamentRef={tournamentRef || tournamentId}
+                           stageId={data.stage_id} token={token} />
+      )}
+
+      {!battleRoyale && myNext && (
         <button type="button" className={styles.myNext} onClick={() => openMatch(myNext)}>
           <span className={styles.myNextLabel}>{tt('bracket.yourMatch', 'Your match')}</span>
           <span className={styles.myNextVs}>
@@ -422,7 +529,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
         </button>
       )}
 
-      {rounds.length === 0 ? (
+      {battleRoyale ? null : rounds.length === 0 ? (
         <p className={styles.state}>
           {stages.length && !stages.find(s => s.id === data.stage_id)?.drawn
             ? tt('bracket.stageNotDrawn', 'This stage is drawn when the one before it finishes.')
@@ -434,9 +541,17 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             {/* In the reader's language; the server's label is English. */}
             <p className={styles.formatName}>{formatLabel(tt, format, data.format_label || format)}</p>
             <p className={styles.formatHint}>
+              {/* How THIS format runs, in the words the wizard used for it: a
+                  page playoff carried the knockout sentence (walk, 28 September 2026). */}
               {table
                 ? tt('bracket.flatHint', 'Every entrant meets the others. Nobody is knocked out, so the table decides it.')
-                : tt('bracket.knockoutHint', 'The winner of each match moves along the line to the next one.')}
+                : norm(format) === 'stepladder'
+                  ? tt('format.stepladderBlurb', 'The lowest seeds play first and each winner climbs to meet the next seed up. The top seed waits in the final.')
+                  : norm(format) === 'page_playoff'
+                    ? tt('format.pageBlurb', 'Four sides. First plays second for a place in the final; third plays fourth to stay alive; the loser of the first meets the winner of the second for the other place in the final.')
+                    : norm(format) === 'winner_stays_on'
+                      ? tt('bracket.wsoHint', 'The winner keeps playing the next challenger in the queue until everybody has had a go, or somebody reaches the winning streak the organiser set.')
+                      : tt('bracket.knockoutHint', 'The winner of each match moves along the line to the next one.')}
             </p>
           </div>
           {table && !groups.length && (
@@ -474,21 +589,41 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             <StandingsTable rows={standings} format={format} advancing={data.advancing} tt={tt} />
             {fixtures(rounds)}
           </>
+        ) : streak ? (
+          <>
+            <StreakTable rows={standings} tt={tt} />
+            <MapFlat rounds={rounds} tt={tt} onOpen={openMatch} isMine={isMine} format={format} />
+          </>
         ) : (
           <>
-            {hasLosers && <p className={styles.sectionTitle}>{tt('bracket.winnersBracket', 'Winners bracket')}</p>}
-            <MapKnockout rounds={bySide('winners')} tt={tt} onOpen={openMatch} isMine={isMine} side="winners" />
+            {hasLosers && <p className={styles.sectionTitle}>
+              {norm(format) === 'page_playoff'
+                ? tt('bracket.pageTopPath', 'The top two')
+                : tt('bracket.winnersBracket', 'Winners bracket')}
+            </p>}
+            <MapKnockout rounds={bySide('winners')} tt={tt} onOpen={openMatch} isMine={isMine}
+                         side={norm(format) === 'single_elimination' || norm(format) === 'double_elimination' ? 'winners' : 'flat'}
+                         format={format} />
             {hasLosers && <>
-              <p className={styles.sectionTitle}>{tt('bracket.losersBracket', 'Losers bracket')}</p>
-              <MapKnockout rounds={bySide('losers')} tt={tt} onOpen={openMatch} isMine={isMine} side="losers" />
+              <p className={styles.sectionTitle}>
+                {norm(format) === 'page_playoff'
+                  ? tt('bracket.pageBottomPath', 'The bottom two, and the second chance')
+                  : tt('bracket.losersBracket', 'Losers bracket')}
+              </p>
+              <MapKnockout rounds={bySide('losers')} tt={tt} onOpen={openMatch} isMine={isMine} side="losers" format={format} />
             </>}
+            {bySide('placement').length > 0 && (
+              <PlacementSections rounds={bySide('placement')} tt={tt} onOpen={openMatch}
+                                 isMine={isMine} format={format} />
+            )}
             {bySide('grand_final').length > 0 && <>
               <p className={styles.sectionTitle}>{tt('bracket.grandFinal', 'Grand final')}</p>
               <MapKnockout rounds={bySide('grand_final')} tt={tt} onOpen={openMatch} isMine={isMine} side="grand_final" />
             </>}
-            {standings.some(r => r.rank) && (
+            {standings.some(r => r.rank) && (<>
+              <p className={styles.sectionTitle}>{tt('bracket.finalPlaces', 'Final places')}</p>
               <StandingsTable rows={standings.filter(r => r.rank)} format={format} tt={tt} />
-            )}
+            </>)}
           </>
         )}
       </>}

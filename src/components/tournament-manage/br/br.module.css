@@ -1,0 +1,738 @@
+/* Battle royale: the console, the settings and the public board.
+   The stage panel's vocabulary: filled surfaces stepping off the panel
+   (#212225, #2a2b30, #33343a), 14px panels, 10px controls, 8px chips, no
+   strokes, 44px targets. A result's meaning is a colour and a word. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.hint,
+.note {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-top: 0.4rem;
+  max-width: 68ch;
+}
+
+.state {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.95rem;
+  padding: 1rem 0;
+}
+
+.problem {
+  color: var(--v-ent-red, #ed1c24);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 0.8rem;
+}
+
+.good {
+  color: var(--v-ent-success, #4caf50);
+  font-size: 0.88rem;
+  margin-top: 0.6rem;
+}
+
+.subhead {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin-top: 1.1rem;
+}
+
+.sectionTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin: 1.2rem 0 0.6rem;
+}
+
+/* ------------------------------------------------------------- controls */
+
+.btn,
+.ghost,
+.save,
+.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn,
+.ghost {
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btn:hover,
+.ghost:hover { background-color: #3d3e45; color: #fff; }
+
+.save {
+  background-color: var(--v-ent-success, #4caf50);
+  color: #10231a;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.save:hover { background-color: var(--v-ent-success-light, #66bb6a); }
+
+.danger {
+  background-color: rgba(237, 28, 36, 0.16);
+  color: #ff8a8f;
+}
+
+.danger:hover { background-color: rgba(237, 28, 36, 0.26); }
+
+.btn:disabled,
+.ghost:disabled,
+.save:disabled,
+.danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn:focus-visible,
+.ghost:focus-visible,
+.save:focus-visible,
+.danger:focus-visible,
+.iconBtn:focus-visible,
+.chip:focus-visible,
+.lobbyChip:focus-visible,
+.matchBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  outline: none;
+}
+
+.iconBtn:hover { background-color: #3d3e45; color: #fff; }
+.iconBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1 1 10rem;
+  margin-top: 0.5rem;
+}
+
+.fieldLabel {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text,
+.select,
+.number {
+  min-height: 44px;
+  width: 100%;
+  min-width: 0;
+  padding: 0 0.8rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.text:focus-visible,
+.select:focus-visible,
+.number:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.text:disabled,
+.select:disabled,
+.number:disabled { opacity: 0.55; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  outline: none;
+}
+
+.chip:hover { background-color: #3d3e45; color: #fff; }
+.chipOn,
+.chipOn:hover { background-color: rgba(212, 175, 55, 0.22); color: var(--v-ent-light-gold, #E8C760); }
+.chip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.settings {
+  display: flex;
+  flex-direction: column;
+}
+
+/* In a column the 10rem basis a field has in a row became a HEIGHT: a
+   ten-rem gap under every chip row (seen on the walk, 28 September 2026). */
+.settings > .field,
+.sheet > .field { flex: 0 0 auto; }
+
+.placeTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.placeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.placeName {
+  flex: 0 0 6.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
+}
+
+.placeRow .number { max-width: 8rem; }
+
+.ordered { margin-top: 0.5rem; }
+
+.orderedList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.orderedRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.35rem 0.4rem 0.35rem 0.6rem;
+}
+
+.orderedName {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.rowActions {
+  display: inline-flex;
+  gap: 0.3rem;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+/* --------------------------------------------------------------- lobbies */
+
+.lobbyChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.lobbyChip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.35rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.lobbyChip:hover { background-color: #33343a; color: #fff; }
+.lobbyChipOn,
+.lobbyChipOn:hover { background-color: rgba(212, 175, 55, 0.22); color: var(--v-ent-light-gold, #E8C760); }
+
+.lobbyChipState {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.9rem;
+  min-width: 0;
+}
+
+.lobbyHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.lobbyName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.seats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+}
+
+.seat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.25rem 0.4rem 0.25rem 0.75rem;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  max-width: 100%;
+}
+
+.seatName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.seatMine { background-color: rgba(76, 175, 80, 0.18); color: #bfe8c2; }
+
+.carry {
+  font-size: 0.76rem;
+  color: var(--v-ent-light-gold, #E8C760);
+}
+
+.seat .select {
+  min-height: 44px;
+  width: auto;
+  background-color: #3d3e45;
+  font-size: 0.82rem;
+}
+
+/* --------------------------------------------------------------- matches */
+
+.matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+}
+
+.match {
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  min-width: 0;
+}
+
+.matchTop {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.matchName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold, 600);
+  letter-spacing: 0.04em;
+}
+
+.matchMeta {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.84rem;
+}
+
+.statusEntered { color: var(--v-ent-success, #4caf50); font-size: 0.84rem; }
+.statusPending { color: rgba(255, 255, 255, 0.55); font-size: 0.84rem; }
+
+.matchBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3d3e45;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.86rem;
+  outline: none;
+}
+
+.matchBtn:hover { background-color: #46474e; color: #fff; }
+.matchBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.matchActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.room {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.88rem;
+}
+
+.roomValue {
+  font-family: ui-monospace, 'SFMono-Regular', monospace;
+  color: #fff;
+  user-select: all;
+}
+
+/* ------------------------------------------------ result entry and review */
+
+.sheet {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.7rem;
+  min-width: 0;
+}
+
+.entryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.entryRow {
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  min-width: 0;
+}
+
+.entryTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.2rem 5.2rem auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.entryName {
+  color: #fff;
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.entryRow .number,
+.entryRow .select,
+.entryRow .text { background-color: #3d3e45; }
+
+.entryMore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.entryMore .field { flex: 1 1 7rem; margin-top: 0; }
+
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  width: 100%;
+}
+
+.playerRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.6rem 5.4rem 4.6rem;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.playerName {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.86rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.flag {
+  color: var(--v-ent-gold, #D4AF37);
+  font-size: 0.8rem;
+}
+
+.shots {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin-top: 0.7rem;
+  padding-bottom: 0.3rem;
+}
+
+.shots > * {
+  flex-shrink: 0;
+}
+
+.shot {
+  flex: 0 0 auto;
+  max-height: 220px;
+  max-width: 100%;
+  border-radius: 8px;
+  background-color: #33343a;
+}
+
+.fileInput {
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  max-width: 100%;
+}
+
+/* ----------------------------------------------------------------- tables */
+
+.tableScroller {
+  overflow-x: auto;
+  margin-top: 0.6rem;
+  border-radius: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 34rem;
+}
+
+.table th {
+  text-align: left;
+  font-weight: var(--fw-medium, 500);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.6rem;
+}
+
+.table td {
+  padding: 0.55rem 0.6rem;
+}
+
+.table tbody tr:nth-child(odd) { background-color: #2a2b30; }
+.table tbody tr:nth-child(even) { background-color: #26272c; }
+
+.tableName {
+  min-width: 9rem;
+}
+
+.tablePts {
+  color: #fff;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.rowThrough td:first-child { color: var(--v-ent-success, #4caf50); }
+.rowChampion td { color: var(--v-ent-light-gold, #E8C760); }
+
+.small {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.76rem;
+}
+
+.mvp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-top: 0.9rem;
+}
+
+/* The MVP's name is a link to their profile: a thumb needs 44px of it. */
+.mvp a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mvpLabel {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mvpName {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.mvpStats { color: rgba(255, 255, 255, 0.6); font-size: 0.86rem; }
+
+/* On a phone the squad and every player get a row of their own, and every
+   number keeps its field: the names were cut to "Wal..." and "@walk..." and
+   assists could not be entered at all (walk at 390px, 28 September 2026).
+   Four nested paddings left the form about 220px wide; they are thinner. */
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .lobby,
+  .sheet { padding: 0.7rem; }
+  .entryRow { padding: 0.6rem; }
+  .entryTop { grid-template-columns: 1fr 1fr; }
+  .entryTop > :first-child { grid-column: 1 / -1; white-space: normal; }
+  .entryTop > :last-child { grid-column: 1 / -1; }
+  .playerRow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .playerRow > :first-child { grid-column: 1 / -1; white-space: normal; }
+  .matchActions { margin-left: 0; width: 100%; }
+  .placeName { flex-basis: 5rem; }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* A read under review: the name the screen showed, who it is, and kills. */
+.reviewRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 16rem) 5rem;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.reviewRow .select,
+.reviewRow .number { background-color: #3d3e45; }
+
+@media (max-width: 720px) {
+  .reviewRow { grid-template-columns: minmax(0, 1fr) 4.6rem; }
+  .reviewRow > :first-child { grid-column: 1 / -1; }
+}
+
+.renameRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.renameRow .text { flex: 1 1 12rem; width: auto; }

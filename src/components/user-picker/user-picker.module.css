@@ -8,6 +8,7 @@
 }
 
 .input {
+  min-height: 44px;
   width: 100%;
   background-color: #2a2b30;
   border: none;

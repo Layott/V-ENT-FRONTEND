@@ -99,13 +99,38 @@ const WORDS = {
     noteKey: 'format.noteLadder',
     note: 'Good for a season that runs for weeks rather than an afternoon.',
   },
+  stepladder: {
+    nameKey: 'format.label.stepladder',
+    name: 'Stepladder',
+    blurbKey: 'format.stepladderBlurb',
+    blurb: 'The lowest seeds play first and each winner climbs to meet the next seed up. The top seed waits in the final.',
+    noteKey: 'format.noteStepladder',
+    note: 'Rewards a high seed with fewer matches to play, so it usually follows a table or a Swiss stage that decided the seeds. Every loser finishes in a known place: the first match’s loser is last.',
+  },
+  page_playoff: {
+    nameKey: 'format.label.page_playoff',
+    name: 'Page playoff',
+    blurbKey: 'format.pageBlurb',
+    blurb: 'Four sides. First plays second for a place in the final; third plays fourth to stay alive; the loser of the first meets the winner of the second for the other place in the final.',
+    noteKey: 'format.notePage',
+    note: 'The top two get a second chance and the bottom two do not, which is the reward for finishing high in the stage before. Four matches, exactly four entrants.',
+  },
+  winner_stays_on: {
+    nameKey: 'format.label.winner_stays_on',
+    name: 'Winner stays on',
+    blurbKey: 'format.wsoBlurb',
+    blurb: 'The winner keeps playing the next challenger in the queue until everybody has had a go, or somebody reaches the winning streak you set.',
+    noteKey: 'format.noteWso',
+    note: 'With a streak target, a loser goes to the back of the queue and can come round again. Placed by wins, then the longest streak.',
+  },
 };
 
 // The order they are offered in, when the catalogue cannot be reached. The
 // server's own order wins whenever it answers.
 const OFFLINE_ORDER = [
   'single_elimination', 'double_elimination', 'round_robin', 'swiss',
-  'battle_royale', 'gsl', 'aggregate_2v2', 'ladder',
+  'battle_royale', 'gsl', 'aggregate_2v2', 'ladder', 'stepladder', 'page_playoff',
+  'winner_stays_on',
 ];
 
 /** However many entrants this tournament is being built for, or 0. */

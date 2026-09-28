@@ -10,8 +10,11 @@ import { useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
 import ResultsDesk from '@/components/tournament-manage/ResultsDesk';
+import BattleRoyaleConsole from '@/components/tournament-manage/br/BattleRoyaleConsole';
 import TieScoring from '@/components/tournament-manage/TieScoring';
 import { formatKey } from '@/lib/formatLabel';
+import { slotsText } from '@/lib/slots';
+import { matchName } from '@/lib/matchName';
 import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -114,7 +117,13 @@ const flattenMatches = (rounds = []) => rounds.flatMap(r => (r.matches || []).ma
   p1: m.participant_1 || null,
   p2: m.participant_2 || null,
   winner: m.winner || null,
-  scheduled_at: m.scheduled_at || null
+  scheduled_at: m.scheduled_at || null,
+  // What the match is for, so the console can name it the way the bracket
+  // does: a stepladder's final, a match for places 5 and 6.
+  is_final: Boolean(m.is_final),
+  winner_place: m.winner_place ?? null,
+  loser_place: m.loser_place ?? null,
+  places: m.places || null
 })));
 const nameOf = p => p?.name || p?.participant?.name || 'TBD';
 const regIdOf = p => p?.registration_id ?? p?.id ?? null;
@@ -241,6 +250,10 @@ const ManageContent = ({ slug }) => {
     && caps !== null && access !== null;
   // A scorekeeper opens the console and sees the one tab they may use.
   const keepsScore = access?.can_record_results && !access?.can_manage;
+  // And the body follows: the page opens on Actions, and a scorekeeper was
+  // shown the whole Actions panel (codes, cancel and refund, the rules)
+  // under a tab row offering Match Control alone (walk, 28 September 2026).
+  const shown = keepsScore ? 'match-control' : tab;
   // The seat-by-seat screen is for a tie made of several matches (an
   // aggregate league, or any table with more than one seat a side). A plain
   // round robin match is one score: it was sent to the seat screen, which
@@ -317,7 +330,7 @@ const ManageContent = ({ slug }) => {
                 <span className={styles.metaText}>
                   {/* No cap set is "16 participants", not "16/0": a zero there
                       read as a full tournament. */}
-                  {tournament.current_participants ?? 0}{tournament.max_participants ? `/${tournament.max_participants}` : ''} {tt("ui.participants.a94a", "participants")}
+                  {slotsText(tt, tournament.current_participants, tournament.max_participants, 'entrant')}
                 </span>
                 <span className={styles.metaText}><LuTrophy /> {prizePool.toLocaleString()} VC</span>
               </div>
@@ -329,9 +342,11 @@ const ManageContent = ({ slug }) => {
               {/* Opens the Production tab below. This was a disabled button
                   titled "Production is not available yet", beside the tab
                   that worked. */}
-              <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
+              {/* Not for a scorekeeper: the studio is not theirs to run, and
+                  the tab it opens is one they are never shown. */}
+              {!keepsScore && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
                 <LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}
-              </button>
+              </button>}
             </div>
           </div>
 
@@ -339,22 +354,29 @@ const ManageContent = ({ slug }) => {
               they cannot use is a control the API would refuse. */}
           <div className={styles.tabBar}>
             {(keepsScore ? TABS.filter(t => t.id === 'match-control') : TABS)
-              .map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
+              .map(t => <button key={t.id} className={`${styles.tabBtn} ${shown === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
           <div>
-            {tab === 'actions' && <ActionsPanel slug={slug} embedded />}
-            {tab === 'match-control' && <>
+            {shown === 'actions' && <ActionsPanel slug={slug} embedded onChanged={() => load({ quiet: true })} />}
+            {shown === 'match-control' && <>
               {/* Entering results, and who may. A league tie is one game per
                   seat and is decided on total goals, so it gets its own
                   screen; a knockout match is one score. Both are here, and a
                   scorekeeper the organiser named sees this tab and no other. */}
-              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague} />
+              {/* A battle royale's lobbies, rooms and results (CEO, 28 September
+                  2026). Renders nothing for a tournament with no battle royale. */}
+              <BattleRoyaleConsole tournamentRef={tournament.slug || tournament.tournament_id} token={token}
+                                   gameTitle={tournament.game || ''} showToast={showToast}
+                                   onChanged={() => load({ quiet: true })} />
+              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague}
+                                 hideWhenEmpty={formatKey(tournament.bracket_type || tournament.format) === 'battle_royale'}
+                                 format={tournament.bracket_type || tournament.format} />
               {access?.can_manage && (
                 <ResultsDesk tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
               )}
             </>}
-            {tab === 'lineup' && <>
+            {shown === 'lineup' && <>
               {/* The organiser's half: when lineups open and close. Above the
                   picker because the deadline governs it. */}
               {access?.can_manage && (
@@ -391,15 +413,15 @@ const ManageContent = ({ slug }) => {
                             token={token} showToast={showToast}
                             onSubmitted={() => setLineupEpoch((n) => n + 1)} />
             </>}
-            {tab === 'participants' && <ParticipantsPanel participants={participants} />}
-            {tab === 'invitations' && <>
+            {shown === 'participants' && <ParticipantsPanel participants={participants} />}
+            {shown === 'invitations' && <>
               <InvitationsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
               {/* Putting somebody in directly, and squads made of players from
                   several clubs. On this tab because it is the same job: an
                   organiser deciding who is in. */}
               <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
             </>}
-            {tab === 'brackets' && <>
+            {shown === 'brackets' && <>
               {/* What shape the whole thing is, above the bracket it produces:
                   groups into a playoff, Swiss into a top cut. The backend has
                   composed tournaments out of stages since the catalogue learned
@@ -413,12 +435,12 @@ const ManageContent = ({ slug }) => {
                                  tournamentRef={tournament.slug || tournament.tournament_id} token={token}
                                  onChanged={() => load({ quiet: true })} />
             </>}
-            {tab === 'run-of-show' && (
+            {shown === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"
                               ownerRef={tournament.slug || tournament.tournament_id}
                               token={token} showToast={showToast} />
             )}
-            {tab === 'production' && <>
+            {shown === 'production' && <>
               {/* The studio. V-ENT's own graphics, bound to this tournament,
                   each with a URL for a browser source. Replaces a panel that
                   told organisers broadcast tooling was "still being built"
@@ -429,7 +451,7 @@ const ManageContent = ({ slug }) => {
                   where somebody is already setting up their stream. */}
               <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
-            {tab === 'reminders' && <>
+            {shown === 'reminders' && <>
               <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />
               {/* Discord announcements, beside the reminders, because they are
                   the same job: telling people something is happening. Same
@@ -440,12 +462,12 @@ const ManageContent = ({ slug }) => {
                                  token={token} showToast={showToast} />
               )}
             </>}
-            {tab === 'money' && (
+            {shown === 'money' && (
               access?.can_manage
                 ? <MoneyPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
                 : <p className={styles.panelSub}>{tt('money.organiserOnly', 'Only the organiser can see the money on this tournament.')}</p>
             )}
-            {tab === 'stats' && <>
+            {shown === 'stats' && <>
                 {/* How the league table is worked out, above the MVP metrics:
                     the table is what everybody looks at, the awards are what
                     an organiser decides afterwards. */}
@@ -1007,12 +1029,18 @@ const MatchControlPanel = ({
   token,
   showToast,
   onSaved,
-  isLeague = false
+  isLeague = false,
+  hideWhenEmpty = false,
+  format = ''
 }) => {
   const tt = useT();
   const [selected, setSelected] = useState(null);
   const [openRoom, setOpenRoom] = useState(null);
   const live = matches.find(m => m.id === selected) || matches[0] || null;
+  // A battle royale has no head-to-head matches until (unless) a knockout
+  // follows it; the console above runs it, and "no bracket yet" beside a
+  // finished battle royale was simply wrong (walk, 28 September 2026).
+  if (!matches.length && hideWhenEmpty) return null;
   if (!matches.length) {
     return <div>
         <h2 className={styles.panelTitle}>{tt("ui.match.control.9540", "Match Control")}</h2>
@@ -1029,7 +1057,8 @@ const MatchControlPanel = ({
             <div className={styles.matchListTop}>
               <span className={styles.matchRound}>
                 {m.group ? `${tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + m.group))} · ` : ''}
-                {m.side === 'losers' ? 'L' : m.side === 'grand_final' ? 'GF' : 'R'}{m.round} · M{m.match_number}
+                {matchName(tt, m, format)
+                  || `${m.side === 'losers' ? 'L' : m.side === 'grand_final' ? 'GF' : 'R'}${m.round} · M${m.match_number}`}
               </span>
               <span className={`${styles.matchStatusBadge} ${styles[`matchStatus_${m.status}`]}`}>{matchStatusWord(tt, m.status)}</span>
             </div>

@@ -28,6 +28,7 @@ import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime
 import DateField from '@/components/date-field/DateField';
 import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
+import { matchName } from '@/lib/matchName';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -247,8 +248,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         <div className={styles.head}>
           <p className={styles.title}>
             {match
-              ? tt('match.titleRound', 'Round {r}, match {m}')
-                .replace('{r}', match.round_number).replace('{m}', match.match_number)
+              ? (matchName(tt, { ...match, side: match.bracket_side }, match.format)
+                || tt('match.titleRound', 'Round {r}, match {m}')
+                  .replace('{r}', match.round_number).replace('{m}', match.match_number))
               : tt('match.title', 'Match')}
           </p>
           <button type="button" className={styles.close} onClick={onClose}

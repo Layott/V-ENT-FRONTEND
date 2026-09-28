@@ -29,7 +29,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 
 // What makes a function destructive.
-const DESTRUCTIVE_CALL = /method:\s*['"]DELETE['"]|\/(delete|remove|end|cancel|refund|rotate|void|reject)\/?['"`]/;
+// `finish` joined 28 September 2026: a battle royale's Finish wrote the final
+// places on one press, and nothing can change the results after it.
+const DESTRUCTIVE_CALL = /method:\s*['"]DELETE['"]|\/(delete|remove|end|cancel|refund|rotate|void|reject|finish)\/?['"`]/;
 // The second press of a two-press control clears the confirm state.
 const CLEARS_CONFIRM = /set[A-Z]\w*\(\s*(null|false|''|"")\s*\)/;
 // A control that says it is one press on purpose.
@@ -141,6 +143,15 @@ function selfTest() {
       export default function X() { return <>
         {/* one-press: undo at a gate is reversed by pressing Check in again */}
         <button onClick={() => undo()}>Undo</button>
+      </>; }
+    `, 0],
+    ['finish.js', `
+      export default function X() { return <button onClick={() => call(\`br/\${stage.id}/finish/\`, { done: 'Finished.' })}>Finish</button>; }
+    `, 1],
+    ['finish-two.js', `
+      export default function X() { return <>
+        <button onClick={() => setConfirm('finish')}>Finish</button>
+        <button onClick={() => { setConfirm(null); call(\`br/\${stage.id}/finish/\`, {}); }}>Yes, finish it</button>
       </>; }
     `, 0],
     ['harmless.js', `

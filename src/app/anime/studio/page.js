@@ -27,6 +27,7 @@ import { call, fill, tokenFrom, useAnimeCatalogue, useAnimeOpen } from '@/lib/an
 import { formatDate, localInputToISO } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
 import styles from './studio.module.css';
+import DateField from '@/components/date-field/DateField';
 
 /** The field the API keeps this comic's price in, or nothing when it is free. */
 const PRICE_FIELD = {
@@ -553,8 +554,8 @@ const Studio = () => {
             <label className={styles.label} htmlFor="ch-when">
               {tt('anime.releaseDate', 'Out on (leave empty for now)')}
             </label>
-            <input id="ch-when" className={styles.input} type="datetime-local"
-                   value={publishAt} onChange={e => setPublishAt(e.target.value)} />
+            <DateField id="ch-when" withTime className={styles.input}
+                       value={publishAt} onChange={e => setPublishAt(e.target.value)} />
 
             <label className={styles.label} htmlFor="ch-early">
               {tt('anime.earlyPrice', 'Early access, in VENT COINS')}

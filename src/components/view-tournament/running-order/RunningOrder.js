@@ -20,6 +20,7 @@ import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './running-order.module.css';
+import DateField from '@/components/date-field/DateField';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -218,8 +219,8 @@ export default function RunningOrder({ tournamentId, token }) {
       </div>
 
       <div className={styles.addDay}>
-        <input className={styles.input} type="date" value={newDay}
-               onChange={e => setNewDay(e.target.value)} />
+        <DateField className={styles.input} value={newDay} ariaLabel={tt('order.addDay', 'Add a day')}
+                   onChange={e => setNewDay(e.target.value)} />
         <button type="button" className={styles.primary} disabled={busy || !newDay}
                 onClick={addDay}>
           {tt('order.addDay', 'Add a day')}

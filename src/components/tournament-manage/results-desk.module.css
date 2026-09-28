@@ -67,6 +67,7 @@
 .addRow { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 
 .input {
+  min-height: 44px;
   flex: 1;
   min-width: 220px;
   background-color: #2a2b30;
@@ -79,6 +80,7 @@
 
 .primary,
 .ghost {
+  min-height: 44px;
   border: none;
   border-radius: 10px;
   padding: 0.65rem 1rem;
