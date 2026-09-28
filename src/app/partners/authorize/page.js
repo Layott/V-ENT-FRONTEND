@@ -33,6 +33,13 @@ const AuthorizeContent = () => {
   const [error, setError] = useState('');
   const [working, setWorking] = useState(false);
   const load = useCallback(async () => {
+    // Opened without a partner's request (a bookmark, a crawler, a walker):
+    // there is nothing to check, so say so instead of asking the API a
+    // question it can only refuse with a 400.
+    if (!clientId || !redirectUri) {
+      setError(tt("api.thatSignInRequestIs", "That sign-in request is not valid."));
+      return;
+    }
     try {
       const query = new URLSearchParams({
         client_id: clientId,
