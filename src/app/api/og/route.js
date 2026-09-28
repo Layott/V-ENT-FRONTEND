@@ -46,6 +46,12 @@ function allowedOrigins() {
 const MAX_BYTES = 6 * 1024 * 1024;      // what we will pull from the media host
 const TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
+// What a card falls back to when the banner cannot be fetched. A JPEG, because
+// every page that points at this route has already declared og:image:type
+// image/jpeg: falling back to the PNG card made that a lie whenever a banner
+// was deleted or unreachable (check-embeds, 29 September).
+const FALLBACK = '/images/og-default.jpg';
+
 // The one card size the tags state, so what is served matches what is claimed.
 const CARD_WIDTH = 1200;
 const CARD_HEIGHT = 630;
@@ -55,13 +61,13 @@ const SCRAPER_MAX_BYTES = 600 * 1024;
 
 export async function GET(request) {
   const src = request.nextUrl.searchParams.get('src');
-  if (!src) return NextResponse.redirect(new URL('/images/og-default.png', request.url));
+  if (!src) return NextResponse.redirect(new URL(FALLBACK, request.url));
 
   let target;
   try {
     target = new URL(src);
   } catch {
-    return NextResponse.redirect(new URL('/images/og-default.png', request.url));
+    return NextResponse.redirect(new URL(FALLBACK, request.url));
   }
 
   // The allow list. Not a pattern match on the string: a check like
@@ -70,7 +76,7 @@ export async function GET(request) {
   const ok = origins.has(target.origin)
     && (target.pathname.startsWith('/media/') || target.pathname.startsWith('/static/'));
   if (!ok) {
-    return NextResponse.redirect(new URL('/images/og-default.png', request.url));
+    return NextResponse.redirect(new URL(FALLBACK, request.url));
   }
 
   try {
@@ -125,6 +131,6 @@ export async function GET(request) {
   } catch {
     // A preview with the platform's own card beats a preview with no picture,
     // which is what a broken image produces in every client that matters.
-    return NextResponse.redirect(new URL('/images/og-default.png', request.url));
+    return NextResponse.redirect(new URL(FALLBACK, request.url));
   }
 }
