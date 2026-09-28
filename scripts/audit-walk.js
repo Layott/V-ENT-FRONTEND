@@ -36,6 +36,9 @@ const PASS = process.env.AUDIT_PASS || 'Passw0rd!';
 const VIEW = (process.env.VIEW || 'desktop').toLowerCase();
 const AS = (process.env.AS || 'user').toLowerCase();
 const ONLY = (process.env.ONLY || '').split(',').map((s) => s.trim()).filter(Boolean);
+const SAMPLES = process.env.AUDIT_SAMPLES
+  ? JSON.parse(fs.readFileSync(process.env.AUDIT_SAMPLES, 'utf8'))
+  : {};
 
 // One folder per person walked, so walking several roles keeps every report.
 const OUT = path.join(__dirname, 'audit-out', `${VIEW}-${AS}${AS === 'user' ? `-${USER}` : ''}`);
@@ -110,7 +113,10 @@ async function walkRoute(page, route, allRoutes) {
   page.on('console', onConsole);
   page.on('response', onResponse);
 
-  const url = `${BASE}${route}${PARAMS[route] || ''}`;
+  // A dynamic route is walked as a real record when the samples file names
+  // one (AUDIT_SAMPLES, a JSON map of route to address); otherwise the
+  // bracketed placeholder only tests the not-found state.
+  const url = `${BASE}${SAMPLES[route] || route}${PARAMS[route] || ''}`;
   let navErr = null;
   try {
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 45000 });
@@ -205,6 +211,17 @@ async function walkRoute(page, route, allRoutes) {
   // Static files under /public (PDFs, images) are valid targets too.
   const norm = (h) => decodeURIComponent(h.split('?')[0].split('#')[0]).replace(/\/$/, '') || '/';
   const known = new Set(allRoutes.map(norm));
+  // A dynamic route matches any value in its bracketed segment: /u/[username]
+  // is the page for /u/demo_organizer, which the parent-prefix rule below
+  // cannot see because nothing lives at /u itself.
+  const segment = (seg) => {
+    if (seg.startsWith('[...')) return '.+';
+    if (seg.startsWith('[') && seg.endsWith(']')) return '[^/]+';
+    return seg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+  const patterns = allRoutes
+    .filter((r) => r.includes('['))
+    .map((r) => new RegExp(`^${norm(r).split('/').map(segment).join('/')}$`));
   const publicDir = path.join(__dirname, '..', 'public');
   const publicFiles = new Set(
     fs.existsSync(publicDir) ? fs.readdirSync(publicDir).map((f) => `/${f}`) : []
@@ -216,6 +233,7 @@ async function walkRoute(page, route, allRoutes) {
       .filter((h) => {
         const n = norm(h);
         if (known.has(n) || publicFiles.has(n)) return false;
+        if (patterns.some((re) => re.test(n))) return false;
         // allow dynamic children of known parents, e.g. /admin/users/7
         return ![...known].some((k) => k !== '/' && n.startsWith(`${k}/`));
       })
@@ -300,16 +318,16 @@ async function walkRoute(page, route, allRoutes) {
       return String(code % 1e6).padStart(6, '0');
     };
 
-    const step1 = await fetch(`${API}/auth/admin/login/`, {
+    const step1 = await fetch(`${API}/auth/login/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: process.env.AUDIT_ADMIN_EMAIL || 'orga@vent.test', password: PASS }),
+      body: JSON.stringify({ username_or_email: process.env.AUDIT_ADMIN_EMAIL || 'orga@vent.test', password: PASS }),
     });
     const s1 = await step1.json().catch(() => ({}));
     const secret = s1?.data?.secret || process.env.ADMIN_TOTP_SECRET;
     let j = {};
     if (s1?.data?.pending_token && secret) {
-      const step2 = await fetch(`${API}/auth/admin/2fa/verify/`, {
+      const step2 = await fetch(`${API}/auth/login/2fa/verify/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pending_token: s1.data.pending_token, code: totpCode(secret) }),
@@ -318,8 +336,8 @@ async function walkRoute(page, route, allRoutes) {
     } else {
       console.error('[audit] admin 2FA: no secret available - set ADMIN_TOTP_SECRET');
     }
-    const tok = j?.data?.session_token;
-    const adminObj = j?.data?.admin || {};
+    const tok = j?.session_token || j?.data?.session_token;
+    const adminObj = j?.user || j?.data?.admin || {};
     if (!tok) { console.error('[audit] admin login FAILED', JSON.stringify(j).slice(0, 300)); }
     // The console reads the site session, so the token goes through the same
     // door a person's does: NextAuth's external-token provider turns it into a

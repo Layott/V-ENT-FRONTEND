@@ -371,11 +371,11 @@ const SettingsContent = () => {
             </aside>
 
             <section>
-              {activePanel === 'account' && <AccountPanel user={user} onSave={handleSaveAccount} showToast={showToast} />}
+              {activePanel === 'account' && <AccountPanel user={user || {}} onSave={handleSaveAccount} showToast={showToast} />}
               {activePanel === 'notifications' && <NotificationsPanel notifications={settings?.notifications || {}} onSave={handleSaveNotifications} />}
               {activePanel === 'privacy' && <PrivacyPanel privacy={settings?.privacy || {}} onSave={handleSavePrivacy} showToast={showToast} />}
               {activePanel === 'security' && <SecurityPanel security={settings?.security || {}} onSave={handleSaveSecurity} showToast={showToast} />}
-              {activePanel === 'payments' && <PaymentsPanel payments={settings?.payments || {}} user={user} onSave={handleSavePayments} showToast={showToast} />}
+              {activePanel === 'payments' && <PaymentsPanel payments={settings?.payments || {}} user={user || {}} onSave={handleSavePayments} showToast={showToast} />}
               {activePanel === 'language' && <LanguagePanel language={settings?.language} timezone={settings?.timezone} dateFormat={settings?.date_format} onSave={handleSaveLanguage} />}
               {activePanel === 'devices' && <DevicesPanel devices={devices} onRevoke={handleRevokeDevice} onRevokeAllOthers={handleRevokeAllOthers} showToast={showToast} />}
               {activePanel === 'linked' && <LinkedAccountsPanel showToast={showToast} />}
