@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './standings.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -141,15 +142,15 @@ export default function StandingsPanel({ tournamentId }) {
   const [detailed, setDetailed] = useState(false);
   const [picked, setPicked] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
     try {
       const res = await fetch(`${API}/tournament/${tournamentId}/standings/`);
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') setData(body.data);
-      else setError(tt('table.failed', 'Could not load the table.'));
+      else if (!quiet) setError(tt('table.failed', 'Could not load the table.'));
     } catch {
-      setError(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       // Cleared whatever happened, or the panel spins for ever on a guard.
@@ -158,6 +159,9 @@ export default function StandingsPanel({ tournamentId }) {
   }, [tournamentId, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   if (loading) {
     return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;

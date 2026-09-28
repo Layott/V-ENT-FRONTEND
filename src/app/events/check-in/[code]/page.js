@@ -23,6 +23,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './check-in.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,8 +45,8 @@ export default function SelfCheckIn({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
     try {
       const res = await fetch(`${API}/event/ticket/${code}/self-check-in/`);
       const body = await res.json().catch(() => ({}));
@@ -54,12 +55,12 @@ export default function SelfCheckIn({ params }) {
         setError('');
         return;
       }
-      setError(apiMessage(tt, body, 'checkIn.notFound',
+      if (!quiet) setError(apiMessage(tt, body, 'checkIn.notFound',
         'No ticket with that code.'));
     } catch {
       // A bare await on fetch turns any network failure into a permanent
       // spinner. This page is opened at a venue on mobile data.
-      setError(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -67,6 +68,9 @@ export default function SelfCheckIn({ params }) {
   }, [code, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const arrive = async () => {
     setBusy(true);

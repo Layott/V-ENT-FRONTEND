@@ -34,6 +34,7 @@ import BRSettingsFields, { defaultBR } from './br/BRSettingsFields';
 import { lobbyLabel } from './br/BRStandings';
 import { plural } from '@/lib/plural';
 import styles from './stages-panel.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -99,7 +100,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
 
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentRef) { setLoading(false); return; }
     setProblem('');
     try {
@@ -110,11 +111,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
       } else {
-        setProblem(apiMessage(tt, body, 'stages.loadFailed',
+        if (!quiet) setProblem(apiMessage(tt, body, 'stages.loadFailed',
           'Could not load how this tournament is shaped.'));
       }
     } catch {
-      setProblem(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setProblem(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -122,6 +123,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   }, [tournamentRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const loadIdRequirement = useCallback(async () => {
     try {

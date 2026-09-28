@@ -16,6 +16,7 @@ import { formatDateTime } from '@/lib/datetime';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-orders.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,7 +26,7 @@ export default function VendorOrders({ token }) {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) { setLoading(false); return; }
     setProblem('');
     try {
@@ -36,11 +37,11 @@ export default function VendorOrders({ token }) {
       if (res.ok && body.status === 'success') {
         setOrders(body.data.orders || []);
       } else {
-        setProblem(apiMessage(tt, body, 'orders.loadFailed',
+        if (!quiet) setProblem(apiMessage(tt, body, 'orders.loadFailed',
           'Could not load what you bought at the stalls.'));
       }
     } catch {
-      setProblem(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setProblem(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -48,6 +49,9 @@ export default function VendorOrders({ token }) {
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const statusWord = status => ({
     pending: tt('orders.pending', 'Waiting at the stall'),

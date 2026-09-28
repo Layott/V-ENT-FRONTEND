@@ -30,6 +30,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { track } from '@/lib/track';
 import styles from './venue-map.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -125,7 +126,7 @@ export default function VenueMap({
 
   // ------------------------------------------------------------ the origins
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!eventSlug) return;
     try {
       const res = await fetch(`${API}/event/${eventSlug}/origins/`, {
@@ -134,8 +135,8 @@ export default function VenueMap({
       const data = await res.json().catch(() => ({}));
       if (data?.status !== 'success') return;
       setCells(data.data?.cells || []);
-      setSharing(Boolean(data.data?.sharing));
-      setMinPerCell(Number(data.data?.min_per_cell) || 3);
+      if (!quiet) setSharing(Boolean(data.data?.sharing));
+      if (!quiet) setMinPerCell(Number(data.data?.min_per_cell) || 3);
       setCanShare(Boolean(data.data?.can_share));
     } catch {
       // A map without the districts is still a map with the venue on it.
@@ -143,6 +144,9 @@ export default function VenueMap({
   }, [eventSlug, sessionToken]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   // Draw the districts whenever they change.
   useEffect(() => {

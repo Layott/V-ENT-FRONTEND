@@ -17,6 +17,7 @@ import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './results-desk.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -42,19 +43,22 @@ export default function ResultsDesk({ tournamentRef, token }) {
     return { ok: res.ok && body.status === 'success', body };
   }, [tournamentRef, token]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentRef) { setLoading(false); return; }
     const { ok, body } = await call('');
     if (ok) {
       setRows(body.data.staff || []);
       setError('');
     } else {
-      setError(apiMessage(tt, body, 'desk.loadFailed', 'Could not load who may enter results.'));
+      if (!quiet) setError(apiMessage(tt, body, 'desk.loadFailed', 'Could not load who may enter results.'));
     }
     setLoading(false);
   }, [call, token, tournamentRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const add = async (e) => {
     e.preventDefault();

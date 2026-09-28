@@ -29,6 +29,7 @@ import DateField from '@/components/date-field/DateField';
 import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
 import { matchName } from '@/lib/matchName';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -71,20 +72,20 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [disputing, setDisputing] = useState(false);
   const [reason, setReason] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     setProblem('');
     try {
       const got = await call(`/tournament/match/${matchId}/`, { token });
       if (got.ok) {
         setMatch(got.body.data);
-        setRoomCode(got.body.data.room_code || '');
-        setRoomPassword(got.body.data.room_password || '');
-        setWhen(got.body.data.scheduled_at ? isoToLocalInput(got.body.data.scheduled_at) : '');
+        if (!quiet) setRoomCode(got.body.data.room_code || '');
+        if (!quiet) setRoomPassword(got.body.data.room_password || '');
+        if (!quiet) setWhen(got.body.data.scheduled_at ? isoToLocalInput(got.body.data.scheduled_at) : '');
       } else {
-        setProblem(apiMessage(tt, got.body, 'match.loadFailed', 'This match could not be opened.'));
+        if (!quiet) setProblem(apiMessage(tt, got.body, 'match.loadFailed', 'This match could not be opened.'));
       }
     } catch {
-      setProblem(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setProblem(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -93,6 +94,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   }, [matchId, token]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     const onKey = event => { if (event.key === 'Escape') onClose(); };

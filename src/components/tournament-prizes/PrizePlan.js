@@ -22,6 +22,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { formatNumber, formatWithZone, localInputToISO } from '@/lib/datetime';
 import styles from './prize-plan.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -60,23 +61,23 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
   const [when, setWhen] = useState('');
   const [noticeHours, setNoticeHours] = useState('24');
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
     setProblem('');
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/prizes/plan/`,
         { headers: { Authorization: `Bearer ${token}` } });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
-        setPlan(body.data);
+        if (!quiet) setPlan(body.data);
         setSchedule(body.data.schedule || null);
         setHasPremium(Boolean(body.data.has_premium));
         return;
       }
-      setProblem(apiMessage(tt, body, 'prizes.loadFailed',
+      if (!quiet) setProblem(apiMessage(tt, body, 'prizes.loadFailed',
         'Could not read who would be paid.'));
     } catch {
-      setProblem(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setProblem(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -84,6 +85,9 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
   }, [tournamentRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const payNow = async () => {
     setBusy(true);

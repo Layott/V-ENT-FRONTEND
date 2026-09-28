@@ -21,6 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LuCamera, LuPencil, LuPlus, LuTrash2, LuKeyRound } from 'react-icons/lu';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import { useAutoRefresh } from '@/lib/useLiveData';
 import { plural } from '@/lib/plural';
 import DateField from '@/components/date-field/DateField';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
@@ -539,7 +540,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
   const [confirm, setConfirm] = useState(null);
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentRef) { setLoading(false); return; }
     try {
       const query = stageId ? `?stage=${encodeURIComponent(stageId)}` : '';
@@ -548,17 +549,21 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
       if (res.ok && body.status === 'success') {
         setData(body.data);
         setProblem('');
-      } else {
+      } else if (!quiet) {
         setProblem(apiMessage(tt, body, 'br.loadFailed', 'Could not load the battle royale.'));
       }
     } catch {
-      setProblem(netFail(tt));
+      // A background refresh that fails keeps what is on screen.
+      if (!quiet) setProblem(netFail(tt));
     } finally {
       setLoading(false);
     }
   }, [tournamentRef, token, stageId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Two people keep score from two devices: each sees the other's entries
+  // without a reload, and at once after any save on this page (inbox 312).
+  useAutoRefresh(() => load({ quiet: true }), [tournamentRef, stageId]);
 
   const current = data?.current || null;
   const lobbies = current?.lobbies || [];

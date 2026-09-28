@@ -19,6 +19,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
 import { call, fill, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from '../seller.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const SellerPage = ({ params }) => {
   const tt = useT();
@@ -30,15 +31,15 @@ const SellerPage = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!open) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     try {
       const data = await call(`/sellers/${encodeURIComponent(username)}/`);
       setSeller(data.seller);
       setListings(data.listings || []);
     } catch (err) {
-      setProblem(err.code === 'SELLER_NOT_FOUND'
+      if (!quiet) setProblem(err.code === 'SELLER_NOT_FOUND'
         ? tt('mk.noSeller', 'Nobody by that name sells here.')
         : err.message);
     } finally {
@@ -47,6 +48,9 @@ const SellerPage = ({ params }) => {
   }, [open, username, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   if (open === null) return null;
   if (!open) {

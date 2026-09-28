@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './ChallengesPanel.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const formatDate = iso => {
   if (!iso) return '-';
@@ -31,7 +32,7 @@ const ChallengesPanel = ({ username }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const [state, setState] = useState({ loading: true, error: '', rows: [], record: null });
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!username) return;
     try {
       const res = await fetch(`${apiUrl}/scrim/history/${encodeURIComponent(username)}/`);
@@ -51,6 +52,9 @@ const ChallengesPanel = ({ username }) => {
   }, [apiUrl, username, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   if (state.loading) {
     return <p className={styles.state}>{tt('ui.loading.challenges.5a29', 'Loading challenges...')}</p>;

@@ -20,6 +20,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import { kindLabel } from './kinds';
 import styles from './entry-checklist.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const base = () => `${process.env.NEXT_PUBLIC_API_URL}/tournament`;
 
@@ -64,9 +65,9 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
   const [sending, setSending] = useState(null);
   const viewer = useViewer();
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     try {
       const res = await fetch(`${base()}/${tournamentId}/requirements/mine/`,
         { headers: { Authorization: `Bearer ${token}` } });
@@ -77,10 +78,10 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
         if (onStatus) onStatus(body.data);
         return;
       }
-      setError(apiMessage(tt, body, 'api.requirementsLoadFailed',
+      if (!quiet) setError(apiMessage(tt, body, 'api.requirementsLoadFailed',
         'Could not load the entry requirements.'));
     } catch {
-      setError(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -88,6 +89,9 @@ export default function EntryChecklist({ tournamentId, token, onStatus }) {
   }, [tournamentId, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const send = async row => {
     const value = drafts[row.kind];

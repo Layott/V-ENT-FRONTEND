@@ -16,6 +16,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './event-waitlist.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -31,7 +32,7 @@ export default function EventWaitlist({ eventRef, token, soldOut }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!eventRef || !token) { setLoading(false); return; }
     try {
       const res = await fetch(`${API}/event/${eventRef}/waitlist/mine/`, {
@@ -47,6 +48,9 @@ export default function EventWaitlist({ eventRef, token, soldOut }) {
   }, [eventRef, token]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const act = async (method) => {
     setBusy(true);

@@ -25,6 +25,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { formatDateTime } from '@/lib/datetime';
 import styles from './shared-wallet.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -51,14 +52,14 @@ export default function SharedWallet({ kind, reference, name }) {
     ? `${API}/auth/team/${encodeURIComponent(reference)}/wallet/`
     : `${API}/auth/organization/${encodeURIComponent(reference)}/wallet/`;
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !reference) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     try {
       const res = await fetch(path, { headers: { Authorization: `Bearer ${token}` } });
       const body = await res.json();
       if (!res.ok || body.status !== 'success') {
-        setError(apiMessage(tt, body, 'api.couldNotLoadWallet',
+        if (!quiet) setError(apiMessage(tt, body, 'api.couldNotLoadWallet',
           'Could not open this wallet.'));
         setWallet(null);
       } else {
@@ -66,13 +67,16 @@ export default function SharedWallet({ kind, reference, name }) {
         setError('');
       }
     } catch {
-      setError(tt('api.networkProblem', 'The network is not answering. Try again.'));
+      if (!quiet) setError(tt('api.networkProblem', 'The network is not answering. Try again.'));
     } finally {
       setLoading(false);
     }
   }, [path, token, reference, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const post = async (payload, okKey, okText) => {
     setBusy(true);

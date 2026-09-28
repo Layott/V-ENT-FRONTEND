@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './event-tournaments-panel.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -34,22 +35,25 @@ export default function EventTournamentsPanel({ eventRef, token, canManage }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!eventRef) { setLoading(false); return; }
     try {
       const res = await fetch(`${API}/event/${eventRef}/tournaments/`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined);
       const body = await res.json().catch(() => ({}));
       if (body?.status === 'success') { setRows(body.data?.tournaments || []); setError(''); }
-      else setError(apiMessage(tt, body, 'eventTournaments.failed', 'Could not load the tournaments in this event.'));
+      else if (!quiet) setError(apiMessage(tt, body, 'eventTournaments.failed', 'Could not load the tournaments in this event.'));
     } catch (err) {
-      setError(apiMessage(tt, err, 'eventTournaments.failed', 'Could not load the tournaments in this event.'));
+      if (!quiet) setError(apiMessage(tt, err, 'eventTournaments.failed', 'Could not load the tournaments in this event.'));
     } finally {
       setLoading(false);
     }
   }, [eventRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   return (
     <section className={styles.panel}>
