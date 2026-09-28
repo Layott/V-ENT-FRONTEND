@@ -15,6 +15,7 @@ import { setAppRegion } from './appRegion';
 // one also says what the actual price is.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { getJson } from '@/lib/apiCache';
 
 const CurrencyContext = createContext(null);
 const PREFERENCE_KEY = 'vent.currency';
@@ -86,9 +87,11 @@ export function CurrencyProvider({
         // format or currency and the whole Currency and region panel was inert:
         // it stored an answer and nothing ever read it back. Found by changing
         // the zone to Auckland in Settings and watching an event date not move.
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setting/`,
-                                { headers: { Authorization: `Bearer ${token}` } });
-        const body = await res.json().catch(() => ({}));
+        // One request for the whole shell: the language, the walkthrough and
+        // the currency each asked for /setting/ on every page load, three
+        // round trips for one answer (inbox 309).
+        const body = await getJson(`${process.env.NEXT_PUBLIC_API_URL}/setting/`, { token })
+          .catch(() => ({}));
         if (cancelled || body?.status !== 'success') return;
         const s = body.data?.settings || {};
         setAppRegion({

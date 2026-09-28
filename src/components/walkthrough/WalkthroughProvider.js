@@ -6,6 +6,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import Walkthrough, { TOUR_VERSION } from './Walkthrough';
+import { getJson } from '@/lib/apiCache';
 
 // Decides whether the walkthrough runs, and remembers the answer.
 //
@@ -81,12 +82,11 @@ export const WalkthroughProvider = ({ children }) => {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${apiBase}/setting/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) return;
-        const body = await res.json();
-        if (cancelled) return;
+        // One request for the whole shell: the language, the walkthrough and
+        // the currency each asked for /setting/ on every page load, three
+        // round trips for one answer (inbox 309).
+        const body = await getJson(`${apiBase}/setting/`, { token });
+        if (cancelled || body?.status !== 'success') return;
         // An account with no walkthrough key has simply never seen it - an
         // older backend, or a user created before this shipped. Treating a
         // missing key as "keep waiting" left `state` null forever and the tour

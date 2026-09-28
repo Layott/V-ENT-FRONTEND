@@ -3,9 +3,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { LANGUAGES, dictionaries } from './dictionaries';
+// English only, from the generated per-language files: the source holds all
+// three and weighed 621 KB gzipped on every first visit (inbox 309). Another
+// language arrives inline from the root layout, or on demand when switched to.
+import en from './generated/en';
+import { LANGUAGES } from './generated/languages';
 import { DEFAULT_LOCALE, LOCALE_COOKIE, localePath, splitLocale } from '@/lib/locale';
 import { setAppLocale } from '@/lib/appLocale';
+import { getJson } from '@/lib/apiCache';
 
 // The language the interface is in.
 //
@@ -44,7 +49,9 @@ const SUPPORTED = LANGUAGES.map((l) => l.code);
 
 const normalise = (value) => (SUPPORTED.includes(value) ? value : 'en');
 
-export const LanguageProvider = ({ children }) => {
+const loadTable = (code) => import(`./generated/${code}.js`).then((m) => m.default);
+
+export const LanguageProvider = ({ children, initialTable = null }) => {
   const { data: session } = useSession();
   const token = session?.user?.sessionToken;
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
@@ -58,6 +65,21 @@ export const LanguageProvider = ({ children }) => {
   const urlLocale = splitLocale(pathname).locale;
 
   const [language, setLanguageState] = useState(urlLocale);
+
+  // The tables this page holds: English always (the fallback, and the index
+  // `tx` translates by), the page's own language as the server sent it, and
+  // any other the reader switches to, fetched then.
+  const [tables, setTables] = useState(() => (initialTable?.code && initialTable.code !== 'en'
+    ? { en, [initialTable.code]: initialTable.table }
+    : { en }));
+  useEffect(() => {
+    if (tables[language]) return;
+    let cancelled = false;
+    loadTable(language)
+      .then((table) => { if (!cancelled) setTables((prev) => ({ ...prev, [language]: table })); })
+      .catch(() => { /* English stays on screen, which is the documented fallback */ });
+    return () => { cancelled = true; };
+  }, [language, tables]);
 
   // Publish it for the formatters that cannot call a hook. Set during render
   // rather than in an effect, because a date formatted on this very render
@@ -87,11 +109,11 @@ export const LanguageProvider = ({ children }) => {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${apiBase}/setting/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) return;
-        const body = await res.json();
+        // One request for the whole shell: the language, the walkthrough and
+        // the currency each asked for /setting/ on every page load, three
+        // round trips for one answer (inbox 309).
+        const body = await getJson(`${apiBase}/setting/`, { token });
+        if (body?.status !== 'success') return;
         const stored = body?.data?.settings?.language;
         // Not over an explicit language in the address.
         if (!cancelled && stored && urlLocale === DEFAULT_LOCALE) {
@@ -149,7 +171,7 @@ export const LanguageProvider = ({ children }) => {
   // title or somebody's username.
   const byText = useMemo(() => {
     const index = new Map();
-    for (const [key, value] of Object.entries(dictionaries.en)) {
+    for (const [key, value] of Object.entries(en)) {
       if (!index.has(value)) index.set(value, key);
     }
     return index;
@@ -159,14 +181,14 @@ export const LanguageProvider = ({ children }) => {
     if (typeof text !== 'string' || !text) return text;
     const key = byText.get(text);
     if (!key) return text;
-    const table = dictionaries[language] || dictionaries.en;
+    const table = tables[language] || en;
     return table[key] ?? text;
-  }, [byText, language]);
+  }, [byText, language, tables]);
 
   const t = useCallback((key, fallback) => {
-    const table = dictionaries[language] || dictionaries.en;
-    return table[key] ?? dictionaries.en[key] ?? fallback ?? key;
-  }, [language]);
+    const table = tables[language] || en;
+    return table[key] ?? en[key] ?? fallback ?? key;
+  }, [language, tables]);
 
   // Publish it for the date formatters, which are often plain helpers rather
   // than components and so cannot call a hook.

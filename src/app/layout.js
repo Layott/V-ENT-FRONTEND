@@ -10,6 +10,8 @@ import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
 import { sectionCopy } from "@/lib/seoCopy";
+import { serverLocale } from "@/i18n/server";
+import { dictionaries } from "@/i18n/dictionaries";
 
 // Metadata is declared, not hand-written into <head>.
 //
@@ -76,8 +78,12 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  // The page's own language, sent with the page so a French or Portuguese
+  // reader never downloads the other two (inbox 309). English is bundled.
+  const locale = serverLocale();
+  const initialTable = locale !== 'en' ? { code: locale, table: dictionaries[locale] } : null;
   return (
-    <SessionWrapper>
+    <SessionWrapper initialTable={initialTable}>
       {/* `lang` is corrected on the client by LanguageProvider once the
           person's choice is known. It starts as `en` because that is what the
           server actually renders. */}
