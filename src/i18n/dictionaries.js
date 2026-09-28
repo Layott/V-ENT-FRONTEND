@@ -17,6 +17,14 @@ export const LANGUAGES = [
 
 export const dictionaries = {
   en: {
+    "challenge.sideA": "Side A",
+    "challenge.scoreTo": "to",
+    "myTournaments.noneFinished": "Nothing finished yet. Tournaments you complete or cancel show up here.",
+    "comingSoon.liveNow": "Live now",
+    "comingSoon.overlayBlurb": "An overlay is driven by one tournament's or one event's live data, so it is uploaded on that console under Production. You get back a URL to paste into an OBS browser source, and the page fills itself from the standings, the rosters and the scores as they change. The production page lists everything you run.",
+    "comingSoon.productionBlurb": "The studio and the overlays belong to one tournament, so they live on that tournament's console under Production: start a broadcast, copy a URL per graphic into OBS or vMix, put each on air from the console, or upload an overlay of your own. The production page lists everything you run.",
+    "scrim.challengedNotified": "{name} has been notified.",
+    "scrim.othersCanAccept": "Other teams can accept it.",
     // A failed load says so on the page, where the loading state was (inbox
     // row 258, the spinner-for-ever debt). One sentence per surface, so the
     // reader knows WHAT did not load, and the shared fallback for the rest.
@@ -9411,6 +9419,14 @@ export const dictionaries = {
   },
 
   fr: {
+    "challenge.sideA": "Camp A",
+    "challenge.scoreTo": "à",
+    "myTournaments.noneFinished": "Rien de terminé pour l'instant. Les tournois que vous terminez ou annulez apparaissent ici.",
+    "comingSoon.liveNow": "Disponible maintenant",
+    "comingSoon.overlayBlurb": "Un habillage vit des données en direct d'un tournoi ou d'un événement : il se téléverse donc sur sa console, sous Production. Vous obtenez une URL à coller dans une source navigateur d'OBS, et la page se remplit seule avec le classement, les effectifs et les scores à mesure qu'ils changent. La page Production liste tout ce que vous organisez.",
+    "comingSoon.productionBlurb": "Le studio et les habillages appartiennent à un tournoi : ils vivent donc sur sa console, sous Production. Lancez une diffusion, copiez une URL par graphique dans OBS ou vMix, passez chacun à l'antenne depuis la console, ou téléversez votre propre habillage. La page Production liste tout ce que vous organisez.",
+    "scrim.challengedNotified": "{name} a été prévenu.",
+    "scrim.othersCanAccept": "D'autres équipes peuvent l'accepter.",
     // A failed load says so on the page, where the loading state was (inbox
     // row 258, the spinner-for-ever debt). One sentence per surface, so the
     // reader knows WHAT did not load, and the shared fallback for the rest.
@@ -18805,6 +18821,14 @@ export const dictionaries = {
   },
 
   pt: {
+    "challenge.sideA": "Lado A",
+    "challenge.scoreTo": "a",
+    "myTournaments.noneFinished": "Ainda nada terminado. Os torneios que concluir ou cancelar aparecem aqui.",
+    "comingSoon.liveNow": "Já disponível",
+    "comingSoon.overlayBlurb": "Um overlay vive dos dados ao vivo de um torneio ou de um evento, por isso é carregado na consola desse torneio ou evento, em Produção. Recebe um URL para colar numa fonte de navegador do OBS, e a página preenche-se sozinha com a classificação, os plantéis e os resultados à medida que mudam. A página de Produção lista tudo o que organiza.",
+    "comingSoon.productionBlurb": "O estúdio e os overlays pertencem a um torneio, por isso vivem na consola desse torneio, em Produção: comece uma transmissão, copie um URL por grafismo para o OBS ou o vMix, ponha cada um no ar a partir da consola, ou carregue um overlay seu. A página de Produção lista tudo o que organiza.",
+    "scrim.challengedNotified": "{name} foi avisado.",
+    "scrim.othersCanAccept": "Outras equipas podem aceitá-lo.",
     // A failed load says so on the page, where the loading state was (inbox
     // row 258, the spinner-for-ever debt). One sentence per surface, so the
     // reader knows WHAT did not load, and the shared fallback for the rest.
