@@ -38,6 +38,7 @@ import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import { slotsText } from '@/lib/slots';
 import { plural } from '@/lib/plural';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -335,7 +336,7 @@ export const ViewTournamentContent = ({
   const statusLabel = tournamentStatusLabel(tt, tournament.status);
   const organizer = getOrganizer(tournament);
   const organizerDisplayName = organizer?.full_name || organizer?.username || 'Unknown organizer';
-  const bannerUrl = tournament.banner_image || tournament.banner;
+  const bannerUrl = mediaUrl(tournament.banner_image || tournament.banner);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />

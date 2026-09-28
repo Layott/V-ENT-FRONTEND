@@ -8,8 +8,11 @@ import styles from './not-found.module.css';
 // of black text, which is what /team-profile showed. Anything mistyped, any old
 // link, any renamed route looked like the site had broken.
 
+// The root layout's title template adds " | V-ENT" itself; writing it here as
+// well made the tab read "Page not found | V-ENT | V-ENT".
 export const metadata = {
-  title: 'Page not found | V-ENT',
+  title: 'Page not found',
+  robots: { index: false },
 };
 
 const NotFound = () => {

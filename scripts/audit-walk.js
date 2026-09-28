@@ -204,6 +204,22 @@ async function walkRoute(page, route, allRoutes) {
         const r = el.getBoundingClientRect();
         return r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44);
       }).length,
+      // The surface the page actually paints, read at its left edge halfway
+      // down: the first ancestor with a background. Pure black or pure white is
+      // banned (design rule E); every sign-in page was #000 through
+      // var(--primary-text) until 28 September, and no grep of the CSS said so.
+      pureBg: (() => {
+        let el = document.elementFromPoint(4, Math.round(innerHeight / 2));
+        while (el) {
+          const bg = getComputedStyle(el).backgroundColor;
+          if (bg && bg !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(bg)) {
+            return /^rgba?\((0, 0, 0|255, 255, 255)(, 1)?\)$/.test(bg)
+              ? `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0].slice(0, 40)} ${bg}` : null;
+          }
+          el = el.parentElement;
+        }
+        return null;
+      })(),
       // Controls past the right edge that nothing can scroll to. A wrapper with
       // overflow-x: hidden keeps scrollWidth equal to the viewport, so the
       // overflow check above sees nothing while a Save button sits at x=760 on
@@ -293,6 +309,7 @@ async function walkRoute(page, route, allRoutes) {
     hashLinks: hashLinks.length,
     smallTaps: data.smallTaps,
     offscreen: data.offscreen,
+    pureBg: data.pureBg,
     strokes: data.strokes,
     glows: data.glows,
     looksEmpty: data.looksEmpty,
@@ -425,6 +442,7 @@ async function walkRoute(page, route, allRoutes) {
       res.netFails.length ? `NET×${res.netFails.length}` : '',
       res.overflow ? 'OVERFLOW' : '',
       res.offscreen.length ? `OFFSCREEN×${res.offscreen.length}` : '',
+      res.pureBg ? 'PUREBG' : '',
       res.deadLinks.length ? `DEAD×${res.deadLinks.length}` : '',
       res.looksEmpty ? 'EMPTY' : '',
       res.strokes.length ? `STROKE×${res.strokes.length}` : '',
@@ -449,12 +467,13 @@ async function walkRoute(page, route, allRoutes) {
   md.push('', '## Details (only routes with findings)', '');
   for (const r of results) {
     if (!r.errors.length && !r.netFails.length && !r.overflow && !r.deadLinks.length
-        && !r.offscreen.length && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length) continue;
+        && !r.offscreen.length && !r.pureBg && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length) continue;
     md.push(`### \`${r.route}\``);
     if (r.navErr) md.push(`- navigation: ${r.navErr}`);
     if (r.looksEmpty) md.push(`- **renders near-empty** (text length ${r.snippet.length}): "${r.snippet}"`);
     if (r.overflow) md.push(`- **horizontal overflow**: scrollWidth ${r.scrollWidth} > viewport ${r.innerWidth}`);
     r.offscreen.forEach((o) => md.push(`- **off screen, unreachable**: ${o}`));
+    if (r.pureBg) md.push(`- **pure black or white page surface**: ${r.pureBg}`);
     r.errors.forEach((e) => md.push(`- console: \`${e}\``));
     r.netFails.forEach((e) => md.push(`- network: \`${e}\``));
     if (r.deadLinks.length) md.push(`- dead links: ${r.deadLinks.map((d) => `\`${d}\``).join(', ')}`);
@@ -465,6 +484,6 @@ async function walkRoute(page, route, allRoutes) {
   fs.writeFileSync(path.join(OUT, 'report.md'), md.join('\n'));
 
   const bad = results.filter((r) => r.errors.length || r.netFails.length || r.overflow
-    || r.deadLinks.length || r.offscreen.length || r.strokes.length || r.glows.length);
+    || r.deadLinks.length || r.offscreen.length || r.pureBg || r.strokes.length || r.glows.length);
   console.log(`\n[audit] ${results.length} routes walked · ${bad.length} with findings · report: ${path.join(OUT, 'report.md')}`);
 })();
