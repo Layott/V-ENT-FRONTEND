@@ -27,6 +27,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import shared from '@/components/admin/admin.module.css';
+import { adminToken } from '@/lib/adminToken'
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -42,8 +43,7 @@ function CommunitiesInner() {
   const [tick, setTick] = useState(0);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
-    const token = typeof window !== 'undefined'
-      ? localStorage.getItem('adminToken') : '';
+    const token = adminToken();
     if (!token) { setLoading(false); return; }
     if (!quiet) setLoading(true);
     try {

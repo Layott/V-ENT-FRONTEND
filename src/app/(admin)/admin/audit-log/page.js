@@ -13,6 +13,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 50;
 const ACTION_BADGE = {
   user_banned: {
@@ -102,7 +103,7 @@ function AuditLogInner() {
   const fetchLogs = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {

@@ -16,6 +16,7 @@ import DateField from '@/components/date-field/DateField';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 20;
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
 const STATUSES = [{
@@ -78,7 +79,7 @@ function UsersInner() {
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const fetchUsers = useCallback(async ({ quiet = false } = {}) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -130,7 +131,7 @@ function UsersInner() {
   const [banReason, setBanReason] = useState('');
 
   async function actOnUser(userId, action, reason) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/ban/`, {
         method: 'PATCH',
@@ -161,7 +162,7 @@ function UsersInner() {
       toast.push(tt("msg.selectAtLeastOneUser", "Select at least one user first."), 'warn');
       return;
     }
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setBulkLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/bulk/`, {

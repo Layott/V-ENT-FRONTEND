@@ -3,10 +3,10 @@
 /**
  * REAL-MODE mobile screenshot + responsive audit for the V-ENT ADMIN dashboard.
  *
- * The admin surface authenticates with `localStorage.adminToken` (+ adminUser +
- * an adminToken cookie), NOT the NextAuth session that scripts/mobile-shots.js
- * uses - so this companion script mints an admin session via the API, injects it
- * into the page origin, then walks every admin route at a TRUE 390x844 mobile
+ * The admin console reads the same NextAuth session as the rest of the site,
+ * but only a session whose sign-in carried the authenticator code - so this
+ * companion script mints that session via the API, hands the token to NextAuth's
+ * external-token provider, then walks every admin route at a TRUE 390x844 mobile
  * viewport (CDP device metrics via puppeteer-core) so media queries fire and
  * scrollWidth reflects the phone width (catches real horizontal overflow).
  *
@@ -129,13 +129,17 @@ async function shoot(page, route) {
     results.push(await shoot(page, r));
   }
 
-  // 3) Establish the origin, then inject the admin session into localStorage + cookie.
-  await page.goto(`${BASE}/admin/login`, { waitUntil: 'domcontentloaded' });
-  await page.evaluate((tok, user) => {
-    localStorage.setItem('adminToken', tok);
-    localStorage.setItem('adminUser', JSON.stringify(user));
-    document.cookie = `adminToken=${tok}; path=/; max-age=86400`;
-  }, token, adminUser);
+  // 3) Sign in through the site's own door: the console reads the NextAuth
+  // session, and the token is never written to localStorage (R66).
+  await page.goto(`${BASE}/login`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(async (tok) => {
+    const csrf = await fetch('/api/auth/csrf').then((r) => r.json());
+    await fetch('/api/auth/callback/external-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ csrfToken: csrf.csrfToken, token: tok, json: 'true' }).toString(),
+    });
+  }, token);
 
   // 4) Shoot the authed admin routes.
   for (const r of ROUTES.filter((x) => x.auth !== false)) {

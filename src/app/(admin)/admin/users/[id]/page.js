@@ -16,6 +16,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatDateTime } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { adminToken } from '@/lib/adminToken'
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -73,7 +74,7 @@ function UserDetailInner() {
       return;
     }
     if (!quiet) { setLoading(true); setError(''); }
-    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
+    const token = adminToken();
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/`, {
         headers: {
@@ -117,7 +118,7 @@ function UserDetailInner() {
     if (!authLoading && admin) fetchDetail();
   }, [authLoading, admin, fetchDetail]);
   async function action(act, body) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     // Map the UI action to the real endpoint (path + verb + body).
     let url;
     let payload;
@@ -169,7 +170,7 @@ function UserDetailInner() {
   // for everything added since. This is the POST half, kept separate rather
   // than bolted onto the same function with a verb argument.
   async function send(path, payload, okText) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setBusy(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/${path}/`, {
@@ -193,7 +194,7 @@ function UserDetailInner() {
   }
 
   async function removeAccount() {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setBusy(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/users/${userId}/delete/`, {

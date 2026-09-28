@@ -12,6 +12,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './overview.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 const KPI_DEFS = [
 // Icons come from the set the admin nav already uses, not emoji: emoji render
 // as a different picture on every operating system and read as decoration on a
@@ -87,7 +88,7 @@ function OverviewInner() {
   const fetchAll = useCallback(async ({ quiet = false } = {}) => {
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
-    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : '';
+    const token = adminToken();
     try {
       const [kpisRes, chartsRes, activityRes] = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/metrics/`, {
         headers: {

@@ -25,6 +25,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import shared from '@/components/admin/admin.module.css';
 import styles from './rates.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 const DAY = 24 * 60 * 60 * 1000;
 function RatesInner() {
   const tt = useT();
@@ -41,7 +42,7 @@ function RatesInner() {
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const call = useCallback(async (path, options = {}) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     let res;
     try {
       res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin${path}`, {

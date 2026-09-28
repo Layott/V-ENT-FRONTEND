@@ -321,13 +321,22 @@ async function walkRoute(page, route, allRoutes) {
     const tok = j?.data?.session_token;
     const adminObj = j?.data?.admin || {};
     if (!tok) { console.error('[audit] admin login FAILED', JSON.stringify(j).slice(0, 300)); }
-    await page.goto(`${BASE}/admin/login`, { waitUntil: 'domcontentloaded' });
-    await page.evaluate((t, admin) => {
-      localStorage.setItem('adminToken', t);
-      localStorage.setItem('adminUser', JSON.stringify(admin));
-      document.cookie = `adminToken=${t}; path=/; max-age=604800; SameSite=Lax`;
-    }, tok || '', adminObj);
-    authNote = tok ? `admin(${USER})` : 'admin-login-FAILED';
+    // The console reads the site session, so the token goes through the same
+    // door a person's does: NextAuth's external-token provider turns it into a
+    // session cookie. It is never written to localStorage (R66).
+    await page.goto(`${BASE}/login`, { waitUntil: 'domcontentloaded' });
+    const signed = await page.evaluate(async (t) => {
+      const csrf = await fetch('/api/auth/csrf').then((r) => r.json());
+      const form = new URLSearchParams({ csrfToken: csrf.csrfToken, token: t, json: 'true' });
+      const res = await fetch('/api/auth/callback/external-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form.toString(),
+      });
+      const session = await fetch('/api/auth/session').then((r) => r.json()).catch(() => ({}));
+      return res.ok && Boolean(session?.user);
+    }, tok || '');
+    authNote = tok && signed ? `admin(${adminObj.username || USER})` : 'admin-login-FAILED';
   } else if (process.env.SESSION_JWT) {
     // A minted session cookie rather than a typed password.
     //

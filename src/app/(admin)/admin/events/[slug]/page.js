@@ -32,6 +32,7 @@ import styles from './event-detail.module.css';
 import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -73,7 +74,7 @@ function AdminEventDetailInner() {
 
   const headers = useCallback(() => ({
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
+    Authorization: `Bearer ${adminToken()}`,
   }), []);
 
   const loadDetail = useCallback(async ({ quiet = false } = {}) => {
@@ -498,7 +499,7 @@ const ComposeAnnouncement = ({ tt, slug, toast, onSent }) => {
   const [sending, setSending] = useState(false);
 
   const send = async () => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setSending(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${slug}/announcements/`, {

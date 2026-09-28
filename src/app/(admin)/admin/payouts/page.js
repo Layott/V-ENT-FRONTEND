@@ -14,6 +14,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -54,7 +55,7 @@ function PayoutsInner() {
   const fetchPayouts = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -97,7 +98,7 @@ function PayoutsInner() {
     setPage(1);
   }, [search, statusFilter, sortBy]);
   async function approvePayout(id) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: 'approve'
@@ -123,7 +124,7 @@ function PayoutsInner() {
     }));
   }
   async function rejectPayout(id, reason) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: 'reject'
@@ -162,7 +163,7 @@ function PayoutsInner() {
       toast.push(tt("msg.selectPendingPayoutsToBulk", "Select pending payouts to bulk-approve."), 'warn');
       return;
     }
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setBulkLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/payouts/bulk-approve/`, {

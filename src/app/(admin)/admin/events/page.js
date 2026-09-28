@@ -23,6 +23,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'upcoming') return shared.sActive;
@@ -69,7 +70,7 @@ function EventsInner() {
   const [editTarget, setEditTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
   const fetchEvents = useCallback(async ({ quiet = false } = {}) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -111,7 +112,7 @@ function EventsInner() {
   }, [search, statusFilter, sortBy]);
   // The event twin of restoreTournament, written in the same pass.
   async function restoreEvent(row) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({ ...p, [row.id]: true }));
     try {
       const res = await fetch(
@@ -132,7 +133,7 @@ function EventsInner() {
   }
 
   async function saveEvent(id, payload) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -293,7 +294,7 @@ function EditEventModal({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const token = localStorage.getItem('adminToken');
+      const token = adminToken();
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${event.slug || event.id}/`, {
           headers: {

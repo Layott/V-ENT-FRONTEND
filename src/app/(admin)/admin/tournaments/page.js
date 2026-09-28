@@ -16,6 +16,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import RulesEditor from '@/components/rules-editor/RulesEditor';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -56,7 +57,7 @@ function TournamentsInner() {
   const mayAnnounce = !!admin?.permissions?.send_notifications;
   const [actionLoading, setActionLoading] = useState({});
   const fetchTournaments = useCallback(async ({ quiet = false } = {}) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -99,7 +100,7 @@ function TournamentsInner() {
   // organiser who could delete and restore at will could hide something and
   // return it with nothing recorded in between.
   async function restoreTournament(row) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({ ...p, [row.id]: true }));
     try {
       const res = await fetch(
@@ -120,7 +121,7 @@ function TournamentsInner() {
   }
 
   async function cancelTournament(id) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -147,7 +148,7 @@ function TournamentsInner() {
     }));
   }
   async function saveTournament(id, payload) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -179,7 +180,7 @@ function TournamentsInner() {
     }));
   }
   async function overrideScore(id, payload) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -221,7 +222,7 @@ function TournamentsInner() {
   // Takes what the picker chose - a registration id and a reason - rather than
   // a typed team name that may match nothing.
   async function disqualifyTeam(id, choice) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -434,7 +435,7 @@ function TournamentNumbersModal({ tournament, onCancel }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const token = localStorage.getItem('adminToken');
+      const token = adminToken();
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.slug || tournament.id}/analytics/`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -521,7 +522,7 @@ function AnnounceModal({ tournament, onCancel }) {
   const [sending, setSending] = useState(false);
 
   const send = async () => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setSending(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.slug || tournament.id}/announce/`, {
@@ -595,7 +596,7 @@ function EditTournamentModal({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const token = localStorage.getItem('adminToken');
+      const token = adminToken();
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${tournament.id}/`, {
           headers: {
@@ -801,7 +802,7 @@ function EditTournamentModal({
         {form && !loadError && <div className={styles.rulesBlock}>
             <RulesEditor
               tournamentId={tournament.id}
-              token={typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null}
+              token={adminToken()}
               canEdit
             />
           </div>}
@@ -843,7 +844,7 @@ function OverrideScoreModal({
     let cancelled = false;
     (async () => {
       try {
-        const token = localStorage.getItem('adminToken');
+        const token = adminToken();
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.id}/matches/`,
           { headers: { Authorization: `Bearer ${token}` } });
@@ -1013,7 +1014,7 @@ function DisqualifyModal({
     let cancelled = false;
     (async () => {
       try {
-        const token = localStorage.getItem('adminToken');
+        const token = adminToken();
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/tournaments/${tournament.id}/matches/`,
           { headers: { Authorization: `Bearer ${token}` } });

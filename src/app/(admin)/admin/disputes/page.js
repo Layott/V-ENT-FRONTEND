@@ -12,6 +12,7 @@ import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatNumber } from '@/lib/datetime';
+import { adminToken } from '@/lib/adminToken'
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -68,7 +69,7 @@ function DisputesInner() {
   const fetchDisputes = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -113,7 +114,7 @@ function DisputesInner() {
     setPage(1);
   }, [statusFilter]);
   async function resolveDispute(id, resolution, note) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: resolution
