@@ -23,6 +23,7 @@
 // on the same engine the submit endpoint uses, and this screen shows the
 // answer. A copy of the rules in the browser is the rules written twice.
 
+import { formatDayShort, formatTime } from '@/lib/datetime';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -262,10 +263,7 @@ export default function LineupPicker({ tournamentRef, token, showToast,
   const when = (value) => {
     if (!value) return '';
     try {
-      return new Date(value).toLocaleString(undefined, {
-        weekday: 'short', day: 'numeric', month: 'short',
-        hour: '2-digit', minute: '2-digit',
-      });
+      return `${formatDayShort(value)}, ${formatTime(value)}`;
     } catch { return ''; }
   };
 

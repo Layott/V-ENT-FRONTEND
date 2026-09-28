@@ -218,6 +218,24 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     return bits.join(', ');
   };
 
+  // How people arrive in a later stage, in words for the saved plan: the
+  // placement and anybody invited straight in. Both were saved and neither was
+  // shown (second bracket walk, 28 September 2026).
+  const arrival = (row, index) => {
+    if (index === 0) return '';
+    const placed = {
+      cross: tt('stages.placeCross', 'Group winners meet runners-up of another group'),
+      by_record: tt('stages.placeRecord', 'By record'),
+      random: tt('stages.placeRandom', 'At random'),
+    }[row.placement || 'cross'];
+    const bits = [tt('stages.placedAs', 'Placed: {how}').replace('{how}', placed)];
+    const invited = (row.direct_entrants_named || []).map(e => e.name).filter(Boolean);
+    if (invited.length) {
+      bits.push(tt('stages.invitedIn', 'Straight in: {names}').replace('{names}', invited.join(', ')));
+    }
+    return bits.join('. ');
+  };
+
   const blank = format => ({
     format, label: '', advances: format === 'round_robin' ? 2 : 0, groups: 0,
     starts_at: '', ends_at: '', place_type: '', location: '', virtual_link: '',
@@ -485,6 +503,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   <span className={styles.stageName}>{row.label}</span>
                   <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
                   <span className={styles.stageLine}>{playedAs(row)}</span>
+                  {index > 0 && <span className={styles.stageLine}>{arrival(row, index)}</span>}
                   {(row.when?.is_its_own || row.where?.is_its_own) && (
                     <span className={styles.stageWhen}>
                       {[
@@ -848,9 +867,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           ) : (
             <>
               <p className={styles.hint}>
-                {tt('stages.confirmHint2',
-                  'These go through to {next}, in this seed order, as the stage’s own table has them. Move anybody up or down if you need to, then send them through. {next} is drawn in the same press.')
-                  .replace(/\{next\}/g, closing.next?.label || '')}
+                {closing.next?.placement === 'random'
+                  ? tt('stages.confirmHintRandom',
+                    'These go through to {next}. {next} places them at random when it is drawn, in the same press, so the order here does not decide who meets whom.')
+                    .replace(/\{next\}/g, closing.next?.label || '')
+                  : tt('stages.confirmHint2',
+                    'These go through to {next}, in this seed order, as the stage’s own table has them. Move anybody up or down if you need to, then send them through. {next} is drawn in the same press.')
+                    .replace(/\{next\}/g, closing.next?.label || '')}
               </p>
               <ol className={styles.through}>
                 {closing.through.map((entry, i) => (
@@ -874,6 +897,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   </li>
                 ))}
               </ol>
+              {(closing.next?.direct_entrants_named || []).length > 0 && (
+                <p className={styles.hint}>
+                  {tt('stages.joiningToo', 'Also joining {next}, invited straight in: {names}.')
+                    .replace('{next}', closing.next?.label || '')
+                    .replace('{names}', closing.next.direct_entrants_named.map(e => e.name).join(', '))}
+                </p>
+              )}
             </>
           )}
           <div className={styles.editorActions}>

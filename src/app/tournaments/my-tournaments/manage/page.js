@@ -374,9 +374,19 @@ const ManageContent = ({
                 </div>
 
                 <div className={styles.actionsRow}>
-                  <button className={`${styles.btn} goldBTN`} onClick={handleGenerateBracket} disabled={!!busyAction}>
-                    <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tx("Close Registration & Generate Bracket")}
-                  </button>
+                  {/* Only before there is a bracket. Once one is drawn the
+                      server refuses a second (409), and a control that can
+                      only be refused is not offered (second bracket walk,
+                      28 September 2026). */}
+                  {['live', 'completed', 'cancelled'].includes(status) ? (
+                    <p className={styles.seedHint}>
+                      {tt('actions.bracketDrawn', 'The bracket is drawn. Results go in under Match Control and Brackets.')}
+                    </p>
+                  ) : (
+                    <button className={`${styles.btn} goldBTN`} onClick={handleGenerateBracket} disabled={!!busyAction}>
+                      <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tx("Close Registration & Generate Bracket")}
+                    </button>
+                  )}
                   {status === 'completed' && <button className={`${styles.btn} goldBTN`} onClick={handleDistributePrizes} disabled={!!busyAction}>
                       <LuTrophy /> {tt("prizes.open", "Prizes")}
                     </button>}

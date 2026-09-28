@@ -177,6 +177,13 @@
   text-transform: uppercase;
 }
 
+/* The @username beside a person's full name, as on the bracket. */
+.handle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  margin-left: 0.35rem;
+}
+
 .actions {
   display: flex;
   align-items: center;

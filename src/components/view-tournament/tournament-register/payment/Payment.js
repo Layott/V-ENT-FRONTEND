@@ -64,6 +64,11 @@ const PaymentModal = ({
   const fee = coveredByTicket ? 0 : chargeFor(quote);
   const feeOnTop = !coveredByTicket && quote && quote.buyer_pays_fee ? Number(quote.buyer_fee_vc || 0) : 0;
   const prizePool = Number(tournament?.prize_pool ?? tournament?.prize_pool_vc ?? 0) || 0;
+  // The server's rule (`Tournament.is_paid_entry`, a locked CEO decision):
+  // an identity check for any tournament that charges entry OR awards a
+  // prize. This read the prize alone, so a paid entry with no prize was
+  // refused only after the PIN (second bracket walk, 28 September 2026).
+  const needsKyc = prizePool > 0 || listedFee > 0;
   const mode = registrationData?.type === 'team' ? 'team' : 'individual';
   const team = selectedTeam || registrationData?.team || null;
   const roster = (teamMembers && teamMembers.length ? teamMembers : registrationData?.members) || [];
@@ -186,7 +191,7 @@ const PaymentModal = ({
     afterTopup = false,
     charge = fee
   } = {}) => {
-    if (prizePool > 0 && w.kyc_verified === false) {
+    if (needsKyc && w.kyc_verified === false) {
       setPhase('kyc');
       return;
     }
@@ -432,7 +437,9 @@ const PaymentModal = ({
         </svg>
         <h3 className={styles.kycTitle}>{tt("ui.complete.kyc.register.paid.4b12", "Complete KYC to register for paid tournaments")}</h3>
         <p className={styles.kycText}>
-          {tournamentName} {tt("ui.has.prize.pool.so.ee8c", "has a prize pool, so we need to verify your identity before you can pay the entry fee and register.")}
+          {tournamentName} {prizePool > 0
+            ? tt("ui.has.prize.pool.so.ee8c", "has a prize pool, so we need to verify your identity before you can pay the entry fee and register.")
+            : tt("kyc.entryFeeReason", "charges an entry fee, so we need to verify your identity before you can pay it and register.")}
         </p>
       </div>;
     footerPrimary = <Link href="/wallets?panel=kyc" className={styles.payButton}>{tt("ui.complete.kyc.4487", "Complete KYC →")}</Link>;
