@@ -36,6 +36,7 @@ import StudioPanel from '@/components/studio/StudioPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import MoneyPanel from '@/components/tournament-manage/MoneyPanel';
 import styles from './manage.module.css';
+import { tournamentStatusLabel } from '@/lib/tournamentStatus';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
@@ -297,7 +298,7 @@ const ManageContent = ({ slug }) => {
       </div>;
   }
   const prizePool = Number(tournament.prize_pool || 0);
-  const statusLabel = (tournament.status || '').replace(/_/g, ' ') || 'draft';
+  const statusLabel = tournamentStatusLabel(tt, tournament.status || 'draft');
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -406,8 +407,11 @@ const ManageContent = ({ slug }) => {
               <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
                            token={token} canManage={Boolean(access?.can_manage)}
                            showToast={showToast} onChanged={load} />
+              {/* A result recorded here can finish the tournament; the
+                  header has to hear about it (it kept "live" until a reload). */}
               <BracketVisualizer tournamentId={tournament.slug || tournament.tournament_id}
-                                 tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
+                                 tournamentRef={tournament.slug || tournament.tournament_id} token={token}
+                                 onChanged={() => load({ quiet: true })} />
             </>}
             {tab === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"

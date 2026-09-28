@@ -309,7 +309,11 @@ export function unavailableMetadata(slug, path) {
 // short URL has to carry the destination's own title, description and picture,
 // which means exactly one builder, used by both routes.
 
+// The fallback descriptions below are English sentences ("tournament on
+// ..."), so the date is written to match them. Translating these metadata
+// fallbacks is recorded as open (second bracket walk, 28 September 2026).
 const dateLabel = (value) => (value
+  // datetime-allow: an English date inside an English metadata sentence
   ? new Date(value).toLocaleDateString('en-NG', {
     day: 'numeric', month: 'long', year: 'numeric',
   })

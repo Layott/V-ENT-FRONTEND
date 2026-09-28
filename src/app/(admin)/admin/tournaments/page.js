@@ -195,13 +195,19 @@ function TournamentsInner() {
         body: JSON.stringify({
           score_p1: payload.score_p1,
           score_p2: payload.score_p2,
-          winner_registration_id: payload.winner_registration_id,
+          winner_registration_id: payload.winner_registration_id || null,
+          penalties_p1: payload.penalties_p1 ?? null,
+          penalties_p2: payload.penalties_p2 ?? null,
           reason: payload.reason
         })
       });
       const data = await res.json();
       if (data.status === 'success') {
-        toast.push(tt('admin.scoreOverridden', 'Score corrected for match {n}.').replace('{n}', payload.match_id), 'success');
+        // Named by who played, never by a database number (second bracket
+        // walk, 28 September 2026: "Score corrected for match 217").
+        toast.push(tt('admin.scoreCorrectedNamed', 'Result recorded: {a} {x} - {y} {b}.')
+          .replace('{a}', payload.side_1 || '').replace('{b}', payload.side_2 || '')
+          .replace('{x}', payload.score_p1).replace('{y}', payload.score_p2), 'success');
         setOverrideTarget(null);
       } else toast.push(apiMessage(tt, data, "api.failed", "Failed."), 'error');
     } catch {
@@ -829,6 +835,8 @@ function OverrideScoreModal({
   const [scoreP1, setScoreP1] = useState(0);
   const [scoreP2, setScoreP2] = useState(0);
   const [winnerRegId, setWinnerRegId] = useState('');
+  const [penP1, setPenP1] = useState('');
+  const [penP2, setPenP2] = useState('');
   const [reason, setReason] = useState('');
 
   useEffect(() => {
@@ -867,10 +875,32 @@ function OverrideScoreModal({
     setScoreP1(m.score_1 ?? 0);
     setScoreP2(m.score_2 ?? 0);
     setWinnerRegId(m.winner_registration_id ? String(m.winner_registration_id) : '');
+    setPenP1('');
+    setPenP2('');
   };
 
   const playable = (matches || []).filter(m => m.side_1 && m.side_2);
-  const canSubmit = Boolean(chosen && winnerRegId);
+  // The result decides the winner, as it does at every other door: a higher
+  // score wins, a level table match is a draw, a level knockout goes to
+  // penalties. The old modal only knew "who won", so it could record neither
+  // a group draw nor a shoot-out (second bracket walk, 28 September 2026).
+  const level = chosen && Number(scoreP1) === Number(scoreP2);
+  const drawOk = Boolean(level && chosen?.draw_allowed);
+  const needsPens = Boolean(level && chosen && !chosen.draw_allowed);
+  const pensOk = needsPens && penP1 !== '' && penP2 !== '' && Number(penP1) !== Number(penP2);
+  const decidedWinner = !chosen ? null
+    : !level ? (Number(scoreP1) > Number(scoreP2) ? chosen.side_1 : chosen.side_2)
+    : pensOk ? (Number(penP1) > Number(penP2) ? chosen.side_1 : chosen.side_2)
+    : null;
+  const canSubmit = Boolean(chosen && (!level || drawOk || pensOk));
+  // Which stage and group, so two "Round 1, match 1" rows can be told apart.
+  const whereOf = m => [
+    m.stage_label,
+    m.group_number ? tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + Number(m.group_number))) : null,
+    m.bracket_side === 'losers' ? tt('bracket.losersBracket', 'Losers bracket')
+      : m.bracket_side === 'grand_final' ? tt('bracket.grandFinal', 'Grand final') : null,
+    tt('admin.roundMatch', 'Round {r}, match {m}').replace('{r}', m.round).replace('{m}', m.match_number),
+  ].filter(Boolean).join(' · ');
 
   return <div className={styles.modalOverlay} onClick={onCancel}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
@@ -891,7 +921,7 @@ function OverrideScoreModal({
                   type="button"
                   className={`${styles.matchRow} ${chosen?.id === m.id ? styles.matchRowOn : ''}`}
                   onClick={() => choose(m)}>
-                  <span className={styles.matchRound}>{m.label}</span>
+                  <span className={styles.matchRound}>{whereOf(m)}</span>
                   <span className={styles.matchSides}>
                     {m.side_1?.name} <span className={styles.matchVs}>{tt("admin.versus", "v")}</span> {m.side_2?.name}
                   </span>
@@ -915,18 +945,23 @@ function OverrideScoreModal({
                 </div>
               </div>
 
-              <div className={styles.formRow}>
-                <label className={styles.formLabel}>{tt("admin.whoWon", "Who won")}</label>
-                <div className={styles.winnerRow}>
-                  {[chosen.side_1, chosen.side_2].filter(Boolean).map(side => <button
-                      key={side.registration_id}
-                      type="button"
-                      className={`${styles.winnerBtn} ${String(winnerRegId) === String(side.registration_id) ? styles.winnerBtnOn : ''}`}
-                      onClick={() => setWinnerRegId(String(side.registration_id))}>
-                      {side.name}
-                    </button>)}
+              {needsPens && <div className={styles.formRow2}>
+                <div>
+                  <label className={styles.formLabel}>{tt('match.pensFor', 'Penalties, {name}').replace('{name}', chosen.side_1?.name || '')}</label>
+                  <input type="number" min="0" className={styles.formInput} value={penP1}
+                         onChange={e => setPenP1(e.target.value === '' ? '' : parseInt(e.target.value, 10))} />
                 </div>
-              </div>
+                <div>
+                  <label className={styles.formLabel}>{tt('match.pensFor', 'Penalties, {name}').replace('{name}', chosen.side_2?.name || '')}</label>
+                  <input type="number" min="0" className={styles.formInput} value={penP2}
+                         onChange={e => setPenP2(e.target.value === '' ? '' : parseInt(e.target.value, 10))} />
+                </div>
+              </div>}
+              <p className={styles.modalSub}>
+                {drawOk ? tt('admin.overrideDraw', 'A draw. Both sides take the draw points.')
+                  : needsPens && !pensOk ? tt('admin.overrideNeedsPens', 'Level in a knockout, so it needs the penalty shoot-out.')
+                  : decidedWinner ? tt('admin.overrideWinner', 'Winner: {name}').replace('{name}', decidedWinner.name) : null}
+              </p>
             </>}
           </>}
 
@@ -945,7 +980,10 @@ function OverrideScoreModal({
           match_id: chosen?.id,
           score_p1: scoreP1,
           score_p2: scoreP2,
-          winner_registration_id: winnerRegId,
+          winner_registration_id: decidedWinner ? decidedWinner.registration_id : null,
+          ...(needsPens ? { penalties_p1: penP1, penalties_p2: penP2 } : {}),
+          side_1: chosen?.side_1?.name,
+          side_2: chosen?.side_2?.name,
           reason
         })} disabled={loading || !canSubmit}>
             {loading ? tx("Saving…") : tx("Apply Override")}

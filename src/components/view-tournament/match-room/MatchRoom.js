@@ -65,6 +65,8 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [roomCode, setRoomCode] = useState('');
   const [roomPassword, setRoomPassword] = useState('');
   const [when, setWhen] = useState('');
+  // A two-leg tie is entered leg by leg; the totals are what they add up to.
+  const [legs, setLegs] = useState([['', ''], ['', '']]);
   const [disputing, setDisputing] = useState(false);
   const [reason, setReason] = useState('');
 
@@ -107,6 +109,12 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const level = s1 !== '' && s2 !== '' && Number(s1) === Number(s2);
   const needsPens = level && match && !match.draw_allowed;
   const pending = match?.status === 'pending_opponent_confirm';
+  const twoLegs = Number(match?.legs) > 1;
+  // A club member plays on a side without acting for it.
+  const memberOnly = !slot && Boolean(match?.your_side);
+  const noShowSide = match?.forfeit_reason === 'no_show' && match?.winner_registration_id
+    ? (match.winner_registration_id === match.participant_1?.registration_id ? two : one)
+    : null;
 
   // The score waiting for confirmation: the newest submission not yet
   // confirmed. The server marks the viewer's own with `mine`, which is the
@@ -146,7 +154,19 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
     score_p1: Number(s1),
     score_p2: Number(s2),
     ...(needsPens ? { penalties_p1: Number(p1), penalties_p2: Number(p2) } : {}),
+    // Each leg as played, so a dispute over leg two has something to point
+    // at. The server checks they add up to the totals.
+    ...(twoLegs ? { games: legs.map(([a, b]) => ({ p1: Number(a), p2: Number(b) })) } : {}),
   });
+
+  const setLeg = (leg, side, value) => {
+    const next = legs.map(pair => [...pair]);
+    next[leg][side] = num(value);
+    setLegs(next);
+    const filled = next.every(pair => pair.every(v => v !== ''));
+    setS1(filled ? next[0][0] + next[1][0] : '');
+    setS2(filled ? next[0][1] + next[1][1] : '');
+  };
 
   const checkIn = () => run(
     () => call(`/tournament/match/${matchId}/check-in/`, { method: 'POST', token, body: {} }),
@@ -259,6 +279,12 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             <p className={styles.nums}>
               {['completed', 'pending_opponent_confirm', 'disputed'].includes(match.status)
                 ? `${match.score_p1} - ${match.score_p2}` : tt('match.vs', 'v')}
+              {Number(match.legs) > 1 && (match.games || []).length === 2 && (
+                <span className={styles.pens}>
+                  {match.games.map((g, i) => tt('match.legScore', 'Leg {n}: {a} - {b}')
+                    .replace('{n}', i + 1).replace('{a}', g.p1).replace('{b}', g.p2)).join(', ')}
+                </span>
+              )}
               {match.penalties_p1 != null && match.penalties_p2 != null && (
                 <span className={styles.pens}>
                   {tt('match.onPens', '{a} - {b} on penalties')
@@ -283,14 +309,16 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             )}
             {match.forfeit_reason === 'no_show' && (
               <div><dt>{tt('match.forfeit', 'Forfeit')}</dt>
-                <dd>{tt('match.noShow', 'The other side did not check in in time.')}</dd></div>
+                <dd>{noShowSide
+                  ? tt('match.noShowNamed', '{name} did not check in in time.').replace('{name}', noShowSide)
+                  : tt('match.noShow', 'The other side did not check in in time.')}</dd></div>
             )}
             {match.status === 'completed' && match.winner_registration_id == null && (
               <div><dt>{tt('match.resultLabel', 'Result')}</dt><dd>{tt('match.draw', 'A draw')}</dd></div>
             )}
           </dl>
 
-          {open && match.scheduled_at && match.break_minutes > 0 && (
+          {open && match.scheduled_at && match.break_minutes > 0 && match.after_a_break && (
             <p className={styles.muted}>
               {tt('match.breakNote', 'Every side gets a {n} minute break after its last match before the next one starts.')
                 .replace('{n}', match.break_minutes)}
@@ -327,7 +355,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
           )}
 
           {/* --------------------------------------------------------- room */}
-          {open && bothKnown && (slot || canRecord) && (
+          {open && bothKnown && (slot || canRecord || memberOnly) && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.roomTitle', 'The room in the game')}</p>
               {roomSettingsText && <p className={styles.muted}>{roomSettingsText}</p>}
@@ -342,7 +370,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
                 <p className={styles.muted}>
                   {iHost || canRecord
                     ? tt('match.roomYouHost', 'You make the room. Create it in the game, then post its code here.')
-                    : tt('match.roomWaiting', 'The other side makes the room and posts its code here.')}
+                    : memberOnly
+                      ? tt('match.roomMember', 'The room code appears here as soon as it is posted.')
+                      : tt('match.roomWaiting', 'The other side makes the room and posts its code here.')}
                 </p>
               )}
               {(iHost || canRecord) && (
@@ -396,18 +426,45 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
                   ? tt('match.recordTitle', 'Record the result')
                   : tt('match.reportTitle', 'Report the result')}
               </p>
-              <div className={styles.scoreInputs}>
-                <label className={styles.field}>
-                  <span className={styles.label}>{one}</span>
-                  <input className={styles.input} type="number" min="0" inputMode="numeric"
-                         value={s1} onChange={e => setS1(num(e.target.value))} disabled={busy} />
-                </label>
-                <label className={styles.field}>
-                  <span className={styles.label}>{two}</span>
-                  <input className={styles.input} type="number" min="0" inputMode="numeric"
-                         value={s2} onChange={e => setS2(num(e.target.value))} disabled={busy} />
-                </label>
-              </div>
+              {twoLegs ? (
+                <>
+                  {[0, 1].map(leg => (
+                    <div key={leg}>
+                      <p className={styles.muted}>{tt('match.legN', 'Leg {n}').replace('{n}', leg + 1)}</p>
+                      <div className={styles.scoreInputs}>
+                        <label className={styles.field}>
+                          <span className={styles.label}>{one}</span>
+                          <input className={styles.input} type="number" min="0" inputMode="numeric"
+                                 value={legs[leg][0]} onChange={e => setLeg(leg, 0, e.target.value)} disabled={busy} />
+                        </label>
+                        <label className={styles.field}>
+                          <span className={styles.label}>{two}</span>
+                          <input className={styles.input} type="number" min="0" inputMode="numeric"
+                                 value={legs[leg][1]} onChange={e => setLeg(leg, 1, e.target.value)} disabled={busy} />
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                  {s1 !== '' && s2 !== '' && (
+                    <p className={styles.muted}>
+                      {tt('match.aggregateIs', 'On aggregate: {a} - {b}').replace('{a}', s1).replace('{b}', s2)}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className={styles.scoreInputs}>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{one}</span>
+                    <input className={styles.input} type="number" min="0" inputMode="numeric"
+                           value={s1} onChange={e => setS1(num(e.target.value))} disabled={busy} />
+                  </label>
+                  <label className={styles.field}>
+                    <span className={styles.label}>{two}</span>
+                    <input className={styles.input} type="number" min="0" inputMode="numeric"
+                           value={s2} onChange={e => setS2(num(e.target.value))} disabled={busy} />
+                  </label>
+                </div>
+              )}
               {needsPens && (
                 <>
                   <p className={styles.muted}>
@@ -487,8 +544,30 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             </section>
           )}
 
+          {/* --------------------------------------------- a club member */}
+          {memberOnly && (
+            <p className={styles.muted}>
+              {tt('match.memberOnly', 'You play for {side}. Whoever runs {side} reports and confirms the result.')
+                .replace(/\{side\}/g, match.your_side === 1 ? one : two)}
+            </p>
+          )}
+
           {/* ------------------------------------------------------- dispute */}
-          {slot && !disputing && ['completed'].includes(match.status) && (
+          {match.my_dispute && ['open', 'under_review'].includes(match.my_dispute.status) && (
+            <p className={styles.muted} role="status">
+              {tt('match.myDisputeOpen', 'You disputed this result. It is with the organiser, who decides.')}
+            </p>
+          )}
+          {match.my_dispute && ['resolved', 'dismissed'].includes(match.my_dispute.status) && (
+            <p className={styles.muted}>
+              {(match.my_dispute.status === 'resolved'
+                ? tt('match.myDisputeResolved', 'Your dispute was settled.')
+                : tt('match.myDisputeDismissed', 'Your dispute was dismissed.'))}
+              {match.my_dispute.note ? ` ${match.my_dispute.note}` : ''}
+            </p>
+          )}
+          {slot && !disputing && ['completed'].includes(match.status)
+            && !(match.my_dispute && ['open', 'under_review'].includes(match.my_dispute.status)) && (
             <button type="button" className={styles.quiet} disabled={busy} onClick={() => setDisputing(true)}>
               {tt('match.disputeResult', 'Dispute this result')}
             </button>

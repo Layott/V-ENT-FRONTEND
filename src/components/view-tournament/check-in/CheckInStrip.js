@@ -1,6 +1,8 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { plural } from '@/lib/plural';
+import { formatTime } from '@/lib/datetime';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuAlarmClock, LuCircleCheck, LuUsers } from 'react-icons/lu';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
@@ -29,13 +31,13 @@ const formatRemaining = seconds => {
   }
   return `${mins}:${pad(secs)}`;
 };
+// Through the timing model: the reader's zone and the language they chose.
+// `toLocaleTimeString([])` printed "12:40 AM" to a Portuguese reader (second
+// bracket walk, 28 September 2026).
 const formatClock = iso => {
   if (!iso) return '';
   try {
-    return new Date(iso).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatTime(iso);
   } catch {
     return '';
   }
@@ -110,7 +112,12 @@ const CheckInStrip = ({
       setBusy(false);
     }
   };
+  // Closing takes people out of the tournament, so it is a second press after
+  // saying who and what happens to their entry (second bracket walk, 28
+  // September 2026: one press removed a paid entrant with nothing said).
+  const [confirmingClose, setConfirmingClose] = useState(false);
   const closeWindow = async () => {
+    setConfirmingClose(false);
     setBusy(true);
     setNotice(null);
     try {
@@ -157,6 +164,9 @@ const CheckInStrip = ({
     }
   };
   if (!state || !state.required) return null;
+  // The bracket is drawn: check-in is over for everybody, and closing it
+  // would only be refused.
+  if (state.bracket_drawn) return null;
   if (!state.registered && !isOrganizer) return null;
   if (state.closed && !isOrganizer && state.checked_in) return null;
   const showEntrantAction = state.registered && !state.checked_in && state.open_now;
@@ -171,7 +181,12 @@ const CheckInStrip = ({
           </p> : state.closed ? <p className={styles.headlineClosed}>
             {(state.closed_by_organiser
               ? tt('checkin.closedByOrganiser', 'The organiser closed check-in at {time}')
-              : tt('checkin.closedAt', 'Check-in closed at {time}')
+              // The time has passed but nobody has been taken out yet; the
+              // organiser still has to close it. "Closed" beside a "Close"
+              // button read as a contradiction.
+              : isOrganizer
+                ? tt('checkin.timeUp', 'Check-in time ended at {time}. Close it to take out whoever has not checked in.')
+                : tt('checkin.closedAt', 'Check-in closed at {time}')
             ).replace('{time}', formatClock(state.closes_at))}
           </p> : <p className={styles.headline}>
             <LuAlarmClock /> {tt("ui.check.opens.at.4d6c", "Check-in opens at")} {formatClock(state.opens_at)}
@@ -213,9 +228,22 @@ const CheckInStrip = ({
             {tt("ui.add.minutes.f939", "Add 15 minutes")}
           </button>}
 
-        {isOrganizer && !state.closed_by_organiser && (state.open_now || state.closed) && <button type="button" className={styles.primaryBtn} onClick={closeWindow} disabled={busy}>
+        {isOrganizer && !state.closed_by_organiser && (state.open_now || state.closed) && !confirmingClose && <button type="button" className={styles.primaryBtn} onClick={() => setConfirmingClose(true)} disabled={busy}>
             {busy ? tt('checkin.closing', 'Closing...') : tt('checkin.close', 'Close check-in')}
           </button>}
+        {confirmingClose && <>
+            <p className={styles.meta}>
+              {plural(tt, Math.max(0, (state.registered_count || 0) - (state.checked_in_count || 0)),
+                'checkin.confirmCloseOne', '{n} entrant who has not checked in is taken out. An entry fee they paid is not refunded.',
+                'checkin.confirmClose', '{n} entrants who have not checked in are taken out. An entry fee they paid is not refunded.')}
+            </p>
+            <button type="button" className={styles.primaryBtn} onClick={closeWindow} disabled={busy}>
+              {tt('checkin.confirmCloseYes', 'Take them out and close')}
+            </button>
+            <button type="button" className={styles.ghostBtn} onClick={() => setConfirmingClose(false)} disabled={busy}>
+              {tt('checkin.confirmCloseNo', 'Keep it open')}
+            </button>
+          </>}
       </div>
     </div>;
 };

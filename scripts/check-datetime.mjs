@@ -104,50 +104,59 @@ const RULES = [
   },
 ];
 
-const CALL = /\.toLocale(String|DateString|TimeString)\s*\(([^)]*)\)/g;
+// The FIRST argument only, read across line breaks. The old pattern wanted
+// the whole call on one line and read `[]` as a locale, so
+// `toLocaleTimeString([], {\n hour: ... })` - the device's language, on the
+// check-in banner - passed as clean while the page printed "12:40 AM" to a
+// Portuguese reader (second bracket walk, 28 September 2026).
+const CALL = /\.toLocale(String|DateString|TimeString)\s*\(\s*([^,)]*)/g;
+
+// No locale at all, spelled any of the ways JavaScript accepts it.
+const NO_LOCALE = (arg) => arg === '' || arg === 'undefined' || arg === 'null' || /^\[\s*\]$/.test(arg);
 
 export function findingsIn(source, file) {
   if (THE_MODEL.some((p) => file.endsWith(p))) return [];
 
   const out = [];
-  const lines = source.split(/\r?\n/);
+  const text = source.replace(/\r\n/g, '\n');
+  const lines = text.split('\n');
 
-  lines.forEach((text, i) => {
+  CALL.lastIndex = 0;
+  let m;
+  while ((m = CALL.exec(text)) !== null) {
+    const i = text.slice(0, m.index).split('\n').length - 1;
+    const line = lines[i];
     // A comment explaining the rule is not a breach of it.
-    if (/^\s*(\/\/|\*|\/\*)/.test(text)) return;
+    if (/^\s*(\/\/|\*|\/\*)/.test(line)) continue;
     // An explicit, justified exception, same shape check-design.mjs uses.
-    if (i > 0 && /datetime-allow/.test(lines[i - 1])) return;
+    if (i > 0 && /datetime-allow/.test(lines[i - 1])) continue;
 
-    CALL.lastIndex = 0;
-    let m;
-    while ((m = CALL.exec(text)) !== null) {
-      const args = m[2].trim();
-      const before = text.slice(0, m.index);
-      const kind = m[1] === 'String' ? receiverKind(before) : 'date';
+    const args = m[2].trim();
+    const before = line.slice(0, m.index - (text.lastIndexOf('\n', m.index - 1) + 1));
+    const kind = m[1] === 'String' ? receiverKind(before) : 'date';
 
-      let id = null;
-      if (kind === 'date') {
-        // `toLocaleDateString()` and `toLocaleTimeString()` are always dates
-        // whatever the receiver looks like.
-        if (args === '') id = 'date-no-locale';
-        else if (/^['"`]/.test(args)) id = 'date-hardcoded-locale';
-        // appLocale() or a variable: already going through the model's idea of
-        // the language. Not a finding.
-      } else if (kind === 'number') {
-        if (args === '') id = 'number-no-locale';
-      }
-      // 'unknown' receivers are left alone deliberately. Guessing produces
-      // exactly the false positives that make a checker ignorable.
-
-      if (id) {
-        out.push({
-          file, line: i + 1, id,
-          severity: RULES.find((r) => r.id === id).severity,
-          text: text.trim().slice(0, 120),
-        });
-      }
+    let id = null;
+    if (kind === 'date') {
+      // `toLocaleDateString()` and `toLocaleTimeString()` are always dates
+      // whatever the receiver looks like.
+      if (NO_LOCALE(args)) id = 'date-no-locale';
+      else if (/^['"`]/.test(args)) id = 'date-hardcoded-locale';
+      // appLocale() or a variable: already going through the model's idea of
+      // the language. Not a finding.
+    } else if (kind === 'number') {
+      if (NO_LOCALE(args)) id = 'number-no-locale';
     }
-  });
+    // 'unknown' receivers are left alone deliberately. Guessing produces
+    // exactly the false positives that make a checker ignorable.
+
+    if (id) {
+      out.push({
+        file, line: i + 1, id,
+        severity: RULES.find((r) => r.id === id).severity,
+        text: line.trim().slice(0, 120),
+      });
+    }
+  }
 
   return out;
 }
@@ -181,6 +190,11 @@ const CASES = [
    '{e.start_date ? new Date(e.start_date).toLocaleDateString() : "-"}'],
   ['severe', 'date-no-locale',
    'row.purchasedAt.toLocaleTimeString()'],
+  // `[]` and `undefined` are no locale too, and a call can run over lines.
+  ['severe', 'date-no-locale',
+   'return new Date(iso).toLocaleTimeString([], {\n  hour: "2-digit",\n  minute: "2-digit"\n});'],
+  ['severe', 'date-no-locale',
+   'new Date(iso).toLocaleDateString(undefined, { day: "numeric" })'],
   // The loud form.
   ['severe', 'date-hardcoded-locale',
    "new Date(iso).toLocaleDateString('en-GB')"],
@@ -191,6 +205,7 @@ const CASES = [
   ['clean', null, 'new Date(iso).toLocaleDateString(appLocale())'],
   ['clean', null, 'new Date(iso).toLocaleString(appLocale(), { day: "numeric" })'],
   ['clean', null, 'new Date(iso).toLocaleDateString(locale)'],
+  ['clean', null, 'new Date(iso).toLocaleString(\n  appLocale(),\n  { day: "numeric" })'],
   ['clean', null, 'formatDateTime(t.checked_in_at)'],
   ['clean', null, '// new Date(x).toLocaleDateString() in a comment is not a breach'],
   ['clean', null, 'const n = someUnknownThing.toLocaleString();'],

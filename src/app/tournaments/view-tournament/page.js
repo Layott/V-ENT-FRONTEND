@@ -27,6 +27,7 @@ import RunningOrder from '@/components/view-tournament/running-order/RunningOrde
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
+import { tournamentStatusLabel } from '@/lib/tournamentStatus';
 import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
 import InvitationBanner from '@/components/view-tournament/invitation-banner/InvitationBanner';
@@ -327,17 +328,9 @@ export const ViewTournamentContent = ({
 
   // The map only covered three of the seven lifecycle statuses, so a tournament
   // taking entries showed the raw enum: "REGISTRATION_OPEN".
-  const statusLabel = {
-    draft: 'Draft',
-    published: 'Published',
-    registration_open: 'Registration open',
-    registration_closed: 'Registration closed',
-    upcoming: 'Upcoming',
-    live: 'Live',
-    in_progress: 'Live',
-    completed: 'Completed',
-    cancelled: 'Cancelled'
-  }[tournament.status] || (tournament.status ? String(tournament.status).replace(/_/g, ' ') : 'Status unknown');
+  // In the reader's language: a Portuguese page read "COMPLETED" (second
+  // bracket walk, 28 September 2026). One set of keys, shared with the console.
+  const statusLabel = tournamentStatusLabel(tt, tournament.status);
   const organizer = getOrganizer(tournament);
   const organizerDisplayName = organizer?.full_name || organizer?.username || 'Unknown organizer';
   const bannerUrl = tournament.banner_image || tournament.banner;
@@ -410,7 +403,7 @@ export const ViewTournamentContent = ({
                     </span>
                   </div>
                   <h1 className={styles.heroTitle}>{tournament.name || tournament.tournament_title || tx("Untitled Tournament")}</h1>
-                  <p className={styles.heroOrganizer}>by {organizerDisplayName}</p>
+                  <p className={styles.heroOrganizer}>{tt('tournament.byName', 'by {name}').replace('{name}', organizerDisplayName)}</p>
                 </div>
                 <div className={styles.heroActions}>
                   {/* Copying a link was all this did. A tournament spreads by

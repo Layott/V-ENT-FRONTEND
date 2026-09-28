@@ -31,6 +31,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
 import { formatDayShort, formatTime } from '@/lib/datetime';
+import { formatLabel } from '@/lib/formatLabel';
 import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -239,6 +240,16 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
   const swiss = norm(format) === 'swiss';
   const placed = ['single_elimination', 'double_elimination', 'gsl'].includes(norm(format));
   const goingThrough = new Set(advancing || []);
+  // A football Swiss can end level, and a row that reads P3 W1 L1 hides the
+  // draw it counted (second bracket walk, 28 September 2026). The column shows
+  // on a Swiss table as soon as anybody has drawn.
+  const showDraws = !swiss || rows.some(r => Number(r.draws) > 0);
+  // What split two sides level on points. The server knows (`decided_by`);
+  // a table that did not say so read as wrong to the very person checking it.
+  const splitBy = row => (row.decided_by && !['points', 'rank'].includes(row.decided_by)
+    ? tt('bracket.splitBy', 'Level on points; {how}')
+      .replace('{how}', tt(`tiebreak.${row.decided_by}`, row.decided_by.replace(/_/g, ' ')).toLowerCase())
+    : null);
   return (
     <div className={styles.tableScroller}>
       <table className={styles.table}>
@@ -248,7 +259,7 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
             <th className={styles.tableName}>{tt('bracket.col.name', 'Name')}</th>
             {!placed && <th title={tt('bracket.col.playedLong', 'Played')}>{tt('bracket.col.played', 'P')}</th>}
             {!placed && <th title={tt('bracket.col.winsLong', 'Won')}>{tt('bracket.col.wins', 'W')}</th>}
-            {!placed && !swiss && <th title={tt('bracket.col.drawsLong', 'Drawn')}>{tt('bracket.col.draws', 'D')}</th>}
+            {!placed && showDraws && <th title={tt('bracket.col.drawsLong', 'Drawn')}>{tt('bracket.col.draws', 'D')}</th>}
             {!placed && <th title={tt('bracket.col.lossesLong', 'Lost')}>{tt('bracket.col.losses', 'L')}</th>}
             {!placed && <th title={tt('bracket.col.gdLong', 'Goal difference')}>{tt('bracket.col.gd', 'GD')}</th>}
             {swiss && <th title={tt('bracket.col.buchholzLong', 'Strength of the opponents faced')}>{tt('bracket.col.buchholz', 'Opp')}</th>}
@@ -264,10 +275,11 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
               <td className={styles.tableName}>
                 {row.name}
                 {row.handle && row.handle !== row.name && <span className={styles.handle}>@{row.handle}</span>}
+                {!placed && splitBy(row) && <span className={styles.handle}>{splitBy(row)}</span>}
               </td>
               {!placed && <td>{row.played}</td>}
               {!placed && <td>{row.wins}</td>}
-              {!placed && !swiss && <td>{row.draws}</td>}
+              {!placed && showDraws && <td>{row.draws}</td>}
               {!placed && <td>{row.losses}</td>}
               {!placed && <td>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</td>}
               {swiss && <td>{row.buchholz}</td>}
@@ -283,7 +295,8 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
   );
 };
 
-export default function BracketVisualizer({ tournamentId, token = null, tournamentRef = null }) {
+export default function BracketVisualizer({ tournamentId, token = null, tournamentRef = null,
+                                           onChanged = null }) {
   const tt = useT();
   const [data, setData] = useState(null);
   const [stageId, setStageId] = useState(null);
@@ -418,7 +431,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
       ) : <>
         <div className={styles.head}>
           <div>
-            <p className={styles.formatName}>{data.format_label || format}</p>
+            {/* In the reader's language; the server's label is English. */}
+            <p className={styles.formatName}>{formatLabel(tt, format, data.format_label || format)}</p>
             <p className={styles.formatHint}>
               {table
                 ? tt('bracket.flatHint', 'Every entrant meets the others. Nobody is knocked out, so the table decides it.')
@@ -482,7 +496,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
       {openFixture && (roomFor
         ? <MatchRoom matchId={openFixture.match_id} tournamentRef={tournamentRef || tournamentId}
                      token={token} canRecord={canRecord}
-                     onClose={() => setOpenFixture(null)} onChanged={() => load({ quiet: true })} />
+                     onClose={() => setOpenFixture(null)}
+                     onChanged={() => { load({ quiet: true }); if (onChanged) onChanged(); }} />
         : <FixtureDetail match={openFixture} onClose={() => setOpenFixture(null)} />)}
     </div>
   );

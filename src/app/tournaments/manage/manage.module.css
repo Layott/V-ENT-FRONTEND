@@ -160,6 +160,9 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.7rem 1rem;
+  /* 44px on a phone: measured 39px on the Android emulator (second bracket
+     walk, 28 September 2026). */
+  min-height: 44px;
   cursor: pointer;
 
   margin-bottom: -1px;

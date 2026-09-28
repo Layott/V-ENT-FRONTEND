@@ -33,6 +33,8 @@ const dayLabel = iso => {
 };
 
 const nameOf = side => side?.name || null;
+// A person's @username beside their full name, as on the bracket.
+const handleOf = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
 
 export default function RunningOrder({ tournamentId, token }) {
   const tt = useT();
@@ -170,8 +172,10 @@ export default function RunningOrder({ tournamentId, token }) {
       <span className={styles.pos}>{dayIso ? index + 1 : '-'}</span>
       <span className={styles.names}>
         {nameOf(fixture.participant_1) || tt('bracket.tbd', 'To be decided')}
+        {handleOf(fixture.participant_1) && <span className={styles.handle}>{handleOf(fixture.participant_1)}</span>}
         <span className={styles.v}>v</span>
         {nameOf(fixture.participant_2) || tt('bracket.tbd', 'To be decided')}
+        {handleOf(fixture.participant_2) && <span className={styles.handle}>{handleOf(fixture.participant_2)}</span>}
       </span>
       <span className={styles.actions}>
         {dayIso && <>

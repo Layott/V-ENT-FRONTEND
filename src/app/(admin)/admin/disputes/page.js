@@ -26,11 +26,17 @@ const STATUS_LABELS = {
   resolved: 'resolved',
   dismissed: 'dismissed'
 };
-function matchLabel(d) {
-  if (d?.round_number != null && d?.match_number != null) {
-    return `R${d.round_number}·M${d.match_number}`;
-  }
-  return '-';
+// Which match, said so two "R1·M1" in different groups or stages can be told
+// apart (second bracket walk, 28 September 2026).
+function matchLabel(d, tt) {
+  if (d?.round_number == null || d?.match_number == null) return '-';
+  return [
+    d.stage_label,
+    d.group_number ? tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + Number(d.group_number))) : null,
+    d.bracket_side === 'losers' ? tt('bracket.losersBracket', 'Losers bracket')
+      : d.bracket_side === 'grand_final' ? tt('bracket.grandFinal', 'Grand final') : null,
+    `R${d.round_number}·M${d.match_number}`,
+  ].filter(Boolean).join(' · ');
 }
 function DisputesInner() {
   const tx = useTx();
@@ -193,7 +199,7 @@ function DisputesInner() {
                   const actionable = d.status === 'open' || d.status === 'under_review';
                   return <tr key={d.id} className={!actionable ? shared.rowResolved : ''}>
                           <td><strong>{d.tournament_title || '-'}</strong></td>
-                          <td>{matchLabel(d)}</td>
+                          <td>{matchLabel(d, tt)}</td>
                           <td>
                             <div className={shared.userCell}>
                               <div className={shared.userAvatar}>
