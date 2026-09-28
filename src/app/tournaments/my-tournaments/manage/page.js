@@ -4,7 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import TournamentAccess from '@/components/view-tournament/access/TournamentAccess';
 import PrizePlan from '@/components/tournament-prizes/PrizePlan';
@@ -502,11 +502,26 @@ const ManageContent = ({
         </div>}
     </div>;
 };
+// This address is retired. Its body lives on as the console's Actions tab
+// (ActionsPanel in /tournaments/manage), and the console is where the "is this
+// yours" guard lives. Rendered here on its own, the old page had no guard: on
+// 28 September a plain player opening ?id=3 got somebody else's tournament
+// with Edit, access codes and every export live. Every old link still works;
+// it lands on the one console, which refuses a stranger in a sentence.
+const RetiredManage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const ref = searchParams.get('id');
+  useEffect(() => {
+    router.replace(ref ? `/tournaments/${encodeURIComponent(ref)}/manage` : '/tournaments/my-tournaments');
+  }, [ref, router]);
+  return <div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />;
+};
 const Manage = () => <Suspense fallback={<div style={{
   minHeight: '100vh',
   backgroundColor: '#131316'
 }} />}>
-    <ManageContent />
+    <RetiredManage />
   </Suspense>;
 export default Manage;
 

@@ -6,7 +6,7 @@ import LeagueScoring from '@/components/view-tournament/standings/LeagueScoring'
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
 import ResultsDesk from '@/components/tournament-manage/ResultsDesk';
@@ -144,6 +144,16 @@ const ManageContent = ({ slug }) => {
   const [tournament, setTournament] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [rounds, setRounds] = useState([]);
+  const router = useRouter();
+  // A numeric address (an old ?id= link, or /tournaments/3/manage from the
+  // retired Actions page) becomes the slug as soon as the slug is known:
+  // sequential ids in an address let anybody count through the table.
+  useEffect(() => {
+    const real = tournament?.slug;
+    if (!real || !id || String(id) === real || !/^\d+$/.test(String(id))) return;
+    const tab = searchParams.get('tab');
+    router.replace(`/tournaments/${real}/manage${tab ? `?tab=${encodeURIComponent(tab)}` : ''}`);
+  }, [tournament?.slug, id, router, searchParams]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // Opens on Actions, because that is the screen every organiser link used
