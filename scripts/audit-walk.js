@@ -37,7 +37,8 @@ const VIEW = (process.env.VIEW || 'desktop').toLowerCase();
 const AS = (process.env.AS || 'user').toLowerCase();
 const ONLY = (process.env.ONLY || '').split(',').map((s) => s.trim()).filter(Boolean);
 
-const OUT = path.join(__dirname, 'audit-out', `${VIEW}-${AS}`);
+// One folder per person walked, so walking several roles keeps every report.
+const OUT = path.join(__dirname, 'audit-out', `${VIEW}-${AS}${AS === 'user' ? `-${USER}` : ''}`);
 const APP = path.join(__dirname, '..', 'src', 'app');
 
 const VIEWPORTS = {
@@ -273,7 +274,10 @@ async function walkRoute(page, route, allRoutes) {
 
   // ---- auth ----
   let authNote = 'anonymous';
-  if (AS === 'admin') {
+  // AS=anon walks signed out: the public site as a stranger arriving from a link.
+  if (AS === 'anon') {
+    authNote = 'anonymous';
+  } else if (AS === 'admin') {
     // Admin sign-in is two steps: credentials return a short-lived pending
     // token, then a real TOTP code exchanges it for a session token.
     // Pass the enrolled secret as ADMIN_TOTP_SECRET (read it from AdminTOTP).
