@@ -1,11 +1,9 @@
-import styles from './not-found.module.css';
+import RouteLoading from '@/components/route-loading/RouteLoading';
 import { getT } from '@/i18n/server';
 
-// The frame between one route and the next. It is the page's own surface rather
-// than nothing, so navigation never shows a white gap.
-const Loading = () => {
+// The outline of this page while it loads, under a moving red line
+// (inbox 310, option A). See src/components/route-loading/RouteLoading.js.
+export default function Loading() {
   const t = getT();
-  return <div className={styles.wrap} aria-busy="true" aria-label={t('loading.generic', 'Loading')} />;
-};
-
-export default Loading;
+  return <RouteLoading kind="page" label={t('loading.generic', 'Loading')} />;
+}
