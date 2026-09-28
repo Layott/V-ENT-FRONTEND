@@ -204,6 +204,34 @@ async function walkRoute(page, route, allRoutes) {
         const r = el.getBoundingClientRect();
         return r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44);
       }).length,
+      // Controls past the right edge that nothing can scroll to. A wrapper with
+      // overflow-x: hidden keeps scrollWidth equal to the viewport, so the
+      // overflow check above sees nothing while a Save button sits at x=760 on
+      // a 375px phone (/settings, 28 September). A control inside a
+      // horizontal scroller (a tab strip) is reachable and is left alone.
+      offscreen: (() => {
+        const vw = document.documentElement.clientWidth;
+        // A closed drawer is a fixed panel parked past the edge on purpose, and
+        // a control inside a horizontal scroller can be scrolled to: neither is
+        // lost.
+        const scrolls = (el) => {
+          for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+            const cs = getComputedStyle(p);
+            if (cs.position === 'fixed') return true;
+            if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') && p.scrollWidth > p.clientWidth) return true;
+          }
+          return false;
+        };
+        return Array.from(document.querySelectorAll('button, a[href], input, select, textarea'))
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            const st = getComputedStyle(el);
+            if (!r.width || !r.height || st.visibility === 'hidden' || st.position === 'fixed') return false;
+            return r.left >= vw - 1 && !scrolls(el);
+          })
+          .slice(0, 6)
+          .map((el) => `${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || el.name || '').trim().slice(0, 30)}" at x=${Math.round(el.getBoundingClientRect().left)}`);
+      })(),
     };
   });
 
@@ -264,6 +292,7 @@ async function walkRoute(page, route, allRoutes) {
     deadLinks,
     hashLinks: hashLinks.length,
     smallTaps: data.smallTaps,
+    offscreen: data.offscreen,
     strokes: data.strokes,
     glows: data.glows,
     looksEmpty: data.looksEmpty,
@@ -395,6 +424,7 @@ async function walkRoute(page, route, allRoutes) {
       res.errors.length ? `ERR×${res.errors.length}` : '',
       res.netFails.length ? `NET×${res.netFails.length}` : '',
       res.overflow ? 'OVERFLOW' : '',
+      res.offscreen.length ? `OFFSCREEN×${res.offscreen.length}` : '',
       res.deadLinks.length ? `DEAD×${res.deadLinks.length}` : '',
       res.looksEmpty ? 'EMPTY' : '',
       res.strokes.length ? `STROKE×${res.strokes.length}` : '',
@@ -419,11 +449,12 @@ async function walkRoute(page, route, allRoutes) {
   md.push('', '## Details (only routes with findings)', '');
   for (const r of results) {
     if (!r.errors.length && !r.netFails.length && !r.overflow && !r.deadLinks.length
-        && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length) continue;
+        && !r.offscreen.length && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length) continue;
     md.push(`### \`${r.route}\``);
     if (r.navErr) md.push(`- navigation: ${r.navErr}`);
     if (r.looksEmpty) md.push(`- **renders near-empty** (text length ${r.snippet.length}): "${r.snippet}"`);
     if (r.overflow) md.push(`- **horizontal overflow**: scrollWidth ${r.scrollWidth} > viewport ${r.innerWidth}`);
+    r.offscreen.forEach((o) => md.push(`- **off screen, unreachable**: ${o}`));
     r.errors.forEach((e) => md.push(`- console: \`${e}\``));
     r.netFails.forEach((e) => md.push(`- network: \`${e}\``));
     if (r.deadLinks.length) md.push(`- dead links: ${r.deadLinks.map((d) => `\`${d}\``).join(', ')}`);
@@ -434,6 +465,6 @@ async function walkRoute(page, route, allRoutes) {
   fs.writeFileSync(path.join(OUT, 'report.md'), md.join('\n'));
 
   const bad = results.filter((r) => r.errors.length || r.netFails.length || r.overflow
-    || r.deadLinks.length || r.strokes.length || r.glows.length);
+    || r.deadLinks.length || r.offscreen.length || r.strokes.length || r.glows.length);
   console.log(`\n[audit] ${results.length} routes walked · ${bad.length} with findings · report: ${path.join(OUT, 'report.md')}`);
 })();
