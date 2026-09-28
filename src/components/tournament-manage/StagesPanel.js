@@ -311,7 +311,14 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           stages: draft.map((r, index) => ({
             format: r.format,
             label: r.label || '',
-            advances: Number(r.advances) || 0,
+            // What the screen shows, not what the row last held: the last
+            // stage reads "Nobody advances" (0) and GSL "fixed at two" in a
+            // disabled field, but the row kept its old number. Removing the
+            // second default stage left round robin's 2 on the only stage,
+            // and the plan could never be saved (production walk, 28
+            // September 2026).
+            advances: index === draft.length - 1 ? 0
+              : r.format === 'gsl' ? 2 : (Number(r.advances) || 0),
             groups: GROUPABLE.has(r.format) ? (Number(r.groups) || 0) : 0,
             // Converted before it leaves the browser, which is the only side
             // that knows which zone the organiser typed in.
