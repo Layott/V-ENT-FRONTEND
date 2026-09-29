@@ -18,8 +18,15 @@
  *     and what to queue, and a worker that answered API calls from a cache
  *     would be a scanner that lies about who has been through.
  *
- * Registered only by the scanner page (see src/app/events/scan/page.js), and
- * the scope is the whole site because the shell's chunks live under /_next.
+ * Registered by the scanner page (see src/app/events/scan/page.js) and by
+ * Settings > Notifications when somebody turns push on in a browser: the site
+ * has ONE worker at scope "/" (a second one there would replace this one), so
+ * push lives here too. The caching above touches only the scanner shell and
+ * hashed static files, so it changes nothing for any other page.
+ *
+ * Push (CEO, 30 September 2026: every notification switch must work as each
+ * person set it): the server sends {title, body, url, tag}; this shows it,
+ * and a tap opens the url, reusing a V-ENT tab when one is open.
  */
 
 const VERSION = 'door-v2';
@@ -97,4 +104,33 @@ self.addEventListener('fetch', (event) => {
       return refresh;
     })());
   }
+});
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (err) { data = { title: 'V-ENT', body: event.data && event.data.text() }; }
+  const title = data.title || 'V-ENT';
+  event.waitUntil(self.registration.showNotification(title, {
+    body: data.body || '',
+    icon: '/images/icon-192.png',
+    badge: '/images/logo_mark_red.png',
+    tag: data.tag || undefined,
+    data: { url: data.url || '/notifications' },
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/notifications';
+  event.waitUntil((async () => {
+    const tabs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const tab of tabs) {
+      if (new URL(tab.url).origin === self.location.origin && 'focus' in tab) {
+        await tab.focus();
+        if ('navigate' in tab) return tab.navigate(url);
+        return undefined;
+      }
+    }
+    return self.clients.openWindow(url);
+  })());
 });
