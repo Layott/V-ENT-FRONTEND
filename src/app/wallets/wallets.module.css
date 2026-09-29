@@ -1618,3 +1618,25 @@
     min-width: 44px;
   }
 }
+
+/* The line that tells the payer what to do next on the method step (CEO,
+   29 September 2026: "user intuitive with pointers"). */
+.methodPointer {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.linkBtn {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 0.25rem;
+}

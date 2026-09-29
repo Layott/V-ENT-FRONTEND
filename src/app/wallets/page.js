@@ -32,8 +32,9 @@ const computeStats = (transactions, withdrawals) => {
   let spent = 0;
   let lifetimeEarned = 0;
   (transactions || []).forEach(tx => {
-    const status = normalizeStatus(tx.status);
-    if (status === 'failed' || status === 'cancelled') return;
+    // Only money that moved: a top-up started and never paid is not money
+    // earned (CEO, 29 September 2026).
+    if (normalizeStatus(tx.status) !== 'completed') return;
     const credit = isCreditType(tx.type || tx.transaction_type);
     const amt = Math.abs(Number(tx.amount || tx.amount_vc || 0));
     const date = new Date(tx.created_at || tx.date || 0);
@@ -64,6 +65,7 @@ const WalletsContent = () => {
   const [kycVerified, setKycVerified] = useState(true);
   const [hasPin, setHasPin] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [withdrawals, setWithdrawals] = useState([]);
   const [balanceLoading, setBalanceLoading] = useState(true);
   const [txLoading, setTxLoading] = useState(true);
@@ -167,12 +169,16 @@ const WalletsContent = () => {
     const loadTx = async () => {
       if (!quiet) setTxLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/transactions/`, {
+        // The server totals the whole history in the reader's own zone; the
+        // page only ever has the latest 20 rows.
+        const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; } })();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/transactions/?tz=${encodeURIComponent(tz)}`, {
           headers: authHeaders()
         });
         const data = await res.json();
         if (!cancelled && data?.status === 'success') {
           setTransactions(data.data?.transactions || []);
+          setSummary(data.data?.summary || null);
         } else {
           failed(data);
         }
@@ -205,7 +211,13 @@ const WalletsContent = () => {
       cancelled = true;
     };
   }, [session?.user?.sessionToken, refreshTick]);
-  const stats = computeStats(transactions, withdrawals);
+  const local = computeStats(transactions, withdrawals);
+  const stats = summary ? {
+    earned: summary.month_in,
+    spent: summary.month_out,
+    pending: local.pending,
+    lifetimeEarned: summary.lifetime_in
+  } : local;
   const ngnBalance = ngnFromVc(balance ?? 0);
   const [convertOpen, setConvertOpen] = useState(false);
   return <div className={styles.pageContainer}>

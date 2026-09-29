@@ -1,6 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
+import { usePayProviders, onlyOption, providerName } from '@/lib/payMethods';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -61,20 +62,17 @@ const TopupPage = () => {
   const [reference, setReference] = useState('');
   const [authorizationUrl, setAuthorizationUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('paystack');
+  // Nothing is chosen until the server has said what exists (CEO, 29
+  // September 2026: this started on Paystack, which production does not
+  // offer, and Pay was refused for a choice nobody could see).
+  const [paymentMethod, setPaymentMethod] = useState('');
   // Cards this person has already saved. Read from the server rather than from
   // a settings blob, because a saved card is an authorization Paystack holds.
   const [savedCards, setSavedCards] = useState([]);
   // The gateways that can take money now (Paystack, Flutterwave), from the
   // server, so a gateway without keys is never offered.
-  const [providers, setProviders] = useState([]);
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/pay/providers/`)
-      .then(r => r.json()).then(b => { if (!cancelled) setProviders(b?.data?.providers || []); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
+  const payProviders = usePayProviders();
+  const providers = payProviders.providers;
   const [polling, setPolling] = useState(false);
   const [newBalance, setNewBalance] = useState(null);
   const authHeaders = () => ({
@@ -103,6 +101,21 @@ const TopupPage = () => {
     return () => { cancelled = true; };
   }, [session?.user?.sessionToken]);
 
+  // A saved card is a Paystack authorization, so it is offered only while
+  // Paystack is.
+  const cardsOffered = providers.some(p => p.key === 'paystack') ? savedCards : [];
+  const optionKeys = [...cardsOffered.map(c => `card:${c.id}`), ...providers.map(p => p.key)];
+  const optionKeyList = optionKeys.join('|');
+  useEffect(() => {
+    if (payProviders.status !== 'ready') return;
+    const keys = optionKeyList ? optionKeyList.split('|') : [];
+    // The one option there is, chosen for them; a choice that no longer
+    // exists, dropped.
+    if (!keys.includes(paymentMethod)) setPaymentMethod(onlyOption(keys));
+  }, [payProviders.status, optionKeyList, paymentMethod]);
+  const chosenLabel = paymentMethod.startsWith('card:')
+    ? tt('topup.chosenCard', 'your saved card')
+    : (paymentMethod ? providerName(tt, paymentMethod) : '');
   const numericVc = Number(vc) || 0;
   const ngn = ngnFromVc(numericVc);
   const handleQuickPick = val => {
@@ -122,6 +135,10 @@ const TopupPage = () => {
     setStep(2);
   };
   const handlePayNow = async () => {
+    if (!paymentMethod) {
+      setError(tt('pay.chooseFirst', 'Choose how to pay above first.'));
+      return;
+    }
     setSubmitting(true);
     setError('');
 
@@ -224,7 +241,7 @@ const TopupPage = () => {
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.top.up.wallet.1875", "Top Up Wallet")}</h1>
-              <p className={styles.pageSubtitle}>{tt("topup.subtitle", "Buy VENT COINS with Paystack or Flutterwave. Rate: ₦1,000 = 1 VC.")}</p>
+              <p className={styles.pageSubtitle}>{tt("topup.subtitleNeutral", "Buy VENT COINS. Rate: ₦1,000 = 1 VC.")}</p>
             </div>
           </div>
 
@@ -276,16 +293,29 @@ const TopupPage = () => {
               fontSize: '1rem',
               margin: '0 0 0.4rem'
             }}>{tt("ui.choose.payment.method.7a13", "Choose payment method")}</h2>
-                <p style={{
-              fontSize: '0.82rem',
-              color: 'rgba(255,255,255,0.45)',
-              marginBottom: '1rem',
-              fontFamily: 'Inter, sans-serif'
-            }}>
-                  {tt("topup.methodsLine", "Pick where to pay. Both take cards and bank transfers; Flutterwave also takes mobile money and more.")}
+                <p className={styles.methodPointer}>
+                  {payProviders.status === 'loading'
+                    ? tt('pay.methodsLoading', 'Finding the ways you can pay...')
+                    : optionKeys.length > 1
+                      ? tt('pay.pickOne', 'Pick one of the options below, then press Pay.')
+                      : optionKeys.length === 1
+                        ? tt('pay.onlyOne', '{name} is the way to pay right now, so it is already chosen for you.')
+                          .replace('{name}', chosenLabel)
+                        : null}
                 </p>
 
-                {savedCards.map(card => {
+                {payProviders.status === 'failed' && <div className={`${styles.notice} ${styles.noticeError}`}>
+                    {tt('pay.methodsFailed', 'The ways to pay could not be loaded. Check your connection and try again.')}
+                    {' '}
+                    <button type="button" className={styles.linkBtn} onClick={payProviders.retry}>
+                      {tt('ui.retry.9f5c', 'Retry')}
+                    </button>
+                  </div>}
+                {payProviders.status === 'ready' && optionKeys.length === 0 && <div className={`${styles.notice} ${styles.noticeInfo}`}>
+                    {tt('pay.noneAvailable', 'Online payment is not available right now. Please try again later.')}
+                  </div>}
+
+                {cardsOffered.map(card => {
               const key = `card:${card.id}`;
               const chosen = paymentMethod === key;
               return (
@@ -340,7 +370,7 @@ const TopupPage = () => {
                   </div>
                   <div className={styles.summaryHr} />
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>{tt("ui.processing.fee.f97e", "Processing fee")}</span>
+                    <span className={styles.summaryKey}>{tt("pay.ventFee", "V-ENT fee")}</span>
                     <span className={styles.summaryVal}>₦0</span>
                   </div>
                   <div className={styles.summaryRow}>
@@ -349,6 +379,10 @@ const TopupPage = () => {
                   </div>
                 </div>
 
+                {paymentMethod === 'flutterwave' && <p className={styles.methodPointer}>
+                    {tt('pay.gatewayFee', 'V-ENT charges no fee. Flutterwave may add its own processing fee, which it shows you on its page before you pay.')}
+                  </p>}
+
                 <div className={`${styles.notice} ${styles.noticeInfo}`}>
                   {tt("ui.after.payment.wallet.will.ad96", "After payment your wallet will be credited within seconds. You can leave this page once redirected.")}
                 </div>
@@ -356,7 +390,7 @@ const TopupPage = () => {
                 {polling && <div className={styles.processingState}>
                     <div className={styles.spinner} />
                     <p className={styles.processingTitle}>{tt("ui.processing.payment.da92", "Processing payment…")}</p>
-                    <p className={styles.processingSub}>{tt("ui.verifying.with.paystack.please.5450", "Verifying with Paystack - please don't close this page.")}</p>
+                    <p className={styles.processingSub}>{tt("pay.verifying", "Checking the payment. Please do not close this page.")}</p>
                   </div>}
 
                 {error && !polling && <div className={`${styles.notice} ${styles.noticeError}`}>{error}</div>}
@@ -365,10 +399,20 @@ const TopupPage = () => {
                     <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setStep(1)} disabled={submitting}>
                       {tt("ui.back.b52b", "Back")}
                     </button>
-                    <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handlePayNow} disabled={submitting}>
-                      {submitting ? tx("Please wait…") : tt('topup.payNow', 'Pay ₦{amount} now').replace('{amount}', formatNumber(ngn))}
+                    <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handlePayNow}
+                      disabled={submitting || !paymentMethod} aria-describedby="payHint">
+                      {submitting
+                        ? tx("Please wait…")
+                        : paymentMethod
+                          ? tt('topup.payWith', 'Pay ₦{amount} with {name}')
+                            .replace('{amount}', formatNumber(ngn)).replace('{name}', chosenLabel)
+                          : tt('pay.chooseToPay', 'Choose how to pay')}
                     </button>
                   </div>}
+                {!polling && !paymentMethod && payProviders.status === 'ready' && optionKeys.length > 1 &&
+                  <p id="payHint" className={styles.methodPointer}>
+                    {tt('pay.chooseFirst', 'Choose how to pay above first.')}
+                  </p>}
               </>}
 
             {step === 3 && <div className={styles.successCenter}>

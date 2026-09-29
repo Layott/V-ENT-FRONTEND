@@ -1,91 +1,191 @@
-.container {
+/* The return page from a payment, in the site's own frame (CEO, 29 September
+   2026: "this page doesnt look nice"). Same ground, pane and card as the
+   top-up page it comes from; text in the light colours, never --primary-text,
+   which is black and meant for light pages. */
+.page {
   width: 100%;
   min-height: 100vh;
-  /* #131316 is the page ground everywhere on this site. `--primary-bg`
-     is #FFFFFF and `--primary-text` is #000000: they are the TEXT
-     colours, and pure black is banned as a page ground anyway. */
   background-color: #131316;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  overflow-x: hidden;
+}
+
+.main {
+  width: 100%;
+}
+
+.pane {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 2.5rem 1rem 6rem;
 }
 
 .card {
   background-color: var(--overlay-gray);
-  border-radius: 12px;
-  padding: 2.5rem 2rem;
-  max-width: 400px;
-  width: 100%;
+  border-radius: 14px;
+  padding: 2.25rem 1.5rem 1.75rem;
+  max-width: 480px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
   text-align: center;
 }
 
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid rgba(255, 255, 255, 0.15);
-
+.badge {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.badgeOk {
+  background-color: rgba(76, 175, 80, 0.16);
+  color: var(--v-ent-success-light);
+}
+
+.badgeStop {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff8a80;
+}
+
+.badgeWait {
+  background-color: rgba(212, 175, 55, 0.14);
+  color: var(--v-ent-gold);
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--v-ent-gold);
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 1.25rem;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.iconSuccess {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.5s; }
+}
+
+.title {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.4rem;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  margin: 0 0 0.6rem;
+  line-height: 1.25;
+}
+
+.body {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 1.5rem;
+  max-width: 36ch;
+}
+
+.fact {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  margin: -0.5rem 0 1.5rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 10px;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btnPrimary {
   background-color: var(--v-ent-gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
+  color: #131316;
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.06);
+}
+
+.btnQuiet {
+  background-color: #2a2b30;
   color: #fff;
-  font-weight: var(--fw-bold);
 }
 
-.iconError {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: var(--v-ent-red);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  color: #fff;
-  font-weight: var(--fw-bold);
+.btnQuiet:hover {
+  background-color: #33343a;
 }
 
-.text {
-  font-size: var(--fs-p-size-desktop);
-  color: var(--primary-text);
-  margin: 0;
-}
-
-.subtext {
-  font-size: var(--fs-p-size-mobile);
+.note {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
-  margin: 0;
+  margin: 0.9rem 0 0;
 }
 
-/* The page's own name, above whichever outcome is being reported. */
-.pageTitle {
-  font-size: var(--desktop-h6-size);
-  font-weight: var(--fw-extra-bold);
-  color: var(--primary-bg);
-  margin: 0 0 1rem;
-  line-height: 1.2;
+.ref {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 1.5rem 0 0;
+  word-break: break-all;
 }
 
-@media (max-width: 768px) {
-  .pageTitle {
-    font-size: var(--mobile-h4-size);
+.ref span {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media only screen and (min-width: 560px) {
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .btn {
+    min-width: 160px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .pane {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+    padding: 4rem 1.5rem 2rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .pane {
+    margin-left: 250px;
+    width: calc(100% - 250px);
   }
 }

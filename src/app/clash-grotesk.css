@@ -66,3 +66,43 @@
   font-display: swap;
   font-style: normal;
 }
+
+/* French writes "1 000 000" and "14 h" with U+202F, the narrow no-break
+   space. Clash Grotesk draws it with no width, so every French number read
+   as "1000000" (walk, 29 September 2026). This face lends that one
+   character from a system font, under every Clash family name. */
+@font-face {
+  font-family: "ClashGrotesk-Bold";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Extralight";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Light";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Medium";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Regular";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Semibold";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}
+@font-face {
+  font-family: "ClashGrotesk-Variable";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("DejaVu Sans");
+  unicode-range: U+202F;
+}

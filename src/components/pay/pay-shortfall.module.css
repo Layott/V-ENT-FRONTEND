@@ -77,3 +77,16 @@
   font-size: 0.78rem;
   font-weight: var(--fw-regular);
 }
+
+/* Flutterwave as the only way to pay: the main button, with its methods
+   written under the label. */
+.payOnly {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.55rem 1.1rem;
+  text-align: left;
+}
+
+.payOnly .payAltHint {
+  color: rgba(13, 15, 13, 0.7);
+}
