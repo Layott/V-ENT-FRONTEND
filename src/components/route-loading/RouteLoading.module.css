@@ -44,6 +44,7 @@
   width: 40%;
   border-radius: 2px;
   background-color: var(--v-ent-red, #ED1C24);
+  /* design-allow ambient-motion: it runs only while a page is loading, which is the real feedback the rule allows, and stops for prefers-reduced-motion below */
   animation: routeLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 

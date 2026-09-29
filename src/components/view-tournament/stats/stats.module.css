@@ -1,0 +1,366 @@
+/* The Stats tab. Same surfaces as the Players tab beside it (mvp.module.css):
+   filled panels a step off the page, zebra rows instead of lines, no stroke and
+   no glow anywhere. Wide tables scroll inside their own box, never the page. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.state {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 64ch;
+}
+
+.problem {
+  color: var(--v-ent-red);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.retry {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.retry:hover { background-color: #33343a; }
+
+.intro,
+.note {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  max-width: 76ch;
+}
+
+.sectionTitle {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.1rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin-bottom: 0.75rem;
+}
+
+/* Leaders. Each board is its own filled panel; the leader's name carries the
+   emphasis by size and weight, the rest are a quiet list under it. */
+.boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 0.9rem;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
+
+.boardTitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: var(--fw-medium, 500);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.leader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.7rem;
+}
+
+.leaderValue {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.6rem;
+  font-weight: var(--fw-semi-bold, 600);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.level {
+  flex-basis: 100%;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+}
+
+.entrantBig {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold, 600);
+  overflow-wrap: anywhere;
+}
+
+.entrant {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.handle {
+  color: rgba(255, 255, 255, 0.42);
+  font-weight: var(--fw-regular, 400);
+  font-size: 0.8em;
+}
+
+.rest {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.restRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 8px;
+}
+
+.restRow:nth-child(odd) { background-color: rgba(255, 255, 255, 0.04); }
+
+.more {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  padding: 0 0.45rem;
+}
+
+.place {
+  width: 1.4rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.restValue {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Records: two plain sentences, a label above each. */
+.records {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.recordLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Head to head. */
+.h2h {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.pickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.75rem;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.pickerLabel {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+}
+
+.select {
+  min-height: 44px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-size: 0.92rem;
+  padding: 0 0.8rem;
+}
+
+.h2hScore {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
+
+.h2hSide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.h2hRight { text-align: right; }
+
+.h2hName {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.h2hBig {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 2rem;
+  font-weight: var(--fw-semi-bold, 600);
+  font-variant-numeric: tabular-nums;
+}
+
+.h2hMiddle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.h2hDraws {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.8rem;
+}
+
+.meetings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meeting {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.meeting:nth-child(odd) { background-color: rgba(255, 255, 255, 0.04); }
+
+.meetingRound { color: rgba(255, 255, 255, 0.55); }
+
+.meetingScore { text-align: right; }
+
+.pens { color: rgba(255, 255, 255, 0.5); }
+
+/* Every entrant: the Players tab's table, row for row. */
+.scroller {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.table thead th {
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: var(--fw-medium, 500);
+  letter-spacing: 0.05em;
+  padding: 0 0.55rem 0.6rem;
+  text-align: right;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.62rem 0.55rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table tbody tr:nth-child(odd) { background-color: rgba(255, 255, 255, 0.04); }
+
+.nameCol {
+  text-align: left !important;
+  min-width: 160px;
+  white-space: normal !important;
+}
+
+.formCol { text-align: left !important; }
+
+/* Form letters carry meaning by colour: a win green, a loss red. */
+.form {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.fw, .fd, .fl {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold, 600);
+  color: #fff;
+}
+
+.fw { background-color: var(--v-ent-success-deep); }
+.fd { background-color: #33343a; }
+.fl { background-color: rgba(237, 28, 36, 0.55); }
+
+@media (max-width: 720px) {
+  .h2hBig { font-size: 1.6rem; }
+  .leaderValue { font-size: 1.35rem; }
+}

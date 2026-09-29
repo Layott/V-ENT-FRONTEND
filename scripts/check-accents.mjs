@@ -22,6 +22,9 @@ const ROOT = path.resolve(HERE, '..');
 
 export const BARE = {
   fr: {
+    // Found 29 September 2026 on the sign-out page ("Se deconnecter").
+    deconnecter: 'déconnecter', deconnecte: 'déconnecté', deconnectez: 'déconnectez',
+    definissez: 'définissez', definir: 'définir',
     equipe: 'équipe', equipes: 'équipes', evenement: 'événement', evenements: 'événements',
     etat: 'état', etre: 'être', ete: 'été', deja: 'déjà', telecharger: 'télécharger',
     telecharge: 'téléchargé', releve: 'relevé', releves: 'relevés', deplacer: 'déplacer',
@@ -91,9 +94,43 @@ export function findBare(table, lang) {
       }
       hits.push({ key, word, should: words[w] });
     });
+    if (lang === 'fr') {
+      for (const word of found) {
+        const should = eeFix(word);
+        if (should) hits.push({ key, word, should });
+      }
+    }
+    // French elision with its apostrophe lost: "l annuler", "n est", "d inscription".
+    // A lone l, d, n, s, j, c or qu before a vowel is never a French word; 144 of
+    // these were found at once on 29 September 2026, so it is part of this catcher.
+    if (lang === 'fr') {
+      for (const m of prose.matchAll(ELISION)) {
+        hits.push({ key, word: `${m[2]} ${m[3]}`, should: `${m[2]}’${m[3]}` });
+      }
+    }
   }
   return hits;
 }
+
+// French past participles and nouns in -ée(s) written -ee(s): "dessinee", "entree",
+// "journee". A French word never ends that way, so the rule needs no word list;
+// 90 were found at once on 29 September 2026. The map gives the whole word where
+// the stem carries an accent too; otherwise only the ending is restored.
+const EE_ENGLISH = new Set(['free', 'fee', 'fees', 'see', 'three', 'agree', 'disagree',
+  'attendee', 'attendees', 'referee', 'coffee', 'committee', 'employee', 'guarantee']);
+const EE_STEM = {
+  telechargee: 'téléchargée', cedee: 'cédée', liberee: 'libérée', desactivee: 'désactivée',
+  desactivees: 'désactivées', prelevee: 'prélevée', controlee: 'contrôlée', debitee: 'débitée',
+  reservee: 'réservée', reservees: 'réservées', decidee: 'décidée', creee: 'créée', creees: 'créées',
+};
+export function eeFix(word) {
+  const lower = word.toLowerCase();
+  if (EE_ENGLISH.has(lower) || !/^[a-zà-ÿ]{2,}ees?$/.test(lower)) return null;
+  const whole = EE_STEM[lower] || lower.replace(/ee(s?)$/, 'ée$1');
+  return word[0] === word[0].toUpperCase() ? whole[0].toUpperCase() + whole.slice(1) : whole;
+}
+
+const ELISION = /(^|[\s(«"'])(d|l|qu|n|s|j|c|jusqu|lorsqu|puisqu) ([aeiouyéèêëàâîïôûùh])/gi;
 
 function selfTest() {
   const cases = [
@@ -108,6 +145,16 @@ function selfTest() {
     ['pt', { a: 'O link passa a ser ?ref=CODIGO' }, 0],
     ['pt', { a: 'Isso nao carregou' }, 1],
     ['pt', { a: 'Isso não carregou' }, 0],
+    ['fr', { a: 'Carte dessinee' }, 1],
+    ['fr', { a: 'Carte dessinée' }, 0],
+    ['fr', { a: 'Free Fire' }, 0],
+    ['fr', { a: 'Liste telechargee' }, 1],
+    ['fr', { a: 'Oui, l annuler' }, 1],
+    ['fr', { a: 'La salle n est plus disponible' }, 1],
+    ['fr', { a: 'Oui, l’annuler' }, 0],
+    ['fr', { a: 'La salle n’est plus disponible' }, 0],
+    ['fr', { a: '{n} entrants' }, 0],
+    ['pt', { a: 'd e f' }, 0],
   ];
   let failed = 0;
   for (const [lang, table, expected] of cases) {
@@ -130,6 +177,6 @@ if (isMain) {
     total += hits.length;
     for (const h of hits.slice(0, 400)) console.log(`${lang} ${h.key}: "${h.word}" should be "${h.should}"`);
   }
-  console.log(`${total} word(s) without their accent in French and Portuguese`);
+  console.log(`${total} word(s) without their accent or apostrophe in French and Portuguese`);
   process.exit(total ? 1 : 0);
 }

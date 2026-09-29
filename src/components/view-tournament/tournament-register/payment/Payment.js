@@ -72,7 +72,7 @@ const PaymentModal = ({
   const mode = registrationData?.type === 'team' ? 'team' : 'individual';
   const team = selectedTeam || registrationData?.team || null;
   const roster = (teamMembers && teamMembers.length ? teamMembers : registrationData?.members) || [];
-  const tournamentName = tournament?.tournament_title || tournament?.name || 'this tournament';
+  const tournamentName = tournament?.tournament_title || tournament?.name || tt('register.theTournament', 'the tournament');
 
   // ── phase: 'loading' | 'verifying-topup' | 'kyc' | 'insufficient'
   //         | 'review' | 'pin' | 'blocked' | 'error'
@@ -375,16 +375,18 @@ const PaymentModal = ({
     if (onClose) onClose();
   };
   if (!isOpen) return null;
+  // Every heading in the reader's language; these were English to everybody
+  // (walk, 29 September 2026).
   const TITLES = {
-    loading: 'Payment',
-    'verifying-topup': 'Verifying Top-Up',
-    kyc: 'Identity Verification Required',
-    insufficient: 'Insufficient Balance',
-    review: 'Confirm Payment',
-    pin: 'Enter Wallet PIN',
-    blocked: 'Registration Unavailable',
-    error: 'Something Went Wrong',
-    conflict: 'Two at the same time'
+    loading: tt('pay.title.loading', 'Payment'),
+    'verifying-topup': tt('pay.title.verifying', 'Checking your top-up'),
+    kyc: tt('pay.title.kyc', 'Identity check needed'),
+    insufficient: tt('pay.title.insufficient', 'Not enough in your wallet'),
+    review: tt('pay.title.review', 'Confirm payment'),
+    pin: tt('pay.title.pin', 'Enter your wallet PIN'),
+    blocked: tt('pay.title.blocked', 'Registration unavailable'),
+    error: tt('pay.title.error', 'Something went wrong'),
+    conflict: tt('pay.title.conflict', 'Two at the same time')
   };
   const backDisabled = phase === 'loading' || phase === 'verifying-topup';
   const renderEntryFeeSection = () => <div className={styles.entryFeeSection}>
@@ -401,8 +403,8 @@ const PaymentModal = ({
               <CoinIcon />
               <span style={{
             color: 'var(--v-ent-gold)'
-          }}>{fee.toLocaleString()} VC</span>
-            </> : 'FREE'}
+          }}>{formatNumber(fee)} VC</span>
+            </> : tt('register.free', 'Free')}
         </span>
         {feeOnTop > 0 && <span className={styles.feeLine}>
           {tt('register.feeOnTop', 'Entry {entry} VC + service fee ({pct}% + {flat} naira) {fee} VC')
@@ -410,6 +412,14 @@ const PaymentModal = ({
             .replace('{pct}', String(quote.fee_pct))
             .replace('{flat}', formatNumber(Number(quote.fee_flat_ngn)))
             .replace('{fee}', formatNumber(feeOnTop))}
+        </span>}
+        {/* What missing check-in costs, on the step every entrant passes
+            through before paying. A solo entry skips the review step, so the
+            line there never reached solo players (walk, 29 September 2026). */}
+        {fee > 0 && tournament?.check_in?.forfeit_without_check_in && <span className={styles.feeLine}>
+          {tournament.check_in.refund_no_shows
+            ? tt('register.noShowRefunded', 'Check in before it starts. If you do not, you are taken out and this fee goes back to your wallet.')
+            : tt('register.noShowKept', 'Check in before it starts. If you do not, you are taken out and this fee is not refunded.')}
         </span>}
       </div>
     </div>;
@@ -453,10 +463,10 @@ const PaymentModal = ({
               <CoinIcon />
               <span style={{
               color: 'var(--v-ent-gold)'
-            }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
+            }}>{formatNumber(wallet?.balance ?? 0)} VC</span>
             </div>
             <div className={styles.insufficientFunds}>
-              {tt("ui.insufficient.funds.need.8556", "Insufficient funds - you need")} {Math.max(fee - (wallet?.balance || 0), 0).toLocaleString()} {tt("ui.more.vc.78f5", "more VC")}
+              {tt("ui.insufficient.funds.need.8556", "Insufficient funds - you need")} {formatNumber(Math.max(fee - (wallet?.balance || 0), 0))} {tt("ui.more.vc.78f5", "more VC")}
             </div>
           </div>
         </div>
@@ -475,7 +485,7 @@ const PaymentModal = ({
           }} />
       </>;
     footerPrimary = <button className={styles.payButton} onClick={handleTopUp} disabled={toppingUp}>
-        {toppingUp ? tx("Redirecting…") : `Top up & pay ${fee.toLocaleString()} VC`}
+        {toppingUp ? tx("Redirecting…") : tt('pay.topUpAndPay', 'Top up and pay {n} VC').replace('{n}', formatNumber(fee))}
       </button>;
   } else if (phase === 'review') {
     body = <>
@@ -487,13 +497,13 @@ const PaymentModal = ({
               <CoinIcon />
               <span style={{
               color: 'var(--v-ent-gold)'
-            }}>{(wallet?.balance ?? 0).toLocaleString()} VC</span>
+            }}>{formatNumber(wallet?.balance ?? 0)} VC</span>
             </div>
           </div>
         </div>
       </>;
     footerPrimary = <button className={styles.payButton} onClick={() => setPhase('pin')}>
-        {`Pay ${fee.toLocaleString()} VC`}
+        {tt('pay.payN', 'Pay {n} VC').replace('{n}', formatNumber(fee))}
       </button>;
   } else if (phase === 'pin') {
     const code = pin.join('');
@@ -501,7 +511,7 @@ const PaymentModal = ({
     body = <>
         {resumeNotice && <div className={styles.resumeBanner}>{resumeNotice}</div>}
         <p className={styles.subtitle}>
-          {tt("ui.enter.digit.wallet.pin.2ead", "Enter your 4-digit wallet PIN to authorize")} {fee.toLocaleString()} {tt("ui.vc.4ea1", "VC for")} {tournamentName}.
+          {tt("ui.enter.digit.wallet.pin.2ead", "Enter your 4-digit wallet PIN to authorize")} {formatNumber(fee)} {tt("ui.vc.4ea1", "VC for")} {tournamentName}.
         </p>
         <div className={styles.pinRow}>
           {pin.map((digit, idx) => <input
@@ -536,7 +546,7 @@ const PaymentModal = ({
       }}>
           {tt("ui.this.runs.at.same.4af5", "This runs at the same time as")}{' '}
           <strong>{conflict?.title || tx("another tournament")}</strong>
-          {conflict?.starts_at ? `, which starts ${formatDateTime(conflict.starts_at)}` : ''}
+          {conflict?.starts_at ? tt('pay.conflictStarts', ', which starts {when}').replace('{when}', formatDateTime(conflict.starts_at)) : ''}
           {tt("ui.are.already.registered.it.03e6", ", and you are already registered for it.")}
         </p>
         <p className={styles.subtitle} style={{
@@ -567,7 +577,7 @@ const PaymentModal = ({
 
         <div className={styles.modalFooter}>
           <button className={styles.cancelButton} onClick={handleClose}>
-            {phase === 'blocked' ? 'Close' : 'Cancel'}
+            {phase === 'blocked' ? tt('pay.close', 'Close') : tt('pay.cancel', 'Cancel')}
           </button>
           {footerPrimary}
         </div>

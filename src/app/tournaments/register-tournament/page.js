@@ -62,12 +62,20 @@ const RegisterTournamentContent = ({
       if (t) setTournament(t);
       else setNotFound(tt("registerTournament.notFound", "That tournament does not exist."));
     } catch (err) {
+      // Renamed since the link was made: carry on at the new name, keeping
+      // everything else in the address (a payment being resumed, say).
+      if (err?.code === 'SLUG_CHANGED' && err?.data?.slug && typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        params.set('id', err.data.slug);
+        router.replace(`/tournaments/register-tournament?${params.toString()}`);
+        return;
+      }
       if (err?.status === 404) setNotFound(tt("registerTournament.notFound", "That tournament does not exist."));
       else setLoadError(apiMessage(tt, err, "api.failedToLoadTournament", "Failed to load tournament."));
     } finally {
       setLoading(false);
     }
-  }, [id, token, sessionStatus, tt]);
+  }, [id, token, sessionStatus, tt, router]);
   useEffect(() => { load(); }, [load]);
   const goToTournament = () => {
     router.push(id ? `/tournaments/${id}` : '/tournaments');
