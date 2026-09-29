@@ -61,6 +61,7 @@ const ROSTER_LOCK_CHOICES = [{
 export const DEFAULT_OPTIONS = {
   check_in_minutes: 15,
   forfeit_without_check_in: true,
+  refund_no_shows: false,
   seeding_method: 'registration',
   third_place_match: false,
   every_place: false,
@@ -141,7 +142,15 @@ const TournamentOptions = ({
               </button>)}
           </div>
 
-          {options.check_in_minutes > 0 && <Toggle id="forfeit_without_check_in" tip="forfeitNoCheckIn" label={tt("ui.forfeit.anyone.who.does.41e7", "Forfeit anyone who does not check in")} hint="You press the button. Nothing is removed automatically." checked={options.forfeit_without_check_in} onChange={v => set('forfeit_without_check_in', v)} />}
+          {options.check_in_minutes > 0 && <Toggle id="forfeit_without_check_in" tip="forfeitNoCheckIn" label={tt("ui.forfeit.anyone.who.does.41e7", "Forfeit anyone who does not check in")} hint={tt("opts.forfeitHint", "You press the button. Nothing is removed automatically.")} checked={options.forfeit_without_check_in} onChange={v => set('forfeit_without_check_in', v)} />}
+
+          {/* Whether a paid entrant taken out for not checking in is refunded.
+              Off keeps the fee (CEO decision D-1). Only on a paid tournament,
+              and held on once somebody has paid on the promise of it. */}
+          {options.check_in_minutes > 0 && options.forfeit_without_check_in && Number(formData.entry_fee) > 0 && <Toggle id="refund_no_shows" label={tt("opts.refundNoShows", "Refund anyone taken out for not checking in")} hint={formData.refund_locked && options.refund_no_shows ? tt("opts.refundNoShowsLocked", "People have paid expecting a refund if they miss check-in, so this stays on.") : tt("opts.refundNoShowsHint", "Off: an entry fee paid by somebody who does not check in is kept. On: it goes back to their wallet when you close check-in.")} checked={Boolean(options.refund_no_shows)} onChange={v => {
+            if (!v && formData.refund_locked) return;
+            set('refund_no_shows', v);
+          }} />}
         </div>
 
         {/* ----------------------------------------------------- seeding */}
@@ -154,7 +163,7 @@ const TournamentOptions = ({
               </button>)}
           </div>
 
-          {!options.every_place && <Toggle id="third_place_match" tip="thirdPlaceMatch" label={tt("ui.play.third.place.match.f507", "Play a third-place match")} hint="The two semi-final losers play for third. Needed if your prize table pays a third place." checked={options.third_place_match} onChange={v => set('third_place_match', v)} />}
+          {!options.every_place && <Toggle id="third_place_match" tip="thirdPlaceMatch" label={tt("ui.play.third.place.match.f507", "Play a third-place match")} hint={tt("opts.thirdPlaceHint", "The two semi-final losers play for third. Needed if your prize table pays a third place.")} checked={options.third_place_match} onChange={v => set('third_place_match', v)} />}
 
           {/* Matches for every place: losers keep playing for fifth, seventh
               and every place below, so every entrant finishes somewhere of
@@ -221,7 +230,7 @@ const TournamentOptions = ({
             </label>
           </div>
 
-          <Toggle id="require_screenshot" tip="requireScreenshot" label={tt("ui.require.screenshot.every.result.bf3a", "Require a screenshot with every result")} hint="Disputes are far easier to settle when there is a picture attached." checked={options.require_screenshot} onChange={v => set('require_screenshot', v)} />
+          <Toggle id="require_screenshot" tip="requireScreenshot" label={tt("ui.require.screenshot.every.result.bf3a", "Require a screenshot with every result")} hint={tt("opts.screenshotHint", "Disputes are far easier to settle when there is a picture attached.")} checked={options.require_screenshot} onChange={v => set('require_screenshot', v)} />
         </div>
 
         {/* ------------------------------------------------------ rosters */}
@@ -275,7 +284,7 @@ const TournamentOptions = ({
           </div>
 
           <Toggle id="require_verified_email" tip="requireVerifiedEmail" label={tt("ui.verified.email.address.required.4ad7", "Verified email address required")} checked={options.require_verified_email} onChange={v => set('require_verified_email', v)} />
-          <Toggle id="require_kyc" tip="requireKyc" label={tt("ui.verified.identity.required.299c", "Verified identity required")} hint="Already required automatically on any tournament that charges entry or pays a prize." checked={options.require_kyc} onChange={v => set('require_kyc', v)} />
+          <Toggle id="require_kyc" tip="requireKyc" label={tt("ui.verified.identity.required.299c", "Verified identity required")} hint={tt("opts.kycHint", "Already required automatically on any tournament that charges entry or pays a prize.")} checked={options.require_kyc} onChange={v => set('require_kyc', v)} />
         </div>
       </div>
     </div>;

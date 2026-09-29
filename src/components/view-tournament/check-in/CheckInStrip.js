@@ -170,6 +170,28 @@ const CheckInStrip = ({
   if (!state.registered && !isOrganizer) return null;
   if (state.closed && !isOrganizer && state.checked_in) return null;
   const showEntrantAction = state.registered && !state.checked_in && state.open_now;
+  // What missing check-in costs THIS reader. An entrant who paid is told
+  // whether the fee comes back (the organiser's choice, off by default: CEO
+  // decision D-1), before the window closes rather than after.
+  const forfeitLine = state.registered && !state.checked_in && state.entry_fee_paid
+    ? (state.refund_no_shows
+      ? tt('checkin.forfeitWarningRefund', 'If you do not check in, you are taken out and your entry fee goes back to your wallet.')
+      : tt('checkin.forfeitWarningKeep', 'If you do not check in, you are taken out and your entry fee is not refunded.'))
+    : tt('checkin.forfeitWarning', 'Anyone who does not check in forfeits.');
+  const waiting = Math.max(0, (state.registered_count || 0) - (state.checked_in_count || 0));
+  const closeWarning = !state.forfeit_without_check_in
+    ? tt('checkin.confirmCloseNoForfeit', 'Check-in closes. Nobody is taken out.')
+    : !state.entry_fee_charged
+      ? plural(tt, waiting,
+        'checkin.confirmCloseOneFree', '{n} entrant who has not checked in is taken out.',
+        'checkin.confirmCloseFree', '{n} entrants who have not checked in are taken out.')
+      : state.refund_no_shows
+        ? plural(tt, waiting,
+          'checkin.confirmCloseOneRefund', '{n} entrant who has not checked in is taken out, and their entry fee goes back to their wallet.',
+          'checkin.confirmCloseRefund', '{n} entrants who have not checked in are taken out, and their entry fees go back to their wallets.')
+        : plural(tt, waiting,
+          'checkin.confirmCloseOne', '{n} entrant who has not checked in is taken out. An entry fee they paid is not refunded.',
+          'checkin.confirmClose', '{n} entrants who have not checked in are taken out. An entry fee they paid is not refunded.');
   return <div className={styles.strip}>
       <div className={styles.main}>
         <p className={styles.label}>{tt("ui.check.4843", "Check-in")}</p>
@@ -199,7 +221,7 @@ const CheckInStrip = ({
             .replace('{total}', state.registered_count)}
           {state.closed || !state.forfeit_without_check_in
             ? '.'
-            : ` ${tt('checkin.forfeitWarning', 'Anyone who does not check in forfeits.')}`}
+            : ` ${forfeitLine}`}
         </p>
 
         {notice && <p className={notice.type === 'ok' ? styles.noticeOk : styles.noticeError}>
@@ -211,6 +233,11 @@ const CheckInStrip = ({
               {closeResult.checked_in?.length || 0} {tt("ui.checked.9982", "checked in")}
               {closeResult.forfeited?.length
                 ? `, ${tt('checkin.nForfeited', '{n} forfeited').replace('{n}', closeResult.forfeited.length)}`
+                : ''}
+              {closeResult.refunded_count > 0
+                ? `, ${plural(tt, closeResult.refunded_count,
+                  'checkin.nRefundedOne', '{n} refunded their entry fee',
+                  'checkin.nRefunded', '{n} refunded their entry fees')}`
                 : ''}
             </p>
             {closeResult.forfeited?.length > 0 && <p className={styles.closeSummaryNames}>
@@ -233,9 +260,7 @@ const CheckInStrip = ({
           </button>}
         {confirmingClose && <>
             <p className={styles.meta}>
-              {plural(tt, Math.max(0, (state.registered_count || 0) - (state.checked_in_count || 0)),
-                'checkin.confirmCloseOne', '{n} entrant who has not checked in is taken out. An entry fee they paid is not refunded.',
-                'checkin.confirmClose', '{n} entrants who have not checked in are taken out. An entry fee they paid is not refunded.')}
+              {closeWarning}
             </p>
             <button type="button" className={styles.primaryBtn} onClick={closeWindow} disabled={busy}>
               {tt('checkin.confirmCloseYes', 'Take them out and close')}

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useMemo, useState } from 'react';
 import styles from './ActivityPanel.module.css';
 import parentStyles from '@/app/user-profile/user-profile.module.css';
@@ -114,7 +116,7 @@ const TournamentTable = ({
                     {tx(stat.label)}
                   </span>
                 </td>
-                <td><a href="#" className={styles.tAction}>{tt("ui.view.details.907b", "View Details")}</a></td>
+                <td>{t.slug ? <Link href={`/tournaments/${t.slug}`} className={styles.tAction}>{tt("ui.view.details.907b", "View Details")}</Link> : null}</td>
               </tr>;
         })}
         </tbody>
@@ -148,7 +150,7 @@ const TournamentTable = ({
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.type.3deb", "Type")}</span><span className={styles.txRowVal}>{t.type || '-'}</span></div>
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.placement.ab89", "Placement")}</span><span className={styles.txRowVal}><span className={`${styles.tPlace} ${placeClass(t.placement)}`}>{t.place || '-'}</span></span></div>
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.prize.d597", "Prize")}</span><span className={styles.txRowVal}>{t.prize || '-'}</span></div>
-                  <a className={styles.txCardCta} href="#" onClick={e => e.stopPropagation()}>{tt("ui.view.details.907b", "View Details")}</a>
+                  {t.slug ? <Link className={styles.txCardCta} href={`/tournaments/${t.slug}`} onClick={e => e.stopPropagation()}>{tt("ui.view.details.907b", "View Details")}</Link> : null}
                 </div>
               </div>
             </div>;
@@ -195,7 +197,7 @@ const EventTable = ({
                 <td>{e.date || '-'}</td>
                 <td>{e.tier || '-'}</td>
                 <td><span className={`${styles.status} ${stat.cls}`}>{tx(stat.label)}</span></td>
-                <td><a href="#" className={styles.tAction}>{tt("ui.view.details.907b", "View Details")}</a></td>
+                <td>{e.slug ? <Link href={`/events/${e.slug}`} className={styles.tAction}>{tt("ui.view.details.907b", "View Details")}</Link> : null}</td>
               </tr>;
         })}
         </tbody>
@@ -224,7 +226,7 @@ const EventTable = ({
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.game.theme.050c", "Game / Theme")}</span><span className={styles.txRowVal}>{e.game || '-'}</span></div>
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.venue.67cd", "Venue")}</span><span className={styles.txRowVal}>{e.venue || e.location || '-'}</span></div>
                   <div className={styles.txRow}><span className={styles.txRowKey}>{tt("ui.tier.5bd4", "Tier")}</span><span className={styles.txRowVal}>{e.tier || '-'}</span></div>
-                  <a className={styles.txCardCta} href="#" onClick={ev => ev.stopPropagation()}>{tt("ui.view.details.907b", "View Details")}</a>
+                  {e.slug ? <Link className={styles.txCardCta} href={`/events/${e.slug}`} onClick={ev => ev.stopPropagation()}>{tt("ui.view.details.907b", "View Details")}</Link> : null}
                 </div>
               </div>
             </div>;

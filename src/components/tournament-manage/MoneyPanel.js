@@ -75,6 +75,31 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
     }
   };
 
+  // Keep or refund the entry fee of somebody taken out for not checking in.
+  // The server holds it on once people have paid expecting a refund.
+  const setNoShowRefund = async (refund) => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/edit-tournament/${tournamentRef}/`, {
+        method: 'PUT', headers: headers(), body: JSON.stringify({ options: { refund_no_shows: refund } }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        showToast && showToast(refund
+          ? tt('money.noShowRefundOn', 'Saved. Anyone taken out for not checking in gets their entry fee back.')
+          : tt('money.noShowRefundOff', 'Saved. Anyone taken out for not checking in keeps no refund.'));
+        await load({ quiet: true });
+      } else {
+        setProblem(apiMessage(tt, body, 'money.saveFailed', 'That was not saved.'));
+      }
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const payOut = async () => {
     setBusy(true);
     setProblem('');
@@ -141,6 +166,30 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
               .replace('{flat}', formatNumber(earnings.fee_flat_ngn))}
           </p>
         </> : <p className={styles.hint}>{tt('money.noFeeAtAll', 'V-ENT is not taking a fee on entries, so there is nothing to pass on.')}</p>}
+      </>}
+
+      {paidEntries && earnings.no_shows?.applies && <>
+        <h4 className={styles.subTitle}>{tt('money.noShowsTitle', 'Somebody who does not check in')}</h4>
+        <div className={styles.chips}>
+          {[[false, 'money.noShowKeep', 'Keep their entry fee'],
+            [true, 'money.noShowRefund', 'Refund them']].map(([value, key, fallback]) => {
+            const on = Boolean(earnings.no_shows.refund) === value;
+            return (
+              <button key={String(value)} type="button"
+                      className={on ? `${styles.chip} ${styles.chipOn}` : styles.chip}
+                      aria-pressed={on}
+                      disabled={busy || on || (earnings.no_shows.locked && !value)}
+                      onClick={() => setNoShowRefund(value)}>
+                {tt(key, fallback)}
+              </button>
+            );
+          })}
+        </div>
+        <p className={styles.hint}>
+          {earnings.no_shows.locked
+            ? tt('opts.refundNoShowsLocked', 'People have paid expecting a refund if they miss check-in, so this stays on.')
+            : tt('money.noShowExplained', 'When you close check-in, anyone who has not checked in is taken out. This decides whether their entry fee is kept or goes back to their wallet. You can switch to refunding at any time; once somebody has paid expecting a refund, it cannot be switched back.')}
+        </p>
       </>}
 
       <h4 className={styles.subTitle}>{tt('money.cameIn', 'What came in and went out')}</h4>

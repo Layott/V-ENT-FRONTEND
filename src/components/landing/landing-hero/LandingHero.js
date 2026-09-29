@@ -122,7 +122,7 @@ const LandingHero = ({
                 <form onSubmit={handleSubmit} className={styles.form}>
                   <input
                     type="text"
-                    placeholder="Enter your email address"
+                    placeholder={tt("ui.enter.email.address.c099", "Enter your email address")}
                     className={styles.inputText}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

@@ -57,7 +57,7 @@ const LandingMarketplace = ({ scrollToForm }) => {
                     >
                         <Image
                             src={marketPlaceLeft}
-                            alt='Market Place Left'
+                            alt={tt('landing.marketplace.altAccount', 'An example Vermillion City listing: a game account for sale for 40 VENT COINS, with the seller shown online')}
                         />
                     </div>
 
@@ -67,7 +67,7 @@ const LandingMarketplace = ({ scrollToForm }) => {
                     >
                         <Image
                             src={marketPlaceRight}
-                            alt='Market Place Right'
+                            alt={tt('landing.marketplace.altSkins', 'An example Vermillion City listing: weapon skins for sale for 10 VENT COINS')}
                         />
                     </div>
                 </div>

@@ -72,6 +72,9 @@ const mapTournamentToFormData = t => {
     // show what is already saved rather than an empty box, which reads as
     // "your upload was lost".
     options: t.options && typeof t.options === 'object' ? t.options : {},
+    // Refunds for no-shows promised to people who have already paid: the
+    // switch is shown held on (the server keeps it on regardless).
+    refund_locked: Boolean(t.check_in?.refund_no_shows_locked),
     series_id: t.series_id ?? t.tournament_series_id ?? '',
     event: t.event ?? t.event_id ?? '',
     // Whose name it runs in. The mapper had no key for it, and the wizard

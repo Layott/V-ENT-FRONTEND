@@ -160,6 +160,14 @@ const ReviewModal = ({
                       .replace('{flat}', formatNumber(Number(quote.fee_flat_ngn)))
                       .replace('{fee}', formatNumber(feeOnTop))}
                   </span>}
+                  {/* What missing check-in costs, said before the money moves
+                      rather than after (CEO decision D-1, and the organiser's
+                      own choice since 29 September 2026). */}
+                  {charge > 0 && tournament?.check_in?.forfeit_without_check_in && <span className={styles.feeLine}>
+                    {tournament.check_in.refund_no_shows
+                      ? tt('register.noShowRefunded', 'Check in before it starts. If you do not, you are taken out and this fee goes back to your wallet.')
+                      : tt('register.noShowKept', 'Check in before it starts. If you do not, you are taken out and this fee is not refunded.')}
+                  </span>}
                 </span>
               </div>
 
@@ -270,7 +278,7 @@ const ReviewModal = ({
               <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} />
               <span className={styles.checkmark}></span>
               <span className={styles.termsText}>
-                {tt("ui.i.agree.v.ent.65bd", "I agree to the v-ent")} <a href="#" className={styles.termsLink}>{tt("ui.terms.conditions.9b45", "terms and conditions")}</a> {tt("ui.rules.this.tournament.649a", "and rules of this tournament.")}
+                {tt("ui.i.agree.v.ent.65bd", "I agree to the v-ent")} <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles.termsLink}>{tt("ui.terms.conditions.9b45", "terms and conditions")}</a> {tt("ui.rules.this.tournament.649a", "and rules of this tournament.")}
               </span>
             </label>
           </div>

@@ -641,7 +641,7 @@ export default function TextLayerEditor({
               <label className={`${styles.field} ${styles.wide}`}>
                 <span className={styles.label}>{tt('layers.words', 'The words')}</span>
                 <input className={styles.input} value={draft.text}
-                       placeholder="GRAND FINAL"
+                       placeholder={tt('layers.wordsExample', 'GRAND FINAL')}
                        onChange={(e) => set('text', e.target.value)} />
               </label>
 

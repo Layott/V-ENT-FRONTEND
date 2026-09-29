@@ -91,9 +91,19 @@ export function findBare(table, lang) {
       }
       hits.push({ key, word, should: words[w] });
     });
+    // French elision with its apostrophe lost: "l annuler", "n est", "d inscription".
+    // A lone l, d, n, s, j, c or qu before a vowel is never a French word; 144 of
+    // these were found at once on 29 September 2026, so it is part of this catcher.
+    if (lang === 'fr') {
+      for (const m of prose.matchAll(ELISION)) {
+        hits.push({ key, word: `${m[2]} ${m[3]}`, should: `${m[2]}’${m[3]}` });
+      }
+    }
   }
   return hits;
 }
+
+const ELISION = /(^|[\s(«"'])(d|l|qu|n|s|j|c|jusqu|lorsqu|puisqu) ([aeiouyéèêëàâîïôûùh])/gi;
 
 function selfTest() {
   const cases = [
@@ -108,6 +118,12 @@ function selfTest() {
     ['pt', { a: 'O link passa a ser ?ref=CODIGO' }, 0],
     ['pt', { a: 'Isso nao carregou' }, 1],
     ['pt', { a: 'Isso não carregou' }, 0],
+    ['fr', { a: 'Oui, l annuler' }, 1],
+    ['fr', { a: 'La salle n est plus disponible' }, 1],
+    ['fr', { a: 'Oui, l’annuler' }, 0],
+    ['fr', { a: 'La salle n’est plus disponible' }, 0],
+    ['fr', { a: '{n} entrants' }, 0],
+    ['pt', { a: 'd e f' }, 0],
   ];
   let failed = 0;
   for (const [lang, table, expected] of cases) {
@@ -130,6 +146,6 @@ if (isMain) {
     total += hits.length;
     for (const h of hits.slice(0, 400)) console.log(`${lang} ${h.key}: "${h.word}" should be "${h.should}"`);
   }
-  console.log(`${total} word(s) without their accent in French and Portuguese`);
+  console.log(`${total} word(s) without their accent or apostrophe in French and Portuguese`);
   process.exit(total ? 1 : 0);
 }
