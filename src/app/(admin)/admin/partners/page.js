@@ -11,6 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './partners.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 
 // The partner queue. Approving is not one button: an admin ticks exactly which
 // scopes a partner gets, and SSO is a second decision on top, because a partner
@@ -65,7 +66,7 @@ function PartnersInner() {
   const fetchPartners = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -111,7 +112,7 @@ function PartnersInner() {
     setIssuedSecret(null);
   };
   const post = async (path, body) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
       method: 'POST',
       headers: {

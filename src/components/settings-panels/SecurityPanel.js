@@ -208,7 +208,7 @@ const SecurityPanel = ({
     const out = await api2FA('confirm/', { code: code.trim() });
     setBusy2FA(false);
     if (out?.status !== 'success') {
-      return showToast?.(apiMessage(tt, out, 'api.badCode', 'That code is not right. Check your app and try again.'), 'error');
+      return showToast?.(apiMessage(tt, out, 'api.badCodeApp', 'That code is not right. Check your app and try again.'), 'error');
     }
     setTwoFA(true);
     setShowQR(false);
@@ -224,7 +224,7 @@ const SecurityPanel = ({
     const out = await api2FA('disable/', { code: code.trim() });
     setBusy2FA(false);
     if (out?.status !== 'success') {
-      return showToast?.(apiMessage(tt, out, 'api.badCode', 'That code is not right. Check your app and try again.'), 'error');
+      return showToast?.(apiMessage(tt, out, 'api.badCodeApp', 'That code is not right. Check your app and try again.'), 'error');
     }
     setTwoFA(false);
     setDisabling(false);

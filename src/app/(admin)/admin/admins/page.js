@@ -30,11 +30,12 @@ import { useT } from '@/i18n/LanguageProvider';
 import Avatar from '@/components/avatar/Avatar';
 import shared from '@/components/admin/admin.module.css';
 import styles from './admins.module.css';
+import { adminToken } from '@/lib/adminToken'
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 function token() {
-  return typeof window === 'undefined' ? '' : localStorage.getItem('adminToken') || '';
+  return adminToken();
 }
 
 function AdminsInner() {

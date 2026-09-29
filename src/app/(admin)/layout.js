@@ -5,6 +5,7 @@ import Link from 'next/link';
 import '../../app/globals.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
+import RouteLoading from '@/components/route-loading/RouteLoading';
 import styles from './admin-guard.module.css';
 
 // The admin portal talks to the real backend only.
@@ -44,6 +45,16 @@ export default function AdminLayout({
   // built next week is covered on the day it is written, and the permission it
   // needs is read from the same map the nav reads.
   const { loading, allowed, needed } = useAdminAuth();
+
+  // No page renders until the console knows who this is. The session token
+  // lives in memory now (R66), and on the first render of a fresh visit the
+  // session is still resolving: a page that ran its first load then found no
+  // token, returned, and never loaded again, so Organisations read "There are
+  // no organisations yet" to a super admin. The disk copy used to hide that.
+  // Waiting here covers every section, including ones written later.
+  if (loading) {
+    return <RouteLoading kind="console" label={tt('loading.console', 'Loading the console')} />;
+  }
 
   if (!loading && !allowed) {
     return (

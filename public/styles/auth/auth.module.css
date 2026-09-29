@@ -1,6 +1,8 @@
 .pageContainer {
   width: 100%;
-  background-color: var(--primary-text);
+  /* --primary-text is #000000: every sign-in page was pure black, which the
+     design rules ban. The document already paints the site's dark surface. */
+  background-color: transparent;
   min-height: 100vh;
   color: var(--primary-bg);
   display: flex;

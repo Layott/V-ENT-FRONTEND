@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import shared from '@/components/admin/admin.module.css';
+import { adminToken } from '@/lib/adminToken'
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -59,8 +60,7 @@ function OrganizationsInner() {
   const [sending, setSending] = useState(false);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
-    const token = typeof window !== 'undefined'
-      ? localStorage.getItem('adminToken') : '';
+    const token = adminToken();
     if (!token) { setLoading(false); return; }
     if (!quiet) setLoading(true);
     try {
@@ -93,7 +93,7 @@ function OrganizationsInner() {
   useAutoRefresh(() => setTick((t) => t + 1), [], { interval: 30000 });
 
   const act = async (org, payload, okText) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     try {
       const res = await fetch(`${API}/auth/admin/organizations/${org.slug}/`, {
         method: 'POST',
@@ -113,7 +113,7 @@ function OrganizationsInner() {
   };
 
   const createOrg = async () => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setSending(true);
     try {
       const res = await fetch(`${API}/auth/admin/organizations/`, {
@@ -141,7 +141,7 @@ function OrganizationsInner() {
   };
 
   const moveFunds = async () => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setSending(true);
     try {
       const res = await fetch(`${API}/auth/admin/transfer-funds/`, {

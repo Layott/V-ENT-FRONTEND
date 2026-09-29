@@ -22,6 +22,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
+import { mediaUrl } from '@/lib/mediaUrl';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -288,8 +289,8 @@ const TournamentsContent = () => {
           {/* Featured carousel */}
           {isFeaturedTab && !loading && !error && featured.length > 0 && <div className={styles.featuredRow}>
               {featured.map((t, i) => <Link key={t?.id ?? i} href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.featuredCard}>
-                  <div className={styles.featuredBanner} style={t?.banner_image || t?.banner ? {
-              backgroundImage: `url(${t.banner_image || t.banner})`
+                  <div className={styles.featuredBanner} style={mediaUrl(t?.banner_image || t?.banner) ? {
+              backgroundImage: `url(${mediaUrl(t.banner_image || t.banner)})`
             } : undefined}>
                     <span className={styles.featuredPill}>{tt("ui.featured.c005", "FEATURED")}</span>
                     <div className={styles.featuredOverlay}>
@@ -400,7 +401,7 @@ const TournamentCard = ({
   const statusLabel = STATUS_LABELS[status] || (status && status !== 'unknown' ? status : 'Upcoming');
   const badgeClass = styles[STATUS_BADGE_CLASS[status]] || styles.status_upcoming;
   const isLive = LIVE_STATUSES.includes(status);
-  const banner = t?.banner_image || t?.banner || '';
+  const banner = mediaUrl(t?.banner_image || t?.banner) || '';
   const fee = entryFeeVc(t);
   const prize = Number(t?.prize_pool || 0);
   const current = t?.current_participants ?? 0;

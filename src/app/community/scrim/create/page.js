@@ -294,7 +294,9 @@ const ScrimCreateInner = () => {
               <h2 className={styles.successTitle}>{tt("ui.challenge.posted.72ba", "Challenge posted")}</h2>
               <p className={styles.successText}>
                 {tt("scrim.liveFor", "Your {format} {game} challenge is now live for {who}.").replace("{format}", form.format).replace("{game}", form.game).replace("{who}", form.open_to === 'anywhere' ? tt("scrim.anybody", "anybody, anywhere") : form.open_to === 'countries' ? form.countries.join(', ') : form.country)}
-                {success.challenged ? ` ${success.challenged.name} has been notified.` : tx(" Other teams can accept it.")}
+                {' '}{success.challenged
+                  ? tt("scrim.challengedNotified", "{name} has been notified.").replace("{name}", success.challenged.name)
+                  : tt("scrim.othersCanAccept", "Other teams can accept it.")}
               </p>
               <div className={styles.successActions}>
                 <button className={`${styles.successBtn} goldBTN`} onClick={() => router.push(success.slug ? `/community/challenge/${success.slug}` : '/community?tab=challenges')}>

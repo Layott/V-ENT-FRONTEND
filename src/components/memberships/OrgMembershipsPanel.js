@@ -752,7 +752,7 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
                 </div>
                 <div className={styles.stat}>
                   <span className={styles.statLabel}>
-                    {tt('billing.refunded', 'Refunded')}
+                    {tt('billing.refundedStatus', 'Refunded')}
                   </span>
                   <span className={styles.statValue}>
                     {formatNumber(detail.refunded_vc)} VC

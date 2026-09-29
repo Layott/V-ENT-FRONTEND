@@ -14,6 +14,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { adminToken } from '@/lib/adminToken'
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -69,7 +70,7 @@ function KycInner() {
     setDocError('');
     (async () => {
       try {
-        const token = localStorage.getItem('adminToken');
+        const token = adminToken();
         const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -100,7 +101,7 @@ function KycInner() {
   const fetchKyc = useCallback(async ({ quiet = false } = {}) => {
     const ticket = requestRef.current + 1;
     requestRef.current = ticket;
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     if (!quiet) setDataLoading(true);
     if (!quiet) setError('');
     try {
@@ -137,7 +138,7 @@ function KycInner() {
     if (!authLoading && admin) fetchKyc();
   }, [authLoading, admin, fetchKyc]);
   async function approveKyc(id) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true
@@ -164,7 +165,7 @@ function KycInner() {
     }));
   }
   async function rejectKyc(id, reason, notes) {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     setActionLoading(p => ({
       ...p,
       [id]: true

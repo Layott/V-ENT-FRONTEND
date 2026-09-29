@@ -30,13 +30,14 @@ import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import shared from '@/components/admin/admin.module.css';
 import styles from './org-detail.module.css';
+import { adminToken } from '@/lib/adminToken'
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 const MEMBER_ROLES = ['owner', 'admin', 'manager', 'member'];
 
 function token() {
-  return typeof window === 'undefined' ? '' : localStorage.getItem('adminToken') || '';
+  return adminToken();
 }
 
 function OrgDetailInner() {

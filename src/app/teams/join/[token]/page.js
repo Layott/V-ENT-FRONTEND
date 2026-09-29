@@ -146,7 +146,7 @@ const JoinByLink = ({ token }) => {
                 ) : (
                   <>
                     <p className={styles.muted}>
-                      {tt('team.signInToJoin', 'Sign in to join. You will come straight back here.')}
+                      {tt('team.signInToJoinBack', 'Sign in to join. You will come straight back here.')}
                     </p>
                     <button type="button" className={styles.primary}
                             onClick={() => router.push(

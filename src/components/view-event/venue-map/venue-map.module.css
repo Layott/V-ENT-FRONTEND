@@ -130,9 +130,28 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
+/* Leaflet outlines the zoom control with a 2px ring and splits the two buttons
+   with a 1px rule: the hairline structure the design rules ban. A filled
+   control with a gap between the buttons says the same thing. */
+/* Three classes: Leaflet's own `.leaflet-touch .leaflet-bar` has two and loads
+   after this file, so a two-class rule here ties and loses (still 2px in
+   Chrome on the first attempt). */
+.mapHolder :global(.leaflet-bar.leaflet-control),
+.mapHolder :global(.leaflet-touch .leaflet-bar.leaflet-control) {
+  border: none;
+  background: transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+}
+
 .mapHolder :global(.leaflet-bar a) {
   background-color: #26262c;
   color: #fff;
+  border: none;
+}
+
+.mapHolder :global(.leaflet-bar a:first-child) {
+  margin-bottom: 2px;
 }
 
 .mapHolder :global(.leaflet-bar a:hover) {

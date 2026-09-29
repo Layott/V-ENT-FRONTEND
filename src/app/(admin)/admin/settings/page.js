@@ -11,6 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './settings.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 const FEATURES = [{
   key: 'tournaments_enabled',
   label: 'Tournaments',
@@ -64,7 +65,7 @@ function SettingsInner() {
   const fetchSettings = useCallback(async () => {
     setLoading(true);
     setError('');
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/settings/`, {
         headers: {
@@ -87,7 +88,7 @@ function SettingsInner() {
   }, [authLoading, admin, fetchSettings]);
   async function save() {
     setSaving(true);
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/settings/`, {
         method: 'POST',

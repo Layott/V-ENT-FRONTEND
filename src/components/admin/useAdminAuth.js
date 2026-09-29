@@ -12,15 +12,16 @@
 // session. The second factor did not get weaker for moving - it used to be
 // reachable only by going looking for the dashboard, and it is now unavoidable.
 //
-// The token is still written to `localStorage.adminToken`, because fourteen
-// pages read it from there. It is the site session token now rather than a
-// separate grant, and the server refuses it unless the sign-in behind it
-// carried the code.
+// The token is the site session token rather than a separate grant, and the
+// server refuses it unless the sign-in behind it carried the code. The pages
+// read it from memory (`@/lib/adminToken`), never from localStorage: a copy on
+// disk outlived the tab and any sign-out that forgot to clear it (R66).
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { permsForPath } from '@/components/admin/AdminNav'
+import { setAdminToken } from '@/lib/adminToken'
 
 export function useAdminAuth() {
   const router = useRouter()
@@ -33,6 +34,10 @@ export function useAdminAuth() {
   // every render, and depending on it here is how this loops forever.
   const token = session?.user?.sessionToken || null
 
+  // Set while rendering, not in an effect: the pages below run their effects
+  // before this hook's own, and their first request needs the token.
+  setAdminToken(token)
+
   useEffect(() => {
     if (status === 'loading') return undefined
     if (!token) {
@@ -40,9 +45,8 @@ export function useAdminAuth() {
       return undefined
     }
 
-    // Fourteen pages read this. Written before the check so their own first
-    // fetch has it, and cleared below if the server says no.
-    localStorage.setItem('adminToken', token)
+    // A copy left on disk by the version that kept it there.
+    localStorage.removeItem('adminToken')
 
     let cancelled = false
     ;(async () => {
@@ -65,7 +69,7 @@ export function useAdminAuth() {
         // makes a session an admin session. Send them back through the front
         // door rather than showing an empty console.
         if (body?.code === 'TWO_FACTOR_REQUIRED') {
-          localStorage.removeItem('adminToken')
+          setAdminToken('')
           localStorage.removeItem('adminUser')
           // Sign out of NextAuth as well, not only out of the console.
           //
@@ -79,7 +83,7 @@ export function useAdminAuth() {
           return
         }
 
-        localStorage.removeItem('adminToken')
+        setAdminToken('')
         localStorage.removeItem('adminUser')
 
         // The backend session is dead while the NextAuth one is still standing.
@@ -113,7 +117,7 @@ export function useAdminAuth() {
 
   function logout() {
     localStorage.removeItem('adminUser')
-    localStorage.removeItem('adminToken')
+    setAdminToken('')
     router.replace('/home')
   }
 

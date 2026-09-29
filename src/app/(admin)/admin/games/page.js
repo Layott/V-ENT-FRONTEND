@@ -23,6 +23,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './games.module.css';
 import ImageUpload from '@/components/image-upload/ImageUpload';
 import { useT } from '@/i18n/LanguageProvider';
+import { adminToken } from '@/lib/adminToken'
 function GamesInner() {
   const tt = useT();
   const {
@@ -51,7 +52,7 @@ function GamesInner() {
   // ever - which is what an admin reported seeing and is indistinguishable
   // from a slow server.
   const call = useCallback(async (path, options = {}) => {
-    const token = localStorage.getItem('adminToken');
+    const token = adminToken();
     const isForm = options.body instanceof FormData;
     let res;
     try {

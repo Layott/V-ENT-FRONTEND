@@ -28,11 +28,12 @@ import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import shared from '@/components/admin/admin.module.css';
 import styles from './content.module.css';
+import { adminToken } from '@/lib/adminToken'
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 function token() {
-  return typeof window === 'undefined' ? '' : localStorage.getItem('adminToken') || '';
+  return adminToken();
 }
 
 const PHASE_NAMES = {
