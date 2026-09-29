@@ -46,6 +46,22 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
   const [quote, setQuote] = useState(null);
   // A promo code, quoted as it is typed and sent only once the quote took it.
   const [promoCode, setPromoCode] = useState('');
+  // Where a paid ticket is paid: Paystack or Flutterwave, from the server, so
+  // a gateway without keys is never offered (CEO, 29 September 2026).
+  const [providers, setProviders] = useState([]);
+  const [provider, setProvider] = useState('paystack');
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API}/auth/wallet/pay/providers/`)
+      .then(r => r.json()).then(b => {
+        if (cancelled) return;
+        const list = b?.data?.providers || [];
+        setProviders(list);
+        if (list.length && !list.some(p => p.key === 'paystack')) setProvider(list[0].key);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
 
   // One answer set per ticket, so the size on ticket two is not the size on
@@ -118,6 +134,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
           // common case for a link posted publicly, so this is the path that
           // matters most for crediting one.
           ref: refFor(eventRef),
+          provider,
         }),
       });
       const body = await res.json().catch(() => ({}));
@@ -338,6 +355,23 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
       </p>}
 
       {error && <p className={styles.error}>{error}</p>}
+
+      {(tier?.price_vc ?? tier?.price ?? 0) > 0 && providers.length > 1 && <div className={styles.providers}
+        role="group" aria-label={tt('pay.chooseProvider', 'Pay with')}>
+        <span className={styles.label}>{tt('pay.chooseProvider', 'Pay with')}</span>
+        <div className={styles.providerRow}>
+          {providers.map(p => <button type="button" key={p.key}
+            className={provider === p.key ? `${styles.providerChip} ${styles.providerChipOn}` : styles.providerChip}
+            aria-pressed={provider === p.key} onClick={() => setProvider(p.key)}>
+            <strong>{p.key === 'flutterwave' ? tt('pay.flutterwave', 'Flutterwave') : tt('ui.paystack.c851', 'Paystack')}</strong>
+            <span className={styles.providerHint}>
+              {p.key === 'flutterwave'
+                ? tt('pay.flutterwaveMethods', 'Card, bank transfer, USSD, mobile money and more')
+                : tt('ui.card.bank.transfer.ussd.334b', 'Card • Bank Transfer • USSD')}
+            </span>
+          </button>)}
+        </div>
+      </div>}
 
       <button type="button" className={styles.buy} disabled={busy || !email.trim()}
               onClick={submit}>

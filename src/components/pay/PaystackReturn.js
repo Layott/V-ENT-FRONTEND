@@ -43,6 +43,13 @@ export default function PaystackReturn() {
     const params = new URLSearchParams(window.location.search);
     const reference = params.get('reference') || params.get('trxref');
     if (!reference) return;
+    // Only a wallet top-up's reference (Paystack VENT-, Flutterwave FLW-TOP-),
+    // and never on a page that verifies its own payment. It used to take ANY
+    // reference: on the ticket confirmation it verified a ticket's reference
+    // as a top-up, failed, stripped it from the address, and the page then
+    // told a paying guest no ticket was issued (walk, 29 September 2026).
+    if (!/^(VENT-|FLW-TOP-)/.test(reference)) return;
+    if (/\/(wallet-topup-callback|events\/ticket-confirmed)/.test(window.location.pathname)) return;
     done.current = true;
 
     (async () => {

@@ -113,6 +113,10 @@ export default function PayShortfall({
         const url = new URL(window.location.href);
         url.searchParams.delete('reference');
         url.searchParams.delete('trxref');
+        // What Flutterwave adds on its way back.
+        url.searchParams.delete('tx_ref');
+        url.searchParams.delete('transaction_id');
+        url.searchParams.delete('status');
         window.history.replaceState({}, '', url.toString());
         if (res.ok && body.status === 'success') {
           await load();
@@ -153,7 +157,9 @@ export default function PayShortfall({
     );
   }
 
-  const press = async () => {
+  // `provider` is 'flutterwave' for its button; otherwise the saved card or
+  // Paystack, as before.
+  const press = async (provider) => {
     setBusy(true);
     setProblem('');
     setSaid('');
@@ -166,6 +172,7 @@ export default function PayShortfall({
           coins: need,
           purpose,
           callback_url: window.location.href,
+          ...(provider === 'flutterwave' ? { provider: 'flutterwave' } : {}),
         }),
       });
       const body = await res.json().catch(() => ({}));
@@ -200,7 +207,7 @@ export default function PayShortfall({
       </p>
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
       {said && <p className={styles.said}>{said}</p>}
-      <button type="button" className={styles.pay} disabled={busy} onClick={press}>
+      <button type="button" className={styles.pay} disabled={busy} onClick={() => press()}>
         <LuCreditCard aria-hidden="true" />
         {busy
           ? tt('pay.working', 'Paying...')
@@ -212,8 +219,21 @@ export default function PayShortfall({
             : tt('pay.withCard', 'Pay {amount} naira with a card')
               .replace('{amount}', formatNumber(naira))))}
       </button>
+      {/* Flutterwave beside Paystack (CEO, 29 September 2026): its own page
+          with every method switched on in its dashboard. */}
+      {(methods.providers || []).some(p => p.key === 'flutterwave') && <button type="button"
+        className={styles.payAlt} disabled={busy} onClick={() => press('flutterwave')}>
+        {tt('pay.withFlutterwave', 'Pay {amount} naira with Flutterwave')
+          .replace('{amount}', formatNumber(naira))}
+        <span className={styles.payAltHint}>
+          {tt('pay.flutterwaveMethods', 'Card, bank transfer, USSD, mobile money and more')}
+        </span>
+      </button>}
       {methods.test_mode && <p className={styles.hint}>
         {tt('pay.testMode', 'This platform is on Paystack test keys, so no real money moves.')}
+      </p>}
+      {(methods.providers || []).some(p => p.key === 'flutterwave' && p.test_mode) && <p className={styles.hint}>
+        {tt('pay.flutterwaveTestMode', 'Flutterwave is on test keys here, so no real money moves.')}
       </p>}
     </div>
   );

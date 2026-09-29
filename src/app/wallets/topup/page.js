@@ -65,6 +65,16 @@ const TopupPage = () => {
   // Cards this person has already saved. Read from the server rather than from
   // a settings blob, because a saved card is an authorization Paystack holds.
   const [savedCards, setSavedCards] = useState([]);
+  // The gateways that can take money now (Paystack, Flutterwave), from the
+  // server, so a gateway without keys is never offered.
+  const [providers, setProviders] = useState([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/pay/providers/`)
+      .then(r => r.json()).then(b => { if (!cancelled) setProviders(b?.data?.providers || []); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
   const [polling, setPolling] = useState(false);
   const [newBalance, setNewBalance] = useState(null);
   const authHeaders = () => ({
@@ -152,7 +162,9 @@ const TopupPage = () => {
         body: JSON.stringify({
           amount_ngn: ngn,
           vc: numericVc,
-          method: paymentMethod
+          provider: paymentMethod,
+          // Where the gateway sends them back; that page verifies and credits.
+          callback_url: `${window.location.origin}/wallet-topup-callback?redirect_to=/wallets`
         })
       });
       const data = await res.json();
@@ -163,8 +175,13 @@ const TopupPage = () => {
       }
       setReference(data.data?.reference || '');
       setAuthorizationUrl(data.data?.authorization_url || '');
+      // To the gateway. This page used to wait a second and verify a payment
+      // nobody had made, which failed it (29 September 2026, inbox 352).
+      if (data.data?.authorization_url) {
+        window.location.assign(data.data.authorization_url);
+        return;
+      }
       setPolling(true);
-      // Simulate Paystack pending state for ~1.2s, then verify.
       setTimeout(async () => {
         try {
           const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/topup/verify/`, {
@@ -207,7 +224,7 @@ const TopupPage = () => {
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.top.up.wallet.1875", "Top Up Wallet")}</h1>
-              <p className={styles.pageSubtitle}>{tt("ui.buy.vent.coins.via.49c6", "Buy VENT COINS via Paystack. Rate: ₦1,000 = 1 VC.")}</p>
+              <p className={styles.pageSubtitle}>{tt("topup.subtitle", "Buy VENT COINS with Paystack or Flutterwave. Rate: ₦1,000 = 1 VC.")}</p>
             </div>
           </div>
 
@@ -265,7 +282,7 @@ const TopupPage = () => {
               marginBottom: '1rem',
               fontFamily: 'Inter, sans-serif'
             }}>
-                  {tt("ui.v.ent.supports.paystack.9dc0", "V-ENT supports Paystack for top-ups. More methods coming soon.")}
+                  {tt("topup.methodsLine", "Pick where to pay. Both take cards and bank transfers; Flutterwave also takes mobile money and more.")}
                 </p>
 
                 {savedCards.map(card => {
@@ -292,17 +309,25 @@ const TopupPage = () => {
               );
             })}
 
-                <button type="button"
-                  className={styles.bankRow + (paymentMethod === 'paystack' ? ' ' + styles.bankRowActive : '')}
-                  onClick={() => setPaymentMethod('paystack')}>
+                {providers.map(p => <button type="button" key={p.key}
+                  className={styles.bankRow + (paymentMethod === p.key ? ' ' + styles.bankRowActive : '')}
+                  aria-pressed={paymentMethod === p.key}
+                  onClick={() => setPaymentMethod(p.key)}>
                   <div>
-                    <div className={styles.bankName}>{tt("ui.paystack.c851", "Paystack")}</div>
-                    <div className={styles.bankHolder}>{tt("ui.card.bank.transfer.ussd.334b", "Card • Bank Transfer • USSD")}</div>
+                    <div className={styles.bankName}>
+                      {p.key === 'flutterwave' ? tt('pay.flutterwave', 'Flutterwave') : tt("ui.paystack.c851", "Paystack")}
+                      {p.test_mode ? ` ${tt('pay.providerTestMode', '(test mode, no real money)')}` : ''}
+                    </div>
+                    <div className={styles.bankHolder}>
+                      {p.key === 'flutterwave'
+                        ? tt('pay.flutterwaveMethods', 'Card, bank transfer, USSD, mobile money and more')
+                        : tt("ui.card.bank.transfer.ussd.334b", "Card • Bank Transfer • USSD")}
+                    </div>
                   </div>
-                  {paymentMethod === 'paystack'
+                  {paymentMethod === p.key
                     ? <span className={styles.bankDefault}>{tt("ui.selected.b0ec", "✓ Selected")}</span>
                     : null}
-                </button>
+                </button>)}
 
                 <div className={styles.summaryList}>
                   <div className={styles.summaryRow}>
@@ -341,7 +366,7 @@ const TopupPage = () => {
                       {tt("ui.back.b52b", "Back")}
                     </button>
                     <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handlePayNow} disabled={submitting}>
-                      {submitting ? tx("Please wait…") : `Pay ₦${formatNumber(ngn)} now`}
+                      {submitting ? tx("Please wait…") : tt('topup.payNow', 'Pay ₦{amount} now').replace('{amount}', formatNumber(ngn))}
                     </button>
                   </div>}
               </>}
