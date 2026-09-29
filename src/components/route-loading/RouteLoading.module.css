@@ -1,0 +1,143 @@
+/* The loading outline. Surfaces are the page's own: page #131316, header
+   #17181A, one step up --overlay-gray #212225, one more #2a2b30. Radius by
+   size: 14px panels, 10px controls, 8px chips. No strokes, no glow. */
+
+.page {
+  min-height: 100vh;
+  background-color: #131316;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  z-index: 60;
+  background-color: #17181A;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.logo {
+  height: 25px;
+  width: auto;
+}
+
+/* The one moving thing: a red line under the header, running left to right
+   for as long as the page takes. */
+.line {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 61;
+  overflow: hidden;
+}
+
+.line i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  border-radius: 2px;
+  background-color: var(--v-ent-red, #ED1C24);
+  animation: routeLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes routeLine {
+  from { left: -40%; }
+  to { left: 100%; }
+}
+
+.sidebar {
+  display: none;
+}
+
+.pane {
+  padding: calc(60px + 1.25rem) 1rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.say {
+  margin: 0.2rem 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 64px;
+  background-color: #17181A;
+}
+
+.block {
+  display: block;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+}
+
+.hero { height: 180px; background-color: #1b1c20; }
+.strip { height: 72px; }
+.chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.chip { width: 84px; height: 44px; border-radius: 8px; background-color: #2a2b30; }
+.step { width: 110px; height: 44px; border-radius: 8px; background-color: #2a2b30; }
+.split { display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
+.column { display: flex; flex-direction: column; gap: 0.9rem; }
+.card { height: 150px; }
+.cardShort { height: 96px; }
+.side { height: 180px; }
+.title { width: 55%; max-width: 320px; height: 32px; border-radius: 10px; }
+.subtitle { width: 75%; max-width: 440px; height: 16px; border-radius: 8px; }
+.grid { display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
+.tile { height: 220px; }
+.back { width: 120px; height: 14px; border-radius: 8px; }
+.panel { height: 360px; }
+.field { display: flex; flex-direction: column; gap: 0.45rem; }
+.label { width: 140px; height: 14px; border-radius: 8px; }
+.input { height: 46px; border-radius: 10px; }
+.banner { height: 160px; background-color: #1b1c20; }
+.identity { display: flex; align-items: center; gap: 0.9rem; margin-top: -2.5rem; padding-left: 1rem; }
+.face { width: 84px; height: 84px; border-radius: 50%; background-color: #2a2b30; }
+.name { width: 180px; height: 26px; border-radius: 10px; margin-top: 2.5rem; }
+.navItem { height: 34px; border-radius: 10px; background-color: #1b1c20; }
+
+@media only screen and (min-width: 600px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media only screen and (min-width: 768px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: fixed;
+    top: 60px;
+    bottom: 0;
+    left: 0;
+    width: 180px;
+    padding: 1.25rem 0.9rem;
+    background-color: #131316;
+  }
+  .pane { margin-left: 180px; padding: calc(60px + 2rem) 2rem 2rem; }
+  .bottomBar { display: none; }
+  .hero { height: 280px; }
+}
+
+@media only screen and (min-width: 1024px) {
+  .sidebar { width: 250px; }
+  .pane { margin-left: 250px; }
+  .split { grid-template-columns: 2fr 1fr; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line i { animation: none; left: 0; width: 100%; opacity: 0.6; }
+}

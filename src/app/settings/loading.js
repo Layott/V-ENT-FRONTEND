@@ -5,5 +5,5 @@ import { getT } from '@/i18n/server';
 // (inbox 310, option A). See src/components/route-loading/RouteLoading.js.
 export default function Loading() {
   const t = getT();
-  return <RouteLoading kind="list" label={t('loading.dashboard', 'Loading dashboard')} />;
+  return <RouteLoading kind="page" label={t('loading.settings', 'Loading settings')} />;
 }
