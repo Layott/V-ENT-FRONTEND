@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-slots.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const EMPTY = {
   name: '', description: '', category: '', price_ngn: '', quantity: '1',
