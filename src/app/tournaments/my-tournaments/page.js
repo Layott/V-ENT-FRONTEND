@@ -15,6 +15,7 @@ import { ventFetch, API, tokenFrom, toTournamentArray, tournamentStatus, ApiErro
 import styles from './my-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { slotsText } from '@/lib/slots';
 const TABS = [{
   id: 'active',
   label: 'Active'
@@ -271,7 +272,6 @@ const MyTournaments = () => {
             const name = t?.name || t?.title || tx("Untitled Tournament");
             const banner = t?.banner_image || t?.banner || '';
             const current = t?.current_participants ?? t?.reg_count ?? 0;
-            const max = t?.max_participants ?? '-';
             const prize = Number(t?.prize_pool || 0);
             const disputeCount = Number(t?.dispute_count || 0);
             return <div key={t?.id ?? i} className={styles.tournamentRow}>
@@ -292,7 +292,7 @@ const MyTournaments = () => {
                         <span>·</span>
                         <span><LuCalendar /> {formatDate(t?.start_date)}</span>
                         <span>·</span>
-                        <span><LuUsers /> {current}/{max}</span>
+                        <span><LuUsers /> {slotsText(tt, current, t?.max_participants)}</span>
                         <span>·</span>
                         <span><LuTrophy /> {prize.toLocaleString(appLocale())} VC</span>
                       </p>

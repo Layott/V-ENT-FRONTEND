@@ -27,6 +27,7 @@ import Avatar from '@/components/avatar/Avatar';
 import Banner from '@/components/banner/Banner';
 import UserChip from '@/components/user-chip/UserChip';
 import Tag from '@/components/tag/Tag';
+import { slotsText } from '@/lib/slots';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -904,7 +905,7 @@ const TournamentCard = ({
           </div>
           <div className={styles.metaRow}>
             <LuUsers className={styles.metaIcon} />
-            <span>{t.current_participants}/{t.max_participants}</span>
+            <span>{slotsText(tt, t.current_participants, t.max_participants)}</span>
           </div>
         </div>
         <div className={styles.tCardFooter}>

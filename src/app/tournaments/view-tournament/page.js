@@ -36,6 +36,8 @@ import { appLocale } from '@/lib/appLocale';
 import UserChip from '@/components/user-chip/UserChip';
 import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import { slotsText } from '@/lib/slots';
+import { plural } from '@/lib/plural';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -490,7 +492,7 @@ export const ViewTournamentContent = ({
               <LuUsers className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>{tt("ui.slots.0c1a", "Slots")}</p>
-                <p className={styles.metaValue}>{tournament.current_participants ?? 0}/{tournament.max_participants ?? '-'}</p>
+                <p className={styles.metaValue}>{slotsText(tt, tournament.current_participants, tournament.max_participants)}</p>
               </div>
             </div>
             <div className={styles.metaItem}>
@@ -781,7 +783,9 @@ const BracketPanel = ({
     {/* The organiser's schedule builder, under the picture of the fixtures
         it schedules. Only they see it: it is an editing surface, and the
         resulting order is public through the visualizer above. */}
-    {isOrganizer && <RunningOrder tournamentId={numericId || tournamentId}
+    {/* Not once it is over: a finished tournament offered to slot four
+        played matches into a day (walk, 28 September 2026). */}
+    {isOrganizer && !['completed', 'cancelled'].includes(tournament?.status) && <RunningOrder tournamentId={numericId || tournamentId}
       token={token} />}
   </div>;
 
@@ -971,28 +975,11 @@ const PrizePanel = ({
       label: d.label || '',
       count: d.count
     };
-  }) : [{
-    pos: '1st Place',
-    percent: 50,
-    label: 'Champion'
-  }, {
-    pos: '2nd Place',
-    percent: 25,
-    label: 'Runner-up'
-  }, {
-    pos: '3rd Place',
-    percent: 12,
-    label: 'Semi-Final'
-  }, {
-    pos: '4th Place',
-    percent: 8,
-    label: 'Semi-Final'
-  }, {
-    pos: '5th-8th',
-    percent: 5,
-    label: 'Quarter-Final',
-    count: 4
-  }];
+  }) : [];
+  // With no split set, this tab used to invent one: 50/25/12/8/5 with
+  // "Semi-Final" and "Quarter-Final" under the places, on a five-player
+  // stepladder and a battle royale alike (walk, 28 September 2026). A split
+  // nobody chose is not shown; the tab says it has not been set.
   const sponsors = Array.isArray(tournament?.sponsors) ? tournament.sponsors : [];
   return <div>
       <div className={styles.prizeHero}>
@@ -1009,14 +996,21 @@ const PrizePanel = ({
             <span>{tt("ui.amount.43dc", "Amount")}</span>
             <span>{tt("ui.percent.ac55", "Percent")}</span>
           </div>
+          {dist.length === 0 && (
+            <p className={styles.prizeLabel}>
+              {tt('prize.noSplit', 'The organiser has not set how the prize pool is split yet.')}
+            </p>
+          )}
           {dist.map((d, i) => {
           const amount = d.amount != null ? d.amount : Math.round(total * (d.percent || 0) / 100);
           return <div key={d.pos || i} className={styles.prizeTableRow}>
                 <div>
                   <p className={styles.prizePos}>{d.pos}</p>
-                  {(d.label || d.count) && <p className={styles.prizeLabel}>{tx(d.label)}{d.count ? ` · ${d.count} teams` : ''}</p>}
+                  {(d.label || d.count) && <p className={styles.prizeLabel}>
+                    {d.label}{d.label && d.count ? ' · ' : ''}{d.count ? plural(tt, d.count, 'slots.teamOne', '{n} team', 'slots.teams', '{n} teams') : ''}
+                  </p>}
                 </div>
-                <span className={styles.prizeAmtCell}>{Number(amount || 0).toLocaleString()} VC</span>
+                <span className={styles.prizeAmtCell}>{formatNumber(Number(amount || 0))} VC</span>
                 <span className={styles.prizePercent}>{d.percent != null ? `${d.percent}%` : '-'}</span>
               </div>;
         })}

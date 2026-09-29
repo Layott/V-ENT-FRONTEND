@@ -20,6 +20,7 @@ import styles from './manage.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
+import { slotsText } from '@/lib/slots';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -76,7 +77,12 @@ const ManageContent = ({
   // the back link, the title and View Public Page. Rendering them again put the
   // same heading on the page twice with a gap between the copies. Still a page
   // in its own right at /tournaments/my-tournaments/manage, where it needs one.
-  embedded = false
+  embedded = false,
+  // Told when this panel changed the tournament (drew the bracket, cancelled
+  // it, paid prizes), so the console around it reloads. Drawing here left
+  // Match Control saying "No bracket has been generated" until a reload
+  // (walk, 28 September 2026).
+  onChanged
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -93,6 +99,9 @@ const ManageContent = ({
   const [retryKey, setRetryKey] = useState(0);
   const [toast, setToast] = useState(null);
   const [busyAction, setBusyAction] = useState(null); // 'bracket' | 'cancel' | null
+  // Drawing the bracket closes registration and cannot be undone, so it asks
+  // first (walk, 28 September 2026: it went live on one press).
+  const [confirmDraw, setConfirmDraw] = useState(false);
   const [prizesOpen, setPrizesOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
@@ -196,6 +205,7 @@ const ManageContent = ({
       });
       showToast(tt("msg.bracketGeneratedRegistrationClosed", "Bracket generated - registration closed."));
       setRetryKey(k => k + 1);
+      if (onChanged) onChanged();
     } catch (err) {
       {
         showToast(apiMessage(tt, err, "api.couldNotGenerateTheBracket", "Could not generate the bracket."));
@@ -220,6 +230,7 @@ const ManageContent = ({
         }
       });
       showToast(tt("msg.tournamentCancelledRefundsInitiated", "Tournament cancelled - refunds initiated."));
+      if (onChanged) onChanged();
       setCancelOpen(false);
       setRetryKey(k => k + 1);
     } catch (err) {
@@ -299,7 +310,7 @@ const ManageContent = ({
                 </div>
                 <div className={styles.summaryMeta}>
                   <span><LuCalendar /> {formatDate(tournament?.start_date)} - {formatDate(tournament?.end_date)}</span>
-                  <span><LuUsers /> {tournament?.current_participants ?? participants.length}/{tournament?.max_participants ?? '-'}</span>
+                  <span><LuUsers /> {slotsText(tt, tournament?.current_participants ?? participants.length, tournament?.max_participants)}</span>
                   <span><LuTrophy /> {Number(tournament?.prize_pool || 0).toLocaleString()} VC</span>
                 </div>
               </div>
@@ -382,11 +393,23 @@ const ManageContent = ({
                     <p className={styles.seedHint}>
                       {tt('actions.bracketDrawn', 'The bracket is drawn. Results go in under Match Control and Brackets.')}
                     </p>
-                  ) : (
-                    <button className={`${styles.btn} goldBTN`} onClick={handleGenerateBracket} disabled={!!busyAction}>
-                      <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tx("Close Registration & Generate Bracket")}
+                  ) : !confirmDraw ? (
+                    <button className={`${styles.btn} goldBTN`} onClick={() => setConfirmDraw(true)} disabled={!!busyAction}>
+                      <LuShuffle /> {tx("Close Registration & Generate Bracket")}
                     </button>
-                  )}
+                  ) : <>
+                    <p className={styles.seedHint}>
+                      {tt('actions.drawAsk', 'Nobody else can register once the bracket is drawn, and it cannot be drawn again.')}
+                    </p>
+                    <button className={`${styles.btn} goldBTN`} disabled={!!busyAction}
+                            onClick={() => { setConfirmDraw(false); handleGenerateBracket(); }}>
+                      <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tt('actions.drawYes', 'Yes, close registration and draw')}
+                    </button>
+                    <button className={styles.outlineBtn} disabled={!!busyAction}
+                            onClick={() => setConfirmDraw(false)}>
+                      {tt('slots.keep', 'Keep it')}
+                    </button>
+                  </>}
                   {status === 'completed' && <button className={`${styles.btn} goldBTN`} onClick={handleDistributePrizes} disabled={!!busyAction}>
                       <LuTrophy /> {tt("prizes.open", "Prizes")}
                     </button>}
@@ -401,7 +424,7 @@ const ManageContent = ({
                   showToast={showToast}
                   onClose={paid => {
                     setPrizesOpen(false);
-                    if (paid) setRetryKey(k => k + 1);
+                    if (paid) { setRetryKey(k => k + 1); if (onChanged) onChanged(); }
                   }}
                 />}
               </div>

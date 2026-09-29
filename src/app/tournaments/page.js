@@ -21,6 +21,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import Tag from '@/components/tag/Tag';
+import { slotsText } from '@/lib/slots';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -297,7 +298,7 @@ const TournamentsContent = () => {
                       <div className={styles.featuredMeta}>
                         <span><LuTrophy /> {Number(t?.prize_pool || 0).toLocaleString()} VC</span>
                         <span><LuCalendar /> {formatDate(t?.start_date)}</span>
-                        <span><LuUsers /> {t?.current_participants ?? 0}/{t?.max_participants ?? 0}</span>
+                        <span><LuUsers /> {slotsText(tt, t?.current_participants, t?.max_participants)}</span>
                       </div>
                     </div>
                   </div>
@@ -403,7 +404,6 @@ const TournamentCard = ({
   const fee = entryFeeVc(t);
   const prize = Number(t?.prize_pool || 0);
   const current = t?.current_participants ?? 0;
-  const max = t?.max_participants ?? 0;
   return <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={banner ? {
       backgroundImage: `url(${banner})`
@@ -427,7 +427,7 @@ const TournamentCard = ({
           </div>
           <div className={styles.metaRow}>
             <LuUsers className={styles.metaIcon} />
-            <span>{current}/{max} {t?.participant_type === 'team' ? 'teams' : 'players'}</span>
+            <span>{slotsText(tt, current, t?.max_participants, t?.participant_type === 'team' ? 'team' : 'player')}</span>
           </div>
         </div>
         <div className={styles.tCardFooter}>

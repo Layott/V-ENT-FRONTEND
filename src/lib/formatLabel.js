@@ -16,6 +16,9 @@ export const FORMAT_KEYS = [
   'battle_royale',
   'aggregate_2v2',
   'ladder',
+  'stepladder',
+  'page_playoff',
+  'winner_stays_on',
 ];
 
 const FALLBACK = {
@@ -27,6 +30,9 @@ const FALLBACK = {
   battle_royale: 'Battle royale',
   aggregate_2v2: 'Aggregate tie',
   ladder: 'Ladder',
+  stepladder: 'Stepladder',
+  page_playoff: 'Page playoff',
+  winner_stays_on: 'Winner stays on',
 };
 
 // The spellings a row or a screen may still hold, mapped to the key. Mirrors
@@ -48,6 +54,12 @@ const ALIASES = {
   aggregate_league: 'aggregate_2v2',
   free_for_all: 'battle_royale',
   ffa: 'battle_royale',
+  step_ladder: 'stepladder',
+  page: 'page_playoff',
+  page_system: 'page_playoff',
+  mcintyre: 'page_playoff',
+  king_of_the_hill: 'winner_stays_on',
+  winner_stay_on: 'winner_stays_on',
 };
 
 /** The catalogue key for however a format was written, or null. */
