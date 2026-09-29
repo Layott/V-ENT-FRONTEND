@@ -508,7 +508,9 @@
   background-color: rgba(255, 255, 255, 0.04);
   border-radius: 13px;
   padding: 1rem;
-  margin-bottom: 0.9rem;
+  /* Clear of the access panel above it; the two sat at 0px and read as one
+     (CEO, 28 September 2026). */
+  margin: 1rem 0 0.9rem;
 }
 
 .seedTitle {

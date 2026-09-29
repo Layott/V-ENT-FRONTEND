@@ -171,7 +171,12 @@
   gap: 0.5rem;
   padding: 1rem;
   background-color: var(--overlay-gray);
-
+  /* A card of its own, clear of the banner above and the tabs below. When
+     the hairline sweep took the borders off, the banner, this strip and the
+     tab bar ran into one another as three flush bands (CEO, 28 September
+     2026: "the borders are always touching"). */
+  margin: 1rem 1rem 0;
+  border-radius: 14px;
 }
 
 .metaItem {
@@ -216,7 +221,8 @@
   top: 60px;
   z-index: 50;
   background-color: #131316;
-
+  margin-top: 0.75rem;
+  padding: 0.5rem 0;
 }
 
 .tabBar {
@@ -243,10 +249,10 @@
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 1rem;
+  min-height: 44px;
+  border-radius: 8px;
   cursor: pointer;
-
-  margin-bottom: -1px;
   transition: color 0.2s, background-color 0.2s;
   white-space: nowrap;
 }
@@ -255,7 +261,7 @@
 
 .tabBtnActive {
   color: var(--primary-bg);
-
+  background-color: #2a2b30;
 }
 
 /* ── Panel ── */
@@ -1340,6 +1346,7 @@
   .metaStrip {
     grid-template-columns: repeat(4, 1fr);
     padding: 1.25rem 2rem;
+    margin: 1.25rem 2rem 0;
   }
   .panel { padding: 1.5rem 2rem; }
   .tabBar { padding: 0 2rem; }
@@ -1493,7 +1500,7 @@
 .ownerLinks {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
