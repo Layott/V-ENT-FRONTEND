@@ -240,6 +240,7 @@ export const PRIVATE_TITLES = {
   // Signing out. Noindex like the rest of these: it is an action, not
   // something anybody should reach from a search result.
   logout: { en: 'Sign out', fr: 'Se déconnecter', pt: 'Terminar sessão' },
+  'ticket-confirmed': { en: 'Your ticket', fr: 'Votre billet', pt: 'O seu bilhete' },
 };
 
 export const sectionCopy = (section, locale) => {

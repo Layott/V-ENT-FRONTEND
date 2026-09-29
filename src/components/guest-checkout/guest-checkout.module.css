@@ -226,3 +226,42 @@
   color: var(--v-ent-success);
   font-feature-settings: 'tnum';
 }
+
+/* Choosing the gateway for a paid ticket: filled chips, the chosen one a step
+   stronger, never a ring (29 September 2026). */
+.providers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.providerRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.5rem;
+}
+
+.providerChip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  min-height: 44px;
+  padding: 0.6rem 0.85rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: left;
+  cursor: pointer;
+}
+
+.providerChipOn {
+  background-color: #3a3b42;
+  color: #fff;
+}
+
+.providerHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.76rem;
+}
