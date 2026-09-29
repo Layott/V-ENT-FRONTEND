@@ -19,6 +19,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { downloadWithToken } from '@/lib/download';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './tournament-access.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -38,7 +39,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
 
   const auth = { Authorization: `Bearer ${token}` };
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId || !token) { setLoading(false); return; }
     try {
       const [codesRes, queueRes] = await Promise.all([
@@ -49,14 +50,14 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       const regs = await queueRes.json().catch(() => ({}));
       if (codesRes.ok && codes.status === 'success') {
         setInvites(codes.data.invites || []);
-        setLimit(codes.data.limit ?? 64);
+        if (!quiet) setLimit(codes.data.limit ?? 64);
       }
       if (queueRes.ok && regs.status === 'success') {
         setQueue(regs.data.registrations || []);
-        setApprovalRequired(Boolean(regs.data.approval_required));
+        if (!quiet) setApprovalRequired(Boolean(regs.data.approval_required));
       }
     } catch {
-      setError(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       setLoading(false);
@@ -65,6 +66,9 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
   }, [tournamentId, token, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     if (!notice) return undefined;

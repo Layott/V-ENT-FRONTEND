@@ -30,6 +30,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import styles from './trade-here.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const TradeHere = ({ eventRef, eventName }) => {
   const tt = useT();
@@ -44,7 +45,7 @@ const TradeHere = ({ eventRef, eventName }) => {
   const [problem, setProblem] = useState('');
   const [done, setDone] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!eventRef) return;
     try {
       const res = await fetch(
@@ -60,6 +61,9 @@ const TradeHere = ({ eventRef, eventName }) => {
   }, [eventRef, viewer.token]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const buy = async () => {
     if (busy || !open) return;

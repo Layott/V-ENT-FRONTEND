@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNgn } from '@/lib/currency';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import styles from './org-memberships.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -77,9 +78,9 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
     'Content-Type': 'application/json',
   }), [token]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!orgSlug || !token) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const [overviewRes, catalogueRes] = await Promise.all([
@@ -89,7 +90,7 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
       ]);
       const body = await overviewRes.json().catch(() => ({}));
       if (body?.status !== 'success') {
-        setError(apiMessage(tt, body, 'billing.couldNotLoadPlans',
+        if (!quiet) setError(apiMessage(tt, body, 'billing.couldNotLoadPlans',
           'The memberships could not be loaded.'));
         return;
       }
@@ -99,7 +100,7 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
       // maps for tournament formats is the fault this avoids.
       if (cat?.status === 'success') setCatalogue(cat.data.benefits || []);
     } catch (err) {
-      setError(apiMessage(tt, err, 'billing.couldNotLoadPlans',
+      if (!quiet) setError(apiMessage(tt, err, 'billing.couldNotLoadPlans',
         'The memberships could not be loaded.'));
     } finally {
       setLoading(false);
@@ -107,6 +108,9 @@ const OrgMembershipsPanel = ({ orgSlug, token, canManage, onToast }) => {
   }, [orgSlug, token, auth, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const openPlan = async (slug, which) => {
     if (open === slug && view === which) { setOpen(''); setDetail(null); return; }

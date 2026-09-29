@@ -28,6 +28,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { formatDateTime } from '@/lib/datetime';
 import { call, fill, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from '../listing.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 export default function ListingClient({ slug }) {
   const tt = useT();
@@ -49,9 +50,9 @@ export default function ListingClient({ slug }) {
   const [offer, setOffer] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!open) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setProblem('');
     try {
       const data = await call(`/listings/${encodeURIComponent(slug)}/`);
@@ -61,7 +62,7 @@ export default function ListingClient({ slug }) {
         router.replace(err.data.url);
         return;
       }
-      setProblem(err.code === 'LISTING_NOT_FOUND'
+      if (!quiet) setProblem(err.code === 'LISTING_NOT_FOUND'
         ? tt('mk.gone', 'That listing is not here any more.')
         : tt('mk.loadFailed', 'The listings could not be loaded.'));
     } finally {
@@ -70,6 +71,9 @@ export default function ListingClient({ slug }) {
   }, [open, slug, router, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const say = message => {
     setToast(message);

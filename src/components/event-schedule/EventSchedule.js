@@ -17,6 +17,7 @@ import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './event-schedule.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -37,9 +38,9 @@ export default function EventSchedule({ eventRef }) {
   // "no programme" and "could not load the programme" looked the same.
   const [loadError, setLoadError] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!eventRef) return;
-    setLoadError('');
+    if (!quiet) setLoadError('');
     try {
       const res = await fetch(`${API}/event/${eventRef}/sessions/`);
       const body = await res.json().catch(() => ({}));
@@ -50,15 +51,18 @@ export default function EventSchedule({ eventRef }) {
       setDays([]);
       // A 404 is an event with no programme, which is not an error.
       if (res.status !== 404) {
-        setLoadError(apiMessage(tt, body, 'schedule.loadFailed', 'The programme could not be loaded.'));
+        if (!quiet) setLoadError(apiMessage(tt, body, 'schedule.loadFailed', 'The programme could not be loaded.'));
       }
     } catch (err) {
       setDays([]);
-      setLoadError(apiMessage(tt, err, 'schedule.loadFailed', 'The programme could not be loaded.'));
+      if (!quiet) setLoadError(apiMessage(tt, err, 'schedule.loadFailed', 'The programme could not be loaded.'));
     }
   }, [eventRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   if (days === null) {
     return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;

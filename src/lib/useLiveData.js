@@ -64,6 +64,9 @@
  *   { changed: (next, prev) => next.asked_at !== prev?.asked_at }
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { installChangeSignal, onChanged } from '@/lib/changeSignal';
+
+installChangeSignal();
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from './apiMessage';
 
@@ -138,6 +141,7 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
     let stopped = false;
     let timer = null;
     let wait = interval;
+    let running = false;
     const controller = new AbortController();
 
     const tick = async (first = false) => {
@@ -146,7 +150,9 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
         timer = setTimeout(tick, wait);
         return;
       }
+      running = true;
       const moved = await run(first, controller.signal);
+      running = false;
       if (stopped) return;
       wait = moved ? interval : Math.min(Math.round(wait * 1.5), maxInterval);
       timer = setTimeout(tick, wait);
@@ -164,6 +170,9 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', wake);
     }
+    // A write anywhere on the page wakes this view at once (inbox 312), but
+    // never from inside its own refresh.
+    const unlisten = onChanged(wake, { busy: () => running });
 
     return () => {
       stopped = true;
@@ -172,6 +181,7 @@ export default function useLiveData(fetcher, deps = [], options = {}) {
       if (typeof document !== 'undefined') {
         document.removeEventListener('visibilitychange', wake);
       }
+      unlisten();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, enabled, interval, maxInterval, run]);
@@ -240,6 +250,7 @@ export function useAutoRefresh(refresh, deps = [], options = {}) {
     let stopped = false;
     let timer = null;
     let wait = interval;
+    let running = false;
 
     const tick = async () => {
       if (stopped) return;
@@ -248,6 +259,7 @@ export function useAutoRefresh(refresh, deps = [], options = {}) {
         return;
       }
       let moved = true;
+      running = true;
       try {
         const result = await refreshRef.current();
         if (changedRef.current) moved = !!changedRef.current(result);
@@ -256,6 +268,7 @@ export function useAutoRefresh(refresh, deps = [], options = {}) {
         // A failed refresh is not a failed page. The page keeps what it has.
         moved = false;
       }
+      running = false;
       if (stopped) return;
       wait = moved ? interval : Math.min(Math.round(wait * 1.5), maxInterval);
       timer = setTimeout(tick, wait);
@@ -274,6 +287,9 @@ export function useAutoRefresh(refresh, deps = [], options = {}) {
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', wake);
     }
+    // A write anywhere on the page wakes this view at once (inbox 312), but
+    // never from inside its own refresh.
+    const unlisten = onChanged(wake, { busy: () => running });
 
     return () => {
       stopped = true;
@@ -281,6 +297,7 @@ export function useAutoRefresh(refresh, deps = [], options = {}) {
       if (typeof document !== 'undefined') {
         document.removeEventListener('visibilitychange', wake);
       }
+      unlisten();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, enabled, interval, maxInterval]);

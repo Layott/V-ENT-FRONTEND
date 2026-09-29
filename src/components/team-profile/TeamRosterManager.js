@@ -26,6 +26,7 @@ import { sameUser } from '@/lib/gating';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import styles from './team-roster-manager.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -59,7 +60,7 @@ const TeamRosterManager = ({ team, onToast }) => {
       : {}),
   }), [session]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!ref || !session?.user?.sessionToken) return;
     try {
       const [rosterRes, rolesRes] = await Promise.all([
@@ -79,11 +80,14 @@ const TeamRosterManager = ({ team, onToast }) => {
         if (invData.status === 'success') setInvites(invData.data.invites || []);
       }
     } catch {
-      setError(tt('team.rosterFailed', 'Could not load the roster.'));
+      if (!quiet) setError(tt('team.rosterFailed', 'Could not load the roster.'));
     }
   }, [ref, session, headers, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const can = (p) => (roster?.my_permissions || []).includes(p);
 

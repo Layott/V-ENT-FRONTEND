@@ -42,6 +42,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import { useT } from '@/i18n/LanguageProvider';
 import { call, fill, useCatalogue, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from './marketplace.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const PAGE_SIZE = 12;
 
@@ -90,9 +91,9 @@ const MarketplaceInner = () => {
   // The filters the SERVER applies. Held apart from the ones applied here so
   // it is obvious which is which: a filter applied in both places is a filter
   // that will disagree with itself the day one of them changes.
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!open) { setLoading(false); return; }
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setProblem('');
     try {
       const params = new URLSearchParams();
@@ -105,7 +106,7 @@ const MarketplaceInner = () => {
       const data = await call(`/listings/?${params.toString()}`);
       setListings(data.listings || []);
     } catch (err) {
-      setProblem(err.code === 'MARKETPLACE_OFF'
+      if (!quiet) setProblem(err.code === 'MARKETPLACE_OFF'
         ? tt('mk.closed', 'Vermillion City is not open yet.')
         : tt('mk.loadFailed', 'The listings could not be loaded.'));
     } finally {
@@ -114,6 +115,9 @@ const MarketplaceInner = () => {
   }, [open, kind, category, search, minPrice, maxPrice, minRating, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   // The address carries the filters, so a search can be shared and a back
   // button returns to the same shelf.

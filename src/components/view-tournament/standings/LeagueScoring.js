@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './league-scoring.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,26 +48,29 @@ export default function LeagueScoring({ tournamentId, token, entrants = [] }) {
   const [draft, setDraft] = useState({ player: '', metric: 'PTS', value: '', reason: '' });
   const [adding, setAdding] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
     try {
       const res = await fetch(`${API}/tournament/${tournamentId}/stat-settings/`);
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setChoices(body.data.choices || []);
-        setSettings(body.data.settings || {});
+        if (!quiet) setSettings(body.data.settings || {});
       } else {
-        setProblem(apiMessage(tt, body, 'scoring.loadFailed',
+        if (!quiet) setProblem(apiMessage(tt, body, 'scoring.loadFailed',
           'Could not load how this league is scored.'));
       }
     } catch {
-      setProblem(tt('api.networkError', 'Could not reach the server.'));
+      if (!quiet) setProblem(tt('api.networkError', 'Could not reach the server.'));
     } finally {
       setLoading(false);
     }
   }, [tournamentId, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const save = async (patch) => {
     if (saving) return;

@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import styles from './invitation-banner.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -29,7 +30,7 @@ export default function InvitationBanner({ tournamentRef, token }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentRef || !token) return;
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/invitations/mine/`, {
@@ -44,6 +45,9 @@ export default function InvitationBanner({ tournamentRef, token }) {
   }, [tournamentRef, token]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   // An invitation is addressed to an account, so a stranger never has one to
   // answer. Said on the identity rather than left to the missing token.

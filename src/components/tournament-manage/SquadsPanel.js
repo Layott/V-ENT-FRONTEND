@@ -22,6 +22,7 @@ import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './squads-panel.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -40,21 +41,24 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
   const base = `${API}/tournament/${tournamentRef}/squads/`;
   const auth = { Authorization: `Bearer ${token}` };
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !tournamentRef) { setLoading(false); return; }
     try {
       const res = await fetch(base, { headers: auth });
       const body = await res.json().catch(() => ({}));
       if (body?.status === 'success') { setSquads(body.data?.squads || []); setError(''); }
-      else setError(apiMessage(tt, body, 'squad.loadFailed', 'Could not load the squads.'));
+      else if (!quiet) setError(apiMessage(tt, body, 'squad.loadFailed', 'Could not load the squads.'));
     } catch (err) {
-      setError(apiMessage(tt, err, 'squad.loadFailed', 'Could not load the squads.'));
+      if (!quiet) setError(apiMessage(tt, err, 'squad.loadFailed', 'Could not load the squads.'));
     } finally {
       setLoading(false);
     }
   }, [base, token, tournamentRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const call = async (url, options, fallbackKey, fallback) => {
     setBusy(true);

@@ -21,6 +21,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './running-order.module.css';
 import DateField from '@/components/date-field/DateField';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,7 +48,7 @@ export default function RunningOrder({ tournamentId, token }) {
   const [notice, setNotice] = useState('');
   const [newDay, setNewDay] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
     try {
       const res = await fetch(`${API}/tournament/${tournamentId}/running-order/`);
@@ -56,10 +57,10 @@ export default function RunningOrder({ tournamentId, token }) {
         setDays(body.data.days || []);
         setUnscheduled(body.data.unscheduled || []);
       } else {
-        setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+        if (!quiet) setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
       }
     } catch {
-      setError(tt('api.NETWORK_UNREACHABLE',
+      if (!quiet) setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
     } finally {
       // Cleared whatever happened; a guard that returns early without this is
@@ -69,6 +70,9 @@ export default function RunningOrder({ tournamentId, token }) {
   }, [tournamentId, tt]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     if (!notice) return undefined;

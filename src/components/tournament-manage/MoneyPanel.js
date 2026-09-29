@@ -50,6 +50,9 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
   }, [tournamentRef, token, headers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   const setBearer = async (value) => {
     setBusy(true);

@@ -19,6 +19,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatWithZone } from '@/lib/datetime';
 import styles from './fixture-detail.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,9 +29,9 @@ export default function FixtureDetail({ match, onClose }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ quiet = false } = {}) => {
     if (!match?.match_id) { setLoading(false); return; }
-    setLoadError('');
+    if (!quiet) setLoadError('');
     try {
       const res = await fetch(`${API}/tournament/tie/${match.match_id}/`);
       const body = await res.json().catch(() => ({}));
@@ -40,12 +41,12 @@ export default function FixtureDetail({ match, onClose }) {
       // as "One match, and that is the result" for a 2v2 tie whose seats
       // simply did not arrive.
       else if (res.status !== 404) {
-        setLoadError(apiMessage(tt, body, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
+        if (!quiet) setLoadError(apiMessage(tt, body, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
       }
     } catch (err) {
       // The scoreline from the fixture list is already on screen, so a failed
       // detail costs the seats and not the result. It says so.
-      setLoadError(apiMessage(tt, err, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
+      if (!quiet) setLoadError(apiMessage(tt, err, 'fixture.loadFailed', 'The matches inside this fixture could not be loaded.'));
     } finally {
       setLoading(false);
     }
@@ -55,6 +56,9 @@ export default function FixtureDetail({ match, onClose }) {
   }, [match]);
 
   useEffect(() => { load(); }, [load]);
+  // Current without a reload: on a timer, and at once after any save on this
+  // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
+  useAutoRefresh(() => load({ quiet: true }));
 
   useEffect(() => {
     const onKey = event => { if (event.key === 'Escape') onClose(); };
