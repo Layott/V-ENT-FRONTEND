@@ -17,6 +17,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-slots.module.css';
+import { useAutoRefresh } from '@/lib/useLiveData';
 
 const StallsReviewPanel = ({ eventRef, token, onNotice }) => {
   const tt = useT();

@@ -18,6 +18,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { ventFetch, API, tokenFrom, toTournament, entryFeeVc, followRename } from '@/components/tournament-lib/tournamentApi';
 import MvpPanel from '@/components/view-tournament/mvp/MvpPanel';
+import StatsPanel from '@/components/view-tournament/stats/StatsPanel';
 import styles from './view-tournament.module.css';
 import { linkTo } from '@/lib/share';
 import ShareCard from '@/components/share/ShareCard';
@@ -71,6 +72,11 @@ const TABS = [{
   // the question of who played best.
   id: 'players',
   label: 'Players'
+}, {
+  // Leaders, every entrant's record and head to head, worked out from the
+  // results (inbox 306). Every format: which boards appear is the game's.
+  id: 'stats',
+  label: 'Stats'
 }, {
   id: 'participants',
   label: 'Participants'
@@ -468,7 +474,7 @@ export const ViewTournamentContent = ({
               </div>
               {tournament.entry_covered_by_ticket ? <p className={styles.eventCovered}>
                   <LuTicket /> {tt("ui.event.ticket.covers.entry.9cea", "Your event ticket covers entry")}
-                </p> : tournament.shared_ticketing ? <Link href={`/events/${tournament.event.slug || tournament.event.id}&tab=tickets`} className={styles.eventTicketLink}>
+                </p> : tournament.shared_ticketing ? <Link href={`/events/${tournament.event.slug || tournament.event.id}?tab=tickets`} className={styles.eventTicketLink}>
                   <LuTicket /> {tt("ui.entry.free.event.ticket.6628", "Entry is free with an event ticket")}
                 </Link> : null}
             </div>}
@@ -539,6 +545,7 @@ export const ViewTournamentContent = ({
               tournamentId={tournament?.tournament_id || tournament?.id} />}
             {activeTab === 'players' && <MvpPanel
               tournamentId={tournament?.tournament_id || tournament?.id} />}
+            {activeTab === 'stats' && <StatsPanel tournamentId={id} />}
             {activeTab === 'participants' && <ParticipantsPanel tournamentId={id} token={token} />}
             {activeTab === 'prize' && <PrizePanel tournament={tournament} />}
             {activeTab === 'stream' && <StreamPanel tournament={tournament} session={session} />}

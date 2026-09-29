@@ -44,6 +44,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import { formatDateTime } from '@/lib/datetime';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -203,6 +204,15 @@ const ManageContent = ({ slug }) => {
       })]);
       if (!tRes.ok) throw new Error(`Tournament not found (${tRes.status})`);
       const tBody = await tRes.json();
+      // Renamed: the console follows it to the new address, keeping the tab,
+      // as the public page does. It used to read the "moved" answer as the
+      // tournament itself and tell its own organiser "this console is not
+      // yours" (walk, 29 September 2026).
+      if (tBody?.status === 'moved' && tBody?.data?.url) {
+        const query = typeof window !== 'undefined' ? window.location.search : '';
+        router.replace(`${tBody.data.url}/manage${query}`);
+        return;
+      }
       setTournament(tBody?.data || null);
       const pBody = pRes.ok ? await pRes.json() : null;
       setParticipants(pBody?.data?.participants || []);
@@ -213,7 +223,7 @@ const ManageContent = ({ slug }) => {
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, [id, token, router]);
 
   // The organiser console during a live tournament. Scores, registrations
   // and check-ins all move while this is open, and it only ever loaded once.

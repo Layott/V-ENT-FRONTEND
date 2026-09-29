@@ -171,4 +171,4 @@ function main() {
   process.exit(findings.length ? 1 : 0);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

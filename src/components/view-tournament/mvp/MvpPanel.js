@@ -14,6 +14,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { metricLabel } from '@/lib/metricLabel';
 import styles from './mvp.module.css';
 import UserChip from '@/components/user-chip/UserChip';
 import { useAutoRefresh } from '@/lib/useLiveData';
@@ -88,7 +89,7 @@ export default function MvpPanel({ tournamentId }) {
         {metrics.map((m, i) => (
           <span key={m.key}>
             {i > 0 ? ', ' : ''}
-            {m.label} <span className={styles.weight}>&times;{m.weight}</span>
+            {metricLabel(tt, m)} <span className={styles.weight}>&times;{m.weight}</span>
           </span>
         ))}
       </p>
@@ -100,7 +101,7 @@ export default function MvpPanel({ tournamentId }) {
               <th className={styles.posCol}>#</th>
               <th className={styles.nameCol}>{tt('mvp.player', 'Player')}</th>
               <th className={styles.numCol}>{tt('mvp.matches', 'Matches')}</th>
-              {metrics.map(m => <th key={m.key} className={styles.numCol}>{m.label}</th>)}
+              {metrics.map(m => <th key={m.key} className={styles.numCol}>{metricLabel(tt, m)}</th>)}
               <th className={styles.ptsCol}>{tt('mvp.score', 'Score')}</th>
             </tr>
           </thead>

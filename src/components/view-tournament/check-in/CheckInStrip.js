@@ -216,12 +216,16 @@ const CheckInStrip = ({
 
         <p className={styles.meta}>
           <LuUsers />{' '}
-          {tt('checkin.countOfEntrants', '{in} of {total} entrants in')
+          {(Number(state.checked_in_count) === 1
+            ? tt('checkin.countOfEntrantsOne', '{in} of {total} entrants in')
+            : tt('checkin.countOfEntrants', '{in} of {total} entrants in'))
             .replace('{in}', state.checked_in_count)
             .replace('{total}', state.registered_count)}
           {state.closed || !state.forfeit_without_check_in
             ? '.'
-            : ` ${forfeitLine}`}
+            // A full stop between the count and the warning: they are two
+            // sentences, and ran together as one (walk, 29 September 2026).
+            : `. ${forfeitLine}`}
         </p>
 
         {notice && <p className={notice.type === 'ok' ? styles.noticeOk : styles.noticeError}>
@@ -232,7 +236,8 @@ const CheckInStrip = ({
             <p className={styles.closeSummaryLine}>
               {closeResult.checked_in?.length || 0} {tt("ui.checked.9982", "checked in")}
               {closeResult.forfeited?.length
-                ? `, ${tt('checkin.nForfeited', '{n} forfeited').replace('{n}', closeResult.forfeited.length)}`
+                ? `, ${plural(tt, closeResult.forfeited.length,
+                  'checkin.nForfeitedOne', '{n} forfeited', 'checkin.nForfeited', '{n} forfeited')}`
                 : ''}
               {closeResult.refunded_count > 0
                 ? `, ${plural(tt, closeResult.refunded_count,

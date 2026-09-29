@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -101,6 +101,7 @@ function CreateTournamentPageInner() {
   const tt = useT();
   const searchParams = useSearchParams();
   const draftId = searchParams.get('draft_id');
+  const router = useRouter();
   const {
     data: session,
     status
@@ -133,7 +134,12 @@ function CreateTournamentPageInner() {
           // second row - which is how one tournament became two.
           writeDraft(localStorage, mapTournamentToFormData(tournament), draftId);
         }
-      } catch {
+      } catch (err) {
+        // Renamed since the link was saved: reopen the draft at its new name.
+        if (err?.code === 'SLUG_CHANGED' && err?.data?.slug && !cancelled) {
+          router.replace(`/tournaments/create-tournament?draft_id=${encodeURIComponent(err.data.slug)}`);
+          return;
+        }
         // Do NOT fall through to the wizard. It reads its opening values from
         // localStorage, and that still holds the LAST tournament edited - so a
         // failed load here does not open an empty form, it opens somebody
@@ -147,7 +153,7 @@ function CreateTournamentPageInner() {
     return () => {
       cancelled = true;
     };
-  }, [draftId, session, status]);
+  }, [draftId, session, status, router]);
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />

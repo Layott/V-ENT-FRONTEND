@@ -210,7 +210,7 @@ const TournamentRegistrationModal = ({
 
             <div className={styles.modalBody}>
               <p className={styles.subtitle}>
-                {allowsIndividual && allowsTeam ? tx("Choose how you want to enter this tournament") : `This tournament is ${allowsTeam ? 'team' : 'solo'} entry only`}
+                {allowsIndividual && allowsTeam ? tx("Choose how you want to enter this tournament") : (allowsTeam ? tt('register.teamOnly', 'This tournament takes teams only') : tt('register.soloOnly', 'This tournament takes solo players only'))}
               </p>
 
               <div className={styles.optionsContainer}>
