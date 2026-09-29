@@ -46,3 +46,34 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Flutterwave, the second way to pay: a filled surface a step up from the
+   panel, quieter than the main button, never an outline. */
+.payAlt {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  min-height: 44px;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-weight: var(--fw-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
+.payAlt:hover { background-color: #33343a; }
+
+.payAlt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payAltHint {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+  font-weight: var(--fw-regular);
+}

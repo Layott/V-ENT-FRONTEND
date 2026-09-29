@@ -69,6 +69,16 @@ const fill = (text, body) => {
 /** Words that mean the sentence was written for a log, not for a person. */
 const MACHINE = new RegExp([
   'Authorization header',
+  // A payment gateway's own words (CEO, 29 September 2026: "Format is
+  // Authorization Bearer [secret key]" reached a person).
+  'Authorization Bearer',
+  'secret key',
+  'sk_(test|live)',
+  'HTTPSConnectionPool',
+  'Max retries exceeded',
+  'Errno',
+  'object has no attribute',
+  'invalid literal for',
   'Bearer token',
   'HTTP [0-9]{3}',
   'traceback',

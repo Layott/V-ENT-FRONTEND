@@ -245,6 +245,7 @@ export const PRIVATE_TITLES = {
   // reader (walk, 29 September 2026).
   manage: { en: 'Manage', fr: 'Gérer', pt: 'Gerir' },
   register: { en: 'Register', fr: 'S’inscrire', pt: 'Inscrever-se' },
+  'ticket-confirmed': { en: 'Your ticket', fr: 'Votre billet', pt: 'O seu bilhete' },
 };
 
 export const sectionCopy = (section, locale) => {

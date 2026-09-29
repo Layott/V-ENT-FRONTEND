@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { clearDraft, readDraft, writeDraft } from '@/lib/wizardDraft';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useTx } from '@/i18n/LanguageProvider';
+import { useT, useTx } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import { validateAll } from './tournamentWizardValidation';
 import ProgressMenu from './progress-menu/ProgressMenu';
@@ -37,6 +38,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
   // Status-banner sentences are English in the source and looked up by
   // their text, the same way the wizard's validation messages are.
   const tx = useTx();
+  const tt = useT();
 
   const [selectedTab, setSelectedTab] = useState(1);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -314,7 +316,9 @@ const CreateTournamentComponent = ({ draftId = null }) => {
     } catch (error) {
       setStatusMessage({
         type: 'error',
-        text: error?.message || `Failed to ${isDraft ? 'save draft' : 'publish tournament'}.`,
+        // The server's sentence when it wrote one for a person; never the
+        // browser's ("Failed to fetch") or an exception's.
+        text: apiMessage(tt, error, 'api.somethingWentWrong', 'Something went wrong. Try again in a moment.'),
       });
     } finally {
       if (isDraft) setIsSavingDraft(false);

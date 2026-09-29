@@ -355,7 +355,7 @@ const PaymentModal = ({
         window.location.href = data.authorization_url;
         return;
       }
-      setTopUpError('Could not start top-up. Please try again.');
+      setTopUpError(tt('pay.topUpFailed', 'Could not start the top-up. Please try again.'));
       setToppingUp(false);
     } catch (err) {
       setTopUpError(apiMessage(tt, err, "api.couldNotStartTopUp", "Could not start top-up. Please try again."));
