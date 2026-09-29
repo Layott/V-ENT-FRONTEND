@@ -8,7 +8,7 @@ import LanguageProvider from "@/i18n/LanguageProvider";
 // seeded mock session and the auto-login shim that used to live here have been
 // removed - every page now reads live data or shows an honest empty state.
 
-const SessionWrapper = ({ children }) => {
+const SessionWrapper = ({ children, initialTable = null }) => {
     return (
         // refetchOnWindowFocus is next-auth's default and it is the wrong
         // default here. Every time the tab regained focus the session was
@@ -27,7 +27,7 @@ const SessionWrapper = ({ children }) => {
                 HierarchyRequestError during hydration. Anything that draws UI -
                 the walkthrough overlay - is mounted inside <body> in
                 app/layout.js instead. */}
-            <LanguageProvider>{children}</LanguageProvider>
+            <LanguageProvider initialTable={initialTable}>{children}</LanguageProvider>
         </SessionProvider>
     );
 };
