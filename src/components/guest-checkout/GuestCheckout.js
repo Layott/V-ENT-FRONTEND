@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { LuCheck, LuTicket } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
+import { usePayProviders, onlyOption, providerName } from '@/lib/payMethods';
 import { useT } from '@/i18n/LanguageProvider';
 import { useCheckoutFields, CheckoutFieldList, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
@@ -48,20 +49,19 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
   const [promoCode, setPromoCode] = useState('');
   // Where a paid ticket is paid: Paystack or Flutterwave, from the server, so
   // a gateway without keys is never offered (CEO, 29 September 2026).
-  const [providers, setProviders] = useState([]);
-  const [provider, setProvider] = useState('paystack');
+  // Nothing chosen until the server has said what exists; the only option
+  // is chosen for them (CEO, 29 September 2026). This used to start on
+  // Paystack, which a press before the list arrived would send.
+  const payProviders = usePayProviders();
+  const providers = payProviders.providers;
+  const [provider, setProvider] = useState('');
+  const providerKeys = providers.map(p => p.key).join('|');
   useEffect(() => {
-    let cancelled = false;
-    fetch(`${API}/auth/wallet/pay/providers/`)
-      .then(r => r.json()).then(b => {
-        if (cancelled) return;
-        const list = b?.data?.providers || [];
-        setProviders(list);
-        if (list.length && !list.some(p => p.key === 'paystack')) setProvider(list[0].key);
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
+    if (payProviders.status !== 'ready') return;
+    const keys = providerKeys ? providerKeys.split('|') : [];
+    if (!keys.includes(provider)) setProvider(onlyOption(keys));
+  }, [payProviders.status, providerKeys, provider]);
+  const paid = (tier?.price_vc ?? tier?.price ?? 0) > 0;
 
 
   // One answer set per ticket, so the size on ticket two is not the size on
@@ -356,9 +356,31 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
 
       {error && <p className={styles.error}>{error}</p>}
 
-      {(tier?.price_vc ?? tier?.price ?? 0) > 0 && providers.length > 1 && <div className={styles.providers}
+      {paid && payProviders.status === 'loading' && <p className={styles.help}>
+        {tt('pay.methodsLoading', 'Finding the ways you can pay...')}
+      </p>}
+      {paid && payProviders.status === 'failed' && <p className={styles.error}>
+        {tt('pay.methodsFailed', 'The ways to pay could not be loaded. Check your connection and try again.')}
+        {' '}
+        <button type="button" className={styles.link} onClick={payProviders.retry}>
+          {tt('ui.retry.9f5c', 'Retry')}
+        </button>
+      </p>}
+      {paid && payProviders.status === 'ready' && providers.length === 0 && <p className={styles.error}>
+        {tt('pay.noneAvailable', 'Online payment is not available right now. Please try again later.')}
+      </p>}
+      {paid && providers.length === 1 && <p className={styles.help}>
+        {tt('pay.onlyOne', '{name} is the way to pay right now, so it is already chosen for you.')
+          .replace('{name}', providerName(tt, providers[0].key))}
+        {' '}
+        {tt('pay.gatewayFeeShort', 'V-ENT charges no fee; {name} may add its own, shown on its page before you pay.')
+          .replace('{name}', providerName(tt, providers[0].key))}
+      </p>}
+
+      {paid && providers.length > 1 && <div className={styles.providers}
         role="group" aria-label={tt('pay.chooseProvider', 'Pay with')}>
         <span className={styles.label}>{tt('pay.chooseProvider', 'Pay with')}</span>
+        <p className={styles.help}>{tt('pay.pickOne', 'Pick one of the options below, then press Pay.')}</p>
         <div className={styles.providerRow}>
           {providers.map(p => <button type="button" key={p.key}
             className={provider === p.key ? `${styles.providerChip} ${styles.providerChipOn}` : styles.providerChip}
@@ -373,9 +395,10 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
         </div>
       </div>}
 
-      <button type="button" className={styles.buy} disabled={busy || !email.trim()}
+      <button type="button" className={styles.buy} disabled={busy || !email.trim() || (paid && !provider)}
               onClick={submit}>
         {busy ? tt('ui.saving.8f2a', 'Saving…')
+          : paid && !provider ? tt('pay.chooseToPay', 'Choose how to pay')
           /* The card mapper on the event page renames price_vc to price, so
              reading only one of them told somebody paying 3 VC that they were
              about to "get the ticket". Whichever the caller passes. */

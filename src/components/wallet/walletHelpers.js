@@ -1,4 +1,5 @@
 import { appLocale } from '@/lib/appLocale';
+import { readable } from '@/lib/datetime';
 // ─────────────────────────────────────────────────────────────────
 // Shared wallet helpers (formatters, classifiers, type metadata).
 // Used across /wallets and /wallets/* sub-routes.
@@ -77,7 +78,7 @@ export const normalizeStatus = (status) => {
 // ── Formatters ──
 export const formatNumber = (n) => {
   if (n == null || Number.isNaN(Number(n))) return '0';
-  return Number(n).toLocaleString(appLocale());
+  return readable(Number(n).toLocaleString(appLocale()));
 };
 
 export const formatNgn = (n) => `₦${formatNumber(n)}`;

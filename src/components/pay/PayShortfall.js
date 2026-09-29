@@ -172,7 +172,9 @@ export default function PayShortfall({
           coins: need,
           purpose,
           callback_url: window.location.href,
-          ...(provider === 'flutterwave' ? { provider: 'flutterwave' } : {}),
+          // Always named: an unnamed request was taken as Paystack, which
+          // production does not offer (CEO, 29 September 2026).
+          provider,
         }),
       });
       const body = await res.json().catch(() => ({}));
@@ -198,6 +200,8 @@ export default function PayShortfall({
 
   const card = methods.saved_card;
   const naira = short * Number(methods.ngn_per_coin || 1000);
+  const has = key => (methods.providers || []).some(p => p.key === key);
+  const onlyFlutterwave = has('flutterwave') && !has('paystack');
 
   return (
     <div className={styles.panel}>
@@ -207,7 +211,14 @@ export default function PayShortfall({
       </p>
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
       {said && <p className={styles.said}>{said}</p>}
-      <button type="button" className={styles.pay} disabled={busy} onClick={() => press()}>
+      {has('paystack') && has('flutterwave') && <p className={styles.hint}>
+        {tt('pay.pickOne', 'Pick one of the options below, then press Pay.')}
+      </p>}
+      {onlyFlutterwave && <p className={styles.hint}>
+        {tt('pay.gatewayFeeShort', 'V-ENT charges no fee; {name} may add its own, shown on its page before you pay.')
+          .replace('{name}', tt('pay.flutterwave', 'Flutterwave'))}
+      </p>}
+      {has('paystack') && <button type="button" className={styles.pay} disabled={busy} onClick={() => press('paystack')}>
         <LuCreditCard aria-hidden="true" />
         {busy
           ? tt('pay.working', 'Paying...')
@@ -218,11 +229,12 @@ export default function PayShortfall({
               .replace('{last4}', card.last4)
             : tt('pay.withCard', 'Pay {amount} naira with a card')
               .replace('{amount}', formatNumber(naira))))}
-      </button>
+      </button>}
       {/* Flutterwave beside Paystack (CEO, 29 September 2026): its own page
-          with every method switched on in its dashboard. */}
-      {(methods.providers || []).some(p => p.key === 'flutterwave') && <button type="button"
-        className={styles.payAlt} disabled={busy} onClick={() => press('flutterwave')}>
+          with every method switched on in its dashboard. The main button when
+          it is the only way to pay. */}
+      {has('flutterwave') && <button type="button"
+        className={onlyFlutterwave ? `${styles.pay} ${styles.payOnly}` : styles.payAlt} disabled={busy} onClick={() => press('flutterwave')}>
         {tt('pay.withFlutterwave', 'Pay {amount} naira with Flutterwave')
           .replace('{amount}', formatNumber(naira))}
         <span className={styles.payAltHint}>

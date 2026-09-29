@@ -129,7 +129,7 @@ function render(value, options, { zone, fallback = '-' } = {}) {
   if (parsed === null) return fallback;
   if (isDateOnly(value)) zone = 'UTC';
   try {
-    return parsed.toLocaleString(appLocale(), {
+    return readable(parsed.toLocaleString(appLocale(), {
       ...options,
       // THE READER'S ZONE, always, unless a caller names one explicitly.
       //
@@ -150,10 +150,10 @@ function render(value, options, { zone, fallback = '-' } = {}) {
       // show genuinely is written on the venue's clock and is read by the
       // people standing in the venue.
       timeZone: zone || viewerZone(),
-    });
+    }));
   } catch {
     // An invalid zone from bad data must never take a page down with it.
-    return parsed.toLocaleString(appLocale(), options);
+    return readable(parsed.toLocaleString(appLocale(), options));
   }
 }
 
@@ -193,10 +193,10 @@ export function formatDate(value, opts) {
   const parsed = asDate(value);
   if (parsed === null) return (opts && opts.fallback) || '-';
   try {
-    return parsed.toLocaleDateString(chosen.locale, {
+    return readable(parsed.toLocaleDateString(chosen.locale, {
       day: '2-digit', month: '2-digit', year: 'numeric',
       timeZone: isDateOnly(value) ? 'UTC' : ((opts && opts.zone) || viewerZone()),
-    });
+    }));
   } catch {
     return render(value, {
       day: 'numeric', month: 'short', year: 'numeric',
@@ -272,8 +272,8 @@ export function formatRelative(value, opts) {
   for (const [unit, size] of steps) {
     if (Math.abs(amount) < size) {
       try {
-        return new Intl.RelativeTimeFormat(appLocale(), { numeric: 'auto' })
-          .format(Math.round(amount), unit);
+        return readable(new Intl.RelativeTimeFormat(appLocale(), { numeric: 'auto' })
+          .format(Math.round(amount), unit));
       } catch {
         return formatDateTime(value, opts);
       }
@@ -284,12 +284,20 @@ export function formatRelative(value, opts) {
 }
 
 /** A number, in the reader's language, so 1,422 and 1.422 both come out right. */
+// French groups digits and spaces times with U+202F, the narrow no-break
+// space. Clash Grotesk has no glyph for it, so "1 000 000" was drawn as
+// "1000000" on every French page (walk, 29 September 2026). The ordinary
+// no-break space keeps the number on one line and is in the font.
+export function readable(text) {
+  return typeof text === 'string' ? text.replace(/ /g, ' ') : text;
+}
+
 export function formatNumber(value, options) {
   if (value === null || value === undefined || value === '') return '-';
   const n = typeof value === 'number' ? value : Number(value);
   if (Number.isNaN(n)) return '-';
   try {
-    return n.toLocaleString(appLocale(), options);
+    return readable(n.toLocaleString(appLocale(), options));
   } catch {
     return String(n);
   }

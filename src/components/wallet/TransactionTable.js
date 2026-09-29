@@ -155,13 +155,20 @@ const TransactionTable = ({
     const cls = ns === 'completed' ? styles.statusCompleted : ns === 'pending' ? styles.statusPending : ns === 'failed' ? styles.statusFailed : '';
     return <span className={`${styles.txStatus} ${cls}`}>{byText(STATUS_LABEL(tx.status))}</span>;
   };
+  // A row that has not happened (pending, failed, cancelled) moved no money,
+  // so it is not drawn as a gain or a loss.
+  const moved = tx => normalizeStatus(tx.status) === 'completed';
+  const amountClass = (tx, credit) => !moved(tx) ? styles.amtNeutral : credit ? styles.amtCredit : styles.amtDebit;
+  const amountText = (tx, credit) => {
+    const amt = formatNumber(Math.abs(Number(tx.amount || tx.amount_vc || 0)));
+    return moved(tx) ? `${credit ? '+' : '-'}${amt} VC` : `${amt} VC`;
+  };
+  const methodLabel = tx => tx.method === 'flutterwave' ? tt('pay.flutterwave', 'Flutterwave')
+    : tx.method === 'paystack' ? tt('ui.paystack.c851', 'Paystack')
+    : tt("wallet.internalMethod", "Wallet (internal)");
   const renderAmount = tx => {
     const credit = isCreditType(tx.type || tx.transaction_type);
-    const amt = Math.abs(Number(tx.amount || tx.amount_vc || 0));
-    const cls = credit ? styles.amtCredit : styles.amtDebit;
-    return <span className={cls}>
-        {credit ? '+' : '-'}{formatNumber(amt)} VC
-      </span>;
+    return <span className={amountClass(tx, credit)}>{amountText(tx, credit)}</span>;
   };
   return <div>
       {showFilters && <>
@@ -238,7 +245,7 @@ const TransactionTable = ({
                               </div>
                               <div className={styles.txDetailItem}>
                                 <span className={styles.txDetailLabel}>{tt("ui.method.8830", "Method")}</span>
-                                <span className={styles.txDetailValue}>{tx.method || tt("wallet.internalMethod", "Wallet (internal)")}</span>
+                                <span className={styles.txDetailValue}>{methodLabel(tx)}</span>
                               </div>
                               {tx.counterparty && <div className={styles.txDetailItem}>
                                   <span className={styles.txDetailLabel}>{tt("ui.counterparty.97b2", "Counterparty")}</span>
@@ -272,8 +279,8 @@ const TransactionTable = ({
                         <div className={styles.txRef}>{tx.reference || tx.ref || '-'}</div>
                       </div>
                       <div className={styles.txCardRight}>
-                        <div className={`${styles.txCardAmount} ${credit ? styles.amtCredit : styles.amtDebit}`}>
-                          {credit ? '+' : '-'}{formatNumber(Math.abs(Number(tx.amount || tx.amount_vc || 0)))} VC
+                        <div className={`${styles.txCardAmount} ${amountClass(tx, credit)}`}>
+                          {amountText(tx, credit)}
                         </div>
                         <div className={styles.txCardDate}>{formatDate(tx.created_at || tx.date || tx.requested_at)}</div>
                       </div>
@@ -289,7 +296,7 @@ const TransactionTable = ({
                         </div>
                         <div className={styles.txCardDetailRow}>
                           <span className={styles.txCardDetailKey}>{tt("ui.method.8830", "Method")}</span>
-                          <span className={styles.txCardDetailVal}>{tx.method || tt("wallet.internalMethod", "Wallet (internal)")}</span>
+                          <span className={styles.txCardDetailVal}>{methodLabel(tx)}</span>
                         </div>
                         {tx.counterparty && <div className={styles.txCardDetailRow}>
                             <span className={styles.txCardDetailKey}>{tt("ui.counterparty.97b2", "Counterparty")}</span>
