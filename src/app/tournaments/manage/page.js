@@ -44,6 +44,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import { formatDateTime } from '@/lib/datetime';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
