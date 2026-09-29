@@ -21,13 +21,19 @@
   const controls = [...document.querySelectorAll('button, a.btn, a.grnBTN, a.redBTN, [role="button"], input[type="submit"]')]
     .filter(visible);
   // A label sits close to its field on purpose, so it is not "text above".
+  // Padding on a box with no fill reads as space; on a filled one it is inside.
+  const unfilledPad = (el, side) => {
+    const cs = getComputedStyle(el);
+    const unfilled = /rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) && cs.backgroundImage === 'none';
+    return unfilled ? parseFloat(cs[side]) || 0 : 0;
+  };
+  // Boxes read once: reading layout inside the loop froze a long profile page.
   const blocks = [...document.querySelectorAll('p, h1, h2, h3, h4, input, textarea, select, ul, ol, table')]
-    .filter(visible);
-  const fields = [...document.querySelectorAll('input, textarea, select')].filter(visible);
+    .filter(visible).map((el) => ({ el, q: el.getBoundingClientRect(), pad: unfilledPad(el, 'paddingBottom') }));
+  const fields = blocks.filter(({ el }) => /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)).map(({ q }) => q);
   // A control on the same line as a field (Save beside the name box, an info
   // tip beside a heading) belongs to that row.
-  const inRow = (r) => fields.some((f) => {
-    const q = f.getBoundingClientRect();
+  const inRow = (r) => fields.some((q) => {
     return Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > r.height / 2
       && (q.right <= r.left + 1 || q.left >= r.right - 1);
   });
@@ -45,12 +51,14 @@
     // worded button under a paragraph is.
     if (!(c.innerText || c.value || '').trim()) continue;
     let best = null;
-    for (const b of blocks) {
+    for (const { el: b, q, pad } of blocks) {
+      if (q.bottom > r.top + 1 || r.top - q.bottom > 40) continue;
       if (b.contains(c) || c.contains(b)) continue;
-      const q = b.getBoundingClientRect();
       const overlap = Math.min(r.right, q.right) - Math.max(r.left, q.left);
       if (overlap <= 0) continue;
-      const gap = r.top - q.bottom;
+      // A control with no fill (a tab, a text link) shows its own top
+      // padding as space; a filled button does not.
+      const gap = r.top - q.bottom + pad + unfilledPad(c, 'paddingTop');
       if (gap < -1) continue; // not above it
       if (!best || gap < best.gap) best = { gap, b };
     }
