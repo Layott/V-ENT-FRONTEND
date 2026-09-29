@@ -195,6 +195,7 @@ const SettingsContent = () => {
     } else {
       showToast(apiMessage(tt, out, "api.saveFailed", "Save failed"), 'error');
     }
+    return out;
   };
   const handleSavePrivacy = async next => {
     const out = await postUpdate('/setting/privacy/update/', next);
@@ -372,7 +373,7 @@ const SettingsContent = () => {
 
             <section>
               {activePanel === 'account' && <AccountPanel user={user || {}} onSave={handleSaveAccount} showToast={showToast} />}
-              {activePanel === 'notifications' && <NotificationsPanel notifications={settings?.notifications || {}} onSave={handleSaveNotifications} />}
+              {activePanel === 'notifications' && <NotificationsPanel onSave={handleSaveNotifications} />}
               {activePanel === 'privacy' && <PrivacyPanel privacy={settings?.privacy || {}} onSave={handleSavePrivacy} showToast={showToast} />}
               {activePanel === 'security' && <SecurityPanel security={settings?.security || {}} onSave={handleSaveSecurity} showToast={showToast} />}
               {activePanel === 'payments' && <PaymentsPanel payments={settings?.payments || {}} user={user || {}} onSave={handleSavePayments} showToast={showToast} />}
