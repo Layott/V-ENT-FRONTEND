@@ -29,6 +29,8 @@ import { apiMessage } from '@/lib/apiMessage';
 import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
 import TextLayerEditor from './TextLayerEditor';
+import OverlayDesigner from './OverlayDesigner';
+import { isDesigned } from '@/lib/overlays';
 import styles from './studio-panel.module.css';
 import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
 
@@ -182,6 +184,9 @@ const fieldsFor = (tt) => ({
     { key: 'label', label: tt('studio.f.frameLabel', 'Label'), placeholder: 'Live play' },
     { key: 'note', label: tt('studio.f.frameNote', 'Under it'), placeholder: 'Seat 1' },
   ],
+  // Edited in OverlayDesigner, not with these fields.
+  starting_soon: [],
+  transition: [],
   break_screen: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
@@ -233,6 +238,9 @@ const labelsFor = (tt) => ({
   matchday: tt('studio.kind.matchday', 'Matchday'),
   analyst_desk: tt('studio.kind.analystDesk', 'Analyst desk'),
   play_area: tt('studio.kind.playArea', 'Play area'),
+  // The designed overlays (inbox 390), edited in OverlayDesigner.
+  starting_soon: tt('studio.kind.startingSoon', 'Starting soon'),
+  transition: tt('studio.kind.transition', 'Transition'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
@@ -718,7 +726,24 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                     </button>
                   </div>
 
-                  {open && <>
+                  {/* A designed overlay (inbox 390) has its own editor: a live
+                      preview drawn by the same template the browser source
+                      uses, every part editable, and the downloads. */}
+                  {open && isDesigned(elementKind) && <>
+                  <p className={styles.elUrl}>{live.urls[elementKind]}</p>
+                  <OverlayDesigner
+                    kind={elementKind}
+                    element={el}
+                    live={el.active}
+                    token={token}
+                    assetsBase={`${API}/${kind}/${ref}/studio/assets/`}
+                    name={`${live.name || ''} ${LABELS[elementKind] || elementKind}`.trim()}
+                    onSave={(design) => push(elementKind, { payload: { design } })}
+                    onPlayOnAir={() => push(elementKind, { payload: { play: (Number(el.payload?.play) || 0) + 1 } })}
+                  />
+                  </>}
+
+                  {open && !isDesigned(elementKind) && <>
                   <p className={styles.elUrl}>{live.urls[elementKind]}</p>
 
                   {/* What it looks like right now, at the size it will be on

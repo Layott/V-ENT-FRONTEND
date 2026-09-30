@@ -1,0 +1,67 @@
+'use client';
+
+// A designed overlay played on a canvas (inbox 390).
+//
+// The same component draws the browser source OBS shows and the editor
+// preview, from the same template in src/lib/overlays, so what the organiser
+// edits is what goes on air.
+//
+// One clock, restarted only when `playKey` or the graphic changes. An edit
+// redraws from wherever the clock is, so the preview changes live under the
+// organiser's hands without replaying the entrance on every keystroke (CEO,
+// 30 September 2026, inbox 392: "previews of all these overlays should be
+// changing live during edits"), and a saved change on air updates the graphic
+// in place rather than making it arrive again. After the entrance only a
+// countdown keeps drawing, because it is information.
+
+import { useEffect, useRef } from 'react';
+import { DESIGNS } from '@/lib/overlays';
+import { W, H, drawFrame, paramsFor, prepare, timing } from '@/lib/overlays/engine';
+
+export default function DesignedCanvas({ kind, design, assets, playKey = 0, className, title }) {
+  const ref = useRef(null);
+  const began = useRef(0);
+  const template = DESIGNS[kind];
+  // Compared by value: a feed poll hands over a new object with the same
+  // contents every few seconds, and that must not count as an edit.
+  const designKey = JSON.stringify(design || {});
+  const assetKey = JSON.stringify((assets || []).map((a) => [a.id, a.url, a.kind]));
+  // The list itself, read through a ref: the key above is only for deciding
+  // WHEN to redraw, and handing the key to prepare() instead of the list meant
+  // no picture was ever found (30 September 2026, caught on the OBS page).
+  const assetsRef = useRef(assets || []);
+
+  // Both declared before the drawing effect, so they have run when it does:
+  // the list is current, and a replay has reset the clock.
+  useEffect(() => { assetsRef.current = assets || []; });
+  useEffect(() => { began.current = performance.now(); }, [kind, playKey]);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas || !template) return undefined;
+    const ctx = canvas.getContext('2d');
+    const params = paramsFor(template, JSON.parse(designKey));
+    const end = timing(template, params).total + (template.tailMs || 0);
+    let stopped = false;
+    let frame = 0;
+    let timer = 0;
+
+    // Fonts and pictures are cached, so after the first load this resolves at
+    // once and an edit costs one frame. Until it does, the last frame stays up.
+    prepare(template, params, assetsRef.current).then((prepared) => {
+      if (stopped) return;
+      const tick = () => {
+        if (stopped) return;
+        const t = performance.now() - began.current;
+        drawFrame(ctx, template, params, Math.min(t, end), prepared);
+        if (t < end) frame = requestAnimationFrame(tick);
+        else if (params.countdown_to) timer = setTimeout(tick, 1000);
+      };
+      tick();
+    });
+    return () => { stopped = true; cancelAnimationFrame(frame); clearTimeout(timer); };
+  }, [template, designKey, assetKey, playKey]);
+
+  if (!template) return null;
+  return <canvas ref={ref} width={W} height={H} className={className} role="img" aria-label={title || kind} />;
+}

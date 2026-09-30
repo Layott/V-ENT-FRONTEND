@@ -135,10 +135,25 @@ const nextConfig = {
   async rewrites() {
     const prefixes = ['fr', 'pt'];
     return {
-      afterFiles: prefixes.flatMap((code) => [
-        { source: `/${code}`, destination: '/' },
-        { source: `/${code}/:path*`, destination: '/:path*' },
-      ]),
+      afterFiles: [
+        ...prefixes.flatMap((code) => [
+          { source: `/${code}`, destination: '/' },
+          { source: `/${code}/:path*`, destination: '/:path*' },
+        ]),
+        // Studio pictures at a same-origin address (inbox 390). A designed
+        // overlay draws the organiser's logo on a canvas, and a canvas that has
+        // drawn a picture from another origin can no longer be exported, so
+        // the PNG and the video would fail with nothing to see. The API's
+        // /media/ sends no CORS header, and this needs none.
+        //
+        // Pictures and fonts ONLY. /media/ also holds uploaded HTML and SVG,
+        // which nginx serves sandboxed on the API host; proxied here they would
+        // run as v-ent.co itself. An SVG is script, so it is not on the list.
+        ...(apiOrigin ? [{
+          source: '/studio-media/:path(.+\\.(?:png|jpe?g|webp|gif|avif|woff2?|ttf|otf))',
+          destination: `${apiOrigin}/media/:path`,
+        }] : []),
+      ],
     };
   },
 

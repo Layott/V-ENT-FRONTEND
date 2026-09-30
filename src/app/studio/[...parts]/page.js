@@ -58,6 +58,8 @@ import NationsTable from '@/components/studio/elements/NationsTable';
 import NowNextBar from '@/components/studio/elements/NowNextBar';
 import PlayAreaFrame from '@/components/studio/elements/PlayAreaFrame';
 import TextLayers from '@/components/studio/TextLayers';
+import DesignedCanvas from '@/components/studio/DesignedCanvas';
+import { isDesigned } from '@/lib/overlays';
 
 // Fast enough that a score correction looks immediate to a viewer, slow enough
 // that six hours on a venue hotspot is not a problem. The feed answers every
@@ -1519,6 +1521,20 @@ export default function StudioElement(props) {
         title={slotOverlay.overlay_name || 'Overlay'}
         scrolling="no"
       />
+    );
+  }
+
+  // A designed overlay (inbox 390) draws itself on a canvas, full frame, with
+  // its own entry. The stage's arrive and leave classes would move a whole
+  // screen, so they are not applied, and it is simply there or not.
+  if (isDesigned(drawKind)) {
+    if (!show) return null;
+    return (
+      <main className={styles.designedStage}>
+        <DesignedCanvas kind={drawKind} design={element?.payload?.design}
+                        assets={feed.assets} playKey={element?.payload?.play || 0}
+                        className={styles.designedCanvas} />
+      </main>
     );
   }
 
