@@ -260,7 +260,9 @@ const StatCard = ({
         <span className={styles.statIcon}>{icon}</span>
       </div>
       <p className={styles.statValue}>
-        {decimals > 0 ? display : Number(display).toLocaleString()}
+        {/* formatNumber, not toLocaleString: French groups thousands with a
+            narrow space the typeface has no glyph for, so 11 985 read 11985. */}
+        {formatNumber(Number(display), { maximumFractionDigits: decimals > 0 ? decimals : 0 })}
         {suffix && <span className={styles.statUnit}>{suffix}</span>}
       </p>
       {sub && <p className={styles.statSub}>{sub}</p>}
@@ -323,7 +325,7 @@ const HomePage = () => {
       const balanceVc = Number(walletData?.balance ?? 0) || 0;
       const wallet = {
         balance_vc: balanceVc,
-        balance_ngn: balanceVc * 1000,
+        balance_ngn: Math.round(balanceVc * 1000),
         kyc_verified: walletData?.kyc_verified
       };
       const allTournaments = extractTournaments(tournamentData).map(mapTournamentCard);
@@ -430,7 +432,7 @@ const HomePage = () => {
             {loading ? Array.from({
             length: 4
           }).map((_, i) => <div key={i} className={`${styles.statCard} ${styles.skeletonCard}`} aria-hidden />) : <>
-                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} suffix=" VC" sub={tt('home.sub.walletNaira', '{amount} in naira').replace('{amount}', `₦${formatNumber(wallet.balance_ngn)}`)} animated={animateStats} accent="green" href="/wallets" />
+                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} decimals={Number.isInteger(wallet.balance_vc) ? 0 : 2} suffix=" VC" sub={tt('home.sub.walletNaira', '{amount} in naira').replace('{amount}', `₦${formatNumber(wallet.balance_ngn)}`)} animated={animateStats} accent="green" href="/wallets" />
                 <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub={tt('home.sub.openTournaments', 'Open to join now')} animated={animateStats} href="/tournaments" />
                 <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub={tt('home.sub.upcomingEvents', 'Happening soon')} animated={animateStats} href="/events" />
                 <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub={tt('home.sub.myTeams', 'Squads you own')} animated={animateStats} accent="red" href="/teams" />
@@ -629,7 +631,7 @@ const HomePage = () => {
               {loading ? <div className={`${styles.skeletonBlock} ${styles.skeletonCard}`} /> : <>
                   <p className={styles.walletLabel}>{tt("ui.available.balance.396a", "Available Balance")}</p>
                   <p className={styles.walletBalance}>
-                    {wallet.balance_vc.toLocaleString()}
+                    {formatNumber(wallet.balance_vc)}
                     <span className={styles.walletUnit}> VC</span>
                   </p>
                   <p className={styles.walletRate}>
@@ -661,7 +663,7 @@ const HomePage = () => {
                         </div>
                         <p className={isCreditTx(tx) ? styles.txAmountCredit : styles.txAmountDebit}>
                           {isCreditTx(tx) ? '+' : '-'}
-                          {Math.abs(tx.amount).toLocaleString()} VC
+                          {formatNumber(Math.abs(tx.amount))} VC
                         </p>
                       </div>)}
                     {transactions.length === 0 && <p className={styles.emptyState}>{tt("ui.no.transactions.yet.f794", "No transactions yet.")}</p>}

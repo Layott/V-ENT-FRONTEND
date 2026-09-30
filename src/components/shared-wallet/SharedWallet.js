@@ -119,7 +119,8 @@ export default function SharedWallet({ kind, reference, name }) {
   }
   if (!wallet) return null;
 
-  const money = (n) => `${Number(n).toLocaleString(appLocale())} VC`;
+  // Hundredths of a coin since 30 September 2026: 0.5 VC reads as 0.5, never 0.500.
+  const money = (n) => `${Number(n).toLocaleString(appLocale(), { maximumFractionDigits: 2 })} VC`;
 
   return (
     <div className={styles.wrap}>
@@ -190,7 +191,7 @@ export default function SharedWallet({ kind, reference, name }) {
                 {tt('wallet.amount', 'How much, in VENT COINS')}
               </label>
               <input id="sw-amount" name="sw-amount" className={styles.input}
-                     type="number" min={1} value={amount}
+                     type="text" inputMode="decimal" placeholder="0.50" value={amount}
                      onChange={(e) => setAmount(e.target.value)} />
 
               <label className={styles.label} htmlFor="sw-note">
@@ -229,7 +230,9 @@ export default function SharedWallet({ kind, reference, name }) {
                                 || (wallet.requires_2fa && code.length < 6)}
                       onClick={() => post({
                         action: 'send', to_kind: toKind, to: to.trim(),
-                        amount: Number(amount), note, pin,
+                        // Sent as typed (a French comma read as the point); the server
+                        // reads hundredths and names anything it cannot.
+                        amount: amount.trim().replace(',', '.'), note, pin,
                         ...(code ? { code } : {}),
                       }, 'wallet.sent', 'Sent.')}>
                 {busy ? tt('wallet.sending', 'Sending...') : tt('wallet.send', 'Send')}

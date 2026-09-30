@@ -76,9 +76,12 @@ export const normalizeStatus = (status) => {
 };
 
 // ── Formatters ──
+// Coins split into hundredths since 30 September 2026 (0.01 VC = 10 naira), so an
+// amount can carry two decimal places and never more: a sum like 0.1 + 0.2 must
+// read 0.3, not 0.30000000000000004.
 export const formatNumber = (n) => {
   if (n == null || Number.isNaN(Number(n))) return '0';
-  return readable(Number(n).toLocaleString(appLocale()));
+  return readable(Number(n).toLocaleString(appLocale(), { maximumFractionDigits: 2 }));
 };
 
 export const formatNgn = (n) => `₦${formatNumber(n)}`;

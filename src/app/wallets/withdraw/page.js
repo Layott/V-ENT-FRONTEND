@@ -186,6 +186,14 @@ const WithdrawPage = () => {
       setError(tt("msg.enterHowManyVcYou", "Enter how many VC you want to withdraw."));
       return;
     }
+    // A balance can hold hundredths of a coin since 30 September 2026, so
+    // somebody can have 12.5 VC. A payout is still whole coins; the part under
+    // a coin stays in the wallet to spend or send, and saying so here beats
+    // the server's refusal after the PIN.
+    if (!Number.isInteger(numericVc)) {
+      setError(tt('wallet.withdrawWhole', 'Withdrawals go in whole coins, like 12. Anything under 1 VC stays in your wallet to spend or send.'));
+      return;
+    }
     if (balance != null && numericVc > balance) {
       setError(tt("msg.insufficientBalance", "Insufficient balance."));
       return;
