@@ -1,3 +1,4 @@
+import { appLocale } from '@/lib/appLocale';
 /**
  * A sentence that depends on a number, in the reader's language.
  *
@@ -14,8 +15,19 @@
  * `scripts/check-plurals.mjs` refuses a "(s)" in any dictionary entry or
  * component string, which is what makes this the only way to write one.
  */
+// The language decides which form a number takes: French says "0 personne"
+// and "1 personne", English "0 people" and "1 person" (30 September 2026, a
+// French page read "0 personnes").
+function isOne(count) {
+  try {
+    return new Intl.PluralRules(appLocale()).select(count) === 'one';
+  } catch {
+    return count === 1;
+  }
+}
+
 export function plural(tt, n, oneKey, oneFallback, manyKey, manyFallback, shown) {
   const count = Number(n) || 0;
-  const text = count === 1 ? tt(oneKey, oneFallback) : tt(manyKey, manyFallback);
+  const text = isOne(count) ? tt(oneKey, oneFallback) : tt(manyKey, manyFallback);
   return text.replace('{n}', shown !== undefined ? String(shown) : String(count));
 }
