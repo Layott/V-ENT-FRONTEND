@@ -31,6 +31,10 @@ const PASSWORD = arg('password', 'VentDemo2026!');
 const CODE_CMD = arg('code-cmd', '');
 const LOGO = arg('logo', '');
 const OUT = path.resolve(arg('out', path.join(ROOT, '.walk-overlays')));
+// Downloads are premium (inbox 397). Local shell commands that give and take
+// premium on the walking account, so the walk sees both sides.
+const GRANT_CMD = arg('grant-cmd', '');
+const REVOKE_CMD = arg('revoke-cmd', '');
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const results = [];
@@ -117,6 +121,25 @@ async function main() {
     note(await openCard(page, 'Starting soon'), 'Starting soon card opens');
     await page.waitForSelector('canvas[role=img]');
     await wait(2500);
+
+    // Without premium: no download buttons, one line and the way to premium.
+    if (GRANT_CMD) {
+      if (REVOKE_CMD) execSync(REVOKE_CMD);
+      const gated = await page.evaluate(() => ({
+        line: /part of V-ENT premium/.test(document.body.innerText),
+        buttons: [...document.querySelectorAll('button')].some((b) => /^Download /.test(b.textContent.trim())),
+      }));
+      note(gated.line && !gated.buttons, 'no premium: downloads replaced by the premium line', JSON.stringify(gated));
+      execSync(GRANT_CMD);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => [...document.querySelectorAll('button')]
+        .filter((b) => b.textContent.trim() === 'Open').length > 10);
+      await openCard(page, 'Starting soon');
+      await page.waitForSelector('canvas[role=img]');
+      await wait(2500);
+      note(await page.evaluate(() => [...document.querySelectorAll('button')].some((b) => /^Download picture/.test(b.textContent.trim()))),
+        'with premium: the downloads are offered');
+    }
 
     // Edit: words and a colour, then a logo upload.
     const edited = await page.evaluate(() => {
@@ -277,6 +300,7 @@ async function main() {
     }
   } finally {
     await browser.close();
+    if (REVOKE_CMD) execSync(REVOKE_CMD);
   }
   const failed = results.filter((r) => !r.ok).length;
   console.log(`${results.length - failed}/${results.length} steps passed, files in ${OUT}`);

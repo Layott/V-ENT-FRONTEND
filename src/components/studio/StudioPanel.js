@@ -799,6 +799,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                     element={el}
                     style={live.style}
                     live={el.active}
+                    mayDownload={Boolean(live.may_download_overlays)}
                     token={token}
                     assetsBase={`${API}/${kind}/${ref}/studio/assets/`}
                     name={`${live.name || ''} ${LABELS[elementKind] || elementKind}`.trim()}

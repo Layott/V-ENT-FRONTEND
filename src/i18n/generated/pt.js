@@ -7621,6 +7621,8 @@ const table = {
  "premium.feature.advanced_streaming": "Dados e grafismos ao vivo dentro de uma transmissão",
  "premium.feature.financial_analytics": "Inscrições, patrocínios e pagamentos, detalhados",
  "premium.feature.media_export": "Logótipos e ficheiros de media, num pacote",
+ "premium.feature.overlay_downloads": "Grafismos, transições e elementos descarregados como imagens e vídeos",
+ "overlay.downloadsPremium": "Descarregar grafismos como imagens e vídeos faz parte do V-ENT premium.",
  "adminSettings.premiumTitle": "Premium",
  "adminSettings.premiumSub": "Quanto custa uma subscrição premium da V-ENT, em VENT COINS. Deixe um preço a 0 e o premium não está à venda: a página diz isso e regista quem o pediu.",
  "adminSettings.premiumMonthly": "Mensal (VC)",

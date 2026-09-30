@@ -16,6 +16,7 @@
 // overlay's own value, so the style reaches it again.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
 import DesignedCanvas from './DesignedCanvas';
@@ -154,6 +155,12 @@ export default function OverlayDesigner({ kind, element, style, assetsBase, toke
           <button type="button" className={panel.ghost} disabled={Boolean(busy)} onClick={onPlayOnAir}>
             {tt('overlay.playOnAir', 'Play it on air')}
           </button>
+        )}
+        {!mayDownload && (
+          <p className={styles.timing}>
+            {tt('overlay.downloadsPremium', 'Downloading overlays as pictures and videos is part of V-ENT premium.')}{' '}
+            <Link href="/premium" className={styles.linkBtn}>{tt('premium.seeWhatItCosts', 'See what premium costs')}</Link>
+          </p>
         )}
         {mayDownload && <>
         <button type="button" className={panel.ghost} disabled={Boolean(busy)} onClick={() => exportAs('png')}>
