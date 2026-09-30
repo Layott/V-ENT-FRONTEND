@@ -29,13 +29,13 @@ const AutomatedTournaments = ({
                             {tt("ui.automated.tournaments.8016", "Automated Tournaments")}
                         </p>
                         <h2 className={landingStyles.headingText}>
-                            {tt("ui.ai.powered.tournaments.gamers.3715", "AI-Powered Tournaments \xA0for Gamers")}
+                            {tt("ui.ai.powered.tournaments.gamers.3715", "Tournaments that run themselves")}
                         </h2>
                     </div>
                     
                     <div className={`${landingStyles.descriptionContainer} ${styles.descriptionContainer}`}>
                         <p className={landingStyles.descriptionParagraph}>
-                            {tt("ui.compete.exciting.automated.tournaments.7864", "Compete in exciting, automated tournaments for your favorite games. From registration to scoring, our AI-driven system ensures smooth management and real-time updates so you can focus on winning.")}
+                            {tt("ui.compete.exciting.automated.tournaments.7864", "Brackets draw themselves, both sides confirm each result, and the standings update as the scores come in, so you can focus on winning.")}
                         </p>
 
                         <Link href={'/signup'} className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}>

@@ -97,8 +97,11 @@ const LandingHero = ({
           <div className={`${styles.heroContentTop}`}>
             <div className={styles.gamingAnimeTribeContainer}>
               <h1 className={styles.heroHeadline}>
-                <span className={styles.headlineWord}>{tt("ui.gaming.c0ec", "Gaming")}</span>
-                <span className={`${styles.headlineWord} ${styles.h1Anime}`}>{tt("ui.anime.f1b3", "Anime")}</span>
+                {/* The spaces are for whoever reads the text rather than the
+                    picture: without them a crawler and a screen reader got one
+                    word, "GamingAnimeTribe". */}
+                <span className={styles.headlineWord}>{tt("ui.gaming.c0ec", "Gaming")}</span>{' '}
+                <span className={`${styles.headlineWord} ${styles.h1Anime}`}>{tt("ui.anime.f1b3", "Anime")}</span>{' '}
                 <span className={`${styles.headlineWord} ${styles.h1Tribe}`}>{tt("ui.tribe.3b07", "Tribe")}</span>
               </h1>
             </div>

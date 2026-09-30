@@ -966,7 +966,7 @@ const TeamCard = ({
         <h3 className={styles.teamName}>{t.name}</h3>
         <span className={styles.teamMeta}>{t.tag} · {t.game}</span>
       </div>
-      {t.is_accepting_members && <span className={styles.openBadge}>{tt("ui.open.cf9b", "Open")}</span>}
+      {t.is_accepting_members && <span className={styles.openBadge}>{tt('teams.openToJoin', 'Open to join')}</span>}
     </div>
     <p className={styles.teamBio}>{t.bio}</p>
     <div className={styles.teamFooter}>
