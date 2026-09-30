@@ -173,11 +173,24 @@ export default function DateField({
     return out;
   }, [cursor, start]);
 
+  const monthNames = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => new Date(2026, i, 1).toLocaleDateString(locale, { month: 'long' })),
+    [locale],
+  );
   const limit = useMemo(() => ({
     from: min ? parseValue(min).date : null,
     to: max ? parseValue(max).date : null,
   }), [min, max]);
 
+  const years = useMemo(() => {
+    const now = new Date().getFullYear();
+    const first = limit.from ? limit.from.getFullYear() : now - 120;
+    const last = limit.to ? limit.to.getFullYear() : now + 10;
+    const out = [];
+    for (let y = last; y >= first; y -= 1) out.push(y);
+    if (!out.includes(cursor.getFullYear())) out.push(cursor.getFullYear());
+    return out;
+  }, [limit, cursor]);
   const outOfRange = useCallback(
     (d) => Boolean((limit.from && d < limit.from) || (limit.to && d > limit.to)),
     [limit],
@@ -270,7 +283,27 @@ export default function DateField({
             >
               <LuChevronLeft aria-hidden="true" />
             </button>
-            <span className={styles.monthTitle}>{monthTitle}</span>
+            {/* Month and year can be chosen directly. A date of birth is decades
+                back, and stepping a month at a time made it about 340 presses
+                (walk, 30 September 2026). */}
+            <span className={styles.jump}>
+              <select
+                className={styles.jumpSelect}
+                value={cursor.getMonth()}
+                onChange={(e) => setCursor(new Date(cursor.getFullYear(), Number(e.target.value), 1))}
+                aria-label={tt('date.month', 'Month')}
+              >
+                {monthNames.map((m, i) => <option key={m} value={i}>{m}</option>)}
+              </select>
+              <select
+                className={styles.jumpSelect}
+                value={cursor.getFullYear()}
+                onChange={(e) => setCursor(new Date(Number(e.target.value), cursor.getMonth(), 1))}
+                aria-label={tt('date.year', 'Year')}
+              >
+                {years.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </span>
             <button
               type="button"
               className={styles.nav}

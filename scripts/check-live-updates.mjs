@@ -247,6 +247,9 @@ const NEVER_REFRESHES = {
   // Forms and wizards. Refreshing would clobber what somebody is typing.
   'src/app/events/create-event/page.js': 'the event wizard',
   'src/app/events/edit-event/page.js': 'a form',
+  // A search that is written to the audit log each time it runs: refreshing
+  // it on a timer would log searches nobody made (inbox 305c).
+  'src/app/(admin)/admin/location-history/page.js': 'a logged search form',
   'src/app/tournaments/create-tournament/page.js': 'the tournament wizard',
   'src/app/tournaments/edit-tournament/page.js': 'a form',
   'src/app/organizations/create/page.js': 'a form',

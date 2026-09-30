@@ -60,6 +60,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import TradeHere from '@/components/vendor-slots/TradeHere';
 import { slotsText } from '@/lib/slots';
+import GoingTogether from '@/components/going-together/GoingTogether';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -92,6 +93,12 @@ const TABS = [{
 }, {
   id: 'tournaments',
   label: 'Tournaments'
+}, {
+  // Inbox 305: ticket holders show they are going, share where they leave
+  // from, and ping people to meet up. The rules are the server's.
+  id: 'together',
+  label: 'Going together',
+  key: 'together.title'
 }
 // The Map tab draws VENUE_BOOTHS, a fixed floor plan with a main stage, a food
 // court and a VIP lounge. It is the same plan for every event, and no event
@@ -1143,6 +1150,9 @@ export const ViewEventContent = ({
               <span className={`${styles.heroType} ${styles['type_' + event.event_type]}`}>
                 {event.event_type}
               </span>
+              {Number(event.min_age) >= 18 && <span className={`${styles.heroType} ${styles.adultsOnly}`}>
+                  {tt('createEvent.adultsOnly', '18+ event')}
+                </span>}
               <h1 className={styles.heroTitle}>{event.name}</h1>
               <div className={styles.heroMeta}>
                 <span className={styles.metaItem}>
@@ -1202,7 +1212,7 @@ export const ViewEventContent = ({
           {/* Tabs */}
           <div className={styles.tabRow} ref={tabsRef}>
             {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)} type="button">
-                {tx(t.label)}
+                {t.key ? tt(t.key, t.label) : tx(t.label)}
               </button>)}
           </div>
 
@@ -1656,6 +1666,8 @@ export const ViewEventContent = ({
               </div>}
 
             {/* TOURNAMENTS */}
+            {activeTab === 'together' && <GoingTogether eventRef={id} onOpenTickets={() => openTab('tickets')} />}
+
             {activeTab === 'tournaments' && <div className={styles.tournamentsTab}>
                 <div className={styles.ticketHeaderRow}>
                   <div>

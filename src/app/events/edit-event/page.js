@@ -67,7 +67,7 @@ const forInput = value => {
 const FIELDS = [
   'name', 'desc', 'event_type', 'category', 'location', 'event_link',
   'entry_fee', 'capacity', 'start_date', 'end_date', 'is_listed',
-  'max_tickets_per_email',
+  'max_tickets_per_email', 'min_age',
 ];
 
 export const EditEventContent = ({ slug: slugFromPath }) => {
@@ -144,6 +144,8 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
           // form would draw as an actual zero.
           max_tickets_per_email: e.max_tickets_per_email != null
             ? String(e.max_tickets_per_email) : '',
+          // 18 for adults only, 0 for everybody (inbox 305).
+          min_age: Number(e.min_age) >= 18 ? 18 : 0,
         };
         setOriginal(shaped);
         setForm(shaped);
@@ -417,6 +419,17 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                   {tt('eventEdit.listed', 'Listed publicly')}
                   <span className={styles.hint}>
                     {tt('eventEdit.listedHint', 'Turn this off and the event stays reachable by its link but leaves the listing.')}
+                  </span>
+                </span>
+              </label>
+
+              <label className={styles.checkRow}>
+                <input type="checkbox" checked={form.min_age >= 18}
+                       onChange={e => set('min_age', e.target.checked ? 18 : 0)} />
+                <span>
+                  {tt('createEvent.adultsOnly', '18+ event')}
+                  <span className={styles.hint}>
+                    {tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')}
                   </span>
                 </span>
               </label>

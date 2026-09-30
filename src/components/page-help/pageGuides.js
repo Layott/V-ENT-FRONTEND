@@ -531,6 +531,11 @@ export const GUIDES = {
     what: 'Who has an API key, and what it lets them do.',
     does: ['Issue a key', 'Change its scopes', 'Rotate or revoke it'],
   },
+  '/admin/location-history': {
+    title: 'Location history',
+    what: 'The areas people said they were leaving from for an event, kept for safety after the event hides them.',
+    does: ['Search by an event, a person, or both', 'Give a reason: every search is written to the audit log'],
+  },
   '/admin/audit-log': {
     title: 'Audit log',
     what: 'Every action an admin has taken, and who took it.',
