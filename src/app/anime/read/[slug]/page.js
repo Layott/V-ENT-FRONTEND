@@ -1,9 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
-import {
-  absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata,
-  unavailableMetadata,
-} from '@/lib/seo';
+import { absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import ReaderClient from './ReaderClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/anime/read/<chapter>` - one chapter of a comic.
 //
@@ -28,20 +26,16 @@ export async function generateMetadata(props) {
 
   if (chapter?.__failed) return unavailableMetadata(slug, `/anime/read/${slug}`);
   if (!chapter || chapter.__moved || !chapter.series_title) {
-    return buildMetadata({
-      title: 'Chapter not found',
-      description: 'This chapter does not exist, or it is not published.',
-      path: `/anime/read/${slug}`,
-      noindex: true,
-      locale,
-    });
+    return missingMetadata('chapter', `/anime/read/${slug}`);
   }
 
+  const { t, n } = recordCopy(locale);
+  const series = chapter.series_title;
   return buildMetadata({
-    title: `${chapter.series_title} chapter ${chapter.number}`,
+    title: t('chapter.title', { series, number: chapter.number }),
     description: clamp(
-      `${chapter.title || `Chapter ${chapter.number}`} of ${chapter.series_title}`
-      + ` on V-ENT. ${chapter.pages} pages.`),
+      `${t('chapter.of', { chapter: chapter.title || t('chapter.untitled', { number: chapter.number }), series })} `
+      + n('chapter.pages', chapter.pages || 0)),
     path: `/anime/read/${chapter.slug || slug}`,
     noindex: true,
     locale,

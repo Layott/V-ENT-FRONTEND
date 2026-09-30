@@ -16,6 +16,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { dictionaries } from '../src/i18n/dictionaries.js';
+// Record-page metadata keeps its own en/fr/pt table (src/lib/seoRecordCopy.js,
+// inbox 380), read on the server where the dictionaries are not loaded. A key
+// there counts, and the table must carry every key in all three languages:
+// recordCopy falls back to English for a missing one, which is silent.
+import { RECORD_COPY } from '../src/lib/seoRecordCopy.js';
+const inRecordCopy = (lang, key) => Boolean(
+  RECORD_COPY[lang]?.[key] || (RECORD_COPY[lang]?.[`${key}.one`] && RECORD_COPY[lang]?.[`${key}.other`]));
 
 const LANGS = ['en', 'fr', 'pt'];
 
@@ -88,10 +95,19 @@ for (const file of files) {
     // and the check that says "0 missing" is the one nobody re-reads.
     if (!/^[A-Za-z][\w-]*(\.[\w-]+)+$/.test(key)) continue;
     checked += 1;
-    const missing = LANGS.filter(l => !dictionaries[l][key]);
+    const missing = LANGS.filter(l => !dictionaries[l][key] && !inRecordCopy(l, key));
     if (missing.length) {
       gaps += 1;
       console.log(`MISSING ${missing.join(',')}  ${key}   (${file})`);
+    }
+  }
+}
+
+for (const key of Object.keys(RECORD_COPY.en)) {
+  for (const l of LANGS) {
+    if (!RECORD_COPY[l]?.[key]) {
+      gaps += 1;
+      console.log(`MISSING ${l}  ${key}   (src/lib/seoRecordCopy.js)`);
     }
   }
 }

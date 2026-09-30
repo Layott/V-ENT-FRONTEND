@@ -1,6 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
-import { breadcrumbLd, buildMetadata, fetchForMetadata } from '@/lib/seo';
+import { breadcrumbLd, buildMetadata, fetchForMetadata, currentLocale } from '@/lib/seo';
 import DocsClient from './DocsClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/partners/docs` - the V-ENT API reference.
 //
@@ -21,13 +22,13 @@ import DocsClient from './DocsClient';
 export const revalidate = 3600;
 
 export async function generateMetadata() {
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
   return buildMetadata({
-    title: 'V-ENT API and Sign in with V-ENT',
-    description:
-      'Build on V-ENT: read tournaments, events, teams, players and rankings '
-      + 'through the partner API, and let people sign in to your site with their '
-      + 'V-ENT account.',
+    title: t('docs.title'),
+    description: t('docs.description'),
     path: '/partners/docs',
+    locale,
   });
 }
 

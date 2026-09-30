@@ -1,23 +1,49 @@
-import { currentLocale } from '@/lib/seo';
-import { privateTitle } from '@/lib/seoCopy';
-// The page itself is a client component and cannot export metadata, so it
-// lives here.
+import { redirect } from 'next/navigation';
+import JsonLd from '@/components/seo/JsonLd';
+import { breadcrumbLd, fetchRecordForMetadata, orgLd, orgMetadata } from '@/lib/seo';
+
+// `/organizations/avalanche-gaming`: an organisation's public profile.
 //
-// This route only looks public. It carries a one-time token, somebody's own
-// invitation, a private conversation, a sign-in hand-off or a browser source,
-// so it is noindex here as well as disallowed in robots.js: a disallow asks a
-// crawler not to fetch it, and this tells anything that fetched it anyway not
-// to keep it.
-// In the reader's language: a const is evaluated once, with no request
-// and so no language, and every reader got the English title (inbox 375).
-export async function generateMetadata() {
-  const locale = await currentLocale();
-  return {
-    title: privateTitle('organizations/[slug]', locale),
-    robots: { index: false, follow: false },
-  };
+// Until 30 September 2026 this layout said the route "only looks public",
+// carried the boilerplate written for token routes, and marked every
+// organisation noindex with the title "Organisation", while sitemap.js listed
+// each one for crawling. Two opposite instructions, and the page lost: no
+// organisation profile could be found in a search. An organisation page is
+// content (the hard rule: public by default, gate the action), so it is
+// described here from its own record, in the reader's language, with its
+// Organization JSON-LD. The manage screen underneath stays private in robots.js.
+
+export const revalidate = 900;
+
+const load = (slug) => fetchRecordForMetadata(`/organization/${encodeURIComponent(slug)}/`);
+const pick = (data) => (data?.__moved || data?.__failed ? data : (data?.organization || data));
+
+export async function generateMetadata(props) {
+  const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
+  return orgMetadata(await load(slug), slug);
 }
 
-export default function Layout({ children }) {
-  return children;
+export default async function Layout(props) {
+  const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
+  const org = pick(await load(slug));
+  if (org?.__moved) redirect(org.__moved);
+  const path = `/organizations/${org?.slug || slug}`;
+
+  return (
+    <>
+      <JsonLd
+        data={[
+          orgLd(org, path),
+          breadcrumbLd([
+            { name: 'Home', path: '/' },
+            { name: 'Organizations', path: '/organizations' },
+            { name: org?.name || 'Organization', path },
+          ]),
+        ]}
+      />
+      {props.children}
+    </>
+  );
 }

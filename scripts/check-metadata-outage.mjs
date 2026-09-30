@@ -24,7 +24,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const APP = path.join(HERE, '..', 'src', 'app');
 
 // Builders in seo.js that already tell a failure from a missing record.
-const AWARE_BUILDERS = /\b(eventMetadata|tournamentMetadata)\s*\(/;
+const AWARE_BUILDERS = /\b(eventMetadata|tournamentMetadata|teamMetadata|orgMetadata)\s*\(/;
 
 /**
  * One route's verdict, from its source alone.
@@ -61,8 +61,9 @@ function walk(dir, out = []) {
  */
 export function builderFaults(seoSource) {
   const out = [];
-  for (const name of ['eventMetadata', 'tournamentMetadata']) {
-    const m = new RegExp(`export function ${name}\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n\\}`).exec(seoSource);
+  for (const name of ['eventMetadata', 'tournamentMetadata', 'teamMetadata', 'orgMetadata']) {
+    // `async` since 30 September 2026 (inbox 380): the builders read the locale.
+    const m = new RegExp(`export (?:async )?function ${name}\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n\\}`).exec(seoSource);
     if (!m) out.push(`${name} is not in seo.js, and the routes still call it`);
     else if (!/__failed/.test(m[1])) out.push(`${name} in seo.js never checks __failed`);
   }

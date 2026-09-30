@@ -1,0 +1,63 @@
+{
+ "id": 3,
+ "org_id": 3,
+ "slug": "avalanche-gaming",
+ "name": "AVALANCHE GAMING",
+ "tag": "AVL",
+ "bio": "WE ARE AVALANCHE GAMING",
+ "focus": "esports",
+ "location": null,
+ "region": "All Africa",
+ "logo": null,
+ "banner": null,
+ "verified": false,
+ "member_count": 1,
+ "team_count": 0,
+ "tournaments_hosted": 0,
+ "total_tournaments_hosted": 0,
+ "prize_pool_awarded_vc": 0,
+ "total_prize_pool": 0,
+ "events_hosted": 0,
+ "owner": {
+  "id": 82,
+  "user_id": 82,
+  "username": "deprofessor",
+  "full_name": "DE PROFESSOR ",
+  "avatar": null,
+  "founder_badge": false
+ },
+ "owner_username": "deprofessor",
+ "follower_count": 1,
+ "org_type": "mixed",
+ "capabilities": {
+  "teams": true,
+  "tournaments": true,
+  "events": true,
+  "ticketing": true,
+  "vendors": true
+ },
+ "my_role": null,
+ "has_pending_request": false,
+ "mission": "",
+ "contact_email": "",
+ "founded": null,
+ "social_links": [
+  {
+   "url": "",
+   "title": "Twitter"
+  }
+ ],
+ "verification_requested": false,
+ "founders": [
+  {
+   "id": 82,
+   "user_id": 82,
+   "username": "deprofessor",
+   "full_name": "DE PROFESSOR ",
+   "avatar": null,
+   "founder_badge": false
+  }
+ ],
+ "is_following": false,
+ "pending_request_count": 0
+}

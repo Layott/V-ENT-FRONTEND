@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
-import {
-  buildMetadata, eventMetadata, fetchForMetadata, tournamentMetadata,
-} from '@/lib/seo';
+import { buildMetadata, eventMetadata, fetchForMetadata, tournamentMetadata, currentLocale } from '@/lib/seo';
 import ShortLinkMissing from './ShortLinkMissing';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/s/k7m2qp` - a shortened ticket link.
 //
@@ -58,11 +57,14 @@ export async function generateMetadata(props) {
   const token = String(params?.token || '').trim();
   const target = safeTarget(await resolve(token));
 
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
   const generic = await buildMetadata({
-    title: 'Short link',
-    description: 'Opening a V-ENT link.',
+    title: t('shortLink.title'),
+    description: t('shortLink.description'),
     path: `/s/${token}`,
     noindex: true,
+    locale,
   });
   if (!target) return generic;
 

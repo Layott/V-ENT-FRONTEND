@@ -54,9 +54,11 @@ function readFixture(name) {
   return JSON.parse(fs.readFileSync(path.join(FIXTURES, name), 'utf8'));
 }
 
-function checkEvent(e, problems, label = 'event', build = seo.eventLd) {
+async function checkEvent(e, problems, label = 'event', build = seo.eventLd) {
   const ld = build(e, `/events/${e.slug}`);
-  const meta = seo.eventMetadata(e, e.slug);
+  // Awaited: the builder is async since 30 September, and the description of
+  // an unawaited promise is undefined, which would pass this check for ever.
+  const meta = await seo.eventMetadata(e, e.slug);
   if (!ld) { problems.push(`${label}: no JSON-LD built`); return; }
   if (ld.startDate !== e.start_date) {
     problems.push(`${label}: startDate is ${ld.startDate}, the record starts ${e.start_date}`);
@@ -82,6 +84,29 @@ function checkEvent(e, problems, label = 'event', build = seo.eventLd) {
   }
 }
 
+// Teams and organisations (30 September 2026): both builders read a name the
+// API does not send (`team_name`, `org_name`), so no team or organisation page
+// had a title and neither JSON-LD was ever built.
+async function checkTeam(raw, problems, label = 'team', build = seo.teamMetadata) {
+  const meta = await build(raw, raw.slug);
+  if (meta?.title !== raw.name && !String(meta?.title?.absolute || meta?.title || '').startsWith(raw.name)) {
+    problems.push(`${label}: title is ${JSON.stringify(meta?.title)}, the team is called ${raw.name}`);
+  }
+  const ld = seo.teamLd(seo.normaliseTeam(raw), `/teams/${raw.slug}`);
+  if (!ld) problems.push(`${label}: no JSON-LD built`);
+  else if (ld.name !== raw.name) problems.push(`${label}: JSON-LD name is ${ld.name}, the team is ${raw.name}`);
+}
+
+async function checkOrg(raw, problems, label = 'organisation') {
+  const meta = await seo.orgMetadata(raw, raw.slug);
+  if (!String(meta?.title?.absolute || meta?.title || '').startsWith(raw.name)) {
+    problems.push(`${label}: title is ${JSON.stringify(meta?.title)}, the organisation is ${raw.name}`);
+  }
+  const ld = seo.orgLd(raw, `/organizations/${raw.slug}`);
+  if (!ld) problems.push(`${label}: no JSON-LD built`);
+  else if (ld.name !== raw.name) problems.push(`${label}: JSON-LD name is ${ld.name}, the organisation is ${raw.name}`);
+}
+
 function checkTournament(t, problems, label = 'tournament') {
   const ld = seo.tournamentLd(t, `/tournaments/${t.slug}`);
   if (!ld) { problems.push(`${label}: no JSON-LD built`); return; }
@@ -97,15 +122,23 @@ function checkTournament(t, problems, label = 'tournament') {
   }
 }
 
-function selfTest() {
+async function selfTest() {
   const e = readFixture('event-payload.json');
   const t = readFixture('tournament-payload.json');
   const cases = [];
 
   // Must pass on the real shape.
   let problems = [];
-  checkEvent(e, problems); checkTournament(t, problems);
+  const team = readFixture('team-payload.json');
+  const org = readFixture('org-payload.json');
+  await checkEvent(e, problems); checkTournament(t, problems);
+  await checkTeam(team, problems); await checkOrg(org, problems);
   cases.push(['real payloads build correctly', problems.length === 0, problems.join('; ')]);
+
+  // The team page as it shipped: title from `team_name` only.
+  problems = [];
+  await checkTeam(team, problems, 'team', async (r) => ({ title: r.team_name }));
+  cases.push(['a title read from team_name, which the API leaves null, is caught', problems.length === 1, problems.join('; ')]);
 
   // Must catch the fault as it shipped: a builder reading names the API does
   // not send fell back to reg_start_date, saw no end and no tiers.
@@ -114,7 +147,7 @@ function selfTest() {
     startDate: rec.start_datetime || rec.event_date || rec.reg_start_date,
   });
   problems = [];
-  checkEvent(e, problems, 'event', shippedBuilder);
+  await checkEvent(e, problems, 'event', shippedBuilder);
   cases.push(['the builder as it shipped is caught (start, end, offers)', problems.length >= 3, problems.join('; ')]);
 
   // Must catch a price that drifts from the record.
@@ -142,11 +175,13 @@ function selfTest() {
 }
 
 if (process.argv.includes('--self-test')) {
-  selfTest();
+  await selfTest();
 } else {
   const problems = [];
-  checkEvent(readFixture('event-payload.json'), problems);
+  await checkEvent(readFixture('event-payload.json'), problems);
   checkTournament(readFixture('tournament-payload.json'), problems);
+  await checkTeam(readFixture('team-payload.json'), problems);
+  await checkOrg(readFixture('org-payload.json'), problems);
   if (problems.length) {
     console.error(`${problems.length} structured-data problem(s):`);
     for (const p of problems) console.error(`  ${p}`);

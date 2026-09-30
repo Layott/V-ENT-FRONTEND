@@ -16,7 +16,7 @@ import { fetchForMetadata, privateMetadata } from '@/lib/seo';
 export const revalidate = 0;
 
 export function generateMetadata() {
-  return privateMetadata('Run of show');
+  return privateMetadata('run-of-show');
 }
 
 const SharedRunOfShow = async props => {

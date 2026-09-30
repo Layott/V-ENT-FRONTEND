@@ -4,6 +4,7 @@ import {
   fetchForMetadata,
 } from '@/lib/seo';
 import PremiumClient from './PremiumClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/premium` - what V-ENT premium is, what it costs, and how to switch it on.
 //
@@ -20,33 +21,33 @@ export const revalidate = 900;
 
 const load = () => fetchForMetadata('/auth/premium/offer/');
 
-const priceSentence = (offer) => {
+const priceSentence = (offer, copy) => {
   if (!offer?.on_sale) {
-    return 'Premium is not on sale yet. Tell us you want it and we will say when it is.';
+    return copy.t('premium.notOnSale');
   }
   // Both units in one sentence: a number reading "25 VC" assumes the reader
   // knows what a VENT COIN is. en-NG explicitly rather than the reader's
   // locale, because metadata is built on the server where there is no reader
   // to ask, and a bare toLocaleString would take the SERVER's language.
   const vc = Number(offer.price_vc_monthly || 0);
-  const ngn = (vc * 1000).toLocaleString('en-NG');
-  return `${vc} VENT COINS a month, which is ${ngn} NGN.`;
+  return copy.t('premium.price', { vc: copy.num(vc), ngn: copy.num(vc * 1000) });
 };
 
 export async function generateMetadata() {
   const locale = await currentLocale();
   const offer = await load();
 
+  const copy = recordCopy(locale);
   const features = (offer?.features || []).map((f) => f.name).slice(0, 3);
   const what = features.length
-    ? `Includes ${features.join(', ')}.`
+    ? copy.t('premium.includes', { features: features.join(', ') })
     : '';
 
   return buildMetadata({
-    title: 'V-ENT premium',
+    title: copy.t('premium.title'),
     description: clamp(
-      `What a V-ENT premium subscription switches on for an organiser. `
-      + `${priceSentence(offer)} ${what}`,
+      `${copy.t('premium.what')} `
+      + `${priceSentence(offer, copy)} ${what}`,
     ),
     path: '/premium',
     type: 'website',

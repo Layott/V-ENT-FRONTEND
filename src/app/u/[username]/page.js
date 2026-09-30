@@ -1,9 +1,8 @@
 import { Suspense } from 'react';
 import JsonLd from '@/components/seo/JsonLd';
-import {
-  breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata,
-} from '@/lib/seo';
+import { breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata, missingMetadata, currentLocale } from '@/lib/seo';
 import ProfileClient from './ProfileClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/u/temi` - a person's profile at their username, which is the readable,
 // stable address for a person and the one they would give somebody.
@@ -28,24 +27,18 @@ export async function generateMetadata(props) {
   const profile = await load(username);
 
   if (profile?.__failed) return unavailableMetadata(username, `/u/${username}`);
-  if (!profile) {
-    return buildMetadata({
-      title: 'Player not found',
-      description: 'This player does not exist, or their profile is not public.',
-      path: `/u/${username}`,
-      noindex: true,
-    });
-  }
+  if (!profile) return missingMetadata('player', `/u/${username}`);
 
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
   const name = profile.full_name || profile.username || username;
-  const country = profile.country ? ` from ${profile.country}` : '';
 
   return buildMetadata({
+    locale,
     title: name,
     description: clamp(
       profile.description
-      || `${name}${country} plays on V-ENT. See their teams, the tournaments `
-         + 'they have entered and how they have placed.',
+      || (profile.country ? t('player.from', { name, country: profile.country }) : t('player.plain', { name })),
     ),
     path: `/u/${profile.username || username}`,
     // Their own picture, not the site card.

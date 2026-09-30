@@ -410,7 +410,8 @@ const EventsListingContent = () => {
           <div className={styles.gridSection}>
             <div className={styles.gridHeader}>
               <h2 className={styles.sectionTitle}>
-                {TABS.find(t => t.id === activeTab)?.label || 'All'} {tt("ui.events.82d5", "events")}
+                {/* One sentence per tab: a label glued to a translated word read "All événements" (inbox 380). */}
+                {tt(`events.heading.${activeTab}`, `${TABS.find(t => t.id === activeTab)?.label || 'All'} events`)}
               </h2>
               <span className={styles.resultCount}>
                 {loading ? tx("Loading…") : loadError && events.length === 0 ? '' : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
