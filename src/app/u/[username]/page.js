@@ -43,6 +43,10 @@ export async function generateMetadata(props) {
     path: `/u/${profile.username || username}`,
     // Their own picture, not the site card.
     image: profile.profile_picture || profile.avatar || null,
+    // Settings > Privacy > "Indexable in search" (inbox 399). Stored and read
+    // by nothing until 1 October 2026; switched off, the page now asks search
+    // engines to leave it out.
+    noindex: profile.indexable === false,
   });
 }
 

@@ -58,7 +58,21 @@ const mapTournamentToFormData = t => {
     bracket_type: t.bracket_type ?? '',
     tournament_rules: t.tournament_rules ?? t.rules ?? '',
     prize_distribution_type: t.prize_type ?? t.prize_distribution_type ?? '',
-    prize_distribution: Array.isArray(t.prize_distribution) ? t.prize_distribution : [],
+    // The figure the organiser typed and its currency (inbox 403). `prize` on
+    // the payload is the coins that pay out; reopening a draft drew those beside
+    // the organiser's naira, and saving converted them again.
+    prize_currency: t.prize_currency || 'VC',
+    prize_pool_total: t.prize_pool_total ?? '',
+    prize_distribution: Array.isArray(t.prize_distribution)
+      ? t.prize_distribution.map((row) => ({
+        position: row.position,
+        prize: row.amount ?? row.prize,
+        amount: row.amount ?? row.prize,
+        currency: row.currency || t.prize_currency || 'VC',
+        extras: row.extras ?? '',
+        extras_amount: row.extras_amount ?? null,
+      }))
+      : [],
     winner_prize: t.winner_prize ?? '',
     sponsors: Array.isArray(t.sponsors) ? t.sponsors : [],
 

@@ -207,13 +207,20 @@ const CreateTournamentComponent = ({ draftId = null }) => {
 
       let prizeData = [];
       if (Array.isArray(formData.prize_distribution)) {
+        // The typed figure and the currency it was typed in, as the prize step
+        // keeps them (inbox 403). Sending only the number made the server read
+        // naira as coins: a 50,000 naira prize became 50,000 coins.
         prizeData = formData.prize_distribution.map((prize, index) => ({
           position: prize.position || index + 1,
-          prize: parseFloat(prize.amount ?? prize.prize ?? 0) || 0,
+          amount: prize.amount ?? prize.prize ?? null,
+          currency: prize.currency || formData.prize_currency || 'VC',
           extras: prize.extras ?? prize.extra ?? '',
+          extras_amount: prize.extras_amount ?? null,
         }));
       }
       formDataToSend.append('prize_data', JSON.stringify(prizeData));
+      formDataToSend.append('prize_currency', formData.prize_currency || 'VC');
+      formDataToSend.append('prize_pool_total', formData.prize_pool_total ?? '');
 
       // 'winner-takes-all' is what this wizard actually sets; 'winner_takes_all'
       // kept for tolerance in case a draft was saved under an older spelling.

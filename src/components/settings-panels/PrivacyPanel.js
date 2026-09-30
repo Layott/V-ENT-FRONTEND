@@ -37,13 +37,16 @@ const PrivacyPanel = ({
 }) => {
   const tx = useTx();
   const tt = useT();
+  // The names the server reads (inbox 399). This panel saved allow_dm_from and
+  // search_indexable, which nothing read, so both switches did nothing; the
+  // server still maps those names for a page loaded before this change.
   const [state, setState] = useState({
     profile_visibility: privacy.profile_visibility || 'public',
     show_email: !!privacy.show_email,
     show_location: privacy.show_location !== false,
     show_birthday: !!privacy.show_birthday,
-    allow_dm_from: privacy.allow_dm_from || 'followers',
-    search_indexable: privacy.search_indexable !== false
+    allow_direct_messages: privacy.allow_direct_messages || 'anyone',
+    indexable: privacy.indexable !== false
   });
   useEffect(() => {
     setState({
@@ -51,8 +54,8 @@ const PrivacyPanel = ({
       show_email: !!privacy.show_email,
       show_location: privacy.show_location !== false,
       show_birthday: !!privacy.show_birthday,
-      allow_dm_from: privacy.allow_dm_from || 'followers',
-      search_indexable: privacy.search_indexable !== false
+      allow_direct_messages: privacy.allow_direct_messages || 'anyone',
+      indexable: privacy.indexable !== false
     });
   }, [privacy]);
   const persist = async next => {
@@ -65,7 +68,7 @@ const PrivacyPanel = ({
   });
   const setDm = v => persist({
     ...state,
-    allow_dm_from: v
+    allow_direct_messages: v
   });
   const toggle = key => persist({
     ...state,
@@ -138,7 +141,7 @@ const PrivacyPanel = ({
 
         <div className={styles.dmRow}>
           {DM_OPTIONS.map(opt => {
-          const active = state.allow_dm_from === opt.v;
+          const active = state.allow_direct_messages === opt.v;
           return <button type="button" key={opt.v} className={`${styles.dmChip} ${active ? styles.dmChipActive : ''}`} onClick={() => setDm(opt.v)}>
                 {tx(opt.label)}
               </button>;
@@ -157,7 +160,7 @@ const PrivacyPanel = ({
             <span className={shared.toggleRowSub}>{tt("ui.if.off.profile.excluded.bfe7", "If off, your profile is excluded from search results.")}</span>
           </div>
           <label className={shared.toggle}>
-            <input type="checkbox" checked={state.search_indexable} onChange={() => toggle('search_indexable')} />
+            <input type="checkbox" checked={state.indexable} onChange={() => toggle('indexable')} />
             <span className={shared.toggleSlider} />
           </label>
         </div>
