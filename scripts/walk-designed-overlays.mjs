@@ -253,6 +253,28 @@ async function main() {
       }
       await obs.close();
     }
+    // Every other design of the set (inbox 394) draws on its browser source:
+    // pixels on the canvas once its entrance is over.
+    const base = find('transition');
+    for (const kind of ['brb', 'stream_ended', 'champions', 'streamer_single', 'streamer_double',
+      'streamer_gameplay', 'name_tag', 'match_lower_third']) {
+      if (!base) break;
+      const obs = await browser.newPage();
+      await obs.setViewport({ width: 1920, height: 1080 });
+      await obs.goto(`${base.replace('/transition/', `/${kind}/`)}?preview=1`, { waitUntil: 'domcontentloaded' });
+      await obs.waitForSelector('canvas', { timeout: 30000 }).catch(() => {});
+      await wait(3600);
+      const inked = await obs.evaluate(() => {
+        const c = document.querySelector('canvas');
+        if (!c) return 0;
+        const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+        let n = 0;
+        for (let i = 3; i < d.length; i += 4 * 97) if (d[i] > 0) n += 1;
+        return n;
+      });
+      note(inked > 50, `${kind} browser source draws`, `${inked} sampled pixels`);
+      await obs.close();
+    }
   } finally {
     await browser.close();
   }
