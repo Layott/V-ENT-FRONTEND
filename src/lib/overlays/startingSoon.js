@@ -57,17 +57,18 @@ export default {
     { key: 'line2', type: 'text', default: 'STARTING', label: ['overlay.f.line2', 'Big word'] },
     { key: 'note', type: 'text', default: 'SOON', label: ['overlay.f.note', 'In the panel'] },
     { key: 'countdown_to', type: 'datetime', default: '', label: ['overlay.f.countdown', 'Count down to (replaces the panel words)'] },
-    { key: 'logo', type: 'picture', default: 'default', label: ['overlay.f.logo', 'Main logo'] },
-    { key: 'partner_logo', type: 'picture', default: 'none', label: ['overlay.f.partnerLogo', 'Second logo, top left'] },
+    { key: 'logo', type: 'picture', role: 'logo', default: 'default', label: ['overlay.f.logo', 'Main logo'] },
+    { key: 'partner_logo', type: 'picture', role: 'logo_secondary', default: 'none', label: ['overlay.f.partnerLogo', 'Second logo, top left'] },
     { key: 'layout', type: 'choice', default: 'psd', label: ['overlay.f.layout', 'Layout'],
       choices: [['psd', ['overlay.layout.psd', 'Words left, logos in the corners']],
         ['center', ['overlay.layout.center', 'Big logo on top, words centred']],
         ['logo_right', ['overlay.layout.logoRight', 'Words left, big logo right']]] },
-    { key: 'bg_from', type: 'colour', default: '#720202', label: ['overlay.f.bgFrom', 'Background, dark corner'] },
-    { key: 'bg_to', type: 'colour', default: '#EE1510', label: ['overlay.f.bgTo', 'Background, bright corner'] },
-    { key: 'text_colour', type: 'colour', default: '#FFFFFF', label: ['overlay.f.textColour', 'Words'] },
+    { key: 'bg_from', type: 'colour', role: 'secondary', default: '#720202', label: ['overlay.f.bgFrom', 'Background, dark corner'] },
+    { key: 'bg_to', type: 'colour', role: 'primary', default: '#EE1510', label: ['overlay.f.bgTo', 'Background, bright corner'] },
+    { key: 'text_colour', type: 'colour', role: 'text', default: '#FFFFFF', label: ['overlay.f.textColour', 'Words'] },
     { key: 'grid', type: 'toggle', default: true, label: ['overlay.f.grid', 'Grid on the background'] },
-    { key: 'font', type: 'font', default: 'pixel', label: ['overlay.f.font', 'Typeface'] },
+    { key: 'font', type: 'font', role: 'font_primary', default: 'pixel', label: ['overlay.f.font', 'Typeface, big word'] },
+    { key: 'font2', type: 'font', role: 'font_secondary', default: 'pixel', label: ['overlay.f.font2', 'Typeface, top line and panel'] },
     { key: 'animated', type: 'toggle', default: true, label: ['overlay.f.animated', 'Animated (off: a still picture)'] },
   ],
 
@@ -75,7 +76,9 @@ export default {
     const T = p.animated === false ? 1e9 : t;
     const L = layoutFor(p.layout);
     const ink = colour(p.text_colour, '#FFFFFF');
-    const family = r.family;
+    // Headline in the primary face, the smaller words in the secondary one.
+    const family = r.fonts.font || r.family;
+    const family2 = r.fonts.font2 || family;
 
     // The plate, whole from the first frame.
     const g = ctx.createLinearGradient(0, 0, W, H);
@@ -94,15 +97,18 @@ export default {
 
     // Words. Silkscreen spaces its letters wider than the PSD's Gameplay, so
     // the pixel face is drawn a little tighter; other faces as they come.
-    ctx.letterSpacing = p.font === 'pixel' || !p.font ? '-0.06em' : '0px';
+    const tight = (face) => (face === 'pixel' || !face ? '-0.06em' : '0px');
+    ctx.letterSpacing = tight(p.font2);
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = ink;
     const line1 = String(p.line1 || '');
     const line2 = String(p.line2 || '');
-    const size1 = fitText(ctx, line1, family, L.line1Cap, L.maxW);
+    const size1 = fitText(ctx, line1, family2, L.line1Cap, L.maxW);
+    ctx.letterSpacing = tight(p.font);
     const size2 = fitText(ctx, line2, family, L.line2Cap, L.maxW);
+    ctx.letterSpacing = tight(p.font2);
 
-    ctx.font = `${size1}px ${family}`;
+    ctx.font = `${size1}px ${family2}`;
     const w1 = ctx.measureText(line1).width;
     const x1 = L.align === 'center' ? L.x - w1 / 2 : L.x;
     const a1 = ease.out(step(T, 150, 500));
@@ -110,6 +116,7 @@ export default {
     ctx.fillText(line1, x1, L.line1Top + L.line1Cap + 40 * (1 - a1));
     ctx.globalAlpha = 1;
 
+    ctx.letterSpacing = tight(p.font);
     ctx.font = `${size2}px ${family}`;
     const w2 = ctx.measureText(line2).width;
     const x2 = L.align === 'center' ? L.x - w2 / 2 : L.x;
@@ -136,8 +143,9 @@ export default {
         ctx.fillStyle = 'rgba(0,0,0,0.24)';
         roundRect(ctx, x, P.y, w, P.h, 18);
         ctx.fill();
-        const size = fitText(ctx, words, family, P.h * 0.42, P.w - 80);
-        ctx.font = `${size}px ${family}`;
+        ctx.letterSpacing = tight(p.font2);
+        const size = fitText(ctx, words, family2, P.h * 0.42, P.w - 80);
+        ctx.font = `${size}px ${family2}`;
         const tw = ctx.measureText(words).width;
         ctx.save();
         roundRect(ctx, x, P.y, w, P.h, 18);

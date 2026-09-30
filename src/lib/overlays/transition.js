@@ -26,8 +26,8 @@ export default {
   tailMs: 150,
   pictures: ['logo'],
   fields: [
-    { key: 'colour_a', type: 'colour', default: '#C8102E', label: ['overlay.f.colourA', 'First colour'] },
-    { key: 'colour_b', type: 'colour', default: '#141416', label: ['overlay.f.colourB', 'Second colour'] },
+    { key: 'colour_a', type: 'colour', role: 'primary', default: '#C8102E', label: ['overlay.f.colourA', 'First colour'] },
+    { key: 'colour_b', type: 'colour', role: 'secondary', default: '#141416', label: ['overlay.f.colourB', 'Second colour'] },
     { key: 'bands', type: 'choice', default: '5', label: ['overlay.f.bands', 'How many bands'],
       choices: [['3', ['overlay.bands.3', '3 bands']], ['5', ['overlay.bands.5', '5 bands']], ['7', ['overlay.bands.7', '7 bands']]] },
     { key: 'direction', type: 'choice', default: 'ltr', label: ['overlay.f.direction', 'Direction'],
@@ -35,7 +35,7 @@ export default {
     { key: 'duration_ms', type: 'choice', default: '1800', label: ['overlay.f.speed', 'Length'],
       choices: [['1200', ['overlay.speed.fast', 'Fast, 1.2 seconds']], ['1800', ['overlay.speed.normal', 'Normal, 1.8 seconds']],
         ['2600', ['overlay.speed.slow', 'Slow, 2.6 seconds']], ['4000', ['overlay.speed.long', 'Long, 4 seconds']]] },
-    { key: 'logo', type: 'picture', default: 'default', label: ['overlay.f.logo', 'Main logo'] },
+    { key: 'logo', type: 'picture', role: 'logo', default: 'default', label: ['overlay.f.logo', 'Main logo'] },
   ],
 
   draw(ctx, t, p, r) {

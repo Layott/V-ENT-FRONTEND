@@ -73,3 +73,22 @@
 @media (max-width: 767px) {
   .designer button, .designer input:not([type=checkbox]), .designer select { min-height: 44px; }
 }
+
+/* Where a field's value comes from (inbox 393): the overlay style, or this
+   overlay's own change with the way back to the style. */
+.fromStyle { color: rgba(255, 255, 255, 0.4); font-size: 0.72rem; }
+.linkBtn {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  color: #E5B94E;
+  cursor: pointer;
+  font-size: 0.75rem;
+  min-height: 44px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* The style editor's previews: every designed overlay, side by side. */
+.styleGrid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.styleCard { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; min-width: 0; }

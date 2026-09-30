@@ -30,6 +30,7 @@ import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
 import TextLayerEditor from './TextLayerEditor';
 import OverlayDesigner from './OverlayDesigner';
+import OverlayStyleEditor from './OverlayStyleEditor';
 import { isDesigned } from '@/lib/overlays';
 import styles from './studio-panel.module.css';
 import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
@@ -734,6 +735,7 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                   <OverlayDesigner
                     kind={elementKind}
                     element={el}
+                    style={live.style}
                     live={el.active}
                     token={token}
                     assetsBase={`${API}/${kind}/${ref}/studio/assets/`}
@@ -915,6 +917,21 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
           </>}
 
           {/* The house style, set once for the whole broadcast. */}
+          {/* The overlay style (inbox 393): fonts, colours and logos every
+              designed overlay follows. First in Look, because it is what an
+              organiser sets once and forgets. */}
+          {section === 'look' && (
+            <OverlayStyleEditor
+              live={live}
+              labels={LABELS}
+              token={token}
+              assetsBase={`${API}/${kind}/${ref}/studio/assets/`}
+              onSave={(style) => run(() => call(`/sessions/${live.id}/`, {
+                method: 'POST', body: JSON.stringify({ style }),
+              }))}
+            />
+          )}
+
           {section === 'look' && <div className={styles.defaults}>
             <h3 className={styles.section}>{tt('studio.house', 'How graphics behave by default')}</h3>
             <p className={styles.hint}>
