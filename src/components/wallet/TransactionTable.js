@@ -4,12 +4,12 @@ import { useState, Fragment } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
-import { TYPE_LABEL, TYPE_BADGE_CLASS, STATUS_LABEL, normalizeType, normalizeStatus, formatDate, formatDateTime, formatNumber, isCreditType } from './walletHelpers';
+import { TYPE_BADGE_CLASS, STATUS_LABEL, normalizeType, normalizeStatus, formatDate, formatDateTime, formatNumber, isCreditType } from './walletHelpers';
 import styles from '@/app/wallets/wallets.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { fuzzyMatches } from '@/lib/fuzzy';
-import { statementLine } from '@/lib/statementLine';
+import { statementLine, kindLabel } from '@/lib/statementLine';
 const TYPE_FILTERS = [{
   id: '',
   label: 'All'
@@ -151,7 +151,7 @@ const TransactionTable = ({
   const renderBadge = tx => {
     const ntype = normalizeType(tx.type || tx.transaction_type);
     const cls = styles[TYPE_BADGE_CLASS[ntype] || 'badgeWithdraw'];
-    return <span className={`${styles.txBadge} ${cls}`}>{byText(TYPE_LABEL[ntype] || ntype)}</span>;
+    return <span className={`${styles.txBadge} ${cls}`}>{kindLabel(tt, ntype)}</span>;
   };
   const renderStatus = tx => {
     const ns = normalizeStatus(tx.status);

@@ -37,17 +37,6 @@ export const normalizeType = (rawType) => {
   return t || 'other';
 };
 
-export const TYPE_LABEL = {
-  top_up: 'Top Up',
-  send: 'Send',
-  receive: 'Receive',
-  prize: 'Prize',
-  withdrawal: 'Withdrawal',
-  fee: 'Fee',
-  refund: 'Refund',
-  other: 'Other',
-};
-
 export const TYPE_BADGE_CLASS = {
   top_up: 'badgeTopup',
   send: 'badgeSend',
