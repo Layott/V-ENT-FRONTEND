@@ -11,6 +11,7 @@ import { VENTT } from '@/constants/vent';
 import { signOut } from "next-auth/react";
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { readSignupRecord } from '@/lib/signupRecord';
 const EmailVerified = () => {
   const tx = useTx();
   const tt = useT();
@@ -76,8 +77,7 @@ const EmailVerified = () => {
   };
   const handleResend = async () => {
     setResendLoadingg(true);
-    const raw = localStorage.getItem('signupData');
-    const storedSignupData = raw ? JSON.parse(raw) : null;
+    const storedSignupData = readSignupRecord();
     if (!storedSignupData) {
       setSnackbarMessage(tt("msg.noSignupDataFoundPlease", "No signup data found. Please try signing up again."));
       setSnackbarType('error');

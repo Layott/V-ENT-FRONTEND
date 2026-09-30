@@ -11,7 +11,7 @@ import { privateTitle } from '@/lib/seoCopy';
 export async function generateMetadata() {
   // In the reader's language; this said 'Payment' to everybody.
   return {
-    title: privateTitle('wallet-topup-callback', currentLocale()),
+    title: privateTitle('wallet-topup-callback', await currentLocale()),
     robots: { index: false, follow: false },
   };
 }

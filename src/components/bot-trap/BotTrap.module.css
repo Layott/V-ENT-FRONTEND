@@ -1,0 +1,10 @@
+/* Off screen rather than display:none: some scripts skip hidden inputs, and
+   this is the one we want them to fill. */
+.trap {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

@@ -5,7 +5,7 @@ import { sectionCopy } from '@/lib/seoCopy';
 // const, because a const is evaluated once at build time where there is no
 // request and therefore no language.
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const copy = sectionCopy('terms', locale);
   return buildMetadata({ ...copy, path: '/terms', locale });
 }

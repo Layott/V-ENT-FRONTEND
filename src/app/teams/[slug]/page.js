@@ -16,7 +16,8 @@ const load = (slug) => fetchRecordForMetadata(`/team/view-team/${encodeURICompon
 
 const pick = (data) => (data?.__moved ? data : (data?.team || data));
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const team = pick(await load(slug));
 
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-const TeamBySlug = async ({ params }) => {
+const TeamBySlug = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const team = pick(await load(slug));
 

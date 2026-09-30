@@ -43,7 +43,8 @@ const Header = ({
   const router = useRouter();
   const dropdownRef = useRef(null);
   const {
-    data: session
+    data: session,
+    status
   } = useSession();
   const {
     title: currentSection,
@@ -245,8 +246,11 @@ const Header = ({
           onUnreadChange={setNotifCount}
         />}
 
-        {/* Signed out: offer the way in rather than a placeholder identity. */}
-        {!session ? <Link href="/login" className={`btn redBTN ${styles.headerLoginBtn}`}>
+        {/* Signed out: offer the way in rather than a placeholder identity.
+            Decided on STATUS, like the sidebar: `data` is empty while the
+            session is still being asked for, and branching on it showed a
+            signed-in person "Log in" on every load (found 30 September). */}
+        {status === 'loading' ? null : status !== 'authenticated' ? <Link href="/login" className={`btn redBTN ${styles.headerLoginBtn}`}>
             {tt("ui.log.f7c4", "Log in")}
           </Link> : <div className={styles.userDetails} ref={dropdownRef}>
           <div className={styles.userInfo}>

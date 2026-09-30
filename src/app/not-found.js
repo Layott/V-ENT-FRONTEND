@@ -15,8 +15,8 @@ export const metadata = {
   robots: { index: false },
 };
 
-const NotFound = () => {
-  const t = getT();
+const NotFound = async () => {
+  const t = await getT();
   return (
   <main className={styles.wrap}>
     <div className={styles.card}>

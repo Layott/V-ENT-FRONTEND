@@ -16,7 +16,7 @@
 // is standing up, holding a phone in one hand and a box in the other, so the
 // control is one big button and a tracking box that can be left empty.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, use } from 'react';
 import { plural } from '@/lib/plural';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -37,7 +37,8 @@ const EMPTY_PRODUCT = {
   name: '', description: '', price: '', stock: '', variants: '', can_deliver: false,
 };
 
-const StallPage = ({ params }) => {
+const StallPage = props => {
+  const params = use(props.params);
   const tt = useT();
   const router = useRouter();
   const slug = decodeURIComponent(params.slug);

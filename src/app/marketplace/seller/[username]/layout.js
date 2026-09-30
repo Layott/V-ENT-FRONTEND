@@ -8,7 +8,8 @@ import { buildMetadata, clamp, fetchForMetadata } from '@/lib/seo';
 // a noindex page with no claims on it. That happens because the switch is off
 // rather than because somebody remembered to add a route to a list.
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const username = decodeURIComponent(params.username);
   const data = await fetchForMetadata(
     `/marketplace/sellers/${encodeURIComponent(username)}/`);

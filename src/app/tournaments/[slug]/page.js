@@ -21,14 +21,16 @@ export const revalidate = 900;
 const load = (slug) =>
   fetchRecordForMetadata(`/tournament/view-tournament/${encodeURIComponent(slug)}/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   // Shared with the short-link route, so both addresses describe the same
   // tournament the same way.
   return tournamentMetadata(await load(slug), slug);
 }
 
-const TournamentBySlug = async ({ params }) => {
+const TournamentBySlug = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const t = await load(slug);
 

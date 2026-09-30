@@ -14,12 +14,13 @@ export async function generateMetadata() {
     description: 'A room where people read the same comic at the same time.',
     path: '/anime/room',
     noindex: true,
-    locale: currentLocale(),
+    locale: await currentLocale(),
   });
 }
 
-const RoomPage = ({ params }) => (
-  <RoomClient roomToken={decodeURIComponent(params.token)} />
-);
+const RoomPage = async props => {
+  const params = await props.params;
+  return (<RoomClient roomToken={decodeURIComponent(params.token)} />);
+};
 
 export default RoomPage;

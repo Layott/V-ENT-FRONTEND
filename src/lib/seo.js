@@ -45,9 +45,9 @@ export const LOCALES = [
  * Set by middleware on a header, because a server component has no other way to
  * know: the prefix has already been rewritten away by the time the route runs.
  */
-export function currentLocale() {
+export async function currentLocale() {
   try {
-    const value = headers().get(LOCALE_HEADER);
+    const value = (await headers()).get(LOCALE_HEADER);
     return LOCALE_CODES.includes(value) ? value : 'en';
   } catch {
     // headers() throws when called outside a request - during a static build,
@@ -182,7 +182,7 @@ function imageType(url) {
   return 'image/jpeg';
 }
 
-export function buildMetadata({
+export async function buildMetadata({
   title,
   description,
   path = '/',
@@ -193,7 +193,7 @@ export function buildMetadata({
   keywords,
   locale,
 }) {
-  const lang = locale || currentLocale();
+  const lang = locale || await currentLocale();
   const url = absolute(withLocale(path, lang));
   const desc = clamp(description || SITE.description);
   const images = [ogImage(image, title)];

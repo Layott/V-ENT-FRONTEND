@@ -20,9 +20,10 @@ export const revalidate = 900;
 
 const load = (slug) => fetchRecordForMetadata(`/anime/chapters/${encodeURIComponent(slug)}/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const chapter = await load(slug);
 
   if (chapter?.__failed) return unavailableMetadata(slug, `/anime/read/${slug}`);
@@ -47,7 +48,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-const ChapterPage = async ({ params }) => {
+const ChapterPage = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const chapter = await load(slug);
 

@@ -10,7 +10,8 @@ import { buildMetadata, clamp, fetchForMetadata } from '@/lib/seo';
 
 export const revalidate = 900;
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const data = await fetchForMetadata(
     `/event/view-event/${encodeURIComponent(slug)}/`);

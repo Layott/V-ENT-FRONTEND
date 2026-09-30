@@ -37,7 +37,8 @@ const MobileHeader = ({
   const pathname = usePathname();
   const router = useRouter();
   const {
-    data: session
+    data: session,
+    status
   } = useSession();
   const sessionToken = session?.user?.sessionToken;
   const dropdownRef = useRef(null);
@@ -150,7 +151,7 @@ const MobileHeader = ({
 
         <div className={styles.leftHeaderContainer}>
           <div className={styles.logoContainer}>
-              <Link className={styles.logoLink} href={session ? '/home' : '/'}>
+              <Link className={styles.logoLink} href={status === 'authenticated' ? '/home' : '/'}>
                 <div className={styles.innerLogoContainer}>
                   <Image src={logoRed} alt="V-ENT" className={styles.logo} />
                 </div>

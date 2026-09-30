@@ -4,7 +4,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // Personal, or behind a login. Titled so the browser tab is not blank, and
 // noindex because it is of no use in a search result.
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return buildMetadata({
     title: privateTitle('partners', locale),
     noindex: true,

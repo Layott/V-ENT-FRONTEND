@@ -15,9 +15,10 @@ export const revalidate = 900;
 
 const load = (slug) => fetchRecordForMetadata(`/anime/battles/${encodeURIComponent(slug)}/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const battle = await load(slug);
 
   if (battle?.__failed) return unavailableMetadata(slug, `/anime/battles/${slug}`);
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-const BattlePage = async ({ params }) => {
+const BattlePage = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const battle = await load(slug);
   return (

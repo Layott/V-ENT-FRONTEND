@@ -10,7 +10,8 @@ import StallBySlugClient from './StallBySlugClient';
 
 export const revalidate = 900;
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const stall = decodeURIComponent(params.stall);
   const path = `/events/${slug}/stall/${stall}`;
@@ -47,7 +48,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-export default function StallBySlugPage({ params }) {
+export default async function StallBySlugPage(props) {
+  const params = await props.params;
   return (
     <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
       <StallBySlugClient

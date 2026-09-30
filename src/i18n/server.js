@@ -24,9 +24,9 @@ import { dictionaries } from './dictionaries';
 
 const LOCALE_HEADER = 'x-vent-locale';
 
-export function serverLocale() {
+export async function serverLocale() {
   try {
-    const value = headers().get(LOCALE_HEADER);
+    const value = (await headers()).get(LOCALE_HEADER);
     return value && dictionaries[value] ? value : 'en';
   } catch {
     // headers() throws outside a request - a static build, for instance -
@@ -35,9 +35,9 @@ export function serverLocale() {
   }
 }
 
-/** `const t = getT()` in a server component, then `t('key', 'English')`. */
-export function getT() {
-  const table = dictionaries[serverLocale()] || dictionaries.en;
+/** `const t = await getT()` in a server component, then `t('key', 'English')`. */
+export async function getT() {
+  const table = dictionaries[await serverLocale()] || dictionaries.en;
   return (key, fallback) => table[key] ?? dictionaries.en[key] ?? fallback ?? key;
 }
 

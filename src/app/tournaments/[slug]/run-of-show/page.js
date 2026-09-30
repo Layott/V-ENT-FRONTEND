@@ -16,7 +16,8 @@ const load = (slug) => fetchForMetadata(
 
 const sheetOf = (data) => data?.sheet || null;
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const sheet = sheetOf(await load(slug));
   if (!sheet || sheet.visibility !== 'public') {
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-const TournamentRunOfShow = async ({ params }) => {
+const TournamentRunOfShow = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const sheet = sheetOf(await load(slug));
 

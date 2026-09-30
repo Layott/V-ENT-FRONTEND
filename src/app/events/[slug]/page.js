@@ -16,14 +16,16 @@ const load = (slug) => fetchRecordForMetadata(`/event/view-event/${encodeURIComp
 
 const pick = (data) => (data?.__moved ? data : (data?.event || data));
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   // One builder, shared with the short-link route, so a second address for this
   // event describes it identically. See `eventMetadata` for why.
   return eventMetadata(pick(await load(slug)), slug);
 }
 
-const EventBySlug = async ({ params }) => {
+const EventBySlug = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const raw = await load(slug);
   const e = pick(raw);

@@ -10,7 +10,7 @@ import { sectionCopy } from '@/lib/seoCopy';
 // built by buildMetadata; this was one English const for every reader
 // (inbox 375).
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return buildMetadata({ ...sectionCopy('teams/team-profile', locale), path: '/teams/team-profile', locale });
 }
 

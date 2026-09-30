@@ -13,7 +13,9 @@
 // the same list here. Two copies is how a form ends up offering a choice the
 // database refuses.
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useBotChallenge } from '@/lib/botChallenge';
+import BotTrap from '@/components/bot-trap/BotTrap';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -42,6 +44,8 @@ function FeedbackContent() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const { take: takeChallenge } = useBotChallenge();
+  const trapRef = useRef(null);
 
   // Where they came from, sent with the report. It is worth more than most of
   // the message: "the button does nothing" cannot be acted on until somebody
@@ -77,7 +81,7 @@ function FeedbackContent() {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ area, kind, message, email, page }),
+        body: JSON.stringify({ area, kind, message, email, page, challenge: await takeChallenge(), website: trapRef.current?.value || '' }),
       });
       const body = await res.json();
       if (!res.ok || body.status !== 'success') {
@@ -131,6 +135,7 @@ function FeedbackContent() {
             </section>
           ) : (
             <form className={styles.form} onSubmit={send}>
+              <BotTrap inputRef={trapRef} />
 
               {/* Chips rather than two native dropdowns.
                   The site picks with filled chips everywhere else, a chip shows

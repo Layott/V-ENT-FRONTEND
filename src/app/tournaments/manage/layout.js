@@ -11,7 +11,7 @@ import { privateTitle } from '@/lib/seoCopy';
 export async function generateMetadata() {
   // Titled in the reader's language: this said 'Manage' or 'Register' in
   // English to everybody (walk, 29 September 2026).
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return {
     title: privateTitle('manage', locale),
     robots: { index: false, follow: false },

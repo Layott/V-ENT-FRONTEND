@@ -4,7 +4,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // An order: what somebody bought, from whom, for how much. Personal by
 // definition, so noindex, and in the robots disallow list as well.
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return buildMetadata({
     title: privateTitle('marketplace-purchase', locale),
     noindex: true,

@@ -6,7 +6,8 @@
 // Jurisdiction]" in the section about which country's law applies. The PDF is
 // kept only as a redirect, because the signup page has linked to it.
 
-import { getT } from '@/i18n/server';
+import Link from 'next/link';
+import { getT, serverLocale } from '@/i18n/server';
 import { TERMS_KEYS, SECTIONS } from './termsCopy';
 
 const containerStyle = {
@@ -86,14 +87,16 @@ const homeLinkStyle = {
   textDecoration: 'none',
 };
 
-export default function TermsOfUse() {
-  const t = getT();
+export default async function TermsOfUse() {
+  const t = await getT();
+  const locale = await serverLocale();
   const k = (key) => t(`terms.${TERMS_KEYS[key][0]}`, TERMS_KEYS[key][1]);
 
   return (
     <div style={containerStyle}>
       <div style={innerStyle}>
-        <a href="/" style={homeLinkStyle}>&larr; {k('back')}</a>
+        {/* Home in the reader's own language, through the router. */}
+        <Link href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>&larr; {k('back')}</Link>
         <h1 style={headingStyle}>{k('title')}</h1>
         <p style={subStyle}>{k('updated')}</p>
 

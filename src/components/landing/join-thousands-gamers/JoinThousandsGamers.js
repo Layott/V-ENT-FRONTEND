@@ -6,7 +6,9 @@ import profileStyles from '@/styles/profile/profile-page.module.css';
 import landingStyles from '@/styles/landing/landing.module.css';
 import styles from './join-thousands-gamers.module.css';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useBotChallenge } from '@/lib/botChallenge';
+import BotTrap from '@/components/bot-trap/BotTrap';
 import Link from 'next/link';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -18,6 +20,8 @@ const JoinThousandsGamers = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
   const [loading, setLoading] = useState(false); // Add loading state
+  const { take: takeChallenge, prime: primeChallenge } = useBotChallenge({ eager: false });
+  const trapRef = useRef(null);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -34,7 +38,7 @@ const JoinThousandsGamers = () => {
     }
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/add-email-to-waitlist/`, {
-        email
+        email, challenge: await takeChallenge(), website: trapRef.current?.value || ''
       });
       setSnackbarMessage(apiMessage(tt, response.data, "api.successfullyJoinedTheWaitlist", "Successfully joined the waitlist!"));
       setSnackbarType('success');
@@ -69,9 +73,10 @@ const JoinThousandsGamers = () => {
               </div>
               <div className={styles.joinThousandsGamersInputContainer}>
                 <form onSubmit={handleSubmit} className={styles.formContainer}>
+                  <BotTrap inputRef={trapRef} />
                   <div className={styles.inputGroup}>
                     <label htmlFor="">{tt("ui.email.address.852c", "Email Address:")}</label>
-                    <input type="text" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={email} onChange={e => setEmail(e.target.value)} />
+                    <input type="text" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={email} onFocus={primeChallenge} onChange={e => setEmail(e.target.value)} />
                   </div>
                   <Link href={'/signup'} className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}>
                     {tt("ui.signup.894b", "Signup")}

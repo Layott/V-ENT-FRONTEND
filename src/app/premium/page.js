@@ -34,7 +34,7 @@ const priceSentence = (offer) => {
 };
 
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const offer = await load();
 
   const features = (offer?.features || []).map((f) => f.name).slice(0, 3);

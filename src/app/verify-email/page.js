@@ -9,6 +9,7 @@ import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { readSignupRecord } from '@/lib/signupRecord';
 const VerifyEmail = () => {
   const tx = useTx();
   const tt = useT();
@@ -18,7 +19,7 @@ const VerifyEmail = () => {
   const [snackbarType, setSnackbarType] = useState('success');
   const handleResend = async () => {
     setResendLoading(true);
-    const storedSignupData = JSON.parse(localStorage.getItem('signupData'));
+    const storedSignupData = readSignupRecord();
     if (!storedSignupData) {
       setSnackbarMessage(tt("msg.noSignupDataFoundPlease", "No signup data found. Please try signing up again."));
       setSnackbarType('error');

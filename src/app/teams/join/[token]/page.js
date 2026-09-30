@@ -14,7 +14,7 @@
 // matters; this is the courtesy of not asking somebody to sign in and then
 // telling them the link was already used up.
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -169,10 +169,14 @@ const JoinByLink = ({ token }) => {
   );
 };
 
-const JoinPage = ({ params }) => (
-  <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
-    <JoinByLink token={decodeURIComponent(params.token)} />
-  </Suspense>
-);
+const JoinPage = props => {
+  const params = use(props.params);
+
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+      <JoinByLink token={decodeURIComponent(params.token)} />
+    </Suspense>
+  );
+};
 
 export default JoinPage;

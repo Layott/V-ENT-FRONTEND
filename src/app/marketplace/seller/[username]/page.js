@@ -7,7 +7,7 @@
 // stranger with coins, and a trust page nobody can reach from a search is a
 // trust page that does not do its job.
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 import Header from '@/components/header/Header';
@@ -21,7 +21,8 @@ import { call, fill, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from '../seller.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
-const SellerPage = ({ params }) => {
+const SellerPage = props => {
+  const params = use(props.params);
   const tt = useT();
   const username = decodeURIComponent(params.username);
   const open = useMarketplaceOpen();

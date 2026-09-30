@@ -21,9 +21,10 @@ export const revalidate = 900;
 
 const load = (slug) => fetchRecordForMetadata(`/anime/series/${encodeURIComponent(slug)}/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const series = await load(slug);
 
   if (series?.__failed) return unavailableMetadata(slug, `/anime/manga/${slug}`);
@@ -78,7 +79,8 @@ const comicLd = (series, path) => {
   };
 };
 
-const SeriesPage = async ({ params }) => {
+const SeriesPage = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const series = await load(slug);
   const path = `/anime/manga/${series?.slug || slug}`;
