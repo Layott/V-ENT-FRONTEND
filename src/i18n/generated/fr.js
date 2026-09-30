@@ -7621,6 +7621,8 @@ const table = {
  "premium.feature.advanced_streaming": "Données et graphiques en direct dans un flux",
  "premium.feature.financial_analytics": "Frais d’inscription, sponsoring et versements, detailles",
  "premium.feature.media_export": "Logos et fichiers média, en un seul lot",
+ "premium.feature.overlay_downloads": "Habillages, transitions et éléments téléchargés en images et en vidéos",
+ "overlay.downloadsPremium": "Télécharger les habillages en images et en vidéos fait partie de V-ENT premium.",
  "adminSettings.premiumTitle": "Premium",
  "adminSettings.premiumSub": "Le prix d'un abonnement premium V-ENT, en VENT COINS. Laissez un prix à 0 et le premium n'est pas en vente : la page le dit et enregistre qui l'a demandé.",
  "adminSettings.premiumMonthly": "Mensuel (VC)",
