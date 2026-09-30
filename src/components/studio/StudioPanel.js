@@ -31,6 +31,9 @@ import StudioMedia from './StudioMedia';
 import TextLayerEditor from './TextLayerEditor';
 import OverlayDesigner from './OverlayDesigner';
 import OverlayStyleEditor from './OverlayStyleEditor';
+import DesignedCanvas from './DesignedCanvas';
+import { groupKinds } from './studioGroups';
+import { fuzzyMatches } from '@/lib/fuzzy';
 import { isDesigned } from '@/lib/overlays';
 import styles from './studio-panel.module.css';
 import { formatDate, formatDateTime, formatTime } from '@/lib/datetime';
@@ -188,6 +191,14 @@ const fieldsFor = (tt) => ({
   // Edited in OverlayDesigner, not with these fields.
   starting_soon: [],
   transition: [],
+  brb: [],
+  stream_ended: [],
+  champions: [],
+  streamer_single: [],
+  streamer_double: [],
+  streamer_gameplay: [],
+  name_tag: [],
+  match_lower_third: [],
   break_screen: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
@@ -239,9 +250,17 @@ const labelsFor = (tt) => ({
   matchday: tt('studio.kind.matchday', 'Matchday'),
   analyst_desk: tt('studio.kind.analystDesk', 'Analyst desk'),
   play_area: tt('studio.kind.playArea', 'Play area'),
-  // The designed overlays (inbox 390), edited in OverlayDesigner.
+  // The designed overlays (inbox 390, 394), edited in OverlayDesigner.
   starting_soon: tt('studio.kind.startingSoon', 'Starting soon'),
   transition: tt('studio.kind.transition', 'Transition'),
+  brb: tt('studio.kind.brb', 'Be right back'),
+  stream_ended: tt('studio.kind.streamEnded', 'Stream ended'),
+  champions: tt('studio.kind.champions', 'Champions'),
+  streamer_single: tt('studio.kind.streamerSingle', 'Streamer frame'),
+  streamer_double: tt('studio.kind.streamerDouble', 'Two streamers frame'),
+  streamer_gameplay: tt('studio.kind.streamerGameplay', 'Streamer and game frame'),
+  name_tag: tt('studio.kind.nameTag', 'Name tag'),
+  match_lower_third: tt('studio.kind.matchLowerThird', 'Match lower third'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its
@@ -338,6 +357,10 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
   // Show only what is on air. Off by default, because setting a graphic up is
   // done before it goes on and the list would be empty exactly then.
   const [onlyOnAir, setOnlyOnAir] = useState(false);
+  // Which group of graphics is showing, and what was typed to find one
+  // (inbox 395: "properly structured and arranged ... easy to manoeuvre").
+  const [group, setGroup] = useState('all');
+  const [find, setFind] = useState('');
 
   // The preview loop. Same rule as the uploaded overlays: the feed keeps the
   // numbers live by itself, but the load-in only happens on a load, and how a
@@ -528,6 +551,12 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
 
   const onAirKinds = live ? Object.keys(live.urls || {}) : kinds;
   const orderedKinds = kinds.length ? kinds.filter((k) => onAirKinds.includes(k)) : onAirKinds;
+  // What the graphics list shows: on air or all, matching what was typed
+  // (forgiving, like every search on the site), in groups.
+  const shownKinds = orderedKinds.filter((k) => (!onlyOnAir || live?.elements?.[k]?.active)
+    && fuzzyMatches(find, LABELS[k] || k));
+  const allGroups = groupKinds(orderedKinds);
+  const shownGroups = groupKinds(shownKinds).filter((g) => group === 'all' || g.id === group);
 
   return (
     <div className={styles.wrap}>
@@ -636,11 +665,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
                             : { item_kind: which });
                         }}>
                   <option value="kind:">{tt('studio.layerEmpty', 'Nothing')}</option>
-                  <optgroup label={tt('studio.layerHouse', 'V-ENT graphics')}>
-                    {orderedKinds.map((k) => (
-                      <option key={k} value={`kind:${k}`}>{LABELS[k] || k}</option>
-                    ))}
-                  </optgroup>
+                  {/* The same groups as the graphics list (inbox 395). */}
+                  {allGroups.map((g) => (
+                    <optgroup key={g.id} label={tt(g.label[0], g.label[1])}>
+                      {g.kinds.map((k) => (
+                        <option key={k} value={`kind:${k}`}>{LABELS[k] || k}</option>
+                      ))}
+                    </optgroup>
+                  ))}
                   {(live.overlays || []).length > 0 && (
                     <optgroup label={tt('studio.layerUploaded', 'Your uploads')}>
                       {live.overlays.map((o) => (
@@ -669,6 +701,24 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             {tt('studio.urlsHint', 'One per graphic. Add each as a browser source at 1920 by 1080 with a transparent background. They show nothing until you put that graphic on air below.')}
           </p>
 
+          {/* Find one by name, forgivingly, then narrow by group. */}
+          <input type="search" className={`${styles.input} ${styles.finder}`} value={find}
+                 placeholder={tt('studio.find', 'Find a graphic')}
+                 aria-label={tt('studio.find', 'Find a graphic')}
+                 onChange={(e) => setFind(e.target.value)} />
+          <div className={styles.sections} role="group" aria-label={tt('studio.groups', 'Groups of graphics')}>
+            <button type="button" className={group === 'all' ? styles.sectionOn : styles.sectionOff}
+                    aria-pressed={group === 'all'} onClick={() => setGroup('all')}>
+              {tt('studio.group.all', 'Every group')}
+            </button>
+            {allGroups.map((g) => (
+              <button key={g.id} type="button" className={group === g.id ? styles.sectionOn : styles.sectionOff}
+                      aria-pressed={group === g.id} onClick={() => setGroup(g.id)}>
+                {tt(g.label[0], g.label[1])}
+              </button>
+            ))}
+          </div>
+
           {/* Everything, or only what a viewer is looking at right now. */}
           <div className={styles.sections}>
             <button type="button"
@@ -685,10 +735,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
             </button>
           </div>
 
+          {shownGroups.map((g) => (
+          <section key={g.id} className={styles.group} aria-labelledby={`studio-group-${g.id}`}>
+          <h3 id={`studio-group-${g.id}`} className={styles.groupHead}>
+            {tt(g.label[0], g.label[1])}
+            <span className={styles.groupCount}>{g.kinds.length}</span>
+          </h3>
           <div className={styles.elements}>
-            {orderedKinds
-              .filter((k) => !onlyOnAir || live.elements?.[k]?.active)
-              .map((elementKind) => {
+            {g.kinds.map((elementKind) => {
               const el = live.elements?.[elementKind] || {};
               const fields = FIELDS[elementKind] || [];
               const values = { ...(el.payload || {}), ...(draft[elementKind] || {}) };
@@ -700,6 +754,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               return (
                 <div key={elementKind} className={styles.element}>
                   <div className={styles.elHead}>
+                    {/* A designed overlay is recognised by its picture faster
+                        than by its name. */}
+                    {isDesigned(elementKind) && (
+                      <span className={styles.thumb} aria-hidden="true">
+                        <DesignedCanvas kind={elementKind} design={el.payload?.design} style={live.style}
+                                        assets={[]} still className={styles.thumbCanvas} />
+                      </span>
+                    )}
                     <span className={styles.elName}>
                       {LABELS[elementKind] || elementKind}
                     </span>
@@ -908,10 +970,14 @@ export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentR
               );
             })}
           </div>
+          </section>
+          ))}
 
-          {orderedKinds.filter((k) => !onlyOnAir || live.elements?.[k]?.active).length === 0 && (
+          {shownGroups.length === 0 && (
             <p className={styles.hint}>
-              {tt('studio.noneOnAir', 'Nothing is on air. Every graphic is still here under All graphics.')}
+              {find.trim()
+                ? tt('studio.noneFound', 'No graphic is called anything like that. Clear the search to see them all.')
+                : tt('studio.noneOnAir', 'Nothing is on air. Every graphic is still here under All graphics.')}
             </p>
           )}
           </>}

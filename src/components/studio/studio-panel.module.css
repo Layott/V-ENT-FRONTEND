@@ -407,3 +407,32 @@
     min-height: 44px;
   }
 }
+
+/* The graphics list in groups (inbox 395): a search, then one headed block
+   per group, each a step apart rather than divided by lines. */
+.finder { margin-bottom: 0.6rem; max-width: 420px; width: 100%; }
+.group { margin-top: 1.4rem; }
+.groupHead {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  font-size: 0.95rem;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.groupCount {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+}
+/* A designed overlay's picture in its row. */
+.thumb {
+  aspect-ratio: 16 / 9;
+  background: #2a2b30;
+  border-radius: 8px;
+  flex: 0 0 96px;
+  overflow: hidden;
+}
+.thumbCanvas { display: block; height: 100%; width: 100%; }
