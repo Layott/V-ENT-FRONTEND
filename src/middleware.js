@@ -57,6 +57,18 @@ export default async function middleware(req) {
   // so it stays on the English URL and indexes it. Auto-redirecting crawlers is
   // how a site ends up with one language indexed and the others invisible.
   const cookieLocale = (await cookies()).get(LOCALE_COOKIE)?.value;
+
+  // An embed is never redirected (inbox 360). It lives inside somebody else's
+  // page at the exact address they pasted; a redirect to /fr/embed/... is a
+  // second address the host did not choose, and a frame that moves is a frame
+  // that can be refused. The reader's language is applied in place instead.
+  if (path.startsWith('/embed/')) {
+    const wanted = hasPrefix ? locale : (LOCALE_CODES.includes(cookieLocale)
+      ? cookieLocale
+      : (preferredLocale(req.headers.get('accept-language')) || DEFAULT_LOCALE));
+    return withLocale(req, wanted, false);
+  }
+
   if (!hasPrefix && req.method === 'GET' && !path.startsWith('/api')) {
     const wanted = LOCALE_CODES.includes(cookieLocale)
       ? cookieLocale

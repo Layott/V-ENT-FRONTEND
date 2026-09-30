@@ -949,6 +949,31 @@ export const ViewEventContent = ({
     setBuyOpen(false);
     setBuyResult(null);
   };
+  // Arriving from an embed or the event's own website with a ticket type
+  // already chosen (inbox 360): `?tab=tickets&tier=<id>` opens that type's
+  // checkout once, after the types have loaded and the session has resolved,
+  // so a signed-in buyer gets the wallet and a stranger gets the guest form,
+  // exactly as if they had pressed Buy here.
+  const tierParam = searchParams.get('tier');
+  const tierOpened = useRef(false);
+  useEffect(() => {
+    if (!tierParam || tierOpened.current || sessionStatus === 'loading' || !tickets.length) return;
+    tierOpened.current = true;
+    const chosen = tickets.find(x => String(x.id) === String(tierParam));
+    if (!chosen || chosen.available <= 0 || countdown?.ended) return;
+    if (session?.user?.sessionToken) {
+      openBuy(chosen);
+      return;
+    }
+    setGuestTier(chosen);
+    // The form draws below the hero and the tab strip; a buyer who pressed
+    // Buy somewhere else should land on it, not on the top of the page.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById('guest-checkout')?.scrollIntoView({ block: 'start' });
+    }));
+    // openBuy is a plain function remade every render; the ref makes this run once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tierParam, sessionStatus, tickets, countdown?.ended, session?.user?.sessionToken]);
   useEffect(() => {
     setBuyPeople(prev => {
       const next = [...prev];
@@ -1339,6 +1364,7 @@ export const ViewEventContent = ({
                     label={tt('share.event', 'Share this event')}
                     shorten={isOrganizer ? shortenTicketLink : null}
                     onShare={() => track(id, 'share')}
+                    embed={event?.slug ? { kind: 'event', slug: event.slug } : null}
                   />
 
                   <p className={styles.sideLabel}>{tt("ui.organizer.debd", "Organizer")}</p>
@@ -1543,13 +1569,15 @@ export const ViewEventContent = ({
                     it would have gained never comes back, and the sale does not
                     happen either. Signing in is offered inside the form,
                     after it, for somebody who has a wallet. */}
-                {!session?.user?.sessionToken && guestTier && <GuestCheckout
-                  eventRef={id}
-                  tier={guestTier}
-                  code={unlockCode}
-                  onDone={() => setTierRefresh(n => n + 1)}
-                  onClose={() => setGuestTier(null)}
-                />}
+                {!session?.user?.sessionToken && guestTier && <div id="guest-checkout">
+                  <GuestCheckout
+                    eventRef={id}
+                    tier={guestTier}
+                    code={unlockCode}
+                    onDone={() => setTierRefresh(n => n + 1)}
+                    onClose={() => setGuestTier(null)}
+                  />
+                </div>}
 
                 <div className={styles.tierGrid}>
                   {tickets.map(t => <div key={t.id} className={`${styles.tierCard} ${styles['tierCard_' + t.tier]}`}>

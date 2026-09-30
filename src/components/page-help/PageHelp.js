@@ -35,6 +35,10 @@ const SILENT = [
   /^\/events\/scan/,
   /^\/studio(\/|$)/,
   /^\/s\/[^/]+$/,
+  // Inside somebody else's website, and the organiser's own (inbox 360):
+  // V-ENT's help button has no place on either.
+  /^\/embed\//,
+  /^\/events\/[^/]+\/site$/,
 ];
 
 export default function PageHelp() {

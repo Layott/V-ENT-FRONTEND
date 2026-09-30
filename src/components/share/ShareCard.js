@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IoClose, IoShareSocialOutline } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
+import { embedSnippets } from '@/lib/embed';
 import styles from './share-card.module.css';
 
 /** The canvas the code is drawn onto, and the PNG the download button saves. */
@@ -72,9 +73,14 @@ const QrCanvas = ({ value }) => {
  * It is a callback rather than this component knowing what it is sharing,
  * because it sits on events and on tournaments and only the caller knows which
  * thing is being counted.
+ *
+ * `embed`, when given as `{kind: 'event' | 'tournament', slug}`, adds the code
+ * that puts this on another website (inbox 360). Anybody may copy it, the way
+ * anybody may embed a public video: the frame shows what the page already
+ * shows, and everything that takes money happens on V-ENT.
  */
 export default function ShareCard({ url, title, text, label, compact = false,
-                                    shorten = null, onShare = null }) {
+                                    shorten = null, onShare = null, embed = null }) {
   const tt = useT();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -88,6 +94,8 @@ export default function ShareCard({ url, title, text, label, compact = false,
   const [shortError, setShortError] = useState('');
   const [useShort, setUseShort] = useState(false);
   const canvasWrapRef = useRef(null);
+  const [embedOpen, setEmbedOpen] = useState(false);
+  const [embedCopied, setEmbedCopied] = useState('');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -188,6 +196,20 @@ export default function ShareCard({ url, title, text, label, compact = false,
 
   const canNativeShare = typeof navigator !== 'undefined' && Boolean(navigator.share);
 
+  const snippets = embed?.slug && absolute
+    ? embedSnippets(embed.kind, embed.slug, new URL(absolute).origin)
+    : null;
+  const copyEmbed = async (which) => {
+    try {
+      await navigator.clipboard.writeText(snippets[which]);
+      setEmbedCopied(which);
+      setTimeout(() => setEmbedCopied(''), 2500);
+      onShare?.();
+    } catch {
+      // The code is on screen and selectable.
+    }
+  };
+
   return (
     <>
       {/* Compact draws the icon alone, so the name has to be carried by the
@@ -267,6 +289,33 @@ export default function ShareCard({ url, title, text, label, compact = false,
                 {tt('share.saveQr', 'Save the QR')}
               </button>
             </div>
+
+            {snippets && (
+              <div className={styles.embed}>
+                <button type="button" className={styles.linkBtn} aria-expanded={embedOpen}
+                        onClick={() => setEmbedOpen(v => !v)}>
+                  {tt('share.embed', 'Put this on a website')}
+                </button>
+                {embedOpen && (
+                  <>
+                    <p className={styles.hint}>
+                      {tt('share.embedHint', 'Paste this into the page. It sizes itself, and anything paid for happens on V-ENT.')}
+                    </p>
+                    <pre className={styles.code}><code>{snippets.script}</code></pre>
+                    <button type="button" className={styles.secondary} onClick={() => copyEmbed('script')}>
+                      {embedCopied === 'script' ? tt('share.embedCopied', 'Code copied') : tt('share.embedCopy', 'Copy the code')}
+                    </button>
+                    <p className={styles.hint}>
+                      {tt('share.embedFrame', 'For a site that does not allow scripts, a plain frame:')}
+                    </p>
+                    <pre className={styles.code}><code>{snippets.iframe}</code></pre>
+                    <button type="button" className={styles.secondary} onClick={() => copyEmbed('iframe')}>
+                      {embedCopied === 'iframe' ? tt('share.embedCopied', 'Code copied') : tt('share.embedCopyFrame', 'Copy the frame')}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

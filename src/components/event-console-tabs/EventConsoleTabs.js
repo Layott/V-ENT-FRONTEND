@@ -43,6 +43,9 @@ export const CONSOLE_TABS = [
   // tab is production; the console still answers to ?tab=overlays.
   ['vendors', 'console.tabVendors', 'Vendor pitches'],
   ['production', 'console.tabProduction', 'Production'],
+  // The event's own website, and the code that sells its tickets on
+  // somebody else's (inbox 360).
+  ['website', 'console.tabWebsite', 'Website and embeds'],
   ['team', 'console.tabTeam', 'Team'],
 ];
 

@@ -1,0 +1,90 @@
+/* Ticket rows for the embed and the event website. Filled rows and space,
+   no strokes. The buy control takes the page's accent, set as --accent and
+   --accent-ink by whoever draws the list. */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: var(--surface-2, #2a2b30);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.what { min-width: 0; }
+
+.name {
+  margin: 0;
+  font-weight: var(--fw-semi-bold);
+  color: var(--ink, #f2f2f3);
+  overflow-wrap: anywhere;
+}
+
+.meta,
+.price {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted, #a9aab0);
+}
+
+.price { color: var(--ink, #f2f2f3); }
+
+.buy {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 88px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  background-color: var(--accent, #D4AF37);
+  color: var(--accent-ink, #131316);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+
+.buy:hover { filter: brightness(1.08); }
+
+.buy:focus-visible,
+.retry:focus-visible { outline: 2px solid var(--ink, #f2f2f3); outline-offset: 2px; }
+
+.gone {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted, #a9aab0);
+}
+
+.note {
+  margin: 0;
+  color: var(--ink-muted, #a9aab0);
+}
+
+.note p { margin: 0 0 0.6rem; }
+
+.retry {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 10px;
+  background-color: var(--surface-3, #33343a);
+  color: var(--ink, #f2f2f3);
+  cursor: pointer;
+  font: inherit;
+}
+
+.skeleton {
+  height: 72px;
+  border-radius: 10px;
+  background-color: var(--surface-2, #2a2b30);
+}

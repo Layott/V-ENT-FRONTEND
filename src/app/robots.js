@@ -55,6 +55,8 @@ export default function robots() {
           '/disputes',        // somebody's own disputes, and the other side's
           '/organizations/invites',  // somebody's own invitations
           '/organizations/*/manage', // roles, invites, and the profile form
+          '/embed/',          // a frame for somebody else's website; the
+                              // event or tournament page is what ranks
           '/studio/',         // broadcast graphics: transparent pages meant
                               // for a browser source, meaningless in search
           '/run-of-show/',    // the share address for a run of show. The
@@ -86,7 +88,7 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
-                   '/events/check-in/', '/s/', '/studio/', '/production',
+                   '/events/check-in/', '/s/', '/studio/', '/embed/', '/production',
                    '/run-of-show/', '/logout', '/marketplace/create',
                    '/marketplace/dashboard', '/marketplace/purchase',
                    '/anime/read/', '/anime/room/', '/anime/my-list',

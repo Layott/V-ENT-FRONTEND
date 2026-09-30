@@ -425,6 +425,7 @@ export const ViewTournamentContent = ({
                     title={tournament?.name || tournament?.tournament_title}
                     text={tt('share.tournamentText', 'Brackets and entry for {name} on V-ENT.')
                       .replace('{name}', tournament?.name || tournament?.tournament_title || '')}
+                    embed={tournament?.slug ? { kind: 'tournament', slug: tournament.slug } : null}
                   />
                   {/* The run of show, when the organiser has published one.
                       The event page carries the same link decided the same

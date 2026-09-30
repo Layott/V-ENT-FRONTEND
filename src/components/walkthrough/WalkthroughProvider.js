@@ -39,7 +39,7 @@ const homeRoute = (pathname) =>
 const NEVER_ON = [
   '/login', '/signup', '/forgot-password', '/reset-password', '/reset-email',
   '/verify-email', '/email-verified', '/claim', '/onboarding', '/admin',
-  '/partners/authorize', '/wallet-topup-callback', '/auth/',
+  '/partners/authorize', '/wallet-topup-callback', '/auth/', '/embed/',
 ];
 
 const readLocal = () => {
