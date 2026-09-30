@@ -13,7 +13,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // In the reader's language: a const is evaluated once, with no request
 // and so no language, and every reader got the English title (inbox 375).
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return {
     title: privateTitle('anime/studio', locale),
     description: 'Upload chapters, decide what they cost, and write to the people reading them.',

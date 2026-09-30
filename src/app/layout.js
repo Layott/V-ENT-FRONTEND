@@ -46,12 +46,12 @@ const fraunces = Fraunces({
 // the English description. That is the one line of a search result anybody
 // reads, and the only reason locale URLs exist at all.
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const copy = sectionCopy('root', locale);
 
   return {
   metadataBase: new URL(SITE.url),
-  ...buildMetadata({ ...copy, path: '/', locale }),
+  ...(await buildMetadata({ ...copy, path: '/', locale })),
   // A per-page title becomes "Naija Free Fire Weekly | V-ENT" without every
   // page having to remember to append the brand.
   title: {
@@ -77,10 +77,10 @@ export const viewport = {
   themeColor: "#131316",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   // The page's own language, sent with the page so a French or Portuguese
   // reader never downloads the other two (inbox 309). English is bundled.
-  const locale = serverLocale();
+  const locale = await serverLocale();
   const initialTable = locale !== 'en' ? { code: locale, table: dictionaries[locale] } : null;
   return (
     <SessionWrapper initialTable={initialTable}>

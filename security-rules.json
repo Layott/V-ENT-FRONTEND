@@ -72,6 +72,16 @@
       "rule": "R81",
       "path": "src/app/api/auth/clear-session/route.js",
       "reason": "clearing a cookie is not a sign-in and cannot fail as one; there is nothing to log"
+    },
+    {
+      "rule": "R80",
+      "path": "GHSA-jmr9-qjv8-65gv",
+      "reason": "extract-zip has no patched release (advisory says patched in <0.0.0). It reaches this repo only as a devDependency, puppeteer-core > @puppeteer/browsers, whose job is downloading a browser; the walk scripts point executablePath at the installed Chrome and never call it, and nothing ships it to production (the standalone build has no puppeteer). Read by hand 30 Sept 2026; revisit when puppeteer drops it"
+    },
+    {
+      "rule": "R80",
+      "path": "GHSA-7pqw-9j4j-h8q3",
+      "reason": "extract-zip has no patched release (advisory says patched in <0.0.0). It reaches this repo only as a devDependency, puppeteer-core > @puppeteer/browsers, whose job is downloading a browser; the walk scripts point executablePath at the installed Chrome and never call it, and nothing ships it to production (the standalone build has no puppeteer). Read by hand 30 Sept 2026; revisit when puppeteer drops it"
     }
   ]
 }

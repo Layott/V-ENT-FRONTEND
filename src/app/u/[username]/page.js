@@ -22,7 +22,8 @@ export const revalidate = 900;
 const load = (username) =>
   fetchRecordForMetadata(`/user/${encodeURIComponent(username)}/profile/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const username = decodeURIComponent(params.username);
   const profile = await load(username);
 
@@ -52,7 +53,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-export default async function ProfileByUsername({ params }) {
+export default async function ProfileByUsername(props) {
+  const params = await props.params;
   const username = decodeURIComponent(params.username);
   const profile = await load(username);
 

@@ -53,11 +53,12 @@ const partsOf = (target) => target.split('?')[0].split('/').filter(Boolean);
 //
 // The canonical still points at the record's real address, so the two do not
 // compete in search.
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const token = String(params?.token || '').trim();
   const target = safeTarget(await resolve(token));
 
-  const generic = buildMetadata({
+  const generic = await buildMetadata({
     title: 'Short link',
     description: 'Opening a V-ENT link.',
     path: `/s/${token}`,
@@ -78,7 +79,8 @@ export async function generateMetadata({ params }) {
   return generic;
 }
 
-export default async function ShortLinkPage({ params }) {
+export default async function ShortLinkPage(props) {
+  const params = await props.params;
   const token = String(params?.token || '').trim();
   const target = safeTarget(await resolve(token));
   if (target) redirect(target);

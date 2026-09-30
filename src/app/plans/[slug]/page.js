@@ -40,9 +40,10 @@ const priceSentence = (plan) => {
   return `${plan.price_vc} VENT COINS ${per}, which is ${ngn} NGN.`;
 };
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  const locale = currentLocale();
+  const locale = await currentLocale();
   const plan = await load(slug);
 
   if (plan?.__failed) return unavailableMetadata(slug, `/plans/${slug}`);
@@ -104,7 +105,8 @@ const planLd = (plan, path) => {
   };
 };
 
-const PlanBySlug = async ({ params }) => {
+const PlanBySlug = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const plan = await load(slug);
 

@@ -5,7 +5,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // noindex because it is of no use in a search result. It is in the robots
 // disallow list for the same reason.
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return buildMetadata({
     title: privateTitle('marketplace-dashboard', locale),
     noindex: true,

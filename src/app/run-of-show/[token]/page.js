@@ -19,7 +19,8 @@ export function generateMetadata() {
   return privateMetadata('Run of show');
 }
 
-const SharedRunOfShow = async ({ params }) => {
+const SharedRunOfShow = async props => {
+  const params = await props.params;
   const token = decodeURIComponent(params.token);
   const data = await fetchForMetadata(
     `/run-of-show/${encodeURIComponent(token)}/`, { revalidate: 0 });

@@ -9,7 +9,8 @@
 // The English governs where a translation differs, and the page says so in
 // whichever language it is being read.
 
-import { getT } from '@/i18n/server';
+import Link from 'next/link';
+import { getT, serverLocale } from '@/i18n/server';
 import { POLICY_KEYS, SECTIONS } from './policyCopy';
 
 // No metadata here: the layout's generateMetadata gives the title and
@@ -93,14 +94,16 @@ const homeLinkStyle = {
   textDecoration: 'none',
 };
 
-export default function PrivacyPolicy() {
-  const t = getT();
+export default async function PrivacyPolicy() {
+  const t = await getT();
+  const locale = await serverLocale();
   const k = (key) => t(`policy.${POLICY_KEYS[key][0]}`, POLICY_KEYS[key][1]);
 
   return (
     <div style={containerStyle}>
       <div style={innerStyle}>
-        <a href="/" style={homeLinkStyle}>&larr; {k('back')}</a>
+        {/* Home in the reader's own language, through the router. */}
+        <Link href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>&larr; {k('back')}</Link>
         <h1 style={headingStyle}>{k('title')}</h1>
         <p style={subStyle}>{k('updated')}</p>
 

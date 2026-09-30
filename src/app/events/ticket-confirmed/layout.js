@@ -10,7 +10,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // option, and this route was in it.
 export async function generateMetadata() {
   // In the reader's language; this said 'Ticket confirmed' to everybody.
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return {
     title: privateTitle('ticket-confirmed', locale),
     robots: { index: false, follow: false },

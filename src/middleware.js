@@ -56,7 +56,7 @@ export default async function middleware(req) {
   // A crawler is never redirected: it sends no cookie and no Accept-Language,
   // so it stays on the English URL and indexes it. Auto-redirecting crawlers is
   // how a site ends up with one language indexed and the others invisible.
-  const cookieLocale = cookies().get(LOCALE_COOKIE)?.value;
+  const cookieLocale = (await cookies()).get(LOCALE_COOKIE)?.value;
   if (!hasPrefix && req.method === 'GET' && !path.startsWith('/api')) {
     const wanted = LOCALE_CODES.includes(cookieLocale)
       ? cookieLocale
@@ -96,9 +96,9 @@ export default async function middleware(req) {
   const isPublicRoute = publicRoutes.some(route => path === route);
 
   const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  const sessionCookie = cookies().get("session")?.value;
+  const sessionCookie = (await cookies()).get("session")?.value;
   
-  const isLoggedOutCookie = cookies().get("isLoggedOut")?.value === "true";
+  const isLoggedOutCookie = (await cookies()).get("isLoggedOut")?.value === "true";
   
   if (isLoggedOutCookie) {
     const response = redirectTo(localePath('/login', locale), req);

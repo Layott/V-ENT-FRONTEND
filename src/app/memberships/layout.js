@@ -10,7 +10,7 @@ import { privateTitle } from '@/lib/seoCopy';
 // person who most needs to see it.
 
 export async function generateMetadata() {
-  const locale = currentLocale();
+  const locale = await currentLocale();
   return buildMetadata({
     title: privateTitle('memberships', locale),
     noindex: true,

@@ -37,7 +37,7 @@
 // draws is going out on air. A connection that drops keeps the last good frame
 // and retries quietly.
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, use } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './studio.module.css';
 import {
@@ -1374,7 +1374,8 @@ export function readAddress(parts) {
   return { token: '', kind: '', slug: null };
 }
 
-export default function StudioElement({ params }) {
+export default function StudioElement(props) {
+  const params = use(props.params);
   const { token, kind } = readAddress(params?.parts);
 
   const [feed, setFeed] = useState(null);

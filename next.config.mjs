@@ -30,8 +30,10 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:" + (isDev ? ' http://localhost:* http://127.0.0.1:*' : ''),
-  "media-src 'self' blob: https:",
+  // The API origin by name as well as https:, so a build pointed at a plain
+  // http API (a local production build) still shows its pictures.
+  `img-src 'self' data: blob: https: ${apiOrigin}${isDev ? ' http://localhost:* http://127.0.0.1:*' : ''}`.trim(),
+  `media-src 'self' blob: https: ${apiOrigin}`.trim(),
   "font-src 'self' data:",
   `connect-src 'self' ${apiOrigin}${isDev ? ' ws://localhost:* http://localhost:* http://127.0.0.1:*' : ''}`.trim(),
   `frame-src 'self' ${apiOrigin} https://www.youtube.com https://player.twitch.tv https://www.google.com`.trim(),
@@ -96,7 +98,6 @@ const nextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
   reactStrictMode: true,
-  swcMinify: true,
   // Emits .next/standalone with a self-contained server.js, which is what the
   // systemd unit on the VPS runs. Without it the box needs the whole node_modules
   // tree and `next start`.

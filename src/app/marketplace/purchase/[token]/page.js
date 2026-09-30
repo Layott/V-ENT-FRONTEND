@@ -13,7 +13,7 @@
 //   the SELLER refunds
 //   either side disputes, and then nothing moves until an admin decides
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/header/Header';
@@ -52,7 +52,8 @@ const STATUS_BODY = {
   disputed: ['mk.o.disputedBody', 'Nothing moves while it is here. Both sides will be asked.'],
 };
 
-const PurchasePage = ({ params }) => {
+const PurchasePage = props => {
+  const params = use(props.params);
   const tt = useT();
   const token_ = decodeURIComponent(params.token);
   const { data: session, status } = useSession();

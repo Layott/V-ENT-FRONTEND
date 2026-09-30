@@ -12,7 +12,7 @@
 // is the same rule as the compose box on the community feed: tell people what
 // they need before they spend effort, never after.
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { LuTicket } from 'react-icons/lu';
@@ -32,7 +32,8 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 // formatting, which is how two screens end up disagreeing about a time.
 const formatTime = value => (value ? formatDateTime(value) : '');
 
-export default function SelfCheckIn({ params }) {
+export default function SelfCheckIn(props) {
+  const params = use(props.params);
   const tt = useT();
   const code = decodeURIComponent(params.code || '').toUpperCase();
   const { data: session } = useSession();

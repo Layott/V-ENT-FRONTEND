@@ -22,7 +22,8 @@ export const revalidate = 300;
 const load = (slug) =>
   fetchForMetadata(`/marketplace/listings/${encodeURIComponent(slug)}/`);
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const data = await load(slug);
   const listing = data?.listing;
@@ -56,7 +57,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-const ListingPage = async ({ params }) => {
+const ListingPage = async props => {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const data = await load(slug);
 
