@@ -140,17 +140,43 @@ export async function prepare(template, params, assets = []) {
   };
   const pics = {};
   await Promise.all((template.pictures || []).map(async (key) => { pics[key] = await pictureFor(params[key]); }));
-  const family = await loadFont(params.font, fonts);
-  return { images: pics, family };
+  // Every typeface field of the design, loaded by its key: `font` is the
+  // primary face and `font2` the secondary one where a design has two.
+  const faces = {};
+  await Promise.all(template.fields.filter((f) => f.type === 'font')
+    .map(async (f) => { faces[f.key] = await loadFont(params[f.key], fonts); }));
+  return { images: pics, fonts: faces, family: faces.font || 'sans-serif' };
 }
 
-/** The design's saved settings over its defaults. */
-export function paramsFor(template, design) {
+/**
+ * What each field is: the value set on this overlay, else the broadcast's
+ * overlay style for the role the field follows, else the design's default.
+ *
+ * CEO, 30 September 2026 (inbox 393): "an overlay design template that will
+ * apply to all overlays, like primary fonts, secondary fonts, primary colors,
+ * secondary colors". So changing the style changes every overlay, except a
+ * field somebody deliberately changed on one overlay.
+ */
+export function paramsFor(template, design, style = {}) {
   const out = {};
-  for (const f of template.fields) out[f.key] = f.default;
+  for (const f of template.fields) {
+    const fromStyle = f.role ? style?.[f.role] : undefined;
+    out[f.key] = fromStyle !== undefined && fromStyle !== '' ? fromStyle : f.default;
+  }
   for (const [k, v] of Object.entries(design || {})) if (v !== undefined && v !== null) out[k] = v;
   return out;
 }
+
+/** The style roles, in the order the style editor shows them. */
+export const STYLE_ROLES = [
+  { role: 'primary', type: 'colour', label: ['overlay.style.primary', 'Primary colour'], fallback: '#EE1510' },
+  { role: 'secondary', type: 'colour', label: ['overlay.style.secondary', 'Secondary colour'], fallback: '#720202' },
+  { role: 'text', type: 'colour', label: ['overlay.style.text', 'Text colour'], fallback: '#FFFFFF' },
+  { role: 'font_primary', type: 'font', label: ['overlay.style.fontPrimary', 'Primary typeface (headlines)'], fallback: 'pixel' },
+  { role: 'font_secondary', type: 'font', label: ['overlay.style.fontSecondary', 'Secondary typeface (smaller words)'], fallback: 'pixel' },
+  { role: 'logo', type: 'picture', label: ['overlay.style.logo', 'Main logo'], fallback: 'default' },
+  { role: 'logo_secondary', type: 'picture', label: ['overlay.style.logoSecondary', 'Second logo'], fallback: 'none' },
+];
 
 // --------------------------------------------------------------- drawing
 

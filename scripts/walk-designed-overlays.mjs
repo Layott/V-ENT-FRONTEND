@@ -194,10 +194,37 @@ async function main() {
     const vid2 = await download(before, '.webm', 90000);
     note(Boolean(vid2), 'transition video downloaded', vid2 || '');
     note(await page.evaluate(() => /Transition Point \d/.test(document.body.innerText)), 'OBS stinger note shown');
-
-    // The browser sources, as OBS would load them.
+    // Read while the transition card is open, before the walk moves on.
     const urls = await page.evaluate(() => [...document.querySelectorAll('p')].map((p) => p.textContent)
       .filter((t) => /\/studio\//.test(t)));
+
+    // The overlay style (inbox 393): a primary colour set once in Look reaches
+    // every overlay field that follows it, live in the previews and on air
+    // after Save, while a field changed on one overlay (the dark corner above)
+    // keeps its own value.
+    await press(page, '^Close$');
+    note(await press(page, '^Look$'), 'Look section opens');
+    await page.waitForFunction(() => /Overlay style/i.test(document.body.innerText), { timeout: 30000 }).catch(() => {});
+    await wait(1500);
+    const styled = await page.evaluate(async () => {
+      const byLabel = (t) => [...document.querySelectorAll('label')].find((l) => l.textContent.trim().startsWith(t));
+      const box = byLabel('Primary colour')?.querySelectorAll('input')[1];
+      if (!box) return { ok: false };
+      // Green or a darker green, whichever is not saved, so Save has work.
+      const next = box.value.toUpperCase() === '#00A86B' ? '#10C070' : '#00A86B';
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(box, next);
+      box.dispatchEvent(new Event('input', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 400));
+      const c = document.querySelector('canvas[role=img]');
+      const px = c.getContext('2d').getImageData(1900, 1060, 1, 1).data;
+      return { ok: true, corner: [...px], green: px[1] > px[0] };
+    });
+    note(styled.ok && styled.green, 'style preview turned green at once', JSON.stringify(styled.corner || ''));
+    note(await press(page, '^Save$'), 'style saved');
+    await page.waitForFunction(() => /Every overlay that follows the style has changed/.test(document.body.innerText), { timeout: 30000 }).catch(() => {});
+    note(await page.evaluate(() => /Every overlay that follows the style has changed/.test(document.body.innerText)), 'style save confirmed');
+
+    // The browser sources, as OBS would load them.
     const find = (k) => (k === 'starting_soon' ? soonUrl : urls.find((u) => u.includes(`/${k}/`)));
     for (const [kind, at] of [['starting_soon', 2600], ['transition', 900]]) {
       const url = find(kind);
@@ -214,6 +241,16 @@ async function main() {
       await obs.screenshot({ path: path.join(OUT, `obs-${kind}.png`), omitBackground: true });
       note(Boolean(await obs.$('canvas')), `${kind} browser source draws`);
       if (kind === 'starting_soon' && LOGO) note(pictures.some((s) => s === 200 || s === 304), 'browser source loads the uploaded logo', pictures.join(','));
+      if (kind === 'starting_soon') {
+        // The bright corner follows the style's primary (green); the dark
+        // corner was changed on this overlay (blue) and must stay blue.
+        const corners = await obs.evaluate(() => {
+          const x = document.querySelector('canvas').getContext('2d');
+          return { bright: [...x.getImageData(1900, 1060, 1, 1).data], dark: [...x.getImageData(20, 20, 1, 1).data] };
+        });
+        note(corners.bright[1] > corners.bright[0] && corners.dark[2] > corners.dark[0],
+          'on air: style colour followed, own colour kept', JSON.stringify(corners));
+      }
       await obs.close();
     }
   } finally {

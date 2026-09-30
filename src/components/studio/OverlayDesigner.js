@@ -7,31 +7,32 @@
 // of the overlay or design to what they want or edit what shows where."
 //
 // Every change redraws the preview at once, from the same template the browser
-// source uses, so there is no round trip between typing and seeing. Nothing
-// reaches the air until Save. The downloads are made here, in the organiser's
-// browser: a PNG of the resting frame, and a WebM with a real alpha channel,
-// which is what OBS takes as a stinger transition.
+// source uses (inbox 392). Nothing reaches the air until Save. The downloads
+// are made here, in the organiser's browser: a PNG of the resting frame, and a
+// WebM with a real alpha channel, which OBS takes as a stinger transition.
+//
+// A field that follows the broadcast's overlay style (inbox 393) says so, and
+// once changed here it offers the way back: "Use the overlay style" drops this
+// overlay's own value, so the style reaches it again.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
-import { apiMessage } from '@/lib/apiMessage';
-import { localInputToISO, isoToLocalInput, formatNumber } from '@/lib/datetime';
-import DateField from '@/components/date-field/DateField';
+import { formatNumber } from '@/lib/datetime';
 import DesignedCanvas from './DesignedCanvas';
 import { DESIGNS } from '@/lib/overlays';
-import { FONTS, paramsFor, prepare, recordWebm, saveBlob, stillPng, timing } from '@/lib/overlays/engine';
+import { paramsFor, prepare, recordWebm, saveBlob, stillPng, timing } from '@/lib/overlays/engine';
+import { Field, FieldControl, useStudioLibrary } from './designFields';
 import panel from './studio-panel.module.css';
 import styles from './overlay-designer.module.css';
 
 // `mayDownload` is the one switch for the downloads. CEO, 30 September 2026
 // (inbox 391): downloading these will be a premium feature once the set-up is
 // done, so the gate goes in the caller, in one place, when premium is ready.
-export default function OverlayDesigner({ kind, element, assetsBase, token, name, onSave, onPlayOnAir, live, mayDownload = true }) {
+export default function OverlayDesigner({ kind, element, style, assetsBase, token, name, onSave, onPlayOnAir, live, mayDownload = true }) {
   const tt = useT();
   const template = DESIGNS[kind];
   const saved = element?.payload?.design || {};
   const [draft, setDraft] = useState(saved);
-  const [assets, setAssets] = useState([]);
   const [replay, setReplay] = useState(0);
   const [busy, setBusy] = useState('');
   const [progress, setProgress] = useState(0);
@@ -39,6 +40,7 @@ export default function OverlayDesigner({ kind, element, assetsBase, token, name
   const [error, setError] = useState('');
   const uploadFor = useRef('');
   const fileRef = useRef(null);
+  const { assets, upload, uploading, libraryError } = useStudioLibrary(assetsBase, token);
 
   // A save elsewhere (another operator, a second tab) lands here when nothing
   // has been typed; typed changes are never overwritten under somebody's hands.
@@ -46,49 +48,22 @@ export default function OverlayDesigner({ kind, element, assetsBase, token, name
   const dirty = JSON.stringify(draft) !== savedKey;
   useEffect(() => { if (!dirty) setDraft(JSON.parse(savedKey)); }, [savedKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (!token || !assetsBase) return undefined;
-    let gone = false;
-    fetch(assetsBase, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json()).then((body) => {
-        if (!gone && body?.status === 'success') setAssets(body.data?.assets || []);
-      }).catch(() => {});
-    return () => { gone = true; };
-  }, [assetsBase, token]);
-
-  const params = useMemo(() => (template ? paramsFor(template, draft) : {}), [template, draft]);
+  const params = useMemo(() => (template ? paramsFor(template, draft, style) : {}), [template, draft, style]);
   if (!template) return null;
-  const pictures = assets.filter((a) => a.kind === 'image');
-  const fonts = assets.filter((a) => a.kind === 'font');
   const set = (key, value) => setDraft((d) => ({ ...d, [key]: value }));
-  const say = ([key, fallback]) => tt(key, fallback);
+  const unset = (key) => setDraft((d) => { const next = { ...d }; delete next[key]; return next; });
   const { total, rest } = timing(template, params);
 
-  const upload = async (file) => {
+  const onFile = async (file) => {
     const key = uploadFor.current;
-    if (!file || !key) return;
-    setBusy('upload'); setError(''); setNote('');
-    try {
-      const form = new FormData();
-      form.append('file', file);
-      form.append('name', file.name.replace(/\.[^.]+$/, ''));
-      const res = await fetch(assetsBase, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
-      const body = await res.json().catch(() => ({}));
-      // The library answers with every asset; the new one is the newest picture.
-      const list = body?.data?.assets || [];
-      const added = list.filter((a) => a.kind === 'image').sort((x, y) => y.id - x.id)[0];
-      if (res.ok && body.status === 'success' && added) {
-        setAssets(list);
-        set(key, String(added.id));
-        setNote(tt('overlay.designer.uploaded', 'Uploaded. It is in the preview; press Save to put it on the overlay.'));
-      } else {
-        setError(apiMessage(tt, body, 'media.addFailed', 'That file was not added.'));
-      }
-    } catch (err) {
-      setError(apiMessage(tt, err, 'media.addFailed', 'That file was not added.'));
-    } finally {
-      setBusy('');
-      if (fileRef.current) fileRef.current.value = '';
+    setError(''); setNote('');
+    const { added, error: failed } = await upload(file);
+    if (fileRef.current) fileRef.current.value = '';
+    if (added && key) {
+      set(key, String(added.id));
+      setNote(tt('overlay.designer.uploaded', 'Uploaded. It is in the preview; press Save to put it on the overlay.'));
+    } else if (failed) {
+      setError(failed);
     }
   };
 
@@ -123,76 +98,28 @@ export default function OverlayDesigner({ kind, element, assetsBase, token, name
 
   const field = (f) => {
     const id = `ov-${kind}-${f.key}`;
-    const value = params[f.key];
-    if (f.type === 'toggle') {
-      return (
-        <label key={f.key} className={styles.toggle} htmlFor={id}>
-          <input id={id} type="checkbox" className={styles.check} checked={value !== false} onChange={(e) => set(f.key, e.target.checked)} />
-          <span>{say(f.label)}</span>
-        </label>
-      );
-    }
-    let control;
-    if (f.type === 'colour') {
-      control = (
-        <span className={styles.colourRow}>
-          <input id={id} type="color" className={styles.swatch} value={/^#[0-9a-f]{6}$/i.test(value) ? value : '#000000'}
-                 onChange={(e) => set(f.key, e.target.value.toUpperCase())} />
-          <input className={panel.input} value={value || ''} maxLength={7} aria-label={say(f.label)}
-                 onChange={(e) => set(f.key, e.target.value)} />
-        </span>
-      );
-    } else if (f.type === 'choice') {
-      control = (
-        <select id={id} className={panel.select} value={String(value)} onChange={(e) => set(f.key, e.target.value)}>
-          {f.choices.map(([v, label]) => <option key={v} value={v}>{say(label)}</option>)}
-        </select>
-      );
-    } else if (f.type === 'font') {
-      control = (
-        <select id={id} className={panel.select} value={String(value)} onChange={(e) => set(f.key, e.target.value)}>
-          {Object.entries(FONTS).map(([v, spec]) => <option key={v} value={v}>{spec.label}</option>)}
-          {fonts.map((a) => <option key={a.id} value={`asset:${a.id}`}>{a.name}</option>)}
-        </select>
-      );
-    } else if (f.type === 'picture') {
-      control = (
-        <span className={styles.pictureRow}>
-          <select id={id} className={panel.select} value={String(value)} onChange={(e) => set(f.key, e.target.value)}>
-            <option value="default">{tt('overlay.logoVent', 'V-ENT logo')}</option>
-            <option value="none">{tt('overlay.logoNone', 'No logo')}</option>
-            {pictures.map((a) => <option key={a.id} value={String(a.id)}>{a.name}</option>)}
-          </select>
-          <button type="button" className={panel.ghost} disabled={Boolean(busy)}
-                  onClick={() => { uploadFor.current = f.key; fileRef.current?.click(); }}>
-            {busy === 'upload' && uploadFor.current === f.key ? tt('overlay.uploading', 'Uploading…') : tt('overlay.upload', 'Upload')}
-          </button>
-        </span>
-      );
-    } else if (f.type === 'datetime') {
-      control = (
-        <DateField id={id} withTime value={isoToLocalInput(value) || ''}
-                   onChange={(e) => set(f.key, e.target.value ? localInputToISO(e.target.value) : '')} />
-      );
-    } else {
-      control = (
-        <input id={id} className={panel.input} value={value ?? ''} maxLength={60} onChange={(e) => set(f.key, e.target.value)} />
-      );
-    }
+    const label = tt(f.label[0], f.label[1]);
+    const own = Object.prototype.hasOwnProperty.call(draft, f.key);
+    const extra = f.role ? (own
+      ? <button type="button" className={styles.linkBtn} onClick={() => unset(f.key)}>
+          {tt('overlay.useStyle', 'Use the overlay style')}
+        </button>
+      : <span className={styles.fromStyle}>{tt('overlay.fromStyle', 'From the overlay style')}</span>) : null;
     return (
-      <label key={f.key} htmlFor={id}
-             className={`${panel.field} ${f.type === 'picture' || f.type === 'colour' ? styles.wide : ''}`}>
-        <span className={panel.fieldLabel}>{say(f.label)}</span>
-        {control}
-      </label>
+      <Field key={f.key} id={id} type={f.type} label={label} extra={extra}>
+        <FieldControl id={id} type={f.type} value={params[f.key]} label={label} choices={f.choices}
+                      assets={assets} uploading={uploading} libraryError={libraryError}
+                      onPickFile={() => { uploadFor.current = f.key; fileRef.current?.click(); }}
+                      onChange={(v) => set(f.key, v)} />
+      </Field>
     );
   };
 
   return (
     <div className={styles.designer}>
       <div className={styles.previewWrap}>
-        <DesignedCanvas kind={kind} design={draft} assets={assets} playKey={replay} className={styles.preview}
-                        title={tt('overlay.preview', 'Preview')} />
+        <DesignedCanvas kind={kind} design={draft} style={style} assets={assets} playKey={replay}
+                        className={styles.preview} title={tt('overlay.preview', 'Preview')} />
       </div>
       <div className={styles.previewBar}>
         <button type="button" className={panel.ghost} onClick={() => setReplay((n) => n + 1)}>
@@ -207,7 +134,7 @@ export default function OverlayDesigner({ kind, element, assetsBase, token, name
       </div>
 
       <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden
-             onChange={(e) => upload(e.target.files?.[0])} />
+             onChange={(e) => onFile(e.target.files?.[0])} />
 
       <div className={panel.fields}>{template.fields.map(field)}</div>
 

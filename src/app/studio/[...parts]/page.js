@@ -1531,7 +1531,7 @@ export default function StudioElement(props) {
     if (!show) return null;
     return (
       <main className={styles.designedStage}>
-        <DesignedCanvas kind={drawKind} design={element?.payload?.design}
+        <DesignedCanvas kind={drawKind} design={element?.payload?.design} style={feed.session?.style}
                         assets={feed.assets} playKey={element?.payload?.play || 0}
                         className={styles.designedCanvas} />
       </main>
