@@ -12,10 +12,9 @@
 import { getT } from '@/i18n/server';
 import { POLICY_KEYS, SECTIONS } from './policyCopy';
 
-export const metadata = {
-  title: 'Privacy Policy - V-ENT (Vermillion Encore)',
-  description: 'How V-ENT collects, uses, shares, and protects your data.',
-};
+// No metadata here: the layout's generateMetadata gives the title and
+// description in the reader's language, and a page's own const would override
+// it with English for everybody (inbox 375).
 
 const containerStyle = {
   minHeight: '100vh',

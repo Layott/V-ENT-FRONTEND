@@ -1,26 +1,18 @@
+import { buildMetadata, currentLocale } from '@/lib/seo';
+import { sectionCopy } from '@/lib/seoCopy';
 // The page itself is a client component and cannot export metadata, so it
 // lives here.
 //
 // A description that could describe any page ranks for nothing, so this one
 // says what is actually on this page. Every public route carries its own, per
 // the SEO rule in CLAUDE.md.
-export const metadata = {
-  title: 'Marketplace',
-  description: 'The V-ENT marketplace, where players buy and sell within the community.',
-  alternates: { canonical: 'https://v-ent.co/marketplace' },
-  openGraph: {
-    title: 'Marketplace',
-    description: 'The V-ENT marketplace, where players buy and sell within the community.',
-    url: 'https://v-ent.co/marketplace',
-    siteName: 'V-ENT',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Marketplace',
-    description: 'The V-ENT marketplace, where players buy and sell within the community.',
-  },
-};
+// In the reader's language, with the language alternates and share cards
+// built by buildMetadata; this was one English const for every reader
+// (inbox 375).
+export async function generateMetadata() {
+  const locale = currentLocale();
+  return buildMetadata({ ...sectionCopy('marketplace', locale), path: '/marketplace', locale });
+}
 
 export default function Layout({ children }) {
   return children;
