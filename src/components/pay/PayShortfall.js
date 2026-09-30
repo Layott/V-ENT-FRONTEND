@@ -33,6 +33,8 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './pay-shortfall.module.css';
+import CurrencyChoice from './CurrencyChoice';
+import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -137,6 +139,12 @@ export default function PayShortfall({
   const need = Math.max(0, Math.ceil(Number(needVc) || 0));
   const balance = methods ? Number(methods.balance_vc || 0) : 0;
   const short = Math.max(0, need - balance);
+  // Their own currency at the Flutterwave door (inbox 361): quoted for the
+  // exact naira the server will charge, which is the shortfall.
+  const flutterwaveOffered = Boolean(methods && (methods.providers || []).some(p => p.key === 'flutterwave'));
+  const quotes = useCurrencyQuotes(short * Number(methods?.ngn_per_coin || 1000), {
+    token, active: flutterwaveOffered && short > 0,
+  });
 
   // Nothing to do: they can already pay for it from the wallet.
   if (!token || need <= 0 || (methods && short <= 0)) return null;
@@ -175,11 +183,15 @@ export default function PayShortfall({
           // Always named: an unnamed request was taken as Paystack, which
           // production does not offer (CEO, 29 September 2026).
           provider,
+          ...(provider === 'flutterwave' ? quotes.choice : {}),
         }),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok || body.status !== 'success') {
         setProblem(apiMessage(tt, body, 'pay.failed', 'That payment did not go through.'));
+        // A price that went stale while they read it: fetch today's, so the
+        // next press charges what is on the screen.
+        if (QUOTE_CODES.includes(body?.code)) quotes.refresh();
         return;
       }
       if (body.data.paid) {
@@ -233,10 +245,15 @@ export default function PayShortfall({
       {/* Flutterwave beside Paystack (CEO, 29 September 2026): its own page
           with every method switched on in its dashboard. The main button when
           it is the only way to pay. */}
+      {has('flutterwave') && <CurrencyChoice quotes={quotes} />}
       {has('flutterwave') && <button type="button"
         className={onlyFlutterwave ? `${styles.pay} ${styles.payOnly}` : styles.payAlt} disabled={busy} onClick={() => press('flutterwave')}>
-        {tt('pay.withFlutterwave', 'Pay {amount} naira with Flutterwave')
-          .replace('{amount}', formatNumber(naira))}
+        {quotes.current && quotes.current.code !== 'NGN'
+          ? tt('pay.withFlutterwaveIn', 'Pay {amount} {code} with Flutterwave')
+            .replace('{amount}', formatNumber(Number(quotes.current.amount)))
+            .replace('{code}', quotes.current.code)
+          : tt('pay.withFlutterwave', 'Pay {amount} naira with Flutterwave')
+            .replace('{amount}', formatNumber(naira))}
         <span className={styles.payAltHint}>
           {tt('pay.flutterwaveMethods', 'Card, bank transfer, USSD, mobile money and more')}
         </span>
