@@ -27,7 +27,9 @@
 .bottomNavContainer {
   display: flex;
   align-items: center;
-  flex: 1 1 auto;
+  /* One share per item it shows, and the profile column one share, so all
+     six columns are the same width (CEO, 30 September 2026). */
+  flex: 4 1 0;
   min-width: 0;
   height: 60px;
   overflow: hidden;
@@ -37,17 +39,29 @@
   display: none;
 }
 
+.bottomNavSigned {
+  flex-grow: 5;
+}
+
 .profileContainerOuter {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 0 0 auto;
+  /* One of six equal columns, like the five before it, and the same 60px
+     tall as the list, so its picture and label land on the others' lines.
+     It was sized to its own content and stretched to the bar's 70px, so it
+     sat off the grid (CEO, 30 September 2026: "bottom right ... misaligned"). */
+  flex: 1 1 0;
   min-width: 0;
+  height: 60px;
+  justify-content: center;
 }
 
 .profileContainer {
-  height: 50px;
+  /* The full height of the bar, as every other item's link is, so the
+     picture and the label land where the icons and labels do. */
+  height: 100%;
   /* Was a hard 60px. It is one of six columns, so it takes a share like the
      rest rather than forcing the other five to fit around it. */
   width: 100%;
@@ -62,14 +76,23 @@
 }
 
 .profileImageContainer {
-  height: 30px;
-  width: 30px;
+  /* The same size as the icons beside it (1.35rem), so the picture and the
+     five icons sit on one line and the labels under them on another. */
+  height: 22px;
+  width: 22px;
   border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .profileImageContainer img {
-  height: 100%;
-  width: 100%;
+  /* The icons' drawn size, 22px, in pixels: a percentage and then 1.35rem
+     both resolved to 35px here and pushed the label below the others. */
+  height: 22px;
+  width: 22px;
+  /* Block, so the size holds even when the picture fails to load: a broken
+     inline image draws its alt text at its own size over the label. */
+  display: block;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -173,7 +196,9 @@
 /* The profile column matches the others rather than being a fixed 60px island
    beside them, so the six read as one row. */
 .profileContainer .username {
-  font-size: 0.62rem;
+  margin-top: 0;
+  /* The size every other label in the bar is drawn at (`.sidebarItem a`). */
+  font-size: 0.7rem;
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;

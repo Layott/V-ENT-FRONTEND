@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import logoRed from "@/images/logo_mark_red.svg";
 import { FiArrowLeft } from "react-icons/fi";
-import { MdKeyboardArrowRight, MdOutlineClose } from "react-icons/md";
+import { MdOutlineClose } from "react-icons/md";
 // import { FcSearch } from "react-icons/fc";
 import { LuSearch } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
@@ -16,13 +16,15 @@ import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import styles from './mobile-header.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 import MobileSidebar from '../mobile-sidebar/MobileSidebar';
-import { useT } from '@/i18n/LanguageProvider';
+import { useT, useTx } from '@/i18n/LanguageProvider';
 import { signOut, useSession } from "next-auth/react"; // Import signOut function from next-auth
+import { splitLocale } from '@/lib/locale';
 
 const MobileHeader = ({
   className = ''
 }) => {
   const tt = useT();
+  const tx = useTx();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -46,7 +48,9 @@ const MobileHeader = ({
     title: currentSection,
     showBackArrow,
     fallbackURL
-  } = breadCrumbTitles[pathname] || {
+  // By the path without its language: /fr/user-profile found nothing here,
+  // so every French and Portuguese page had a blank title (30 September 2026).
+  } = breadCrumbTitles[splitLocale(pathname).path] || {
     title: '',
     showBackArrow: false,
     fallbackURL: '/'
@@ -165,23 +169,14 @@ const MobileHeader = ({
                   
                   <FiArrowLeft className={styles.backArrowIcon} />
                 </span>}
-              <span className={styles.currentSection}>{currentSection}</span>
+              <span className={styles.currentSection}>{tx(currentSection)}</span>
             </p>
             
-            {pathname === '/user-profile' && <nav className={styles.breadcrumbNav}>
-                <Link href={'./'}>{tt("ui.home.70f8", "Home")}</Link>
-                <MdKeyboardArrowRight className={styles.arrowRightIcon} />
-                <Link href={'./user-profile'} className={styles.currentSectionLink}>
-                  {tt("ui.my.profile.9ba8", "My Profile")}
-                </Link>
-              </nav>}
-            {pathname === '/edit-user-profile' && <nav className={styles.breadcrumbNav}>
-                <Link href={'./'}>{tt("ui.home.70f8", "Home")}</Link>
-                <MdKeyboardArrowRight className={styles.arrowRightIcon} />
-                <Link href={'./edit-user-profile'} className={styles.currentSectionLink}>
-                  {tt("ui.edit.my.profile.a837", "Edit My Profile")}
-                </Link>
-              </nav>}
+            {/* The profile pages alone carried a "Home > My Profile" trail
+                here. On a phone it wrapped under the title into three cramped
+                lines, the title repeated in red above "Home" (CEO, 30
+                September 2026, with a screenshot). Every page shows its title
+                and nothing else in this bar; the back arrow is the way out. */}
           </div>
         </div>
 

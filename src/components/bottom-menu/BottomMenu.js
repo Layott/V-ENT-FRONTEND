@@ -114,7 +114,7 @@ const BottomMenu = ({
     await logOut();
   };
   return <div className={styles.bottomMenuContainer}>
-        <nav className={styles.bottomNavContainer}>
+        <nav className={signedIn ? `${styles.bottomNavContainer} ${styles.bottomNavSigned}` : styles.bottomNavContainer}>
             <ul className={styles.sidebarList}>
                 {/* Home is a member's dashboard and redirects a visitor to
                     sign in, so it is not a place to send one from the bar. */}
