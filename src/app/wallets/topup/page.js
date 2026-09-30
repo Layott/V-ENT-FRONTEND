@@ -15,6 +15,8 @@ import { formatNumber, ngnFromVc, vcFromNgn } from '@/components/wallet/walletHe
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import CurrencyChoice from '@/components/pay/CurrencyChoice';
+import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
 const QUICK_AMOUNTS_VC = [1000, 5000, 10000, 50000];
 const STEPS = [{
   n: 1,
@@ -118,6 +120,14 @@ const TopupPage = () => {
     : (paymentMethod ? providerName(tt, paymentMethod) : '');
   const numericVc = Number(vc) || 0;
   const ngn = ngnFromVc(numericVc);
+  // Their own currency through Flutterwave (inbox 361): quoted for this naira
+  // amount, shown before paying, charged exactly.
+  const quotes = useCurrencyQuotes(ngn, {
+    token: session?.user?.sessionToken || '',
+    active: paymentMethod === 'flutterwave' && ngn > 0,
+  });
+  const foreign = paymentMethod === 'flutterwave' && quotes.current && quotes.current.code !== 'NGN'
+    ? quotes.current : null;
   const handleQuickPick = val => {
     setVc(String(val));
     setError('');
@@ -180,6 +190,7 @@ const TopupPage = () => {
           amount_ngn: ngn,
           vc: numericVc,
           provider: paymentMethod,
+          ...(paymentMethod === 'flutterwave' ? quotes.choice : {}),
           // Where the gateway sends them back; that page verifies and credits.
           callback_url: `${window.location.origin}/wallet-topup-callback?redirect_to=/wallets`
         })
@@ -187,6 +198,7 @@ const TopupPage = () => {
       const data = await res.json();
       if (data?.status !== 'success') {
         setError(apiMessage(tt, data, "api.couldNotStartTheTop", "Could not start the top-up."));
+        if (QUOTE_CODES.includes(data?.code)) quotes.refresh();
         setSubmitting(false);
         return;
       }
@@ -359,10 +371,14 @@ const TopupPage = () => {
                     : null}
                 </button>)}
 
+                {paymentMethod === 'flutterwave' && <CurrencyChoice quotes={quotes} />}
+
                 <div className={styles.summaryList}>
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.pay.2d77", "You pay")}</span>
-                    <span className={styles.summaryVal}>₦{formatNumber(ngn)}</span>
+                    <span className={styles.summaryVal}>
+                      {foreign ? `${formatNumber(Number(foreign.amount))} ${foreign.code}` : `₦${formatNumber(ngn)}`}
+                    </span>
                   </div>
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryKey}>{tt("ui.receive.29cc", "You receive")}</span>
@@ -403,6 +419,10 @@ const TopupPage = () => {
                       disabled={submitting || !paymentMethod} aria-describedby="payHint">
                       {submitting
                         ? tx("Please wait…")
+                        : foreign
+                          // The amount actually charged, in the currency chosen.
+                          ? tt('pay.withFlutterwaveIn', 'Pay {amount} {code} with Flutterwave')
+                            .replace('{amount}', formatNumber(Number(foreign.amount))).replace('{code}', foreign.code)
                         : paymentMethod
                           ? tt('topup.payWith', 'Pay ₦{amount} with {name}')
                             .replace('{amount}', formatNumber(ngn)).replace('{name}', chosenLabel)

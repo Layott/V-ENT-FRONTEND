@@ -27,6 +27,8 @@ import { useCheckoutFields, CheckoutFieldList, quantityCeiling }
 import styles from './guest-checkout.module.css';
 import { refFor } from '@/lib/referral';
 import { formatNumber } from '@/lib/datetime';
+import CurrencyChoice from '@/components/pay/CurrencyChoice';
+import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -104,6 +106,11 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
 
   const priced = (quote && quote.tier_id === tier?.id
                   && quote.quantity === quantity) ? quote : null;
+  // A guest paying in their own currency (inbox 361): quoted for the total
+  // the server priced, shown before paying, charged exactly.
+  const quotes = useCurrencyQuotes(priced?.total_ngn || 0, {
+    active: paid && provider === 'flutterwave' && Number(priced?.total_ngn) > 0,
+  });
 
   const setPerson = (index, patch) => setPeople(prev => prev.map(
     (p, i) => (i === index ? { ...p, ...patch } : p)));
@@ -135,6 +142,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
           // matters most for crediting one.
           ref: refFor(eventRef),
           provider,
+          ...(provider === 'flutterwave' ? quotes.choice : {}),
         }),
       });
       const body = await res.json().catch(() => ({}));
@@ -150,6 +158,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
         return;
       }
       setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      if (QUOTE_CODES.includes(body?.code)) quotes.refresh();
     } catch {
       setError(tt('api.NETWORK_UNREACHABLE',
         'Could not reach the server. Check the connection and try again.'));
@@ -394,6 +403,8 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
           </button>)}
         </div>
       </div>}
+
+      {paid && provider === 'flutterwave' && <CurrencyChoice quotes={quotes} />}
 
       <button type="button" className={styles.buy} disabled={busy || !email.trim() || (paid && !provider)}
               onClick={submit}>
