@@ -20,6 +20,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { useSession } from "next-auth/react";
 import { logOut } from '@/lib/logout';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
+import { splitLocale } from '@/lib/locale';
 
 const Header = ({
   className = ''
@@ -50,7 +51,9 @@ const Header = ({
     title: currentSection,
     showBackArrow,
     fallbackURL
-  } = breadCrumbTitles[pathname] || {
+  // By the path without its language: /fr/user-profile found nothing here,
+  // so every French and Portuguese page had a blank title (30 September 2026).
+  } = breadCrumbTitles[splitLocale(pathname).path] || {
     title: '',
     showBackArrow: false,
     fallbackURL: '/'
@@ -198,7 +201,7 @@ const Header = ({
                 
                 <FiArrowLeft className={styles.backArrowIcon} />
               </span>}
-            <span className={styles.currentSection}>{currentSection}</span>
+            <span className={styles.currentSection}>{tx(currentSection)}</span>
           </p>
           
           {pathname === '/user-profile' && <nav className={styles.breadcrumbNav}>
