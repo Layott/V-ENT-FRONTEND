@@ -64,6 +64,7 @@ const TicketQr = ({
   size = 220,
   className
 }) => {
+  const tt = useT();
   const canvasRef = useRef(null);
   useEffect(() => {
     if (!canvasRef.current || !value) return;
@@ -89,7 +90,7 @@ const TicketQr = ({
       cancelled = true;
     };
   }, [value, size]);
-  return <canvas ref={canvasRef} className={className} width={size} height={size} aria-label={`Ticket ${value}`} />;
+  return <canvas ref={canvasRef} className={className} width={size} height={size} aria-label={tt('tickets.codeLabel', 'Ticket {code}').replace('{code}', value)} />;
 };
 
 // GET /event/my-tickets/ returns nested event/tier objects and the API's own

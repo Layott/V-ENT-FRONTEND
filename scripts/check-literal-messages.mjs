@@ -26,12 +26,19 @@ const SRC = path.join(HERE, '..', 'src');
 
 const PATTERN = /(\b[a-zA-Z_]+\.(?!(?:className|id|href|src|rel|target|type|style|key|download|title)\b)[a-zA-Z_]+ = |set[A-Z][a-zA-Z]*(?:Error|Msg|Message|Notice|Status|Toast)\(|showToast\(|toast\(|alert\()\s*(['"])[A-Z][a-z]+[ ,][^'"]{6,}\2/;
 
+// The same fault in a prop: `sub="Open to join now"`, a template placeholder
+// `What's on your mind, ${name}?`, an aria-label or alt in English. Found on
+// the full walk (inbox 376): 14 more. ComingSoon translates its own props by
+// their English text, so its lines are exempt.
+const PROPS = /\b(?:placeholder|title|alt|aria-label|label|sub|hint|text|description|emptyText|message|heading|subtitle|caption|tooltip)=(?:"[A-Z][a-z']+ [^"{}]{3,}"|\{`[A-Z][a-z']+ [^`]{3,}`\})/;
+
 export function literalMessages(source) {
   const out = [];
   source.split('\n').forEach((line, i) => {
     const t = line.trim();
     if (t.startsWith('//') || t.startsWith('*')) return;
     if (PATTERN.test(line)) out.push([i + 1, t]);
+    else if (PROPS.test(line) && !/<ComingSoon\b/.test(line)) out.push([i + 1, t]);
   });
   return out;
 }
@@ -60,6 +67,11 @@ if (isMain && process.argv.includes('--self-test')) {
     ['a class name', "el.className = 'Card header';", 0],
     ['a code', "setError('NETWORK')", 0],
     ['a comment', "// e.name = 'Event name is required.'", 0],
+    ['a sub prop', '<StatCard sub="Open to join now" />', 1],
+    ['a template placeholder', "<textarea placeholder={`What's on your mind, ${name}?`} />", 1],
+    ['an aria-label', '<button aria-label={`Remove ${g.name}`} />', 1],
+    ['a keyed prop', "<StatCard sub={tt('home.sub.x', 'Open to join now')} />", 0],
+    ['ComingSoon translates its own', '<ComingSoon title="Stream overlay" />', 0],
   ];
   let bad = 0;
   for (const [what, src, expected] of cases) {

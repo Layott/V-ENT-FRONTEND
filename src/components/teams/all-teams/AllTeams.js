@@ -228,7 +228,9 @@ const AllTeams = () => {
   return <div className={styles.allTeamsContainer}>
       <div className={styles.headerRow}>
         <div>
-          <h3 className={styles.pageTitle}>{tt("ui.teams.cbfd", "Teams")}</h3>
+          {/* The page's one h1: this was an h3, so the teams page had no
+              heading at all to a crawler or a screen reader. */}
+          <h1 className={styles.pageTitle}>{tt("ui.teams.cbfd", "Teams")}</h1>
           <p className={styles.pageSub}>{tt("ui.browse.join.manage.competitive.1fc5", "Browse, join and manage competitive squads.")}</p>
         </div>
         <div className={styles.headerActions}>
@@ -365,7 +367,7 @@ const AllTeams = () => {
                   {bannerUrl ? <Image src={mediaUrl(bannerUrl)} alt={team.name} fill style={{
               objectFit: 'cover'
             }} sizes="400px" /> : <div className={styles.placeholderBanner} />}
-                  {open && !owned && <span className={styles.openBadge}>{tt("ui.open.cf9b", "Open")}</span>}
+                  {open && !owned && <span className={styles.openBadge}>{tt('teams.openToJoin', 'Open to join')}</span>}
                   {owned && <span className={styles.ownedBadge}>{tt("ui.owner.89ff", "Owner")}</span>}
                 </div>
 

@@ -284,3 +284,13 @@
 .footerLink:hover {
   opacity: 1;
 }
+
+/* Every link down here is pressed with a thumb: 44px tall, the text itself
+   unchanged (phone pass, 30 September 2026: they were 15 to 19px). */
+.innerContactContainer a,
+.socialParagraph,
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

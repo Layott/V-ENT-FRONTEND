@@ -176,6 +176,23 @@ html {
   }
 }
 
+/* And every other control on a phone, not only the shared class. The full
+   walk on 30 September 2026 measured controls with no height of their own
+   at 16 to 42px on most pages: the settings tabs (35), the community tabs
+   (42), the list actions on my events (32), "see all" links on home (16),
+   the search chips (30). A stylesheet check cannot see a height nobody wrote,
+   so the floor is set here once. min-height does nothing to an inline link
+   inside a sentence, so prose keeps its line height; it reaches exactly the
+   links laid out as blocks and boxes, which are the ones pressed like buttons. */
+@media (max-width: 768px) {
+  button,
+  [role="button"],
+  select,
+  a[class] {
+    min-height: 44px;
+  }
+}
+
 /* Documented in CLAUDE.md as one of the three global button classes, alongside
    .btn and .redBTN, and never actually written. Three places used it, so three
    buttons - including Try again on the tournament wizard's error screen - were

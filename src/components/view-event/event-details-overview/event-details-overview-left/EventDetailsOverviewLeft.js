@@ -1,4 +1,7 @@
+'use client';
+
 import { mediaUrl } from '@/lib/mediaUrl';
+import { useT } from '@/i18n/LanguageProvider';
 import Image from "next/image";
 import organizer from "@/images/signed_in_user_small.webp"
 import ventLogo from '@/images/logo_mark_red.png';
@@ -45,6 +48,7 @@ const sponsors = [
 ];
 
 const EventDetailsOverviewLeft = ({ event }) => {
+  const tt = useT();
   // Format dates
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Date not set';
@@ -122,7 +126,7 @@ const EventDetailsOverviewLeft = ({ event }) => {
           <div className={overviewLtStyles.imageContainer}>
             <Image
               src={mediaUrl(event?.organizer?.profile_image || organizer)}
-              alt="Organizer Logo"
+              alt={tt('event.organiserLogoAlt', 'Organiser logo')}
             />
           </div>
 

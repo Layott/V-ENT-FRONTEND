@@ -305,6 +305,8 @@
   /* The mark is 25px tall and it is the way home from every page. The target
      around it is 44px; the mark itself is unchanged. */
   min-height: 44px;
+  /* And 44 wide: the flex row gave it 30 (phone pass, 30 September 2026). */
+  min-width: 44px;
   padding-right: 0.35rem;
 }
 

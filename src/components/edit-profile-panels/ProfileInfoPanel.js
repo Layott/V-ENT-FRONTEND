@@ -264,7 +264,7 @@ const ProfileInfoPanel = ({
         <div className={styles.chipRow}>
           {interests.map(chip => <span className={styles.chip} key={chip}>
               {chip}
-              <button type="button" className={styles.chipX} onClick={() => removeChip(chip)} aria-label={`Remove ${chip}`}>✕</button>
+              <button type="button" className={styles.chipX} onClick={() => removeChip(chip)} aria-label={tt('profile.removeNamed', 'Remove {name}').replace('{name}', chip)}>✕</button>
             </span>)}
         </div>
       </div>

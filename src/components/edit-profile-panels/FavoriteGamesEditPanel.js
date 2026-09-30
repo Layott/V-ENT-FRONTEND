@@ -142,7 +142,7 @@ const FavoriteGamesEditPanel = ({
                 {g.isMain && <span className={styles.mainBadge}>
                     <StarSvg /> {tt("ui.main.game.6260", "Main game")}
                   </span>}
-                <button type="button" className={styles.gameRemove} onClick={() => removeGame(g.id)} aria-label={`Remove ${g.name}`}>
+                <button type="button" className={styles.gameRemove} onClick={() => removeGame(g.id)} aria-label={tt('profile.removeNamed', 'Remove {name}').replace('{name}', g.name)}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
                 {gameCover(g) ? <img src={mediaUrl(gameCover(g))} alt={g.name} /> : <span className={styles.coverFallback}>{(g.name || '?').charAt(0)}</span>}

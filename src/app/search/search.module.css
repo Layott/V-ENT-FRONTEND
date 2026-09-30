@@ -198,6 +198,8 @@
 .tabBtn {
   display: inline-flex;
   align-items: center;
+  /* Was 30px tall on a phone (phone pass, 30 September 2026). */
+  min-height: 44px;
   gap: 0.4rem;
   background-color: var(--overlay-gray);
 
