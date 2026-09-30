@@ -23,6 +23,7 @@ import DateField from '@/components/date-field/DateField';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -216,7 +217,7 @@ const TournamentsContent = () => {
     if (tab === 'upcoming') list = list.filter(t => UPCOMING_STATUSES.includes(tournamentStatus(t)));else if (tab === 'live') list = list.filter(t => LIVE_STATUSES.includes(tournamentStatus(t)));else if (tab === 'completed') list = list.filter(t => COMPLETED_STATUSES.includes(tournamentStatus(t)));
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      list = list.filter(t => (t?.name || '').toLowerCase().includes(q) || (t?.game || '').toLowerCase().includes(q));
+      list = list.filter(t => fuzzyMatches(q, t?.name) || fuzzyMatches(q, t?.game));
     }
     if (game !== 'All Games') list = list.filter(t => t?.game === game);
     if (format !== 'All Formats') {

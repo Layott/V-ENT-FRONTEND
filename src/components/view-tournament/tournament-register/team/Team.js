@@ -13,6 +13,7 @@ import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamen
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 
 // Coerce a raw team payload into the shape this modal renders. Keeps the real
 // `id` so the downstream Payment step can send `team_id`.
@@ -74,7 +75,7 @@ const ChooseTeamModal = ({
   const filteredTeams = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return teams;
-    return teams.filter(team => team.name.toLowerCase().includes(q) || (team.game || '').toLowerCase().includes(q));
+    return teams.filter(team => fuzzyMatches(q, team.name) || fuzzyMatches(q, team.game));
   }, [teams, searchTerm]);
   const handleTeamSelect = team => setSelectedTeam(team);
   const handleProceed = () => {

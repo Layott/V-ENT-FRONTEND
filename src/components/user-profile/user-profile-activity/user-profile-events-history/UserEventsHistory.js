@@ -11,6 +11,7 @@ import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './user-events-history.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const UserEventsHistory = () => {
   const tt = useT();
   const {
@@ -43,7 +44,7 @@ const UserEventsHistory = () => {
     };
     fetchHistory();
   }, [session]);
-  const filtered = events.filter(e => !searchQuery.trim() || (e.name || e.event_name || '').toLowerCase().includes(searchQuery.toLowerCase()));
+  const filtered = events.filter(e => fuzzyMatches(searchQuery, e.name || e.event_name));
   const total = filtered.length;
   const indexOfFirst = (currentPage - 1) * rowsPerPage;
   const indexOfLast = indexOfFirst + rowsPerPage;

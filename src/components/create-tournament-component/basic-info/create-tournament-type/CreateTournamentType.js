@@ -10,6 +10,7 @@ import styles from './create-tournament-type.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const CreateTournamentType = ({
   formData = {},
   updateFormData
@@ -118,7 +119,7 @@ const CreateTournamentType = ({
       setFilteredEvents([]);
       return;
     }
-    const filtered = availableEvents.filter(event => event.name.toLowerCase().includes(eventSearchTerm.toLowerCase()));
+    const filtered = availableEvents.filter(event => fuzzyMatches(eventSearchTerm, event.name));
     setFilteredEvents(filtered);
   }, [eventSearchTerm, availableEvents]);
   const handleOptionClick = option => {

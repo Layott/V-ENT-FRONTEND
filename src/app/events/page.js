@@ -28,6 +28,7 @@ import DateField from '@/components/date-field/DateField';
 import Tag from '@/components/tag/Tag';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -231,7 +232,7 @@ const EventsListingContent = () => {
     // Location filter
     if (locationFilter) {
       const q = locationFilter.toLowerCase();
-      out = out.filter(e => (e.location || '').toLowerCase().includes(q));
+      out = out.filter(e => fuzzyMatches(q, e.location));
     }
 
     // Date range
@@ -262,7 +263,7 @@ const EventsListingContent = () => {
     // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      out = out.filter(e => (e.name || '').toLowerCase().includes(q) || (e.location || '').toLowerCase().includes(q) || (e.description || '').toLowerCase().includes(q));
+      out = out.filter(e => fuzzyMatches(q, e.name) || fuzzyMatches(q, e.location) || fuzzyMatches(q, e.description));
     }
     return out;
   }, [events, activeTab, typeFilter, locationFilter, priceFilter, dateFrom, dateTo, searchQuery]);

@@ -15,6 +15,7 @@ import { formatDate } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
+import { fuzzyMatches } from '@/lib/fuzzy';
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -120,7 +121,7 @@ function KycInner() {
         let list = data.data?.results || [];
         if (search) {
           const q = search.toLowerCase();
-          list = list.filter(k => (k.username || '').toLowerCase().includes(q) || (k.email || '').toLowerCase().includes(q));
+          list = list.filter(k => fuzzyMatches(q, k.username) || fuzzyMatches(q, k.email));
         }
         setSubmissions(list);
       } else setError(apiMessage(tt, data, "api.failedToLoad", "Failed to load."));

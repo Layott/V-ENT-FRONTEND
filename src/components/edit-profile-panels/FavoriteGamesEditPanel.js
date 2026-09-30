@@ -7,6 +7,7 @@ import shared from './editProfileShared.module.css';
 import styles from './FavoriteGamesEditPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const StarSvg = () => <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>;
@@ -70,7 +71,7 @@ const FavoriteGamesEditPanel = ({
   }, []);
   const filtered = useMemo(() => {
     if (!search) return games;
-    return games.filter(g => g.name.toLowerCase().includes(search.toLowerCase()));
+    return games.filter(g => fuzzyMatches(search, g.name));
   }, [games, search]);
   const setAsMain = id => {
     setGames(games.map(g => ({
@@ -116,7 +117,7 @@ const FavoriteGamesEditPanel = ({
       setSaving(false);
     }
   };
-  const filteredCatalog = catalog.filter(c => c.name.toLowerCase().includes(modalSearch.toLowerCase()));
+  const filteredCatalog = catalog.filter(c => fuzzyMatches(modalSearch, c.name));
   return <form className={shared.formStack} onSubmit={handleSubmit}>
       <div className={shared.card}>
         <div className={styles.gamesHead}>

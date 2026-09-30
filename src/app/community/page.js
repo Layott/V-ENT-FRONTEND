@@ -26,6 +26,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import ErrorState from '@/components/error-state/ErrorState';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const TABS = [{
   id: 'feed',
   label: 'Feed',
@@ -317,7 +318,7 @@ const CommunityInner = () => {
   const filteredPosts = useMemo(() => {
     const q = feedQuery.trim().toLowerCase();
     if (!q) return posts;
-    return posts.filter(p => (p.content || '').toLowerCase().includes(q) || (p.author?.username || '').toLowerCase().includes(q));
+    return posts.filter(p => fuzzyMatches(q, p.content) || fuzzyMatches(q, p.author?.username));
   }, [posts, feedQuery]);
 
   // ─── FORUMS ───
@@ -410,7 +411,7 @@ const CommunityInner = () => {
     let rows = clubs;
     if (clubScope === 'mine') rows = rows.filter(c => c.is_owner || c.is_joined);
     if (!q) return rows;
-    return rows.filter(c => (c.name || '').toLowerCase().includes(q) || (c.game || '').toLowerCase().includes(q));
+    return rows.filter(c => fuzzyMatches(q, c.name) || fuzzyMatches(q, c.game));
   }, [clubs, clubQuery, clubScope]);
   const myClubCount = useMemo(
     () => clubs.filter(c => c.is_owner || c.is_joined).length, [clubs]);
@@ -514,7 +515,7 @@ const CommunityInner = () => {
     if (!q) return dmThreads;
     return dmThreads.filter(t => {
       const other = otherOf(t);
-      return (other?.full_name || '').toLowerCase().includes(q) || (other?.username || '').toLowerCase().includes(q);
+      return fuzzyMatches(q, other?.full_name) || fuzzyMatches(q, other?.username);
     });
   }, [dmThreads, dmContactQuery]);
   const openDm = async convo => {

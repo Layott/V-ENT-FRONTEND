@@ -41,6 +41,7 @@ import { slotsText } from '@/lib/slots';
 import { plural } from '@/lib/plural';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { entryStatusLabel } from '@/lib/labels';
+import { fuzzyMatches } from '@/lib/fuzzy';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -858,7 +859,7 @@ const ParticipantsPanel = ({
   const filtered = normalized.filter(r => {
     if (!search.trim()) return true;
     const q = search.trim().toLowerCase();
-    return r.name.toLowerCase().includes(q) || r.captain.toLowerCase().includes(q) || r.region.toLowerCase().includes(q);
+    return fuzzyMatches(q, r.name) || fuzzyMatches(q, r.captain) || fuzzyMatches(q, r.region);
   });
   return <div>
       <div className={styles.partHeader}>

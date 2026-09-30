@@ -13,6 +13,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { adminToken } from '@/lib/adminToken'
+import { fuzzyMatches } from '@/lib/fuzzy';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -151,7 +152,7 @@ function DisputesInner() {
 
   // Client-side narrowing over the current page for the header search box.
   const q = search.trim().toLowerCase();
-  const visible = q ? disputes.filter(d => `${d.tournament_title || ''} ${d.raised_by || ''} ${d.description || ''}`.toLowerCase().includes(q)) : disputes;
+  const visible = q ? disputes.filter(d => fuzzyMatches(q, `${d.tournament_title || ''} ${d.raised_by || ''} ${d.description || ''}`)) : disputes;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />

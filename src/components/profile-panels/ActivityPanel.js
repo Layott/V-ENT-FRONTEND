@@ -8,6 +8,7 @@ import parentStyles from '@/app/user-profile/user-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const TOURNAMENT_STATUS = {
   upcoming: {
     cls: styles.sUpcoming,
@@ -251,9 +252,7 @@ const ActivityPanel = ({
     return data.filter(row => {
       if (statusFilter && row.status !== statusFilter) return false;
       if (search) {
-        const q = search.toLowerCase();
-        const hay = `${row.name || ''} ${row.game || ''} ${row.venue || ''}`.toLowerCase();
-        if (!hay.includes(q)) return false;
+        if (![row.name, row.game, row.venue].some(v => fuzzyMatches(search, v))) return false;
       }
       return true;
     });

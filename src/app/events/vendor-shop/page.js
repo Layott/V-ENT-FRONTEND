@@ -22,6 +22,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './vendor-shop.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 const VendorShopContent = ({
   slug: slugFromPath
@@ -178,7 +179,7 @@ const VendorShopContent = ({
     if (category) out = out.filter(v => v.category === category);
     if (search.trim()) {
       const q = search.toLowerCase();
-      out = out.filter(v => (v.name || '').toLowerCase().includes(q) || (v.category || '').toLowerCase().includes(q) || (v.description || '').toLowerCase().includes(q));
+      out = out.filter(v => fuzzyMatches(q, v.name) || fuzzyMatches(q, v.category) || fuzzyMatches(q, v.description));
     }
     return out;
   }, [vendors, category, search]);
