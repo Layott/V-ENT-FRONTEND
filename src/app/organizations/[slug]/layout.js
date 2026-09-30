@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import { breadcrumbLd, fetchRecordForMetadata, orgLd, orgMetadata } from '@/lib/seo';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/organizations/avalanche-gaming`: an organisation's public profile.
 //
@@ -21,7 +22,9 @@ const pick = (data) => (data?.__moved || data?.__failed ? data : (data?.organiza
 export async function generateMetadata(props) {
   const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  return orgMetadata(await load(slug), slug);
+  const raw = await load(slug);
+  await toSlugAddress(slug, pick(raw), '/organizations');
+  return orgMetadata(raw, slug);
 }
 
 export default async function Layout(props) {
@@ -29,6 +32,8 @@ export default async function Layout(props) {
   const slug = decodeURIComponent(params.slug);
   const org = pick(await load(slug));
   if (org?.__moved) redirect(org.__moved);
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, org, '/organizations');
   const path = `/organizations/${org?.slug || slug}`;
 
   return (

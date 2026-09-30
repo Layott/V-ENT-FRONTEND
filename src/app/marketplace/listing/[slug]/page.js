@@ -4,6 +4,7 @@ import JsonLd from '@/components/seo/JsonLd';
 import { absolute, breadcrumbLd, buildMetadata, clamp, fetchForMetadata, currentLocale } from '@/lib/seo';
 import ListingClient from './ListingClient';
 import { recordCopy } from '@/lib/seoRecordCopy';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/marketplace/listing/league-coaching-plat-and-below`.
 //
@@ -71,6 +72,8 @@ const ListingPage = async props => {
   if (data?.__moved) redirect(data.__moved);
 
   const listing = data?.listing;
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, listing, '/marketplace/listing', await props.searchParams);
   const path = `/marketplace/listing/${listing?.slug || slug}`;
 
   return (

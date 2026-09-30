@@ -8299,6 +8299,7 @@ const table = {
  "api.PAYMENT_REFUSED": "The payment could not be started. Nothing was charged. Try again, or choose another way to pay.",
  "api.SERVER_ERROR": "Something went wrong on our side. Nothing was changed. Try again in a moment.",
  "api.INVALID_INPUT": "Some of the details could not be read. Check the dates and numbers and try again.",
+ "share.teamCopied": "Team link copied",
  "home.day.0": "Sunday reset. Line up the week and pick your next tournament.",
  "home.day.1": "Mondays are for setting the pace. Pick a goal, chase it.",
  "home.day.2": "Tuesday grind. Small reps beat big talk.",

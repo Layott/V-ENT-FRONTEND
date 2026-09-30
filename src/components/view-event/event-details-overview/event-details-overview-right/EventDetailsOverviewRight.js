@@ -95,6 +95,7 @@ const EventDetailsOverviewRight = ({
       path: linkTo.event(event),
       title: event?.name,
       text: 'Event on V-ENT',
+      copied: tt('share.copied', 'Link copied'),
       notify: message => {
         setMessage(message);
         setSeverity('success');

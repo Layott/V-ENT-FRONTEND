@@ -24,6 +24,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
+import { linkTo } from '@/lib/share';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -544,9 +545,12 @@ const UserProfileContent = ({
   // window.location.href is /user-profile with nothing on it, so the button was
   // copying a link that showed the reader their own profile - or the login
   // screen. The link now names whose profile it is.
+  // By username, never the account number: linkTo.profile is the one builder
+  // (CEO, 30 September 2026: slugs everywhere, a shared team link showed /29).
   const handleShare = async () => {
-    const id = profileId || sessionUserId || profileData.user_id;
-    const link = id ? `${window.location.origin}/u/${id}` : window.location.href;
+    const link = profileData?.username
+      ? `${window.location.origin}${linkTo.profile(profileData)}`
+      : window.location.href;
     try {
       await navigator.clipboard.writeText(link);
       showToast(tt("msg.profileLinkCopied", "Profile link copied"));
