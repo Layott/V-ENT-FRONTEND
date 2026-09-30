@@ -45,6 +45,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import { formatDateTime } from '@/lib/datetime';
+import { entryStatusLabel } from '@/lib/labels';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -1144,7 +1145,7 @@ const ParticipantsPanel = ({
             <span className={styles.seedCell}>#{i + 1}</span>
             <span className={styles.partTeamName}>{p.participant?.name || '-'}</span>
             <span className={styles.partCaptain}>{p.type}</span>
-            <span className={`${styles.partStatusBadge} ${styles[`partStatus_${p.status}`] || ''}`}>{p.status}</span>
+            <span className={`${styles.partStatusBadge} ${styles[`partStatus_${p.status}`] || ''}`}>{entryStatusLabel(tt, p.status)}</span>
             <span className={styles.partCaptain}>{p.entry_fee_paid ? 'Paid' : tx("Not paid")}</span>
           </div>)}
       </div>

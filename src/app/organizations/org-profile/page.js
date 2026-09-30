@@ -29,6 +29,7 @@ import { sameUser, useViewer, usernameOf } from '@/lib/gating';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
 import PlanCard from '@/components/memberships/PlanCard';
+import { eventStatusLabel, eventTypeLabel, tournamentStatusLabel } from '@/lib/labels';
 // `needs` names the capability a tab depends on. Without it the screen said
 // "this organisation does not do events" in Key stats and "here are its
 // events" in the tab strip at the same time, which reads as a bug in the
@@ -699,7 +700,7 @@ const OrgProfileContent = ({
                         <td>{t.game}</td>
                         <td>
                           <span className={`${styles.statusPill} ${styles[`status_${t.status}`] || ''}`}>
-                            {(t.status || '').replace('_', ' ')}
+                            {tournamentStatusLabel(tt, t.status)}
                           </span>
                         </td>
                         <td>{(t.prize_pool ?? 0).toLocaleString()} VC</td>
@@ -730,11 +731,11 @@ const OrgProfileContent = ({
                   <tbody>
                     {events.map(e => <tr key={e.id}>
                         <td>{e.name}</td>
-                        <td>{e.event_type}</td>
+                        <td>{eventTypeLabel(tt, e.event_type)}</td>
                         <td>{e.location}</td>
                         <td>
                           <span className={`${styles.statusPill} ${styles[`status_${e.status}`] || ''}`}>
-                            {(e.status || '').replace('_', ' ')}
+                            {eventStatusLabel(tt, e.status)}
                           </span>
                         </td>
                         <td>{formatDate(e.start_date)}</td>

@@ -15,6 +15,7 @@ import styles from './partners.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate } from '@/lib/datetime';
+import { partnerStatusLabel } from '@/lib/labels';
 
 // The partner area. Three states in one page, because they are the same subject
 // at different stages: you have not applied, you have applied and are waiting,
@@ -278,8 +279,8 @@ const PartnersPage = () => {
               <div className={styles.card}>
                 <div className={styles.rowBetween}>
                   <h2 className={styles.cardTitle}>{partner.name}</h2>
-                  <span className={`${styles.pill} ${styles[`pill_${partner.status}`] || ''}`}>
-                    {partner.status}
+                  <span className={`${styles.pill} ${styles[`pill_${partnerStatusLabel(tt, partner.status)}`] || ''}`}>
+                    {partnerStatusLabel(tt, partner.status)}
                   </span>
                 </div>
                 <dl className={styles.metaGrid}>

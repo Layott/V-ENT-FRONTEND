@@ -16,6 +16,7 @@ import newTournamentsStyles from './../../new-tournaments/new-tournaments.module
 import allTournamentsStyles from './../all-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { accessLabel } from '@/lib/labels';
 const TournamentsByGame = ({
   data
 }) => {
@@ -114,7 +115,7 @@ const TournamentsByGame = ({
                           <AiOutlineTeam className={menuContentStyles.teamsIcon} />
                         </span>
                         <span className={menuContentStyles.participantTypeSpan}>
-                          {tournament.tournament_access}
+                          {accessLabel(tt, tournament.tournament_access)}
                         </span>
                       </p>
                       <span className={menuContentStyles.playerSpan}># {tournament.player_size}</span>

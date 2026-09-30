@@ -16,6 +16,7 @@ import styles from './my-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { slotsText } from '@/lib/slots';
+import { plural } from '@/lib/plural';
 const TABS = [{
   id: 'active',
   label: 'Active'
@@ -285,7 +286,7 @@ const MyTournaments = () => {
                           {status === 'in_progress' || status === 'live' || status === 'ongoing' ? <LuRadio /> : null} {statusLabel}
                         </span>
                         {t?.reg_count != null && <span className={styles.regBadge}><LuUsers /> {t.reg_count} {tt("ui.registered.6248", "registered")}</span>}
-                        {disputeCount > 0 && <span className={styles.disputeBadge}><LuTriangleAlert /> {disputeCount} {tt("ui.dispute.cfc8", "dispute")}{disputeCount === 1 ? '' : 's'}</span>}
+                        {disputeCount > 0 && <span className={styles.disputeBadge}><LuTriangleAlert /> {plural(tt, disputeCount, 'count.disputeOne', '{n} dispute', 'count.dispute', '{n} disputes')}</span>}
                       </div>
                       <p className={styles.tournamentMeta}>
                         <span>{t?.game || '-'}</span>

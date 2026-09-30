@@ -15,6 +15,7 @@ import tableStyles from "@/styles/modules/tables/tables.module.css";
 import styles from './tournament-details-participants.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 
 // Map API participant to display shape
 const normalize = p => ({
@@ -147,7 +148,7 @@ const TournamentDetailsParticipants = ({
       <div className={tableStyles.tournamentsEventsFilterSearchContainer}>
         <div className={tableStyles.tournamentsEventsFilterContainer}>
           <p>
-            {loading ? tx("Loading...") : `${filtered.length} participant${filtered.length !== 1 ? 's' : ''}`}
+            {loading ? tx("Loading...") : plural(tt, filtered.length, 'count.participantOne', '{n} participant', 'count.participant', '{n} participants')}
           </p>
           <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
             {showGalleryView ? <button className={tableStyles.galleryViewBTN}>{tt("ui.less.fields.77b4", "Less fields")} <RiGalleryView2 className={tableStyles.galleryViewIcon} /></button> : <button className={tableStyles.galleryViewBTN}>{tt("ui.all.fields.3d66", "All fields")} <IoGridOutline className={tableStyles.galleryViewIcon} /></button>}

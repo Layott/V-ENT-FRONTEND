@@ -151,31 +151,31 @@ const CreateOrganizationContent = () => {
   const validateStep = () => {
     if (step === 1) {
       if (!formData.name.trim() || !formData.tag.trim()) {
-        setErrorMsg('Name and tag are required.');
+        setErrorMsg(tt('msg.orgNameTagNeeded', 'Name and tag are required.'));
         return false;
       }
       if (formData.tag.length < 2 || formData.tag.length > 5) {
-        setErrorMsg('Tag must be 2-5 characters.');
+        setErrorMsg(tt('msg.tagLength', 'Tag must be 2-5 characters.'));
         return false;
       }
     }
     if (step === 3) {
       if (!formData.bio.trim()) {
-        setErrorMsg('Add a short bio.');
+        setErrorMsg(tt('msg.orgBioNeeded', 'Add a short bio.'));
         return false;
       }
       if (!formData.region) {
-        setErrorMsg('Pick a region.');
+        setErrorMsg(tt('msg.pickRegion', 'Pick a region.'));
         return false;
       }
       if (!formData.focus) {
-        setErrorMsg('Pick a focus area.');
+        setErrorMsg(tt('msg.pickFocus', 'Pick a focus area.'));
         return false;
       }
     }
     if (step === 4) {
       if (formData.contact_email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.contact_email)) {
-        setErrorMsg('Enter a valid contact email.');
+        setErrorMsg(tt('msg.contactEmailBad', 'Enter a valid contact email.'));
         return false;
       }
     }

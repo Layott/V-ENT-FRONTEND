@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { eventStatusLabel } from '@/lib/labels';
 const STATUS_CLASS = {
   upcoming: 'statusUpcoming',
   in_progress: 'statusLive',
@@ -65,7 +66,7 @@ const TeamProfileEvents = ({
             <div className={styles.cellMuted}>{fmtDate(e.date)}</div>
             <div>
               <span className={`${styles.statusBadge} ${styles[STATUS_CLASS[e.status] || 'statusUpcoming']}`}>
-                {(e.status || '').replace('_', ' ')}
+                {eventStatusLabel(tt, e.status)}
               </span>
             </div>
           </div>)}
@@ -93,7 +94,7 @@ const TeamProfileEvents = ({
               <div>
                 <span className={styles.cellMuted}>{tt("ui.status.bae7", "Status")}</span>
                 <span className={`${styles.statusBadge} ${styles[STATUS_CLASS[e.status] || 'statusUpcoming']}`}>
-                  {(e.status || '').replace('_', ' ')}
+                  {eventStatusLabel(tt, e.status)}
                 </span>
               </div>
             </div>

@@ -277,7 +277,7 @@ const ScrimCreateInner = () => {
       }
     } catch (err) {
       console.error('Create scrim error:', err);
-      setSubmitError('Could not reach the server. Try again.');
+      setSubmitError(tt('msg.noReachRetry', 'Could not reach the server. Try again.'));
     } finally {
       setSubmitting(false);
     }

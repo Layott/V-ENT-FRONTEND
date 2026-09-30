@@ -12,6 +12,7 @@ import fallbackLogo from '@/images/signed_in_user_big.webp';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 
 // Coerce a raw team payload into the shape this modal renders. Keeps the real
 // `id` so the downstream Payment step can send `team_id`.
@@ -110,7 +111,7 @@ const ChooseTeamModal = ({
           <p className={styles.subtitle}>{tt("ui.can.only.use.one.2556", "You can only use one team at a time.")}</p>
 
           <div className={styles.teamsHeader}>
-            <span className={styles.teamsCount}>{teams.length} {tt("ui.team.d251", "team")}{teams.length !== 1 ? 's' : ''}</span>
+            <span className={styles.teamsCount}>{plural(tt, teams.length, 'count.teamOne', '{n} team', 'count.team', '{n} teams')}</span>
             <Link href="/teams/create-team" className={styles.newTeamButton}>
               <span className={styles.plusIcon}>+</span> {tt("ui.new.team.235b", "New Team")}
             </Link>

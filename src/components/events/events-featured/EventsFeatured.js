@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import { imagePlaceholder, mediaIn, mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image'
 import Link from 'next/link'
@@ -6,8 +9,10 @@ import { LuBuilding2 } from "react-icons/lu";
 import { FaArrowRight } from "react-icons/fa";
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import { appLocale } from '@/lib/appLocale';
+import { eventTypeLabel } from '@/lib/labels';
 
 const EventsFeatured = ({ featuredEvents = [] }) => {
+  const tt = useT();
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Function to get the correct image URL - same as tournament implementation
@@ -90,7 +95,7 @@ const EventsFeatured = ({ featuredEvents = [] }) => {
                           <span className={menuContentStyles.eventTypeIconSpan}>
                             <LuBuilding2 className={menuContentStyles.buildingIcon} /> Event Type: 
                           </span>
-                          <span className={menuContentStyles.eventType}>{event.event_type}</span>
+                          <span className={menuContentStyles.eventType}>{eventTypeLabel(tt, event.event_type)}</span>
                         </p>
                       </div>
                     </div>

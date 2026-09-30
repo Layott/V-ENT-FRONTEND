@@ -12,6 +12,7 @@ import newTournamentStyles from './../../tournaments/new-tournaments/new-tournam
 import styles from './all-events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { eventTypeLabel } from '@/lib/labels';
 const formatDate = dateString => {
   if (!dateString) return '-';
   return new Date(dateString).toLocaleDateString(appLocale(), {
@@ -53,7 +54,7 @@ const GameSection = ({
                 <div className={menuContentStyles.detailsContainer}>
                   <div className={menuContentStyles.eventOrParticipantTypeContainer}>
                     <p className={menuContentStyles.eventTypeParagraph}>
-                      <span className={menuContentStyles.eventTypeSpan}>{event.event_type}</span>
+                      <span className={menuContentStyles.eventTypeSpan}>{eventTypeLabel(tt, event.event_type)}</span>
                     </p>
                     {event.location && <>
                         <span className={menuContentStyles.dotSpan}>

@@ -26,6 +26,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import Tag from '@/components/tag/Tag';
+import { eventTypeLabel } from '@/lib/labels';
+import { plural } from '@/lib/plural';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -322,7 +324,7 @@ const EventsListingContent = () => {
                     objectFit: 'cover'
                   }} unoptimized /> : null}
                         <div className={styles.featuredOverlay} />
-                        <Tag className={styles.typeTag} on="card">{e.event_type}</Tag>
+                        <Tag className={styles.typeTag} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>
                       </div>
                       <div className={styles.featuredBody}>
                         <h2 className={styles.featuredTitle}>{e.name}</h2>
@@ -414,7 +416,7 @@ const EventsListingContent = () => {
                 {tt(`events.heading.${activeTab}`, `${TABS.find(t => t.id === activeTab)?.label || 'All'} events`)}
               </h2>
               <span className={styles.resultCount}>
-                {loading ? tx("Loading…") : loadError && events.length === 0 ? '' : `${filtered.length} result${filtered.length === 1 ? '' : 's'}`}
+                {loading ? tx("Loading…") : loadError && events.length === 0 ? '' : plural(tt, filtered.length, 'count.resultOne', '{n} result', 'count.result', '{n} results')}
               </span>
             </div>
 
@@ -437,7 +439,7 @@ const EventsListingContent = () => {
                         {e.banner_image || e.banner ? <Image src={mediaUrl(e.banner_image || e.banner)} alt={e.name} fill sizes="(min-width: 1440px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" style={{
                     objectFit: 'cover'
                   }} unoptimized /> : null}
-                        <Tag className={styles.typeTag} on="card">{e.event_type}</Tag>
+                        <Tag className={styles.typeTag} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>
                       </div>
                       <div className={styles.cardBody}>
                         <h2 className={styles.cardTitle}>{e.name}</h2>

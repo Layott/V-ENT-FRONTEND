@@ -23,6 +23,8 @@ import useGames from '@/hooks/useGames';
 import { useT, useLanguage } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { eventTypeLabel } from '@/lib/labels';
+import { plural } from '@/lib/plural';
 const STEPS = [{
   id: 1,
   label: 'Basic info'
@@ -317,31 +319,31 @@ const CreateEventPage = () => {
   const validateStep = s => {
     const e = {};
     if (s === 1) {
-      if (!formData.name.trim()) e.name = 'Event name is required.';else if (formData.name.trim().length < 4) {
-        e.name = 'Name must be at least 4 characters.';
+      if (!formData.name.trim()) e.name = tt('msg.eventNameNeeded', 'Event name is required.');else if (formData.name.trim().length < 4) {
+        e.name = tt('msg.nameMin4', 'Name must be at least 4 characters.');
       } else if (formData.name.trim().length > 40) {
-        e.name = 'Name must be 40 characters or fewer.';
+        e.name = tt('msg.nameMax40', 'Name must be 40 characters or fewer.');
       }
-      if (!formData.description.trim()) e.description = 'Description is required.';
+      if (!formData.description.trim()) e.description = tt('msg.descriptionNeeded', 'Description is required.');
     }
     if (s === 2) {
-      if (!formData.start_date) e.start_date = 'Start date is required.';
+      if (!formData.start_date) e.start_date = tt('msg.startNeeded', 'Start date is required.');
       // The server refuses a start in the past; said here, beside the field.
       if (formData.start_date && new Date(formData.start_date) < new Date(Date.now() - 5 * 60 * 1000)) {
         e.start_date = tt('createEvent.startInPast', 'The start has to be in the future.');
       }
-      if (!formData.end_date) e.end_date = 'End date is required.';
+      if (!formData.end_date) e.end_date = tt('msg.endNeeded', 'End date is required.');
       if (formData.start_date && formData.end_date && new Date(formData.end_date) < new Date(formData.start_date)) {
-        e.end_date = 'End date must be after start date.';
+        e.end_date = tt('msg.endAfterStart', 'End date must be after start date.');
       }
       if (formData.event_type !== 'virtual' && !formData.location.trim()) {
-        e.location = 'Location is required for physical / hybrid events.';
+        e.location = tt('msg.locationNeeded', 'Location is required for physical / hybrid events.');
       }
       if (formData.event_type === 'virtual' && !formData.virtual_link.trim()) {
-        e.virtual_link = 'Virtual link is required.';
+        e.virtual_link = tt('msg.virtualLinkNeeded', 'Virtual link is required.');
       }
       if (!formData.capacity || formData.capacity < 1) {
-        e.capacity = 'Capacity must be at least 1.';
+        e.capacity = tt('msg.capacityMin', 'Capacity must be at least 1.');
       }
     }
     if (s === 3 && !freeEntry) {
@@ -909,7 +911,7 @@ const CreateEventPage = () => {
                     <p className={styles.reviewValue} style={{
                   textTransform: 'capitalize'
                 }}>
-                      {formData.event_type}
+                      {eventTypeLabel(tt, formData.event_type)}
                     </p>
                     <p className={styles.reviewSub}>
                       {formData.event_type !== 'virtual' && formData.location}
@@ -943,7 +945,7 @@ const CreateEventPage = () => {
                   <div className={styles.reviewCard}>
                     <p className={styles.reviewLabel}>{tt("ui.capacity.45bd", "Capacity")}</p>
                     <p className={styles.reviewValue}>{Number(formData.capacity).toLocaleString()}</p>
-                    <p className={styles.reviewSub}>{formData.ticket_types.length} {tt("ui.ticket.tier.4cbf", "ticket tier")}{formData.ticket_types.length === 1 ? '' : 's'}</p>
+                    <p className={styles.reviewSub}>{plural(tt, formData.ticket_types.length, 'count.ticketTierOne', '{n} ticket tier', 'count.ticketTier', '{n} ticket tiers')}</p>
                   </div>
 
                   <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>

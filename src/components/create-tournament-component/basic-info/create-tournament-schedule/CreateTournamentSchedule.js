@@ -41,13 +41,13 @@ const CreateTournamentSchedule = ({
 
       // Check if start date is after end date
       if (start > end) {
-        setDateError('Tournament start date cannot be later than end date and time');
+        setDateError(tt('msg.tournamentStartBeforeEnd', 'Tournament start date cannot be later than end date and time'));
         return false;
       }
 
       // Check if dates are exactly the same (no duration)
       if (start.getTime() === end.getTime()) {
-        setDateError('Tournament end date must be at least 10 minutes after start date and time');
+        setDateError(tt('msg.tournamentEnd10', 'Tournament end date must be at least 10 minutes after start date and time'));
         return false;
       }
 
@@ -56,7 +56,7 @@ const CreateTournamentSchedule = ({
       const tenMinutesInMs = 10 * 60 * 1000; // 10 minutes in milliseconds
 
       if (timeDifference < tenMinutesInMs) {
-        setDateError('Tournament end date must be at least 10 minutes after start date and time');
+        setDateError(tt('msg.tournamentEnd10', 'Tournament end date must be at least 10 minutes after start date and time'));
         return false;
       }
       setDateError('');
@@ -72,13 +72,13 @@ const CreateTournamentSchedule = ({
 
       // Check if start date is after end date
       if (regStart > regEnd) {
-        setRegDateError('Registration start date cannot be later than end date and time');
+        setRegDateError(tt('msg.regStartBeforeEnd', 'Registration start date cannot be later than end date and time'));
         return false;
       }
 
       // Check if dates are exactly the same (no duration)
       if (regStart.getTime() === regEnd.getTime()) {
-        setRegDateError('Registration end date must be at least 10 minutes after start date and time');
+        setRegDateError(tt('msg.regEnd10', 'Registration end date must be at least 10 minutes after start date and time'));
         return false;
       }
 
@@ -87,7 +87,7 @@ const CreateTournamentSchedule = ({
       const tenMinutesInMs = 10 * 60 * 1000; // 10 minutes in milliseconds
 
       if (timeDifference < tenMinutesInMs) {
-        setRegDateError('Registration end date must be at least 10 minutes after start date');
+        setRegDateError(tt('msg.regEnd10', 'Registration end date must be at least 10 minutes after start date'));
         return false;
       }
       setRegDateError('');

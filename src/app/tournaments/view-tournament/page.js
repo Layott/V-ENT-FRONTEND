@@ -40,6 +40,7 @@ import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import { slotsText } from '@/lib/slots';
 import { plural } from '@/lib/plural';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { entryStatusLabel } from '@/lib/labels';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -929,7 +930,7 @@ const ParticipantsPanel = ({
                 </div>
                 <div>
                   <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>
-                    {r.status}
+                    {entryStatusLabel(tt, r.status)}
                   </span>
                 </div>
               </div>)}
@@ -946,7 +947,7 @@ const ParticipantsPanel = ({
                       <p className={styles.teamCellTag}>{r.tag ? `${r.tag} · ` : ''}{tt("ui.seed.2318", "Seed #")}{r.seed}</p>
                     </div>
                   </div>
-                  <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>{r.status}</span>
+                  <span className={`${styles.partStatus} ${styles[`partStatus_${r.status}`] || ''}`}>{entryStatusLabel(tt, r.status)}</span>
                 </div>
                 <div className={styles.partCardBody}>
                   <div><span className={styles.cardLabel}>{tt("ui.country.d523", "Country")}</span><span>{r.region}</span></div>

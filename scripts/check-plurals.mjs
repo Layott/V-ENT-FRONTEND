@@ -32,7 +32,12 @@ const BACKEND = path.resolve(FRONTEND, '..', 'V-ENT-BACKEND');
 // "(s)" and its agreement cousins, INSIDE a string literal: `str(e)` and
 // `_row(s)` are code, `'reader(s)'` is a sentence.
 const PATTERN = /[\p{L}]\((?:s|es|ões|eis|ies|s\))\)/u;
-const LITERALS = /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`/g;
+// The other shape, found 30 September 2026 (inbox 364) in ten places: an
+// English "s" glued on by hand, `{n} {tt('k', 'item')}{n === 1 ? '' : 's'}`.
+// Right in English only, and the word before it may not even be English.
+// The admin console is English only and exempt.
+const HAND = /[=!]==\s*1\s*\?\s*(?:''|"")\s*:\s*['"]s['"]|[=!]==\s*1\s*\?\s*['"]s['"]\s*:\s*(?:''|"")|>\s*1\s*\?\s*['"]s['"]\s*:\s*(?:''|"")/;
+const LITERALS =/'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`/g;
 
 function literalsOf(line) {
   // A template literal's ${...} is code, not prose: `${formatDate(s)}`.
@@ -76,7 +81,8 @@ export function findPlurals(files) {
     const text = fs.readFileSync(file, 'utf8');
     text.split(/\r?\n/).forEach((line, i) => {
       if (isSkippable(line, lang)) return;
-      if (literalsOf(line).some((lit) => PATTERN.test(lit))) hits.push(`${path.relative(FRONTEND, file)}:${i + 1}: ${line.trim().slice(0, 110)}`);
+      const hand = lang === 'js' && !file.includes(`${path.sep}(admin)${path.sep}`) && HAND.test(line);
+      if (hand || literalsOf(line).some((lit) => PATTERN.test(lit))) hits.push(`${path.relative(FRONTEND, file)}:${i + 1}: ${line.trim().slice(0, 110)}`);
     });
   }
   return hits;
@@ -105,7 +111,11 @@ function selfTest() {
     ['comment.py', "# 'ticket(s)' was a sentence nobody finished", 0],
     ['log.py', "    logger.info('attached %s guest ticket(s) to %s', n, who)", 0],
     ['tests_x.py', "        self.assertIn('ticket(s)', body)", 0],
-    ['regex.js', "const re = /\\d+(s)?/;", 0],
+    ['hand.js', "{n} {tt('k', 'item')}{n === 1 ? '' : 's'}", 1],
+    ['hand_template.js', "`${hrs} hour${hrs === 1 ? '' : 's'} ago`", 1],
+    ['hand_gt.js', "{n} match{n > 1 ? 's' : ''}", 1],
+    ['plural_ok.js', "{plural(tt, n, 'k.one', '{n} item', 'k', '{n} items')}", 0],
+    ['regex.js',"const re = /\\d+(s)?/;", 0],
   ];
   let failed = 0;
   for (const [name, body, expected] of cases) {

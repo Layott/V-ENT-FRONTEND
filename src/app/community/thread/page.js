@@ -210,7 +210,7 @@ const ThreadInner = ({
       }
     } catch (err) {
       console.error('Reply error:', err);
-      setReplyError('Could not reach the server. Try again.');
+      setReplyError(tt('msg.noReachRetry', 'Could not reach the server. Try again.'));
     } finally {
       setPosting(false);
     }
