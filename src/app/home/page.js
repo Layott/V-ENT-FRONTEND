@@ -22,6 +22,7 @@ import styles from './home.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
+import { statementLine } from '@/lib/statementLine';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
@@ -657,7 +658,7 @@ const HomePage = () => {
                             {txTypeLabel(tx.type)}
                           </span>
                           <div className={styles.txDescBlock}>
-                            <p className={styles.txDesc}>{byText(tx.description)}</p>
+                            <p className={styles.txDesc}>{statementLine(tt, tx)}</p>
                             <p className={styles.txDate}>{formatDate(tx.created_at)}</p>
                           </div>
                         </div>

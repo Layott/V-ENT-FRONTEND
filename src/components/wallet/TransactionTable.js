@@ -9,6 +9,7 @@ import styles from '@/app/wallets/wallets.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { statementLine } from '@/lib/statementLine';
 const TYPE_FILTERS = [{
   id: '',
   label: 'All'
@@ -120,7 +121,8 @@ const TransactionTable = ({
   const filtered = (transactions || []).filter(tx => {
     const ntype = normalizeType(tx.type || tx.transaction_type);
     const nstatus = normalizeStatus(tx.status);
-    const desc = String(tx.description || tx.name || '').toLowerCase();
+    // The line as the reader sees it, so a search in French finds French.
+    const desc = `${statementLine(tt, tx)} ${tx.description || ''}`.toLowerCase();
     const ref = String(tx.reference || tx.ref || '').toLowerCase();
     const counter = String(tx.counterparty || '').toLowerCase();
     const q = search.toLowerCase().trim();
@@ -223,7 +225,7 @@ const TransactionTable = ({
                       <tr className={isOpen ? styles.expanded : ''} onClick={() => toggleExpand(id)}>
                         <td>{renderBadge(tx)}</td>
                         <td>
-                          <div className={styles.txName}>{tx.description || tx.name || '-'}</div>
+                          <div className={styles.txName}>{statementLine(tt, tx)}</div>
                           {tx.counterparty && tx.counterparty !== 'V-ENT Treasury' && <div className={styles.txRef}>{tx.counterparty}</div>}
                         </td>
                         <td>
@@ -276,7 +278,7 @@ const TransactionTable = ({
             return <div key={id} className={styles.txCard} onClick={() => toggleExpand(id)}>
                     <div className={styles.txCardTop}>
                       <div className={styles.txCardLeft}>
-                        <div className={styles.txName}>{tx.description || tx.name || '-'}</div>
+                        <div className={styles.txName}>{statementLine(tt, tx)}</div>
                         <div className={styles.txRef}>{tx.reference || tx.ref || '-'}</div>
                       </div>
                       <div className={styles.txCardRight}>

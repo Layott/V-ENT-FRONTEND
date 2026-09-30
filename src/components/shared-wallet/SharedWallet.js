@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
+import { statementLine } from '@/lib/statementLine';
 import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { formatDateTime } from '@/lib/datetime';
@@ -259,7 +260,7 @@ export default function SharedWallet({ kind, reference, name }) {
             {wallet.transactions.map((row) => (
               <div key={row.id} className={styles.row}>
                 <div className={styles.rowMain}>
-                  <strong className={styles.rowName}>{row.description}</strong>
+                  <strong className={styles.rowName}>{statementLine(tt, row)}</strong>
                   <span className={styles.muted}>{formatDateTime(row.at)}</span>
                 </div>
                 <span className={row.amount < 0 ? styles.out : styles.in}>

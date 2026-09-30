@@ -26,6 +26,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
+import { statementLine } from '@/lib/statementLine';
 import DateField from '@/components/date-field/DateField';
 import shared from '@/components/admin/admin.module.css';
 import styles from './finance.module.css';
@@ -425,7 +426,7 @@ function FinanceInner() {
                         <td className={row.amount < 0 ? styles.debit : styles.credit}>
                           {formatNumber(row.amount)} VC
                         </td>
-                        <td className={shared.hideMobile}>{row.description}</td>
+                        <td className={shared.hideMobile}>{statementLine(tt, row)}</td>
                         <td>
                           <span className={`${shared.badge} ${row.status === 'completed' ? shared.sApproved : row.status === 'pending' ? shared.sPending : shared.sRejected}`}>
                             {row.status}
