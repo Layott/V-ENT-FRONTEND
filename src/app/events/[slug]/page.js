@@ -5,6 +5,7 @@ import {
   breadcrumbLd, buildMetadata, clamp, eventLd, eventMetadata, fetchRecordForMetadata,
 } from '@/lib/seo';
 import EventBySlugClient from './EventBySlugClient';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/events/lagos-anime-con`. Server component so the event is described in the
 // HTML rather than after the JavaScript runs - see the note in the tournament
@@ -21,7 +22,9 @@ export async function generateMetadata(props) {
   const slug = decodeURIComponent(params.slug);
   // One builder, shared with the short-link route, so a second address for this
   // event describes it identically. See `eventMetadata` for why.
-  return eventMetadata(pick(await load(slug)), slug);
+  const e = pick(await load(slug));
+  await toSlugAddress(slug, e, '/events', await props.searchParams);
+  return eventMetadata(e, slug);
 }
 
 const EventBySlug = async props => {
@@ -31,6 +34,8 @@ const EventBySlug = async props => {
   const e = pick(raw);
 
   if (e?.__moved) redirect(e.__moved);
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, e, '/events', await props.searchParams);
 
   const path = `/events/${e?.slug || slug}`;
 

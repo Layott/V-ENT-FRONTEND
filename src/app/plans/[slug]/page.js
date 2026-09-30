@@ -4,6 +4,7 @@ import JsonLd from '@/components/seo/JsonLd';
 import { SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import PlanPageClient from './PlanPageClient';
 import { recordCopy } from '@/lib/seoRecordCopy';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/plans/inner-circle` - one membership an organiser sells.
 //
@@ -108,6 +109,8 @@ const PlanBySlug = async props => {
   // address bar is right on the first paint rather than correcting itself a
   // moment later.
   if (plan?.__moved) redirect(plan.__moved);
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, plan, '/plans', await props.searchParams);
 
   const path = `/plans/${plan?.slug || slug}`;
 

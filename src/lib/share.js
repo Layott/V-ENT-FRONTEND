@@ -24,9 +24,11 @@ export const absoluteUrl = (path) => {
  * @param {string} [options.title] what the thing is called
  * @param {string} [options.text]  a line of context for the native sheet
  * @param {(message: string) => void} [options.notify] how to tell the person
+ * @param {string} [options.copied] what to tell them when it was copied, in
+ *   their language: the caller has tt(), this module does not
  * @returns {Promise<'shared'|'copied'|'shown'>}
  */
-export async function shareLink({ path, title, text, notify }) {
+export async function shareLink({ path, title, text, notify, copied }) {
   const url = absoluteUrl(path);
 
   if (typeof navigator !== 'undefined' && navigator.share) {
@@ -42,7 +44,7 @@ export async function shareLink({ path, title, text, notify }) {
 
   try {
     await navigator.clipboard.writeText(url);
-    notify?.('Link copied');
+    notify?.(copied || 'Link copied');
     return 'copied';
   } catch {
     notify?.(url);

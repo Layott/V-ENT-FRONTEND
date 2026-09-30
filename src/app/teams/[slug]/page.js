@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import { breadcrumbLd, fetchRecordForMetadata, normaliseTeam, teamLd, teamMetadata } from '@/lib/seo';
 import TeamBySlugClient from './TeamBySlugClient';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/teams/lagos-rangers`. Server component, for the reason set out in the
 // tournament route: the interactive page loads in an effect, so without this
@@ -17,7 +18,9 @@ const pick = normaliseTeam;
 export async function generateMetadata(props) {
   const params = await props.params;
   const slug = decodeURIComponent(params.slug);
-  return teamMetadata(await load(slug), slug);
+  const raw = await load(slug);
+  await toSlugAddress(slug, pick(raw), '/teams', await props.searchParams);
+  return teamMetadata(raw, slug);
 }
 
 const TeamBySlug = async props => {
@@ -26,6 +29,8 @@ const TeamBySlug = async props => {
   const team = pick(await load(slug));
 
   if (team?.__moved) redirect(team.__moved);
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, team, '/teams', await props.searchParams);
 
   const path = `/teams/${team?.slug || slug}`;
 

@@ -24,6 +24,7 @@ const TournamentDetailsBanner = ({
       path: linkTo.tournament(tournament),
       title: tournament?.tournament_title || tournament?.name,
       text: 'Tournament on V-ENT',
+      copied: tt('share.copied', 'Link copied'),
       notify: message => {
         setShareLabel(message);
         window.setTimeout(() => setShareLabel(tt("ui.share.09ca", "Share")), 3000);

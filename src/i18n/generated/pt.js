@@ -8299,6 +8299,7 @@ const table = {
  "api.PAYMENT_REFUSED": "Não foi possível iniciar o pagamento. Nada foi cobrado. Tente novamente ou escolha outra forma de pagamento.",
  "api.SERVER_ERROR": "Algo correu mal do nosso lado. Nada foi alterado. Tente novamente dentro de momentos.",
  "api.INVALID_INPUT": "Alguns dados não puderam ser lidos. Verifique as datas e os números e tente novamente.",
+ "share.teamCopied": "Link da equipa copiado",
  "home.day.0": "Domingo de recomeço. Planeie a semana e escolha o próximo torneio.",
  "home.day.1": "À segunda define-se o ritmo. Escolha um objetivo e vá atrás dele.",
  "home.day.2": "Terça de trabalho. Pequenos passos valem mais do que grandes promessas.",

@@ -6,6 +6,7 @@ import {
   tournamentMetadata,
 } from '@/lib/seo';
 import TournamentBySlugClient from './TournamentBySlugClient';
+import { toSlugAddress } from '@/lib/slugAddress';
 
 // `/tournaments/naija-free-fire-weekly-12`.
 //
@@ -26,7 +27,9 @@ export async function generateMetadata(props) {
   const slug = decodeURIComponent(params.slug);
   // Shared with the short-link route, so both addresses describe the same
   // tournament the same way.
-  return tournamentMetadata(await load(slug), slug);
+  const t = await load(slug);
+  await toSlugAddress(slug, t, '/tournaments', await props.searchParams);
+  return tournamentMetadata(t, slug);
 }
 
 const TournamentBySlug = async props => {
@@ -38,6 +41,8 @@ const TournamentBySlug = async props => {
   // address bar is right on the very first paint rather than correcting itself
   // a moment later.
   if (t?.__moved) redirect(t.__moved);
+  // Opened by its number: the address bar gets the name (inbox 381).
+  await toSlugAddress(slug, t, '/tournaments', await props.searchParams);
 
   const path = `/tournaments/${t?.slug || slug}`;
 

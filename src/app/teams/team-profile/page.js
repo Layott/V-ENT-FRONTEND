@@ -22,6 +22,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, usernameOf } from '@/lib/gating';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
+import { linkTo, shareLink } from '@/lib/share';
 const ALL_TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -127,17 +128,16 @@ export const TeamProfileContent = ({
     || sameUser(usernameOf(team?.owner), session?.user?.username)
     || sameUser(team?.owner?.user_id, session?.user?.id)));
 
-  // Share used to be a Link back to the page you were already on. It copies a
-  // link to this team, and says what the link is if the clipboard is refused.
-  const handleShare = async () => {
-    const link = `${window.location.origin}/teams/${team?.id ?? teamId}`;
-    try {
-      await navigator.clipboard.writeText(link);
-      showToast?.('Team link copied');
-    } catch {
-      showToast?.(link);
-    }
-  };
+  // Share used to be a Link back to the page you were already on. It shares
+  // the team's own address: the slug, never the number (CEO, 30 September
+  // 2026, "I wanted to share a team and still saw an ID .../teams/29"). One
+  // builder, linkTo.team, so this link cannot drift from every other.
+  const handleShare = () => shareLink({
+    path: linkTo.team(team) || `/teams/${teamId}`,
+    title: team?.name,
+    notify: showToast,
+    copied: tt('share.teamCopied', 'Team link copied'),
+  });
   const handleRequestJoin = async () => {
     setRequestState('loading');
     try {
