@@ -26,6 +26,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
+import { statementLine } from '@/lib/statementLine';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import shared from '@/components/admin/admin.module.css';
@@ -353,7 +354,7 @@ function OrgDetailInner() {
                         <tbody>
                           {org.transactions.map((row) => <tr key={row.id}>
                             <td>{formatDateTime(row.at)}</td>
-                            <td>{row.description}</td>
+                            <td>{statementLine(tt, row)}</td>
                             <td className={row.amount < 0 ? styles.debit : styles.credit}>
                               {formatNumber(row.amount)} VC
                             </td>
