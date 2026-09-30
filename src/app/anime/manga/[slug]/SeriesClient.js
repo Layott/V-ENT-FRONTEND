@@ -29,6 +29,7 @@ import Banner from '@/components/banner/Banner';
 import PayShortfall from '@/components/pay/PayShortfall';
 import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './series.module.css';
+import { seriesStatusLabel } from '@/lib/labels';
 
 const SeriesClient = ({ slug }) => {
   const tt = useT();
@@ -184,7 +185,7 @@ const SeriesClient = ({ slug }) => {
         </div>
 
         <div className={styles.infoCol}>
-          <span className={styles.statusPill}>{series.status}</span>
+          <span className={styles.statusPill}>{seriesStatusLabel(tt, series.status)}</span>
           <h1 className={styles.title}>{series.title}</h1>
           <p className={styles.byline}>
             <UserChip user={series.author} />

@@ -543,7 +543,7 @@ const CommunityInner = () => {
       }
     } catch (err) {
       console.error('Open DM error:', err);
-      setDmError('Could not reach the server.');
+      setDmError(tt('msg.noReach', 'Could not reach the server.'));
     }
   };
   const handleSendDm = async () => {
@@ -591,7 +591,7 @@ const CommunityInner = () => {
       }
     } catch (err) {
       console.error('Send DM error:', err);
-      setDmError('Could not reach the server. Message not sent.');
+      setDmError(tt('msg.noReachNotSent', 'Could not reach the server. Message not sent.'));
       setActiveDm(prev => prev ? {
         ...prev,
         messages: replaceLocal(prev.messages, null)
@@ -637,7 +637,7 @@ const CommunityInner = () => {
       }
     } catch (err) {
       console.error('Start DM error:', err);
-      setNewDmError('Could not reach the server.');
+      setNewDmError(tt('msg.noReach', 'Could not reach the server.'));
     } finally {
       setNewDmSending(false);
     }
@@ -716,7 +716,7 @@ const CommunityInner = () => {
       }
     } catch (err) {
       console.error('Accept scrim error:', err);
-      setScrimError('Could not reach the server.');
+      setScrimError(tt('msg.noReach', 'Could not reach the server.'));
     }
   };
   const handleAcceptScrim = scrim => {

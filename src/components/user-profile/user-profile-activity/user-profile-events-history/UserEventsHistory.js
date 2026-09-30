@@ -10,6 +10,7 @@ import UserEventsDetails from './UserEventsDetails';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './user-events-history.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 const UserEventsHistory = () => {
   const tt = useT();
   const {
@@ -68,7 +69,7 @@ const UserEventsHistory = () => {
   return <div className={profileStyles.tournamentEventsContainer}>
       <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
         <div className={profileStyles.tournamentsEventsFilterContainer}>
-          <p>{total} {tt("ui.event.5006", "event")}{total !== 1 ? 's' : ''}</p>
+          <p>{plural(tt, total, 'count.eventOne', '{n} event', 'count.event', '{n} events')}</p>
           <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>{tt("ui.filter.d7de", "Filter")}</div>
         </div>
 

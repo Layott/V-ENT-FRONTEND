@@ -10,6 +10,7 @@ import UserProfileTournamentsDetails from './UserProfileTournamentsDetails';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './user-profile-tournaments-history.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 const UserProfileTournamentsHistory = () => {
   const tt = useT();
   const {
@@ -68,7 +69,7 @@ const UserProfileTournamentsHistory = () => {
   return <div className={profileStyles.tournamentEventsContainer}>
       <div className={profileStyles.tournamentsEventsFilterSearchContainer}>
         <div className={profileStyles.tournamentsEventsFilterContainer}>
-          <p>{total} {tt("ui.tournament.cb9d", "tournament")}{total !== 1 ? 's' : ''}</p>
+          <p>{plural(tt, total, 'count.tournamentOne', '{n} tournament', 'count.tournament', '{n} tournaments')}</p>
           <div className={`${profileStyles.filterContainer} ${profileStyles.topMostLayerColor}`}>{tt("ui.filter.d7de", "Filter")}</div>
         </div>
 

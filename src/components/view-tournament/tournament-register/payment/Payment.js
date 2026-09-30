@@ -311,7 +311,7 @@ const PaymentModal = ({
   const handlePinConfirm = async () => {
     const code = pin.join('');
     if (code.length !== 4) {
-      setPinError('Enter all 4 digits.');
+      setPinError(tt('msg.pinFourDigits', 'Enter all 4 digits.'));
       return;
     }
     setPinVerifying(true);

@@ -61,6 +61,8 @@ import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import TradeHere from '@/components/vendor-slots/TradeHere';
 import { slotsText } from '@/lib/slots';
 import GoingTogether from '@/components/going-together/GoingTogether';
+import { eventTypeLabel } from '@/lib/labels';
+import { plural } from '@/lib/plural';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -657,7 +659,7 @@ export const ViewEventContent = ({
         setLinkError(apiMessage(tt, data, "api.couldNotLinkThatTournament", "Could not link that tournament."));
       }
     } catch (err) {
-      setLinkError('Network error while linking.');
+      setLinkError(tt('msg.linkFailed', 'Network error while linking.'));
     } finally {
       setLinkBusyId(null);
     }
@@ -681,7 +683,7 @@ export const ViewEventContent = ({
         setLinkError(apiMessage(tt, data, "api.couldNotUnlinkThatTournament", "Could not unlink that tournament."));
       }
     } catch (err) {
-      setLinkError('Network error while unlinking.');
+      setLinkError(tt('msg.unlinkFailed', 'Network error while unlinking.'));
     } finally {
       setLinkBusyId(null);
     }
@@ -700,7 +702,7 @@ export const ViewEventContent = ({
       const data = await res.json();
       if (data.status === 'success') await loadTournaments();else setLinkError(apiMessage(tt, data, "api.couldNotChangeSharedTicketing", "Could not change shared ticketing."));
     } catch (err) {
-      setLinkError('Network error while changing shared ticketing.');
+      setLinkError(tt('msg.sharedTicketingFailed', 'Network error while changing shared ticketing.'));
     } finally {
       setLinkBusyId(null);
     }
@@ -1173,7 +1175,7 @@ export const ViewEventContent = ({
             <div className={styles.heroOverlay} />
             <div className={styles.heroContent}>
               <span className={`${styles.heroType} ${styles['type_' + event.event_type]}`}>
-                {event.event_type}
+                {eventTypeLabel(tt, event.event_type)}
               </span>
               {Number(event.min_age) >= 18 && <span className={`${styles.heroType} ${styles.adultsOnly}`}>
                   {tt('createEvent.adultsOnly', '18+ event')}
@@ -1187,7 +1189,7 @@ export const ViewEventContent = ({
                   <IoLocationOutline /> {event.location}
                 </span>
                 <span className={styles.metaItem}>
-                  <FaUsers /> {event.attendees_count?.toLocaleString() || 0} {tt("ui.attending.5ae7", "attending")}
+                  <FaUsers /> {plural(tt, event.attendees_count, 'count.attendingOne', '{n} attending', 'count.attending', '{n} attending', formatNumber(event.attendees_count || 0))}
                 </span>
               </div>
 
@@ -1455,13 +1457,13 @@ export const ViewEventContent = ({
                     </div>
                     <div className={styles.miniStatRow}>
                       <span>{tt("ui.attending.969a", "Attending")}</span>
-                      <strong>{(event.attendees_count || 0).toLocaleString()}</strong>
+                      <strong>{formatNumber(event.attendees_count || 0)}</strong>
                     </div>
                     <div className={styles.miniStatRow}>
                       <span>{tt("ui.type.3deb", "Type")}</span>
                       <strong style={{
                     textTransform: 'capitalize'
-                  }}>{event.event_type}</strong>
+                  }}>{eventTypeLabel(tt, event.event_type)}</strong>
                     </div>
                     <div className={styles.miniStatRow}>
                       <span>{tt("ui.status.bae7", "Status")}</span>

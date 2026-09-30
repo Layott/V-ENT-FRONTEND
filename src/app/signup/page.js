@@ -67,7 +67,7 @@ const Signup = () => {
       setEmailError("");
       setIsEmailLoading(true);
       if (!emailRegex.test(value)) {
-        setEmailError("Invalid email address");
+        setEmailError(tt('msg.emailBad', "Invalid email address"));
         clearError(setEmailError);
         setIsEmailLoading(false);
         return;
@@ -100,7 +100,7 @@ const Signup = () => {
           setUsernameError("");
         }
       } catch (err) {
-        setEmailError("Verification failed. Try again.");
+        setEmailError(tt('msg.verifyFailed', "Verification failed. Try again."));
         clearError(setEmailError);
         setUsernameEditable(true);
       } finally {
@@ -130,7 +130,7 @@ const Signup = () => {
         if (data.message === "The username does not exist") {
           setUsernameError("");
         } else {
-          setUsernameError("Username is already taken");
+          setUsernameError(tt('msg.usernameTaken', "Username is already taken"));
           clearError(setUsernameError);
         }
       } catch (err) {

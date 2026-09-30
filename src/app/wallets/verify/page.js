@@ -104,7 +104,7 @@ const VerifyPage = () => {
       }
     } catch (err) {
       console.error('KYC status fetch error:', err);
-      setLoadError('Network error loading verification status.');
+      setLoadError(tt('msg.verifyStatusFailed', 'Network error loading verification status.'));
     } finally {
       setLoading(false);
     }
@@ -163,7 +163,7 @@ const VerifyPage = () => {
       }
     } catch (err) {
       console.error('KYC submit error:', err);
-      setSubmitError('Network error. Please try again.');
+      setSubmitError(tt('msg.networkRetry', 'Network error. Please try again.'));
     } finally {
       setSubmitting(false);
     }

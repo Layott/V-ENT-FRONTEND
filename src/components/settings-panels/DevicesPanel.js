@@ -5,27 +5,15 @@ import shared from './settingsShared.module.css';
 import styles from './DevicesPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-import { appLocale } from '@/lib/appLocale';
+import { formatDate, formatRelative } from '@/lib/datetime';
+import { plural } from '@/lib/plural';
+// "3 hours ago" in the reader's language (formatRelative), then a date once
+// it is a fortnight old. Was built by hand in English, "hour" + "s" (inbox 364).
 const formatLastActive = iso => {
   if (!iso) return '-';
-  try {
-    const d = new Date(iso);
-    const diff = Date.now() - d.getTime();
-    const mins = Math.round(diff / 60000);
-    if (mins < 2) return 'Just now';
-    if (mins < 60) return `${mins} min ago`;
-    const hrs = Math.round(mins / 60);
-    if (hrs < 24) return `${hrs} hour${hrs === 1 ? '' : 's'} ago`;
-    const days = Math.round(hrs / 24);
-    if (days < 14) return `${days} day${days === 1 ? '' : 's'} ago`;
-    return d.toLocaleDateString(appLocale(), {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  } catch {
-    return iso;
-  }
+  const days = (Date.now() - new Date(iso).getTime()) / 86400000;
+  if (Number.isNaN(days)) return iso;
+  return days < 14 ? formatRelative(iso) : formatDate(iso);
 };
 const DeviceIcon = ({
   type
@@ -145,7 +133,7 @@ const DevicesPanel = ({
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.sign.out.all.other.7094", "Sign out all other devices?")}</h3>
             <p className={shared.modalSub}>
-              {others.length} {tt("ui.other.session.22cf", "other session")}{others.length === 1 ? '' : 's'} {tt("ui.will.be.signed.out.60ca", "will be signed out. Your current session stays signed in.")}
+              {plural(tt, others.length, 'count.otherSessionOne', '{n} other session', 'count.otherSession', '{n} other sessions')} {tt("ui.will.be.signed.out.60ca", "will be signed out. Your current session stays signed in.")}
             </p>
             <div className={shared.modalActions}>
               <button type="button" className={`${shared.btn} ${shared.ghostBTN}`} onClick={() => setConfirmAll(false)} disabled={busy}>

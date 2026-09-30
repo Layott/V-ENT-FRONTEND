@@ -91,9 +91,15 @@ export const BARE = {
     unite: 'unité', zero: 'zéro', envoye: 'envoyé', envoyes: 'envoyés', abonne: 'abonné',
     abonnes: 'abonnés',
     paye: 'payé', payes: 'payés', termine: 'terminé', rembourse: 'remboursé', rembourses: 'remboursés', verse: 'versé', verses: 'versés', annule: 'annulé', ferme: 'fermé', valide: 'validé', publie: 'publié', programme: 'programmé', confirme: 'confirmé', accepte: 'accepté', ajoute: 'ajouté',
+    // Found 30 September 2026 (inbox 364) in the vendor-slot block: typed
+    // without accents AND without apostrophes, which no word here knew.
+    derives: 'dérivés', redige: 'rédigé', dechets: 'déchets', jai: 'j’ai',
+    lemplacement: 'l’emplacement', lorganisateur: 'l’organisateur', lacheteur: 'l’acheteur',
+    sagit: 's’agit', quil: 'qu’il', quils: 'qu’ils', quelle: null,
     mois: null, a: null,
   },
   pt: {
+    espacos: 'espaços',
     nao: 'não', sao: 'são', entao: 'então', informacao: 'informação', configuracoes: 'configurações',
     opcoes: 'opções', acao: 'ação', acoes: 'ações', transacao: 'transação', transacoes: 'transações',
     publico: 'público', numero: 'número', proximo: 'próximo', ultimo: 'último', tambem: 'também',

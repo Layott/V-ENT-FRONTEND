@@ -1,3 +1,6 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import { imagePlaceholder, mediaIn, mediaUrl } from '@/lib/mediaUrl';
 import Image from 'next/image'
 import Link from 'next/link';
@@ -8,8 +11,10 @@ import { GoDotFill } from "react-icons/go";
 import newTournamentStyles from './../../tournaments/new-tournaments/new-tournaments.module.css'
 import menuContentStyles from '@/styles/menu/menu-content.module.css'
 import { appLocale } from '@/lib/appLocale';
+import { eventTypeLabel } from '@/lib/labels';
 
 const UpcomingEvents = ({ upcomingEvents = [] }) => {
+  const tt = useT();
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
   // Function to get the correct image URL - same as tournament implementation
@@ -75,7 +80,7 @@ const UpcomingEvents = ({ upcomingEvents = [] }) => {
                   <div className={menuContentStyles.detailsContainer}>
                     <div className={menuContentStyles.eventOrParticipantTypeContainer}>
                       <p className={menuContentStyles.eventTypeParagraph}>
-                        <span className={menuContentStyles.eventTypeSpan}>{event.event_type}</span>
+                        <span className={menuContentStyles.eventTypeSpan}>{eventTypeLabel(tt, event.event_type)}</span>
                       </p>
                       {event.location && (
                         <>

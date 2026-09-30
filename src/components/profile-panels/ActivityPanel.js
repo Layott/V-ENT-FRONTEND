@@ -7,6 +7,7 @@ import styles from './ActivityPanel.module.css';
 import parentStyles from '@/app/user-profile/user-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { plural } from '@/lib/plural';
 const TOURNAMENT_STATUS = {
   upcoming: {
     cls: styles.sUpcoming,
@@ -281,7 +282,7 @@ const ActivityPanel = ({
       <div className={styles.activityWrap}>
         <div className={styles.filterBar}>
           <div className={styles.filterCount}>
-            {total} {subTab === 'tournaments' ? 'tournament' : 'event'}{total === 1 ? '' : 's'}
+            {subTab === 'tournaments' ? plural(tt, total, 'count.tournamentOne', '{n} tournament', 'count.tournament', '{n} tournaments') : plural(tt, total, 'count.eventOne', '{n} event', 'count.event', '{n} events')}
           </div>
           <div className={styles.filterControls}>
             <div className={styles.ctrlSearch}>

@@ -8,26 +8,14 @@ import styles from './SecurityPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
+import { formatRelative } from '@/lib/datetime';
 
 // Recent sign-ins are read from the account. There used to be a fixed list of
 // ten invented ones here - a MacBook, an iPad, addresses in Lagos and Abuja -
 // shown identically to every user, which defeats the only purpose this table
 // has: letting somebody notice a sign-in that was not theirs.
-const relativeTime = iso => {
-  if (!iso) return '';
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return '';
-  const seconds = Math.max(0, Math.round((Date.now() - then) / 1000));
-  if (seconds < 60) return 'Just now';
-  const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
-  const days = Math.round(hours / 24);
-  if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`;
-  const months = Math.round(days / 30);
-  return `${months} month${months === 1 ? '' : 's'} ago`;
-};
+// The reader's language, not "minute" + "s" in English (inbox 364).
+const relativeTime = iso => (iso ? formatRelative(iso, { fallback: '' }) : '');
 
 // ── Password strength scoring ────────────────────────────────────────────
 const scorePassword = pw => {

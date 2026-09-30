@@ -1,8 +1,13 @@
+'use client';
+
+import { useT } from '@/i18n/LanguageProvider';
 import { TfiClose } from "react-icons/tfi";
 import Image from "next/image";
 import styles from './team-events-history.module.css'
+import { eventStatusLabel } from '@/lib/labels';
 
 const TeamEventsDetails = ({ selectedTournament, setSelectedTournament }) => {
+  const tt = useT();
     if (!selectedTournament) return null
 
   return (
@@ -32,7 +37,7 @@ const TeamEventsDetails = ({ selectedTournament, setSelectedTournament }) => {
             
             <div className={styles.tournamentRecord}>
               <label>Status:</label>
-              <p>{selectedTournament.status}</p>
+              <p>{eventStatusLabel(tt, selectedTournament.status)}</p>
             </div>
             
             <div className={styles.tournamentRecord}>

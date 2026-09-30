@@ -49,7 +49,7 @@ const ForgotPassword = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (!emailRegex.test(email.trim())) {
-      setEmailError('Enter a valid email address');
+      setEmailError(tt('msg.emailBad', 'Enter a valid email address'));
       return;
     }
     setEmailError('');

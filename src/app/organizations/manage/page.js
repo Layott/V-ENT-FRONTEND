@@ -27,6 +27,7 @@ import OrgMembershipsPanel from '@/components/memberships/OrgMembershipsPanel';
 import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
 import { sameUser, usernameOf } from '@/lib/gating';
+import { plural } from '@/lib/plural';
 const TABS = [{
   id: 'members',
   label: 'Members'
@@ -1080,7 +1081,7 @@ const ManageOrgContent = ({
                       <div>
                         <p className={styles.verifyItemTitle}>{tt("ui.members.e611", "5+ members")}</p>
                         <p className={styles.verifyItemSub}>
-                          {tt("ui.have.799c", "You have")} {org.member_count} {tt("ui.member.6467", "member")}{org.member_count === 1 ? '' : 's'}{tt("ui.verified.orgs.need.at.40b3", ". Verified orgs need at least 5.")}
+                          {tt("ui.have.799c", "You have")} {plural(tt, org.member_count, 'count.memberOne', '{n} member', 'count.member', '{n} members')}{tt("ui.verified.orgs.need.at.40b3", ". Verified orgs need at least 5.")}
                         </p>
                       </div>
                     </div>
@@ -1092,7 +1093,7 @@ const ManageOrgContent = ({
                       <div>
                         <p className={styles.verifyItemTitle}>{tt("ui.hosted.least.tournament.3383", "Hosted at least 1 tournament")}</p>
                         <p className={styles.verifyItemSub}>
-                          {tt("ui.have.hosted.73bd", "You have hosted")} {org.tournaments_hosted || 0} {tt("ui.tournament.cb9d", "tournament")}{org.tournaments_hosted === 1 ? '' : 's'}.
+                          {tt("ui.have.hosted.73bd", "You have hosted")} {plural(tt, org.tournaments_hosted || 0, 'count.tournamentOne', '{n} tournament', 'count.tournament', '{n} tournaments')}.
                         </p>
                       </div>
                     </div>

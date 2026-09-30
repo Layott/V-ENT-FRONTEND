@@ -73,11 +73,11 @@ const Login = () => {
     const next = {};
     const id = username_or_email.trim();
     if (!id) {
-      next.username_or_email = "Email or username is required";
+      next.username_or_email = tt('msg.loginIdNeeded', "Email or username is required");
     } else if (id.includes("@") && !emailRegex.test(id)) {
-      next.username_or_email = "Enter a valid email address";
+      next.username_or_email = tt('msg.emailBad', "Enter a valid email address");
     }
-    if (!password) next.password = "Password is required";else if (password.length < 8) next.password = "Password must be at least 8 characters";
+    if (!password) next.password = tt('msg.passwordNeeded', "Password is required");else if (password.length < 8) next.password = tt('msg.passwordMin8', "Password must be at least 8 characters");
     return next;
   };
   const togglePasswordVisibility = () => {

@@ -478,7 +478,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
           so ordering needs its own control. */}
       {cart.length > 0 && !cartOpen && <div className={styles.checkoutBar}>
           <div className={styles.checkoutBarInfo}>
-            <span className={styles.checkoutBarCount}>{cartCount} {tt("ui.item.3a7d", "item")}{cartCount === 1 ? '' : 's'}</span>
+            <span className={styles.checkoutBarCount}>{plural(tt, cartCount, 'count.itemOne', '{n} item', 'count.item', '{n} items')}</span>
             <span className={styles.checkoutBarTotal}>{formatNumber(cartTotalVc)} VC</span>
           </div>
           <button type="button" className={`${styles.checkoutBarBtn} goldBTN`} onClick={() => {

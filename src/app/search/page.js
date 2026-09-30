@@ -28,6 +28,7 @@ import Banner from '@/components/banner/Banner';
 import UserChip from '@/components/user-chip/UserChip';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
+import { eventTypeLabel, seriesStatusLabel } from '@/lib/labels';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -931,7 +932,7 @@ const EventCard = ({
         <span className={`${styles.statusBadge} ${styles[`status_${e.status}`] || ''}`}>
           {statusLabel}
         </span>
-        <span className={styles.typeBadge}>{e.event_type}</span>
+        <span className={styles.typeBadge}>{eventTypeLabel(tt, e.event_type)}</span>
       </div>
       <div className={styles.tCardBody}>
         <h3 className={styles.tCardTitle}>{e.name}</h3>
@@ -1111,7 +1112,7 @@ const MangaCard = ({
   return <Link href={`/anime/reader?id=${m.id}`} className={styles.mangaCard}>
     <div className={styles.mangaCoverWrap}>
       <Banner src={mediaUrl(m.cover)} alt={tx(m.title)} className={styles.mangaCover} />
-      <span className={styles.mangaStatus}>{m.status}</span>
+      <span className={styles.mangaStatus}>{seriesStatusLabel(tt, m.status)}</span>
     </div>
     <div className={styles.mangaBody}>
       <h3 className={styles.mangaTitle}>{tx(m.title)}</h3>

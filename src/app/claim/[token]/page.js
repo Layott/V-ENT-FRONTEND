@@ -57,7 +57,7 @@ const ClaimAccount = () => {
           setLoadError(apiMessage(tt, data, "api.thisClaimLinkIsNot", "This claim link is not valid."));
         }
       } catch {
-        if (!cancelled) setLoadError('Could not reach V-ENT. Check your connection and try again.');
+        if (!cancelled) setLoadError(tt('msg.noReachVent', 'Could not reach V-ENT. Check your connection and try again.'));
       } finally {
         if (!cancelled) setChecking(false);
       }

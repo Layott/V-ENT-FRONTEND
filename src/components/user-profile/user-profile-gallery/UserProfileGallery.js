@@ -108,11 +108,11 @@ const UserProfileGallery = () => {
   const handleUploadClick = () => {
     // Check if user is authenticated
     if (status === "loading") {
-      setUploadError("Please wait, checking authentication...");
+      setUploadError(tt('msg.checkingSession', "Please wait, checking authentication..."));
       return;
     }
     if (status === "unauthenticated" || !session?.user?.sessionToken) {
-      setUploadError("Please log in to upload images");
+      setUploadError(tt('msg.signInToUpload', "Please log in to upload images"));
       return;
     }
     if (fileInputRef.current) {
@@ -213,14 +213,14 @@ const UserProfileGallery = () => {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setUploadError("Please select a valid image file");
+      setUploadError(tt('msg.pickImage', "Please select a valid image file"));
       return;
     }
 
     // Validate file size (e.g., max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      setUploadError("File size must be less than 5MB");
+      setUploadError(tt('msg.fileUnder5mb', "File size must be less than 5MB"));
       return;
     }
     setIsUploading(true);
@@ -270,7 +270,7 @@ const UserProfileGallery = () => {
       // ✅ ✅ ✅ FIXED HERE:
       if (!error.message.includes("Upload limit exceeded") && !error.message.includes("limit")) {
         console.error('[v-ent] gallery upload', error);
-        setUploadError('That picture did not upload. Check the file and try again.');
+        setUploadError(tt('msg.pictureNotUploaded', 'That picture did not upload. Check the file and try again.'));
       }
     } finally {
       setIsUploading(false);

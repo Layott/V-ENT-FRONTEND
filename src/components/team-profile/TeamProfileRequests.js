@@ -11,6 +11,7 @@ import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
+import { requestStatusLabel } from '@/lib/labels';
 const TeamProfileRequests = ({
   team,
   onToast
@@ -160,7 +161,7 @@ const TeamProfileRequests = ({
                 <p className={styles.requestMessage}>{i.message}</p>
                 <div className={styles.requestFooter}>
                   <span className={styles.requestTime}><LuClock /> {tt("ui.sent.35f4", "Sent")} {fmtDate(i.created_at)}</span>
-                  <span className={`${styles.statusBadge} ${styles.statusUpcoming}`}>{i.status}</span>
+                  <span className={`${styles.statusBadge} ${styles.statusUpcoming}`}>{requestStatusLabel(tt, i.status)}</span>
                 </div>
               </div>)}
           </div>}
