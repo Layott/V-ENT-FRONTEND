@@ -106,7 +106,7 @@ export default function PrivacyPolicy() {
         <p style={subStyle}>{k('updated')}</p>
 
         {SECTIONS.map((section) => (
-          <section key={section.id} style={sectionStyle}>
+          <section key={section.id} id={section.id} style={sectionStyle}>
             <h2 style={sectionTitleStyle}>
               {t(`policy.${section.id}.heading`, section.heading)}
             </h2>

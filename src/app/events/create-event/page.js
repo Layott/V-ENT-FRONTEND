@@ -60,6 +60,9 @@ const emptyForm = {
   // IF THAT DAY MEANS STARTING AFRESH OR IT KEEPS CPUNTING". It was settable in
   // the console and not here, so every event started on the default.
   capacity_mode: 'per_day',
+  // 18 for an adults-only event, 0 for everybody (inbox 305: an 18+ event
+  // closes going together to minors; same meaning as a tournament's min_age).
+  min_age: 0,
   // Whose name it runs in. Empty means the organiser's own.
   organization: '',
   organization_name: '',
@@ -692,6 +695,16 @@ const CreateEventPage = () => {
                   </select>
                   <span className={styles.freeEntryHint}>
                     {tt('createEvent.capacityModeHint', 'On a two-day event, "each day" means the number starts again on day two. "The whole event" means the two days share it.')}
+                  </span>
+                </label>
+                <label className={styles.freeEntryRow}>
+                  <input type="checkbox" checked={Number(formData.min_age) >= 18}
+                         onChange={e => update('min_age', e.target.checked ? 18 : 0)} />
+                  <span>
+                    <strong>{tt('createEvent.adultsOnly', '18+ event')}</strong>
+                    <span className={styles.freeEntryHint}>
+                      {tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')}
+                    </span>
                   </span>
                 </label>
               </div>}

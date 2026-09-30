@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
-import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding } from 'react-icons/lu';
+import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding, LuMapPin } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
@@ -158,6 +158,13 @@ export const NAV = [{
     href: '/admin/audit-log',
     icon: LuFileText,
     perms: ['view_audit_log']
+  }, {
+    // Where people said they were leaving from for an event (inbox 305c).
+    // Its own permission: the general admin role does not have it.
+    label: 'Location history',
+    href: '/admin/location-history',
+    icon: LuMapPin,
+    perms: ['view_location_history']
   }, {
     label: 'Settings',
     href: '/admin/settings',

@@ -1807,3 +1807,9 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
     min-width: 44px;
   }
 }
+
+/* An adults-only event (inbox 305), beside the event type. */
+.adultsOnly {
+  background: rgba(237, 28, 36, 0.16);
+  color: #ff8a80;
+}

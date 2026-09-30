@@ -13,7 +13,7 @@
 export const POLICY_KEYS = {
   back: ['back', 'Back to V-ENT'],
   title: ['title', 'Privacy policy'],
-  updated: ['updated', 'Last updated: April 2026 · Vermillion Encore (V-ENT)'],
+  updated: ['updated', 'Last updated: September 2026 · Vermillion Encore (V-ENT)'],
   authoritative: [
     'authoritative',
     'This policy is written in English. The French and Portuguese versions are '
@@ -44,7 +44,7 @@ export const SECTIONS = [
       'Account information: email, username, full name, country, password hash.',
       'Profile information you choose to provide: avatar, banner, bio, social handles, gaming accounts.',
       'Wallet activity: top-ups, sends, withdrawals, prize payouts. Card data is handled by '
-      + 'Paystack, and we do not store card numbers.',
+      + 'Paystack or Flutterwave, and we do not store card numbers.',
       'Tournament and event activity: registrations, results, brackets, tickets.',
       'Device and log data: IP, device, browser, login timestamps, security events.',
       'KYC documents when you choose to verify, held in encrypted private storage.',
@@ -86,7 +86,7 @@ export const SECTIONS = [
     heading: '6. Security',
     paragraphs: [
       'Passwords are hashed. Sessions are bound to device and IP. KYC documents live in private '
-      + 'S3 storage with restricted IAM. Paystack handles card data on PCI-DSS-compliant '
+      + 'S3 storage with restricted IAM. Paystack and Flutterwave handle card data on PCI-DSS-compliant '
       + 'infrastructure, and V-ENT never sees your card number.',
     ],
   },
@@ -99,8 +99,17 @@ export const SECTIONS = [
     ],
   },
   {
+    id: 'going-together',
+    heading: '8. Going together at events',
+    paragraphs: [
+      'If you hold a ticket to an event, you may choose to show that you are going, the area you are leaving from, and whether other people at the event may ping you to meet up. All of it is off until you switch it on, and you choose who sees each part: nobody, your mutual follows, people you approve, or everyone at the event.',
+      'What you can share depends on the date of birth on your profile. Under 13, none of it is available. From 13 to 17 the choices are narrower, pings are only between people of the same age group, and an adult never sees a minor’s area. Events marked 18+ close it to anybody younger.',
+      'Once the event ends, the area you left from is hidden from everybody, including you. V-ENT keeps a record of every area you set, for safety, and only staff with a separate permission can search it; each search must give a reason and is written to our audit log. The record is included when you download your data from Settings.',
+    ],
+  },
+  {
     id: 'contact',
-    heading: '8. Contact',
+    heading: '9. Contact',
     contact: true,
   },
 ];

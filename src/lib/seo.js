@@ -552,6 +552,8 @@ export function eventLd(e, path) {
     url: absolute(path),
     startDate: start,
     ...(end ? { endDate: end } : {}),
+    // An adults-only event says so where a reader of the markup can see it.
+    ...(Number(e.min_age) >= 18 ? { typicalAgeRange: '18-' } : {}),
     eventStatus: e.is_active === false
       ? 'https://schema.org/EventCancelled'
       : 'https://schema.org/EventScheduled',

@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import shared from './settingsShared.module.css';
 import styles from './AccountPanel.module.css';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
+import BirthdayCard from './BirthdayCard';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
@@ -255,6 +256,8 @@ const AccountPanel = ({
           <span className={shared.fieldHelper}>{tt("ui.letters.numbers.underscores.characters.0bcd", "Letters, numbers and underscores, 3 to 20 characters. Case does not create a new name.")}</span>
         </div>
       </div>
+
+      <BirthdayCard showToast={showToast} />
 
       {/* Read-only meta */}
       <div className={shared.card}>
