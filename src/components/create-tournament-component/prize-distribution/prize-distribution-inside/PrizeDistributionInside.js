@@ -218,7 +218,7 @@ const PrizeDistributionInside = ({
                 <label htmlFor="prizePoolTotal" className={createTournamentStyles.labelWithAsterisk}>
                   <span className="fieldLabelRow">{tt("ui.total.prize.pool.2276", "Total prize pool")} <InfoTip id="prizePoolTotal" /></span>
                 </label>
-                <input id="prizePoolTotal" type="number" min="0" placeholder={`Total in ${currency}`} className={createTournamentStyles.inputNumber} value={poolTotal} onChange={e => setPoolTotal(e.target.value)} />
+                <input id="prizePoolTotal" type="number" min="0" placeholder={tt('prize.totalIn', 'Total in {currency}').replace('{currency}', currency)} className={createTournamentStyles.inputNumber} value={poolTotal} onChange={e => setPoolTotal(e.target.value)} />
                 <span className={styles.conversionHint}>{showCoins(poolTotal)}</span>
               </div>
             </div>
@@ -234,12 +234,12 @@ const PrizeDistributionInside = ({
             {positions.map(position => <div key={position} className={`${createTournamentStyles.twoInputContainer} ${styles.twoInputContainer}`}>
                 <div className={createTournamentStyles.inputGroup}>
                   <label htmlFor={`prizePosition${position}`} className={createTournamentStyles.labelWithAsterisk}>
-                    <span className="fieldLabelRow">{position} {tt("ui.place.c32a", "Place")} {position === 1 && "(Winner)"}
+                    <span className="fieldLabelRow">{position} {tt("ui.place.c32a", "Place")} {position === 1 && tt('prize.winnerNote', '(Winner)')}
                     <span className={createTournamentStyles.asteriskSpan}>
                       <FaAsterisk className={createTournamentStyles.asteriskIcon} />
                     </span> <InfoTip id="prizePlace" /></span>
                   </label>
-                  <input id={`prizePosition${position}`} type="number" placeholder={`Prize for ${position} place in ${currency}`} className={createTournamentStyles.inputNumber} value={prizes[`prizePosition${position}`] || ""} onChange={e => handlePrizeChange(position, e.target.value)} />
+                  <input id={`prizePosition${position}`} type="number" placeholder={tt('prize.forPlace', 'Prize for place {n} in {currency}').replace('{n}', position).replace('{currency}', currency)} className={createTournamentStyles.inputNumber} value={prizes[`prizePosition${position}`] || ""} onChange={e => handlePrizeChange(position, e.target.value)} />
                   <span className={styles.conversionHint}>
                     {showCoins(prizes[`prizePosition${position}`])}
                   </span>
@@ -255,7 +255,7 @@ const PrizeDistributionInside = ({
                   <input id={`extraBonus${position}`} type="text" placeholder={tt("ui.what.bonus.e.g.c411", "What the bonus is, e.g. a gaming chair")} className={`${createTournamentStyles.inputText} ${styles.inputText}`} value={extraBonuses[`extraBonus${position}`] || ""} onChange={e => handleBonusChange(position, e.target.value)} />
                   {/* A bonus can be a thing ("gaming chair") and a value. The
                       value converts exactly like a prize does. */}
-                  <input id={`bonusAmount${position}`} type="number" min="0" placeholder={`Bonus value in ${currency} (optional)`} className={createTournamentStyles.inputNumber} value={bonusAmounts[`bonusAmount${position}`] || ""} onChange={e => handleBonusAmountChange(position, e.target.value)} />
+                  <input id={`bonusAmount${position}`} type="number" min="0" placeholder={tt('prize.bonusIn', 'Bonus value in {currency} (optional)').replace('{currency}', currency)} className={createTournamentStyles.inputNumber} value={bonusAmounts[`bonusAmount${position}`] || ""} onChange={e => handleBonusAmountChange(position, e.target.value)} />
                   <span className={styles.conversionHint}>
                     {showCoins(bonusAmounts[`bonusAmount${position}`])}
                   </span>

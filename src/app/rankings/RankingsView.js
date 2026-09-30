@@ -250,7 +250,7 @@ const RankingsView = () => {
       <div className={styles.filtersRow}>
         <div className={styles.searchBar}>
           <CiSearch className={styles.searchIcon} />
-          <input type="text" placeholder={`Search ${tab}…`} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
+          <input type="text" placeholder={tt(`rankings.search.${tab}`, `Search ${tab}…`)} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
         </div>
 
         <div className={styles.filterSelect}>
@@ -292,7 +292,7 @@ const RankingsView = () => {
         // Rendering order: 2nd, 1st, 3rd for visual hierarchy on desktop.
         const entry = top3[slot];
         if (!entry) return null;
-        return <button type="button" key={entry.id} className={`${styles.podiumCard} ${podiumOrderClass[slot]}`} onClick={() => navigateToProfile(entry)} aria-label={`View ${entry.name}`}>
+        return <button type="button" key={entry.id} className={`${styles.podiumCard} ${podiumOrderClass[slot]}`} onClick={() => navigateToProfile(entry)} aria-label={tt('rankings.viewEntry', 'View {name}').replace('{name}', entry.name)}>
                 <span className={styles.podiumRank}>
                   {podiumIcons[slot]}
                   <span>{podiumLabels[slot]}</span>

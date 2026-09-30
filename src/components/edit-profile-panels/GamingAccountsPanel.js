@@ -94,7 +94,7 @@ const GamingAccountsPanel = ({
                   <span className={`${styles.toggleLabel} ${acc.connected ? styles.toggleLabelActive : ''}`}>
                     {acc.connected ? 'Connected' : 'Disconnected'}
                   </span>
-                  <button type="button" className={`${styles.toggle} ${acc.connected ? styles.toggleOn : ''}`} onClick={() => updateField(p.id, 'connected', !acc.connected)} aria-label={`Toggle ${p.name}`}>
+                  <button type="button" className={`${styles.toggle} ${acc.connected ? styles.toggleOn : ''}`} onClick={() => updateField(p.id, 'connected', !acc.connected)} aria-label={tt('profile.toggleNamed', 'Turn {name} on or off').replace('{name}', p.name)}>
                     <span className={styles.toggleHandle} />
                   </button>
                 </div>

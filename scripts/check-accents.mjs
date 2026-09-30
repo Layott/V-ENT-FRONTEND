@@ -96,6 +96,7 @@ export const BARE = {
     derives: 'dérivés', redige: 'rédigé', dechets: 'déchets', jai: 'j’ai',
     lemplacement: 'l’emplacement', lorganisateur: 'l’organisateur', lacheteur: 'l’acheteur',
     sagit: 's’agit', quil: 'qu’il', quils: 'qu’ils', quelle: null,
+    defis: 'défis',
     mois: null, a: null,
   },
   pt: {

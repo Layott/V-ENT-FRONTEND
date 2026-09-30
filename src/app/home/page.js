@@ -21,11 +21,12 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './home.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { formatNumber } from '@/lib/datetime';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
-const ngnFormatter = new Intl.NumberFormat('en-NG');
+// Grouping follows the reader's language (formatNumber), not English.
 const formatDate = d => {
   if (!d) return '-';
   return new Date(d).toLocaleDateString(appLocale(), {
@@ -189,7 +190,17 @@ const activityIconFor = (kind, type) => {
 };
 
 // Greeting line under the welcome header, one per weekday.
-const motivationByDay = ['Sunday reset. Line up the week and pick your next tournament.', 'Mondays are for setting the pace. Pick a goal, chase it.', 'Tuesday grind. Small reps beat big talk.', 'Midweek. Check your bracket and your balance.', 'Thursday. Lock in the squad before the weekend runs.', 'Friday. Prime time for scrims and finals.', 'Saturday. Play the matches you have been waiting for.'];
+// Keys, not sentences: this list reached French readers in English (full
+// walk, 30 September 2026). The English is each key's fallback.
+const motivationByDay = [
+  ['home.day.0', 'Sunday reset. Line up the week and pick your next tournament.'],
+  ['home.day.1', 'Mondays are for setting the pace. Pick a goal, chase it.'],
+  ['home.day.2', 'Tuesday grind. Small reps beat big talk.'],
+  ['home.day.3', 'Midweek. Check your bracket and your balance.'],
+  ['home.day.4', 'Thursday. Lock in the squad before the weekend runs.'],
+  ['home.day.5', 'Friday. Prime time for scrims and finals.'],
+  ['home.day.6', 'Saturday. Play the matches you have been waiting for.'],
+];
 
 /* ─────────────────────────── count-up hook ─────────────────────────── */
 
@@ -362,7 +373,7 @@ const HomePage = () => {
   const sessionName = snapshot?.user?.name || session?.user?.name || session?.user?.username;
   const firstName = (typeof sessionName === 'string' && sessionName.trim() ? sessionName.split(' ')[0] : '') || 'Gamer';
   const today = new Date();
-  const motivation = motivationByDay[today.getDay()];
+  const motivation = tt(...motivationByDay[today.getDay()]);
   const wallet = snapshot?.wallet || {
     balance_vc: 0,
     balance_ngn: 0
@@ -419,10 +430,10 @@ const HomePage = () => {
             {loading ? Array.from({
             length: 4
           }).map((_, i) => <div key={i} className={`${styles.statCard} ${styles.skeletonCard}`} aria-hidden />) : <>
-                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} suffix=" VC" sub={`₦${ngnFormatter.format(wallet.balance_ngn)} equivalent`} animated={animateStats} accent="green" href="/wallets" />
-                <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub="Open to join now" animated={animateStats} href="/tournaments" />
-                <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub="Happening soon" animated={animateStats} href="/events" />
-                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub="Squads you own" animated={animateStats} accent="red" href="/teams" />
+                <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} suffix=" VC" sub={tt('home.sub.walletNaira', '{amount} in naira').replace('{amount}', `₦${formatNumber(wallet.balance_ngn)}`)} animated={animateStats} accent="green" href="/wallets" />
+                <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub={tt('home.sub.openTournaments', 'Open to join now')} animated={animateStats} href="/tournaments" />
+                <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub={tt('home.sub.upcomingEvents', 'Happening soon')} animated={animateStats} href="/events" />
+                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub={tt('home.sub.myTeams', 'Squads you own')} animated={animateStats} accent="red" href="/teams" />
               </>}
           </section>
 
@@ -622,7 +633,7 @@ const HomePage = () => {
                     <span className={styles.walletUnit}> VC</span>
                   </p>
                   <p className={styles.walletRate}>
-                    ≈ ₦{ngnFormatter.format(wallet.balance_ngn)} · ₦1,000 = 1 VC
+                    ≈ ₦{formatNumber(wallet.balance_ngn)} · ₦{formatNumber(1000)} = 1 VC
                   </p>
 
                   <div className={styles.walletActions}>

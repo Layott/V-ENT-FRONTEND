@@ -773,7 +773,7 @@ const CommunityInner = () => {
                   <Avatar src={me.avatar} name={me.username} size={40} />
                 </div>
                 <div className={styles.composeBody}>
-                  <textarea className={styles.composeTextarea} placeholder={`What's on your mind, ${me.full_name.split(' ')[0]}?`} value={composeText} onChange={e => setComposeText(e.target.value)} maxLength={500} />
+                  <textarea className={styles.composeTextarea} placeholder={tt('community.composePlaceholder', 'What is on your mind, {name}?').replace('{name}', me.full_name.split(' ')[0])} value={composeText} onChange={e => setComposeText(e.target.value)} maxLength={500} />
                   {composeImage && <div className={styles.composeImageWrap}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={composeImage} alt={tt("ui.attachment.preview.f608", "attachment preview")} className={styles.composeImagePreview} />
