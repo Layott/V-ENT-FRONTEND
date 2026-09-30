@@ -2,7 +2,7 @@
 
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import BlockList from './BlockList';
 import shared from './settingsShared.module.css';
 import styles from './PrivacyPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -40,6 +40,7 @@ const PrivacyPanel = ({
   // The names the server reads (inbox 399). This panel saved allow_dm_from and
   // search_indexable, which nothing read, so both switches did nothing; the
   // server still maps those names for a page loaded before this change.
+  const [showBlocks, setShowBlocks] = useState(false);
   const [state, setState] = useState({
     profile_visibility: privacy.profile_visibility || 'public',
     show_email: !!privacy.show_email,
@@ -170,13 +171,11 @@ const PrivacyPanel = ({
             <span className={shared.toggleRowTitle}>{tt("ui.blocked.users.80a6", "Blocked users")}</span>
             <p className={shared.toggleRowSub}>{tt("ui.manage.list.users.have.2c72", "Manage the list of users you have blocked.")}</p>
           </div>
-          <Link href="/settings?panel=privacy" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`} onClick={e => {
-          e.preventDefault();
-          showToast?.('Block list coming soon');
-        }}>
-            {tt("ui.manage.block.list.ea2a", "Manage block list")}
-          </Link>
+          <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`} aria-expanded={showBlocks} onClick={() => setShowBlocks(v => !v)}>
+            {showBlocks ? tt('settings.blockList.hide', 'Hide block list') : tt("ui.manage.block.list.ea2a", "Manage block list")}
+          </button>
         </div>
+        {showBlocks && <BlockList showToast={showToast} />}
       </div>
     </div>;
 };
