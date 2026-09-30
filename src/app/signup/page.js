@@ -2,7 +2,9 @@
 
 import { apiMessage } from '@/lib/apiMessage';
 import AuthProviders from '@/components/auth-providers/AuthProviders';
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useBotChallenge } from '@/lib/botChallenge';
+import BotTrap from '@/components/bot-trap/BotTrap';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
@@ -16,6 +18,7 @@ import generalStyles from "@/styles/auth/auth.module.css";
 import styles from "./signup.module.css";
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { rememberSignup } from '@/lib/signupRecord';
 const Signup = () => {
   const tx = useTx();
   const tt = useT();
@@ -33,6 +36,8 @@ const Signup = () => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
   const [loading, setLoading] = useState(false);
+  const { take: takeChallenge } = useBotChallenge();
+  const trapRef = useRef(null);
   const [emailError, setEmailError] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [usernameError, setUsernameError] = useState("");
@@ -177,7 +182,7 @@ const Signup = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ ...payload, challenge: await takeChallenge(), website: trapRef.current?.value || '' })
       });
       const responseText = await response.text();
       let data;
@@ -189,7 +194,7 @@ const Signup = () => {
         };
       }
       if (response.ok) {
-        localStorage.setItem("signupData", JSON.stringify(payload));
+        rememberSignup(payload);
         // Flag first-run so the first login routes through /onboarding.
         localStorage.setItem("needsOnboarding", "true");
         router.push("/verify-email");
@@ -237,6 +242,7 @@ const Signup = () => {
                 address bar, in history, and in any referrer. */}
 
                     <form method="post" className={generalStyles.generalForm} onSubmit={handleFormSubmit}>
+                      <BotTrap inputRef={trapRef} />
 
                         <div className={generalStyles.inputGroup}>
                             <label>{tt("ui.email.address.852c", "Email Address:")}</label>

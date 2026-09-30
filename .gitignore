@@ -53,3 +53,10 @@ __pycache__/
 # A browser profile of its own for scripts/walk-console.mjs, so a walk does not
 # share cookies with whatever else is signed in on this machine.
 .walk-profile
+
+# Keys and service credentials never enter the repo (owner rule R62)
+*.key
+*.p12
+*.pfx
+*service-account*.json
+*credentials*.json

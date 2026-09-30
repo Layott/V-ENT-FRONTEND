@@ -4,6 +4,56 @@
 // build time; without it only the local dev hosts below are allowed.
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
+// The security headers every page carries (owner rule R77, 30 September 2026).
+//
+// nginx already sent X-Frame-Options, nosniff and a referrer policy for
+// v-ent.co; HSTS and a Content-Security-Policy were missing. They are set here
+// rather than in nginx so a local build and the box send the same thing, and
+// so the list of what a page may load lives next to the code that loads it.
+//
+// The CSP names what the site actually uses, found by reading it:
+//   connect  the API (NEXT_PUBLIC_API_URL) and this origin
+//   frames   YouTube and Twitch stream embeds, Google Maps on an event, and
+//            the API's own overlays in the studio preview
+//   images   anywhere over https (avatars, maps tiles, link previews) and data
+//   scripts  this origin; 'unsafe-inline' because Next writes its bootstrap
+//            inline, 'unsafe-eval' only in development for fast refresh
+const isDev = process.env.NODE_ENV === 'development';
+const apiOrigin = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_API_URL || '').origin;
+  } catch {
+    return '';
+  }
+})();
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:" + (isDev ? ' http://localhost:* http://127.0.0.1:*' : ''),
+  "media-src 'self' blob: https:",
+  "font-src 'self' data:",
+  `connect-src 'self' ${apiOrigin}${isDev ? ' ws://localhost:* http://localhost:* http://127.0.0.1:*' : ''}`.trim(),
+  `frame-src 'self' ${apiOrigin} https://www.youtube.com https://player.twitch.tv https://www.google.com`.trim(),
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'self'",
+].join('; ');
+
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+  ...(isDev ? [] : [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]),
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // The door scanner needs the camera and the venue map can show where
+  // somebody is standing; nothing needs the microphone, and no framed page may
+  // ask for any of them.
+  { key: 'Permissions-Policy', value: 'camera=(self), geolocation=(self), microphone=()' },
+];
+
 const nextConfig = {
   // DEV builds into their own directory, so a production build can never
   // overwrite what a running dev server is serving from.
@@ -125,6 +175,10 @@ const nextConfig = {
   // addresses have been sent in emails and printed on a listing, so they keep
   // working rather than 404ing at the moment somebody is checking what they
   // agreed to.
+  async headers() {
+    return [{ source: '/:path*', headers: securityHeaders }];
+  },
+
   async redirects() {
     return [
       { source: '/terms-of-use.pdf', destination: '/terms', permanent: true },
