@@ -1,9 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
-import {
-  breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata,
-  unavailableMetadata,
-} from '@/lib/seo';
+import { breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import BattleClient from './BattleClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/anime/battles/<slug>` - one character battle.
 //
@@ -23,22 +21,17 @@ export async function generateMetadata(props) {
 
   if (battle?.__failed) return unavailableMetadata(slug, `/anime/battles/${slug}`);
   if (!battle || battle.__moved || !battle.title) {
-    return buildMetadata({
-      title: 'Battle not found',
-      description: 'This battle does not exist.',
-      path: `/anime/battles/${slug}`,
-      noindex: true,
-      locale,
-    });
+    return missingMetadata('battle', `/anime/battles/${slug}`);
   }
+  const { t } = recordCopy(locale);
 
   const names = (battle.characters || []).map(c => c.name).slice(0, 4);
   return buildMetadata({
     title: battle.title,
     description: clamp(
-      `${battle.description || 'A V-ENT character battle.'} `
+      `${battle.description || t('battle.default')} `
       + (names.length ? `${names.join(', ')}. ` : '')
-      + 'Scored on strength, speed, intelligence, durability and technique.'),
+      + t('battle.scored')),
     path: `/anime/battles/${battle.slug || slug}`,
     type: 'website',
     locale,

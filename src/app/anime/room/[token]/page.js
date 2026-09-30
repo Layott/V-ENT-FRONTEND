@@ -1,5 +1,6 @@
 import { buildMetadata, currentLocale } from '@/lib/seo';
 import RoomClient from './RoomClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/anime/room/<token>` - one reading room.
 //
@@ -9,12 +10,14 @@ import RoomClient from './RoomClient';
 // the test the project rule sets.
 
 export async function generateMetadata() {
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
   return buildMetadata({
-    title: 'Reading room',
-    description: 'A room where people read the same comic at the same time.',
+    title: t('room.title'),
+    description: t('room.description'),
     path: '/anime/room',
     noindex: true,
-    locale: await currentLocale(),
+    locale,
   });
 }
 

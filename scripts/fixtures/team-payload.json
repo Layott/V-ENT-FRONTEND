@@ -1,0 +1,100 @@
+{
+ "id": 14,
+ "team_id": 14,
+ "slug": "lagos-rangers",
+ "name": "Lagos Rangers",
+ "tag": null,
+ "game": "Free Fire",
+ "core_game": "Free Fire",
+ "logo": "https://api.v-ent.co/media/teams_logos/Lagos_Rangers_logo_hV8bxDv.jpg",
+ "logo_url": "https://api.v-ent.co/media/teams_logos/Lagos_Rangers_logo_hV8bxDv.jpg",
+ "team_logo": "https://api.v-ent.co/media/teams_logos/Lagos_Rangers_logo_hV8bxDv.jpg",
+ "image": "https://api.v-ent.co/media/teams_logos/Lagos_Rangers_logo_hV8bxDv.jpg",
+ "banner": "https://api.v-ent.co/media/teams_banners/Lagos_Rangers_banner_4khVGu4.jpg",
+ "banner_url": "https://api.v-ent.co/media/teams_banners/Lagos_Rangers_banner_4khVGu4.jpg",
+ "team_banner": "https://api.v-ent.co/media/teams_banners/Lagos_Rangers_banner_4khVGu4.jpg",
+ "is_accepting_members": true,
+ "open_to_join": true,
+ "region": null,
+ "max_members": null,
+ "password_protected": false,
+ "member_count": 4,
+ "bio": "Naija Free Fire Weekly regulars out of Yaba.",
+ "description": "Naija Free Fire Weekly regulars out of Yaba.",
+ "penalty_points": 0,
+ "creation_date": "2026-08-18",
+ "social_links": {
+  "discord": null
+ },
+ "owner": {
+  "id": 57,
+  "user_id": 57,
+  "username": "demo_temi",
+  "full_name": "Temi Adeyemi",
+  "avatar": "https://api.v-ent.co/media/profile_pictures/demo_temi_profile_B7lAIAu.png",
+  "founder_badge": false,
+  "profile_pic": "https://api.v-ent.co/media/profile_pictures/demo_temi_profile_B7lAIAu.png"
+ },
+ "members": [
+  {
+   "user_id": 57,
+   "username": "demo_temi",
+   "full_name": "Temi Adeyemi",
+   "role": "owner",
+   "joined_at": "2026-08-18",
+   "win_rate": 0,
+   "profile_pic": "https://api.v-ent.co/media/profile_pictures/demo_temi_profile_B7lAIAu.png",
+   "avatar": "https://api.v-ent.co/media/profile_pictures/demo_temi_profile_B7lAIAu.png",
+   "founder_badge": false
+  },
+  {
+   "user_id": 58,
+   "username": "demo_chidi",
+   "full_name": "Chidi Okeke",
+   "role": "member",
+   "joined_at": "2026-08-18",
+   "win_rate": 0,
+   "profile_pic": "https://api.v-ent.co/media/profile_pictures/demo_chidi_profile_qrNhzGM.png",
+   "avatar": "https://api.v-ent.co/media/profile_pictures/demo_chidi_profile_qrNhzGM.png",
+   "founder_badge": false
+  },
+  {
+   "user_id": 59,
+   "username": "demo_amara",
+   "full_name": "Amara Nwosu",
+   "role": "member",
+   "joined_at": "2026-08-18",
+   "win_rate": 0,
+   "profile_pic": "https://api.v-ent.co/media/profile_pictures/demo_amara_profile_EjP857v.png",
+   "avatar": "https://api.v-ent.co/media/profile_pictures/demo_amara_profile_EjP857v.png",
+   "founder_badge": false
+  },
+  {
+   "user_id": 60,
+   "username": "demo_yusuf",
+   "full_name": "Yusuf Bello",
+   "role": "member",
+   "joined_at": "2026-08-18",
+   "win_rate": 0,
+   "profile_pic": "https://api.v-ent.co/media/profile_pictures/demo_yusuf_profile_BzTkDIw.png",
+   "avatar": "https://api.v-ent.co/media/profile_pictures/demo_yusuf_profile_BzTkDIw.png",
+   "founder_badge": false
+  }
+ ],
+ "tournaments": [],
+ "events": [],
+ "stats": {
+  "win_rate": 0,
+  "tournaments_won": 0,
+  "wins": 0,
+  "losses": 0,
+  "total_prize_pool": 0,
+  "rank": null,
+  "win_rate_by_month": [],
+  "most_played_games": []
+ },
+ "_pendingRequestCount": 3,
+ "viewer_is_owner": false,
+ "viewer_is_member": false,
+ "viewer_request_status": "none"
+}

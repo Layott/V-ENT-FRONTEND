@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
-import { buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata } from '@/lib/seo';
+import { buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata, missingMetadata, currentLocale } from '@/lib/seo';
 import StallBySlugClient from './StallBySlugClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/events/lagos-anime-con/stall/suya-corner` - one stall at one event, by
 // name. It was `/events/vendor-shop/vendor?event=..&vendor=..` with a static
@@ -19,30 +20,27 @@ export async function generateMetadata(props) {
     `/event/${encodeURIComponent(slug)}/vendor/${encodeURIComponent(stall)}/`);
   if (got?.__failed) return unavailableMetadata(stall, path);
   const vendor = got?.vendor || null;
-  if (!vendor) {
-    return buildMetadata({
-      title: 'Stall not found',
-      description: 'This stall does not exist, or it has closed.',
-      path,
-      noindex: true,
-    });
-  }
+  if (!vendor) return missingMetadata('stall', path);
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
   const eventData = await fetchRecordForMetadata(
     `/event/view-event/${encodeURIComponent(slug)}/`);
   const eventName = eventData?.event?.name || eventData?.name || '';
   const products = Array.isArray(vendor.products) ? vendor.products : [];
   const sells = products.slice(0, 4).map((p) => p.name).filter(Boolean).join(', ');
-  const title = eventName ? `${vendor.name} at ${eventName}` : vendor.name;
+  const vars = { stall: vendor.name, event: eventName, items: sells };
+  const title = eventName ? t('stall.at', vars) : vendor.name;
   const description = clamp(
     vendor.description
-    || (sells ? `${vendor.name} sells ${sells}${eventName ? ` at ${eventName}` : ''}. Order before you arrive and collect at the booth.`
-      : `${vendor.name}${eventName ? ` at ${eventName}` : ''}${vendor.booth ? `, booth ${vendor.booth}` : ''}. What they sell and how to order.`),
+    || (sells ? t(eventName ? 'stall.sellsAt' : 'stall.sells', vars)
+      : t(eventName ? 'stall.plainAt' : 'stall.plain', vars)),
     155);
   const open = vendor.status === 'approved' || vendor.status === 'live';
   return buildMetadata({
     title,
     description,
     path,
+    locale,
     image: vendor.banner || vendor.logo || null,
     noindex: !open,
   });

@@ -1,4 +1,6 @@
 import { headers } from 'next/headers';
+import { privateTitle } from './seoCopy.js';
+import { recordCopy } from './seoRecordCopy.js';
 
 // Everything the site says about itself to a crawler or a link preview.
 //
@@ -227,9 +229,15 @@ export async function buildMetadata({
   };
 }
 
-/** Metadata for a page that must never be indexed: wallets, settings, admin. */
-export const privateMetadata = (title) =>
-  buildMetadata({ title, description: SITE.description, noindex: true });
+/**
+ * Metadata for a page that must never be indexed: wallets, settings, admin.
+ * Takes a PRIVATE_TITLES key (src/lib/seoCopy.js), never an English title:
+ * a literal here was every reader's title in every language (inbox 380).
+ */
+export async function privateMetadata(key) {
+  const locale = await currentLocale();
+  return buildMetadata({ title: privateTitle(key, locale), description: SITE.description, noindex: true, locale });
+}
 
 // ---------------------------------------------------------------------------
 // Fetching a record for metadata
@@ -287,11 +295,27 @@ export const titleFromSlug = (slug = '') =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
 /** Metadata for a record page whose record could not be fetched just now. */
-export function unavailableMetadata(slug, path) {
+export async function unavailableMetadata(slug, path) {
+  const locale = await currentLocale();
   return buildMetadata({
     title: titleFromSlug(slug) || SITE.name,
-    description: 'This page could not be loaded just now. Try again in a moment.',
+    description: recordCopy(locale).t('unavailable.description'),
     path,
+    locale,
+  });
+}
+
+/** "Not found" or "moved", in the reader's language, never indexed. */
+export async function missingMetadata(kind, path, { moved = false } = {}) {
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
+  const key = `${moved ? 'moved' : 'notFound'}.${kind}`;
+  return buildMetadata({
+    title: t(`${key}.title`),
+    description: t(`${key}.description`),
+    path,
+    noindex: true,
+    locale,
   });
 }
 
@@ -309,15 +333,9 @@ export function unavailableMetadata(slug, path) {
 // short URL has to carry the destination's own title, description and picture,
 // which means exactly one builder, used by both routes.
 
-// The fallback descriptions below are English sentences ("tournament on
-// ..."), so the date is written to match them. Translating these metadata
-// fallbacks is recorded as open (second bracket walk, 28 September 2026).
-const dateLabel = (value) => (value
-  // datetime-allow: an English date inside an English metadata sentence
-  ? new Date(value).toLocaleDateString('en-NG', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  })
-  : null);
+// The fallback descriptions below are written in the reader's language by
+// recordCopy (src/lib/seoRecordCopy.js), dates included, on the venue's clock.
+// They were English sentences until 30 September 2026 (inbox 380).
 
 // The event payload's own names, with the names these builders were first
 // written against kept as fallbacks. Until 18 September 2026 they read only
@@ -332,41 +350,31 @@ const eventTiers = (e) => (Array.isArray(e?.ticket_types) ? e.ticket_types
 const tierLeft = (tier) => (tier.available ?? tier.quantity_remaining ?? 1);
 
 /** Metadata for one event. `slug` is the address it was asked for. */
-export function eventMetadata(e, slug, { path } = {}) {
+export async function eventMetadata(e, slug, { path } = {}) {
   if (e?.__failed) return unavailableMetadata(slug, path || `/events/${slug}`);
-  if (!e) {
-    return buildMetadata({
-      title: 'Event not found',
-      description: 'This event does not exist, or it is no longer listed.',
-      path: path || `/events/${slug}`,
-      noindex: true,
-    });
-  }
-  if (e.__moved) {
-    return buildMetadata({
-      title: 'Event moved',
-      description: 'This event has been renamed.',
-      path: e.__moved,
-      noindex: true,
-    });
-  }
+  if (!e) return missingMetadata('event', path || `/events/${slug}`);
+  if (e.__moved) return missingMetadata('event', e.__moved, { moved: true });
 
-  const when = dateLabel(eventStart(e));
+  const locale = await currentLocale();
+  const copy = recordCopy(locale);
+  const when = copy.date(eventStart(e), e.timezone);
   const tiers = eventTiers(e);
   const cheapest = tiers.length
     ? Math.min(...tiers.map((t) => Number(t.price || 0)))
     : Number(e.entry_fee || 0);
+  const kind = copy.t(`event.kind.${e.event_type === 'physical' || e.event_type === 'hybrid' ? e.event_type : 'virtual'}`);
 
   const description = clamp(
     e.desc || e.description
     || [
-      `${e.event_type === 'physical' ? 'In person' : e.event_type === 'hybrid' ? 'In person and online' : 'Online'} event${when ? ` on ${when}` : ''}.`,
+      when ? copy.t('event.on', { kind, date: when }) : copy.t('event.plain', { kind }),
       e.location ? `${e.location}.` : null,
-      cheapest > 0 ? `Tickets from ${cheapest.toLocaleString()} NGN.` : 'Free to attend.',
+      cheapest > 0 ? copy.t('event.from', { price: copy.num(cheapest) }) : copy.t('event.free'),
     ].filter(Boolean).join(' '),
   );
 
   return buildMetadata({
+    locale,
     title: e.name || e.title,
     description,
     // Always the record's own address, never the short one. A short link is a
@@ -382,44 +390,37 @@ export function eventMetadata(e, slug, { path } = {}) {
 }
 
 /** Metadata for one tournament. */
-export function tournamentMetadata(t, slug, { path } = {}) {
+export async function tournamentMetadata(t, slug, { path } = {}) {
   if (t?.__failed) return unavailableMetadata(slug, path || `/tournaments/${slug}`);
-  if (!t) {
-    return buildMetadata({
-      title: 'Tournament not found',
-      description: 'This tournament does not exist, or it is no longer listed.',
-      path: path || `/tournaments/${slug}`,
-      noindex: true,
-    });
-  }
-  if (t.__moved) {
-    return buildMetadata({
-      title: 'Tournament moved',
-      description: 'This tournament has been renamed.',
-      path: t.__moved,
-      noindex: true,
-    });
-  }
+  if (!t) return missingMetadata('tournament', path || `/tournaments/${slug}`);
+  if (t.__moved) return missingMetadata('tournament', t.__moved, { moved: true });
 
-  const game = t.game ? `${t.game} ` : '';
+  const locale = await currentLocale();
+  const copy = recordCopy(locale);
   const prize = Number(t.prize_pool || 0);
-  const when = dateLabel(t.start_date_and_time);
+  const when = copy.date(t.start_date_and_time, t.timezone);
+  const opening = t.game
+    ? (when ? copy.t('tournament.gameOn', { game: t.game, date: when }) : copy.t('tournament.game', { game: t.game }))
+    : (when ? copy.t('tournament.on', { date: when }) : copy.t('tournament.plain'));
 
   // Written to be read in a search result, so it leads with what somebody is
   // deciding: the game, the date, what it pays, what it costs to enter.
   const description = clamp(
     t.tournament_description
     || [
-      `${game}tournament${when ? ` on ${when}` : ''}.`,
-      prize > 0 ? `${prize.toLocaleString()} VENT COINS prize pool.` : null,
+      opening,
+      prize > 0 ? copy.t('tournament.prize', { prize: copy.num(prize) }) : null,
       t.entry_fee === 'Paid'
-        ? `Entry ${Number(t.entry_fee_price || 0).toLocaleString()} VC.`
-        : 'Free to enter.',
-      t.max_participants ? `${t.current_participants || 0} of ${t.max_participants} places taken.` : null,
+        ? copy.t('tournament.entry', { price: copy.num(t.entry_fee_price || 0) })
+        : copy.t('tournament.free'),
+      t.max_participants
+        ? copy.t('tournament.places', { taken: copy.num(t.current_participants || 0), max: copy.num(t.max_participants) })
+        : null,
     ].filter(Boolean).join(' '),
   );
 
   return buildMetadata({
+    locale,
     title: t.tournament_title,
     description,
     path: `/tournaments/${t.slug || slug}`,
@@ -429,6 +430,88 @@ export function tournamentMetadata(t, slug, { path } = {}) {
       .filter(Boolean).join(', '),
     // A draft is not published, and a cancelled tournament should stop ranking.
     noindex: Boolean(t.is_draft) || t.status === 'cancelled',
+  });
+}
+
+/**
+ * A team payload with the API's own names first (`name`, `member_count`,
+ * `logo`) and the older names kept as fallbacks. Until 30 September 2026 the
+ * page read only `team_name`, which the API sends as null, so no team page had
+ * a title in a search result or a link preview. scripts/check-ld-shape.mjs
+ * builds this from a captured payload so it cannot drift again.
+ */
+export function normaliseTeam(data) {
+  if (data?.__moved || data?.__failed) return data;
+  const team = data?.team || data;
+  if (!team) return team;
+  return {
+    ...team,
+    team_name: team.name || team.team_name,
+    number_of_members: team.member_count ?? team.number_of_members,
+    team_logo: team.logo_url || team.logo || team.team_logo,
+    team_banner: team.banner_url || team.banner || team.team_banner,
+  };
+}
+
+/** Metadata for one team. `raw` is the API answer, normalised here. */
+export async function teamMetadata(raw, slug) {
+  const team = normaliseTeam(raw);
+  if (team?.__failed) return unavailableMetadata(slug, `/teams/${slug}`);
+  if (!team || !team.team_name) return missingMetadata('team', `/teams/${slug}`);
+  if (team.__moved) return missingMetadata('team', team.__moved, { moved: true });
+
+  const locale = await currentLocale();
+  const { t, n } = recordCopy(locale);
+  const game = team.game?.game_title || team.core_game?.game_title || team.game;
+  const gameName = typeof game === 'string' ? game : null;
+  const place = team.region || team.country;
+  const description = clamp(
+    team.description
+    || [
+      gameName ? t('team.withGame', { name: team.team_name, game: gameName }) : t('team.plain', { name: team.team_name }),
+      team.number_of_members ? n('team.members', team.number_of_members) : null,
+      place ? t('team.based', { place }) : null,
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    locale,
+    title: team.team_name,
+    description,
+    path: `/teams/${team.slug || slug}`,
+    image: team.team_banner || team.team_logo,
+    type: 'profile',
+    keywords: [gameName, 'esports team', place, 'Nigeria'].filter(Boolean).join(', '),
+  });
+}
+
+/** Metadata for one organisation's public profile. */
+export async function orgMetadata(raw, slug) {
+  const org = raw?.__moved || raw?.__failed ? raw : (raw?.organization || raw);
+  if (org?.__failed) return unavailableMetadata(slug, `/organizations/${slug}`);
+  if (!org || !(org.name || org.org_name)) return missingMetadata('organization', `/organizations/${slug}`);
+  if (org.__moved) return missingMetadata('organization', org.__moved, { moved: true });
+
+  const locale = await currentLocale();
+  const { t, n } = recordCopy(locale);
+  const name = org.name || org.org_name;
+  const place = org.region || org.location;
+  const description = clamp(
+    org.bio || org.mission
+    || [
+      t('organization.plain', { name }),
+      org.total_tournaments_hosted ? n('organization.tournaments', org.total_tournaments_hosted) : null,
+      place ? t('team.based', { place }) : null,
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    locale,
+    title: name,
+    description,
+    path: `/organizations/${org.slug || slug}`,
+    image: org.banner || org.logo || null,
+    type: 'profile',
   });
 }
 
@@ -590,11 +673,12 @@ export function eventLd(e, path) {
 }
 
 export function teamLd(team, path) {
-  if (!team?.team_name) return null;
+  const teamName = team?.name || team?.team_name;
+  if (!teamName) return null;
   return {
     '@context': 'https://schema.org',
     '@type': 'SportsTeam',
-    name: team.team_name,
+    name: teamName,
     url: absolute(path),
     ...(team.description ? { description: clamp(team.description, 300) } : {}),
     ...(team.team_logo ? { logo: team.team_logo } : {}),
@@ -621,16 +705,17 @@ export function personLd(user, path) {
 }
 
 export function orgLd(org, path) {
-  if (!org?.org_name) return null;
+  const orgName = org?.name || org?.org_name;
+  if (!orgName) return null;
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: org.org_name,
+    name: orgName,
     url: absolute(path),
     ...(org.bio ? { description: clamp(org.bio, 300) } : {}),
     ...(org.logo ? { logo: org.logo } : {}),
-    ...(org.location
-      ? { address: { '@type': 'PostalAddress', addressLocality: org.location } }
+    ...(org.location || org.region
+      ? { address: { '@type': 'PostalAddress', addressLocality: org.location || org.region } }
       : {}),
   };
 }

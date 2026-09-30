@@ -44,6 +44,53 @@ export const BARE = {
     tete: 'tête', controle: 'contrôle', reponse: 'réponse', reponses: 'réponses',
     selectionnez: 'sélectionnez', precedent: 'précédent', prete: 'prête', pret: 'prêt',
     fenetre: 'fenêtre', depot: 'dépôt', recu: 'reçu', recus: 'reçus', francais: 'français',
+    // Found 30 September 2026 on the feedback and pricing pages (inbox 380):
+    // a block of French typed without accents that this list did not know.
+    gene: 'gêné', preferons: 'préférons', plutot: 'plutôt', presence: 'présence',
+    memes: 'mêmes', necessaire: 'nécessaire', heberger: 'héberger', echelle: 'échelle',
+    identite: 'identité', verification: 'vérification', emblemes: 'emblèmes', ecrire: 'écrire',
+    ca: 'ça', signale: 'signalé', trouve: 'trouvé', laisse: 'laissé', passe: 'passé',
+    // The rest of that sweep: every word here also appears WITH its accent
+    // elsewhere in the French, and is never correct without it.
+    adhesion: 'adhésion', adhesions: 'adhésions', apparait: 'apparaît', arriere: 'arrière',
+    aussitot: 'aussitôt', banniere: 'bannière', bareme: 'barème', bientot: 'bientôt',
+    boite: 'boîte', capacite: 'capacité', categorie: 'catégorie', categories: 'catégories',
+    cle: 'clé', cles: 'clés', commercant: 'commerçant', communaute: 'communauté',
+    communautes: 'communautés', competitions: 'compétitions', cout: 'coût', coute: 'coûte',
+    createur: 'créateur', creation: 'création', credit: 'crédit', creez: 'créez',
+    critere: 'critère', debattre: 'débattre', debut: 'début', decalage: 'décalage',
+    decident: 'décident', decidez: 'décidez', decision: 'décision', decisions: 'décisions',
+    declarez: 'déclarez', decroissant: 'décroissant', defi: 'défi',
+    definitivement: 'définitivement', dela: 'delà', demarrer: 'démarrer',
+    departage: 'départage', departages: 'départages', depasser: 'dépasser',
+    deplacez: 'déplacez', dernieres: 'dernières', derriere: 'derrière',
+    desactiver: 'désactiver', desormais: 'désormais', detail: 'détail',
+    detenteurs: 'détenteurs', detiennent: 'détiennent', deuxieme: 'deuxième',
+    deverrouiller: 'déverrouiller', disparait: 'disparaît', dixieme: 'dixième',
+    echange: 'échange', ecrit: 'écrit', ecrivez: 'écrivez', egalite: 'égalité',
+    elimination: 'élimination', elimine: 'éliminé', emis: 'émis', empeche: 'empêche',
+    empecher: 'empêcher', entieres: 'entières', epuise: 'épuisé', etait: 'était', etes: 'êtes',
+    generale: 'générale', generez: 'générez', gerez: 'gérez', grace: 'grâce', hote: 'hôte',
+    huitieme: 'huitième', immediatement: 'immédiatement', interet: 'intérêt',
+    irreversible: 'irréversible', itineraire: 'itinéraire', media: 'média', mene: 'mené',
+    methode: 'méthode', modere: 'modéré', necessite: 'nécessite', notres: 'nôtres',
+    palmares: 'palmarès', penalite: 'pénalité', piece: 'pièce', pieces: 'pièces',
+    possede: 'possédé', precedente: 'précédente', preleve: 'prélevé', preparer: 'préparer',
+    present: 'présent', presents: 'présents', presentent: 'présentent', presentez: 'présentez',
+    prevenez: 'prévenez', prevenu: 'prévenu', previendrons: 'préviendrons', prevu: 'prévu',
+    prive: 'privé', prives: 'privés', probleme: 'problème', protege: 'protégé',
+    quantite: 'quantité', recentes: 'récentes', reception: 'réception', recoit: 'reçoit',
+    recoivent: 'reçoivent', recupere: 'récupéré', recuperer: 'récupérer',
+    reduction: 'réduction', reel: 'réel', reglages: 'réglages', reglent: 'règlent',
+    reglez: 'réglez', reinitialisation: 'réinitialisation', repeter: 'répéter',
+    repond: 'répond', repondre: 'répondre', repondu: 'répondu', reseau: 'réseau',
+    reseaux: 'réseaux', reservation: 'réservation', retabli: 'rétabli', retablir: 'rétablir',
+    seance: 'séance', separe: 'séparé', separes: 'séparés', sequestre: 'séquestre',
+    serie: 'série', series: 'séries', siege: 'siège', sieges: 'sièges', situes: 'situés',
+    telechargement: 'téléchargement', tetes: 'têtes', theme: 'thème', themes: 'thèmes',
+    unite: 'unité', zero: 'zéro', envoye: 'envoyé', envoyes: 'envoyés', abonne: 'abonné',
+    abonnes: 'abonnés',
+    paye: 'payé', payes: 'payés', termine: 'terminé', rembourse: 'remboursé', rembourses: 'remboursés', verse: 'versé', verses: 'versés', annule: 'annulé', ferme: 'fermé', valide: 'validé', publie: 'publié', programme: 'programmé', confirme: 'confirmé', accepte: 'accepté', ajoute: 'ajouté',
     mois: null, a: null,
   },
   pt: {
@@ -59,6 +106,40 @@ export const BARE = {
     paginas: 'páginas', numeros: 'números', possiveis: 'possíveis', disponiveis: 'disponíveis',
     premio: 'prémio', premios: 'prémios', sessoes: 'sessões', funcao: 'função', relatorio: 'relatório',
     endereco: 'endereço', cartao: 'cartão', ninguem: 'ninguém', alguem: 'alguém', tres: 'três',
+    // Found 30 September 2026 by the same twin sweep as the French (inbox 380):
+    // each is never correct without its accent.
+    adesoes: 'adesões', adversario: 'adversário', alteracao: 'alteração',
+    alteracoes: 'alterações', anfitriao: 'anfitrião', apos: 'após', area: 'área',
+    atras: 'atrás', atraves: 'através', atualizacoes: 'atualizações',
+    autenticacao: 'autenticação', automatico: 'automático', autorizacao: 'autorização',
+    avaliacoes: 'avaliações', avancar: 'avançar', cabeca: 'cabeça', cabecas: 'cabeças',
+    capitao: 'capitão', capitulo: 'capítulo', capitulos: 'capítulos', cartoes: 'cartões',
+    classificacao: 'classificação', classificacoes: 'classificações', comeca: 'começa',
+    comecar: 'começar', comecou: 'começou', comentarios: 'comentários', comissao: 'comissão',
+    competicoes: 'competições', compoem: 'compõem', concluido: 'concluído',
+    condicoes: 'condições', construimos: 'construímos', conteudos: 'conteúdos',
+    criacao: 'criação', criterios: 'critérios', decisao: 'decisão', definicoes: 'definições',
+    diario: 'diário', digitos: 'dígitos', discussao: 'discussão', discussoes: 'discussões',
+    ecra: 'ecrã', epoca: 'época', espaco: 'espaço', especifico: 'específico', estao: 'estão',
+    estatisticas: 'estatísticas', estudio: 'estúdio', fas: 'fãs', foruns: 'fóruns',
+    grafico: 'gráfico', graficos: 'gráficos', gratis: 'grátis', ha: 'há', incluido: 'incluído',
+    indicacao: 'indicação', indisponivel: 'indisponível', lancamento: 'lançamento',
+    legivel: 'legível', logotipo: 'logótipo', logotipos: 'logótipos', mao: 'mão', maos: 'mãos',
+    maximo: 'máximo', minimo: 'mínimo', necessario: 'necessário', nigeria: 'nigéria',
+    obrigatoria: 'obrigatória', obrigatorio: 'obrigatório', opcao: 'opção', padrao: 'padrão',
+    paises: 'países', penalizacao: 'penalização', permissoes: 'permissões', pixeis: 'píxeis',
+    planteis: 'plantéis', pontuacao: 'pontuação', posicao: 'posição', posicoes: 'posições',
+    preco: 'preço', precos: 'preços', presenca: 'presença', producao: 'produção',
+    propria: 'própria', proprio: 'próprio', proprios: 'próprios', proxima: 'próxima',
+    publicacao: 'publicação', publicacoes: 'publicações', razao: 'razão', reacoes: 'reações',
+    recomeca: 'recomeça', recomendacoes: 'recomendações', reposicao: 'reposição',
+    responsavel: 'responsável', revisao: 'revisão', sera: 'será', serao: 'serão',
+    serie: 'série', serio: 'sério', servico: 'serviço', subscricao: 'subscrição',
+    subscricoes: 'subscrições', telemovel: 'telemóvel', tera: 'terá', titulo: 'título',
+    topicos: 'tópicos', transferencia: 'transferência', transmissao: 'transmissão',
+    unico: 'único', util: 'útil', utilizacoes: 'utilizações', vao: 'vão', varios: 'vários',
+    versoes: 'versões', visualizacoes: 'visualizações', vitorias: 'vitórias', so: 'só',
+    mes: 'mês',
     equipa: null, torneio: null,
   },
 };
@@ -69,10 +150,12 @@ const WORD = /[A-Za-zÀ-ÿ]+/g;
 // "cela supprime", "modifie un résultat". They are wrong only as a past
 // participle, so they count only after an auxiliary, or standing alone as a
 // whole message ("Enregistre.").
-const AMBIGUOUS = { fr: new Set(['enregistre', 'supprime', 'modifie']) };
+const AMBIGUOUS = { fr: new Set(['enregistre', 'supprime', 'modifie', 'signale', 'trouve', 'laisse', 'passe', 'paye', 'payes', 'termine', 'rembourse', 'rembourses', 'verse', 'verses', 'annule', 'ferme', 'valide', 'publie', 'programme', 'confirme', 'accepte', 'ajoute', 'abonne', 'abonnes', 'recupere', 'elimine', 'modere', 'protege', 'possede', 'preleve', 'mene', 'epuise']) };
 const AUXILIARY = new Set(['a', 'ai', 'as', 'avons', 'avez', 'ont', 'est', 'sont', 'suis', 'es',
   'sommes', 'etes', 'êtes', 'été', 'ete', 'être', 'etre', 'sera', 'seront', 'était', 'etait',
   'bien', 'pas', 'jamais', 'rien', 'deja', 'déjà', 'non']);
+
+const LEADING_A = /(^|[.!?:]\s+)A (venir|propos|vendre|gauche|droite|qui|quoi|vous|votre|vos|envoyer|partir|jour|la|l’|l'|moins|bientôt|demain|nouveau|plus)(?![\wÀ-ÿ])/g;
 
 export function findBare(table, lang) {
   const words = BARE[lang];
@@ -107,6 +190,12 @@ export function findBare(table, lang) {
       for (const m of prose.matchAll(ELISION)) {
         hits.push({ key, word: `${m[2]} ${m[3]}`, should: `${m[2]}’${m[3]}` });
       }
+      // A sentence opening "A venir", "A propos", "A vous": the preposition,
+      // which is "À". "A" meaning "has" opens a sentence only before a past
+      // participle, which is not one of these words (30 September 2026).
+      for (const m of prose.matchAll(LEADING_A)) {
+        hits.push({ key, word: `A ${m[2]}`, should: `À ${m[2]}` });
+      }
     }
   }
   return hits;
@@ -136,6 +225,9 @@ function selfTest() {
   const cases = [
     ['fr', { a: 'Vers une equipe' }, 1],
     ['fr', { a: 'Vers une équipe' }, 0],
+    ['fr', { a: 'A venir' }, 1],
+    ['fr', { a: 'A accepté vos règles le {date}' }, 0],
+    ['fr', { a: 'Le code est incorrect, ou il a déjà servi.' }, 0],
     ['fr', { a: 'Telecharger le releve' }, 2],
     ['fr', { a: 'Le mois {equipe}' }, 0],
     ['fr', { a: "Quiconque ne s'enregistre pas" }, 0],

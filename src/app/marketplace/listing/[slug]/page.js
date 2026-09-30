@@ -1,8 +1,9 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
-import { absolute, breadcrumbLd, buildMetadata, clamp, fetchForMetadata } from '@/lib/seo';
+import { absolute, breadcrumbLd, buildMetadata, clamp, fetchForMetadata, currentLocale } from '@/lib/seo';
 import ListingClient from './ListingClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/marketplace/listing/league-coaching-plat-and-below`.
 //
@@ -27,29 +28,33 @@ export async function generateMetadata(props) {
   const slug = decodeURIComponent(params.slug);
   const data = await load(slug);
   const listing = data?.listing;
+  const locale = await currentLocale();
+  const { t, num } = recordCopy(locale);
 
   if (!listing) {
     // Closed, gone, or renamed. None of the three should be indexed, and none
     // of them should claim to describe a listing.
     return buildMetadata({
-      title: 'Vermillion City',
-      description: 'Listings between people on V-ENT.',
+      title: t('market.title'),
+      description: t('market.description'),
       path: `/marketplace/listing/${slug}`,
       noindex: true,
+      locale,
     });
   }
 
   const price = listing.price
-    ? `${listing.price.toLocaleString()} VENT COINS`
-    : 'Open to offers';
+    ? t('listing.price', { price: num(listing.price) })
+    : t('listing.offers');
 
   return buildMetadata({
+    locale,
     // The facts in the markup rather than only in the layout, because the
     // reader is increasingly a model rather than a person with eyes.
-    title: `${listing.title}, ${price}`,
+    title: t('listing.title', { title: listing.title, price }),
     description: clamp(
       listing.description
-        || `${listing.title}. ${price}, from ${listing.seller?.name || 'a V-ENT seller'} on Vermillion City.`,
+        || t('listing.default', { title: listing.title, price, seller: listing.seller?.name || t('listing.someSeller') }),
       160),
     path: `/marketplace/listing/${listing.slug || slug}`,
     image: listing.cover || undefined,

@@ -342,6 +342,7 @@ export const PRIVATE_TITLES = {
   'tournaments/[slug]/edit': { en: 'Edit tournament', fr: 'Modifier le tournoi', pt: 'Editar torneio' },
   wallets: { en: 'Wallet', fr: 'Portefeuille', pt: 'Carteira' },
   'wallet-topup-callback': { en: 'Payment', fr: 'Paiement', pt: 'Pagamento' },
+  'run-of-show': { en: 'Run of show', fr: 'Conducteur', pt: 'Alinhamento' },
   production: { en: 'Production', fr: 'Production', pt: 'Produção' },
   settings: { en: 'Settings', fr: 'Paramètres', pt: 'Definições' },
   notifications: { en: 'Notifications', fr: 'Notifications', pt: 'Notificações' },

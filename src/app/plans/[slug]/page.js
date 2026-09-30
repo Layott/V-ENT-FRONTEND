@@ -1,12 +1,9 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
-import {
-  SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale,
-  fetchRecordForMetadata,
-  unavailableMetadata,
-} from '@/lib/seo';
+import { SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import PlanPageClient from './PlanPageClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/plans/inner-circle` - one membership an organiser sells.
 //
@@ -24,10 +21,9 @@ export const revalidate = 900;
 
 const load = (slug) => fetchRecordForMetadata(`/billing/plan/${encodeURIComponent(slug)}/`);
 
-const priceSentence = (plan) => {
+const priceSentence = (plan, copy) => {
   if (!plan) return '';
-  if (plan.is_free) return 'Free to join.';
-  const per = plan.interval === 'yearly' ? 'a year' : 'a month';
+  if (plan.is_free) return copy.t('membership.free');
   // Said plainly and once, with both units, because a badge reading "5 VC"
   // assumes the reader knows what a VENT COIN is. A model reading this page
   // needs the number and the unit in the same sentence.
@@ -36,8 +32,11 @@ const priceSentence = (plan) => {
   // description and metadata is built on the server, where there is no reader
   // to ask. `toLocaleString()` with no argument would take the SERVER's
   // language, which is the fault check-datetime exists for.
-  const ngn = Number(plan.price_ngn || 0).toLocaleString('en-NG');
-  return `${plan.price_vc} VENT COINS ${per}, which is ${ngn} NGN.`;
+  // In the reader's language and grouping since 30 September (inbox 380):
+  // recordCopy formats the number for the language asked, never the server's.
+  return copy.t(plan.interval === 'yearly' ? 'membership.year' : 'membership.month', {
+    vc: copy.num(plan.price_vc), ngn: copy.num(plan.price_ngn || 0),
+  });
 };
 
 export async function generateMetadata(props) {
@@ -48,21 +47,16 @@ export async function generateMetadata(props) {
 
   if (plan?.__failed) return unavailableMetadata(slug, `/plans/${slug}`);
   if (!plan || plan.__moved) {
-    return buildMetadata({
-      title: 'Membership not found',
-      description: 'This membership does not exist, or it is no longer offered.',
-      path: `/plans/${slug}`,
-      noindex: true,
-      locale,
-    });
+    return missingMetadata('membership', `/plans/${slug}`);
   }
 
+  const copy = recordCopy(locale);
   const seller = plan.seller?.name || SITE.name;
   return buildMetadata({
-    title: `${plan.name} - membership from ${seller}`,
+    title: copy.t('membership.title', { plan: plan.name, seller }),
     description: clamp(
-      `${plan.tagline || plan.description || `A membership from ${seller} on V-ENT.`} `
-      + priceSentence(plan),
+      `${plan.tagline || plan.description || copy.t('membership.default', { seller })} `
+      + priceSentence(plan, copy),
     ),
     path: `/plans/${plan.slug || slug}`,
     type: 'website',

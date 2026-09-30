@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import RunOfShowScreen from '@/components/run-of-show/RunOfShowScreen';
-import { buildMetadata, clamp, fetchForMetadata, privateMetadata } from '@/lib/seo';
+import { buildMetadata, clamp, fetchForMetadata, privateMetadata, currentLocale } from '@/lib/seo';
+import { privateTitle } from '@/lib/seoCopy';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/events/rivalry-series-season-2/run-of-show`
 //
@@ -26,15 +28,18 @@ export async function generateMetadata(props) {
   const slug = decodeURIComponent(params.slug);
   const sheet = sheetOf(await load(slug));
   if (!sheet || sheet.visibility !== 'public') {
-    return privateMetadata('Run of show');
+    return privateMetadata('run-of-show');
   }
-  const name = sheet.owner?.name || sheet.name || 'Run of show';
+  const locale = await currentLocale();
+  const { t, n } = recordCopy(locale);
+  const name = sheet.owner?.name || sheet.name || privateTitle('run-of-show', locale);
   const days = (sheet.days || []).length;
-  const cues = (sheet.days || []).reduce((n, d) => n + (d.items || []).length, 0);
+  const cues = (sheet.days || []).reduce((sum, d) => sum + (d.items || []).length, 0);
   return buildMetadata({
-    title: `${name}: run of show`,
+    locale,
+    title: t('runOfShow.title', { name }),
     description: clamp(sheet.subtitle
-      || `The minute by minute running order for ${name}: ${cues} cues across ${days} ${days === 1 ? 'day' : 'days'}, with the times, who owns each one and how long it runs.`),
+      || n('runOfShow.days', days, { name, cues: n('runOfShow.cues', cues) })),
     path: `/events/${slug}/run-of-show`,
     type: 'article',
   });

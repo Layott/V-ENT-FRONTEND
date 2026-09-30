@@ -1,5 +1,6 @@
 import { currentLocale } from '@/lib/seo';
 import { privateTitle } from '@/lib/seoCopy';
+import { recordCopy } from '@/lib/seoRecordCopy';
 // The page itself is a client component and cannot export metadata, so it
 // lives here.
 //
@@ -14,23 +15,15 @@ import { privateTitle } from '@/lib/seoCopy';
 // and so no language, and every reader got the English title (inbox 375).
 export async function generateMetadata() {
   const locale = await currentLocale();
+  const title = privateTitle('anime/studio', locale);
+  const description = recordCopy(locale).t('private.animeStudio');
   return {
-    title: privateTitle('anime/studio', locale),
-    description: 'Upload chapters, decide what they cost, and write to the people reading them.',
+    title,
+    description,
     alternates: { canonical: 'https://v-ent.co/anime/studio' },
     robots: { index: false, follow: false },
-    openGraph: {
-      title: 'Your comics',
-      description: 'Upload chapters, decide what they cost, and write to the people reading them.',
-      url: 'https://v-ent.co/anime/studio',
-      siteName: 'V-ENT',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: 'Your comics',
-      description: 'Upload chapters, decide what they cost, and write to the people reading them.',
-    },
+    openGraph: { title, description, url: 'https://v-ent.co/anime/studio', siteName: 'V-ENT', type: 'website' },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 

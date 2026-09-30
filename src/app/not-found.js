@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getT } from '@/i18n/server';
+import { getT, serverLocale } from '@/i18n/server';
+import { recordCopy } from '@/lib/seoRecordCopy';
 import styles from './not-found.module.css';
 
 // A page for an address that does not exist.
@@ -10,10 +11,14 @@ import styles from './not-found.module.css';
 
 // The root layout's title template adds " | V-ENT" itself; writing it here as
 // well made the tab read "Page not found | V-ENT | V-ENT".
-export const metadata = {
-  title: 'Page not found',
-  robots: { index: false },
-};
+// In the reader's language (inbox 380); a const is evaluated once, with no
+// request and so no language.
+export async function generateMetadata() {
+  return {
+    title: recordCopy(await serverLocale()).t('notFound.page.title'),
+    robots: { index: false },
+  };
+}
 
 const NotFound = async () => {
   const t = await getT();

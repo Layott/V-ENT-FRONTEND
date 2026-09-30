@@ -150,7 +150,8 @@ function FeedbackContent() {
                             className={area === a.value ? styles.chipOn : styles.chip}
                             aria-pressed={area === a.value}
                             onClick={() => setArea(a.value)}>
-                      {a.label}
+                      {/* The server sends English labels; the value picks the translation (inbox 380). */}
+                      {tt(`feedback.area.${a.value}`, a.label)}
                     </button>
                   ))}
                 </div>
@@ -164,7 +165,7 @@ function FeedbackContent() {
                             className={kind === k.value ? styles.chipOn : styles.chip}
                             aria-pressed={kind === k.value}
                             onClick={() => setKind(k.value)}>
-                      {k.label}
+                      {tt(`feedback.kind.${k.value}`, k.label)}
                     </button>
                   ))}
                 </div>

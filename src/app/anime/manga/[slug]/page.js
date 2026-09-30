@@ -1,10 +1,7 @@
 import JsonLd from '@/components/seo/JsonLd';
-import {
-  SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale,
-  fetchRecordForMetadata,
-  unavailableMetadata,
-} from '@/lib/seo';
+import { SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import SeriesClient from './SeriesClient';
+import { recordCopy } from '@/lib/seoRecordCopy';
 
 // `/anime/manga/<slug>` - one comic.
 //
@@ -29,21 +26,16 @@ export async function generateMetadata(props) {
 
   if (series?.__failed) return unavailableMetadata(slug, `/anime/manga/${slug}`);
   if (!series || series.__moved || !series.title) {
-    return buildMetadata({
-      title: 'Comic not found',
-      description: 'This comic does not exist, or it is not published.',
-      path: `/anime/manga/${slug}`,
-      noindex: true,
-      locale,
-    });
+    return missingMetadata('comic', `/anime/manga/${slug}`);
   }
 
+  const { t, n } = recordCopy(locale);
   const author = series.author?.username || SITE.name;
   return buildMetadata({
-    title: `${series.title} by ${author}`,
+    title: t('comic.title', { title: series.title, author }),
     description: clamp(
-      `${series.synopsis || `A ${series.kind_label || 'comic'} by ${author} on V-ENT.`} `
-      + `${series.chapters} chapters.`),
+      `${series.synopsis || t('comic.default', { author })} `
+      + n('comic.chapters', series.chapters || 0)),
     path: `/anime/manga/${series.slug || slug}`,
     image: series.cover || undefined,
     type: 'website',
