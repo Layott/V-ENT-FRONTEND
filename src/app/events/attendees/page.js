@@ -19,6 +19,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const AttendeesContent = ({
   slug: slugFromPath
@@ -303,7 +304,7 @@ const AttendeesContent = ({
     const q = search.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter(r => [r.attendee_name, r.username, r.code, r.tier,
-      r.attendee_email, r.attendee_phone].some(v => (v || '').toLowerCase().includes(q)));
+      r.attendee_email, r.attendee_phone].some(v => fuzzyMatches(q, v)));
   }, [rows, search]);
 
   /**

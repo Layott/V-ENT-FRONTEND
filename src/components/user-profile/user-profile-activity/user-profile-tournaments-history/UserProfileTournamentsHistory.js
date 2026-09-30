@@ -11,6 +11,7 @@ import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './user-profile-tournaments-history.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const UserProfileTournamentsHistory = () => {
   const tt = useT();
   const {
@@ -43,7 +44,7 @@ const UserProfileTournamentsHistory = () => {
     };
     fetchHistory();
   }, [session]);
-  const filtered = tournaments.filter(t => !searchQuery.trim() || (t.tournament_title || t.name || '').toLowerCase().includes(searchQuery.toLowerCase()));
+  const filtered = tournaments.filter(t => fuzzyMatches(searchQuery, t.tournament_title || t.name));
   const total = filtered.length;
   const indexOfFirst = (currentPage - 1) * rowsPerPage;
   const indexOfLast = indexOfFirst + rowsPerPage;

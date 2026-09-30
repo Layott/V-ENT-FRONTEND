@@ -29,6 +29,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { eventTypeLabel, seriesStatusLabel } from '@/lib/labels';
+import { fuzzyFilter } from '@/lib/fuzzy';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -102,10 +103,6 @@ const fmtDate = iso => {
     return '';
   }
 };
-const matches = (haystack, needle) => {
-  if (!haystack || !needle) return false;
-  return String(haystack).toLowerCase().includes(needle);
-};
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // Live search sources. Tournaments, events, teams and users have real
@@ -147,11 +144,9 @@ const normaliseUser = p => ({
 });
 
 // ── Per-entity filter functions ──────────────────────────────────────────
-const filterByQuery = (list, q, fields) => {
-  if (!q) return list;
-  const needle = q.toLowerCase();
-  return list.filter(item => fields.some(f => matches(item[f], needle)));
-};
+// Closest first, and a wrong or half-typed name still finds its match
+// (src/lib/fuzzy.js, inbox 383).
+const filterByQuery = (list, q, fields) => fuzzyFilter(list, q, fields);
 
 // ── Main component ──────────────────────────────────────────────────────
 const SearchPageInner = () => {

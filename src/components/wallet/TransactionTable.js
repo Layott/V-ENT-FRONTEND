@@ -8,6 +8,7 @@ import { TYPE_LABEL, TYPE_BADGE_CLASS, STATUS_LABEL, normalizeType, normalizeSta
 import styles from '@/app/wallets/wallets.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const TYPE_FILTERS = [{
   id: '',
   label: 'All'
@@ -125,7 +126,7 @@ const TransactionTable = ({
     const q = search.toLowerCase().trim();
     if (typeFilter && ntype !== typeFilter) return false;
     if (statusFilter && nstatus !== statusFilter) return false;
-    if (q && !(desc.includes(q) || ref.includes(q) || counter.includes(q))) return false;
+    if (q && ![desc, ref, counter].some(v => fuzzyMatches(q, v))) return false;
     if (dateFrom) {
       const d = new Date(tx.created_at || tx.date || tx.requested_at);
       if (!Number.isNaN(d.getTime()) && d < new Date(dateFrom)) return false;

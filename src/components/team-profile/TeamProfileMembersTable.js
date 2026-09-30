@@ -12,6 +12,7 @@ import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const ROLE_LABEL = {
   owner: 'Owner',
   captain: 'Captain',
@@ -43,7 +44,7 @@ const TeamProfileMembersTable = ({
   const filtered = members.filter(m => {
     const q = search.trim().toLowerCase();
     if (!q) return true;
-    return (m.username || '').toLowerCase().includes(q) || (m.full_name || '').toLowerCase().includes(q) || (m.role || '').toLowerCase().includes(q);
+    return fuzzyMatches(q, m.username) || fuzzyMatches(q, m.full_name) || fuzzyMatches(q, m.role);
   });
   const action = async (path, body) => {
     try {

@@ -16,6 +16,7 @@ import styles from './tournament-details-participants.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 
 // Map API participant to display shape
 const normalize = p => ({
@@ -87,7 +88,7 @@ const TournamentDetailsParticipants = ({
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return participants;
-    return participants.filter(p => p.name.toLowerCase().includes(q) || p.location.toLowerCase().includes(q));
+    return participants.filter(p => fuzzyMatches(q, p.name) || fuzzyMatches(q, p.location));
   }, [participants, searchQuery]);
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const indexOfFirst = (currentPage - 1) * rowsPerPage;

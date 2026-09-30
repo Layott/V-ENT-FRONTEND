@@ -19,6 +19,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import VendorOrders from '@/components/vendor-orders/VendorOrders';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const STATUS_FILTERS = [{
   id: 'all'
 }, {
@@ -259,7 +260,7 @@ const MyTickets = () => {
     }
     if (search.trim()) {
       const q = search.toLowerCase();
-      out = out.filter(t => (t.event_name || '').toLowerCase().includes(q) || (t.location || '').toLowerCase().includes(q) || (t.qr_code || '').toLowerCase().includes(q));
+      out = out.filter(t => fuzzyMatches(q, t.event_name) || fuzzyMatches(q, t.location) || fuzzyMatches(q, t.qr_code));
     }
     return out;
   }, [tickets, statusFilter, search]);

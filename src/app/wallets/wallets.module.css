@@ -1640,3 +1640,81 @@
   min-height: 44px;
   padding: 0 0.25rem;
 }
+
+/* Send: the people chosen, and the closest matches to what is typed
+   (inbox 383, 385, 386). Filled rows and space, no strokes; each match is a
+   44px-plus button, because tapping it is how somebody is chosen. */
+.chosenList,
+.suggestList {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.chosenList .recipientCard {
+  margin-bottom: 0;
+}
+
+.suggestRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 56px;
+  padding: 0.6rem 0.9rem;
+  border: 0;
+  border-radius: 8px;
+  background-color: #303136;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestRow:hover:not(:disabled) {
+  background-color: #36373d;
+}
+
+.suggestRow:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.suggestRow:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.suggestAdd {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.fieldHint {
+  margin: 0.4rem 0 0;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.reviewTitle {
+  font-size: 1rem;
+  margin: 0 0 0.4rem;
+}
+
+.reviewSub {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1rem;
+}
+
+.successAmount {
+  color: var(--v-ent-gold);
+}
+
+.summaryLeft {
+  text-align: left;
+}

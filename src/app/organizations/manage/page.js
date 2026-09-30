@@ -28,6 +28,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import Avatar from '@/components/avatar/Avatar';
 import { sameUser, usernameOf } from '@/lib/gating';
 import { plural } from '@/lib/plural';
+import { fuzzyMatches } from '@/lib/fuzzy';
 const TABS = [{
   id: 'members',
   label: 'Members'
@@ -614,13 +615,13 @@ const ManageOrgContent = ({
   const filteredMembers = members.filter(m => {
     const q = memberSearch.trim().toLowerCase();
     if (!q) return true;
-    return (m.user?.full_name || '').toLowerCase().includes(q) || (m.user?.username || '').toLowerCase().includes(q) || (m.role || '').toLowerCase().includes(q);
+    return fuzzyMatches(q, m.user?.full_name) || fuzzyMatches(q, m.user?.username) || fuzzyMatches(q, m.role);
   });
   const linkedTeamIds = new Set(teams.map(t => t.id));
   const availableTeams = allTeams.filter(t => !linkedTeamIds.has(t.id)).filter(t => {
     const q = teamSearch.trim().toLowerCase();
     if (!q) return true;
-    return (t.name || '').toLowerCase().includes(q) || (t.tag || '').toLowerCase().includes(q);
+    return fuzzyMatches(q, t.name) || fuzzyMatches(q, t.tag);
   });
   return <div className={styles.pageContainer}>
       <Header />
