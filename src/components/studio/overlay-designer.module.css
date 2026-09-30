@@ -1,0 +1,75 @@
+/* The designed overlay editor (inbox 390). Built on the studio panel's own
+   field, input and button classes; this file holds only what is new. */
+
+.designer { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.7rem; }
+
+/* The preview at 16:9 over the studio's checkerboard, so where the overlay is
+   see-through (the end of a transition) is visible rather than assumed. */
+.previewWrap {
+  aspect-ratio: 16 / 9;
+  background-color: #2a2b30;
+  background-image:
+    linear-gradient(45deg, #34353b 25%, transparent 25%),
+    linear-gradient(-45deg, #34353b 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #34353b 75%),
+    linear-gradient(-45deg, transparent 75%, #34353b 75%);
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-size: 16px 16px;
+  border-radius: 14px;
+  max-width: 720px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.preview { display: block; height: 100%; width: 100%; }
+
+.previewBar { align-items: center; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+.timing { color: rgba(255, 255, 255, 0.55); font-size: 0.8rem; }
+
+.colourRow, .pictureRow { align-items: center; display: flex; gap: 0.5rem; min-width: 0; }
+
+/* A picture or colour field carries a second control, so it needs more room
+   than a text box or the choice is squeezed to two letters. */
+.wide { flex: 1 1 17rem; }
+
+.colourRow input:last-child, .pictureRow select { flex: 1 1 auto; min-width: 0; }
+
+/* The platform draws its own colour control; this only sizes it. */
+.swatch {
+  background: none;
+  block-size: 44px;
+  border: 0;
+  cursor: pointer;
+  flex: 0 0 44px;
+  inline-size: 44px;
+  padding: 0;
+}
+
+.toggle {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex: 1 1 14rem;
+  font-size: 0.85rem;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0 0.8rem;
+}
+
+/* The whole label, 44px tall, is what gets pressed; this only sizes the box
+   the platform draws inside it. */
+.check { accent-color: #E5B94E; height: 20px; width: 20px; }
+
+.note { color: #8fd694; font-size: 0.85rem; margin: 0; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* On a phone every control in the editor is at least 44px tall; the studio
+   panel's own buttons are 38px and its inputs 32px. */
+@media (max-width: 767px) {
+  .designer button, .designer input:not([type=checkbox]), .designer select { min-height: 44px; }
+}

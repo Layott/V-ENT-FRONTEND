@@ -1781,3 +1781,16 @@
   font-weight: 700;
   letter-spacing: 0.14em;
 }
+
+/* A designed overlay (inbox 390): the canvas is 1920x1080 and scales to the
+ * browser source, keeping its shape. */
+.designedStage {
+  position: fixed;
+  inset: 0;
+}
+.designedCanvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}

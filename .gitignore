@@ -52,7 +52,9 @@ __pycache__/
 
 # A browser profile of its own for scripts/walk-console.mjs, so a walk does not
 # share cookies with whatever else is signed in on this machine.
-.walk-profile
+# Every walker Chrome profile (each holds a signed-in session) and its output.
+.walk-profile*/
+.walk-overlays/
 
 # Keys and service credentials never enter the repo (owner rule R62)
 *.key
