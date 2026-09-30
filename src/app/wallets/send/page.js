@@ -67,17 +67,28 @@ const fromTeam = t => ({ kind: 'team', key: `team:${t.slug || t.name}`, ref: t.s
 const fromOrg = o => ({ kind: 'org', key: `org:${o.slug || o.name}`, ref: o.slug || o.name, name: o.name, label: o.name, handle: o.tag || '', avatar: o.logo });
 
 /**
- * Whole coins only. "0.2" is not rounded, and not read as nothing: it is
- * named, because a person who typed a fraction meant something and the screen
- * owes them the reason it cannot go (CEO screenshot, 30 September 2026:
- * 0.2 VC answered "Enter how much you want to send.").
+ * Hundredths of a coin, so 0.2 VC (200 naira) can be sent: CEO, 30 September
+ * 2026, "Yes people should be able to send amounts under N1000". A comma is
+ * read as the decimal point, because that is how French and Portuguese write
+ * it. A third decimal place is named rather than rounded, because rounding is
+ * choosing somebody's amount for them.
+ *
+ * Counted in whole hundredths (`cents`) so that 0.1 + 0.2 is 0.3 and not
+ * 0.30000000000000004, which would call a balance of exactly 0.3 too small.
  */
 const readCoins = raw => {
-  const text = String(raw ?? '').trim();
-  if (!text) return { coins: 0, state: 'empty' };
-  if (/^\d+$/.test(text)) return { coins: Number(text), state: Number(text) > 0 ? 'ok' : 'empty' };
-  return { coins: 0, state: 'fraction' };
+  const text = String(raw ?? '').trim().replace(',', '.');
+  if (!text) return { cents: 0, coins: 0, state: 'empty' };
+  const m = /^(\d*)(?:\.(\d*))?$/.exec(text);
+  if (!m || (!m[1] && !m[2])) return { cents: 0, coins: 0, state: 'invalid' };
+  if ((m[2] || '').length > 2) return { cents: 0, coins: 0, state: 'precise' };
+  const cents = Number(m[1] || 0) * 100 + Number(((m[2] || '') + '00').slice(0, 2));
+  return { cents, coins: cents / 100, state: cents > 0 ? 'ok' : 'empty' };
 };
+
+/** A coin amount as the server reads it: "0.20", "12.00". */
+const sendable = cents => (cents / 100).toFixed(2);
+const toCents = vc => Math.round((Number(vc) || 0) * 100);
 
 /**
  * Who the money is going to. A person is drawn by their chip, which carries
@@ -240,15 +251,18 @@ const SendPage = () => {
 
   const many = recipients.length > 1;
   const readings = recipients.map(r => ({ r, ...readCoins(amounts[r.key]) }));
-  const total = readings.reduce((sum, row) => sum + row.coins, 0);
-  const balanceAfter = (balance ?? 0) - total;
+  const totalCents = readings.reduce((sum, row) => sum + row.cents, 0);
+  const total = totalCents / 100;
+  const balanceAfter = (toCents(balance ?? 0) - totalCents) / 100;
   const people = n => plural(tt, n, 'count.personOne', '{n} person', 'count.person', '{n} people', formatNumber(n));
 
   const amountProblem = () => {
-    const fraction = readings.find(row => row.state === 'fraction');
-    if (fraction) {
-      return tt('wallet.wholeCoins', 'VENT COINS go in whole coins: 1, 2, 3 and so on. {value} cannot be sent.')
-        .replace('{value}', String(amounts[fraction.r.key]).trim());
+    const unreadable = readings.find(row => row.state === 'invalid' || row.state === 'precise');
+    if (unreadable) {
+      return (unreadable.state === 'precise'
+        ? tt('wallet.twoPlaces', 'Coins go to two decimal places at most, like 0.25. {value} has more.')
+        : tt('wallet.notAnAmount', '{value} is not an amount. Type a number, like 5 or 0.25.'))
+        .replace('{value}', String(amounts[unreadable.r.key]).trim());
     }
     const empty = readings.find(row => row.state === 'empty');
     if (empty) {
@@ -256,7 +270,7 @@ const SendPage = () => {
         ? tt('wallet.enterAmountFor', 'Enter how much to send to {name}.').replace('{name}', empty.r.name)
         : tt('msg.enterHowMuchYouWant', 'Enter how much you want to send.');
     }
-    if (balance != null && total > balance) return tt('msg.insufficientBalance', 'Insufficient balance.');
+    if (balance != null && totalCents > toCents(balance)) return tt('msg.insufficientBalance', 'Insufficient balance.');
     return '';
   };
 
@@ -299,8 +313,8 @@ const SendPage = () => {
       // all of them or none (the server's send-many).
       const single = recipients.length === 1;
       const body = single
-        ? { to_kind: recipients[0].kind, to: recipients[0].ref, amount: readings[0].coins, pin, note: memo }
-        : { recipients: readings.map(row => ({ to_kind: row.r.kind, to: row.r.ref, amount: row.coins })), pin, note: memo };
+        ? { to_kind: recipients[0].kind, to: recipients[0].ref, amount: sendable(readings[0].cents), pin, note: memo }
+        : { recipients: readings.map(row => ({ to_kind: row.r.kind, to: row.r.ref, amount: sendable(row.cents) })), pin, note: memo };
       if (code) body.code = code;
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wallet/${single ? 'send' : 'send-many'}/`, {
         method: 'POST',
@@ -475,7 +489,7 @@ const SendPage = () => {
                     </label>
                     <div className={styles.inputPrefixWrap}>
                       <span className={styles.prefixTag}>VC</span>
-                      <input id="send-same" type="text" inputMode="numeric" pattern="[0-9]*" placeholder="10"
+                      <input id="send-same" type="text" inputMode="decimal" placeholder="10"
                              value={sameForAll} onChange={e => applySameToAll(e.target.value)} />
                     </div>
                   </div>}
@@ -498,12 +512,12 @@ const SendPage = () => {
                       {/* Text with a numeric keypad, not type="number": a number
                           input quietly accepts "0.2" and hands back 0.2, which
                           is how a fraction reached the send. */}
-                      <input id={`send-amount-${r.key}`} type="text" inputMode="numeric" pattern="[0-9]*" placeholder="50"
+                      <input id={`send-amount-${r.key}`} type="text" inputMode="decimal" placeholder="50"
                              value={amounts[r.key] || ''} onChange={e => setAmountFor(r.key, e.target.value)} autoFocus={!many} />
                     </div>
                   </div>)}
 
-                <p className={styles.fieldHint}>{tt('wallet.wholeCoinsHint', 'Whole coins only. 1 VC is ₦1,000.')}</p>
+                <p className={styles.fieldHint}>{tt('wallet.centsHint', 'Down to 0.01 VC, which is ₦10. 1 VC is ₦1,000.')}</p>
 
                 <div className={styles.infoRow}>
                   <span className={styles.infoRowLabel}>{many ? tt('wallet.total', 'Total') : tt("ui.balance.after.50e7", "Balance after")}</span>

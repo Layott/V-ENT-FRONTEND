@@ -138,7 +138,11 @@ export default function PayShortfall({
 
   const need = Math.max(0, Math.ceil(Number(needVc) || 0));
   const balance = methods ? Number(methods.balance_vc || 0) : 0;
-  const short = Math.max(0, need - balance);
+  // A card buys whole coins, and a balance can hold hundredths since 30
+  // September 2026: 4.8 VC towards a 5 VC ticket is one coin short, not 0.2
+  // (which the server rounds up to 1 anyway). Counted in hundredths so
+  // 5 - 4.8 is not 0.20000000000000018.
+  const short = Math.max(0, Math.ceil((need * 100 - Math.round(balance * 100)) / 100));
   // Their own currency at the Flutterwave door (inbox 361): quoted for the
   // exact naira the server will charge, which is the shortfall.
   const flutterwaveOffered = Boolean(methods && (methods.providers || []).some(p => p.key === 'flutterwave'));
