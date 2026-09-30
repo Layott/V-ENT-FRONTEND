@@ -1,3 +1,5 @@
+import { currentLocale } from '@/lib/seo';
+import { privateTitle } from '@/lib/seoCopy';
 // The page itself is a client component and cannot export metadata, so it
 // lives here.
 //
@@ -8,24 +10,29 @@
 // NOINDEX: this is one person's own screen. It is of no use in a search
 // result and indexing it would rank a redirect to the login page.
 
-export const metadata = {
-  title: 'Your comics',
-  description: 'Upload chapters, decide what they cost, and write to the people reading them.',
-  alternates: { canonical: 'https://v-ent.co/anime/studio' },
-  robots: { index: false, follow: false },
-  openGraph: {
-    title: 'Your comics',
+// In the reader's language: a const is evaluated once, with no request
+// and so no language, and every reader got the English title (inbox 375).
+export async function generateMetadata() {
+  const locale = currentLocale();
+  return {
+    title: privateTitle('anime/studio', locale),
     description: 'Upload chapters, decide what they cost, and write to the people reading them.',
-    url: 'https://v-ent.co/anime/studio',
-    siteName: 'V-ENT',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Your comics',
-    description: 'Upload chapters, decide what they cost, and write to the people reading them.',
-  },
-};
+    alternates: { canonical: 'https://v-ent.co/anime/studio' },
+    robots: { index: false, follow: false },
+    openGraph: {
+      title: 'Your comics',
+      description: 'Upload chapters, decide what they cost, and write to the people reading them.',
+      url: 'https://v-ent.co/anime/studio',
+      siteName: 'V-ENT',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Your comics',
+      description: 'Upload chapters, decide what they cost, and write to the people reading them.',
+    },
+  };
+}
 
 export default function Layout({ children }) {
   return children;

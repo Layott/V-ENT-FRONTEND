@@ -1,3 +1,5 @@
+import { buildMetadata, currentLocale } from '@/lib/seo';
+import { sectionCopy } from '@/lib/seoCopy';
 // The page itself is a client component and cannot export metadata, so it
 // lives here.
 //
@@ -5,23 +7,13 @@
 // says what is actually on this page. Every route carries its own, per the SEO
 // rule in CLAUDE.md.
 
-export const metadata = {
-  title: 'Reading rooms',
-  description: 'Rooms where people read the same comic at the same time on V-ENT, with the pages in step and a chat beside them.',
-  alternates: { canonical: 'https://v-ent.co/anime/rooms' },
-  openGraph: {
-    title: 'Reading rooms',
-    description: 'Rooms where people read the same comic at the same time on V-ENT, with the pages in step and a chat beside them.',
-    url: 'https://v-ent.co/anime/rooms',
-    siteName: 'V-ENT',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Reading rooms',
-    description: 'Rooms where people read the same comic at the same time on V-ENT, with the pages in step and a chat beside them.',
-  },
-};
+// In the reader's language, with the language alternates and share cards
+// built by buildMetadata; this was one English const for every reader
+// (inbox 375).
+export async function generateMetadata() {
+  const locale = currentLocale();
+  return buildMetadata({ ...sectionCopy('anime/rooms', locale), path: '/anime/rooms', locale });
+}
 
 export default function Layout({ children }) {
   return children;

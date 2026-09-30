@@ -1,26 +1,18 @@
+import { buildMetadata, currentLocale } from '@/lib/seo';
+import { sectionCopy } from '@/lib/seoCopy';
 // The page itself is a client component and cannot export metadata, so it
 // lives here.
 //
 // A description that could describe any page ranks for nothing, so this one
 // says what is actually on this page. Every public route carries its own, per
 // the SEO rule in CLAUDE.md.
-export const metadata = {
-  title: 'Team',
-  description: 'A team on V-ENT: its players, the tournaments it has entered, and its record.',
-  alternates: { canonical: 'https://v-ent.co/teams/team-profile' },
-  openGraph: {
-    title: 'Team',
-    description: 'A team on V-ENT: its players, the tournaments it has entered, and its record.',
-    url: 'https://v-ent.co/teams/team-profile',
-    siteName: 'V-ENT',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Team',
-    description: 'A team on V-ENT: its players, the tournaments it has entered, and its record.',
-  },
-};
+// In the reader's language, with the language alternates and share cards
+// built by buildMetadata; this was one English const for every reader
+// (inbox 375).
+export async function generateMetadata() {
+  const locale = currentLocale();
+  return buildMetadata({ ...sectionCopy('teams/team-profile', locale), path: '/teams/team-profile', locale });
+}
 
 export default function Layout({ children }) {
   return children;

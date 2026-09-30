@@ -10,6 +10,91 @@
 // A description that could describe any page ranks for nothing.
 
 export const SECTION_COPY = {
+  'anime': {
+    en: { title: 'Anime', description: 'Anime on V-ENT: what is coming, and the community around it.' },
+    fr: { title: 'Anime', description: 'L’anime sur V-ENT : ce qui arrive, et la communauté autour.' },
+    pt: { title: 'Anime', description: 'Anime na V-ENT: o que aí vem, e a comunidade à volta.' },
+  },
+  'anime/battles': {
+    en: { title: 'Character battles', description: 'Nominate an anime character, score their strength, speed, intelligence, durability and technique, and the average of every vote decides who wins.' },
+    fr: { title: 'Combats de personnages', description: 'Proposez un personnage d’anime, notez sa force, sa vitesse, son intelligence, sa résistance et sa technique : la moyenne des votes désigne le vainqueur.' },
+    pt: { title: 'Batalhas de personagens', description: 'Proponha uma personagem de anime, avalie a força, velocidade, inteligência, resistência e técnica, e a média dos votos decide quem ganha.' },
+  },
+  'anime/manga': {
+    en: { title: 'Comics', description: 'Manga, manhwa and webcomics uploaded by people on V-ENT. Search by genre, rating and status.' },
+    fr: { title: 'Bandes dessinées', description: 'Manga, manhwa et webcomics publiés par les membres de V-ENT. Recherche par genre, note et statut.' },
+    pt: { title: 'Bandas desenhadas', description: 'Manga, manhwa e webcomics publicados pelas pessoas na V-ENT. Pesquise por género, classificação e estado.' },
+  },
+  'anime/rooms': {
+    en: { title: 'Reading rooms', description: 'Rooms where people read the same comic at the same time on V-ENT, with the pages in step and a chat beside them.' },
+    fr: { title: 'Salons de lecture', description: 'Des salons où l’on lit la même bande dessinée en même temps sur V-ENT, pages synchronisées et discussion à côté.' },
+    pt: { title: 'Salas de leitura', description: 'Salas onde as pessoas leem a mesma banda desenhada ao mesmo tempo na V-ENT, com as páginas sincronizadas e um chat ao lado.' },
+  },
+  'community/post': {
+    en: { title: 'Posts', description: 'What players on V-ENT are posting about their matches, teams and events.' },
+    fr: { title: 'Publications', description: 'Ce que les joueurs de V-ENT publient sur leurs matchs, leurs équipes et leurs événements.' },
+    pt: { title: 'Publicações', description: 'O que os jogadores da V-ENT publicam sobre os seus jogos, equipas e eventos.' },
+  },
+  'community/thread': {
+    en: { title: 'Discussions', description: 'Discussions from the V-ENT community: tactics, results, teams and events.' },
+    fr: { title: 'Discussions', description: 'Les discussions de la communauté V-ENT : tactiques, résultats, équipes et événements.' },
+    pt: { title: 'Discussões', description: 'Discussões da comunidade V-ENT: táticas, resultados, equipas e eventos.' },
+  },
+  'events/vendor-shop': {
+    en: { title: 'Stalls', description: 'The stalls trading at this event, and what each of them sells.' },
+    fr: { title: 'Stands', description: 'Les stands présents à cet événement, et ce que chacun vend.' },
+    pt: { title: 'Bancas', description: 'As bancas presentes neste evento, e o que cada uma vende.' },
+  },
+  'events/vendor-shop/vendor': {
+    en: { title: 'Stall', description: 'A stall at a V-ENT event, and what it sells.' },
+    fr: { title: 'Stand', description: 'Un stand à un événement V-ENT, et ce qu’il vend.' },
+    pt: { title: 'Banca', description: 'Uma banca num evento V-ENT, e o que vende.' },
+  },
+  'events/view-event': {
+    en: { title: 'Event', description: 'An event on V-ENT: what is on, where it is, and how to get a ticket.' },
+    fr: { title: 'Événement', description: 'Un événement sur V-ENT : ce qui s’y passe, où, et comment obtenir un billet.' },
+    pt: { title: 'Evento', description: 'Um evento na V-ENT: o que acontece, onde é, e como obter um bilhete.' },
+  },
+  'feedback': {
+    en: { title: 'Send feedback', description: 'Tell us what broke, what confused you, or what is missing. No account needed.' },
+    fr: { title: 'Donner votre avis', description: 'Dites-nous ce qui ne marche pas, ce qui vous a perdu ou ce qui manque. Aucun compte nécessaire.' },
+    pt: { title: 'Enviar comentários', description: 'Diga-nos o que avariou, o que o confundiu ou o que falta. Não precisa de conta.' },
+  },
+  'marketplace': {
+    en: { title: 'Marketplace', description: 'The V-ENT marketplace, where players buy and sell within the community.' },
+    fr: { title: 'Marketplace', description: 'La marketplace V-ENT, où les joueurs achètent et vendent au sein de la communauté.' },
+    pt: { title: 'Marketplace', description: 'O marketplace da V-ENT, onde os jogadores compram e vendem dentro da comunidade.' },
+  },
+  'organizations/org-profile': {
+    en: { title: 'Organisation', description: 'An organisation on V-ENT: the tournaments and events it runs, and its teams.' },
+    fr: { title: 'Organisation', description: 'Une organisation sur V-ENT : les tournois et événements qu’elle organise, et ses équipes.' },
+    pt: { title: 'Organização', description: 'Uma organização na V-ENT: os torneios e eventos que organiza, e as suas equipas.' },
+  },
+  'pricing': {
+    en: { title: 'Pricing', description: 'V-ENT is free to use today. What will cost money later, what stays free, and the one thing we will never do.' },
+    fr: { title: 'Tarifs', description: 'V-ENT est gratuit aujourd’hui. Ce qui sera payant plus tard, ce qui reste gratuit, et la seule chose que nous ne ferons jamais.' },
+    pt: { title: 'Preços', description: 'A V-ENT é gratuita hoje. O que passará a ser pago, o que fica gratuito, e a única coisa que nunca faremos.' },
+  },
+  'shop': {
+    en: { title: 'Shop', description: 'The V-ENT shop: merchandise and gear for players and teams.' },
+    fr: { title: 'Boutique', description: 'La boutique V-ENT : produits dérivés et équipement pour les joueurs et les équipes.' },
+    pt: { title: 'Loja', description: 'A loja V-ENT: merchandising e equipamento para jogadores e equipas.' },
+  },
+  'teams/team-profile': {
+    en: { title: 'Team', description: 'A team on V-ENT: its players, the tournaments it has entered, and its record.' },
+    fr: { title: 'Équipe', description: 'Une équipe sur V-ENT : ses joueurs, les tournois auxquels elle a participé, et son palmarès.' },
+    pt: { title: 'Equipa', description: 'Uma equipa na V-ENT: os seus jogadores, os torneios em que participou, e o seu historial.' },
+  },
+  'tournaments/view-tournament': {
+    en: { title: 'Tournament', description: 'A tournament on V-ENT: the format, who is playing, the bracket and the prizes.' },
+    fr: { title: 'Tournoi', description: 'Un tournoi sur V-ENT : le format, les participants, le tableau et les prix.' },
+    pt: { title: 'Torneio', description: 'Um torneio na V-ENT: o formato, quem joga, o quadro e os prémios.' },
+  },
+  'wager': {
+    en: { title: 'Wager', description: 'Wagering on V-ENT. Not open yet; this page says where it has got to.' },
+    fr: { title: 'Paris', description: 'Les paris sur V-ENT. Pas encore ouverts ; cette page dit où nous en sommes.' },
+    pt: { title: 'Apostas', description: 'Apostas na V-ENT. Ainda não abertas; esta página diz em que ponto estamos.' },
+  },
   tournaments: {
     en: {
       title: 'Esports tournaments in Nigeria and across Africa',
@@ -220,6 +305,41 @@ export const SECTION_COPY = {
 
 /** Titles for pages that are noindex - the tab still needs a name. */
 export const PRIVATE_TITLES = {
+  'anime/my-list': { en: 'My list', fr: 'Ma liste', pt: 'A minha lista' },
+  'anime/studio': { en: 'Your comics', fr: 'Vos bandes dessinées', pt: 'As suas bandas desenhadas' },
+  'auth/external': { en: 'Signing in', fr: 'Connexion en cours', pt: 'A iniciar sessão' },
+  'community/challenge/[slug]': { en: 'Challenge', fr: 'Défi', pt: 'Desafio' },
+  'community/dm': { en: 'Messages', fr: 'Messages', pt: 'Mensagens' },
+  'community/dm/[slug]': { en: 'Messages', fr: 'Messages', pt: 'Mensagens' },
+  'community/post/[slug]': { en: 'Post', fr: 'Publication', pt: 'Publicação' },
+  'community/scrim/create': { en: 'New challenge', fr: 'Nouveau défi', pt: 'Novo desafio' },
+  'community/thread/[slug]': { en: 'Discussion', fr: 'Discussion', pt: 'Discussão' },
+  'edit-team-profile/[slug]': { en: 'Edit team', fr: 'Modifier l’équipe', pt: 'Editar equipa' },
+  'email-verified/[key]/[value]': { en: 'Email verified', fr: 'E-mail vérifié', pt: 'E-mail verificado' },
+  'events/attendees': { en: 'Door list', fr: 'Liste d’entrée', pt: 'Lista de entrada' },
+  'events/check-in/[code]': { en: 'Check in', fr: 'Enregistrement', pt: 'Check-in' },
+  'events/create-event': { en: 'Create an event', fr: 'Créer un événement', pt: 'Criar um evento' },
+  'events/edit-event': { en: 'Edit event', fr: 'Modifier l’événement', pt: 'Editar evento' },
+  'events/find-ticket': { en: 'Find ticket', fr: 'Retrouver un billet', pt: 'Encontrar bilhete' },
+  'events/my-events': { en: 'My events', fr: 'Mes événements', pt: 'Os meus eventos' },
+  'events/my-tickets': { en: 'My tickets', fr: 'Mes billets', pt: 'Os meus bilhetes' },
+  'events/scan': { en: 'Scanner', fr: 'Scanner', pt: 'Leitor' },
+  'events/[slug]/attendees': { en: 'Door list', fr: 'Liste d’entrée', pt: 'Lista de entrada' },
+  'events/[slug]/edit': { en: 'Edit event', fr: 'Modifier l’événement', pt: 'Editar evento' },
+  'my-stalls': { en: 'My stalls', fr: 'Mes stands', pt: 'As minhas bancas' },
+  'organizations/create': { en: 'New organisation', fr: 'Nouvelle organisation', pt: 'Nova organização' },
+  'organizations/invites': { en: 'Invites', fr: 'Invitations', pt: 'Convites' },
+  'organizations/[slug]': { en: 'Organisation', fr: 'Organisation', pt: 'Organização' },
+  'partners/authorize': { en: 'Authorize', fr: 'Autoriser', pt: 'Autorizar' },
+  'teams/create-team': { en: 'Create team', fr: 'Créer une équipe', pt: 'Criar equipa' },
+  'teams/join/[token]': { en: 'Join a team', fr: 'Rejoindre une équipe', pt: 'Juntar-se a uma equipa' },
+  'tournaments/create-tournament': { en: 'Create a tournament', fr: 'Créer un tournoi', pt: 'Criar um torneio' },
+  'tournaments/drafts': { en: 'Drafts', fr: 'Brouillons', pt: 'Rascunhos' },
+  'tournaments/edit-tournament': { en: 'Edit tournament', fr: 'Modifier le tournoi', pt: 'Editar torneio' },
+  'tournaments/my-tournaments': { en: 'My tournaments', fr: 'Mes tournois', pt: 'Os meus torneios' },
+  'tournaments/overlay': { en: 'Overlay', fr: 'Habillage', pt: 'Sobreposição' },
+  'tournaments/production': { en: 'Production', fr: 'Production', pt: 'Produção' },
+  'tournaments/[slug]/edit': { en: 'Edit tournament', fr: 'Modifier le tournoi', pt: 'Editar torneio' },
   wallets: { en: 'Wallet', fr: 'Portefeuille', pt: 'Carteira' },
   'wallet-topup-callback': { en: 'Payment', fr: 'Paiement', pt: 'Pagamento' },
   production: { en: 'Production', fr: 'Production', pt: 'Produção' },
