@@ -19,7 +19,7 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 const REFRESH_MS = 10 * 60 * 1000;
 
 /** The codes the server answers when a quote cannot be charged. */
-export const QUOTE_CODES = ['QUOTE_EXPIRED', 'QUOTE_INVALID', 'QUOTE_MISMATCH', 'CURRENCY_UNAVAILABLE'];
+export const QUOTE_CODES = ['QUOTE_EXPIRED', 'QUOTE_INVALID', 'QUOTE_MISMATCH', 'CURRENCY_UNAVAILABLE', 'CURRENCY_BELOW_MINIMUM'];
 
 /**
  * `{status, options, selected, choose, choice, refresh}` for `amountNgn`.
