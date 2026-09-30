@@ -8315,6 +8315,7 @@ const table = {
  "api.QUOTE_INVALID": "That price could not be read. The new one is on the screen; press Pay again.",
  "api.QUOTE_MISMATCH": "The amount changed. The new price is on the screen; press Pay again.",
  "api.CURRENCY_UNAVAILABLE": "That currency cannot be used here. Choose another, or pay in naira.",
+ "api.CURRENCY_BELOW_MINIMUM": "That amount is too small to pay in this currency. Choose another, or pay in naira.",
  "api.RATE_UNAVAILABLE": "No exchange rate for that currency just now. Pay in naira, or try again in a moment.",
  "api.BOT_CHECK_FAILED": "We could not confirm this came from a person. Reload the page and try again.",
  "api.UNSUPPORTED_FILE": "That kind of file cannot be uploaded here.",
