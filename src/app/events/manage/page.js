@@ -39,6 +39,7 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import EventSitePanel from '@/components/event-site/EventSitePanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
 import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
@@ -69,7 +70,7 @@ const FUNNEL_LABELS = {
 
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
   'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors',
-  'production', 'team'];
+  'production', 'website', 'team'];
 // The tab used to be called overlays, before the studio existed for events.
 // Links carrying the old name still open the right place.
 const TAB_ALIASES = { overlays: 'production' };
@@ -2682,6 +2683,14 @@ export const ManageEventContent = ({
                 </section>}
 
               {/* ------------------------------------------------------- team */}
+              {/* Its own website and the code for somebody else's
+                  (inbox 360). */}
+              {tab === 'website' && <EventSitePanel
+                eventRef={eventRef}
+                token={token}
+                showToast={setNotice}
+              />}
+
               {tab === 'run-of-show' && <RunOfShowPanel
                 kind="event"
                 ownerRef={eventRef}

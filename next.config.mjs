@@ -44,6 +44,17 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
 ].join('; ');
 
+// Embeds (inbox 360) are pages other websites hold in a frame, so they carry
+// the same policy with one change: any site may frame them, and there is no
+// X-Frame-Options to contradict that. Everything else still refuses framing.
+const embedHeaders = [
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy.replace("frame-ancestors 'self'", 'frame-ancestors *') },
+  ...(isDev ? [] : [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]),
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), geolocation=(), microphone=()' },
+];
+
 const securityHeaders = [
   { key: 'Content-Security-Policy', value: contentSecurityPolicy },
   ...(isDev ? [] : [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]),
@@ -177,7 +188,12 @@ const nextConfig = {
   // working rather than 404ing at the moment somebody is checking what they
   // agreed to.
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }];
+    return [
+      // A prefixed embed (/fr/embed/...) is still an embed.
+      { source: '/:path((?!(?:fr/|pt/)?embed/).*)', headers: securityHeaders },
+      { source: '/embed/:path*', headers: embedHeaders },
+      { source: '/:locale(fr|pt)/embed/:path*', headers: embedHeaders },
+    ];
   },
 
   async redirects() {

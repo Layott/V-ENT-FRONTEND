@@ -196,3 +196,27 @@
   margin: -0.4rem 0 0.9rem;
   text-align: center;
 }
+
+/* The embed code (inbox 360): folded away until asked for, then the code on a
+   darker surface so it reads as something to copy rather than to read. */
+.embed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.code {
+  margin: 0;
+  background-color: #1a1b1e;
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  color: #d8d8dc;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 9rem;
+  overflow: auto;
+  text-align: left;
+}
