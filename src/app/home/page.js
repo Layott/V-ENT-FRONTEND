@@ -22,7 +22,7 @@ import styles from './home.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
-import { statementLine } from '@/lib/statementLine';
+import { statementLine, kindLabel } from '@/lib/statementLine';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
@@ -169,16 +169,6 @@ const upcomingSlice = (list, count) => {
 // Wallet rows: credits are positive amounts, debits negative.
 const CREDIT_TYPES = new Set(['top_up', 'prize', 'receive', 'refund']);
 const isCreditTx = tx => Number(tx?.amount) > 0 || CREDIT_TYPES.has(tx?.type);
-const TX_TYPE_LABELS = {
-  top_up: 'Top up',
-  deduction: 'Entry fee',
-  prize: 'Prize',
-  send: 'Sent',
-  receive: 'Received',
-  withdrawal: 'Withdrawal',
-  refund: 'Refund'
-};
-const txTypeLabel = type => TX_TYPE_LABELS[type] || (type ? type.replace(/_/g, ' ') : 'Transaction');
 const activityIconFor = (kind, type) => {
   const key = kind || type;
   if (key === 'match_live') return <BsBroadcast />;
@@ -655,7 +645,7 @@ const HomePage = () => {
                 }}>
                         <div className={styles.txLeft}>
                           <span className={`${styles.txTypeBadge} ${isCreditTx(tx) ? styles.txTypeCredit : styles.txTypeDebit}`}>
-                            {txTypeLabel(tx.type)}
+                            {kindLabel(tt, tx.type)}
                           </span>
                           <div className={styles.txDescBlock}>
                             <p className={styles.txDesc}>{statementLine(tt, tx)}</p>

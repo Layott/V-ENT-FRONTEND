@@ -95,3 +95,19 @@ export function statementLine(tt, row) {
     code === 'returned' && p?.reason ? say(tt, 'returnedReason', p) : say(tt, code, p)));
   return extras.length ? `${main} (${extras.join(', ')})` : main;
 }
+
+/**
+ * The kind of a history row, as a noun (inbox 389). The badge used to look
+ * up its English word ("Send", "Refund") in the shared text table, which
+ * found the button verbs, so French rows read "Envoyer" under a filter chip
+ * reading "Envois". Home drew the English word untranslated.
+ */
+export const KIND_ENGLISH = {
+  top_up: 'Top-up', send: 'Sent', receive: 'Received', prize: 'Prize', withdrawal: 'Withdrawal',
+  fee: 'Fee', refund: 'Refund', deduction: 'Entry fee', transfer: 'Transfer', other: 'Other',
+};
+
+export function kindLabel(tt, type) {
+  const key = KIND_ENGLISH[type] ? type : 'other';
+  return tt(`txn.kind.${key}`, KIND_ENGLISH[key]);
+}
