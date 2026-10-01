@@ -100,7 +100,7 @@ const Battles = () => {
                   <Link href={`/anime/battles/${b.slug}`} className={styles.row}>
                     <span className={styles.rowTitle}>{b.title}</span>
                     <span className={styles.rowMeta}>
-                      {b.state_label}
+                      {tt(`anime.battleState.${b.state}`, b.state_label)}
                       {' '}
                       {fill(tt('anime.charactersIn', '{n} characters'),
                         { n: b.characters })}

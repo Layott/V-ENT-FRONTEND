@@ -683,7 +683,7 @@ const UserProfileContent = ({
                       <label className={styles.reportLabel}>
                         {tt('safety.reportReason', 'What is the problem?')}
                         <select className={styles.reportSelect} value={reportReason} onChange={e => setReportReason(e.target.value)}>
-                          {(safety.reasons || []).map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+                          {(safety.reasons || []).map(r => <option key={r.key} value={r.key}>{tt(`reportReason.${r.key}`, r.label)}</option>)}
                         </select>
                       </label>
                       <label className={styles.reportLabel}>

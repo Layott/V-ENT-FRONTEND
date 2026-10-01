@@ -194,7 +194,7 @@ const SeriesClient = ({ slug }) => {
           <div className={styles.statRow}>
             <span className={styles.statItem}>
               <span className={styles.statLabel}>{tt('anime.kind', 'Kind')}</span>
-              {series.kind_label}
+              {tt(`anime.kindName.${series.kind}`, series.kind_label)}
             </span>
             <span className={styles.statItem}>
               <span className={styles.statLabel}>{tt('anime.chapters', 'Chapters')}</span>

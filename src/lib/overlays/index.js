@@ -11,6 +11,7 @@ import transition from './transition';
 import { brb, streamEnded, champions } from './screens';
 import { streamerSingle, streamerDouble, streamerGameplay } from './frames';
 import { nameTag, matchLowerThird } from './people';
+import { titleCard, versusCard, awardCard, cornerBug, statCounter, socialPost } from './library';
 
 export const DESIGNS = {
   starting_soon: startingSoon,
@@ -23,6 +24,12 @@ export const DESIGNS = {
   name_tag: nameTag,
   match_lower_third: matchLowerThird,
   transition,
+  title_card: titleCard,
+  versus_card: versusCard,
+  award_card: awardCard,
+  corner_bug: cornerBug,
+  stat_counter: statCounter,
+  social_post: socialPost,
 };
 
 export const isDesigned = (kind) => Boolean(DESIGNS[kind]);

@@ -1,0 +1,1989 @@
+{
+ "source": "OVERLAYS-ELEMENTS/Esports_Broadcast_Asset_Library.pdf (inbox 396), checklist copied to docs/asset-library-checklist.txt",
+ "items": [
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Stream Starting Soon screen",
+   "kind": "starting_soon"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Stream Countdown screen",
+   "kind": "starting_soon",
+   "note": "the countdown is a field of the starting soon screen"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Stream Break / Intermission screen",
+   "kind": "break_screen",
+   "note": "also the designed brb screen"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Stream Back Soon screen",
+   "kind": "brb"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Stream Ending screen",
+   "kind": "stream_ended"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Main Broadcast Overlay",
+   "kind": "scorebar",
+   "note": "live score bar over the game"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Clean Gameplay Overlay",
+   "kind": "play_area",
+   "note": "the frame with nothing over the play"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Fullscreen Gameplay Frame",
+   "kind": "play_area"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Single Caster Overlay",
+   "kind": "streamer_single"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Dual Caster Overlay",
+   "kind": "streamer_double"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Player Introduction Overlay",
+   "kind": "player_card"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Team Introduction Overlay",
+   "kind": "versus_card",
+   "note": "one side named, or the team card"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Match Introduction",
+   "kind": "versus_card"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Match Loading Screen",
+   "kind": "title_card",
+   "preset": "loading"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Match Results Screen",
+   "kind": "match_result"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Winner Screen",
+   "kind": "award_card",
+   "preset": "winner"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Tournament Champion Screen",
+   "kind": "champions",
+   "note": "also award_card CHAMPIONS"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "MVP Screen",
+   "kind": "award_card",
+   "preset": "mvp"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Player of the Match Screen",
+   "kind": "award_card",
+   "preset": "potm"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Lower Third",
+   "kind": "lower_third"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Player Nameplate",
+   "kind": "name_tag"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Team Nameplate",
+   "kind": "match_lower_third"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Caster Nameplate",
+   "kind": "desk_lower_third"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Sponsor Lower Third",
+   "kind": "match_lower_third",
+   "note": "with the sponsor logo and words"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Sponsor Takeover",
+   "kind": "title_card",
+   "preset": "sponsor",
+   "note": "the sponsor logo as the main logo"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Advertisement Break Screen",
+   "kind": "title_card",
+   "preset": "ad_break"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Tournament Logo Bug",
+   "kind": "corner_bug",
+   "note": "show: a logo"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Sponsor Logo Bug",
+   "kind": "corner_bug",
+   "note": "show: a logo, caption SPONSORED BY"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Social Media Handle Bug",
+   "kind": "corner_bug",
+   "note": "show: a social handle"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "QR Code Frame",
+   "kind": "corner_bug",
+   "note": "show: a QR code, drawn from the link"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Announcement Overlay",
+   "kind": "title_card",
+   "preset": "announcement"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Tournament Title Card",
+   "kind": "title_card",
+   "preset": "tournament"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Match Title Card",
+   "kind": "title_card",
+   "preset": "match"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Round Title Card",
+   "kind": "title_card",
+   "preset": "round"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Day / Stage Title Card",
+   "kind": "title_card",
+   "preset": "day",
+   "note": "or STAGE #"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Group Stage Card",
+   "kind": "title_card",
+   "preset": "group_stage"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Playoffs Card",
+   "kind": "title_card",
+   "preset": "playoffs"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Semi Final Card",
+   "kind": "title_card",
+   "preset": "semi_final"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Grand Final Card",
+   "kind": "title_card",
+   "preset": "grand_final"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Match Schedule",
+   "kind": "now_next",
+   "note": "live from the run of show; matchday draws a day of fixtures"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Upcoming Match",
+   "kind": "title_card",
+   "preset": "upcoming",
+   "note": "live: now_next"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Current Match",
+   "kind": "title_card",
+   "preset": "current",
+   "note": "live: scorebar"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Previous Match Result",
+   "kind": "match_result"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Standings",
+   "kind": "standings"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Leaderboard",
+   "kind": "standings"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Bracket",
+   "kind": "bracket"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Group Table",
+   "kind": "standings"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Points Table",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "1. Core Broadcast Package",
+   "item": "Statistics Screen",
+   "kind": "stat_counter",
+   "note": "up to four rows of words and numbers"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Match Intro",
+   "kind": "versus_card",
+   "note": "or title card MATCH #"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Lineup",
+   "kind": "squad_depth",
+   "note": "live lineup; or social post rows"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Player Lineup",
+   "kind": "squad_depth"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Drop / Match Start",
+   "kind": "title_card",
+   "preset": "match_start"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Live Match Overlay",
+   "kind": "scorebar"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Alive Counter",
+   "kind": "stat_counter",
+   "note": "ALIVE row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Alive Counter",
+   "kind": "stat_counter",
+   "note": "TEAMS ALIVE row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Kill Counter",
+   "kind": "stat_counter",
+   "note": "KILLS row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Kill Counter",
+   "kind": "stat_counter",
+   "note": "TEAM KILLS row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Current Placement",
+   "kind": "stat_counter",
+   "note": "PLACE row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Zone / Phase Information",
+   "kind": "title_card",
+   "preset": "phase",
+   "note": "or stat counter ZONE row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Match Timer",
+   "kind": "stat_counter",
+   "note": "TIME row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Remaining Teams",
+   "kind": "stat_counter",
+   "note": "TEAMS LEFT row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Remaining Players",
+   "kind": "stat_counter",
+   "note": "PLAYERS LEFT row"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Match Result",
+   "kind": "match_result"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Card",
+   "kind": "player_card",
+   "note": "or award card with the team logo"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Roster",
+   "kind": "squad_depth"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Player Card",
+   "kind": "player_card"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Player Introduction",
+   "kind": "player_card"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Player Stats",
+   "kind": "stat_counter",
+   "note": "the player's numbers, or award card with a stat"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Stats",
+   "kind": "stat_counter",
+   "note": "the team's numbers"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Kill Leader",
+   "kind": "award_card",
+   "preset": "kill_leader"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Damage Leader",
+   "kind": "award_card",
+   "preset": "damage_leader"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "MVP",
+   "kind": "award_card",
+   "preset": "mvp"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Top Fragger",
+   "kind": "award_card",
+   "preset": "top_fragger"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Top Placement",
+   "kind": "award_card",
+   "preset": "top_placement"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Match Results",
+   "kind": "match_result",
+   "note": "battle royale: the standings graphic draws the stage table"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Overall Standings",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Overall Leaderboard",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Points Breakdown",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Placement Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Elimination Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Total Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Team Movement",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Qualification Status",
+   "kind": "title_card",
+   "preset": "qualified",
+   "note": "or ELIMINATED"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Qualified Teams",
+   "kind": "title_card",
+   "preset": "qualified",
+   "note": "with the names in the line below; social post rows for a list"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Eliminated Teams",
+   "kind": "title_card",
+   "preset": "eliminated"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Final Standings",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Chicken Dinner / Winner Screen",
+   "kind": "award_card",
+   "preset": "chicken_dinner"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Final Circle",
+   "kind": "title_card",
+   "preset": "final_circle"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Last Team Standing",
+   "kind": "title_card",
+   "preset": "last_team"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Clutch Moment",
+   "kind": "title_card",
+   "preset": "clutch"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Most Eliminations",
+   "kind": "award_card",
+   "preset": "most_eliminations"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Highest Placement",
+   "kind": "award_card",
+   "preset": "top_placement"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Biggest Point Gain",
+   "kind": "award_card",
+   "preset": "biggest_gain"
+  },
+  {
+   "section": "2. PUBG Mobile Package",
+   "item": "Biggest Upset",
+   "kind": "title_card",
+   "preset": "upset"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Match Intro",
+   "kind": "versus_card",
+   "note": "or title card MATCH #"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Team Lineup",
+   "kind": "squad_depth",
+   "note": "live lineup; or social post rows"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Player Lineup",
+   "kind": "squad_depth"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Live Match Overlay",
+   "kind": "scorebar"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Alive Counter",
+   "kind": "stat_counter",
+   "note": "ALIVE row"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Kill Counter",
+   "kind": "stat_counter",
+   "note": "KILLS row"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Placement",
+   "kind": "stat_counter",
+   "note": "PLACE row"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Match Timer",
+   "kind": "stat_counter",
+   "note": "TIME row"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Remaining Teams",
+   "kind": "stat_counter",
+   "note": "TEAMS LEFT row"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Match Results",
+   "kind": "match_result",
+   "note": "battle royale: the standings graphic draws the stage table"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Booyah Screen",
+   "kind": "award_card",
+   "preset": "booyah"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Match Results",
+   "kind": "match_result",
+   "note": "battle royale: the standings graphic draws the stage table"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Overall Standings",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Points Table",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Placement Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Kill Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Total Points",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Team Ranking",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Team Movement",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Qualified Teams",
+   "kind": "title_card",
+   "preset": "qualified",
+   "note": "with the names in the line below; social post rows for a list"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Eliminated Teams",
+   "kind": "title_card",
+   "preset": "eliminated"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Grand Final Standings",
+   "kind": "standings",
+   "note": "live: a battle royale stage draws its points table (placement, kill, total) from the stage itself"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Team Introduction",
+   "kind": "player_card",
+   "note": "or versus card with one side"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Player Introduction",
+   "kind": "player_card"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Player Stats",
+   "kind": "stat_counter",
+   "note": "the player's numbers, or award card with a stat"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Team Stats",
+   "kind": "stat_counter",
+   "note": "the team's numbers"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "MVP",
+   "kind": "award_card",
+   "preset": "mvp"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Kill Leader",
+   "kind": "award_card",
+   "preset": "kill_leader"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Top Team",
+   "kind": "award_card",
+   "preset": "top_team"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Match Winner",
+   "kind": "award_card",
+   "preset": "match_winner"
+  },
+  {
+   "section": "3. Free Fire Package",
+   "item": "Tournament Winner",
+   "kind": "award_card",
+   "preset": "champion"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Match Intro",
+   "kind": "versus_card",
+   "note": "or title card MATCH #"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Team vs Team",
+   "kind": "versus_card"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Team Lineup",
+   "kind": "squad_depth",
+   "note": "live lineup; or social post rows"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Player Lineup",
+   "kind": "squad_depth"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Player Roles",
+   "kind": "squad_depth",
+   "note": "or player card"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Draft / Pick Screen",
+   "status": "not_built",
+   "reason": "a pick and ban screen needs ten hero slots fed from the draft, and V-ENT records no MLBB draft; nothing to draw it from"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Ban / Pick Screen",
+   "status": "not_built",
+   "reason": "as the draft screen: no draft data exists on the platform"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game Loading Screen",
+   "kind": "title_card",
+   "preset": "loading"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Live Match Overlay",
+   "kind": "scorebar"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game Timer",
+   "kind": "stat_counter",
+   "note": "TIME row"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Kill Score",
+   "kind": "stat_counter",
+   "note": "KILLS rows, one per side"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Turret Score",
+   "kind": "stat_counter",
+   "note": "TURRETS rows"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Gold Difference",
+   "kind": "stat_counter",
+   "note": "GOLD row"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Team Stats",
+   "kind": "stat_counter",
+   "note": "the team's numbers"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Player Stats",
+   "kind": "stat_counter",
+   "note": "the player's numbers, or award card with a stat"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Objective Status",
+   "kind": "stat_counter",
+   "note": "OBJECTIVE row"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Lord Status",
+   "kind": "stat_counter",
+   "note": "LORD row"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Turtle Status",
+   "kind": "stat_counter",
+   "note": "TURTLE row"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game 1",
+   "kind": "title_card",
+   "preset": "game",
+   "note": "number 1"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game 2",
+   "kind": "title_card",
+   "preset": "game",
+   "note": "number 2"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game 3",
+   "kind": "title_card",
+   "preset": "game",
+   "note": "number 3"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game 4",
+   "kind": "title_card",
+   "preset": "game",
+   "note": "number 4"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Game 5",
+   "kind": "title_card",
+   "preset": "game",
+   "note": "number 5"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Series Score",
+   "kind": "versus_card",
+   "note": "with both scores"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Match Point",
+   "kind": "title_card",
+   "preset": "match_point"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Series Winner",
+   "kind": "award_card",
+   "preset": "series_winner"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Player Card",
+   "kind": "player_card"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Hero Played",
+   "kind": "award_card",
+   "preset": "custom",
+   "note": "the hero picture as the photo"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "KDA",
+   "kind": "stat_counter",
+   "note": "K, D, A rows"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "MVP",
+   "kind": "award_card",
+   "preset": "mvp"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Most Kills",
+   "kind": "award_card",
+   "preset": "most_kills"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Highest Damage",
+   "kind": "award_card",
+   "preset": "highest_damage"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Best Support",
+   "kind": "award_card",
+   "preset": "best_support"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Best Tank",
+   "kind": "award_card",
+   "preset": "best_tank"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Best Jungler",
+   "kind": "award_card",
+   "preset": "best_jungler"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Group Standings",
+   "kind": "standings"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Playoff Bracket",
+   "kind": "bracket"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Match Schedule",
+   "kind": "now_next",
+   "note": "live from the run of show; matchday draws a day of fixtures"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Results",
+   "kind": "match_result"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Upper Bracket",
+   "kind": "title_card",
+   "preset": "upper_bracket",
+   "note": "live: bracket"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Lower Bracket",
+   "kind": "title_card",
+   "preset": "lower_bracket",
+   "note": "live: bracket"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Grand Final",
+   "kind": "title_card",
+   "preset": "grand_final"
+  },
+  {
+   "section": "4. Mobile Legends: Bang Bang Package",
+   "item": "Tournament Champion",
+   "kind": "champions"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Match Intro",
+   "kind": "versus_card",
+   "note": "or title card MATCH #"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Player vs Player",
+   "kind": "versus_card"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Team Lineup",
+   "kind": "squad_depth",
+   "note": "live lineup; or social post rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Player Introduction",
+   "kind": "player_card"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Match Scoreboard",
+   "kind": "scorebar"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Match Timer",
+   "kind": "stat_counter",
+   "note": "TIME row"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Goal Graphic",
+   "kind": "title_card",
+   "preset": "goal"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Half Time",
+   "kind": "title_card",
+   "preset": "half_time"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Full Time",
+   "kind": "title_card",
+   "preset": "full_time"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Extra Time",
+   "kind": "title_card",
+   "preset": "extra_time"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Penalty Shootout",
+   "kind": "title_card",
+   "preset": "penalties"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Match Result",
+   "kind": "match_result"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Goals",
+   "kind": "stat_counter",
+   "note": "GOALS rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Assists",
+   "kind": "stat_counter",
+   "note": "ASSISTS rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Possession",
+   "kind": "stat_counter",
+   "note": "POSSESSION rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Shots",
+   "kind": "stat_counter",
+   "note": "SHOTS rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Shots on Target",
+   "kind": "stat_counter",
+   "note": "ON TARGET rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Pass Accuracy",
+   "kind": "stat_counter",
+   "note": "PASS % rows"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Player of the Match",
+   "kind": "award_card",
+   "preset": "potm"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Round of 32",
+   "kind": "title_card",
+   "preset": "round_of_32"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Round of 16",
+   "kind": "title_card",
+   "preset": "round_of_16"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Quarter Final",
+   "kind": "title_card",
+   "preset": "quarter_final"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Semi Final",
+   "kind": "title_card",
+   "preset": "semi_final"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Grand Final",
+   "kind": "title_card",
+   "preset": "grand_final"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Bracket",
+   "kind": "bracket"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Fixtures",
+   "kind": "matchday",
+   "note": "a day of fixtures; fixture_card for one"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Results",
+   "kind": "match_result"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Standings",
+   "kind": "standings"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Next Match",
+   "kind": "fixture_card"
+  },
+  {
+   "section": "5. EA FC / EAFC Package",
+   "item": "Champion",
+   "kind": "champions"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Match Intro",
+   "kind": "versus_card",
+   "note": "or title card MATCH #"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Player vs Player",
+   "kind": "versus_card"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Team Lineup",
+   "kind": "squad_depth",
+   "note": "live lineup; or social post rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Match Scoreboard",
+   "kind": "scorebar"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Match Timer",
+   "kind": "stat_counter",
+   "note": "TIME row"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Goal",
+   "kind": "title_card",
+   "preset": "goal"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Half Time",
+   "kind": "title_card",
+   "preset": "half_time"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Full Time",
+   "kind": "title_card",
+   "preset": "full_time"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Extra Time",
+   "kind": "title_card",
+   "preset": "extra_time"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Penalties",
+   "kind": "title_card",
+   "preset": "penalties"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Match Result",
+   "kind": "match_result"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Possession",
+   "kind": "stat_counter",
+   "note": "POSSESSION rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Shots",
+   "kind": "stat_counter",
+   "note": "SHOTS rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Shots on Target",
+   "kind": "stat_counter",
+   "note": "ON TARGET rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Passes",
+   "kind": "stat_counter",
+   "note": "PASSES rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Pass Accuracy",
+   "kind": "stat_counter",
+   "note": "PASS % rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Fouls",
+   "kind": "stat_counter",
+   "note": "FOULS rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Cards",
+   "kind": "stat_counter",
+   "note": "CARDS rows"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Player of the Match",
+   "kind": "award_card",
+   "preset": "potm"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Fixtures",
+   "kind": "matchday",
+   "note": "a day of fixtures; fixture_card for one"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Results",
+   "kind": "match_result"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Group Table",
+   "kind": "standings"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Knockout Bracket",
+   "kind": "bracket"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Round of 32",
+   "kind": "title_card",
+   "preset": "round_of_32"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Round of 16",
+   "kind": "title_card",
+   "preset": "round_of_16"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Quarter Final",
+   "kind": "title_card",
+   "preset": "quarter_final"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Semi Final",
+   "kind": "title_card",
+   "preset": "semi_final"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Grand Final",
+   "kind": "title_card",
+   "preset": "grand_final"
+  },
+  {
+   "section": "6. eFootball Package",
+   "item": "Champion",
+   "kind": "champions"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Tournament Logo",
+   "kind": "corner_bug",
+   "note": "show: a logo"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Tournament Title",
+   "kind": "title_card",
+   "preset": "tournament",
+   "note": "the name in your own words"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Tournament Slogan",
+   "kind": "title_card",
+   "preset": "custom",
+   "note": "the slogan in your own words"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Event Date",
+   "kind": "title_card",
+   "preset": "event_date"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Prize Pool",
+   "kind": "title_card",
+   "preset": "prize_pool"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Registration Information",
+   "kind": "title_card",
+   "preset": "registration_open"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Rules",
+   "kind": "title_card",
+   "preset": "rules"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Schedule",
+   "kind": "programme",
+   "note": "events; now_next for a tournament"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Venue / Platform",
+   "kind": "title_card",
+   "preset": "venue"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Sponsors",
+   "kind": "sponsors"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Partners",
+   "kind": "sponsors"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Registration Open",
+   "kind": "title_card",
+   "preset": "registration_open"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Registration Closed",
+   "kind": "title_card",
+   "preset": "registration_closed"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Group Stage",
+   "kind": "title_card",
+   "preset": "group_stage"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Knockout Stage",
+   "kind": "title_card",
+   "preset": "knockout"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Playoffs",
+   "kind": "title_card",
+   "preset": "playoffs"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Semi Finals",
+   "kind": "title_card",
+   "preset": "semi_final"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Grand Final",
+   "kind": "title_card",
+   "preset": "grand_final"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Tournament Completed",
+   "kind": "title_card",
+   "preset": "completed"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Match Result",
+   "kind": "match_result"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Daily Results",
+   "kind": "social_post",
+   "preset": "daily_results"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Standings",
+   "kind": "standings"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Leaderboard",
+   "kind": "standings"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Bracket",
+   "kind": "bracket"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Qualified",
+   "kind": "title_card",
+   "preset": "qualified"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Eliminated",
+   "kind": "title_card",
+   "preset": "eliminated"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Champion",
+   "kind": "champions"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Runner Up",
+   "kind": "award_card",
+   "preset": "runner_up"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "Third Place",
+   "kind": "award_card",
+   "preset": "third_place"
+  },
+  {
+   "section": "7. Universal Tournament Graphics",
+   "item": "MVP",
+   "kind": "award_card",
+   "preset": "mvp"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Tournament Announcement",
+   "kind": "social_post",
+   "preset": "announcement"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Matchday",
+   "kind": "social_post",
+   "preset": "matchday"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Live Stream",
+   "kind": "social_post",
+   "preset": "live_now"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Grand Final",
+   "kind": "social_post",
+   "preset": "grand_final"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Semi Final",
+   "kind": "social_post",
+   "preset": "semi_final"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Quarter Final",
+   "kind": "social_post",
+   "preset": "quarter_final"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Highlights",
+   "kind": "social_post",
+   "preset": "highlights"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Best Moments",
+   "kind": "social_post",
+   "preset": "best_moments"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Match Recap",
+   "kind": "social_post",
+   "preset": "match_recap"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Tournament Recap",
+   "kind": "social_post",
+   "preset": "recap"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Player Spotlight",
+   "kind": "social_post",
+   "preset": "player_spotlight"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "MVP",
+   "kind": "social_post",
+   "preset": "mvp"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Winner Reveal",
+   "kind": "social_post",
+   "preset": "winner_reveal"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Results",
+   "kind": "social_post",
+   "preset": "match_result"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Standings",
+   "kind": "social_post",
+   "preset": "standings"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Bracket Reveal",
+   "kind": "social_post",
+   "preset": "bracket_reveal"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Team Reveal",
+   "kind": "social_post",
+   "preset": "team_reveal"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Player Reveal",
+   "kind": "social_post",
+   "preset": "player_reveal"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Roster Reveal",
+   "kind": "social_post",
+   "preset": "roster_reveal"
+  },
+  {
+   "section": "8. YouTube Assets",
+   "item": "Prize Pool Reveal",
+   "kind": "social_post",
+   "preset": "prize_pool_reveal"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Tournament Announcement",
+   "kind": "social_post",
+   "preset": "announcement"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Registration Open",
+   "kind": "social_post",
+   "preset": "registration_open"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Registration Closing",
+   "kind": "social_post",
+   "preset": "registration_closing"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Prize Pool",
+   "kind": "social_post",
+   "preset": "prize_pool"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Tournament Date",
+   "kind": "social_post",
+   "preset": "event_date"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Schedule",
+   "kind": "social_post",
+   "preset": "schedule"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Matchday",
+   "kind": "social_post",
+   "preset": "matchday"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Upcoming Match",
+   "kind": "social_post",
+   "preset": "upcoming"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Live Now",
+   "kind": "social_post",
+   "preset": "live_now"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Match Result",
+   "kind": "social_post",
+   "preset": "match_result"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Daily Results",
+   "kind": "social_post",
+   "preset": "daily_results"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Standings",
+   "kind": "social_post",
+   "preset": "standings"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Leaderboard",
+   "kind": "social_post",
+   "preset": "leaderboard"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Bracket",
+   "kind": "social_post",
+   "preset": "bracket_reveal"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Team Reveal",
+   "kind": "social_post",
+   "preset": "team_reveal"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Player Reveal",
+   "kind": "social_post",
+   "preset": "player_reveal"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Roster Reveal",
+   "kind": "social_post",
+   "preset": "roster_reveal"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Matchup",
+   "kind": "social_post",
+   "preset": "matchup"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "MVP",
+   "kind": "social_post",
+   "preset": "mvp"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Player of the Match",
+   "kind": "social_post",
+   "preset": "potm"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Top 5 Players",
+   "kind": "social_post",
+   "preset": "top5_players"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Top 5 Teams",
+   "kind": "social_post",
+   "preset": "top5_teams"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Highlight",
+   "kind": "social_post",
+   "preset": "highlights"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Best Moment",
+   "kind": "social_post",
+   "preset": "best_moments"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Clutch",
+   "kind": "social_post",
+   "preset": "clutch"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Upset",
+   "kind": "social_post",
+   "preset": "upset"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Qualification",
+   "kind": "social_post",
+   "preset": "qualified"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Elimination",
+   "kind": "social_post",
+   "preset": "eliminated"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Semi Final",
+   "kind": "social_post",
+   "preset": "semi_final"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Grand Final",
+   "kind": "social_post",
+   "preset": "grand_final"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Winner",
+   "kind": "social_post",
+   "preset": "winner"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Runner Up",
+   "kind": "social_post",
+   "preset": "runner_up"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Thank You",
+   "kind": "social_post",
+   "preset": "thank_you"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Tournament Recap",
+   "kind": "social_post",
+   "preset": "recap"
+  },
+  {
+   "section": "9. Social Media Assets",
+   "item": "Sponsor Appreciation",
+   "kind": "social_post",
+   "preset": "sponsor_thanks"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1080 x 1350 px -- main feed posts, match graphics, results, player cards, team cards, standings",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: Instagram feed 1080 x 1350"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1080 x 1920 px -- stories, reminders, live announcements, results and countdowns",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: story 1080 x 1920"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1600 x 900 px -- match graphics, results and announcements",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: X 1600 x 900"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1280 x 720 px -- thumbnails",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: YouTube thumbnail 1280 x 720"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1920 x 1080 px -- video and community graphics",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: YouTube or Discord 1920 x 1080"
+  },
+  {
+   "section": "10. Recommended Design Sizes",
+   "item": "1920 x 1080 px -- announcements, tournament updates and match graphics",
+   "kind": "social_post",
+   "preset": "custom",
+   "note": "format: YouTube or Discord 1920 x 1080"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Create modular PSD templates instead of isolated graphics",
+   "kind": "system:designer",
+   "note": "every design is one template with editable fields; the PSD set downloads for premium (inbox 394, 397)"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Use editable layers for tournament logo, tournament name, game logo, team logos, player photos, sponsor",
+   "kind": "system:designer",
+   "note": "picture, words, colour and typeface fields on every design"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Create a master package for each game that can be adapted across tournaments",
+   "kind": "system:overlay_style",
+   "note": "the overlay style is set once per broadcast and carried into the next (inbox 393)"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Tournament branding",
+   "kind": "system:overlay_style"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Custom colors",
+   "kind": "system:overlay_style"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Typography",
+   "kind": "system:overlay_style",
+   "note": "two typefaces, uploaded fonts too"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Logo placement",
+   "kind": "system:designer",
+   "note": "where-it-sits fields and corner logos"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Sponsor integration",
+   "kind": "corner_bug",
+   "note": "sponsor bug; sponsors wall; sponsor preset"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Game specific styling",
+   "kind": "system:overlay_style",
+   "note": "a style per broadcast, so per game"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Team and player cards",
+   "kind": "player_card",
+   "note": "and award_card"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Broadcast overlays",
+   "kind": "system:designer",
+   "note": "the studio console"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Social templates",
+   "kind": "social_post"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "YouTube thumbnails",
+   "kind": "social_post",
+   "note": "format: YouTube thumbnail"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Match graphics",
+   "kind": "versus_card"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "Design spaces for software driven data rather than static text",
+   "kind": "system:feed",
+   "note": "the live graphics read the studio feed; nothing typed"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "PUBG / Free Fire: team logo, team name, wins, kills, placement points and total points",
+   "kind": "standings",
+   "note": "the battle royale table, live"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "MLBB: team, wins, losses, series score and points",
+   "kind": "standings",
+   "note": "live table; versus card for a series score"
+  },
+  {
+   "section": "11. Template System & Customization",
+   "item": "EAFC / eFootball: player, played, wins, draws, losses, goals for, goals against, goal difference and points",
+   "kind": "standings",
+   "note": "the aggregate league tables, live"
+  }
+ ]
+}

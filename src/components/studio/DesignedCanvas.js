@@ -16,7 +16,7 @@
 
 import { useEffect, useRef } from 'react';
 import { DESIGNS } from '@/lib/overlays';
-import { W, H, drawFrame, paramsFor, prepare, timing } from '@/lib/overlays/engine';
+import { drawFrame, paramsFor, prepare, sizeOf, timing } from '@/lib/overlays/engine';
 
 // `style` is the broadcast's overlay style (inbox 393): every field that
 // follows a role reads it unless this overlay changed that field itself.
@@ -70,5 +70,8 @@ export default function DesignedCanvas({ kind, design, style, assets, playKey = 
   }, [template, designKey, styleKey, assetKey, playKey, still]);
 
   if (!template) return null;
-  return <canvas ref={ref} width={W} height={H} className={className} role="img" aria-label={title || kind} />;
+  // The design's own canvas: a social post is 1080x1350 or 1080x1920, not
+  // 1920x1080 (inbox 396). The frame around it letterboxes (object-fit).
+  const size = sizeOf(template, paramsFor(template, JSON.parse(designKey), JSON.parse(styleKey)));
+  return <canvas ref={ref} width={size.w} height={size.h} className={className} role="img" aria-label={title || kind} />;
 }

@@ -192,7 +192,7 @@ function AdminsInner() {
                           </div>
                         </td>
                         <td>
-                          <span className={`${shared.badge} ${shared.roleAdmin}`}>{row.role_label}</span>
+                          <span className={`${shared.badge} ${shared.roleAdmin}`}>{tt(`adminRole.${row.admin_role}`, row.role_label)}</span>
                           {row.awaiting_feature ? <p className={styles.note}>
                             {tt('adminAdmins.awaiting', 'Grants nothing until {what} is built.')
                               .replace('{what}', row.awaiting_feature)}

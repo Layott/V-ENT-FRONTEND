@@ -403,7 +403,11 @@
   .onBtn,
   .offBtn,
   .copyBtn,
-  .foldBtn {
+  .foldBtn,
+  .primary,
+  .ghost,
+  .sectionOn,
+  .sectionOff {
     min-height: 44px;
   }
 }
@@ -435,4 +439,4 @@
   flex: 0 0 96px;
   overflow: hidden;
 }
-.thumbCanvas { display: block; height: 100%; width: 100%; }
+.thumbCanvas { display: block; height: 100%; width: 100%;  object-fit: contain; }

@@ -1,0 +1,456 @@
+ESPORTS BROADCAST & TOURNAMENT ASSET
+                             LIBRARY
+
+Generic design asset checklist for a multi game esports tournament streaming platform
+
+1. Core Broadcast Package
+
+Stream / OBS Assets
+
+q Stream Starting Soon screen
+q Stream Countdown screen
+q Stream Break / Intermission screen
+q Stream Back Soon screen
+q Stream Ending screen
+q Main Broadcast Overlay
+q Clean Gameplay Overlay
+q Fullscreen Gameplay Frame
+q Single Caster Overlay
+q Dual Caster Overlay
+q Player Introduction Overlay
+q Team Introduction Overlay
+q Match Introduction
+q Match Loading Screen
+q Match Results Screen
+q Winner Screen
+q Tournament Champion Screen
+q MVP Screen
+q Player of the Match Screen
+q Lower Third
+q Player Nameplate
+q Team Nameplate
+q Caster Nameplate
+q Sponsor Lower Third
+q Sponsor Takeover
+q Advertisement Break Screen
+q Tournament Logo Bug
+q Sponsor Logo Bug
+q Social Media Handle Bug
+q QR Code Frame
+q Announcement Overlay
+Broadcast Information
+
+q Tournament Title Card
+q Match Title Card
+q Round Title Card
+q Day / Stage Title Card
+q Group Stage Card
+q Playoffs Card
+q Semi Final Card
+q Grand Final Card
+q Match Schedule
+q Upcoming Match
+q Current Match
+q Previous Match Result
+q Standings
+q Leaderboard
+q Bracket
+q Group Table
+q Points Table
+q Statistics Screen
+
+2. PUBG Mobile Package
+
+Match Broadcast
+
+q Match Intro
+q Team Lineup
+q Player Lineup
+q Drop / Match Start
+q Live Match Overlay
+q Alive Counter
+q Team Alive Counter
+q Kill Counter
+q Team Kill Counter
+q Current Placement
+q Zone / Phase Information
+q Match Timer
+q Remaining Teams
+q Remaining Players
+q Match Result
+
+Team / Player Information
+q Team Card
+q Team Roster
+q Player Card
+q Player Introduction
+q Player Stats
+q Team Stats
+q Kill Leader
+q Damage Leader
+q MVP
+q Top Fragger
+q Top Placement
+
+Tournament
+
+q Match Results
+q Overall Standings
+q Overall Leaderboard
+q Points Breakdown
+q Placement Points
+q Elimination Points
+q Total Points
+q Team Movement
+q Qualification Status
+q Qualified Teams
+q Eliminated Teams
+q Final Standings
+
+Special PUBG Screens
+
+q Chicken Dinner / Winner Screen
+q Final Circle
+q Last Team Standing
+q Clutch Moment
+q Most Eliminations
+q Highest Placement
+q Biggest Point Gain
+q Biggest Upset
+
+3. Free Fire Package
+
+Match Assets
+
+q Match Intro
+q Team Lineup
+q Player Lineup
+q Live Match Overlay
+q Alive Counter
+q Kill Counter
+q Placement
+q Match Timer
+q Remaining Teams
+q Match Results
+q Booyah Screen
+
+Tournament Assets
+
+q Match Results
+q Overall Standings
+q Points Table
+q Placement Points
+q Kill Points
+q Total Points
+q Team Ranking
+q Team Movement
+q Qualified Teams
+q Eliminated Teams
+q Grand Final Standings
+
+Player / Team Assets
+
+q Team Introduction
+q Player Introduction
+q Player Stats
+q Team Stats
+q MVP
+q Kill Leader
+q Top Team
+q Match Winner
+q Tournament Winner
+
+4. Mobile Legends: Bang Bang Package
+
+Match Assets
+
+q Match Intro
+q Team vs Team
+q Team Lineup
+q Player Lineup
+q Player Roles
+q Draft / Pick Screen
+q Ban / Pick Screen
+q Game Loading Screen
+q Live Match Overlay
+q Game Timer
+q Kill Score
+q Turret Score
+q Gold Difference
+q Team Stats
+q Player Stats
+q Objective Status
+q Lord Status
+q Turtle Status
+
+Series Assets
+
+q Game 1
+q Game 2
+q Game 3
+q Game 4
+q Game 5
+q Series Score
+q Match Point
+q Series Winner
+
+Player Assets
+
+q Player Card
+q Hero Played
+q KDA
+q MVP
+q Most Kills
+q Highest Damage
+q Best Support
+q Best Tank
+q Best Jungler
+
+Tournament Assets
+
+q Group Standings
+q Playoff Bracket
+q Match Schedule
+q Results
+q Upper Bracket
+q Lower Bracket
+q Grand Final
+q Tournament Champion
+
+5. EA FC / EAFC Package
+
+Match Assets
+
+q Match Intro
+q Player vs Player
+q Team Lineup
+q Player Introduction
+q Match Scoreboard
+q Match Timer
+q Goal Graphic
+q Half Time
+q Full Time
+q Extra Time
+q Penalty Shootout
+q Match Result
+
+Player Stats
+
+q Goals
+q Assists
+q Possession
+q Shots
+q Shots on Target
+q Pass Accuracy
+q Player of the Match
+
+Tournament Assets
+
+q Round of 32
+q Round of 16
+q Quarter Final
+q Semi Final
+q Grand Final
+q Bracket
+q Fixtures
+q Results
+q Standings
+q Next Match
+q Champion
+
+6. eFootball Package
+
+Match Assets
+
+q Match Intro
+q Player vs Player
+q Team Lineup
+q Match Scoreboard
+q Match Timer
+q Goal
+q Half Time
+q Full Time
+q Extra Time
+q Penalties
+q Match Result
+
+Statistics
+
+q Possession
+q Shots
+q Shots on Target
+q Passes
+q Pass Accuracy
+q Fouls
+q Cards
+q Player of the Match
+
+Tournament Assets
+
+q Fixtures
+q Results
+q Group Table
+q Knockout Bracket
+q Round of 32
+q Round of 16
+q Quarter Final
+q Semi Final
+q Grand Final
+q Champion
+
+7. Universal Tournament Graphics
+
+Tournament Identity
+q Tournament Logo
+q Tournament Title
+q Tournament Slogan
+q Event Date
+q Prize Pool
+q Registration Information
+q Rules
+q Schedule
+q Venue / Platform
+q Sponsors
+q Partners
+
+Tournament Stages
+
+q Registration Open
+q Registration Closed
+q Group Stage
+q Knockout Stage
+q Playoffs
+q Semi Finals
+q Grand Final
+q Tournament Completed
+
+Results
+
+q Match Result
+q Daily Results
+q Standings
+q Leaderboard
+q Bracket
+q Qualified
+q Eliminated
+q Champion
+q Runner Up
+q Third Place
+q MVP
+
+8. YouTube Assets
+
+Thumbnail Templates
+
+q Tournament Announcement
+q Matchday
+q Live Stream
+q Grand Final
+q Semi Final
+q Quarter Final
+q Highlights
+q Best Moments
+q Match Recap
+q Tournament Recap
+q Player Spotlight
+q MVP
+q Winner Reveal
+q Results
+q Standings
+q Bracket Reveal
+q Team Reveal
+q Player Reveal
+q Roster Reveal
+q Prize Pool Reveal
+
+9. Social Media Assets
+
+Feed / Social Templates
+
+q Tournament Announcement
+q Registration Open
+q Registration Closing
+q Prize Pool
+q Tournament Date
+q Schedule
+q Matchday
+q Upcoming Match
+q Live Now
+q Match Result
+q Daily Results
+q Standings
+q Leaderboard
+q Bracket
+q Team Reveal
+q Player Reveal
+q Roster Reveal
+q Matchup
+q MVP
+q Player of the Match
+q Top 5 Players
+q Top 5 Teams
+q Highlight
+q Best Moment
+q Clutch
+q Upset
+q Qualification
+q Elimination
+q Semi Final
+q Grand Final
+q Winner
+q Runner Up
+q Thank You
+q Tournament Recap
+q Sponsor Appreciation
+
+10. Recommended Design Sizes
+
+Instagram
+
+q 1080 x 1350 px -- main feed posts, match graphics, results, player cards, team cards, standings
+q 1080 x 1920 px -- stories, reminders, live announcements, results and countdowns
+
+X / Twitter
+
+q 1600 x 900 px -- match graphics, results and announcements
+
+YouTube
+
+q 1280 x 720 px -- thumbnails
+q 1920 x 1080 px -- video and community graphics
+
+Discord
+
+q 1920 x 1080 px -- announcements, tournament updates and match graphics
+
+11. Template System & Customization
+
+Generic Template System
+
+q Create modular PSD templates instead of isolated graphics
+q Use editable layers for tournament logo, tournament name, game logo, team logos, player photos, sponsor
+
+    logos, colors, typography, scores, statistics, dates and social handles
+q Create a master package for each game that can be adapted across tournaments
+
+Customization Service
+
+q Tournament branding
+q Custom colors
+q Typography
+q Logo placement
+q Sponsor integration
+q Game specific styling
+q Team and player cards
+q Broadcast overlays
+q Social templates
+q YouTube thumbnails
+q Match graphics
+
+Dynamic Data Considerations
+
+q Design spaces for software driven data rather than static text
+q PUBG / Free Fire: team logo, team name, wins, kills, placement points and total points
+q MLBB: team, wins, losses, series score and points
+q EAFC / eFootball: player, played, wins, draws, losses, goals for, goals against, goal difference and points
+

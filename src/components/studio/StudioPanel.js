@@ -199,6 +199,12 @@ const fieldsFor = (tt) => ({
   streamer_gameplay: [],
   name_tag: [],
   match_lower_third: [],
+  title_card: [],
+  versus_card: [],
+  award_card: [],
+  corner_bug: [],
+  stat_counter: [],
+  social_post: [],
   break_screen: [
     { key: 'title', label: tt('studio.f.title', 'Title'), placeholder: 'Be right back' },
     { key: 'subtitle', label: tt('studio.f.underIt', 'Under it'), placeholder: 'Group B starts shortly' },
@@ -261,6 +267,13 @@ const labelsFor = (tt) => ({
   streamer_gameplay: tt('studio.kind.streamerGameplay', 'Streamer and game frame'),
   name_tag: tt('studio.kind.nameTag', 'Name tag'),
   match_lower_third: tt('studio.kind.matchLowerThird', 'Match lower third'),
+  // The asset library families (inbox 396).
+  title_card: tt('studio.kind.titleCard', 'Title card'),
+  versus_card: tt('studio.kind.versusCard', 'Versus card'),
+  award_card: tt('studio.kind.awardCard', 'Award card'),
+  corner_bug: tt('studio.kind.cornerBug', 'Corner logo, handle or QR'),
+  stat_counter: tt('studio.kind.statCounter', 'Stat counter'),
+  social_post: tt('studio.kind.socialPost', 'Social post or thumbnail'),
 });
 
 // How a graphic arrives and leaves. The server owns the list; these are its

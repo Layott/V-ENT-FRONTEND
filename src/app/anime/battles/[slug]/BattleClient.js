@@ -157,7 +157,7 @@ const BattleClient = ({ slug }) => {
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{battle.title}</h1>
         <p className={styles.pageSub}>
-          {battle.state_label}
+          {tt(`anime.battleState.${battle.state}`, battle.state_label)}
           {battle.description ? ` ${battle.description}` : ''}
         </p>
       </div>

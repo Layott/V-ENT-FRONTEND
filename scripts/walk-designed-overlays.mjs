@@ -151,7 +151,9 @@ async function main() {
       const top = byLabel('Top line')?.querySelector('input');
       const from = byLabel('Background, dark corner')?.querySelectorAll('input')[1];
       if (!top || !from) return false;
-      set(top, 'MATCHDAY IS');
+      // Words other than the ones saved, so Save has something to save: a
+      // second walk on the same broadcast otherwise finds Save disabled.
+      set(top, top.value === 'MATCHDAY IS' ? 'GAME DAY IS' : 'MATCHDAY IS');
       set(from, '#0A2A6B');
       return true;
     });
@@ -193,6 +195,28 @@ async function main() {
     // Its browser source address, read while the card is open.
     const soonUrl = await page.evaluate(() => [...document.querySelectorAll('p')].map((p) => p.textContent)
       .find((t) => /\/studio\/.*\/starting_soon\//.test(t)) || '');
+
+    // A social post (inbox 396) downloads at its own size, not 1920x1080:
+    // Story is 1080x1920, read off the PNG's own header.
+    await press(page, '^Close$');
+    await wait(800);
+    note(await openCard(page, 'Social post or thumbnail'), 'Social post card opens');
+    await wait(2000);
+    await page.evaluate(() => {
+      const el = document.getElementById('ov-social_post-format');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(el, 'story');
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await wait(1500);
+    before = fs.readdirSync(OUT);
+    await press(page, '^Download picture');
+    const post = await download(before, '.png');
+    let postSize = '';
+    if (post) {
+      const head = fs.readFileSync(path.join(OUT, post)).subarray(16, 24);
+      postSize = `${head.readUInt32BE(0)}x${head.readUInt32BE(4)}`;
+    }
+    note(postSize === '1080x1920', 'Story post downloaded at 1080x1920', `${post || ''} ${postSize}`);
 
     // The transition.
     await press(page, '^Close$');
@@ -280,7 +304,9 @@ async function main() {
     // pixels on the canvas once its entrance is over.
     const base = find('transition');
     for (const kind of ['brb', 'stream_ended', 'champions', 'streamer_single', 'streamer_double',
-      'streamer_gameplay', 'name_tag', 'match_lower_third']) {
+      'streamer_gameplay', 'name_tag', 'match_lower_third',
+      // The asset library families (inbox 396).
+      'title_card', 'versus_card', 'award_card', 'corner_bug', 'stat_counter', 'social_post']) {
       if (!base) break;
       const obs = await browser.newPage();
       await obs.setViewport({ width: 1920, height: 1080 });
