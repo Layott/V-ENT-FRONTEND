@@ -33,16 +33,19 @@ export const tight = (face) => (face === 'pixel' || !face ? '-0.06em' : '0px');
 
 /** The whole-frame plate, with rounded holes cut where video shows through. */
 export function drawPlate(ctx, T, p, holes = []) {
-  const g = ctx.createLinearGradient(0, 0, W, H);
+  // The canvas's own size: a social post is not 1920x1080 (inbox 396).
+  const cw = ctx.canvas?.width || W;
+  const ch = ctx.canvas?.height || H;
+  const g = ctx.createLinearGradient(0, 0, cw, ch);
   g.addColorStop(0, colour(p.bg_from, '#720202'));
   g.addColorStop(1, colour(p.bg_to, '#EE1510'));
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(0, 0, cw, ch);
   if (p.grid !== false) {
     ctx.globalAlpha = 0.14 * ease.out(step(T, 0, 700));
     ctx.fillStyle = '#FFFFFF';
-    for (let x = 22; x < W; x += 148) ctx.fillRect(x, 0, 2, H);
-    for (let y = 22; y < H; y += 148) ctx.fillRect(0, y, W, 2);
+    for (let x = 22; x < cw; x += 148) ctx.fillRect(x, 0, 2, ch);
+    for (let y = 22; y < ch; y += 148) ctx.fillRect(0, y, cw, 2);
     ctx.globalAlpha = 1;
   }
   if (holes.length) {

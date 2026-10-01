@@ -29,6 +29,13 @@ import fixWebmDuration from 'fix-webm-duration';
 export const W = 1920;
 export const H = 1080;
 
+/** The canvas a design draws on: 1920x1080 unless the design names another,
+ *  as a social post does (1080x1350, 1080x1920, ...; inbox 396). */
+export function sizeOf(template, params) {
+  const s = typeof template?.size === 'function' ? template.size(params || {}) : null;
+  return s && s.w > 0 && s.h > 0 ? s : { w: W, h: H };
+}
+
 /** Typefaces a design may use. Self-hosted, so a browser source offline still
  *  draws them. Silkscreen (SIL Open Font License 1.1) stands in for the PSD's
  *  "Gameplay", which is not available: CEO, "use whatever fonts are available". */
@@ -140,6 +147,11 @@ export async function prepare(template, params, assets = []) {
   };
   const pics = {};
   await Promise.all((template.pictures || []).map(async (key) => { pics[key] = await pictureFor(params[key]); }));
+  // A picture a design makes for itself, such as a QR code drawn from a link
+  // (inbox 396). Made in the browser, so it never taints the canvas.
+  if (typeof template.preparePictures === 'function') {
+    try { Object.assign(pics, await template.preparePictures(params)); } catch { /* draws without it */ }
+  }
   // Every typeface field of the design, loaded by its key: `font` is the
   // primary face and `font2` the secondary one where a design has two.
   const faces = {};
@@ -214,7 +226,7 @@ export function drawPicture(ctx, img, x, y, w, h, align = 'center') {
 /** One frame of `template` at `t` into `ctx`. */
 export function drawFrame(ctx, template, params, t, prepared) {
   ctx.save();
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   template.draw(ctx, t, params, prepared);
   ctx.restore();
 }
@@ -230,7 +242,8 @@ export function timing(template, params) {
 /** A PNG of the resting frame. */
 export async function stillPng(template, params, prepared) {
   const c = document.createElement('canvas');
-  c.width = W; c.height = H;
+  const size = sizeOf(template, params);
+  c.width = size.w; c.height = size.h;
   drawFrame(c.getContext('2d'), template, params, timing(template, params).rest, prepared);
   return new Promise((resolve) => c.toBlob(resolve, 'image/png'));
 }
@@ -246,7 +259,8 @@ export async function stillPng(template, params, prepared) {
  */
 export async function recordWebm(template, params, prepared, { fps = 30, onProgress } = {}) {
   const c = document.createElement('canvas');
-  c.width = W; c.height = H;
+  const size = sizeOf(template, params);
+  c.width = size.w; c.height = size.h;
   const ctx = c.getContext('2d');
   const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8'].find((m) => MediaRecorder.isTypeSupported(m));
   if (!mime) throw new Error('RECORDING_UNSUPPORTED');

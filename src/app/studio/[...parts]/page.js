@@ -299,6 +299,45 @@ function Standings({ payload, data }) {
     );
   }
 
+  // A battle royale stage: the points table the asset library asks for on
+  // PUBG and Free Fire broadcasts (inbox 396). Placement points, kill points
+  // and the total, the same rows the public table ranks.
+  const royale = players ? [] : (data.battle_royale?.rows || []).slice(0, many);
+  if (royale.length) {
+    return (
+      <div className={`${styles.standings} ${styles.stWide}`}>
+        <div className={styles.stTitle}>
+          {payload.title || data.battle_royale?.stage || data.tournament?.title || tt('studio.rv.standings', 'Standings')}
+        </div>
+        <div className={styles.stHead}>
+          <span className={styles.stPos} />
+          <span className={styles.stTeam}>{tt('studio.rv.colTeam', 'Team')}</span>
+          <span className={styles.stNum} title={tt('studio.br.mapsFull', 'Matches played')}>{tt('studio.br.maps', 'M')}</span>
+          <span className={styles.stNum} title={tt('studio.br.winsFull', 'Matches won')}>{tt('studio.br.wins', 'WIN')}</span>
+          <span className={styles.stNum} title={tt('studio.br.killsFull', 'Kills')}>{tt('studio.br.kills', 'K')}</span>
+          <span className={styles.stNum} title={tt('studio.br.placeFull', 'Placement points')}>{tt('studio.br.place', 'PL')}</span>
+          <span className={styles.stNum} title={tt('studio.br.killPtsFull', 'Kill points')}>{tt('studio.br.killPts', 'KP')}</span>
+          <span className={styles.stNum}>{tt('studio.rv.colPts', 'PTS')}</span>
+        </div>
+        {royale.map((r) => (
+          <div key={`${r.rank}-${r.name}`} className={styles.stRow}>
+            <span className={styles.stPos}>{r.rank}</span>
+            <span className={styles.stTeam}>
+              {r.logo && <img className={styles.stLogo} src={r.logo} alt="" />}
+              {r.name}
+            </span>
+            <span className={styles.stNum}>{r.maps_played}</span>
+            <span className={styles.stNum}>{r.booyahs}</span>
+            <span className={styles.stNum}>{r.kills}</span>
+            <span className={styles.stNum}>{r.placement_points}</span>
+            <span className={styles.stNum}>{r.kill_points}</span>
+            <span className={`${styles.stNum} ${styles.stPts}`}>{r.points}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   // A players table asked for on a tournament that keeps no player record is
   // not the nations table with a different heading. Say so instead.
   const teams = players ? [] : (data.teams || []).slice(0, many);

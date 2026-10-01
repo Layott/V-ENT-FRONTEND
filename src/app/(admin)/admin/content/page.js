@@ -282,7 +282,7 @@ function ContentInner() {
                             <td><strong>{row.reported?.username || '-'}</strong></td>
                             <td className={shared.hideMobile}>{row.reporter?.username || '-'}</td>
                             <td>
-                              <span className={`${shared.badge} ${shared.sPending}`}>{row.reason_label}</span>
+                              <span className={`${shared.badge} ${shared.sPending}`}>{tt(`reportReason.${row.reason}`, row.reason_label)}</span>
                               {row.detail ? <p className={styles.detail}>{row.detail}</p> : null}
                             </td>
                             <td className={shared.hideMobile}>{row.context || '-'}</td>
