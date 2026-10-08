@@ -204,8 +204,8 @@ function AdminEventDetailInner() {
       const r = body.data?.refunds;
       toast.push(action === 'cancel'
         ? (r ? plural(tt, r.refunded || 0,
-            'admin.eventCancelledRefundsOne', 'Event cancelled. {n} paid ticket refunded, {vc} VC to wallets, card payments through Paystack.',
-            'admin.eventCancelledRefunds', 'Event cancelled. {n} paid tickets refunded, {vc} VC to wallets, card payments through Paystack.')
+            'admin.eventCancelledRefundsOne', 'Event cancelled. {n} paid ticket refunded, {vc} VC to wallets, card payments to the card that paid.',
+            'admin.eventCancelledRefunds', 'Event cancelled. {n} paid tickets refunded, {vc} VC to wallets, card payments to the card that paid.')
             .replace('{vc}', String(r.coins || 0))
           : tt('admin.eventCancelled', 'Event cancelled.'))
         : tt('admin.eventRestored', 'Event restored.'));

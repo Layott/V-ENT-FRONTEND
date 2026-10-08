@@ -1222,7 +1222,7 @@ export const ViewEventContent = ({
                   holders find out here rather than at the door, and nothing
                   on it sells (walk, 18 September). */}
               {cancelled && <div className={styles.endedBadge}>
-                {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody, and what was paid is on its way back: to the wallet that paid, or to the card through Paystack.')}
+                {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody, and what was paid is on its way back: to the wallet that paid, or to the card that paid.')}
               </div>}
 
               <div className={styles.heroActions}>
@@ -1500,7 +1500,7 @@ export const ViewEventContent = ({
             {activeTab === 'tickets' && cancelled && <div className={styles.ticketTab}>
                 <h2 className={styles.sectionTitle}>{tt('event.cancelledTitle', 'Cancelled')}</h2>
                 <p className={styles.body}>
-                  {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody, and what was paid is on its way back: to the wallet that paid, or to the card through Paystack.')}
+                  {tt('event.cancelledNotice', 'This event was cancelled. Tickets no longer admit anybody, and what was paid is on its way back: to the wallet that paid, or to the card that paid.')}
                 </p>
               </div>}
             {activeTab === 'tickets' && !cancelled && <div className={styles.ticketTab}>

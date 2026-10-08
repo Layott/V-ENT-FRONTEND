@@ -18,7 +18,7 @@
     "fix-webm-duration": "^1.0.6",
     "jsqr": "^1.4.0",
     "leaflet": "^1.9.4",
-    "next": "^15.5.26",
+    "next": "^15.5.27",
     "next-auth": "^4.24.15",
     "qrcode": "^1.5.4",
     "react": "^19.3.0",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "^15.5.26",
+    "eslint-config-next": "^15.5.27",
     "puppeteer-core": "^24.42.0",
     "typescript": "^5.9.3"
   },
@@ -47,7 +47,8 @@
       "postcss": "^8.5.23",
       "ws@8": "^8.21.0",
       "ip-address": "^10.5.1",
-      "basic-ftp": "^5.3.1",
+      "basic-ftp": "^6.2.1",
+      "source-map-js": "^1.2.2",
       "form-data@4": "^4.0.6",
       "follow-redirects": "^1.16.0",
       "yaml@1": "^1.10.3",

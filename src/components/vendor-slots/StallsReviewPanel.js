@@ -113,7 +113,7 @@ const StallsReviewPanel = ({ eventRef, token, onNotice }) => {
       {error && <p className={styles.error}>{error}</p>}
       {stalls.length === 0
         ? <p className={styles.muted}>
-            {tt('stalls.none', 'Nobody has a stall yet. Sell a pitch below, or add a trader yourself.')}
+            {tt('stalls.none', 'Nobody has a stall yet. Sell a pitch or stall below, or add a trader yourself.')}
           </p>
         : <ul className={styles.list}>
             {stalls.map((s) => (
@@ -137,7 +137,7 @@ const StallsReviewPanel = ({ eventRef, token, onNotice }) => {
                   {` · ${tt('stalls.orders', '{n} orders').replace('{n}', formatNumber(s.orders || 0))}`}
                 </p>
                 <div className={styles.rowActions}>
-                  <input className={`${styles.input} ${styles.booth}`} aria-label={tt('slots.stallBooth', 'Pitch or booth')}
+                  <input className={`${styles.input} ${styles.booth}`} aria-label={tt('slots.stallBooth', 'Pitch or stall')}
                          value={booths[s.id] ?? (s.booth || '')}
                          placeholder={tt('slots.stallBoothPlaceholder', 'B4')}
                          onChange={(e) => setBooths((b) => ({ ...b, [s.id]: e.target.value }))} />

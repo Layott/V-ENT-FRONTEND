@@ -122,7 +122,7 @@ const TradeHere = ({ eventRef, eventName }) => {
 
       {done && <p className={styles.good}>
         {done.status === 'pending'
-          ? tt('slots.boughtPending', 'Your pitch is paid for. The organiser approves each stall before it opens; you can add what you sell while you wait.')
+          ? tt('slots.boughtPending', 'Your pitch or stall is paid for. The organiser approves each stall before it opens; you can add what you sell while you wait.')
           : tt('slots.bought', 'Your stall is set up. Open it from your account to add '
             + 'what you sell.')}
         {' '}
@@ -161,7 +161,7 @@ const TradeHere = ({ eventRef, eventName }) => {
               ? <p className={styles.meta}>{tt('slots.yours', 'You have one of these.')}</p>
               : s.is_sold_out
                 ? null
-                : <NeedsAccount action={tt('slots.action', 'buy a pitch at this event')}>
+                : <NeedsAccount action={tt('slots.action', 'buy a pitch or stall at this event')}>
                     <button type="button" className={styles.buy}
                             onClick={() => {
                               setOpen(s);
@@ -169,7 +169,7 @@ const TradeHere = ({ eventRef, eventName }) => {
                               setProblem('');
                               setStallName('');
                             }}>
-                      {tt('slots.buy', 'Buy this pitch')}
+                      {tt('slots.buy', 'Buy this pitch or stall')}
                     </button>
                   </NeedsAccount>}
           </li>
@@ -235,7 +235,7 @@ const TradeHere = ({ eventRef, eventName }) => {
                 is a refusal is a button that should not be pressable. */}
             <button type="button" className={styles.buy} onClick={buy}
                     disabled={busy || !canPay}>
-              {busy ? tt('ui.checking', 'Checking...') : tt('slots.confirm', 'Take the pitch')}
+              {busy ? tt('ui.checking', 'Checking...') : tt('slots.confirm', 'Take the pitch or stall')}
             </button>
           </div>
         </div>
