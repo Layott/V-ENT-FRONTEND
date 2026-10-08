@@ -345,7 +345,7 @@ export const GUIDES = {
   '/wallets/topup': {
     title: 'Adding money',
     what: 'Turning naira into VENT COINS.',
-    does: ['Choose an amount and pay with a card through Paystack'],
+    does: ['Choose an amount and pay by card or bank transfer'],
     note: 'The coins land as soon as the payment clears.',
   },
   '/wallets/withdraw': {
@@ -688,7 +688,7 @@ export const GUIDES = {
   },
   '/wallet-topup-callback': {
     title: 'Finishing a top-up',
-    what: 'The step where Paystack hands you back after a payment.',
+    what: 'The step where the payment provider hands you back after a payment.',
     does: ['Wait a moment - this confirms the payment and credits your coins'],
     note: 'Closing this page does not lose the money. The payment is confirmed on our side too.',
   },

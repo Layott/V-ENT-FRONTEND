@@ -2076,6 +2076,9 @@ export const ManageEventContent = ({
                                     <span className={styles.funnelLabel}>
                                       {FUNNEL_LABELS[step.step] ? tt(FUNNEL_LABELS[step.step][0], FUNNEL_LABELS[step.step][1]) : step.step}
                                       {step.step === 'sold' && <span className={styles.funnelHint}>{tt('manage.funnelCounted', 'Counted from the tickets that exist')}</span>}
+                                      {step.step === 'sold' && step.count > 0 && <span className={styles.funnelHint}>
+                                        {tt('manage.funnelBuyers', 'Paying buyers: {n}').replace('{n}', Number(step.people).toLocaleString(appLocale()))}
+                                      </span>}
                                     </span>
                                     <span className={styles.funnelCount}>
                                       {Number(step.count).toLocaleString(appLocale())}
@@ -2087,7 +2090,7 @@ export const ManageEventContent = ({
                               })}
                             </div>
                             {metrics.funnel.sales_predate_tracking && <p className={styles.cardHint}>
-                              {tt('manage.funnelPredates', 'More tickets exist than page opens counted, so some of these sales happened before this counting started, or through a link that never opened the event page. The rates below read high because of it.')}
+                              {tt('manage.funnelPredates', 'More people paid than the steps above counted, so some of these sales happened before this counting started, or through a link that never opened the event page. A rate that this makes meaningless reads Not all counted rather than a figure over 100%.')}
                             </p>}
                             <div className={styles.figureGrid}>
                               {[['open_to_buy', 'manage.rateOpenBuy', 'Opened, then tapped Buy'],
@@ -2095,7 +2098,9 @@ export const ManageEventContent = ({
                                 ['checkout_to_sold', 'manage.rateCheckoutSold', 'Reached checkout, then paid'],
                                 ['open_to_sold', 'manage.rateOpenSold', 'Opened, then paid']].map(([key, tkey, fallback]) => <div key={key} className={styles.figure}>
                                   <strong className={styles.figureValue}>
-                                    {metrics.funnel.conversion[key] === null
+                                    {(metrics.funnel.untracked || []).includes(key)
+                                      ? tt('manage.rateUntracked', 'Not all counted')
+                                      : metrics.funnel.conversion[key] === null
                                       ? tt('manage.notYetKnown', 'Not yet')
                                       : `${metrics.funnel.conversion[key]}%`}
                                   </strong>
@@ -2702,7 +2707,7 @@ export const ManageEventContent = ({
                   V-ENT straight away; inviting a trader directly is the other
                   door into the same room. */}
               {tab === 'vendors' && <section className={styles.card}>
-                  <h3>{tt('console.tabVendors', 'Vendor pitches')}</h3>
+                  <h3>{tt('console.tabVendors', 'Pitches and stalls')}</h3>
                   {/* The stalls first: who is trading and who is waiting for
                       a yes. "Approve each stall before it opens" had no
                       screen until 18 September 2026. */}

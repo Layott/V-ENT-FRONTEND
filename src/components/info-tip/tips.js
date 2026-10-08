@@ -137,8 +137,8 @@ export const TIPS = {
     'Four digits, asked for whenever coins leave your wallet. It is the one thing '
     + 'between somebody who borrows your unlocked phone and your balance.',
   walletTopUp:
-    'Add money by card or bank transfer through Paystack. Your card details go straight '
-    + 'to Paystack and never touch V-ENT.',
+    'Add money by card or bank transfer through Paystack or Flutterwave. Your card details '
+    + 'go straight to them and never touch V-ENT.',
   walletWithdraw:
     'Move money to a Nigerian bank account. Your identity has to be verified first - '
     + 'that is a legal requirement for paying out real money.',

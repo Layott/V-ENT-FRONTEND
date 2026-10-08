@@ -131,8 +131,8 @@ const MyEventsPage = () => {
                           {!row.is_active && <span className={styles.badge}>{tt('event.cancelledTitle', 'Cancelled')}</span>}
                           {cancelled[row.id] && <span className={styles.org}>
                             {plural(tt, cancelled[row.id].refunded || 0,
-                              'cancelEvent.refundedOne', '{n} paid ticket refunded: {vc} VC back to wallets, card payments through Paystack.',
-                              'cancelEvent.refunded', '{n} paid tickets refunded: {vc} VC back to wallets, card payments through Paystack.')
+                              'cancelEvent.refundedOne', '{n} paid ticket refunded: {vc} VC back to wallets, card payments back to the card that paid.',
+                              'cancelEvent.refunded', '{n} paid tickets refunded: {vc} VC back to wallets, card payments back to the card that paid.')
                               .replace('{vc}', String(cancelled[row.id].coins || 0))}
                           </span>}
                           {(row.role === 'manager' || row.role === 'org') && <span className={styles.badge}>{tt('myEvents.youHelpRun', 'You help run this')}</span>}

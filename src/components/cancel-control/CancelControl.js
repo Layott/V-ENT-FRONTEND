@@ -67,8 +67,8 @@ export default function CancelControl({
         </p>
         <p className={styles.reassure}>
           {plural(tt, done.refunded || 0,
-            'cancelEvent.refundedOne', '{n} paid ticket refunded: {vc} VC back to wallets, card payments through Paystack.',
-            'cancelEvent.refunded', '{n} paid tickets refunded: {vc} VC back to wallets, card payments through Paystack.')
+            'cancelEvent.refundedOne', '{n} paid ticket refunded: {vc} VC back to wallets, card payments back to the card that paid.',
+            'cancelEvent.refunded', '{n} paid tickets refunded: {vc} VC back to wallets, card payments back to the card that paid.')
             .replace('{vc}', String(done.coins || 0))}
           {failed > 0 && ' ' + plural(tt, failed,
             'cancelEvent.failedOne', '{n} card refund was refused by the gateway; V-ENT will retry it.',
@@ -93,7 +93,7 @@ export default function CancelControl({
         {tt('cancelEvent.ask', 'Cancel {name} and refund everybody?').replace('{name}', name || '')}
       </p>
       <p className={styles.reassure}>
-        {tt('cancelEvent.reassure', 'It stops selling and leaves the listing; its page keeps answering with the notice. Every paid ticket is refunded: coins to the wallet that paid, card payments through Paystack. Everybody holding a ticket is told, with your reason.')}
+        {tt('cancelEvent.reassure', 'It stops selling and leaves the listing; its page keeps answering with the notice. Every paid ticket is refunded: coins to the wallet that paid, card payments to the card that paid. Everybody holding a ticket is told, with your reason.')}
       </p>
       <label className={styles.reassure}>
         {tt('cancelEvent.why', 'Why is it being cancelled?')}

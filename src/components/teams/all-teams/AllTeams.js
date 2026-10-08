@@ -19,6 +19,7 @@ import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, signInHref, useViewer, usernameOf } from '@/lib/gating';
+import { linkTo } from '@/lib/share';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -357,6 +358,8 @@ const AllTeams = () => {
       {!loading && !error && teams.length > 0 && <div className={styles.cardGrid}>
           {teams.map(team => {
         const teamId = team.id || team.team_id;
+        // The address people copy, so it carries the name rather than the number.
+        const teamHref = linkTo.team(team);
         const bannerUrl = getImageUrl(team.banner || team.banner_url || team.team_banner);
         const logoUrl = teamLogo(team);
         const owned = isOwner(team);
@@ -410,17 +413,23 @@ const AllTeams = () => {
                   </div>
 
                   <div className={styles.cardActions}>
-                    {owned || reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
-                        {owned ? tx("Manage") : tx("Pending request")}
+                    {/* Manage was a disabled button sharing a branch with
+                        "Pending request", so it drew and never did anything
+                        (CEO, 8 Oct, inbox 415). It goes where the owner's
+                        Manage on the team page goes. */}
+                    {owned ? <Link href={`/edit-team-profile/${team.slug || teamId}`} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                        {tx("Manage")}
+                      </Link> : reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
+                        {tx("Pending request")}
                       </button> : open && viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
                         {reqState === 'loading' ? tx("Requesting…") : tx("Request to join")}
-                      </button> : open ? <Link href={signInHref(`/teams/${teamId}`)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                      </button> : open ? <Link href={signInHref(teamHref)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
                         {tt('team.signInToJoin', 'Sign in to join')}
-                      </Link> : <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
+                      </Link> : <Link href={teamHref} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
                         {tt("ui.view.69bd", "View")}
                       </Link>}
 
-                    <Link href={`/teams/${teamId}`} className={`${styles.actionBtn} ${styles.actionGhost}`}>
+                    <Link href={teamHref} className={`${styles.actionBtn} ${styles.actionGhost}`}>
                       {tt("ui.profile.ff4f", "Profile")}
                     </Link>
                   </div>

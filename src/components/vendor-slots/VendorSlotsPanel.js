@@ -182,12 +182,12 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
   }));
 
   if (loading) {
-    return <p className={styles.muted}>{tt('slots.loading', 'Loading pitches...')}</p>;
+    return <p className={styles.muted}>{tt('slots.loading', 'Loading pitches and stalls...')}</p>;
   }
 
   return (
     <div className={styles.wrap}>
-      <h4 className={styles.formTitle}>{tt('slots.listTitle', 'Pitches for sale')}</h4>
+      <h4 className={styles.formTitle}>{tt('slots.listTitle', 'Pitches and stalls for sale')}</h4>
       <p className={styles.blurb}>
         {tt('slots.blurb', 'Sell a pitch at your event. Anybody who buys one gets a '
           + 'shop on V-ENT straight away: their own stock, prices and orders. You can '
@@ -260,7 +260,7 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
           </ul>}
 
       <h4 className={styles.formTitle}>
-        {editing ? tt('slots.editTitle', 'Edit this pitch') : tt('slots.addTitle', 'Sell a pitch')}
+        {editing ? tt('slots.editTitle', 'Edit this pitch or stall') : tt('slots.addTitle', 'Sell a pitch/stall')}
       </h4>
       <div className={styles.form}>
         <label className={styles.field}>
@@ -342,7 +342,7 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                  placeholder={tt('slots.stallOwnerPlaceholder', 'Email or @username, or leave it empty')} />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{tt('slots.stallBooth', 'Pitch or booth')}</span>
+          <span className={styles.label}>{tt('slots.stallBooth', 'Pitch or stall')}</span>
           <input className={styles.input} value={stall.booth}
                  onChange={e => setStall({ ...stall, booth: e.target.value })}
                  placeholder={tt('slots.stallBoothPlaceholder', 'B4')} />

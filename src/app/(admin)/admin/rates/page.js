@@ -185,7 +185,7 @@ function RatesInner() {
 
           <div className={shared.card}>
             <p className={styles.hint}>
-              {tt('admin.ratesHint', 'These change what people READ, never what they are charged: money moves in naira through Paystack, and a VENT COIN is a naira amount. Rates refresh nightly from the feed; type one only when the feed is wrong or unreachable.')}
+              {tt('admin.ratesHint', 'These change what people READ, never what they are charged: money moves through Paystack or Flutterwave, and a VENT COIN is a naira amount. Rates refresh nightly from the feed; type one only when the feed is wrong or unreachable.')}
             </p>
             {feed && <p className={styles.feed}>{tt('admin.ratesFeed', 'Feed')}: <code>{feed}</code></p>}
 

@@ -82,6 +82,11 @@
       "rule": "R80",
       "path": "GHSA-7pqw-9j4j-h8q3",
       "reason": "extract-zip has no patched release (advisory says patched in <0.0.0). It reaches this repo only as a devDependency, puppeteer-core > @puppeteer/browsers, whose job is downloading a browser; the walk scripts point executablePath at the installed Chrome and never call it, and nothing ships it to production (the standalone build has no puppeteer). Read by hand 30 Sept 2026; revisit when puppeteer drops it"
+    },
+    {
+      "rule": "R80",
+      "path": "GHSA-vfj7-8cjw-p6xm",
+      "reason": "braces <=3.0.3 has no fixed release. It reaches us only as eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch, at lint time over our own source globs; no user input ever reaches a pattern and it is not in the production bundle. Re-check when a fixed braces ships (8 Oct 2026)."
     }
   ]
 }
