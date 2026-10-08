@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { formatNumber } from '@/lib/datetime';
 import styles from './OverviewPanel.module.css';
+import Avatar from '@/components/avatar/Avatar';
+import { PLATFORM_ICONS } from '@/components/linked-account/platformIcons';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 const SocialIcon = ({
@@ -98,19 +100,24 @@ const OverviewPanel = ({
         }}>
               {tt("ui.no.gaming.accounts.linked.0ee8", "No gaming accounts linked.")}
             </p> : <div className={styles.acctList}>
-              {(allAccounts ? gamingAccounts : gamingAccounts.slice(0, 4)).map((a, idx) => {
-            const initials = (a.platform || a.name || '?').slice(0, 2).toUpperCase();
-            return <div className={styles.acctRow} key={idx}>
-                    <div className={styles.acctLogo} style={a.color ? {
-                backgroundColor: a.color
-              } : undefined}>
-                      {a.icon ? <img src={a.icon} alt="" aria-hidden="true" /> : initials}
+              {(allAccounts ? gamingAccounts : gamingAccounts.slice(0, 4)).map(a => {
+            // Proven by signing in to the platform (inbox 417): the picture and
+            // name are the ones Discord or Steam gave, never typed.
+            const inner = <>
+                    <div className={styles.acctLogo}>
+                      {a.avatar
+                        ? <Avatar src={a.avatar} name={a.handle} size={36} />
+                        : PLATFORM_ICONS[a.platform] || (a.label || a.platform || '?').slice(0, 2).toUpperCase()}
                     </div>
                     <div className={styles.acctMeta}>
-                      <div className={styles.acctName}>{a.platform || a.name}</div>
-                      <div className={styles.acctHandle}>{a.handle || a.gamertag || '-'}</div>
+                      <div className={styles.acctName}>{a.label || a.platform}</div>
+                      <div className={styles.acctHandle}>{a.handle || a.username || '-'}</div>
                     </div>
-                  </div>;
+                  </>;
+            return a.url
+              ? <a className={styles.acctRow} key={a.platform} href={a.url} target="_blank" rel="noopener noreferrer"
+                   aria-label={tt('linked.openOn', '{handle} on {platform}').replace('{handle}', a.handle || a.username || '').replace('{platform}', a.label || a.platform)}>{inner}</a>
+              : <div className={styles.acctRow} key={a.platform}>{inner}</div>;
           })}
               {gamingAccounts.length > 4 && !allAccounts && <button type="button" className={styles.chipMore}
                 onClick={() => setAllAccounts(true)}>{tt("ui.see.more.2acf", "See more · +")}{gamingAccounts.length - 4}</button>}

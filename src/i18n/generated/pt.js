@@ -3348,7 +3348,7 @@ const table = {
  "ui.like.c4eb": "gostar",
  "ui.likes.aecb": "gostos",
  "ui.link.d051": "Associar",
- "ui.linked.account.confirmed.by.f08e": "Uma conta associada é confirmada pela própria plataforma, por isso o identificador no seu perfil fica provado em vez de apenas escrito. Os identificadores da PSN, Xbox, Riot, EA, Epic e Activision são introduzidos no perfil, porque nenhum deles nos permite verificá-los.",
+ "ui.linked.account.confirmed.by.f08e": "Uma conta ligada é confirmada pela própria plataforma: entra no Discord ou no Steam, e o nome e a foto no seu perfil vêm de lá. Nada aqui é escrito à mão, por isso ninguém pode usar o nome de outra pessoa.",
  "ui.list.a1ff": "Lista",
  "ui.live.65c8": "Em direto",
  "ui.live.6990": "EM DIRETO",
@@ -10275,6 +10275,16 @@ const table = {
  "picker.findOrg": "Comece a escrever o nome de uma organização",
  "picker.noTeams": "Nenhuma equipa na V-ENT corresponde.",
  "picker.noOrgs": "Nenhuma organização na V-ENT corresponde.",
- "team.roleChanged": "{name} é agora {role}."
+ "team.roleChanged": "{name} é agora {role}.",
+ "linked.cannotStart": "Não foi possível começar a ligação. Tente de novo.",
+ "linked.cannotDisconnect": "Não foi possível desligar. Tente de novo.",
+ "linked.disconnected": "Desligado.",
+ "linked.loadFailed": "As suas contas ligadas não carregaram.",
+ "linked.profileLead": "Ligue a conta entrando no Discord ou no Steam. O seu nome e a sua foto vêm de lá, por isso ninguém tem de escrever um nome de utilizador e ninguém pode usar o de outra pessoa.",
+ "linked.notConnected": "Não ligado",
+ "linked.done": "Concluído",
+ "linked.openOn": "{handle} no {platform}",
+ "linked.discordSub": "Entre no Discord, e o seu nome e a sua foto aparecem no seu perfil.",
+ "linked.steamSub": "Entre no Steam, e o seu nome e a sua foto aparecem no seu perfil."
 };
 export default table;
