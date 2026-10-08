@@ -69,6 +69,7 @@
 }
 
 .input { flex: 1 1 200px; }
+.pickerCell { flex: 1 1 200px; min-width: 0; }
 .small { flex: 1 1 150px; }
 .select { flex: 0 1 170px; }
 

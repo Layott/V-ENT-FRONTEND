@@ -19,6 +19,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import UserChip from '@/components/user-chip/UserChip';
 import UserPicker from '@/components/user-picker/UserPicker';
+import NamePicker from '@/components/name-picker/NamePicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './squads-panel.module.css';
@@ -148,14 +149,14 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
       </div>
 
       <div className={styles.addRow}>
-        <input className={styles.input} value={entrant.who} disabled={busy}
-               placeholder={entrant.kind === 'team'
-                 ? tt('invite.teamName', 'Team name')
-                 : tt('invite.username', 'Username')}
-               aria-label={entrant.kind === 'team'
-                 ? tt('invite.teamName', 'Team name')
-                 : tt('invite.username', 'Username')}
-               onChange={(e) => setEntrant((s) => ({ ...s, who: e.target.value }))} />
+        <div className={styles.pickerCell}>
+          <NamePicker kind={entrant.kind === 'team' ? 'team' : 'user'} value={entrant.who}
+                      disabled={busy} token={token}
+                      onChange={(value) => setEntrant((s) => ({ ...s, who: value }))}
+                      placeholder={entrant.kind === 'team'
+                        ? tt('invite.teamName', 'Team name')
+                        : tt('invite.username', 'Username')} />
+        </div>
         <button type="button" className={styles.primary} disabled={busy || !entrant.who.trim()}
                 onClick={addEntrant}>
           {tt('entrant.add', 'Put them in')}

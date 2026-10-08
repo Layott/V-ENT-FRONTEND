@@ -295,6 +295,11 @@
   padding-top: 0.5rem;
 
 }
+.pickerCell {
+  flex: 1;
+  min-width: 0;
+}
+
 .chatInput {
   flex: 1;
   padding: 0.5rem 0.75rem;

@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-slots.module.css';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
 const EMPTY = {
@@ -335,12 +336,15 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                  onChange={e => setStall({ ...stall, name: e.target.value })}
                  placeholder={tt('slots.stallNameExample', 'Mama Put Grill')} />
         </label>
-        <label className={styles.field}>
-          <span className={styles.label}>{tt('slots.stallOwner', 'Who runs it')}</span>
-          <input className={styles.input} value={stall.owner}
-                 onChange={e => setStall({ ...stall, owner: e.target.value })}
-                 placeholder={tt('slots.stallOwnerPlaceholder', 'Email or @username, or leave it empty')} />
-        </label>
+        {/* A div, not a label: the picker's list is buttons, and buttons do
+            not belong inside a label. */}
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="stall-owner">{tt('slots.stallOwner', 'Who runs it')}</label>
+          <UserPicker id="stall-owner" value={stall.owner}
+                      onChange={value => setStall({ ...stall, owner: value })}
+                      token={token} allowEmail
+                      placeholder={tt('slots.stallOwnerPlaceholder', 'Email or @username, or leave it empty')} />
+        </div>
         <label className={styles.field}>
           <span className={styles.label}>{tt('slots.stallBooth', 'Pitch or stall')}</span>
           <input className={styles.input} value={stall.booth}

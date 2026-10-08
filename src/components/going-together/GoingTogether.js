@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import UserChip from '@/components/user-chip/UserChip';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import { apiMessage } from '@/lib/apiMessage';
@@ -218,9 +219,10 @@ export default function GoingTogether({ eventRef, onOpenTickets }) {
           </button>
         </li>)}</ul>}
       <div className={styles.inline}>
-        <input className={styles.input} value={approveName} onChange={(e) => setApproveName(e.target.value)}
-          placeholder={tt('together.usernamePlaceholder', 'Their username')}
-          aria-label={tt('together.usernamePlaceholder', 'Their username')} />
+        <div className={styles.pickerCell}>
+          <UserPicker value={approveName} onChange={setApproveName} token={token}
+            placeholder={tt('together.usernamePlaceholder', 'Their username')} />
+        </div>
         <button type="button" className={styles.primary} disabled={busy || !approveName.trim()}
           onClick={() => call('approve/', 'POST', { username: approveName }, tt('together.approved', 'Approved.')).then(() => setApproveName(''))}>
           {tt('together.approve', 'Approve')}

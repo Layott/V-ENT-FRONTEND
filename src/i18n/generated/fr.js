@@ -1228,7 +1228,7 @@ const table = {
  "role.captain.blurb": "Dirige l'effectif : invite, accepte les demandes et inscrit aux compétitions.",
  "role.vice_captain": "Vice-capitaine",
  "role.vice_captain.blurb": "Seconde le capitaine : peut inviter et accepter les demandes.",
- "role.coach": "Entraineur",
+ "role.coach": "Entraîneur",
  "role.coach.blurb": "Fait partie de l'équipe. Aucun pouvoir administratif.",
  "role.analyst": "Analyste",
  "role.analyst.blurb": "Fait partie de l'équipe. Aucun pouvoir administratif.",
@@ -10270,6 +10270,11 @@ const table = {
  "stages.placeLobbies": "Répartis dans les lobbies selon leur classement",
  "bracket.placesAandB": "Places {a} et {b}",
  "manage.rateUntracked": "Pas tout compté",
- "manage.funnelBuyers": "Acheteurs payants : {n}"
+ "manage.funnelBuyers": "Acheteurs payants : {n}",
+ "picker.findTeam": "Commencez à taper le nom d’une équipe",
+ "picker.findOrg": "Commencez à taper le nom d’une organisation",
+ "picker.noTeams": "Aucune équipe sur V-ENT ne correspond.",
+ "picker.noOrgs": "Aucune organisation sur V-ENT ne correspond.",
+ "team.roleChanged": "{name} est maintenant {role}."
 };
 export default table;

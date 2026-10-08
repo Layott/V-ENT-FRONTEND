@@ -201,7 +201,8 @@ const SendPage = () => {
             const data = await get(`/auth/user/lookup/?q=${encodeURIComponent(q)}`);
             if (data.status === 'success' && data.data?.user) found = [fromUser(data.data.user)];
           } else {
-            const data = await get(`/user/search/?q=${encodeURIComponent(q.replace(/^@/, ''))}`);
+            // purpose=pick: a rough spelling finds anyone you send to (inbox 416).
+            const data = await get(`/user/search/?q=${encodeURIComponent(q.replace(/^@/, ''))}&purpose=pick`);
             found = (data?.data?.users || []).map(fromUser);
           }
         } else if (toKind === 'team') {

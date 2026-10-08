@@ -27,6 +27,7 @@ import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import shared from '@/components/admin/admin.module.css';
 import { adminToken } from '@/lib/adminToken'
+import NamePicker from '@/components/name-picker/NamePicker';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -262,9 +263,10 @@ function OrganizationsInner() {
             <option value="community">{tt('adminOrgs.typeCommunity', 'Community or fan group')}</option>
             <option value="mixed">{tt('adminOrgs.typeMixed', 'A bit of everything')}</option>
           </select>
-          <input className={shared.modalInput} value={newOwner} autoComplete="off"
-                 placeholder={tt('adminOrgs.ownerPlaceholder', 'Who owns it: a username or email address')}
-                 onChange={(e) => setNewOwner(e.target.value)} />
+          <div className={shared.modalPicker}>
+            <NamePicker kind="user" value={newOwner} onChange={setNewOwner} token={adminToken()} allowEmail
+                        placeholder={tt('adminOrgs.ownerPlaceholder', 'Who owns it: a username or email address')} />
+          </div>
           <input className={shared.modalInput} value={newDesc} maxLength={280}
                  placeholder={tt('adminOrgs.descPlaceholder', 'What it does, in a sentence')}
                  onChange={(e) => setNewDesc(e.target.value)} />
@@ -304,9 +306,10 @@ function OrganizationsInner() {
             <option value="team">{tt('wallet.toTeam', 'A team')}</option>
             <option value="org">{tt('wallet.toOrg', 'An organisation')}</option>
           </select>
-          <input className={shared.modalInput} value={to} autoComplete="off"
-                 placeholder={tt('adminOrgs.moveTo', 'Who it goes to')}
-                 onChange={(e) => setTo(e.target.value)} />
+          <div className={shared.modalPicker}>
+            <NamePicker kind={toKind} value={to} onChange={setTo} token={adminToken()}
+                        placeholder={tt('adminOrgs.moveTo', 'Who it goes to')} />
+          </div>
           <input className={shared.modalInput} type="number" min={1} value={amount}
                  placeholder={tt('wallet.amount', 'How much, in VENT COINS')}
                  onChange={(e) => setAmount(e.target.value)} />

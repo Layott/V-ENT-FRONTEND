@@ -18,6 +18,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './invitations-panel.module.css';
+import NamePicker from '@/components/name-picker/NamePicker';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -143,14 +144,21 @@ export default function InvitationsPanel({ tournamentRef, token, showToast }) {
         >{tt('invite.anEmail', 'An email address')}</button>
       </div>
 
-      <input
-        className={styles.input}
-        value={who}
-        onChange={(e) => setWho(e.target.value)}
-        type={kind === 'email' ? 'email' : 'text'}
-        placeholder={placeholder}
-        aria-label={placeholder}
-      />
+      {/* A player or a team is picked from a rough spelling (inbox 416); an
+          email address is typed, because nobody can be listed for one. */}
+      {kind === 'email'
+        ? <input
+            className={styles.input}
+            value={who}
+            onChange={(e) => setWho(e.target.value)}
+            type="email"
+            placeholder={placeholder}
+            aria-label={placeholder}
+          />
+        : <div className={styles.pickerCell}>
+            <NamePicker kind={kind === 'team' ? 'team' : 'user'} value={who} onChange={setWho}
+                        token={token} placeholder={placeholder} />
+          </div>}
       <input
         className={styles.input}
         maxLength={280}

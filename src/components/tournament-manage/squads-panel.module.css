@@ -70,6 +70,11 @@
   font-weight: var(--fw-semi-bold, 600);
 }
 
+.pickerCell {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
 .addRow {
   display: flex;
   align-items: center;

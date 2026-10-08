@@ -16,6 +16,7 @@ import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import NamePicker from '@/components/name-picker/NamePicker';
 import { COUNTRIES } from '@/constants/countries';
 // Formats are no longer a constant. What a match can be played to depends on
 // the mode, and the mode depends on the game: a Free Fire battle royale is
@@ -471,7 +472,12 @@ const ScrimCreateInner = () => {
 
               <div className={`${styles.field} ${styles.fieldFull}`}>
                 <label className={styles.label}><span className="fieldLabelRow">{tt("ui.opponent.optional.6967", "Opponent (optional)")} <InfoTip id="scrimOpponent" /></span></label>
-                <input type="text" placeholder={tt("ui.leave.empty.open.scrim.1023", "Leave empty for an open scrim, anyone can accept")} className={styles.input} value={form.opponent} onChange={e => updateField('opponent', e.target.value)} maxLength={60} />
+                {/* A team, or a player when the post is solo, picked from a
+                    rough spelling (inbox 416). */}
+                <NamePicker kind={form.solo ? 'user' : 'team'} value={form.opponent}
+                            onChange={value => updateField('opponent', value)}
+                            token={session?.user?.sessionToken}
+                            placeholder={tt("ui.leave.empty.open.scrim.1023", "Leave empty for an open scrim, anyone can accept")} />
                 <span className={styles.hint}>{tt("ui.type.team.name.challenge.359a", "Type a team name to challenge directly. Leave empty to keep it open.")}</span>
               </div>
 

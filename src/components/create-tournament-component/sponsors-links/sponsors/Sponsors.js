@@ -11,11 +11,14 @@ import { FaTrash } from "react-icons/fa";
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './sponsors.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { useSession } from 'next-auth/react';
+import UserPicker from '@/components/user-picker/UserPicker';
 const Sponsors = ({
   formData,
   updateFormData
 }) => {
   const tt = useT();
+  const { data: session } = useSession();
   const [fields, setFields] = useState(() => Array.isArray(formData?.sponsors) && formData.sponsors.length > 0 ? formData.sponsors : [{
     name: '',
     username: '',
@@ -107,7 +110,10 @@ const Sponsors = ({
                 <label htmlFor={`sponsorUsername-${index}`} className={createTournamentStyles.labelWithAsterisk}>
                   <span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="sponsorUsername" /></span>
                 </label>
-                <input id={`sponsorUsername-${index}`} type="text" placeholder={tt("ui.enter.sponsor.username.ad02", "Enter sponsor username")} className={createTournamentStyles.inputText} value={field.username} onChange={e => handleFieldChange(index, 'username', e.target.value)} />
+                <UserPicker id={`sponsorUsername-${index}`} value={field.username || ''}
+                            onChange={value => handleFieldChange(index, 'username', value)}
+                            token={session?.user?.sessionToken}
+                            placeholder={tt("ui.enter.sponsor.username.ad02", "Enter sponsor username")} />
               </div>
             </div>
             <div className={styles.uploaderAndDeleteFieldBTNContainer}>

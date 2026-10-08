@@ -31,6 +31,7 @@ import DateField from '@/components/date-field/DateField';
 import shared from '@/components/admin/admin.module.css';
 import styles from './finance.module.css';
 import { adminToken } from '@/lib/adminToken'
+import NamePicker from '@/components/name-picker/NamePicker';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -471,9 +472,10 @@ function FinanceInner() {
             <option value="team">{tt('adminFinance.fromTeam', 'From a team')}</option>
             <option value="org">{tt('adminFinance.fromOrg', 'From an organisation')}</option>
           </select>
-          <input className={shared.modalInput} value={fromRef} autoComplete="off"
-                 placeholder={tt('adminFinance.fromWho', 'Who it comes from')}
-                 onChange={(e) => setFromRef(e.target.value)} />
+          <div className={shared.modalPicker}>
+            <NamePicker kind={fromKind} value={fromRef} onChange={setFromRef} token={adminToken()}
+                        placeholder={tt('adminFinance.fromWho', 'Who it comes from')} />
+          </div>
 
           <select className={shared.modalInput} value={toKind}
                   onChange={(e) => setToKind(e.target.value)}>
@@ -481,9 +483,10 @@ function FinanceInner() {
             <option value="team">{tt('adminFinance.toTeam', 'To a team')}</option>
             <option value="org">{tt('adminFinance.toOrg', 'To an organisation')}</option>
           </select>
-          <input className={shared.modalInput} value={toRef} autoComplete="off"
-                 placeholder={tt('adminFinance.toWho', 'Who it goes to')}
-                 onChange={(e) => setToRef(e.target.value)} />
+          <div className={shared.modalPicker}>
+            <NamePicker kind={toKind} value={toRef} onChange={setToRef} token={adminToken()}
+                        placeholder={tt('adminFinance.toWho', 'Who it goes to')} />
+          </div>
 
           <input className={shared.modalInput} type="number" min={1} value={amount}
                  placeholder={tt('wallet.amount', 'How much, in VENT COINS')}
