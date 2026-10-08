@@ -46,6 +46,13 @@
   color: #fff;
 }
 
+/* What it is connected as: the picture and the name the platform gave. */
+.account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .sub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;

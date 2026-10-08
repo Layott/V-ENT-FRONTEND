@@ -1,146 +1,101 @@
+/* Gaming accounts on Edit profile: one filled row per platform, the platform's
+   mark, what it is connected as, and one action. No strokes, no switch: the
+   connection is made at Discord or Steam, not by flipping anything here. */
+
+.lead {
+  margin: 0 0 1rem;
+  font-size: var(--fs-p-size-mobile);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.retry {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--v-ent-red);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .list {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.6rem;
 }
 
 .row {
   display: grid;
-  grid-template-columns: auto 1fr 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.85rem;
   align-items: center;
   background-color: #303136;
-
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-}
-
-.platformBlock {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-width: 140px;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
 }
 
 .platformIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   background-color: var(--overlay-gray);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #fff;
-  font-family: "Fraunces", sans-serif;
-  font-size: 0.7rem;
 }
 
-.platformName {
-  font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.88rem;
-  color: #fff;
-}
-
-.fieldBlock {
+.who {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
   min-width: 0;
 }
 
-.fieldLabel {
-  font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.fieldInput {
-  width: 100%;
-  background: var(--overlay-gray);
-
+.platformName {
+  font-size: 0.92rem;
+  font-weight: var(--fw-semi-bold);
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.85rem;
-  outline: none;
-  transition: background-color 0.2s;
 }
 
-.fieldInput:focus {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-.toggleWrap {
-  display: flex;
+.account {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
-.toggleLabel {
-  font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.78rem;
+.handle {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.muted {
+  font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.45);
 }
 
-.toggleLabelActive {
-  color: var(--v-ent-gold);
+.action {
+  min-height: 44px;
 }
 
-.toggle {
-  width: 38px;
-  height: 22px;
-  border-radius: 22px;
-  background-color: rgba(255, 255, 255, 0.1);
-
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.toggleOn {
-  background-color: var(--v-ent-gold);
-
-}
-
-.toggleHandle {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: #fff;
-  transition: transform 0.2s;
-}
-
-.toggleOn .toggleHandle {
-  transform: translateX(16px);
-}
-
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .row {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
+    grid-template-columns: auto minmax(0, 1fr);
   }
-  .platformBlock {
-    min-width: 0;
-  }
-  .toggleWrap {
-    justify-content: flex-start;
-  }
-}
 
-/* A thumb needs 44px. Raised only on a phone, so nothing moves on
-   a desktop where a mouse is doing the pointing. */
-@media (max-width: 720px) {
-  /* Square by design: widened as well, or a round icon button
-     becomes a pill. */
-  .toggle {
-    min-height: 44px;
-    min-width: 44px;
+  .action {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }

@@ -3348,7 +3348,7 @@ const table = {
  "ui.like.c4eb": "like",
  "ui.likes.aecb": "likes",
  "ui.link.d051": "Link",
- "ui.linked.account.confirmed.by.f08e": "A linked account is confirmed by the platform itself, so the handle on your profile is proven rather than typed. Handles for PSN, Xbox, Riot, EA, Epic and Activision are entered on your profile instead, because none of them offer a way for us to check them.",
+ "ui.linked.account.confirmed.by.f08e": "A linked account is confirmed by the platform itself: you sign in to Discord or Steam, and the name and picture on your profile come from there. Nothing here is typed, so nobody can wear somebody else's handle.",
  "ui.list.a1ff": "List",
  "ui.live.65c8": "Live",
  "ui.live.6990": "LIVE",
@@ -10275,6 +10275,16 @@ const table = {
  "picker.findOrg": "Start typing an organisation name",
  "picker.noTeams": "No team on V-ENT matches that.",
  "picker.noOrgs": "No organisation on V-ENT matches that.",
- "team.roleChanged": "{name} is now {role}."
+ "team.roleChanged": "{name} is now {role}.",
+ "linked.cannotStart": "Could not start connecting. Try again.",
+ "linked.cannotDisconnect": "Could not disconnect. Try again.",
+ "linked.disconnected": "Disconnected.",
+ "linked.loadFailed": "Your linked accounts did not load.",
+ "linked.profileLead": "Connect by signing in to Discord or Steam. Your name and picture come from there, so nobody has to type a handle and nobody can borrow one.",
+ "linked.notConnected": "Not connected",
+ "linked.done": "Done",
+ "linked.openOn": "{handle} on {platform}",
+ "linked.discordSub": "Sign in to Discord, and your name and picture show on your profile.",
+ "linked.steamSub": "Sign in to Steam, and your name and picture show on your profile."
 };
 export default table;

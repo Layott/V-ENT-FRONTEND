@@ -227,20 +227,9 @@ const EditUserProfileContent = () => {
     }
   };
 
-  // Gaming accounts - POST /auth/update-gaming-accounts/. The endpoint exists
-  // now; until it did, every save here answered 404 and nothing was stored.
-  const handleSaveAccounts = async payload => {
-    const res = await postJson('/auth/update-gaming-accounts/', {
-      accounts: payload.accounts || {}
-    });
-    const saved = res?.data?.gaming_accounts;
-    if (saved && typeof saved === 'object') {
-      setProfileData(prev => ({
-        ...(prev || {}),
-        gaming_accounts: saved
-      }));
-    }
-  };
+  // Gaming accounts are not saved from here: the panel connects Discord and
+  // Steam by signing in to them (inbox 417), and the endpoint that stored typed
+  // handles is gone.
 
   // Social links - real endpoint POST /auth/update-web-and-social-links/ ({ links }).
   const handleSaveSocial = async payload => {
@@ -327,7 +316,7 @@ const EditUserProfileContent = () => {
             <section>
               {activePanel === 'info' && <ProfileInfoPanel initialData={profileData || {}} onSave={handleSaveProfileInfo} onCancel={handleCancel} showToast={showToast} sessionToken={session?.user?.sessionToken || null} />}
               {activePanel === 'games' && <FavoriteGamesEditPanel initialGames={profileData?.favorite_games} onSave={handleSaveGames} onCancel={handleCancel} showToast={showToast} />}
-              {activePanel === 'accounts' && <GamingAccountsPanel initialAccounts={profileData?.gaming_accounts || {}} onSave={handleSaveAccounts} onCancel={handleCancel} showToast={showToast} />}
+              {activePanel === 'accounts' && <GamingAccountsPanel onCancel={handleCancel} showToast={showToast} />}
               {activePanel === 'social' && <SocialLinksEditPanel initialLinks={profileData?.social_links_object || {}} initialCustom={profileData?.custom_links || []} onSave={handleSaveSocial} onCancel={handleCancel} showToast={showToast} />}
             </section>
           </div>

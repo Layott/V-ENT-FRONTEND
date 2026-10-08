@@ -3348,7 +3348,7 @@ const table = {
  "ui.like.c4eb": "j'aime",
  "ui.likes.aecb": "j'aime",
  "ui.link.d051": "Lier",
- "ui.linked.account.confirmed.by.f08e": "Un compte lié est confirmé par la plateforme elle-même : l'identifiant sur votre profil est donc prouvé et non simplement saisi. Les identifiants PSN, Xbox, Riot, EA, Epic et Activision se renseignent sur votre profil, car aucun de ces services ne nous permet de les vérifier.",
+ "ui.linked.account.confirmed.by.f08e": "Un compte lié est confirmé par la plateforme elle-même : vous vous identifiez sur Discord ou Steam, et le nom et la photo de votre profil viennent de là. Rien n’est saisi ici, donc personne ne peut porter le pseudo d’un autre.",
  "ui.list.a1ff": "Liste",
  "ui.live.65c8": "En direct",
  "ui.live.6990": "EN DIRECT",
@@ -10275,6 +10275,16 @@ const table = {
  "picker.findOrg": "Commencez à taper le nom d’une organisation",
  "picker.noTeams": "Aucune équipe sur V-ENT ne correspond.",
  "picker.noOrgs": "Aucune organisation sur V-ENT ne correspond.",
- "team.roleChanged": "{name} est maintenant {role}."
+ "team.roleChanged": "{name} est maintenant {role}.",
+ "linked.cannotStart": "Impossible de lancer la connexion. Réessayez.",
+ "linked.cannotDisconnect": "Impossible de déconnecter. Réessayez.",
+ "linked.disconnected": "Déconnecté.",
+ "linked.loadFailed": "Vos comptes liés ne se sont pas chargés.",
+ "linked.profileLead": "Connectez-vous en vous identifiant sur Discord ou Steam. Votre nom et votre photo viennent de là : personne n’a à taper un pseudo, et personne ne peut en emprunter un.",
+ "linked.notConnected": "Non connecté",
+ "linked.done": "Terminé",
+ "linked.openOn": "{handle} sur {platform}",
+ "linked.discordSub": "Identifiez-vous sur Discord : votre nom et votre photo apparaissent sur votre profil.",
+ "linked.steamSub": "Identifiez-vous sur Steam : votre nom et votre photo apparaissent sur votre profil."
 };
 export default table;
