@@ -10270,6 +10270,11 @@ const table = {
  "stages.placeLobbies": "Distribuídos pelos lobbies conforme a classificação",
  "bracket.placesAandB": "Posições {a} e {b}",
  "manage.rateUntracked": "Nem tudo contado",
- "manage.funnelBuyers": "Compradores pagantes: {n}"
+ "manage.funnelBuyers": "Compradores pagantes: {n}",
+ "picker.findTeam": "Comece a escrever o nome de uma equipa",
+ "picker.findOrg": "Comece a escrever o nome de uma organização",
+ "picker.noTeams": "Nenhuma equipa na V-ENT corresponde.",
+ "picker.noOrgs": "Nenhuma organização na V-ENT corresponde.",
+ "team.roleChanged": "{name} é agora {role}."
 };
 export default table;

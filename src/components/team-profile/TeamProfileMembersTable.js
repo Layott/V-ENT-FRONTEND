@@ -33,6 +33,9 @@ const TeamProfileMembersTable = ({
   onToast
 }) => {
   const tt = useT();
+  // The role names the roster manager already shows in every language
+  // (role.<code>); this table drew the English map and nothing else.
+  const roleText = role => tt(`role.${role === 'player' ? 'member' : role}`, ROLE_LABEL[role] || role || 'Member');
   const {
     data: session
   } = useSession();
@@ -79,7 +82,9 @@ const TeamProfileMembersTable = ({
         ...x,
         role
       } : x));
-      onToast?.(`${m.full_name || m.username} promoted to ${role}`);
+      onToast?.(tt('team.roleChanged', '{name} is now {role}.')
+        .replace('{name}', m.full_name || m.username)
+        .replace('{role}', roleText(role)));
     } else {
       onToast?.(apiMessage(tt, data, "api.failed", "Failed"));
     }
@@ -147,7 +152,7 @@ const TeamProfileMembersTable = ({
 
             <div>
               <span className={`${styles.roleBadge} ${styles[ROLE_BADGE_CLASS[m.role] || 'roleMember']}`}>
-                {ROLE_LABEL[m.role] || m.role || 'Member'}
+                {roleText(m.role)}
               </span>
             </div>
 
@@ -195,7 +200,7 @@ const TeamProfileMembersTable = ({
               </div>
               <div className={styles.memberMobileRoleWrap}>
                 <span className={`${styles.roleBadge} ${styles[ROLE_BADGE_CLASS[m.role] || 'roleMember']}`}>
-                  {ROLE_LABEL[m.role] || m.role}
+                  {roleText(m.role)}
                 </span>
                 {expanded === m.user_id ? <BsChevronUp /> : <BsChevronDown />}
               </div>

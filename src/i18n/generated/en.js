@@ -10270,6 +10270,11 @@ const table = {
  "stages.placeLobbies": "Spread across the lobbies by how they finished",
  "bracket.placesAandB": "Places {a} and {b}",
  "manage.rateUntracked": "Not all counted",
- "manage.funnelBuyers": "Paying buyers: {n}"
+ "manage.funnelBuyers": "Paying buyers: {n}",
+ "picker.findTeam": "Start typing a team name",
+ "picker.findOrg": "Start typing an organisation name",
+ "picker.noTeams": "No team on V-ENT matches that.",
+ "picker.noOrgs": "No organisation on V-ENT matches that.",
+ "team.roleChanged": "{name} is now {role}."
 };
 export default table;

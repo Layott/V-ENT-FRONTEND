@@ -31,6 +31,7 @@ import Avatar from '@/components/avatar/Avatar';
 import shared from '@/components/admin/admin.module.css';
 import styles from './admins.module.css';
 import { adminToken } from '@/lib/adminToken'
+import UserPicker from '@/components/user-picker/UserPicker';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -262,9 +263,10 @@ function AdminsInner() {
           <p className={shared.modalSub}>
             {tt('adminAdmins.grantSub', 'They need an account already, and an authenticator set up before they can open the console. The grant goes in the audit log with your name on it.')}
           </p>
-          <input className={shared.modalInput} value={who} autoComplete="off"
-                 placeholder={tt('adminAdmins.whoPlaceholder', 'Their username or email address')}
-                 onChange={(e) => setWho(e.target.value)} />
+          <div className={shared.modalPicker}>
+            <UserPicker value={who} onChange={setWho} token={adminToken()} allowEmail
+                        placeholder={tt('adminAdmins.whoPlaceholder', 'Their username or email address')} />
+          </div>
           <select className={shared.modalInput} value={role}
                   onChange={(e) => setRole(e.target.value)}>
             {roles.map((row) => <option key={row.value} value={row.value}>{row.label}</option>)}

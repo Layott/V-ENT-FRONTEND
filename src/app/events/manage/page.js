@@ -2603,10 +2603,13 @@ export const ManageEventContent = ({
                 ...p,
                 commission_pct: e.target.value
               }))} />
-                    <input className={styles.input} placeholder={tt('manage.payeePlaceholder', 'Pay it to (email or @username)')} value={newReferral.payee} onChange={e => setNewReferral(p => ({
-                ...p,
-                payee: e.target.value
-              }))} autoComplete="off" />
+                    <UserPicker
+                      value={newReferral.payee}
+                      onChange={value => setNewReferral(p => ({ ...p, payee: value }))}
+                      token={token}
+                      allowEmail
+                      placeholder={tt('manage.payeePlaceholder', 'Pay it to (email or @username)')}
+                    />
                     <input className={styles.input} type="number" min={0} placeholder={tt('manage.allocationPlaceholder', 'Tickets held (0 = none)')} value={newReferral.allocation} onChange={e => setNewReferral(p => ({
                   ...p,
                   allocation: e.target.value

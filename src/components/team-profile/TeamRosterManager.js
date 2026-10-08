@@ -25,6 +25,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { sameUser } from '@/lib/gating';
 import { useT } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import UserPicker from '@/components/user-picker/UserPicker';
 import styles from './team-roster-manager.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
@@ -171,12 +172,17 @@ const TeamRosterManager = ({ team, onToast }) => {
           </p>
 
           <div className={styles.row}>
-            <input
-              className={styles.input}
-              placeholder={tt('team.usernamePlaceholder', 'Their username')}
-              value={invitee}
-              onChange={e => setInvitee(e.target.value)}
-            />
+            {/* A name picker, so a rough spelling finds them (CEO, 8 Oct,
+                inbox 416): "the search bar in teams doesn't show users with
+                the name when you want to add someone". */}
+            <div className={styles.pickerCell}>
+              <UserPicker
+                value={invitee}
+                onChange={setInvitee}
+                token={session?.user?.sessionToken}
+                placeholder={tt('team.usernamePlaceholder', 'Their username')}
+              />
+            </div>
             <select className={styles.select} value={inviteRole}
                     onChange={e => setInviteRole(e.target.value)}>
               {roles.filter(r => r.role !== 'owner').map(r => (

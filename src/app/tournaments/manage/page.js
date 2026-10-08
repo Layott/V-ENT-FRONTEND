@@ -46,6 +46,7 @@ import Tag from '@/components/tag/Tag';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import { formatDateTime } from '@/lib/datetime';
 import { entryStatusLabel } from '@/lib/labels';
+import UserPicker from '@/components/user-picker/UserPicker';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -716,9 +717,10 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
             {`R${m.round} M${m.match_number}: ${nameOf(m.p1)} v ${nameOf(m.p2)}`}
           </option>)}
         </select>
-        <input className={styles.modalInput} value={player}
-               placeholder={tt('stats.player', 'Player username')}
-               onChange={e => setPlayer(e.target.value)} />
+        <div className={styles.pickerCell}>
+          <UserPicker value={player} onChange={setPlayer} token={token}
+                      placeholder={tt('stats.player', 'Player username')} />
+        </div>
       </div>
       <div className={styles.statEntry}>
         {metrics.map(m => <label key={m.key} className={styles.statField}>
@@ -753,9 +755,10 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
               .replace('{score}', Number(table[0].score).toFixed(1))}
           </p>
           <div className={styles.newRowInline}>
-            <input className={styles.modalInput} value={overrideTo}
-                   placeholder={tt('stats.orSomebodyElse', 'Or somebody else, by username')}
-                   onChange={e => setOverrideTo(e.target.value)} />
+            <div className={styles.pickerCell}>
+              <UserPicker value={overrideTo} onChange={setOverrideTo} token={token}
+                          placeholder={tt('stats.orSomebodyElse', 'Or somebody else, by username')} />
+            </div>
             {overriding && <input className={styles.modalInput} value={overrideWhy}
                    placeholder={tt('stats.why', 'Why them?')}
                    onChange={e => setOverrideWhy(e.target.value)} />}

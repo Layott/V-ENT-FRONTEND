@@ -65,6 +65,10 @@
   font-weight: var(--fw-semi-bold, 600);
 }
 
+.pickerCell {
+  margin-top: 0.6rem;
+}
+
 .input {
   width: 100%;
   min-height: 48px;

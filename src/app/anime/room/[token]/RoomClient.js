@@ -24,6 +24,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDateTime } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
+import UserPicker from '@/components/user-picker/UserPicker';
 import { mediaUrl } from '@/lib/mediaUrl';
 import useLiveData from '@/lib/useLiveData';
 import styles from './room.module.css';
@@ -468,11 +469,11 @@ const RoomClient = ({ roomToken }) => {
                       {tt('anime.invite', 'Invite somebody')}
                     </p>
                     <div className={styles.chatInputRow}>
-                      <input className={styles.chatInput} value={invite}
-                             placeholder={tt('anime.invitePlaceholder',
-                               'A username or an email address')}
-                             onChange={e => setInvite(e.target.value)}
-                             onKeyDown={onEnter(sendInvite)} />
+                      <div className={styles.pickerCell}>
+                        <UserPicker value={invite} onChange={setInvite} token={token} allowEmail
+                                    placeholder={tt('anime.invitePlaceholder',
+                                      'A username or an email address')} />
+                      </div>
                       <button type="button" className={styles.chatSendBtn}
                               onClick={sendInvite}>
                         {tt('anime.send', 'Send it')}

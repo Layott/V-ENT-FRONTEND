@@ -358,6 +358,9 @@
 
 .modalInput::placeholder { color: rgba(255, 255, 255, 0.35); }
 
+/* A name picker in a modal: the same gap below it that a modal input has. */
+.modalPicker { margin-bottom: 1.25rem; }
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
