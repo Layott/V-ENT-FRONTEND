@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
-import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding, LuMapPin } from 'react-icons/lu';
+import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding, LuMapPin, LuDatabase } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import logoRed from '@/images/logo_mark_red.svg';
@@ -147,6 +147,14 @@ export const NAV = [{
 }, {
   section: 'System',
   items: [{
+    // Every record on the site, the console as a CMS (inbox 420). Built from
+    // the models themselves, so a new feature's records appear here with no
+    // work. Changing one needs edit_records on top; the screens ask.
+    label: 'Records',
+    href: '/admin/records',
+    icon: LuDatabase,
+    perms: ['view_records']
+  }, {
     // Creating and removing administrators. The one thing the spec gives a
     // Super Admin and withholds from an Admin.
     label: 'Administrators',
