@@ -1,0 +1,366 @@
+/* The roadmap as a stepladder bracket (inbox 426). Base: a phone's spine, top
+   to bottom, which also stands for any browser without container queries.
+   From 720px of room: the staircase, left to right, on rows of 56px: a card
+   is 100px and spans two, and each step drops one. Filled surfaces only; the
+   connectors are the diagram, as in the tournament bracket. Surfaces from the
+   house scale: panel --overlay-gray, then #2a2b30, then #33343a. */
+
+.frame {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.map {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: block;
+}
+
+/* ---- the node: a filled card naming the step ---- */
+.node {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 68px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--overlay-gray);
+  color: #fff;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.node:hover {
+  background: #2a2b30;
+}
+
+.node[aria-expanded="true"] {
+  background: #33343a;
+}
+
+.node:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.open .node {
+  border-radius: 10px 10px 0 0;
+}
+
+.nodeTop,
+.detailTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.phase {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: var(--fw-semi-bold);
+  color: var(--v-ent-red);
+}
+
+.badge {
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: var(--fw-semi-bold);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+}
+
+.badgeLive {
+  background: rgba(76, 175, 80, 0.18);
+  color: var(--v-ent-success-light);
+}
+
+.name {
+  font-family: var(--font-fraunces), "Fraunces", "ClashGrotesk-Variable", serif;
+  font-weight: var(--fw-bold);
+  font-size: 1.08rem;
+  line-height: 1.15;
+  color: #fff;
+}
+
+/* ---- what a step builds on: joins the spine from the side ---- */
+.feeder {
+  position: relative;
+  padding: 14px 0 14px 46px;
+}
+
+.feeder::before,
+.feeder::after {
+  content: "";
+  position: absolute;
+  left: 21px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.feeder::before {
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+
+.feeder::after {
+  top: 50%;
+  width: 25px;
+  height: 2px;
+}
+
+.lit::before,
+.lit::after {
+  background: var(--v-ent-red);
+}
+
+.chip {
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.chipLabel {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.chipName {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* The elbow between two steps; only drawn on the staircase. */
+.wire {
+  display: none;
+}
+
+.wire path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 2;
+}
+
+.wire path.wireLit {
+  stroke: var(--v-ent-red);
+}
+
+/* ---- a step's details ---- */
+.detail {
+  padding: 0.4rem 14px 1rem;
+  border-radius: 0 0 10px 10px;
+  background: #33343a;
+}
+
+.detail .detailTop,
+.detailTitle {
+  display: none;
+}
+
+.detailTitle {
+  margin: 0.35rem 0 0.4rem;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.blurb {
+  margin: 0 0 1rem;
+  max-width: 62ch;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.55;
+}
+
+.lines {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lines li {
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.shot {
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #2a2b30;
+  cursor: zoom-in;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.shot:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1.1rem;
+}
+
+.actions > div {
+  margin-top: 0;
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.more:hover {
+  background: #33343a;
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+/* ---- the staircase, given room ---- */
+@container (min-width: 720px) {
+  .map {
+    display: grid;
+    grid-template-columns: var(--cols);
+    grid-template-rows: repeat(var(--rows), 56px) auto;
+  }
+
+  .step {
+    display: contents;
+  }
+
+  .node {
+    grid-column: var(--c);
+    grid-row: var(--r) / span 2;
+    align-self: start;
+    height: 100px;
+    min-height: 0;
+    padding: 0 14px;
+    gap: 4px;
+  }
+
+  .open .node {
+    border-radius: 10px;
+  }
+
+  /* Two lines at most: "V-ENT aujourd’hui" is wider than a step on a
+     five-step climb. */
+  .name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .feeder {
+    grid-column: var(--c);
+    grid-row: var(--r) / span 2;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    height: 100px;
+    padding: 0;
+  }
+
+  .feeder::before,
+  .feeder::after {
+    display: none;
+  }
+
+  .chip {
+    width: 100%;
+  }
+
+  .wire {
+    display: block;
+    grid-column: var(--c);
+    grid-row: var(--r) / span 4;
+    width: 100%;
+    height: 224px;
+    overflow: visible;
+  }
+
+  .detail {
+    grid-column: 1 / -1;
+    grid-row: calc(var(--rows) + 1);
+    margin-top: 28px;
+    padding: 1.4rem 1.4rem 1.3rem;
+    border-radius: 14px;
+    background: var(--overlay-gray);
+  }
+
+  .detail .detailTop {
+    display: flex;
+  }
+
+  .detailTitle {
+    display: block;
+  }
+
+  .lines {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lines li {
+    background: #2a2b30;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node,
+  .more {
+    transition: none;
+  }
+}
