@@ -1,0 +1,282 @@
+/* Pictures of a pitch or stall and the venue layout (inbox 419): filled
+   surfaces and space, a small radius on small tiles and a larger one on the
+   cover. No strokes. */
+
+/* ---- buyers ---- */
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.cover,
+.thumb,
+.layoutButton {
+  display: block;
+  padding: 0;
+  border: none;
+  background: #2a2b30;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+}
+
+.cover img,
+.thumb img,
+.layoutButton img,
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumbs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+}
+
+.thumbs > * {
+  flex-shrink: 0;
+}
+
+.thumb {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.cover:focus-visible,
+.thumb:focus-visible,
+.layoutButton:focus-visible,
+.tileBtn:focus-visible,
+.addTile:focus-visible,
+.ghostBtn:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.layout {
+  margin: 0.4rem 0 1rem;
+}
+
+.layoutTitle {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.layoutButton {
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+}
+
+/* ---- organiser ---- */
+
+.editor {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.editorTitle {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.count {
+  font-size: 0.78rem;
+  font-weight: var(--fw-regular);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.help {
+  margin: 0.25rem 0 0.6rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 0.5rem;
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #2a2b30;
+}
+
+.coverBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--v-ent-red);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.tileActions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+  background: rgba(20, 20, 22, 0.72);
+}
+
+.tileBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.tileBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tileBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Removing a picture asks first, in place of the tile's buttons. */
+.tileConfirm {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(20, 20, 22, 0.85);
+}
+
+.confirmDanger,
+.confirmKeep {
+  flex: 1;
+  min-height: 36px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  color: #fff;
+}
+
+.confirmDanger {
+  background: var(--v-ent-red);
+}
+
+.confirmKeep {
+  background: #3a3b41;
+}
+
+.layoutActions .confirmDanger {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+}
+
+.addTile {
+  aspect-ratio: 4 / 3;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.addTile:hover:not(:disabled) {
+  background: #33343a;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.layoutPreview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.layoutActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ghostBtn {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.ghostBtn:hover:not(:disabled) {
+  background: #33343a;
+}
+
+@media (max-width: 720px) {
+  .tiles {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .tileBtn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .confirmDanger,
+  .confirmKeep {
+    min-height: 44px;
+  }
+}
