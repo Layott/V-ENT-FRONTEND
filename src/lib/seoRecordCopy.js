@@ -129,6 +129,8 @@ const COPY = {
     'shortLink.title': 'Short link',
     'shortLink.description': 'Opening a V-ENT link.',
 
+    'roadmap.title': 'What is coming to V-ENT',
+    'roadmap.what': 'The modules V-ENT opens next, in order: the shop, Vermillion City (player to player trading), the anime hub, and wagers. What each will do, and how to be told when it opens.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'What a V-ENT premium subscription switches on for an organiser.',
     'premium.includes': 'Includes {features}.',
@@ -255,6 +257,8 @@ const COPY = {
     'shortLink.title': 'Lien court',
     'shortLink.description': 'Ouverture d’un lien V-ENT.',
 
+    'roadmap.title': 'Ce qui arrive sur V-ENT',
+    'roadmap.what': 'Les modules que V-ENT ouvre ensuite, dans l’ordre : la boutique, Vermillion City (échanges entre joueurs), l’espace anime et les paris. Ce que chacun fera, et comment être prévenu de son ouverture.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'Ce qu’un abonnement V-ENT premium active pour un organisateur.',
     'premium.includes': 'Comprend {features}.',
@@ -381,6 +385,8 @@ const COPY = {
     'shortLink.title': 'Ligação curta',
     'shortLink.description': 'A abrir uma ligação da V-ENT.',
 
+    'roadmap.title': 'O que vem aí na V-ENT',
+    'roadmap.what': 'Os módulos que a V-ENT abre a seguir, por ordem: a loja, Vermillion City (compra e venda entre jogadores), o espaço anime e as apostas. O que cada um fará, e como ser avisado quando abrir.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'O que uma subscrição V-ENT premium ativa para um organizador.',
     'premium.includes': 'Inclui {features}.',

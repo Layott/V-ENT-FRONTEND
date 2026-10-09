@@ -191,9 +191,7 @@ const MarketplaceInner = () => {
   if (open === null) return null;
   if (!open) {
     return <ComingSoon
-      phase="Phase 4"
-      title={tt('mk.title', 'Vermillion City')}
-      blurb={tt('mk.comingSoon', 'Player to player listings, offers and escrow are built and not open yet.')}
+      module="marketplace"
       alternatives={[
         { href: '/wallets', label: tt('ui.wallet.b608', 'Wallet') },
         { href: '/tournaments', label: tt('ui.tournaments.fee2', 'Tournaments') },

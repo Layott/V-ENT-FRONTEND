@@ -98,6 +98,136 @@
 
 .linkPill:focus-visible { outline: 2px solid var(--v-ent-red); outline-offset: 2px; }
 
+/* A module's roadmap (inbox 421): wider, read left to right, the features as a
+   numbered list in plain text (no tick bullets), real screenshots, one action. */
+.cardPlan {
+  max-width: 760px;
+  text-align: left;
+}
+
+.cardPlan .blurb {
+  margin: 0;
+  max-width: none;
+}
+
+.planTitle {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+  color: #fff;
+}
+
+.planList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: plan;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.planList li {
+  counter-increment: plan;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.25rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.planList li::before {
+  content: counter(plan);
+  color: var(--v-ent-red);
+  font-weight: var(--fw-semi-bold);
+}
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+.shot {
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #2a2b30;
+  cursor: zoom-in;
+  aspect-ratio: 16 / 10;
+}
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.shot:focus-visible,
+.notifyButton:focus-visible,
+.textButton:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.notify {
+  margin-top: 1.75rem;
+}
+
+.notifyButton {
+  min-height: 48px;
+  padding: 0 1.4rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--v-ent-red);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+.notifyButton:hover:not(:disabled) {
+  background: var(--v-ent-light-red);
+}
+
+.notifyDone {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.textButton {
+  min-height: 44px;
+  padding: 0 0.4rem;
+  border: none;
+  background: none;
+  color: var(--v-ent-red);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.problem {
+  margin: 0.6rem 0 0;
+  color: var(--v-ent-red);
+  font-size: 0.85rem;
+}
+
+.roadmapLink {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+}
+
+.roadmapLink a {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 @media only screen and (max-width: 767px) {
   .title { font-size: var(--mobile-h3-size); }
   .blurb { font-size: var(--fs-p-size-mobile); }

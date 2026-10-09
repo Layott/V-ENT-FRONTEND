@@ -45,7 +45,11 @@ function audit(raw) {
   if (!/development/.test(clause)) {
     problems.push('distDir does not distinguish development from production');
   }
-  if (!/process\.env\.PORT/.test(clause)) {
+  // A helper that reads the port counts as reading it: the parent `next dev`
+  // process sees no PORT, so the config also reads `-p` from the command
+  // line (9 October 2026). It must still read PORT itself.
+  const helperReadsPort = /function\s+devPort\s*\([^)]*\)\s*\{[\s\S]{0,400}?process\.env\.PORT/.test(text);
+  if (!/process\.env\.PORT/.test(clause) && !(helperReadsPort && /devPort\(\)/.test(clause))) {
     problems.push('the dev distDir does not include the port, so two dev servers '
       + 'on this checkout will overwrite each other');
   }
@@ -75,6 +79,20 @@ function selfTest() {
       // becomes \r\r\n and the fixture tests something nothing produces.
       text: fs.readFileSync(CONFIG, 'utf8').replace(/\r\n/g, '\n').replace(/\n/g, '\r\n'),
       expect: 0,
+    },
+    {
+      name: 'a dev dir from a devPort() helper that reads PORT passes',
+      text: "function devPort() {\n  if (process.env.PORT) return process.env.PORT;\n  return '';\n}\n"
+        + "  distDir: process.env.NODE_ENV === 'development'\n"
+        + "    ? (devPort() ? `.next-dev-${devPort()}` : '.next-dev')\n    : '.next',\n",
+      expect: 0,
+    },
+    {
+      name: 'a devPort() helper that never reads PORT is caught',
+      text: "function devPort() {\n  return '';\n}\n"
+        + "  distDir: process.env.NODE_ENV === 'development'\n"
+        + "    ? (devPort() ? `.next-dev-${devPort()}` : '.next-dev')\n    : '.next',\n",
+      expect: 1,
     },
     {
       name: 'a port-scoped dev dir passes',

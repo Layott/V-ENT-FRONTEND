@@ -88,11 +88,7 @@ const AnimeHub = () => {
 
   if (open === false) {
     return <ComingSoon
-      phase="Phase 5"
-      title={tt('anime.comingTitle', 'Anime hub')}
-      blurb={tt('anime.comingBlurb',
-        'Manga reading, co-reading rooms and character battles are built and '
-        + 'not open yet. Nothing here is live.')}
+      module="anime"
       alternatives={[
         { href: '/tournaments', label: tt('nav.tournaments', 'Tournaments') },
         { href: '/events', label: tt('nav.events', 'Events') },
