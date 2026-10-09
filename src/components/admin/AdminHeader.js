@@ -11,16 +11,13 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
-const BREADCRUMBS = {
-  '/admin': 'Dashboard',
-  '/admin/users': 'Users',
-  '/admin/disputes': 'Disputes',
-  '/admin/tournaments': 'Tournaments',
-  '/admin/kyc': 'KYC Review',
-  '/admin/payouts': 'Payouts',
-  '/admin/audit-log': 'Audit Log',
-  '/admin/settings': 'Settings'
-};
+import { NAV } from '@/components/admin/AdminNav';
+
+// The page's name in the header, from the nav's own list. This used to be a
+// second list of eight addresses beside the nav's twenty, so every section
+// added after it (games, events, finance, records...) was called "Dashboard"
+// in its own header (found on the emulator, 10 October 2026).
+const BREADCRUMBS = Object.fromEntries(NAV.flatMap((group) => group.items.map((item) => [item.href, item.label])));
 export default function AdminHeader({
   pending = {},
   admin,

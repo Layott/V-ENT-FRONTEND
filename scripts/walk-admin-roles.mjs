@@ -32,6 +32,29 @@ const arg = (name, fallback) => {
 };
 const BASE = arg('--base', 'http://localhost:3005');
 const ONLY = arg('--role', '');
+// --width 390 walks the console as a phone: a touch viewport, and every page
+// opened is measured for sideways scroll and for targets under 44px (links
+// inside a sentence are typography and not counted).
+const WIDTH = Number(arg('--width', '0')) || 0;
+
+async function measure(page) {
+  if (!WIDTH) return '';
+  const m = await page.evaluate(() => {
+    const small = [...document.querySelectorAll('main button, main a[href], main input, main select')]
+      .filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44)
+          && !(e.tagName === 'A' && getComputedStyle(e).display === 'inline');
+      })
+      .map((e) => `${(e.textContent || e.placeholder || e.getAttribute('aria-label') || '').trim().slice(0, 18)} ${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`);
+    return { sw: document.documentElement.scrollWidth, iw: window.innerWidth, small };
+  });
+  const bad = m.sw > m.iw + 1 || m.small.length;
+  if (bad) failures += 1;
+  return ` [${m.iw}px: scroll ${m.sw}${m.small.length ? `, small ${m.small.slice(0, 4).join('; ')}` : ''}]`;
+}
+
+let failures = 0;
 
 const SECRET = process.env.WALK_TOTP_SECRET || 'IB7TWGVGKHVNQA5BWCJ5FNGWPYRZY6UG';
 const PASSWORD = process.env.WALK_PASSWORD || 'VentDemo2026!';
@@ -61,20 +84,34 @@ const ROLES = [
     user: 'demo_temi',
     role: 'super admin',
     allowed: ['/admin', '/admin/users', '/admin/finance', '/admin/content',
-              '/admin/admins', '/admin/organizations'],
+              '/admin/admins', '/admin/organizations', '/admin/records', '/admin/records/bin'],
     refused: [],
+    // The records (inbox 420): what each role is offered on a record, a money
+    // record and in the bin. `first` opens the first record of that kind.
+    controls: [
+      { path: '/admin/records/vent_auth.games/1', must: ['Change', 'Put in the bin'] },
+      { first: 'vent_auth.userwallet', must: ['Correct with a new entry'], mustNot: ['Change', 'Put in the bin'] },
+      { path: '/admin/records/bin', must: ['Restore', 'Throw away now'] },
+    ],
   },
   {
     user: 'fin_walk',
     role: 'financial manager',
-    allowed: ['/admin', '/admin/finance'],
+    allowed: ['/admin', '/admin/finance', '/admin/records', '/admin/records/bin'],
     refused: ['/admin/admins'],
+    // May look at records, may not change them: a Financial Manager holds the
+    // money permission and not Edit records, so a correction is refused too.
+    controls: [
+      { path: '/admin/records/vent_auth.games/1', mustNot: ['Change', 'Put in the bin', 'Undo this change'] },
+      { first: 'vent_auth.userwallet', mustNot: ['Correct with a new entry', 'Change', 'Put in the bin'] },
+      { path: '/admin/records/bin', mustNot: ['Restore', 'Throw away now'] },
+    ],
   },
   {
     user: 'mod_only',
     role: 'moderator',
     allowed: ['/admin', '/admin/content'],
-    refused: ['/admin/finance', '/admin/admins'],
+    refused: ['/admin/finance', '/admin/admins', '/admin/records'],
   },
 ];
 
@@ -141,12 +178,14 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--disable-dev-shm-usage'],
 });
 
-let failures = 0;
 
 for (const who of ROLES) {
   if (ONLY && who.user !== ONLY) continue;
   const context = await browser.createBrowserContext();
   const page = await context.newPage();
+  if (WIDTH) {
+    await page.setViewport({ width: WIDTH, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  }
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e).slice(0, 140)));
 
@@ -174,7 +213,7 @@ for (const who of ROLES) {
       const ok = seen.url.startsWith('/admin') && seen.text > 300 && !seen.refused;
       if (!ok) failures += 1;
       console.log(`  ${ok ? 'ok  ' : 'FAIL'} sees ${path}  (${seen.text} chars, `
-        + `${seen.buttons} live controls, at ${seen.url})`);
+        + `${seen.buttons} live controls, at ${seen.url})${await measure(page)}`);
     }
 
     for (const path of who.refused) {
@@ -196,6 +235,34 @@ for (const who of ROLES) {
       console.log(`  ${ok ? 'ok  ' : 'FAIL'} refused ${path}  (at ${seen.url}`
         + `${seen.refused ? ', says so' : ', SILENTLY'}`
         + `, ${seen.live} live control(s))`);
+    }
+
+    for (const c of who.controls || []) {
+      let path = c.path;
+      if (c.first) {
+        await page.goto(`${BASE}/admin/records/${c.first}`, { waitUntil: 'networkidle2', timeout: 45000 });
+        await new Promise((r) => setTimeout(r, 2500));
+        path = await page.evaluate((kind) => {
+          const a = [...document.querySelectorAll('main a')].find((x) => (x.getAttribute('href') || '').includes(`/admin/records/${kind}/`));
+          return a ? new URL(a.href).pathname : null;
+        }, c.first);
+        if (!path) {
+          failures += 1;
+          console.log(`  FAIL  no ${c.first} record to open`);
+          continue;
+        }
+      }
+      await page.goto(BASE + path, { waitUntil: 'networkidle2', timeout: 45000 });
+      await new Promise((r) => setTimeout(r, 2500));
+      const live = await page.evaluate(() => [...document.querySelectorAll('main button')]
+        .filter((b) => !b.disabled).map((b) => (b.textContent || '').trim()));
+      const missing = (c.must || []).filter((l) => !live.includes(l));
+      const extra = (c.mustNot || []).filter((l) => live.includes(l));
+      const ok = !missing.length && !extra.length;
+      if (!ok) failures += 1;
+      console.log(`  ${ok ? 'ok  ' : 'FAIL'} controls on ${path}`
+        + `${missing.length ? `, missing ${missing.join(', ')}` : ''}`
+        + `${extra.length ? `, offered ${extra.join(', ')}` : ''}${await measure(page)}`);
     }
 
     if (errors.length) {
