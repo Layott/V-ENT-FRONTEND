@@ -6,7 +6,7 @@ import ComingSoon from '@/components/coming-soon/ComingSoon';
 // which was indistinguishable from real data. The designed layout is preserved
 // in docs/wip/ and returns when the API lands.
 const Page = () => {
-  return <ComingSoon phase="Phase 3" title="V-ENT Shop" blurb="The official store, with merch, gear and VENT COIN bundles, is still being built." alternatives={[{
+  return <ComingSoon module="shop" alternatives={[{
     href: "/wallets",
     label: "Wallet"
   }]} />;

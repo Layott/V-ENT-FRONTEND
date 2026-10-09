@@ -100,6 +100,9 @@ export default async function sitemap() {
     // /pricing is: the person deciding whether to pay is the whole audience,
     // and a price behind a sign-in wall reaches none of them.
     entry('/premium', { changeFrequency: 'weekly', priority: 0.6 }),
+    // What opens next, in order (inbox 421): the answer to "what is V-ENT
+    // building", which people and models ask by name.
+    entry('/roadmap', { changeFrequency: 'monthly', priority: 0.5 }),
     entry('/feedback', { changeFrequency: 'monthly', priority: 0.3 }),
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.

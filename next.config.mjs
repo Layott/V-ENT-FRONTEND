@@ -19,6 +19,18 @@ const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 //   scripts  this origin; 'unsafe-inline' because Next writes its bootstrap
 //            inline, 'unsafe-eval' only in development for fast refresh
 const isDev = process.env.NODE_ENV === 'development';
+
+// The dev server's port: PORT when set, otherwise `-p` / `--port` from the
+// command line (the parent `next dev` process reads this file before PORT is
+// set for the server it starts).
+function devPort() {
+  if (process.env.PORT) return process.env.PORT;
+  const argv = process.argv;
+  const at = argv.findIndex((a) => a === '-p' || a === '--port');
+  if (at > -1 && argv[at + 1]) return argv[at + 1];
+  const joined = argv.find((a) => a.startsWith('--port='));
+  return joined ? joined.slice('--port='.length) : '';
+}
 const apiOrigin = (() => {
   try {
     return new URL(process.env.NEXT_PUBLIC_API_URL || '').origin;
@@ -93,11 +105,13 @@ const nextConfig = {
   // browser then says is "Cannot find module './vendor-chunks/next-auth@...'",
   // which names webpack and next-auth and points at neither. That cost three
   // restarts on 8 September while several people worked in this repo at once.
-  // `next dev -p 3001` puts 3001 in PORT before the config is read, so this is
-  // enough to keep them apart; with no PORT it falls back to the old name, so
-  // a single server behaves exactly as before.
+  // `next dev -p 3001` puts 3001 in PORT for the server it starts, but the
+  // parent process reads this file first, with no PORT yet, and wrote its
+  // `trace` into a bare `.next-dev` that the stale-build check then failed
+  // every commit on (9 October 2026). So the port is read from the command
+  // line as well; with neither it falls back to the old name.
   distDir: process.env.NODE_ENV === 'development'
-    ? (process.env.PORT ? `.next-dev-${process.env.PORT}` : '.next-dev')
+    ? (devPort() ? `.next-dev-${devPort()}` : '.next-dev')
     : '.next',
   // next-auth's browser bundle reads process.env.NEXTAUTH_URL to work out its
   // own origin. Next only inlines NEXT_PUBLIC_* into client code, so in the
