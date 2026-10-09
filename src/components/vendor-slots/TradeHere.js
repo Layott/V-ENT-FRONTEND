@@ -28,6 +28,7 @@ import { formatNumber } from '@/lib/datetime';
 import PayShortfall from '@/components/pay/PayShortfall';
 import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
+import SlotPictures, { VenueLayoutView } from './SlotPictures';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import styles from './trade-here.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
@@ -36,6 +37,7 @@ const TradeHere = ({ eventRef, eventName }) => {
   const tt = useT();
   const viewer = useViewer();
   const [slots, setSlots] = useState([]);
+  const [layout, setLayout] = useState(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(null);      // the slot being bought
   const [accepted, setAccepted] = useState(false);
@@ -52,7 +54,10 @@ const TradeHere = ({ eventRef, eventName }) => {
         `${process.env.NEXT_PUBLIC_API_URL}/event/${eventRef}/slots/`,
         { headers: viewer.token ? { Authorization: `Bearer ${viewer.token}` } : {} });
       const body = await res.json().catch(() => null);
-      if (body?.status === 'success') setSlots(body.data.slots || []);
+      if (body?.status === 'success') {
+        setSlots(body.data.slots || []);
+        setLayout(body.data.venue_layout || null);
+      }
     } catch {
       // A section that cannot load must not take the event page with it.
     } finally {
@@ -131,6 +136,8 @@ const TradeHere = ({ eventRef, eventName }) => {
         </Link>
       </p>}
 
+      <VenueLayoutView url={layout} eventName={eventName} />
+
       <ul className={styles.list}>
         {slots.map((s) => (
           <li key={s.id} className={styles.card}>
@@ -140,6 +147,7 @@ const TradeHere = ({ eventRef, eventName }) => {
                 {tt('slots.soldOut', 'Sold out')}
               </span>}
             </div>
+            <SlotPictures pictures={s.pictures} name={s.name} />
             <p className={styles.price}>
               {s.price_vc > 0
                 ? `${formatNumber(s.price_vc)} VC`

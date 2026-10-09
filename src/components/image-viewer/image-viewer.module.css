@@ -1,0 +1,92 @@
+/* A picture shown large over the page. A dark scrim, the picture, and three
+   filled round controls; no strokes, no glow. */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(10, 10, 12, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px;
+}
+
+/* The dialog holds focus so keys work; it is not a control, so no ring. */
+.backdrop:focus {
+  outline: none;
+}
+
+.image {
+  max-width: min(92vw, 1200px);
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.round {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #2a2b30;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.round:hover {
+  background: #3a3b41;
+}
+
+.round:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}
+
+.close {
+  top: 14px;
+  right: 14px;
+}
+
+.prev {
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.next {
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.count {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  /* It spans the width under the buttons; a tap goes through it. */
+  pointer-events: none;
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 720px) {
+  .prev,
+  .next {
+    top: auto;
+    bottom: 10px;
+    transform: none;
+  }
+
+  .count {
+    bottom: 22px;
+  }
+}

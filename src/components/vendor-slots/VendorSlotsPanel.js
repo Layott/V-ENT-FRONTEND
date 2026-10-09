@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-slots.module.css';
+import SlotPicturesEditor, { VenueLayoutEditor } from './SlotPicturesEditor';
 import UserPicker from '@/components/user-picker/UserPicker';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
@@ -40,6 +41,7 @@ const EMPTY = {
 const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
   const tt = useT();
   const [slots, setSlots] = useState([]);
+  const [layout, setLayout] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [draft, setDraft] = useState(EMPTY);
@@ -103,7 +105,10 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
     setError(null);
     try {
       const out = await api('');
-      if (out?.status === 'success') setSlots(out.data.slots || []);
+      if (out?.status === 'success') {
+        setSlots(out.data.slots || []);
+        setLayout(out.data.venue_layout || null);
+      }
       else setError(apiMessage(tt, out, 'api.somethingWentWrong', 'Something went wrong.'));
     } catch (err) {
       setError(apiMessage(tt, err, 'api.somethingWentWrong', 'Something went wrong.'));
@@ -197,6 +202,9 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
 
       {error && <p className={styles.error}>{error}</p>}
 
+      <VenueLayoutEditor eventRef={eventRef} url={layout} token={token}
+                         onChanged={setLayout} onNotice={onNotice} />
+
       {slots.length === 0
         ? <p className={styles.muted}>
             {tt('slots.none', 'No pitches for sale yet. Add one below and it appears on '
@@ -225,6 +233,8 @@ const VendorSlotsPanel = ({ eventRef, token, onNotice }) => {
                     : ` · ${tt('slots.instant', 'live straight away')}`}
                 </p>
                 {s.description && <p className={styles.rowDesc}>{s.description}</p>}
+                <SlotPicturesEditor eventRef={eventRef} slot={s} token={token} onNotice={onNotice}
+                                    onChanged={(next) => setSlots((all) => all.map((x) => (x.id === next.id ? next : x)))} />
                 <div className={styles.rowActions}>
                   <button type="button" className={styles.ghost} onClick={() => beginEdit(s)}>
                     {tt('ui.edit', 'Edit')}
