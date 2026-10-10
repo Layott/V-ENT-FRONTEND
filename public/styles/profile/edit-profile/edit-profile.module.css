@@ -148,8 +148,8 @@
 }
 @media only screen and (min-width: 900px) {
   .rightPaneEditProfileContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     flex-direction: row;
   }
   .profileEditDashboard {
@@ -159,8 +159,8 @@
     display: flex;
   }
   .customHeader {
-    margin-left: 180px;
-    width: calc(100% - 180px);
+    margin-left: var(--shell-offset);
+    width: calc(100% - var(--shell-offset));
   }
 }
 @media only screen and (min-width: 1024px) {

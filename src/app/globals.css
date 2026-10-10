@@ -38,6 +38,17 @@
   --fw-light: 300;
   --fw-extra-light: 200;
   --fw-thin: 100;
+  /* How far page content sits from the left edge to clear the sidebar. 0 under 1024px, where
+     phones and tablets get the phone shell (MobileHeader and BottomMenu, the sidebar as the
+     drawer), 250px from 1024px up. Inbox 414, 8 October 2026. Every page offsets with this
+     rather than its own number: 115 stylesheets once hard-coded a 180px tablet sidebar. */
+  --shell-offset: 0px;
+}
+
+@media only screen and (min-width: 1024px) {
+  :root {
+    --shell-offset: 250px;
+  }
 }
 
 input:-webkit-autofill,
@@ -165,17 +176,22 @@ html {
 }
 
 /* 37px is a comfortable button under a mouse and a small one under a thumb.
-   Most of this platform is read on a phone, so on a phone every button built
-   from the shared class is at least 44px, which is the smallest thing a thumb
+   Most of this platform is read on a phone, so on a phone or a tablet (the
+   touch shell runs to 1023px, inbox 414) every button built from the shared class is at least 44px, which is the smallest thing a thumb
    hits reliably. Measured, not assumed: the emulator reported the pair on the
-   tournaments page at 38px tall. */
-@media (max-width: 768px) {
+   tournaments page at 38px tall. And on any touch screen, whatever its width: an iPad held
+   sideways is 1024px and up and gets the sidebar, whose links measured 32px and the bell 22px
+   on a tablet walk (inbox 414). The floor follows the finger, not only the width. */
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
   .btn {
     height: auto;
     min-height: 44px;
   }
 }
 
+/* The floor matches (hover: none) as well as a coarse pointer: an Android tablet in
+   the emulator reports pointer: fine with hover: none and five touch points, so a
+   coarse-only floor left its sidebar links at 33px (measured 10 October 2026). */
 /* And every other control on a phone, not only the shared class. The full
    walk on 30 September 2026 measured controls with no height of their own
    at 16 to 42px on most pages: the settings tabs (35), the community tabs
@@ -184,11 +200,27 @@ html {
    so the floor is set here once. min-height does nothing to an inline link
    inside a sentence, so prose keeps its line height; it reaches exactly the
    links laid out as blocks and boxes, which are the ones pressed like buttons. */
-@media (max-width: 768px) {
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
   button,
   [role="button"],
   select,
   a[class] {
+    min-height: 44px;
+  }
+  /* And wide enough for a thumb: the tablet walk (inbox 414) measured page
+     numbers at 30px wide and the "All" chip at 40, full height and too
+     narrow. A word or a glyph keeps its size; the box around it is 44. */
+  button,
+  [role="button"] {
+    min-width: 44px;
+  }
+  /* "Back to list", "← My Tournaments": a link standing on its own line, laid
+     out inline, so min-height never reached it (14 to 16px tall on a tablet
+     walk). Matched by the class name in use, case-insensitively, like the
+     close buttons above. */
+  a[class*="backlink" i] {
+    display: inline-flex;
+    align-items: center;
     min-height: 44px;
   }
 }
@@ -331,6 +363,16 @@ body {
      rendered nothing. */
   background-color: #131316;
   color: #ffffff;
+}
+
+/* The bottom menu (70px, fixed) is drawn at every width under 1024px, so the room for it is
+   made once, here, rather than page by page. Pages that pad for it themselves get a little
+   extra space; pages that forgot (or whose padding never took, like /rankings, whose last
+   row sat 63px under the menu on a phone) are covered. Inbox 414, 9 October 2026. */
+@media only screen and (max-width: 1023px) {
+  body {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* The first row of a form field: its label text, any "(optional)" marker, and

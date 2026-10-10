@@ -162,13 +162,13 @@
 .dropdownDanger { color: var(--v-ent-red);  background-color: rgba(255, 255, 255, 0.14); }
 
 /* Responsive */
-@media only screen and (min-width: 768px) and (max-width: 1023px) {
-  .header { left: 180px; }
-  .searchInput { width: 130px; }
-}
-@media only screen and (max-width: 767px) {
+/* Under 1024px the nav is a drawer behind the menu button (inbox 414); a tablet keeps the
+   search, a phone has no room for it. */
+@media only screen and (max-width: 1023px) {
   .header { left: 0; padding: 0 1rem; }
   .hamburger { display: flex; }
+}
+@media only screen and (max-width: 767px) {
   .search { display: none; }
   .adminInfo { display: none; }
 }
@@ -205,6 +205,6 @@
 /* A thumb is bigger than 32px. The bell and the menu are the two controls a
  * phone user reaches for first in this header, so they are 44px there. The
  * desktop size is unchanged. */
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 1023px), (pointer: coarse), (hover: none) {
   .iconBtn { width: 44px; height: 44px; }
 }

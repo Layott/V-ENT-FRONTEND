@@ -245,7 +245,8 @@
     width: 80%;
   }
 }
-@media only screen and (min-width: 768px) {
+/* The drawer belongs to the phone shell, which runs to 1023px (inbox 414). */
+@media only screen and (min-width: 1024px) {
   .mobileSidebar {
     display: none;
   }

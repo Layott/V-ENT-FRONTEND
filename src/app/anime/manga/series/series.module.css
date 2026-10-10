@@ -8,7 +8,7 @@
   min-height: calc(100vh - 60px);
   padding: 1.25rem 1rem 6rem;
 }
-@media (min-width: 768px) { .rightPaneContainer { width: calc(100% - 180px); margin-left: 180px; padding: 1.5rem 1.5rem 3rem; } }
+@media (min-width: 768px) { .rightPaneContainer { width: calc(100% - var(--shell-offset)); margin-left: var(--shell-offset); padding: 1.5rem 1.5rem 3rem; } }
 @media (min-width: 1024px) { .rightPaneContainer { width: calc(100% - 250px); margin-left: 250px; padding: 1.5rem 2rem 3rem; } }
 @media (min-width: 1440px) { .rightPaneContainer { padding: 1.75rem 2rem 3rem; } }
 

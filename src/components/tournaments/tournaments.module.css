@@ -120,8 +120,8 @@
 
 @media only screen and (min-width: 768px) {
   .tournamentsComponentContainer {
-    margin-left: 180px;
-    width: calc(100% - 180px);
+    margin-left: var(--shell-offset);
+    width: calc(100% - var(--shell-offset));
   }
   .searchBar {
     min-width: 400px;
