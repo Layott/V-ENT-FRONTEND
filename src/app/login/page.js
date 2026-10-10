@@ -313,7 +313,7 @@ const Login = () => {
               {errors.password && <p className={generalStyles.errorMessage}>{errors.password}</p>}
             </div>
 
-            <Link href={"/forgot-password"}>{tt("ui.forgot.password.4c29", "Forgot password?")}</Link>
+            <Link href={"/forgot-password"} className={generalStyles.forgotLink}>{tt("ui.forgot.password.4c29", "Forgot password?")}</Link>
 
             <button className={`btn redBTN ${generalStyles.formBTN}`} disabled={loading}>
               {loading ? <CircularProgress size={24} sx={{
