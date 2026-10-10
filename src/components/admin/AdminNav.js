@@ -43,39 +43,47 @@ const ROLE_LABELS = {
 // typing the address.
 export const NAV = [{
   section: 'Overview',
+  sk: 'adminNav.section.overview',
   items: [{
     label: 'Dashboard',
+    k: 'adminNav.dashboard',
     href: '/admin',
     icon: MdOutlineDashboard,
     perms: null
   }]
 }, {
   section: 'Management',
+  sk: 'adminNav.section.management',
   items: [
   // perms use the REAL ROLE_PERMISSIONS keys the BE emits in admin.permissions.
   {
     label: 'Users',
+    k: 'adminNav.users',
     href: '/admin/users',
     icon: LuUsers,
     perms: ['view_users'],
     badge: 'users'
   }, {
     label: 'Events',
+    k: 'adminNav.events',
     href: '/admin/events',
     icon: LuCalendar,
     perms: ['manage_events']
   }, {
     label: 'Games',
+    k: 'adminNav.games',
     href: '/admin/games',
     icon: LuGamepad2,
     perms: ['manage_games']
   }, {
     label: 'Tournaments',
+    k: 'adminNav.tournaments',
     href: '/admin/tournaments',
     icon: RiTrophyLine,
     perms: ['manage_tournaments']
   }, {
     label: 'Disputes',
+    k: 'adminNav.disputes',
     href: '/admin/disputes',
     icon: MdGavel,
     perms: ['resolve_dispute'],
@@ -87,11 +95,13 @@ export const NAV = [{
     // Phase 3. A console section for an unbuilt feature is a screen of
     // controls that do nothing.
     label: 'Organisations',
+    k: 'adminNav.organisations',
     href: '/admin/organizations',
     icon: LuBuilding,
     perms: ['view_organizations']
   }, {
     label: 'Communities',
+    k: 'adminNav.communities',
     href: '/admin/communities',
     icon: LuMessagesSquare,
     perms: ['manage_communities']
@@ -100,6 +110,7 @@ export const NAV = [{
     // reports still waiting, because a queue with no number on it is a queue
     // people stop opening.
     label: 'Reports and content',
+    k: 'adminNav.reportsAndContent',
     href: '/admin/content',
     icon: LuFlag,
     perms: ['moderate_content'],
@@ -107,18 +118,22 @@ export const NAV = [{
   }]
 }, {
   section: 'Finance',
+  sk: 'adminNav.section.finance',
   items: [{
     label: 'Money',
+    k: 'adminNav.money',
     href: '/admin/finance',
     icon: LuReceipt,
     perms: ['view_transactions']
   }, {
     label: 'Rates',
+    k: 'adminNav.rates',
     href: '/admin/rates',
     icon: LuCoins,
     perms: ['manage_rates']
   }, {
     label: 'Payouts',
+    k: 'adminNav.payouts',
     href: '/admin/payouts',
     icon: IoWalletOutline,
     perms: ['list_payouts'],
@@ -127,6 +142,7 @@ export const NAV = [{
     // A finished page that was in no navigation list anywhere, so the only way
     // to reach it was to type the address.
     label: 'Identity checks',
+    k: 'adminNav.identityChecks',
     href: '/admin/kyc',
     icon: LuIdCard,
     perms: ['list_kyc'],
@@ -134,23 +150,27 @@ export const NAV = [{
   }]
 }, {
   section: 'Partners',
+  sk: 'adminNav.section.partners',
   items: [
   // Partner access is a super-admin decision: it hands somebody outside the
   // platform a key to read our data, and SSO on top of that hands them
   // people's identities.
   {
     label: 'Partner access',
+    k: 'adminNav.partnerAccess',
     href: '/admin/partners',
     icon: LuShield,
     perms: ['manage_admins']
   }]
 }, {
   section: 'System',
+  sk: 'adminNav.section.system',
   items: [{
     // Every record on the site, the console as a CMS (inbox 420). Built from
     // the models themselves, so a new feature's records appear here with no
     // work. Changing one needs edit_records on top; the screens ask.
     label: 'Records',
+    k: 'adminNav.records',
     href: '/admin/records',
     icon: LuDatabase,
     perms: ['view_records']
@@ -158,11 +178,13 @@ export const NAV = [{
     // Creating and removing administrators. The one thing the spec gives a
     // Super Admin and withholds from an Admin.
     label: 'Administrators',
+    k: 'adminNav.administrators',
     href: '/admin/admins',
     icon: LuShield,
     perms: ['manage_admins']
   }, {
     label: 'Audit Log',
+    k: 'adminNav.auditLog',
     href: '/admin/audit-log',
     icon: LuFileText,
     perms: ['view_audit_log']
@@ -170,11 +192,13 @@ export const NAV = [{
     // Where people said they were leaving from for an event (inbox 305c).
     // Its own permission: the general admin role does not have it.
     label: 'Location history',
+    k: 'adminNav.locationHistory',
     href: '/admin/location-history',
     icon: LuMapPin,
     perms: ['view_location_history']
   }, {
     label: 'Settings',
+    k: 'adminNav.settings',
     href: '/admin/settings',
     icon: MdOutlineSettings,
     perms: ['manage_settings']
@@ -262,23 +286,25 @@ export default function AdminNav({
         <ul className={styles.navList}>
           {NAV.map(({
           section,
+          sk,
           items
         }) => {
           // Show a section if the admin can see at least one of its items.
           const visibleItems = items.filter(item => canSeeItem(item, permissions));
           if (!visibleItems.length) return null;
           return <li key={section}>
-                <p className={styles.sectionLabel}>{section}</p>
+                <p className={styles.sectionLabel}>{tt(sk, section)}</p>
                 <ul className={styles.sectionList}>
                   {visibleItems.map(({
                 label,
+                k,
                 href,
                 icon: Icon,
                 badge: badgeKey
               }) => <li key={href} className={`${styles.navItem} ${isActive(href) ? styles.activeItem : ''}`}>
                       <Link className={styles.navLink} href={href}>
                         <Icon className={styles.navIcon} />
-                        {label}
+                        {tt(k, label)}
                         {badgeKey && badges[badgeKey] > 0 && <span className={styles.navBadge}>{badges[badgeKey]}</span>}
                       </Link>
                     </li>)}

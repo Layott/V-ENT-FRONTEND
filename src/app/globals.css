@@ -265,6 +265,54 @@ html {
   transform: scale(1.01);
 }
 
+/* One drawn checkbox (10 October 2026). Three pages drew their own with
+   `appearance: none`, and the border sweep left all three blank: the admin
+   user and payout lists showed nothing at all until a row was ticked, and the
+   wizard's "hide location" tick was a faint tint with no mark, because each
+   tick was a border with its colour and style removed. A filled box and a
+   drawn mark need no border. On a phone or a touch screen the box keeps its
+   20px look and takes a 44px press: the padding is part of the target and
+   the fill is clipped to the middle. */
+.ventCheck {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.16);
+  background-clip: content-box;
+  background-origin: content-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.ventCheck:hover:not(:checked) {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.ventCheck:checked {
+  background-color: var(--v-ent-red);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23f4f4f4' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.ventCheck:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
+  .ventCheck {
+    width: 44px;
+    height: 44px;
+    padding: 12px;
+    border-radius: 17px;
+  }
+}
+
 select {
 
   height: 40px;

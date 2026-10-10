@@ -253,7 +253,7 @@ function PayoutsInner() {
                       {statusFilter === 'pending' && <th style={{
                     width: 36
                   }}>
-                          <input type="checkbox" className={styles.checkbox} checked={allPendingSelected} onChange={toggleSelectAll} aria-label={tt("ui.select.all.pending.c335", "Select all pending")} />
+                          <input type="checkbox" className="ventCheck" checked={allPendingSelected} onChange={toggleSelectAll} aria-label={tt("ui.select.all.pending.c335", "Select all pending")} />
                         </th>}
                       <th>{tt("ui.user.9f8a", "User")}</th>
                       <th>{tt("ui.amount.vc.7f67", "Amount VC")}</th>
@@ -268,7 +268,7 @@ function PayoutsInner() {
                   <tbody>
                     {payouts.map(p => <tr key={p.id} className={p.status !== 'pending' ? shared.rowResolved : ''}>
                         {statusFilter === 'pending' && <td>
-                            {p.status === 'pending' && <input type="checkbox" className={styles.checkbox} checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} aria-label={`Select ${p.username}`} />}
+                            {p.status === 'pending' && <input type="checkbox" className="ventCheck" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} aria-label={`Select ${p.username}`} />}
                           </td>}
                         <td>
                           <div className={shared.userCell}>

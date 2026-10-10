@@ -261,7 +261,7 @@ function UsersInner() {
                       <th style={{
                     width: 36
                   }}>
-                        <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} className={styles.checkbox} aria-label={tt("ui.select.all.913a", "Select all")} />
+                        <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} className="ventCheck" aria-label={tt("ui.select.all.913a", "Select all")} />
                       </th>
                       <th>{tt("ui.user.9f8a", "User")}</th>
                       <th className={shared.hideMobile}>{tt("ui.email.84ad", "Email")}</th>
@@ -275,7 +275,7 @@ function UsersInner() {
                   <tbody>
                     {users.map(u => <tr key={u.id}>
                         <td>
-                          <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggleSelect(u.id)} className={styles.checkbox} aria-label={`Select ${u.username}`} />
+                          <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggleSelect(u.id)} className="ventCheck" aria-label={`Select ${u.username}`} />
                         </td>
                         <td>
                           <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={styles.userLink}>

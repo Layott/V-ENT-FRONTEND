@@ -179,7 +179,7 @@ const CreateTournamentType = ({
           </div>
 
           <div className={styles.hideLocationContainer}>
-            <input type="checkbox" className={styles.hideCheckbox} checked={hideLocation} onChange={handleHideLocationChange} />
+            <input type="checkbox" className="ventCheck" checked={hideLocation} onChange={handleHideLocationChange} />
             <label><span className="fieldLabelRow">{tt("ui.hide.location.36ab", "Hide location")} <InfoTip id="hideLocation" /></span></label>
           </div>
 

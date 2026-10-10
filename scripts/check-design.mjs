@@ -56,14 +56,11 @@ const ALLOWED = [
 //: Rules that no comment exemption applies to.
 const NO_COMMENT_PASS = new Set(['em-dash']);
 
+// One finding per line, the most specific rule first. A divider is also a
+// border with a width, and counting it as both made one line two breaches: the
+// self-test said so ("a divider rule: expected 1, got 2") and nothing ran the
+// self-test, so the count was double for weeks (found 10 October 2026).
 const RULES = [
-  {
-    id: 'hairline',
-    why: 'structure built from a 1px stroke. Use a filled surface and space.',
-    // A border with a visible width. `border: none` and `border: 0` are the fix,
-    // not the fault, so they are not matched.
-    test: /(^|[^-\w])border(-(top|right|bottom|left))?\s*:\s*(?!none|0\b|0px)[^;]*\b\d+px\b/i,
-  },
   {
     id: 'divider',
     why: 'a divider line. Use whitespace, or a background step.',
@@ -73,6 +70,13 @@ const RULES = [
     id: 'dashed',
     why: 'a dashed outline. An empty state is a filled surface or plain text.',
     test: /border[^;]*\bdashed\b/i,
+  },
+  {
+    id: 'hairline',
+    why: 'structure built from a 1px stroke. Use a filled surface and space.',
+    // A border with a visible width. `border: none` and `border: 0` are the fix,
+    // not the fault, so they are not matched.
+    test: /(^|[^-\w])border(-(top|right|bottom|left))?\s*:\s*(?!none|0\b|0px)[^;]*\b\d+px\b/i,
   },
   {
     id: 'glow',
@@ -158,9 +162,42 @@ export function findingsIn(source, file = '<source>') {
       if (rule.test.test(line)) {
         out.push({ file, line: i + 1, id: rule.id, why: rule.why,
                    text: line.trim().slice(0, 90) });
+        break;
       }
     }
     if (line.trim() && !line.trim().startsWith('*')) allowHere = '';
+  }
+  out.push(...stripesIn(source, file, lines));
+  return out;
+}
+
+//: A coloured stripe down the left edge of a card or hero, the "accent bar"
+// the vibecoded-look rule bans. It is a whole rule block rather than one
+// line (an absolutely placed element, at the left, a few pixels wide, the
+// full height, with a fill), so the line rules above cannot see it. Found
+// twice on 10 October 2026, on the marketplace hero and the shop hero.
+const STRIPE = {
+  id: 'accent-stripe',
+  why: 'a coloured stripe down the left edge. Emphasis is fill, colour and weight.',
+};
+function stripesIn(source, file, lines) {
+  const out = [];
+  const block = /\{([^{}]*)\}/g;
+  let m;
+  while ((m = block.exec(source))) {
+    const body = m[1];
+    if (!/position:\s*absolute/i.test(body)) continue;
+    if (!/(^|[;\s])left:\s*0(px)?\s*;/i.test(body)) continue;
+    if (!/(^|[;\s])width:\s*[1-8]px\s*;/i.test(body)) continue;
+    if (!/(^|[;\s])height:\s*100%/i.test(body)) continue;
+    if (!/background(-color)?:/i.test(body)) continue;
+    const at = source.slice(0, m.index).split(/\r?\n/).length;
+    // The same written exception as the line rules, on the line above the block.
+    let above = at - 2;
+    while (above >= 0 && !lines[above].trim()) above -= 1;
+    const asked = above >= 0 ? ALLOW_HERE.exec(lines[above]) : null;
+    if (asked && asked[1] === STRIPE.id) continue;
+    out.push({ file, line: at, id: STRIPE.id, why: STRIPE.why, text: lines[at - 1].trim().slice(0, 90) });
   }
   return out;
 }
@@ -193,7 +230,9 @@ const CASES = [
   ['frosted glass', '.panel { backdrop-filter: blur(12px); }', 1],
   ['a banned typeface', "  font-family: 'Inter', sans-serif;", 1],
   ['Clash Grotesk is the house font', "  font-family: 'ClashGrotesk-Variable', sans-serif;", 0],
-  ['an em dash in a comment', '/* one thing - then another */', 1],
+  // Built from the code point: a dash sweep turned the literal here into a
+  // hyphen, and this case then expected a hyphen to fail.
+  ['an em dash in a comment', `/* one thing ${String.fromCharCode(0x2014)} then another */`, 1],
   ['a hyphen is fine', '/* one thing - then another */', 0],
   ['a comment naming a ban is not a ban', '// never use border: 1px solid here', 0],
   ['a loading spinner is the motion the rules require',
@@ -215,6 +254,15 @@ const CASES = [
    '/* design-allow pure-black-or-white: the plate a badge is drawn on.\n'
    + '   A logo drawn for white disappears on a dark row. */\n'
    + '  background: #fff;', 0],
+  ['a coloured stripe down the left of a hero',
+   '.heroAccent {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 4px;\n'
+   + '  height: 100%;\n  background-color: var(--v-ent-red);\n}', 1],
+  ['a checkbox tick is not a stripe',
+   '.box:checked::after {\n  position: absolute;\n  left: 3px;\n  width: 4px;\n'
+   + '  height: 8px;\n  background-color: red;\n}', 0],
+  ['a bar along the top is not a left stripe',
+   '.bar {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  height: 4px;\n'
+   + '  background: red;\n}', 0],
   ['and it still stops at the declaration it was written for',
    '/* design-allow pure-black-or-white: the plate a badge is drawn on.\n'
    + '   A logo drawn for white disappears on a dark row. */\n'

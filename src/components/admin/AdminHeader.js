@@ -17,7 +17,7 @@ import { NAV } from '@/components/admin/AdminNav';
 // second list of eight addresses beside the nav's twenty, so every section
 // added after it (games, events, finance, records...) was called "Dashboard"
 // in its own header (found on the emulator, 10 October 2026).
-const BREADCRUMBS = Object.fromEntries(NAV.flatMap((group) => group.items.map((item) => [item.href, item.label])));
+const BREADCRUMBS = Object.fromEntries(NAV.flatMap((group) => group.items.map((item) => [item.href, item])));
 export default function AdminHeader({
   pending = {},
   admin,
@@ -51,10 +51,10 @@ export default function AdminHeader({
 
   // Determine breadcrumb
   const breadcrumb = (() => {
-    for (const [prefix, label] of Object.entries(BREADCRUMBS).sort((a, b) => b[0].length - a[0].length)) {
-      if (pathname === prefix || pathname.startsWith(prefix + '/')) return label;
+    for (const [prefix, item] of Object.entries(BREADCRUMBS).sort((a, b) => b[0].length - a[0].length)) {
+      if (pathname === prefix || pathname.startsWith(prefix + '/')) return tt(item.k, item.label);
     }
-    return 'Admin';
+    return tt('adminNav.admin', 'Admin');
   })();
   return <header className={styles.header}>
       <div className={styles.left}>

@@ -210,7 +210,6 @@ const MarketplaceInner = () => {
 
         <div className={styles.rightPaneContainer}>
           <section className={styles.hero}>
-            <span className={styles.heroAccent} />
             <div className={styles.heroTop}>
               <div className={styles.heroText}>
                 <h1 className={styles.heroTitle}>
