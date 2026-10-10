@@ -1454,12 +1454,18 @@ export default function StudioElement(props) {
   }, []);
 
   const read = useCallback(async () => {
+    // An address with no token (one part, or none) has nothing to read: asking
+    // for /studio//feed/ every second only fills the log with 404s (found on
+    // the live signed-out walk, 10 October 2026).
+    if (!token) return;
     if (inFlight.current || Date.now() < pausedUntil.current) return;
     inFlight.current = true;
     try {
       const res = await fetch(`${API}/studio/${encodeURIComponent(token)}/feed/`,
         { cache: 'no-store' });
-      if (res.status === 429 || res.status >= 500) {
+      // A wrong or revoked token answers 404 every time; it backs off like a
+      // busy server rather than asking twice a second for ever.
+      if (res.status === 404 || res.status === 429 || res.status >= 500) {
         failures.current += 1;
         pausedUntil.current = Date.now()
           + Math.min(60000, mode.every * (2 ** failures.current));
