@@ -26,36 +26,6 @@
   font-size: 0.9rem;
 }
 
-.hideCheckbox {
-  height: 16px;
-  width: 16px;
-  background-color: #28292D;
-  border-radius: 0.25rem;
-
-  appearance: none;
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  transition: background-color 0.3;
-}
-
-.hideCheckbox:checked {
-  background-color: rgba(237, 28, 36, 0.14);
-}
-
-.hideCheckbox:checked::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 12px;
-  background-color: rgba(237, 28, 36, 0.14);
-  border-width: 0 2.5px 2.5px 0;
-  transform: translate(-50%, -60%) rotate(45deg);
-  transition: transform 0.3s ease-in-out;
-}
-
 .outerQuestionContainer {
   display: flex;
   flex-direction: column;

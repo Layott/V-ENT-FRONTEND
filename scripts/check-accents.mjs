@@ -97,6 +97,22 @@ export const BARE = {
     lemplacement: 'l’emplacement', lorganisateur: 'l’organisateur', lacheteur: 'l’acheteur',
     sagit: 's’agit', quil: 'qu’il', quils: 'qu’ils', quelle: null,
     defis: 'défis',
+    // Found 10 October 2026 (inbox 422): the event numbers funnel and the
+    // marketplace, admin and wallet blocks, written in plain ASCII. Words here
+    // are never correct bare; the ones that are also a present tense are in
+    // AMBIGUOUS below.
+    achete: 'acheté', achetes: 'achetés', etats: 'états', ecrans: 'écrans',
+    elargissez: 'élargissez', elargir: 'élargir', echanges: 'échanges', reserve: 'réservé',
+    reserves: 'réservés', recue: 'reçue', recues: 'reçues', etoiles: 'étoiles',
+    etiquette: 'étiquette', definirez: 'définirez', repercuter: 'répercuter', decide: 'décide',
+    declare: 'déclaré', debloque: 'débloqué', conteste: 'contesté', configure: 'configuré',
+    lie: 'lié', lies: 'liés', utilise: 'utilisé', utilises: 'utilisés', trouves: 'trouvés',
+    retire: 'retiré', retires: 'retirés', encaisses: 'encaissés', ajoutes: 'ajoutés',
+    anticipe: 'anticipé', effaces: 'effacés', verrouille: 'verrouillé', renseigne: 'renseigné',
+    bloque: 'bloqué', invite: 'invité', invites: 'invités', lances: 'lancés',
+    confirmes: 'confirmés', gagne: 'gagné', gagnes: 'gagnés',
+    arrives: 'arrivés', regarde: 'regardé', amenes: 'amenés', copie: 'copié', donne: 'donné',
+    tire: 'tiré', organise: 'organisé', publies: 'publiés', connecte: 'connecté',
     mois: null, a: null,
   },
   pt: {
@@ -147,6 +163,12 @@ export const BARE = {
     unico: 'único', util: 'útil', utilizacoes: 'utilizações', vao: 'vão', varios: 'vários',
     versoes: 'versões', visualizacoes: 'visualizações', vitorias: 'vitórias', so: 'só',
     mes: 'mês',
+    // Found 10 October 2026 (inbox 422). Words ending -cao, -coes, -soes or a
+    // long -ao are caught by rule below, without a list.
+    anuncio: 'anúncio', anuncios: 'anúncios', calculo: 'cálculo', metodo: 'método',
+    maxima: 'máxima', mantem: 'mantém', denuncia: 'denúncia', faca: 'faça', medias: 'médias',
+    valido: 'válido', convocatorias: 'convocatórias', dai: 'daí', relatorios: 'relatórios',
+    pe: 'pé',
     equipa: null, torneio: null,
   },
 };
@@ -157,7 +179,14 @@ const WORD = /[A-Za-zÀ-ÿ]+/g;
 // "cela supprime", "modifie un résultat". They are wrong only as a past
 // participle, so they count only after an auxiliary, or standing alone as a
 // whole message ("Enregistre.").
-const AMBIGUOUS = { fr: new Set(['enregistre', 'supprime', 'modifie', 'signale', 'trouve', 'laisse', 'passe', 'paye', 'payes', 'termine', 'rembourse', 'rembourses', 'verse', 'verses', 'annule', 'ferme', 'valide', 'publie', 'programme', 'confirme', 'accepte', 'ajoute', 'abonne', 'abonnes', 'recupere', 'elimine', 'modere', 'protege', 'possede', 'preleve', 'mene', 'epuise']) };
+const AMBIGUOUS = { fr: new Set(['enregistre', 'supprime', 'modifie', 'signale', 'trouve', 'laisse', 'passe', 'paye', 'payes', 'termine', 'rembourse', 'rembourses', 'verse', 'verses', 'annule', 'ferme', 'valide', 'publie', 'programme', 'confirme', 'accepte', 'ajoute', 'abonne', 'abonnes', 'recupere', 'elimine', 'modere', 'protege', 'possede', 'preleve', 'mene', 'epuise',
+  'conteste', 'configure', 'lie', 'lies', 'utilise', 'utilises', 'trouves', 'retire', 'retires',
+  'encaisses', 'ajoutes', 'anticipe', 'effaces', 'verrouille', 'renseigne', 'bloque', 'invite',
+  'invites', 'lances', 'confirmes', 'gagne', 'gagnes', 'arrives', 'regarde', 'amenes',
+  'copie', 'donne', 'tire', 'organise', 'publies', 'connecte']) };
+
+// "La clé n'est pas valide": an adjective after être, not "validé".
+const ADJECTIVE_AFTER = { valide: new Set(['est', 'pas', 'sont', 'reste', 'plus', 'soit', 'être', 'etre']) };
 const AUXILIARY = new Set(['a', 'ai', 'as', 'avons', 'avez', 'ont', 'est', 'sont', 'suis', 'es',
   'sommes', 'etes', 'êtes', 'été', 'ete', 'être', 'etre', 'sera', 'seront', 'était', 'etait',
   'bien', 'pas', 'jamais', 'rien', 'deja', 'déjà', 'non']);
@@ -179,6 +208,7 @@ export function findBare(table, lang) {
       if (word.length > 1 && word === word.toUpperCase()) return;
       if (AMBIGUOUS[lang]?.has(w)) {
         const before = (found[i - 1] || '').toLowerCase();
+        if (ADJECTIVE_AFTER[w]?.has(before)) return;
         const alone = found.length === 1;
         if (!alone && !AUXILIARY.has(before)) return;
       }
@@ -203,6 +233,24 @@ export function findBare(table, lang) {
       for (const m of prose.matchAll(LEADING_A)) {
         hits.push({ key, word: `A ${m[2]}`, should: `À ${m[2]}` });
       }
+      // "a" meaning "to" or "at" inside a sentence: "Rien a examiner",
+      // "jusqu'a", "envoyé a {n}", "a partir". Never after "il y" or "en",
+      // where it is the verb (10 October 2026, 39 found).
+      for (const m of value.matchAll(A_FOR_A)) {
+        hits.push({ key, word: m[0], should: m[0].replace(/a(?=\s|$)/, 'à').replace(/'a$|’a$/, (x) => x[0] + 'à') });
+      }
+    }
+    if (lang === 'pt') {
+      // No Portuguese word ends bare in -cao, -coes, -soes or a long -ao:
+      // "ligacao", "restricoes", "atencao" (10 October 2026, 24 found).
+      for (const word of found) {
+        const should = aoFix(word);
+        if (should) hits.push({ key, word, should });
+      }
+      // "e" where "é" is meant: "Essa e a sua equipa", "e uma funcionalidade".
+      for (const m of value.matchAll(E_FOR_E)) {
+        hits.push({ key, word: m[0], should: m[0].replace(/ e /, ' é ') });
+      }
     }
   }
   return hits;
@@ -223,6 +271,21 @@ export function eeFix(word) {
   const lower = word.toLowerCase();
   if (EE_ENGLISH.has(lower) || !/^[a-zà-ÿ]{2,}ees?$/.test(lower)) return null;
   const whole = EE_STEM[lower] || lower.replace(/ee(s?)$/, 'ée$1');
+  return word[0] === word[0].toUpperCase() ? whole[0].toUpperCase() + whole.slice(1) : whole;
+}
+
+// Letter boundaries rather than \b, which is ASCII even with the u flag.
+const LB = String.raw`(?<![\p{L}\p{M}])`;
+const LE = String.raw`(?![\p{L}\p{M}])`;
+const A_FOR_A = new RegExp(String.raw`(?<!${LB}y\s)(?<!${LB}en\s)${LB}a\s+(?:partir|zéro|zero|chaque|quelqu|rejoindre|examiner|retirer|faire|payer|voir|venir|lire|suivre|répondre|repondre|saisir|récupérer|recuperer|répercuter|repercuter|\{|\d)|${LB}(?:[Rr]ien|[Pp]rêt|[Jj]usqu['’]|[Vv]erser|ferme|ouvre)\s*a${LE}`, 'gu');
+const E_FOR_E = new RegExp(String.raw`${LB}(?:[Ii]sto|[Ii]sso|[Aa]quilo)\s+e\s+o\s+que${LE}|${LB}(?:[Ee]sse|[Ee]ssa|[Ee]ste|[Ee]sta|nada|[Cc]omo|que|[Qq]uem)\s+e\s+(?:o|a|um|uma|seu|sua|gratuit[oa]|pag[oa]|preciso|possível|obrigatóri[oa]|devid[oa]|premium)${LE}|${LB}e\s+uma\s+funcionalidade${LE}`, 'gu');
+
+export function aoFix(word) {
+  const lower = word.toLowerCase();
+  const m = /^([a-z]+?)(cao|coes|soes|ao|oes)$/.exec(lower);
+  if (!m || lower.length < 4 || word === word.toUpperCase()) return null;
+  const end = { cao: 'ção', coes: 'ções', soes: 'sões', ao: 'ão', oes: 'ões' }[m[2]];
+  const whole = m[1] + end;
   return word[0] === word[0].toUpperCase() ? whole[0].toUpperCase() + whole.slice(1) : whole;
 }
 
@@ -254,6 +317,26 @@ function selfTest() {
     ['fr', { a: 'La salle n’est plus disponible' }, 0],
     ['fr', { a: '{n} entrants' }, 0],
     ['pt', { a: 'd e f' }, 0],
+    // 10 October 2026 (inbox 422)
+    ['fr', { a: 'Ont achete un billet' }, 1],
+    ['fr', { a: 'Rien a examiner pour {list}.' }, 1],
+    ['fr', { a: 'Jusqu’a {n} billets.' }, 1],
+    ['fr', { a: 'Envoyé a {n} personnes.' }, 1],
+    ['fr', { a: 'il y a {n} jours' }, 0],
+    ['fr', { a: 'et la vôtre en a {points}.' }, 0],
+    ['fr', { a: 'Cette clé n’est pas valide.' }, 0],
+    ['fr', { a: 'Copie' }, 1],
+    ['fr', { a: 'Il copie le lien' }, 0],
+    ['pt', { a: 'Copiar ligacao' }, 1],
+    ['pt', { a: 'Sem restricoes.' }, 1],
+    ['pt', { a: 'Os meus anuncios' }, 1],
+    ['pt', { a: 'Essa e a sua própria equipa.' }, 1],
+    ['pt', { a: 'Destacar uma banda e uma funcionalidade premium.' }, 1],
+    ['pt', { a: 'E esse número é' }, 0],
+    ['pt', { a: 'Desligue isto e o evento continua' }, 0],
+    ['pt', { a: 'Copiar a ligação. Este anúncio é seu.' }, 0],
+    ['pt', { a: 'Um país, e os pais' }, 0],
+    ['pt', { a: 'Paginação' }, 0],
   ];
   let failed = 0;
   for (const [lang, table, expected] of cases) {
