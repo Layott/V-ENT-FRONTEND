@@ -224,6 +224,24 @@
   font-size: 0.85rem;
 }
 
+/* A thumb's size on a phone or a touch tablet (inbox 414): the fields measured
+   40px and "Login" under "Already have an account?" 33x15, a bare link the
+   global a[class] floor does not reach. */
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
+  .inputGroup input {
+    min-height: 44px;
+  }
+  .formHelperContainer {
+    align-items: center;
+  }
+  .formHelperContainer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.35rem;
+  }
+}
+
 @media only screen and (min-width: 600px) {
   .formContainer {
     width: 450px;

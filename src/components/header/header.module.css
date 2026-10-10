@@ -62,6 +62,24 @@
   color: var(--v-ent-red);
 }
 
+/* The crumbs are 12px tall words in a 60px header. On a touch screen each takes
+   a 44px press without moving: the padding grows the target and the negative
+   margin gives the room back (tablet walk, inbox 414: "Home" measured 25x12). */
+@media (pointer: coarse), (hover: none) {
+  .breadcrumbNav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+    margin: -16px -10px;
+  }
+  .breadcrumbNav a + svg {
+    margin: 0 10px;
+  }
+}
+
 .headerContent {
   width: 100%;
   display: flex;
@@ -356,11 +374,13 @@
     width: 350px;
   }
 }
-@media only screen and (min-width: 768px) {
+/* The desktop header, from 1024px up, beside the sidebar. A tablet under 1024px gets the
+   phone shell (MobileHeader), inbox 414. */
+@media only screen and (min-width: 1024px) {
   .profileHeader {
     display: flex;
-    margin-left: 180px;
-    width: calc(100% - 180px);
+    margin-left: 250px;
+    width: calc(100% - 250px);
   }
   .userAvatar {
     width: 60px;
@@ -382,12 +402,6 @@
   }
   .logoutBTN {
     width: 110px;
-  }
-}
-@media only screen and (min-width: 1024px) {
-  .profileHeader {
-    margin-left: 250px;
-    width: calc(100% - 250px);
   }
   .searchBar {
     width: 280px;

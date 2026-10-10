@@ -19,8 +19,8 @@
 
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     padding: 1.75rem 1.5rem 4rem;
   }
 }
@@ -310,7 +310,7 @@
   gap: 0.75rem;
 }
 
-.postAvatarLink { display: inline-flex; }
+.postAvatarLink { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; }
 
 .postAvatar {
   width: 40px;
@@ -446,6 +446,8 @@
 .reactBtn {
   display: flex;
   align-items: center;
+  min-width: 44px;
+  min-height: 44px;
   gap: 0.4rem;
   background: transparent;
   border: none;

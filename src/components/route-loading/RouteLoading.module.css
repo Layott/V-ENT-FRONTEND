@@ -115,6 +115,13 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .pane { margin-left: var(--shell-offset); padding: calc(60px + 2rem) 2rem 2rem; }
+  .hero { height: 280px; }
+}
+
+/* The placeholder draws the shell the page will have: the sidebar from 1024px up, the
+   bottom bar below it (inbox 414). */
+@media only screen and (min-width: 1024px) {
   .sidebar {
     display: flex;
     flex-direction: column;
@@ -123,18 +130,11 @@
     top: 60px;
     bottom: 0;
     left: 0;
-    width: 180px;
+    width: 250px;
     padding: 1.25rem 0.9rem;
     background-color: #131316;
   }
-  .pane { margin-left: 180px; padding: calc(60px + 2rem) 2rem 2rem; }
   .bottomBar { display: none; }
-  .hero { height: 280px; }
-}
-
-@media only screen and (min-width: 1024px) {
-  .sidebar { width: 250px; }
-  .pane { margin-left: 250px; }
   .split { grid-template-columns: 2fr 1fr; }
   .grid { grid-template-columns: repeat(3, 1fr); }
 }

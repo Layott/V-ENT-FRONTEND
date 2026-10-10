@@ -19,8 +19,8 @@
 
 @media (min-width: 768px) {
   .rightPaneContainer {
-    width: calc(100% - 250px);
-    margin-left: 250px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     padding: 2rem 2rem 3rem;
   }
 }

@@ -25,8 +25,8 @@
 
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     padding-bottom: 110px;
   }
 }
@@ -1040,7 +1040,6 @@
 
 @media only screen and (min-width: 768px) {
   .yourRankStrip {
-    bottom: 1rem;
     padding: 0 1.5rem;
   }
   .yourRankInner {
@@ -1061,7 +1060,9 @@
 
 @media only screen and (min-width: 1024px) {
   .yourRankStrip {
-    /* Account for fixed sidebar (250px) so the strip aligns to content area */
+    /* The bottom menu is gone from 1024px up (inbox 414), so the strip drops to the edge;
+       the fixed sidebar (250px) is cleared so it aligns to the content area. */
+    bottom: 1rem;
     padding-left: 250px;
     padding-right: 1.5rem;
   }

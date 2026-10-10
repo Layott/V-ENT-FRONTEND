@@ -11,6 +11,11 @@
 .main {
   display: flex;
   gap: 24px;
+  /* Clear of the fixed header (60px) and, from 1024px, the fixed sidebar. Without these the
+     page sat underneath both (the tablet walk found its controls under the sidebar at
+     1024px, inbox 414). */
+  padding-top: 60px;
+  padding-left: var(--shell-offset);
 }
 
 .content {

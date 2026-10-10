@@ -367,8 +367,8 @@
 /* ── Responsive ── */
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     padding: 2rem 1.5rem;
   }
   .formGrid {
