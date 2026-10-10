@@ -176,6 +176,9 @@ html {
   }
 }
 
+/* The floor matches (hover: none) as well as a coarse pointer: an Android tablet in
+   the emulator reports pointer: fine with hover: none and five touch points, so a
+   coarse-only floor left its sidebar links at 33px (measured 10 October 2026). */
 /* And every other control on a phone, not only the shared class. The full
    walk on 30 September 2026 measured controls with no height of their own
    at 16 to 42px on most pages: the settings tabs (35), the community tabs
@@ -272,7 +275,7 @@ html {
   cursor: default;
 }
 
-@media (max-width: 1023px), (pointer: coarse) {
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
   .ventCheck {
     width: 44px;
     height: 44px;
