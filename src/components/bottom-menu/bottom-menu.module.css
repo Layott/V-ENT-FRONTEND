@@ -262,7 +262,8 @@
   align-items: center;
 }
 
-@media only screen and (min-width: 768px) {
+/* Phones and tablets keep the bottom menu to 1023px (inbox 414). */
+@media only screen and (min-width: 1024px) {
   .bottomMenuContainer {
     display: none;
   }
@@ -280,6 +281,9 @@
    does not jump when a session resolves. */
 .signInLink {
   display: flex;
+  /* "Log in" is one short word: measured 36px wide on a tablet walk (inbox 414), so the
+     target is held at 44 rather than the width of the word. */
+  min-width: 44px;
   flex-direction: column;
   align-items: center;
   justify-content: center;

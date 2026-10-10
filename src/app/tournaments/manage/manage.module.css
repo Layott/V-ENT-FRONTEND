@@ -71,6 +71,10 @@
 }
 
 .backLink {
+  /* A block so the touch floor reaches it: inline it measured 110x14 on a tablet walk. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: rgba(255,255,255,0.6);
   font-size: 0.78rem;
   text-decoration: none;
@@ -753,8 +757,8 @@
 /* ── Responsive ── */
 @media only screen and (min-width: 768px) {
   .rightPaneContainer {
-    width: calc(100% - 180px);
-    margin-left: 180px;
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
     padding: 2rem 1.5rem 4rem;
   }
   .matchCtrlGrid { grid-template-columns: 320px 1fr; }

@@ -273,9 +273,10 @@
 .rowResolved td { text-decoration: none; }
 
 /* Responsive */
+/* Under 1024px the nav is a drawer (inbox 414), so the content takes the full width. */
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
   .contentArea {
-    margin-left: 180px;
+    margin-left: 0;
     padding: 1.5rem;
   }
 }
@@ -288,6 +289,10 @@
   .pageHeader { flex-direction: column; align-items: flex-start; }
   .pageTitle { font-size: var(--mobile-h2-size); }
   .hideMobile { display: none; }
+}
+
+/* A tablet is pressed with a thumb too, so the touch sizes run to 1023px. */
+@media only screen and (max-width: 1023px), (pointer: coarse), (hover: none) {
 
   /* Every pressable thing in the console is 44px on a phone.
    *

@@ -18,6 +18,7 @@
  * Usage:
  *   node scripts/audit-walk.js                       # desktop 1440, user session
  *   VIEW=mobile node scripts/audit-walk.js           # 390x844
+ *   VIEW=tablet768|tablet820|tablet1024 node scripts/audit-walk.js   # tablets (inbox 414)
  *   AS=admin node scripts/audit-walk.js              # admin surfaces (localStorage adminToken)
  *   ONLY=/wallets,/teams node scripts/audit-walk.js  # subset
  *
@@ -48,7 +49,14 @@ const VIEWPORTS = {
   desktop: { width: 1440, height: 900, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
   mobile: { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   wide: { width: 1920, height: 1080, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
+  // Tablets, portrait, for inbox 414: under 1024px the shell is the phone one, from 1024 the
+  // sidebar. 1024 is an iPad Pro held upright, the first width that gets the sidebar.
+  tablet768: { width: 768, height: 1024, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
+  tablet820: { width: 820, height: 1180, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
+  tablet1024: { width: 1024, height: 1366, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
 };
+const UA_TABLET =
+  'Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const UA_MOBILE =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
@@ -126,7 +134,7 @@ async function walkRoute(page, route, allRoutes) {
   }
   await new Promise((r) => setTimeout(r, 1400));
 
-  const data = await page.evaluate(() => {
+  const measure = () => {
     const vis = (el) => {
       const r = el.getBoundingClientRect();
       const st = getComputedStyle(el);
@@ -200,10 +208,24 @@ async function walkRoute(page, route, allRoutes) {
         }
         return [...new Set(out)].slice(0, 6);
       })(),
+      // A link laid out inline inside a sentence is typography, and counting it
+      // reports faults nobody can act on (reference_emulator_devtools): those
+      // are counted apart, as inlineLinks.
+      inlineLinks: Array.from(document.querySelectorAll('a[href]')).filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.height < 44 && getComputedStyle(el).display === 'inline'
+          && (el.parentElement && (el.parentElement.textContent || '').trim().length > (el.textContent || '').trim().length + 3);
+      }).length,
       smallTaps: Array.from(document.querySelectorAll('button, a[href]')).filter((el) => {
         const r = el.getBoundingClientRect();
-        return r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44);
-      }).length,
+        if (!(r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44))) return false;
+        const inSentence = el.tagName === 'A' && getComputedStyle(el).display === 'inline'
+          && el.parentElement && (el.parentElement.textContent || '').trim().length > (el.textContent || '').trim().length + 3;
+        return !inSentence;
+      }).map((el) => {
+        const r = el.getBoundingClientRect();
+        return `${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 24)}" ${Math.round(r.width)}x${Math.round(r.height)} .${String(el.className).split(' ')[0].slice(0, 36)}`;
+      }),
       // The surface the page actually paints, read at its left edge halfway
       // down: the first ancestor with a background. Pure black or pure white is
       // banned (design rule E); every sign-in page was #000 through
@@ -225,6 +247,59 @@ async function walkRoute(page, route, allRoutes) {
       // overflow check above sees nothing while a Save button sits at x=760 on
       // a 375px phone (/settings, 28 September). A control inside a
       // horizontal scroller (a tab strip) is reachable and is left alone.
+      // Which shell the page drew, and whether it fits it (inbox 414). Under 1024px: the phone
+      // header and the bottom menu, no sidebar. From 1024px: the sidebar. `under` counts
+      // controls the fixed sidebar covers; `covered` counts controls that sit inside the last
+      // 70px of the document, where the fixed bottom menu covers them even fully scrolled.
+      shell: (() => {
+        const shown = (sel) => Array.from(document.querySelectorAll(sel)).some((el) => {
+          const r = el.getBoundingClientRect();
+          const st = getComputedStyle(el);
+          return r.width > 0 && r.height > 0 && st.display !== 'none' && st.visibility !== 'hidden';
+        });
+        const sidebar = shown('[class*="desktopSidebar"]');
+        const bottomMenu = shown('[class*="bottomMenuContainer"]');
+        const fixedAncestor = (el) => {
+          for (let p = el; p && p !== document.body; p = p.parentElement) {
+            if (getComputedStyle(p).position === 'fixed') return true;
+          }
+          return false;
+        };
+        // A control inside a collapsed panel (`max-height: 0; overflow: hidden`) keeps its own
+        // size, so its rect says it is there while nobody can see or press it. The rankings
+        // row's closed detail drawer read as two buttons under the bottom menu (10 October).
+        const clippedAway = (el) => {
+          const r = el.getBoundingClientRect();
+          for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+            const st = getComputedStyle(p);
+            if (st.overflow === 'visible' && st.overflowY === 'visible') continue;
+            const pr = p.getBoundingClientRect();
+            if (r.bottom <= pr.top || r.top >= pr.bottom || pr.height < 1) return true;
+          }
+          return false;
+        };
+        const controls = Array.from(document.querySelectorAll('button, a[href], input, select, textarea'))
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'
+              && !fixedAncestor(el) && !clippedAway(el);
+          });
+        const side = document.querySelector('[class*="desktopSidebar"]');
+        const sideRight = sidebar && side ? side.getBoundingClientRect().right : 0;
+        const docH = document.documentElement.scrollHeight;
+        const name = (el) => `${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || el.name || '').trim().slice(0, 24)}"`;
+        return {
+          sidebar,
+          bottomMenu,
+          under: controls.filter((el) => {
+            const r = el.getBoundingClientRect();
+            return r.right > 0 && r.left < sideRight - 1;
+          }).slice(0, 4).map(name),
+          covered: bottomMenu
+            ? controls.filter((el) => el.getBoundingClientRect().bottom + window.scrollY > docH - 70 + 1).slice(0, 4).map(name)
+            : [],
+        };
+      })(),
       offscreen: (() => {
         const vw = document.documentElement.clientWidth;
         // A closed drawer is a fixed panel parked past the edge on purpose, and
@@ -249,7 +324,34 @@ async function walkRoute(page, route, allRoutes) {
           .map((el) => `${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || el.name || '').trim().slice(0, 30)}" at x=${Math.round(el.getBoundingClientRect().left)}`);
       })(),
     };
-  });
+  };
+
+  // A page that redirects (/ to /home, a gated page to /login) can replace
+  // its document mid-measurement. Wait for it to settle and measure again;
+  // only after three tries is the route recorded as unreadable, and the walk
+  // goes on to the next one instead of dying.
+  let data = null;
+  for (let attempt = 0; attempt < 3 && !data; attempt += 1) {
+    try {
+      data = await page.evaluate(measure);
+    } catch (e) {
+      navErr = `measure: ${e.message.slice(0, 100)}`;
+      await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+  if (!data) {
+    page.off('pageerror', onErr);
+    page.off('console', onConsole);
+    page.off('response', onResponse);
+    return {
+      route, url, navErr, title: null, overflow: false, scrollWidth: 0, innerWidth: 0,
+      buttons: 0, buttonList: [], links: 0, linkList: [], inputs: 0, deadLinks: [], hashLinks: 0,
+      smallTaps: 0, smallTapList: [], offscreen: [], shell: { sidebar: false, bottomMenu: false, under: [], covered: [] },
+      shellWrong: null, pureBg: null, strokes: [], glows: [], looksEmpty: false, errorText: false, snippet: '',
+      errors: [...new Set(errors)].slice(0, 12), netFails: [...new Set(netFails)].slice(0, 12),
+    };
+  }
 
   // dead links: internal hrefs pointing at a route that doesn't exist.
   // Static files under /public (PDFs, images) are valid targets too.
@@ -307,8 +409,18 @@ async function walkRoute(page, route, allRoutes) {
     inputs: data.inputs,
     deadLinks,
     hashLinks: hashLinks.length,
-    smallTaps: data.smallTaps,
+    smallTaps: data.smallTaps.length,
+    smallTapList: data.smallTaps.slice(0, 8),
     offscreen: data.offscreen,
+    shell: data.shell,
+    shellWrong: (() => {
+      const w = data.innerWidth;
+      const phone = w < 1024;
+      const want = phone ? (!data.shell.sidebar && data.shell.bottomMenu) : (data.shell.sidebar && !data.shell.bottomMenu);
+      // Pages with no shell at all (sign in, embeds, overlays) draw neither, which is fine.
+      const none = !data.shell.sidebar && !data.shell.bottomMenu;
+      return want || none ? null : `${phone ? 'phone' : 'desktop'} width ${w} drew sidebar=${data.shell.sidebar} bottomMenu=${data.shell.bottomMenu}`;
+    })(),
     pureBg: data.pureBg,
     strokes: data.strokes,
     glows: data.glows,
@@ -334,6 +446,7 @@ async function walkRoute(page, route, allRoutes) {
   const page = await browser.newPage();
   await page.setViewport(VIEWPORTS[VIEW]);
   if (VIEW === 'mobile') await page.setUserAgent(UA_MOBILE);
+  if (VIEW.startsWith('tablet')) await page.setUserAgent(UA_TABLET);
   page.setDefaultTimeout(30000);
 
   // ---- auth ----
@@ -442,6 +555,10 @@ async function walkRoute(page, route, allRoutes) {
       res.netFails.length ? `NET×${res.netFails.length}` : '',
       res.overflow ? 'OVERFLOW' : '',
       res.offscreen.length ? `OFFSCREEN×${res.offscreen.length}` : '',
+      res.shellWrong ? 'SHELL' : '',
+      res.shell.under.length ? `UNDERSIDEBAR×${res.shell.under.length}` : '',
+      res.shell.covered.length ? `COVERED×${res.shell.covered.length}` : '',
+      VIEW !== 'desktop' && VIEW !== 'wide' && res.smallTaps ? `SMALL×${res.smallTaps}` : '',
       res.pureBg ? 'PUREBG' : '',
       res.deadLinks.length ? `DEAD×${res.deadLinks.length}` : '',
       res.looksEmpty ? 'EMPTY' : '',
@@ -467,12 +584,17 @@ async function walkRoute(page, route, allRoutes) {
   md.push('', '## Details (only routes with findings)', '');
   for (const r of results) {
     if (!r.errors.length && !r.netFails.length && !r.overflow && !r.deadLinks.length
-        && !r.offscreen.length && !r.pureBg && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length) continue;
+        && !r.offscreen.length && !r.pureBg && !r.looksEmpty && !r.navErr && !r.strokes.length && !r.glows.length
+        && !r.shellWrong && !r.shell.under.length && !r.shell.covered.length) continue;
     md.push(`### \`${r.route}\``);
     if (r.navErr) md.push(`- navigation: ${r.navErr}`);
     if (r.looksEmpty) md.push(`- **renders near-empty** (text length ${r.snippet.length}): "${r.snippet}"`);
     if (r.overflow) md.push(`- **horizontal overflow**: scrollWidth ${r.scrollWidth} > viewport ${r.innerWidth}`);
     r.offscreen.forEach((o) => md.push(`- **off screen, unreachable**: ${o}`));
+    if (r.shellWrong) md.push(`- **wrong shell**: ${r.shellWrong}`);
+    if (VIEW !== 'desktop' && VIEW !== 'wide') r.smallTapList.forEach((o) => md.push(`- under 44px: ${o}`));
+    r.shell.under.forEach((o) => md.push(`- **under the sidebar**: ${o}`));
+    r.shell.covered.forEach((o) => md.push(`- **under the bottom menu at the end of the page**: ${o}`));
     if (r.pureBg) md.push(`- **pure black or white page surface**: ${r.pureBg}`);
     r.errors.forEach((e) => md.push(`- console: \`${e}\``));
     r.netFails.forEach((e) => md.push(`- network: \`${e}\``));
@@ -484,6 +606,7 @@ async function walkRoute(page, route, allRoutes) {
   fs.writeFileSync(path.join(OUT, 'report.md'), md.join('\n'));
 
   const bad = results.filter((r) => r.errors.length || r.netFails.length || r.overflow
-    || r.deadLinks.length || r.offscreen.length || r.pureBg || r.strokes.length || r.glows.length);
+    || r.deadLinks.length || r.offscreen.length || r.pureBg || r.strokes.length || r.glows.length
+    || r.shellWrong || r.shell.under.length || r.shell.covered.length);
   console.log(`\n[audit] ${results.length} routes walked · ${bad.length} with findings · report: ${path.join(OUT, 'report.md')}`);
 })();

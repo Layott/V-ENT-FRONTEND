@@ -115,6 +115,9 @@
 }
 
 .link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--v-ent-success);
   text-decoration: none;
 }

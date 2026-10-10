@@ -86,9 +86,13 @@ const linkStyle = {
   textDecoration: 'underline',
 };
 
+// A link on its own line, pressed like a button: 44px tall (it measured 16px on
+// a tablet walk, inbox 414).
 const homeLinkStyle = {
-  display: 'inline-block',
-  marginBottom: '1.25rem',
+  display: 'inline-flex',
+  alignItems: 'center',
+  minHeight: '44px',
+  marginBottom: '0.75rem',
   color: 'rgba(230,230,230,0.6)',
   fontSize: '0.85rem',
   textDecoration: 'none',

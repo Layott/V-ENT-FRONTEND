@@ -65,7 +65,7 @@
 
 /* On a phone the mark is a tap target, and 17px is not one. The button keeps
    its size visually while its hit area grows past it. */
-@media (pointer: coarse) {
+@media (pointer: coarse), (hover: none) {
   .mark::after {
     content: '';
     position: absolute;

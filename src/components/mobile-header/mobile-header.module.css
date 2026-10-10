@@ -435,7 +435,8 @@
     gap: 0.6rem;
   }
 }
-@media only screen and (min-width: 768px) {
+/* Phones and tablets: the phone shell runs to 1023px (inbox 414). */
+@media only screen and (min-width: 1024px) {
   .profileHeader {
     display: none;
   }

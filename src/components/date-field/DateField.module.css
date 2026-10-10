@@ -333,3 +333,13 @@
   text-transform: capitalize;
   cursor: pointer;
 }
+
+/* A thumb target on phones and tablets (inbox 414): the field measured 38 and
+   42px tall, because the class each caller brings sets its own min-height
+   and beats the global floor on specificity. button.field outranks it. */
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
+  button.field,
+  .jumpSelect {
+    min-height: 44px;
+  }
+}

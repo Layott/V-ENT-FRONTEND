@@ -164,38 +164,25 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
 }
 
-@media only screen and (min-width: 768px) {
-  .desktopSidebar {
-    width: 180px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .logoContainer {
-    width: 180px;
-  }
-  .sidebarItem span.disabledLink {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .iconTextLink:has(.comingSoon) {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0.35rem;
-  }
-  .iconShopSpan,
-  .iconMarketplaceSpan {
-    display: flex;
-    gap: 0.5rem;
-  }
-}
+/* The sidebar is the desktop shell, from 1024px up. Under 1024px a tablet gets the phone shell
+   (MobileHeader with its drawer, BottomMenu), decided for inbox 414 on 8 October 2026: the old
+   180px tablet sidebar left every page that forgot to offset for it underneath it. */
 @media only screen and (min-width: 1024px) {
   .desktopSidebar {
     width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    /* Pinned to the edge. Without `left` a fixed box sits where it would have been in the
+       flow, so on /partners, which draws the sidebar inside a main padded by the shell
+       offset, it sat at 250 to 500px on top of the form (tablet walk, 10 October 2026). */
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    /* On a touch screen the links are 44px (the touch floor), and an iPad held sideways
+       is 768px tall: the list must scroll rather than fall off the bottom. */
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .logoContainer {
     width: 250px;
@@ -209,6 +196,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 0.35rem;
+  }
+  .iconShopSpan,
+  .iconMarketplaceSpan {
+    display: flex;
+    gap: 0.5rem;
   }
   .logoContainer .wordmark {
     font-size: 1.75rem;

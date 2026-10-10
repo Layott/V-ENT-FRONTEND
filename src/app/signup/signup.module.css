@@ -82,6 +82,15 @@
   font-weight: var(--fw-bold);
 }
 
+/* Laid out as boxes in a wrapping row, so they are pressed like buttons: 44px
+   on a phone or a touch tablet (they measured 19px tall, inbox 414). */
+@media (max-width: 1023px), (pointer: coarse), (hover: none) {
+  .termsAndPrivacy a {
+    min-height: 44px;
+    padding: 0 0.25rem;
+  }
+}
+
 .errorMessage {
   color: red;
   margin-top: 0.5rem;
