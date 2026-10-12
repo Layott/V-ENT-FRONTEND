@@ -1,0 +1,414 @@
+/* The Games tab on an event page (inbox 434), as approved in
+   docs/mockups/party-games.html, in the same hand as Going together beside it:
+   panels on --overlay-gray, filled chips and buttons, no outlines, no glow. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.title {
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+}
+
+.lead,
+.muted,
+.organiserNote {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.inlineLink {
+  color: var(--v-ent-light-gold);
+  font-weight: 600;
+}
+
+.ticketBar {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background: #2a2b30;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.barText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 320px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.barText > span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.86rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chipsLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  margin-right: 4px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--v-ent-gold);
+  color: #17140a;
+  font-weight: 600;
+}
+
+.codeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.codeLabel {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.82rem;
+}
+
+.codeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.codeInput {
+  min-height: 44px;
+  flex: 1 1 180px;
+  min-width: 0;
+  max-width: 260px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.btn,
+.goldBtn,
+.redBtn,
+.quietBtn,
+.inBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.btn:hover {
+  background: #3b3c43;
+}
+
+.goldBtn {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.goldBtn:hover {
+  background: var(--v-ent-light-gold);
+}
+
+.redBtn {
+  background: var(--v-ent-red);
+  color: #fff;
+}
+
+.redBtn:hover {
+  background: var(--v-ent-light-red);
+}
+
+.quietBtn {
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.quietBtn:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.inBtn {
+  background: rgba(76, 175, 80, 0.18);
+  color: #8fd694;
+}
+
+.inBtn:hover {
+  background: rgba(76, 175, 80, 0.26);
+}
+
+.btn:disabled,
+.goldBtn:disabled,
+.inBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn:focus-visible,
+.goldBtn:focus-visible,
+.redBtn:focus-visible,
+.quietBtn:focus-visible,
+.inBtn:focus-visible,
+.chip:focus-visible,
+.codeInput:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.notice {
+  margin: 0;
+  color: #8fd694;
+  font-size: 0.9rem;
+}
+
+.problem {
+  margin: 0;
+  color: #ff8a80;
+  font-size: 0.88rem;
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.empty {
+  margin: 0;
+  padding: 18px 16px;
+  border-radius: 14px;
+  background: var(--overlay-gray);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  background: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.thumb {
+  display: block;
+  width: 132px;
+  height: 76px;
+  border-radius: 10px;
+}
+
+.ownThumb {
+  width: 132px;
+  height: 76px;
+  border-radius: 10px;
+  background: #2a2b30;
+  display: grid;
+  place-items: center;
+  color: var(--v-ent-light-gold);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.rowBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.name {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.meta {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+}
+
+.tag,
+.goldTag,
+.redTag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.tag {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.goldTag {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--v-ent-light-gold);
+}
+
+.redTag {
+  background: rgba(237, 28, 36, 0.16);
+  color: #ff8a80;
+}
+
+/* Where a button would be when there is nothing to press: said in words, in
+   the button's place and size, never as a dead control. */
+.statusNote {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.places {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.meter {
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: #33343a;
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--v-ent-gold);
+  border-radius: 3px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.sheetAction {
+  display: flex;
+}
+
+.sheetAction > * {
+  flex: 1;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .thumb,
+  .ownThumb {
+    width: 96px;
+    height: 54px;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+
+  .actions > * {
+    flex: 1;
+  }
+
+  .meter {
+    width: 80px;
+  }
+}

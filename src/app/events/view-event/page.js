@@ -61,6 +61,7 @@ import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import TradeHere from '@/components/vendor-slots/TradeHere';
 import { slotsText } from '@/lib/slots';
 import GoingTogether from '@/components/going-together/GoingTogether';
+import EventGames from '@/components/party-games/EventGames';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
 import { prizeText } from '@/lib/prize';
@@ -96,6 +97,12 @@ const TABS = [{
 }, {
   id: 'tournaments',
   label: 'Tournaments'
+}, {
+  // Party games the organiser runs at the event (inbox 434). Public to read;
+  // playing takes a ticket.
+  id: 'games',
+  label: 'Games',
+  key: 'games.tab'
 }, {
   // Inbox 305: ticket holders show they are going, share where they leave
   // from, and ping people to meet up. The rules are the server's.
@@ -1698,6 +1705,8 @@ export const ViewEventContent = ({
 
             {/* TOURNAMENTS */}
             {activeTab === 'together' && <GoingTogether eventRef={id} onOpenTickets={() => openTab('tickets')} />}
+
+            {activeTab === 'games' && <EventGames eventRef={event?.slug || id} eventSlug={event?.slug || id} onOpenTickets={() => openTab('tickets')} />}
 
             {activeTab === 'tournaments' && <div className={styles.tournamentsTab}>
                 <div className={styles.ticketHeaderRow}>
