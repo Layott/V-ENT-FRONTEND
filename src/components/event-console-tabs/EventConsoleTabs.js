@@ -30,6 +30,8 @@ export const CONSOLE_TABS = [
   ['numbers', 'console.tabNumbers', 'Sales and attendance'],
   ['messages', 'console.tabMessages', 'Messages'],
   ['polls', 'console.tabPolls', 'Polls'],
+  // Party games at the event (inbox 434).
+  ['games', 'console.tabGames', 'Games'],
   ['holds', 'console.tabHolds', 'Holds'],
   ['programme', 'console.tabProgramme', 'Programme'],
   // The minute by minute for the day: what happens, who owns it, how

@@ -39,6 +39,7 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import EventTournamentsPanel from '@/components/events/EventTournamentsPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
+import EventGamesPanel from '@/components/party-games/EventGamesPanel';
 import EventSitePanel from '@/components/event-site/EventSitePanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
 import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
@@ -69,7 +70,7 @@ const FUNNEL_LABELS = {
   sold: ['manage.stepSold', 'Bought a ticket'],
 };
 
-const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'holds',
+const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'games', 'holds',
   'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors',
   'production', 'website', 'team'];
 // The tab used to be called overlays, before the studio existed for events.
@@ -1052,6 +1053,7 @@ export const ManageEventContent = ({
     numbers: tt('manage.tabNumbers', 'Sales and attendance'),
     messages: tt('manage.tabMessages', 'Messages'),
     polls: tt('manage.tabPolls', 'Polls'),
+    games: tt('console.tabGames', 'Games'),
     production: tt('manage.tabProduction', 'Production')
   })[key];
   return <div className={styles.pageContainer}>
@@ -2695,6 +2697,14 @@ export const ManageEventContent = ({
               {/* Its own website and the code for somebody else's
                   (inbox 360). */}
               {tab === 'website' && <EventSitePanel
+                eventRef={eventRef}
+                token={token}
+                showToast={setNotice}
+              />}
+
+              {/* Party games at the event (inbox 434, 439): the catalogue of
+                  fifty, the organiser's own, who wants to play. */}
+              {tab === 'games' && <EventGamesPanel
                 eventRef={eventRef}
                 token={token}
                 showToast={setNotice}

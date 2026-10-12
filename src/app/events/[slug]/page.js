@@ -6,6 +6,7 @@ import {
 } from '@/lib/seo';
 import EventBySlugClient from './EventBySlugClient';
 import { toSlugAddress } from '@/lib/slugAddress';
+import gameWords from '@/lib/partyGames/words/en';
 
 // `/events/lagos-anime-con`. Server component so the event is described in the
 // HTML rather than after the JavaScript runs - see the note in the tournament
@@ -38,12 +39,15 @@ const EventBySlug = async props => {
   await toSlugAddress(slug, e, '/events', await props.searchParams);
 
   const path = `/events/${e?.slug || slug}`;
+  // The party games with a time go into the markup as sub-events (inbox 434).
+  const games = e && !e.__moved ? await fetchRecordForMetadata(`/event/${encodeURIComponent(e.slug || slug)}/games/`) : null;
+  const gameNames = Object.fromEntries(Object.entries(gameWords).map(([k, w]) => [k, w.name]));
 
   return (
     <>
       <JsonLd
         data={[
-          eventLd(e, path),
+          eventLd(e, path, games?.games, gameNames),
           breadcrumbLd([
             { name: 'Home', path: '/' },
             { name: 'Events', path: '/events' },

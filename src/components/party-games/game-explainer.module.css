@@ -1,0 +1,243 @@
+/* The explainer sheet (inbox 439), as approved in docs/mockups/party-games.html:
+   the stage beside the words on a desktop, the stage above them on a phone.
+   Filled surfaces, no outlines, no glow; the only motion is the animation. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: rgba(8, 8, 10, 0.72);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 760px) {
+  .scrim {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.sheet {
+  background: var(--overlay-gray);
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 760px) {
+  .sheet {
+    width: min(1060px, 100%);
+    max-height: calc(100vh - 3rem);
+    border-radius: 16px;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  }
+
+  .sheet.wordsOnly {
+    width: min(560px, 100%);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.stageBox {
+  background: #18181b;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-radius: 16px 16px 0 0;
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .stageBox {
+    border-radius: 16px 0 0 16px;
+  }
+}
+
+.stepButtons {
+  display: flex;
+  gap: 6px;
+}
+
+.stepButton {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stepButton[aria-pressed='true'] {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.stepButton:focus-visible,
+.quiet:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.stageFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.origin {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+}
+
+.quiet {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quiet:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.body {
+  padding: 1.35rem 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.name {
+  margin: 0.2rem 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.number {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #33343a;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.steps li.now {
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.steps li.now .number {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fact {
+  background: #2a2b30;
+  border-radius: 10px;
+  padding: 9px 12px;
+  min-width: 0;
+}
+
+.fact dt {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fact dd {
+  margin: 2px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.win {
+  background: #2a2b30;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.win p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.92rem;
+}

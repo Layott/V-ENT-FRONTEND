@@ -620,7 +620,33 @@ export function tournamentLd(t, path) {
   };
 }
 
-export function eventLd(e, path) {
+/** The party games of an event (inbox 434) as sub-events, for a reader of the
+ *  markup. Only a game with a time is one: schema.org's Event needs a start,
+ *  and invalid structured data is worse than none. Names are the English ones,
+ *  like the rest of the record's markup. */
+export function gameSubEvents(games, e, path, names = {}) {
+  if (!Array.isArray(games)) return [];
+  return games
+    .filter((g) => g && g.starts_at && g.status !== 'off')
+    .map((g) => {
+      const name = (g.catalogue_key && names[g.catalogue_key]) || g.custom?.name;
+      if (!name) return null;
+      return {
+        '@type': 'Event',
+        name,
+        startDate: g.starts_at,
+        url: absolute(`${path}?tab=games`),
+        location: e?.location
+          ? { '@type': 'Place', name: g.place ? `${g.place}, ${e.location}` : e.location,
+              address: { '@type': 'PostalAddress', addressLocality: e.location, addressCountry: 'NG' } }
+          : { '@type': 'VirtualLocation', url: absolute(path) },
+        ...(g.places ? { maximumAttendeeCapacity: g.places } : {}),
+      };
+    })
+    .filter(Boolean);
+}
+
+export function eventLd(e, path, games = null, gameNames = {}) {
   const name = e?.name || e?.title;
   if (!name) return null;
   const start = eventStart(e) || e.reg_start_date;
@@ -651,6 +677,8 @@ export function eventLd(e, path) {
           address: { '@type': 'PostalAddress', addressLocality: e.location, addressCountry: 'NG' } }
       : { '@type': 'VirtualLocation', url: e.event_link || absolute(path) },
     ...(e.banner ? { image: [e.banner] } : {}),
+    ...(gameSubEvents(games, e, path, gameNames).length
+      ? { subEvent: gameSubEvents(games, e, path, gameNames) } : {}),
     ...(e.creator?.username
       ? { organizer: { '@type': 'Person', name: e.creator.full_name || e.creator.username } }
       : {}),

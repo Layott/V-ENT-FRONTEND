@@ -1,0 +1,33 @@
+/* The party game stage. Flat fills on a dark stage; the only motion is an
+   actor moving from one step to the next, and none at all under reduced
+   motion. */
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  background: #1a1a1e;
+}
+
+.stage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+}
+
+.actor {
+  transition: transform 0.85s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.5s ease;
+}
+
+.still .actor {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actor {
+    transition: none;
+  }
+}
