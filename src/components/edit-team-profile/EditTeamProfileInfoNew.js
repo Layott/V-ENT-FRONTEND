@@ -10,7 +10,9 @@ import styles from './edit-team-profile-new.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Morocco', 'Senegal'];
+import { COUNTRIES } from '@/constants/countries';
+// The one country list, alphabetical (inbox 443); it had its own seven.
+const REGIONS = COUNTRIES;
 const EditTeamProfileInfoNew = ({
   team,
   onSaved

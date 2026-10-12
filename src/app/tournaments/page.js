@@ -24,6 +24,7 @@ import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { prizeText } from '@/lib/prize';
 const STATUS_TABS = [{
   id: 'featured',
   label: 'Featured'
@@ -298,7 +299,7 @@ const TournamentsContent = () => {
                       <Tag on="card">{t?.game || tx("Unknown Game")}</Tag>
                       <h2 className={styles.featuredTitle}>{t?.name || tx("Untitled Tournament")}</h2>
                       <div className={styles.featuredMeta}>
-                        <span><LuTrophy /> {Number(t?.prize_pool || 0).toLocaleString()} VC</span>
+                        <span><LuTrophy /> {prizeText(t)}</span>
                         <span><LuCalendar /> {formatDate(t?.start_date)}</span>
                         <span><LuUsers /> {slotsText(tt, t?.current_participants, t?.max_participants)}</span>
                       </div>
@@ -404,7 +405,6 @@ const TournamentCard = ({
   const isLive = LIVE_STATUSES.includes(status);
   const banner = mediaUrl(t?.banner_image || t?.banner) || '';
   const fee = entryFeeVc(t);
-  const prize = Number(t?.prize_pool || 0);
   const current = t?.current_participants ?? 0;
   return <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={banner ? {
@@ -421,7 +421,7 @@ const TournamentCard = ({
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>
             <LuTrophy className={styles.metaIcon} />
-            <span className={styles.metaPrize}>{prize.toLocaleString()} VC</span>
+            <span className={styles.metaPrize}>{prizeText(t)}</span>
           </div>
           <div className={styles.metaRow}>
             <LuCalendar className={styles.metaIcon} />

@@ -9,6 +9,7 @@
 import Link from 'next/link';
 import { getT, serverLocale } from '@/i18n/server';
 import { TERMS_KEYS, SECTIONS } from './termsCopy';
+import BackLink from '@/components/back-link/BackLink';
 
 const containerStyle = {
   minHeight: '100vh',
@@ -100,7 +101,7 @@ export default async function TermsOfUse() {
     <div style={containerStyle}>
       <div style={innerStyle}>
         {/* Home in the reader's own language, through the router. */}
-        <Link href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>&larr; {k('back')}</Link>
+        <BackLink href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>{k('back')}</BackLink>
         <h1 style={headingStyle}>{k('title')}</h1>
         <p style={subStyle}>{k('updated')}</p>
 

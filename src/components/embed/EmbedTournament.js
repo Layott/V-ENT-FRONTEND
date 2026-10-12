@@ -11,6 +11,7 @@ import { slotsText } from '@/lib/slots';
 import { useReportHeight } from '@/lib/embed';
 import { paintDocument, siteStyle } from '@/lib/siteTheme';
 import styles from './embed.module.css';
+import { prizeText } from '@/lib/prize';
 
 export default function EmbedTournament({ slug, initial, failed }) {
   const { t: tt } = useLanguage();
@@ -48,7 +49,7 @@ export default function EmbedTournament({ slug, initial, failed }) {
     [tt('embed.places', 'Places'), slotsText(tt, t.current_participants, t.max_participants,
       t.participant_type === 'team' ? 'team' : 'entrant')],
     [tt('embed.entry', 'Entry'), fee > 0 ? coins(fee) : tt('embed.free', 'Free')],
-    [tt('embed.prize', 'Prize pool'), prize > 0 ? coins(prize) : ''],
+    [tt('embed.prize', 'Prize pool'), prize > 0 ? prizeText(t) : ''],
   ].filter(([, v]) => v);
 
   return (

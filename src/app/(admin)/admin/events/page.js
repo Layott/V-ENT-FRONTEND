@@ -24,6 +24,7 @@ import styles from './events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { adminToken } from '@/lib/adminToken'
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'upcoming') return shared.sActive;
@@ -257,13 +258,13 @@ function EventsInner() {
               </div>}
 
             {totalPages > 1 && <div className={shared.pagination}>
-                <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+                <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><PagerArrow dir="prev" /></button>
                 {Array.from({
               length: totalPages
             }, (_, i) => i + 1).filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1).map(p => {
               return <button key={p} className={`${shared.pageBtn} ${p === page ? shared.pageBtnActive : ''}`} onClick={() => setPage(p)}>{p}</button>;
             })}
-                <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+                <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><PagerArrow dir="next" /></button>
               </div>}
           </div>
         </main>

@@ -28,6 +28,7 @@
 
 import { useEffect, useState } from 'react';
 import { formatKey, formatLabel } from './formatLabel';
+import { formatNumber } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -35,11 +36,11 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 // Keyed by the arguments because the shape depends on them.
 const inFlight = new Map();
 
-const cacheKey = (participants, seats) => `${participants || 0}|${seats || 1}`;
+const cacheKey = (participants, seats, legs) => `${participants || 0}|${seats || 1}|${legs || 0}`;
 
 /** Every format, with the shape it takes for this many entrants. */
-export function fetchFormats(participants, seats) {
-  const key = cacheKey(participants, seats);
+export function fetchFormats(participants, seats, legs = 0) {
+  const key = cacheKey(participants, seats, legs);
   if (inFlight.has(key)) return inFlight.get(key);
   // Typing a number walks through several of them, and each one is a distinct
   // question with a distinct answer. Cheap to keep, but not for ever.
@@ -48,6 +49,8 @@ export function fetchFormats(participants, seats) {
   const query = [];
   if (participants) query.push(`participants=${encodeURIComponent(participants)}`);
   if (seats && Number(seats) > 1) query.push(`seats=${encodeURIComponent(seats)}`);
+  // Once or home and away; 0 leaves each format its own answer (inbox 440).
+  if (legs) query.push(`legs=${encodeURIComponent(legs)}`);
   const url = `${API}/tournament/formats/${query.length ? `?${query.join('&')}` : ''}`;
 
   const promise = fetch(url)
@@ -66,13 +69,15 @@ export function fetchFormats(participants, seats) {
  *
  *   const { entry, loading } = useFormatShape(formData.bracket_type, count, seats);
  */
-export function useFormatShape(bracketType, participants, rawSeats = 1) {
+export function useFormatShape(bracketType, participants, rawSeats = 1, rawLegs = 0) {
   const key = formatKey(bracketType);
   // Somebody typing "128" passes through 1, 12 and 128, so the count is only
   // asked about once it could be a real field. Anything outside that asks for
   // the plain catalogue, which is one cached request.
   const n = Number(participants);
-  const count = Number.isFinite(n) && n >= 2 && n <= 4096 ? n : 0;
+  // No ceiling on entrants since inbox 441; this only bounds a preview.
+  const count = Number.isFinite(n) && n >= 2 && n <= 100000 ? n : 0;
+  const legs = [1, 2].includes(Number(rawLegs)) ? Number(rawLegs) : 0;
   const s = Number(rawSeats);
   const seats = Number.isFinite(s) && s > 1 && s <= 11 ? s : 1;
   const [entries, setEntries] = useState(null);
@@ -82,11 +87,11 @@ export function useFormatShape(bracketType, participants, rawSeats = 1) {
     // null while asking, false if it could not be asked, a list once it
     // answered. Three states, because "no formats" and "did not load" lead to
     // different screens and one nullable value cannot tell them apart.
-    fetchFormats(count, seats).then(list => {
+    fetchFormats(count, seats, legs).then(list => {
       if (alive) setEntries(list === null ? false : list);
     });
     return () => { alive = false; };
-  }, [count, seats]);
+  }, [count, seats, legs]);
 
   const list = Array.isArray(entries) ? entries : null;
   const entry = key && list ? list.find(f => f.key === key) || null : null;
@@ -123,16 +128,22 @@ export function structureLines(tt, entry) {
   const fill = (key, fallback, values) => {
     let out = tt(key, fallback);
     Object.entries(values || {}).forEach(([name, value]) => {
-      out = out.split(`{${name}}`).join(String(value));
+      // Numbers the reader's way: "39 800" in French, never "39800".
+      const shown = typeof value === 'number' ? formatNumber(value) : String(value);
+      out = out.split(`{${name}}`).join(shown);
     });
     return out;
   };
 
   const shape = entry.shape;
   if (shape && shape.kind === 'table') {
-    lines.push(fill('format.structTable',
-      '{n} sides each play everyone once: {matches} fixtures over {rounds} rounds.',
-      { n: shape.participants, matches: shape.matches, rounds: shape.rounds }));
+    lines.push(Number(shape.legs) > 1
+      ? fill('format.structTableTwice',
+        '{n} sides each play everyone twice, home and away: {matches} fixtures over {rounds} rounds.',
+        { n: shape.participants, matches: shape.matches, rounds: shape.rounds })
+      : fill('format.structTable',
+        '{n} sides each play everyone once: {matches} fixtures over {rounds} rounds.',
+        { n: shape.participants, matches: shape.matches, rounds: shape.rounds }));
     if (shape.sits_out_each_round) {
       lines.push(tt('format.structSitsOut',
         'An odd number means one side sits out each round.'));

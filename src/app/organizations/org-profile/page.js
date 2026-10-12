@@ -30,6 +30,7 @@ import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
 import PlanCard from '@/components/memberships/PlanCard';
 import { eventStatusLabel, eventTypeLabel, tournamentStatusLabel } from '@/lib/labels';
+import { prizeText, coinText } from '@/lib/prize';
 // `needs` names the capability a tab depends on. Without it the screen said
 // "this organisation does not do events" in Key stats and "here are its
 // events" in the tab strip at the same time, which reads as a bug in the
@@ -571,7 +572,7 @@ const OrgProfileContent = ({
                         <div>
                           <span className={styles.statLabel}>{tt("ui.prize.pool.e9b1", "Prize pool")}</span>
                           <span className={styles.statNumber}>
-                            {formatNumber(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0)} VC
+                            {coinText(org.total_prize_pool ?? org.prize_pool_awarded_vc ?? 0)}
                           </span>
                         </div>
                       </div>}
@@ -703,7 +704,7 @@ const OrgProfileContent = ({
                             {tournamentStatusLabel(tt, t.status)}
                           </span>
                         </td>
-                        <td>{(t.prize_pool ?? 0).toLocaleString()} VC</td>
+                        <td>{prizeText(t)}</td>
                         <td>{formatDate(t.start_date)}</td>
                         <td>
                           <Link href={`/tournaments/${t.slug || t.id}`} className={styles.smallBtn}>

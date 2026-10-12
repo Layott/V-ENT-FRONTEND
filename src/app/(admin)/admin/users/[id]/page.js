@@ -17,6 +17,7 @@ import { formatDate, formatDateTime } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
+import BackLink from '@/components/back-link/BackLink';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -227,7 +228,7 @@ function UserDetailInner() {
           {/* Page header */}
           <div className={shared.pageHeader}>
             <div>
-              <Link href="/admin/users" className={styles.backLink}>{tt("ui.all.users.c1b5", "← All Users")}</Link>
+              <BackLink href="/admin/users" className={styles.backLink}>{tt("ui.all.users.c1b5", "All Users")}</BackLink>
               <h1 className={shared.pageTitle}>{u?.username || tt('admin.aUser', 'User')}</h1>
               <p className={shared.pageSubtitle}>
                 {u?.full_name && `${u.full_name} · `}{u?.email}

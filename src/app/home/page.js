@@ -23,6 +23,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
 import { statementLine, kindLabel } from '@/lib/statementLine';
+import { prizeText } from '@/lib/prize';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
@@ -134,7 +135,9 @@ const mapTournamentCard = t => ({
   game: typeof t.game === 'string' ? t.game : t.game_name || t.tournament_game_name || t.tournament_game || 'Esports',
   name: t.name || t.title || t.tournament_title || 'Tournament',
   start_date: t.start_date || t.start_date_and_time || t.start || null,
-  prize_pool: Number(t.prize_pool ?? t.prize ?? t.prize_pool_vc ?? 0) || 0
+  prize_pool: Number(t.prize_pool ?? t.prize_pool_vc ?? 0) || 0,
+  // As typed and in coins (inbox 444); prizeText reads it.
+  prize: t.prize && typeof t.prize === 'object' ? t.prize : null
 });
 const mapEventCard = e => ({
   id: e.id,
@@ -519,7 +522,7 @@ const HomePage = () => {
                       </p>
                       <p className={styles.gridPrize}>
                         <LuTrophy className={styles.metaIcon} />
-                        {t.prize_pool.toLocaleString()} {tt("ui.vc.prize.9797", "VC prize")}
+                        {prizeText(t)}
                       </p>
                       <button type="button" className={`btn goldBTN ${styles.gridCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>
                         {tt("ui.view.tournament.c54b", "View tournament")}
@@ -734,7 +737,7 @@ const HomePage = () => {
                         </p>
                         <p className={styles.gridPrize}>
                           <LuTrophy className={styles.metaIcon} />
-                          {t.prize_pool.toLocaleString()} VC
+                          {prizeText(t)}
                         </p>
                       </div>
                       <button type="button" className={`btn goldBTN ${styles.recoCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>

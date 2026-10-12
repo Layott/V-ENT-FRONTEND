@@ -20,6 +20,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, signInHref, useViewer, usernameOf } from '@/lib/gating';
 import { linkTo } from '@/lib/share';
+import { COUNTRIES } from '@/constants/countries';
 const TABS = [{
   id: 'all',
   label: 'All'
@@ -33,7 +34,9 @@ const TABS = [{
   id: 'invited',
   label: 'Invited'
 }];
-const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa'];
+// A team's region is picked from the one country list now (inbox 443), so
+// the filter offers the same list, in order.
+const REGIONS = COUNTRIES;
 // The tabs that mean "mine". Everything else is the public catalogue.
 const PERSONAL_TABS = ['owned', 'joined', 'invited'];
 const AllTeams = () => {

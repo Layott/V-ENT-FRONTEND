@@ -21,6 +21,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
+import { prizeText } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -267,7 +269,7 @@ const ManageContent = ({
         <div className={embedded ? undefined : styles.rightPaneContainer}>
           {!embedded && <div className={styles.pageHeader}>
             <div>
-              <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
+              <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>
               <h1 className={styles.pageTitle}>
                 {loading ? tx("Loading…") : tournament?.name || tournament?.title || tx("Manage Tournament")}
               </h1>
@@ -311,7 +313,7 @@ const ManageContent = ({
                 <div className={styles.summaryMeta}>
                   <span><LuCalendar /> {formatDate(tournament?.start_date)} - {formatDate(tournament?.end_date)}</span>
                   <span><LuUsers /> {slotsText(tt, tournament?.current_participants ?? participants.length, tournament?.max_participants)}</span>
-                  <span><LuTrophy /> {Number(tournament?.prize_pool || 0).toLocaleString()} VC</span>
+                  <span><LuTrophy /> {prizeText(tournament)}</span>
                 </div>
               </div>
 

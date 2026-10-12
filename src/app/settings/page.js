@@ -22,6 +22,7 @@ import styles from './settings.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { useCurrency } from '@/lib/money';
+import { LuChevronRight } from 'react-icons/lu';
 
 // Ids are fixed; labels come from the translator, so switching language
 // renames the navigation without touching which panel is open.
@@ -326,7 +327,7 @@ const SettingsContent = () => {
                   return <li key={p.id} className={cls}>
                         <button type="button" onClick={() => setPanel(p.id)}>
                           {tx(p.label)}
-                          <span className={shared.chev}>›</span>
+                          <LuChevronRight className={shared.chev} aria-hidden="true" />
                         </button>
                       </li>;
                 })}
@@ -364,7 +365,7 @@ const SettingsContent = () => {
                 return <li key={p.id} className={cls}>
                       <button type="button" onClick={() => setPanel(p.id)}>
                         {tx(p.label)}
-                        <span className={shared.chev}>›</span>
+                        <LuChevronRight className={shared.chev} aria-hidden="true" />
                       </button>
                     </li>;
               })}

@@ -45,18 +45,19 @@ const PLACE_WORDS = {
   hybrid: 'Online and at a venue',
 };
 
-const TABLE = new Set(['round_robin', 'ladder', 'aggregate_2v2', 'swiss']);
+const TABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'swiss']);
 // A knockout for the purpose of how a match is played: a final, two legs,
 // a winner when it ends level. The placing formats are knockouts too.
 const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladder',
   'page_playoff', 'winner_stays_on']);
-const GROUPABLE = new Set(['round_robin', 'ladder', 'aggregate_2v2']);
+const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
 const BEST_OF = [1, 2, 3, 5, 7];
 const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
-      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 } : { legs: 1 }) }
+      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 }
+        : { legs: format === 'league' ? 2 : 1 }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
       ...(format === 'single_elimination' ? { third_place: false, every_place: false } : {}),
@@ -750,7 +751,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   {GROUPABLE.has(row.format) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.legs', 'Everybody plays everybody')}</span>
-                      <Chips value={Number(s.legs || 1)} disabled={busy}
+                      <Chips value={Number(s.legs || (row.format === 'league' ? 2 : 1))} disabled={busy}
                              label={tt('stages.legs', 'Everybody plays everybody')}
                              options={[[1, tt('stages.once', 'Once')], [2, tt('stages.twiceHomeAway', 'Twice, home and away')]]}
                              onChange={v => setSetting(index, 'legs', v)} />

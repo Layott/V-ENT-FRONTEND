@@ -16,7 +16,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRoutePath } from '@/lib/routePath';
-import { LuCircleHelp, LuX } from 'react-icons/lu';
+import { LuChevronRight, LuCircleHelp, LuX } from 'react-icons/lu';
 import { guideFor } from './pageGuides';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './page-help.module.css';
@@ -136,7 +136,7 @@ export default function PageHelp() {
                           onClick={() => setOpen(false)}
                         >
                           <span>{text}</span>
-                          <span className={styles.go} aria-hidden="true">&rsaquo;</span>
+                          <LuChevronRight className={styles.go} aria-hidden="true" />
                         </Link>
                       </li>
                     ) : (

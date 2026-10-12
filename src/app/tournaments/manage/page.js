@@ -15,7 +15,7 @@ import TieScoring from '@/components/tournament-manage/TieScoring';
 import { formatKey } from '@/lib/formatLabel';
 import { slotsText } from '@/lib/slots';
 import { matchName } from '@/lib/matchName';
-import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil } from 'react-icons/lu';
+import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil, LuCopy } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -47,6 +47,8 @@ import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import { formatDateTime } from '@/lib/datetime';
 import { entryStatusLabel } from '@/lib/labels';
 import UserPicker from '@/components/user-picker/UserPicker';
+import { prizeText } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -272,6 +274,33 @@ const ManageContent = ({ slug }) => {
     && caps !== null && access !== null;
   // A scorekeeper opens the console and sees the one tab they may use.
   const keepsScore = access?.can_record_results && !access?.can_manage;
+  // Only the person who made it may copy it (inbox 446); an admin running it
+  // from the console is not offered a copy under their own name.
+  const ownsIt = viewer.signedIn && (
+    sameUser(viewer.username, usernameOf(creator))
+    || sameUser(viewer.id, creator?.user_id ?? creator?.id)
+  );
+  const [copying, setCopying] = useState(false);
+  const duplicate = async () => {
+    const ref = tournament?.slug || tournament?.tournament_id;
+    if (!ref || !token) return;
+    setCopying(true);
+    try {
+      const res = await fetch(`${API}/tournament/${ref}/duplicate/`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        showToast(apiMessage(tt, body, 'dup.failed', 'Could not duplicate this tournament.'));
+        return;
+      }
+      router.push(`/tournaments/create-tournament?draft_id=${encodeURIComponent(body.data.slug)}`);
+    } catch {
+      showToast(tt('api.networkProblem', 'The network is not answering. Try again.'));
+    } finally {
+      setCopying(false);
+    }
+  };
   // And the body follows: the page opens on Actions, and a scorekeeper was
   // shown the whole Actions panel (codes, cancel and refund, the rules)
   // under a tab row offering Match Control alone (walk, 28 September 2026).
@@ -283,7 +312,7 @@ const ManageContent = ({ slug }) => {
   // (27 September 2026). It gets the match room like any other match.
   const seats = Number(tournament?.players_per_team ?? tournament?.league?.players_per_team ?? 1) || 1;
   const isLeague = formatKey(tournament?.bracket_type || tournament?.format) === 'aggregate_2v2'
-    || (seats > 1 && ['round_robin', 'ladder'].includes(formatKey(tournament?.bracket_type || tournament?.format)));
+    || (seats > 1 && ['round_robin', 'league', 'ladder'].includes(formatKey(tournament?.bracket_type || tournament?.format)));
   if (loading) {
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -302,7 +331,7 @@ const ManageContent = ({ slug }) => {
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
+            <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>
             <h1 className={styles.pageTitle}>{tt("ui.can.t.open.this.8089", "Can’t open this tournament")}</h1>
             <p className={styles.panelSub}>{error || tx("Tournament not found.")}</p>
           </div>
@@ -332,7 +361,6 @@ const ManageContent = ({ slug }) => {
         <BottomMenu />
       </div>;
   }
-  const prizePool = Number(tournament.prize_pool || 0);
   const statusLabel = tournamentStatusLabel(tt, tournament.status || 'draft');
   return <div className={styles.pageContainer}>
       <Header />
@@ -344,7 +372,7 @@ const ManageContent = ({ slug }) => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div>
-              <Link href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "← My Tournaments")}</Link>
+              <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>
               <h1 className={styles.pageTitle}>{tournament.name || tournament.tournament_title}</h1>
               <div className={styles.headerMeta}>
                 <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
@@ -354,13 +382,16 @@ const ManageContent = ({ slug }) => {
                       read as a full tournament. */}
                   {slotsText(tt, tournament.current_participants, tournament.max_participants, 'entrant')}
                 </span>
-                <span className={styles.metaText}><LuTrophy /> {prizePool.toLocaleString()} VC</span>
+                <span className={styles.metaText}><LuTrophy /> {prizeText(tournament)}</span>
               </div>
             </div>
             <div className={styles.headerActions}>
-              <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`}>
-                <button className={styles.outlineBtn}><LuEye /> {tt("ui.view.public.page.13b1", "View Public Page")}</button>
+              <Link href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={styles.outlineBtn}>
+                <LuEye aria-hidden="true" /> {tt("ui.view.public.page.13b1", "View Public Page")}
               </Link>
+              {ownsIt && <button type="button" className={styles.outlineBtn} disabled={copying} onClick={duplicate}>
+                <LuCopy aria-hidden="true" /> {copying ? tt('dup.working', 'Copying...') : tt('dup.button', 'Duplicate')}
+              </button>}
               {/* Opens the Production tab below. This was a disabled button
                   titled "Production is not available yet", beside the tab
                   that worked. */}

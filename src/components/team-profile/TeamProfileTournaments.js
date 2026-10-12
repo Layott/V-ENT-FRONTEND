@@ -7,6 +7,7 @@ import Link from 'next/link';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { tournamentStatusLabel } from '@/lib/labels';
+import { coinText } from '@/lib/prize';
 const STATUS_CLASS = {
   upcoming: 'statusUpcoming',
   in_progress: 'statusLive',
@@ -62,7 +63,7 @@ const TeamProfileTournaments = ({
             <div className={styles.cellMuted}>{t.game}</div>
             <div className={styles.placement}>{t.placement || '-'}</div>
             <div className={styles.prizeCell}>
-              {t.prize_won ? `${Number(t.prize_won).toLocaleString()} VC` : '-'}
+              {t.prize_won ? coinText(t.prize_won) : '-'}
             </div>
             <div className={styles.cellMuted}>{fmtDate(t.date)}</div>
             <div>
@@ -89,7 +90,7 @@ const TeamProfileTournaments = ({
             </div>
             <div className={styles.activityMobileGrid}>
               <div><span className={styles.cellMuted}>{tt("ui.placement.ab89", "Placement")}</span><span>{t.placement || '-'}</span></div>
-              <div><span className={styles.cellMuted}>{tt("ui.prize.d597", "Prize")}</span><span>{t.prize_won ? `${Number(t.prize_won).toLocaleString()} VC` : '-'}</span></div>
+              <div><span className={styles.cellMuted}>{tt("ui.prize.d597", "Prize")}</span><span>{t.prize_won ? coinText(t.prize_won) : '-'}</span></div>
               <div><span className={styles.cellMuted}>{tt("ui.date.eb9a", "Date")}</span><span>{fmtDate(t.date)}</span></div>
               <div>
                 <span className={styles.cellMuted}>{tt("ui.status.bae7", "Status")}</span>

@@ -15,6 +15,7 @@ import { formatDate, formatNumber } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -336,14 +337,14 @@ function PayoutsInner() {
             {totalPages > 1 && <div className={shared.pagination}>
                 <span className={shared.paginationInfo}>{tt("ui.page.fb06", "Page")} {page} of {totalPages}</span>
                 <div className={shared.paginationBtns}>
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><PagerArrow dir="prev" /></button>
                   {Array.from({
                 length: Math.min(5, totalPages)
               }, (_, i) => {
                 const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
                 return <button key={p} className={`${shared.pageBtn} ${p === page ? shared.pageBtnActive : ''}`} onClick={() => setPage(p)}>{p}</button>;
               })}
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><PagerArrow dir="next" /></button>
                 </div>
               </div>}
           </div>

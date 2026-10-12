@@ -59,6 +59,15 @@ const WORDS = {
     noteKey: 'format.noteRoundRobin',
     note: 'Matches grow with the square of the field: eight teams is 28 matches, sixteen is 120. Past about twelve it wants splitting into groups.',
   },
+  // Inbox 440: the same table as a round robin, played home and away.
+  league: {
+    nameKey: 'format.label.league',
+    name: 'League',
+    blurbKey: 'format.leagueBlurb',
+    blurb: 'Everyone plays everyone, home and away. Points decide the table.',
+    noteKey: 'format.noteLeague',
+    note: 'Every pair meets twice, once on each side: ten teams is 90 matches over 18 rounds. Choose once instead of home and away for half that.',
+  },
   swiss: {
     nameKey: 'ui.swiss.system.f479',
     name: 'Swiss System',
@@ -128,7 +137,7 @@ const WORDS = {
 // The order they are offered in, when the catalogue cannot be reached. The
 // server's own order wins whenever it answers.
 const OFFLINE_ORDER = [
-  'single_elimination', 'double_elimination', 'round_robin', 'swiss',
+  'single_elimination', 'double_elimination', 'round_robin', 'league', 'swiss',
   'battle_royale', 'gsl', 'aggregate_2v2', 'ladder', 'stepladder', 'page_playoff',
   'winner_stays_on',
 ];
@@ -152,7 +161,8 @@ const TournamentFormat = ({ formData = {}, updateFormData }) => {
 
   const chosenKey = formatKey(selectedOption);
   const { entry, entries } = useFormatShape(
-    selectedOption, plannedCount(formData), plannedSeats(formData));
+    selectedOption, plannedCount(formData), plannedSeats(formData),
+    formData.options?.legs || 0);
 
   const handleOptionClick = key => {
     setSelectedOption(key);

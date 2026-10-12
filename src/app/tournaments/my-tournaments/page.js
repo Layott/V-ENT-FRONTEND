@@ -5,7 +5,8 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert, LuTrash2 } from 'react-icons/lu';
+import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert, LuTrash2, LuEye, LuCopy, LuX, LuRotateCw, LuPlay } from 'react-icons/lu';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -17,6 +18,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { slotsText } from '@/lib/slots';
 import { plural } from '@/lib/plural';
+import { prizeText } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 const TABS = [{
   id: 'active',
   label: 'Active'
@@ -100,6 +103,26 @@ const MyTournaments = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [note, setNote] = useState('');
+  const router = useRouter();
+  // Duplicate (inbox 446): the copy is a new draft, opened straight away.
+  const [copyingId, setCopyingId] = useState(null);
+  const duplicate = async (t) => {
+    const ref = t?.slug || t?.id;
+    if (!ref || !token) return;
+    setCopyingId(t?.id ?? ref);
+    try {
+      // The page's own helper: the same address base and the same refusals
+      // as every other call here (a raw fetch to `${API}` posted to
+      // "[object Object]/...", because API on this page is the endpoint map).
+      const made = await ventFetch(`/tournament/${encodeURIComponent(ref)}/duplicate/`, { method: 'POST', token });
+      router.push(`/tournaments/create-tournament?draft_id=${encodeURIComponent(made.slug)}`);
+    } catch (err) {
+      setNote(apiMessage(tt, err, 'dup.failed', 'Could not duplicate this tournament.'));
+      setTimeout(() => setNote(''), 4000);
+    } finally {
+      setCopyingId(null);
+    }
+  };
 
   const deleteDraft = async (draft) => {
     if (deletingId) return;
@@ -180,7 +203,7 @@ const MyTournaments = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div>
-              <Link href="/tournaments" className={styles.backLink}>{tt("ui.all.tournaments.4a37", "← All Tournaments")}</Link>
+              <BackLink href="/tournaments" className={styles.backLink}>{tt("ui.all.tournaments.4a37", "All Tournaments")}</BackLink>
               <h1 className={styles.pageTitle}>{tt("ui.my.tournaments.3780", "My Tournaments")}</h1>
               <p className={styles.pageSub}>{tt("ui.tournaments.organize.b1ff", "Tournaments you organize.")}</p>
             </div>
@@ -210,12 +233,12 @@ const MyTournaments = () => {
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.78d7", "Couldn't load your tournaments")}</p>
               <p className={styles.inlineErrorSub}>{tx("We could not load your tournaments just now.")}</p>
-              <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+              <button className={`${styles.btn} goldBTN`} onClick={handleRetry}><LuRotateCw aria-hidden="true" /> {tt("ui.retry.9f5c", "Retry")}</button>
             </div> : tab === 'drafts' ? drafts.length === 0 ? <div className={styles.emptyState}>
                 <LuTrophy className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.drafts.d770", "No drafts")}</p>
-                <Link href="/tournaments/create-tournament">
-                  <button className={`${styles.btn} goldBTN`}>{tt("ui.create.tournament.4440", "Create Tournament")}</button>
+                <Link href="/tournaments/create-tournament" className={`${styles.btn} goldBTN`}>
+                  <LuPlus aria-hidden="true" /> {tt("ui.create.tournament.4440", "Create Tournament")}
                 </Link>
               </div> : <div className={styles.tournamentList}>
                 {drafts.map(d => <div key={d.id} className={styles.tournamentRow}>
@@ -233,8 +256,8 @@ const MyTournaments = () => {
                       </p>
                     </div>
                     <div className={styles.rowActions}>
-                      <Link href={`/tournaments/create-tournament?draft_id=${d.slug || d.id}`}>
-                        <button className={styles.actionBtn}><LuPencil /> {tt("ui.resume.b3bd", "Resume")}</button>
+                      <Link href={`/tournaments/create-tournament?draft_id=${d.slug || d.id}`} className={styles.actionBtn}>
+                        <LuPlay aria-hidden="true" /> {tt("ui.resume.b3bd", "Resume")}
                       </Link>
                       {/* Asked once, in place. A draft is somebody's unfinished
                           work and there is no undo, so it takes two presses -
@@ -250,7 +273,7 @@ const MyTournaments = () => {
                         </button>
                         <button type="button" className={styles.actionBtn}
                                 onClick={() => setConfirmId(null)}>
-                          {tt('ui.cancel.77df', 'Cancel')}
+                          <LuX aria-hidden="true" /> {tt('ui.cancel.77df', 'Cancel')}
                         </button>
                       </> : <button type="button" className={styles.actionBtn}
                                     onClick={() => setConfirmId(d.id)}>
@@ -262,8 +285,8 @@ const MyTournaments = () => {
               <LuTrophy className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>{tab === 'active' && tournaments.length === 0 ? tx("You haven't created any tournaments yet") : tx("Nothing here yet")}</p>
               <p className={styles.emptySub}>{tab === 'active' ? tx("Create your first tournament to get started.") : tx("Nothing finished yet. Tournaments you complete or cancel show up here.")}</p>
-              <Link href="/tournaments/create-tournament">
-                <button className={`${styles.btn} goldBTN`}>{tt("ui.create.tournament.4440", "Create Tournament")}</button>
+              <Link href="/tournaments/create-tournament" className={`${styles.btn} goldBTN`}>
+                <LuPlus aria-hidden="true" /> {tt("ui.create.tournament.4440", "Create Tournament")}
               </Link>
             </div> : <div className={styles.tournamentList}>
               {filtered.map((t, i) => {
@@ -273,7 +296,6 @@ const MyTournaments = () => {
             const name = t?.name || t?.title || tx("Untitled Tournament");
             const banner = t?.banner_image || t?.banner || '';
             const current = t?.current_participants ?? t?.reg_count ?? 0;
-            const prize = Number(t?.prize_pool || 0);
             const disputeCount = Number(t?.dispute_count || 0);
             return <div key={t?.id ?? i} className={styles.tournamentRow}>
                     <div className={styles.bannerThumb} style={banner ? {
@@ -295,24 +317,31 @@ const MyTournaments = () => {
                         <span>·</span>
                         <span><LuUsers /> {slotsText(tt, current, t?.max_participants)}</span>
                         <span>·</span>
-                        <span><LuTrophy /> {prize.toLocaleString(appLocale())} VC</span>
+                        <span><LuTrophy /> {prizeText(t)}</span>
                       </p>
                     </div>
                     <div className={styles.rowActions}>
-                      <Link href={`/tournaments/${t?.slug || t?.id || ''}`}>
-                        <button className={styles.actionBtn}>{tt("ui.view.69bd", "View")}</button>
+                      <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.actionBtn}>
+                        <LuEye aria-hidden="true" /> {tt("ui.view.69bd", "View")}
                       </Link>
                       {/* Edit was reachable from nowhere at all, which is the
                           same as a tournament being uneditable. It is first
                           because correcting the name, game or artwork is the
                           commonest reason to come back to one. */}
-                      <Link href={`/tournaments/${t?.slug || t?.id || ''}/edit`}>
-                        <button className={styles.actionBtn}><LuPencil /> {tt('tEdit.edit', 'Edit')}</button>
+                      <Link href={`/tournaments/${t?.slug || t?.id || ''}/edit`} className={styles.actionBtn}>
+                        <LuPencil aria-hidden="true" /> {tt('tEdit.edit', 'Edit')}
                       </Link>
+                      {/* A new draft set up the same way (inbox 446). */}
+                      <button type="button" className={styles.actionBtn}
+                              disabled={copyingId === (t?.id ?? (t?.slug || t?.id))}
+                              onClick={() => duplicate(t)}>
+                        <LuCopy aria-hidden="true" /> {copyingId === (t?.id ?? (t?.slug || t?.id))
+                          ? tt('dup.working', 'Copying...') : tt('dup.button', 'Duplicate')}
+                      </button>
                       {/* By slug, not by id: a number in an address somebody
                           can see is the one thing the slug rule forbids. */}
-                      {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`}>
-                          <button className={`${styles.actionBtn} ${styles.manageBtn}`}><LuSettings /> {tt("ui.manage.bf58", "Manage")}</button>
+                      {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`} className={styles.actionBtn}>
+                          <LuSettings aria-hidden="true" /> {tt("ui.manage.bf58", "Manage")}
                         </Link>}
                       {/* Deleting a published tournament, which nothing on the
                           platform could do: the only path was the draft one,

@@ -63,6 +63,7 @@ import { slotsText } from '@/lib/slots';
 import GoingTogether from '@/components/going-together/GoingTogether';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
+import { prizeText } from '@/lib/prize';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1757,7 +1758,7 @@ export const ViewEventContent = ({
                             <p className={styles.tournamentName}>{t.name}</p>
                             <div className={styles.tournamentStats}>
                               <span>
-                                <FaTrophy /> {Number(t.prize_pool || 0).toLocaleString()} VC
+                                <FaTrophy /> {prizeText(t)}
                               </span>
                               <span>
                                 <FaUsers /> {slotsText(tt, t.current_participants, t.max_participants)}

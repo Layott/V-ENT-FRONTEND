@@ -17,7 +17,10 @@ import styles from './create-team.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
-const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Morocco', 'Senegal'];
+import { COUNTRIES } from '@/constants/countries';
+// The one country list, alphabetical (inbox 443). This page had its own seven,
+// in no order, so a team from anywhere else could not say where it was from.
+const REGIONS = COUNTRIES;
 const CreateTeam = () => {
   const tx = useTx();
   const tt = useT();

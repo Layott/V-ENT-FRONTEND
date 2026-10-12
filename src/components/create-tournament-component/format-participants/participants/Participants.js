@@ -216,7 +216,7 @@ const Participants = ({
                   <span className={styles.infoSpan}>
                     <FiInfo />
                   </span>
-                  {tt("ui.maximum.number.individuals.allowed.175c", "The maximum number of individuals allowed is 64.")}
+                  {tt("ui.count.noLimit", "There is no limit on how many can register.")}
                 </p>
               </div>
             </div>
