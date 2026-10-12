@@ -368,7 +368,7 @@ const table = {
  "adminFinance.streams": "Les 30 derniers jours, par source",
  "adminFinance.sub": "Tous les mouvements de la plateforme, quel que soit le portefeuille.",
  "adminFinance.teams": "Équipes",
- "adminFinance.ticketRevenue": "{n} nairas percus",
+ "adminFinance.ticketRevenue": "{n} nairas perçus",
  "adminFinance.tickets": "Billets vendus",
  "adminFinance.title": "Argent",
  "adminFinance.toDate": "Au",
@@ -10789,6 +10789,22 @@ const table = {
  "adminNav.section.finance": "Finances",
  "adminNav.section.partners": "Partenaires",
  "adminNav.section.system": "Système",
- "adminNav.admin": "Admin"
+ "adminNav.admin": "Admin",
+ "wallet.status.cancelled": "Annulé",
+ "adminFinance.kind.deduction": "Déduction",
+ "adminFinance.completedOnly": "Ces totaux ne comptent que les lignes terminées.",
+ "adminFinance.waitingOne": "{n} ligne est encore en attente : {parts}.",
+ "adminFinance.waitingMany": "{n} lignes sont encore en attente : {parts}.",
+ "adminFinance.waitingOut": "{c} VC en sortie",
+ "adminFinance.waitingIn": "{c} VC en entrée",
+ "adminFinance.notMovedOne": "{n} ligne annulée ou échouée n’a rien déplacé.",
+ "adminFinance.notMovedMany": "{n} lignes annulées ou échouées n’ont rien déplacé.",
+ "adminFinance.streamLinesOne": "{n} ligne",
+ "adminFinance.countOne": "{n} ligne",
+ "adminFinance.hold.held": "Bloqué",
+ "adminFinance.hold.released": "Payé au vendeur",
+ "adminFinance.hold.refunded": "Rendu à l’acheteur",
+ "adminFinance.hold.disputed": "Chez un administrateur",
+ "adminFinance.hold.cancelled": "Annulé"
 };
 export default table;

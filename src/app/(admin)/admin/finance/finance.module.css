@@ -37,6 +37,14 @@
 
 /* Direction carries meaning, so it carries colour. Green for money arriving,
  * red for money leaving, and nothing else on the row is coloured. */
+/* What the cards above leave out, said once under them (inbox 437). */
+.leftOut {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: -0.5rem 0 1.5rem;
+  max-width: 70ch;
+}
+
 .credit { color: var(--v-ent-success); font-weight: var(--fw-bold); }
 .debit { color: var(--v-ent-red); font-weight: var(--fw-bold); }
 
