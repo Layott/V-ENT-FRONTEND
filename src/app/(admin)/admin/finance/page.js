@@ -26,7 +26,8 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
-import { statementLine } from '@/lib/statementLine';
+import { statementLine, kindLabel } from '@/lib/statementLine';
+import { plural } from '@/lib/plural';
 import DateField from '@/components/date-field/DateField';
 import shared from '@/components/admin/admin.module.css';
 import styles from './finance.module.css';
@@ -225,6 +226,38 @@ function FinanceInner() {
   const totals = meta?.totals || { credited_vc: 0, debited_vc: 0, net_vc: 0 };
   const pages = meta?.pages || 1;
 
+  // Words, never the database's codes (inbox 437: the Kind column read
+  // "top_up" and the state "cancelled" in every language). A person's
+  // statement calls every deduction an entry fee; on the ledger a deduction is
+  // also a correction, like the demo coins removed on 29 September, so here it
+  // keeps its own name.
+  const kindName = (code) => (code === 'deduction'
+    ? tt('adminFinance.kind.deduction', 'Deduction') : kindLabel(tt, code));
+  const STATE_ENGLISH = { pending: 'Pending', completed: 'Completed', failed: 'Failed', cancelled: 'Cancelled' };
+  const HOLD_ENGLISH = { held: 'Held', released: 'Paid to the seller', refunded: 'Returned to the buyer',
+    disputed: 'With an admin', cancelled: 'Called off' };
+  const stateName = (code) => tt(`wallet.status.${code}`, STATE_ENGLISH[code] || code);
+
+  // In, Out and Net count what moved. When that left lines out, say how many
+  // and what they hold, so the cards and the table beside them agree.
+  const waitingParts = [
+    totals.waiting_out_vc ? tt('adminFinance.waitingOut', '{c} VC going out')
+      .replace('{c}', formatNumber(totals.waiting_out_vc)) : '',
+    totals.waiting_in_vc ? tt('adminFinance.waitingIn', '{c} VC coming in')
+      .replace('{c}', formatNumber(totals.waiting_in_vc)) : '',
+  ].filter(Boolean).join(', ');
+  const leftOut = totals.completed_only && (totals.waiting_lines || totals.not_moved_lines) ? [
+    tt('adminFinance.completedOnly', 'These count completed lines only.'),
+    totals.waiting_lines ? plural(tt, totals.waiting_lines,
+      'adminFinance.waitingOne', '{n} line is still waiting: {parts}.',
+      'adminFinance.waitingMany', '{n} lines are still waiting: {parts}.',
+      formatNumber(totals.waiting_lines)).replace('{parts}', waitingParts) : '',
+    totals.not_moved_lines ? plural(tt, totals.not_moved_lines,
+      'adminFinance.notMovedOne', '{n} cancelled or failed line moved nothing.',
+      'adminFinance.notMovedMany', '{n} cancelled or failed lines moved nothing.',
+      formatNumber(totals.not_moved_lines)) : '',
+  ].filter(Boolean).join(' ') : '';
+
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
            onClick={() => setSidebarOpen(false)} />
@@ -270,6 +303,7 @@ function FinanceInner() {
               <p className={shared.metricValue}>{formatNumber(meta?.count || 0)}</p>
             </div>
           </div>
+          {leftOut ? <p className={styles.leftOut}>{leftOut}</p> : null}
 
           {summary ? <div className={styles.streams}>
             <h2 className={shared.sectionTitle}>
@@ -277,10 +311,11 @@ function FinanceInner() {
             </h2>
             <div className={styles.streamGrid}>
               {(summary.streams || []).filter((s) => s.lines > 0).map((stream) => <div key={stream.type} className={styles.stream}>
-                <p className={shared.metricLabel}>{stream.label}</p>
+                <p className={shared.metricLabel}>{kindName(stream.type)}</p>
                 <p className={styles.streamValue}>{formatNumber(stream.total_vc)} VC</p>
                 <p className={styles.streamNote}>
-                  {tt('adminFinance.streamLines', '{n} lines').replace('{n}', formatNumber(stream.lines))}
+                  {plural(tt, stream.lines, 'adminFinance.streamLinesOne', '{n} line',
+                    'adminFinance.streamLines', '{n} lines', formatNumber(stream.lines))}
                 </p>
               </div>)}
               <div className={styles.stream}>
@@ -355,7 +390,7 @@ function FinanceInner() {
                             <td>{h.buyer?.username || ''}</td>
                             <td>{h.seller?.username || ''}</td>
                             <td>{formatNumber(h.amount)} VC</td>
-                            <td>{h.status}</td>
+                            <td>{tt(`adminFinance.hold.${h.status}`, HOLD_ENGLISH[h.status] || h.status)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -379,12 +414,12 @@ function FinanceInner() {
             <select className={shared.filterSelect} value={type}
                     onChange={(e) => { setType(e.target.value); setPage(1); }}>
               <option value="all">{tt('adminFinance.anyType', 'Any kind')}</option>
-              {(meta?.types || []).map((row) => <option key={row.value} value={row.value}>{row.label}</option>)}
+              {(meta?.types || []).map((row) => <option key={row.value} value={row.value}>{kindName(row.value)}</option>)}
             </select>
             <select className={shared.filterSelect} value={state}
                     onChange={(e) => { setState(e.target.value); setPage(1); }}>
               <option value="all">{tt('adminFinance.anyStatus', 'Any state')}</option>
-              {(meta?.statuses || []).map((row) => <option key={row.value} value={row.value}>{row.label}</option>)}
+              {(meta?.statuses || []).map((row) => <option key={row.value} value={row.value}>{stateName(row.value)}</option>)}
             </select>
 {/* DateField, never a native date input. The native control takes its
                 format from the BROWSER's language, so a Portuguese reader gets
@@ -396,7 +431,8 @@ function FinanceInner() {
                        placeholder={tt('adminFinance.toDate', 'To')}
                        onChange={(e) => { setTo(e.target.value); setPage(1); }} />
             <span className={shared.resultsCount}>
-              {tt('adminFinance.count', '{n} lines').replace('{n}', formatNumber(meta?.count || 0))}
+              {plural(tt, meta?.count || 0, 'adminFinance.countOne', '{n} line',
+                'adminFinance.count', '{n} lines', formatNumber(meta?.count || 0))}
             </span>
           </div>
 
@@ -423,14 +459,14 @@ function FinanceInner() {
                       {rows.map((row) => <tr key={row.id}>
                         <td>{formatDateTime(row.at)}</td>
                         <td><strong>{row.owner}</strong></td>
-                        <td className={shared.hideMobile}>{row.type}</td>
+                        <td className={shared.hideMobile}>{kindName(row.type)}</td>
                         <td className={row.amount < 0 ? styles.debit : styles.credit}>
                           {formatNumber(row.amount)} VC
                         </td>
                         <td className={shared.hideMobile}>{statementLine(tt, row)}</td>
                         <td>
                           <span className={`${shared.badge} ${row.status === 'completed' ? shared.sApproved : row.status === 'pending' ? shared.sPending : shared.sRejected}`}>
-                            {row.status}
+                            {stateName(row.status)}
                           </span>
                         </td>
                       </tr>)}

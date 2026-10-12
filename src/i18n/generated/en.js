@@ -10789,6 +10789,22 @@ const table = {
  "adminNav.section.finance": "Finance",
  "adminNav.section.partners": "Partners",
  "adminNav.section.system": "System",
- "adminNav.admin": "Admin"
+ "adminNav.admin": "Admin",
+ "wallet.status.cancelled": "Cancelled",
+ "adminFinance.kind.deduction": "Deduction",
+ "adminFinance.completedOnly": "These count completed lines only.",
+ "adminFinance.waitingOne": "{n} line is still waiting: {parts}.",
+ "adminFinance.waitingMany": "{n} lines are still waiting: {parts}.",
+ "adminFinance.waitingOut": "{c} VC going out",
+ "adminFinance.waitingIn": "{c} VC coming in",
+ "adminFinance.notMovedOne": "{n} cancelled or failed line moved nothing.",
+ "adminFinance.notMovedMany": "{n} cancelled or failed lines moved nothing.",
+ "adminFinance.streamLinesOne": "{n} line",
+ "adminFinance.countOne": "{n} line",
+ "adminFinance.hold.held": "Held",
+ "adminFinance.hold.released": "Paid to the seller",
+ "adminFinance.hold.refunded": "Returned to the buyer",
+ "adminFinance.hold.disputed": "With an admin",
+ "adminFinance.hold.cancelled": "Called off"
 };
 export default table;
