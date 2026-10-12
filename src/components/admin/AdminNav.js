@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
+import { splitLocale } from '@/lib/locale';
 import { MdOutlineDashboard, MdLogout, MdOutlineSettings, MdGavel, MdArrowBack } from 'react-icons/md';
 import { LuCalendar, LuCoins, LuGamepad2, LuUsers, LuShield, LuFileText, LuFlag, LuReceipt, LuIdCard, LuMessagesSquare, LuBuilding, LuMapPin, LuDatabase } from 'react-icons/lu';
 import { RiTrophyLine } from 'react-icons/ri';
@@ -50,6 +51,18 @@ export const NAV = [{
     href: '/admin',
     icon: MdOutlineDashboard,
     perms: null
+  }, {
+    // Every record on the site, the console as a CMS (inbox 420). Built from
+    // the models themselves, so a new feature's records appear here with no
+    // work. Changing one needs edit_records on top; the screens ask.
+    // Second in the list, not under System: on a 1080p screen (an 891px
+    // window) everything from System down sat under the nav's fold, so the CMS
+    // could not be seen without scrolling (inbox 431/432, 12 October 2026).
+    label: 'Records',
+    k: 'adminNav.records',
+    href: '/admin/records',
+    icon: LuDatabase,
+    perms: ['view_records']
   }]
 }, {
   section: 'Management',
@@ -166,15 +179,6 @@ export const NAV = [{
   section: 'System',
   sk: 'adminNav.section.system',
   items: [{
-    // Every record on the site, the console as a CMS (inbox 420). Built from
-    // the models themselves, so a new feature's records appear here with no
-    // work. Changing one needs edit_records on top; the screens ask.
-    label: 'Records',
-    k: 'adminNav.records',
-    href: '/admin/records',
-    icon: LuDatabase,
-    perms: ['view_records']
-  }, {
     // Creating and removing administrators. The one thing the spec gives a
     // Super Admin and withholds from an Admin.
     label: 'Administrators',
@@ -239,7 +243,7 @@ function canSeeItem(item, permissions) {
  * at its own address.
  */
 export function permsForPath(pathname) {
-  const path = String(pathname || '').replace(/\/+$/, '') || '/admin';
+  const path = splitLocale(String(pathname || '')).path.replace(/\/+$/, '') || '/admin';
   let best = null;
   for (const group of NAV) {
     for (const item of group.items) {
@@ -258,11 +262,11 @@ export default function AdminNav({
   sidebarOpen = false
 }) {
   const tt = useT();
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const role = admin?.role || 'support';
   const permissions = admin?.permissions || null;
   const isActive = href => href === '/admin' ? pathname === '/admin' : pathname.startsWith(href);
-  return <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ''}`} id="admin-sidebar">
+  return <aside className={`${styles.sidebar} quietScroll ${sidebarOpen ? styles.open : ''}`} id="admin-sidebar">
       {/* Logo */}
       <div className={styles.logoContainer}>
         <Link className={styles.logoLink} href="/admin">
@@ -282,7 +286,7 @@ export default function AdminNav({
       </div>
 
       {/* Nav */}
-      <nav className={styles.nav}>
+      <nav className={`${styles.nav} quietScroll`}>
         <ul className={styles.navList}>
           {NAV.map(({
           section,

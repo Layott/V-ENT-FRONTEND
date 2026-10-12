@@ -225,6 +225,25 @@ html {
   }
 }
 
+/* A navigation panel that scrolls only when the window is too short for it: the
+   desktop sidebar, the phone drawer, the admin console's nav. Windows draws its
+   classic wide grey bar beside any such panel, and the CEO asked why it was
+   there (inbox 432, 12 October 2026). Here it is a slim dark bar instead,
+   brighter while the pointer or the keyboard is in the panel. It is not hidden
+   altogether: when a panel really is taller than the window, the bar is the
+   only thing saying there is more below (at 891px the admin nav hid Records,
+   Admins, the audit log and Settings under its fold). A panel that fits draws
+   no bar at all. Touch screens draw their own overlay bar. */
+.quietScroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.quietScroll:hover,
+.quietScroll:focus-within {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
 /* Documented in CLAUDE.md as one of the three global button classes, alongside
    .btn and .redBTN, and never actually written. Three places used it, so three
    buttons - including Try again on the tournament wizard's error screen - were

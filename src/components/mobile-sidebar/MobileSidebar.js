@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LuChevronDown } from 'react-icons/lu';
 import { useComingSoon } from '@/lib/platformModules';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import Link from 'next/link';
 // import { BiHomeCircle } from "react-icons/bi";
 import { MdOutlineEvent } from "react-icons/md";
@@ -38,7 +38,7 @@ const MobileSidebar = ({
   const signedIn = status === 'authenticated';
   const signedOut = status === 'unauthenticated';
   const t = useT();
-  const pathname = usePathname(); // Gets the current pathname
+  const pathname = useRoutePath(); // the route, without /fr or /pt in front
   // Help is only offered where there is something to say. A menu item that
   // opens an empty panel is worse than no menu item.
   const hasGuide = Boolean(guideFor(pathname || '/'));
@@ -66,7 +66,7 @@ const MobileSidebar = ({
     // middleware also accepts, so pressing Logout did not sign anybody out.
     await logOut();
   };
-  return <div className={`${styles.mobileSidebar} ${isOpen ? styles.open : ''}`}>
+  return <div className={`${styles.mobileSidebar} quietScroll ${isOpen ? styles.open : ''}`}>
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>

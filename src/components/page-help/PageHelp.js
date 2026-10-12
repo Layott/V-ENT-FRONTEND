@@ -15,7 +15,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import { LuCircleHelp, LuX } from 'react-icons/lu';
 import { guideFor } from './pageGuides';
 import { useT } from '@/i18n/LanguageProvider';
@@ -43,12 +43,12 @@ const SILENT = [
 
 export default function PageHelp() {
   const tt = useT();
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const [open, setOpen] = useState(false);
 
   const path = pathname || '/';
   const guide = guideFor(path);
-  const hidden = SILENT.some((r) => r.test(path.replace(/^\/(en|fr|pt)(?=\/|$)/, '')));
+  const hidden = SILENT.some((r) => r.test(path));
 
   // Closing on Escape, and on a route change. Leaving it open across a
   // navigation would describe the page somebody just left.

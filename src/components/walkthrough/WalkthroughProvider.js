@@ -4,7 +4,7 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useSession } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import Walkthrough, { TOUR_VERSION } from './Walkthrough';
 import { getJson } from '@/lib/apiCache';
 
@@ -34,7 +34,7 @@ const LOCAL_KEY = 'vent:walkthrough';
 // chapter is about, so starting it anywhere else moves somebody off the page
 // they asked for.
 const homeRoute = (pathname) =>
-  (pathname || '').replace(/^\/(fr|pt)(?=\/|$)/, '').replace(/\/$/, '') === '/home';
+  (pathname || '').replace(/\/$/, '') === '/home';
 
 const NEVER_ON = [
   '/login', '/signup', '/forgot-password', '/reset-password', '/reset-email',
@@ -57,7 +57,7 @@ const writeLocal = (value) => {
 
 export const WalkthroughProvider = ({ children }) => {
   const { data: session, status } = useSession();
-  const pathname = usePathname() || '';
+  const pathname = useRoutePath();
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
   const token = session?.user?.sessionToken;
 

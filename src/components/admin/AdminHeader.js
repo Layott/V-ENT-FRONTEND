@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { IoNotificationsOutline } from 'react-icons/io5';
@@ -28,7 +28,7 @@ export default function AdminHeader({
 }) {
   const tx = useTx();
   const tt = useT();
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const [pendingOpen, setPendingOpen] = useState(false);

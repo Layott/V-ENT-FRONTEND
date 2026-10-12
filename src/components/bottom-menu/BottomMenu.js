@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import { useSession } from 'next-auth/react'; // Add this import
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ const BottomMenu = ({
 }) => {
   const tt = useT();
   const t = useT();
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const {
     data: session,
     status
