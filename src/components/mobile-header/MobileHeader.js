@@ -14,11 +14,11 @@ import breadCrumbTitles from '../header/BreadCrumbData';
 import { unreadCount } from '@/components/notifications/notificationsApi';
 import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import styles from './mobile-header.module.css';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import MobileSidebar from '../mobile-sidebar/MobileSidebar';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import { signOut, useSession } from "next-auth/react"; // Import signOut function from next-auth
-import { splitLocale } from '@/lib/locale';
 
 const MobileHeader = ({
   className = ''
@@ -36,7 +36,7 @@ const MobileHeader = ({
   // Same drawer the desktop header opens; on a phone it comes up from the
   // bottom. One component, so a fix to it is a fix to both.
   const [notifOpen, setNotifOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const router = useRouter();
   const {
     data: session,
@@ -50,7 +50,7 @@ const MobileHeader = ({
     fallbackURL
   // By the path without its language: /fr/user-profile found nothing here,
   // so every French and Portuguese page had a blank title (30 September 2026).
-  } = breadCrumbTitles[splitLocale(pathname).path] || {
+  } = breadCrumbTitles[pathname] || {
     title: '',
     showBackArrow: false,
     fallbackURL: '/'

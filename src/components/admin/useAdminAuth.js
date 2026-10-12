@@ -18,14 +18,15 @@
 // disk outlived the tab and any sign-out that forgot to clear it (R66).
 
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useRoutePath } from '@/lib/routePath'
 import { signOut, useSession } from 'next-auth/react'
 import { permsForPath } from '@/components/admin/AdminNav'
 import { setAdminToken } from '@/lib/adminToken'
 
 export function useAdminAuth() {
   const router = useRouter()
-  const pathname = usePathname()
+  const pathname = useRoutePath()
   const { data: session, status } = useSession()
   const [admin, setAdmin] = useState(null)
   const [loading, setLoading] = useState(true)

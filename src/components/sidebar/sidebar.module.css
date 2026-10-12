@@ -4,8 +4,11 @@
 
 }
 
+/* The width of the panel it sits in, never a fixed 250px: when the list scrolls,
+   the scroll bar takes its width out of those 250 and a fixed logo row then
+   overflows sideways, drawing a second, horizontal bar (inbox 432). */
 .logoContainer {
-  width: 250px;
+  width: 100%;
   height: 60px;
   display: flex;
   align-items: center;
@@ -40,13 +43,19 @@
 
 .sidebarNav {
   margin-top: 0.25rem;
+  /* Room under Log out, so a scrolled list does not end on the window's edge. */
+  padding-bottom: 0.5rem;
 }
 
+/* 4px between rows, not 12. With 12 an admin's twenty links ran to about 940px,
+   so a 1080p screen with the browser's own bars (an 891px window) scrolled the
+   list and Windows drew a grey bar beside it (inbox 432, 12 October 2026). At 4px
+   all twenty fit any window 800px tall; the rows themselves keep their size. */
 .sidebarList {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.25rem;
 }
 
 .sidebarItem {
@@ -180,12 +189,16 @@
     display: flex;
     flex-direction: column;
     /* On a touch screen the links are 44px (the touch floor), and an iPad held sideways
-       is 768px tall: the list must scroll rather than fall off the bottom. */
+       is 768px tall: the list must scroll rather than fall off the bottom. A short laptop
+       window scrolls too; the global .quietScroll keeps the bar out of sight until the
+       pointer is over the list. */
     overflow-y: auto;
+    /* Never sideways: a 250px panel has nothing wider than itself to show. */
+    overflow-x: hidden;
     overscroll-behavior: contain;
   }
   .logoContainer {
-    width: 250px;
+    width: 100%;
   }
   .sidebarItem span.disabledLink {
     flex-direction: row;

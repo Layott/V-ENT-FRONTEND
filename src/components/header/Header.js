@@ -14,13 +14,13 @@ import { unreadCount } from '@/components/notifications/notificationsApi';
 import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import { getJson } from '@/lib/apiCache';
 import styles from './header.module.css';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { useSession } from "next-auth/react";
 import { logOut } from '@/lib/logout';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
-import { splitLocale } from '@/lib/locale';
 
 const Header = ({
   className = ''
@@ -40,7 +40,7 @@ const Header = ({
   // The bell opens a drawer over the page now rather than navigating away, so
   // glancing at what just happened does not cost you the screen you were on.
   const [notifOpen, setNotifOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const router = useRouter();
   const dropdownRef = useRef(null);
   const {
@@ -53,7 +53,7 @@ const Header = ({
     fallbackURL
   // By the path without its language: /fr/user-profile found nothing here,
   // so every French and Portuguese page had a blank title (30 September 2026).
-  } = breadCrumbTitles[splitLocale(pathname).path] || {
+  } = breadCrumbTitles[pathname] || {
     title: '',
     showBackArrow: false,
     fallbackURL: '/'

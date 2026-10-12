@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { clearSessionCookies } from '@/lib/logout';
 import { isGatedPath } from '@/lib/gatedRoutes';
+import { splitLocale } from '@/lib/locale';
 
 /**
  * Global session-expiry handler.
@@ -59,7 +60,7 @@ export default function SessionExpiryGuard() {
           // `/fr/admin` and `startsWith('/admin')` was false, so a dead admin
           // token fell through to the branch below and signed the admin out of
           // the entire site - the opposite of what the next comment promises.
-          const path = window.location.pathname.replace(/^\/(fr|pt)(?=\/|$)/, '') || '/';
+          const path = splitLocale(window.location.pathname).path;
           // The console used to have an identity of its own and a login screen
           // of its own, and a dead token there had to be kept away from the
           // main app. It reads the site session now, so an expired token in the

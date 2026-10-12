@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS, TOTAL_MINUTES, TOUR_VERSION, flattenSteps } from './tourChapters';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import styles from './walkthrough.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 
@@ -112,7 +113,7 @@ const Walkthrough = ({
   const tx = useTx();
   const tt = useT();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = useRoutePath();
   const steps = useMemo(() => flattenSteps(CHAPTERS), []);
   const firstIndex = useMemo(() => {
     if (!startAtChapter) return 0;
@@ -141,9 +142,8 @@ const Walkthrough = ({
   const wantedRoute = step?.chapterRoute || null;
   useEffect(() => {
     if (!wantedRoute) return;
-    // The locale prefix is the router's business, so compare what is left.
-    const here = pathname.replace(/^\/(fr|pt)(?=\/|$)/, '') || '/';
-    if (here === wantedRoute) return;
+    // The locale prefix is the router's business; useRoutePath has taken it off.
+    if (pathname === wantedRoute) return;
     router.push(wantedRoute);
   }, [wantedRoute, pathname, router]);
 

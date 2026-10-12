@@ -1,5 +1,5 @@
 import { useComingSoon } from '@/lib/platformModules';
-import { usePathname } from 'next/navigation';
+import { useRoutePath } from '@/lib/routePath';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,7 +27,7 @@ const Sidebar = ({
   const isComingSoon = useComingSoon();
   const tt = useT();
   const t = useT();
-  const pathname = usePathname(); // Gets the current pathname
+  const pathname = useRoutePath(); // the route, without /fr or /pt in front
   const {
     data: session,
     status
@@ -52,7 +52,7 @@ const Sidebar = ({
     // middleware also accepts, so pressing Logout did not sign anybody out.
     await logOut();
   };
-  return <div className={`${styles.desktopSidebar} ${customClass ? customClass : ''}`} data-tour="sidebar">
+  return <div className={`${styles.desktopSidebar} quietScroll ${customClass ? customClass : ''}`} data-tour="sidebar">
         <div className={styles.logoContainer}>
             <Link className={styles.logoLink} href={logoHref}>
                 <div className={styles.innerLogoContainer}>

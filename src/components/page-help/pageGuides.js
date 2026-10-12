@@ -28,6 +28,8 @@
 // its own entry rather than the one for `/wallets`, and `/tournaments/anything`
 // falls to the tournament detail entry rather than the tournaments list.
 
+import { splitLocale } from '@/lib/locale';
+
 export const GUIDES = {
   // ------------------------------------------------------------ the basics
   '/': {
@@ -975,7 +977,7 @@ export function guideFor(pathname) {
   if (!pathname) return null;
 
   // The locale prefix is not part of the address as far as this is concerned.
-  const path = String(pathname).replace(/^\/(en|fr|pt)(?=\/|$)/, '') || '/';
+  const path = splitLocale(String(pathname)).path;
   if (GUIDES[path]) return { ...GUIDES[path], key: routeKey(path) };
 
   const parts = path.split('/').filter(Boolean);

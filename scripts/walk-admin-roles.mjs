@@ -36,6 +36,11 @@ const ONLY = arg('--role', '');
 // opened is measured for sideways scroll and for targets under 44px (links
 // inside a sentence are typography and not counted).
 const WIDTH = Number(arg('--width', '0')) || 0;
+// --lang fr walks the console at its French addresses (/fr/admin/...). The
+// page guard once matched no section there and let a moderator in (inbox 433).
+const LANG = arg('--lang', '');
+const at = (path) => (LANG ? `/${LANG}${path}` : path);
+const route = (p) => (LANG ? p.replace(new RegExp(`^/${LANG}(?=/|$)`), '') || '/' : p);
 
 async function measure(page) {
   if (!WIDTH) return '';
@@ -199,7 +204,7 @@ for (const who of ROLES) {
     console.log(`\n${who.user} (${who.role}) signed in as ${signedIn}`);
 
     for (const path of who.allowed) {
-      await page.goto(BASE + path, { waitUntil: 'networkidle2', timeout: 45000 });
+      await page.goto(BASE + at(path), { waitUntil: 'networkidle2', timeout: 45000 });
       await new Promise((r) => setTimeout(r, 2500));
       const seen = await page.evaluate(() => ({
         url: location.pathname,
@@ -207,21 +212,21 @@ for (const who of ROLES) {
         buttons: [...document.querySelectorAll('button')]
           .filter((b) => !b.disabled).length,
         // The console's own wording for a section somebody may not open.
-        refused: /not part of your role|not allowed|no permission|forbidden/i
+        refused: /not part of your role|ne fait pas partie de votre rôle|não faz parte do seu papel|not allowed|no permission|forbidden/i
           .test(document.body.innerText || ''),
       }));
-      const ok = seen.url.startsWith('/admin') && seen.text > 300 && !seen.refused;
+      const ok = route(seen.url).startsWith('/admin') && seen.text > 300 && !seen.refused;
       if (!ok) failures += 1;
       console.log(`  ${ok ? 'ok  ' : 'FAIL'} sees ${path}  (${seen.text} chars, `
         + `${seen.buttons} live controls, at ${seen.url})${await measure(page)}`);
     }
 
     for (const path of who.refused) {
-      await page.goto(BASE + path, { waitUntil: 'networkidle2', timeout: 45000 });
+      await page.goto(BASE + at(path), { waitUntil: 'networkidle2', timeout: 45000 });
       await new Promise((r) => setTimeout(r, 2000));
       const seen = await page.evaluate(() => ({
         url: location.pathname,
-        refused: /not part of your role|not allowed|no permission|forbidden|denied/i
+        refused: /not part of your role|ne fait pas partie de votre rôle|não faz parte do seu papel|not allowed|no permission|forbidden|denied/i
           .test(document.body.innerText || ''),
         live: [...document.querySelectorAll('button')].filter((b) => !b.disabled).length,
       }));
@@ -230,14 +235,17 @@ for (const who of ROLES) {
       // 8 September a moderator reached /admin/admins and was given a live
       // "Give somebody a role" button beside the refusal.
       const quiet = seen.live <= 1;   // the one link back to the dashboard
-      const ok = (seen.refused && quiet) || !seen.url.startsWith(path);
+      const ok = (seen.refused && quiet) || !route(seen.url).startsWith(path);
       if (!ok) failures += 1;
       console.log(`  ${ok ? 'ok  ' : 'FAIL'} refused ${path}  (at ${seen.url}`
         + `${seen.refused ? ', says so' : ', SILENTLY'}`
         + `, ${seen.live} live control(s))`);
     }
 
-    for (const c of who.controls || []) {
+    // The control labels below are English; under --lang they would pass by
+    // finding nothing, so they are not claimed there.
+    if (LANG && (who.controls || []).length) console.log(`  --   controls checked in English only`);
+    for (const c of LANG ? [] : who.controls || []) {
       let path = c.path;
       if (c.first) {
         await page.goto(`${BASE}/admin/records/${c.first}`, { waitUntil: 'networkidle2', timeout: 45000 });
@@ -252,7 +260,7 @@ for (const who of ROLES) {
           continue;
         }
       }
-      await page.goto(BASE + path, { waitUntil: 'networkidle2', timeout: 45000 });
+      await page.goto(BASE + at(path), { waitUntil: 'networkidle2', timeout: 45000 });
       await new Promise((r) => setTimeout(r, 2500));
       const live = await page.evaluate(() => [...document.querySelectorAll('main button')]
         .filter((b) => !b.disabled).map((b) => (b.textContent || '').trim()));
