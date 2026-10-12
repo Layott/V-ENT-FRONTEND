@@ -30,13 +30,17 @@
 
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* A filled button beside the gold one, never an outline (the console's
+   View Public Page and Duplicate, inbox 445/446). Also used on a link. */
 .outlineBtn {
   height: 38px;
   padding: 0 1.25rem;
-  background-color: transparent;
+  background-color: #2a2b30;
+  border: 0;
+  text-decoration: none;
 
-  color: rgba(255,255,255,0.75);
-  border-radius: 6px;
+  color: rgba(255,255,255,0.85);
+  border-radius: 10px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -48,9 +52,11 @@
 }
 
 .outlineBtn:hover {
-
-  color: var(--primary-bg);
+  background-color: #33343a;
+  color: #fff;
 }
+
+.outlineBtn:disabled { opacity: 0.55; cursor: default; }
 
 .dangerBtn {
   background-color: rgba(237,28,36,0.1);

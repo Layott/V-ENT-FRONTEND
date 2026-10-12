@@ -13,6 +13,7 @@ import styles from '../wallets.module.css';
 import pinStyles from './pin.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 
 // Keep only digits, cap at 4.
 const clean4 = val => val.replace(/\D/g, '').slice(0, 4);
@@ -228,9 +229,9 @@ const PinPage = () => {
                 {tt("ui.secure.sends.withdrawals.digit.1db8", "Secure your sends and withdrawals with a 4-digit PIN.")}
               </p>
             </div>
-            <Link href="/wallets" className={styles.sectionLink}>
-              {tt("ui.back.wallet.f0f5", "← Back to wallet")}
-            </Link>
+            <BackLink href="/wallets" className={styles.sectionLink}>
+              {tt("ui.back.wallet.f0f5", "Back to wallet")}
+            </BackLink>
           </div>
 
           {content}

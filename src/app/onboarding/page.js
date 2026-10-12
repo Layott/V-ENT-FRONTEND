@@ -10,6 +10,7 @@ import styles from './onboarding.module.css';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { COUNTRIES } from '@/constants/countries';
 const STEPS = [{
   id: 'profile',
   label: 'Profile'
@@ -26,7 +27,8 @@ const STEPS = [{
   id: 'done',
   label: 'Done'
 }];
-const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Other'];
+// The one country list, alphabetical, then Other (inbox 443).
+const REGIONS = [...COUNTRIES, 'Other'];
 const OnboardingContent = () => {
   const tx = useTx();
   const tt = useT();

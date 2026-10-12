@@ -18,6 +18,7 @@ import shared from '@/components/edit-profile-panels/editProfileShared.module.cs
 import styles from './edit-user-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { LuChevronRight } from 'react-icons/lu';
 const PANELS = [{
   id: 'info',
   label: 'Profile Info'
@@ -263,7 +264,7 @@ const EditUserProfileContent = () => {
                   {PANELS.map(p => <li key={p.id} className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}>
                       <button type="button" onClick={() => setPanel(p.id)}>
                         {tx(p.label)}
-                        <span className={shared.chev}>›</span>
+                        <LuChevronRight className={shared.chev} aria-hidden="true" />
                       </button>
                     </li>)}
                 </ul>
@@ -307,7 +308,7 @@ const EditUserProfileContent = () => {
                 {PANELS.map(p => <li key={p.id} className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}>
                     <button type="button" onClick={() => setPanel(p.id)}>
                       {tx(p.label)}
-                      <span className={shared.chev}>›</span>
+                      <LuChevronRight className={shared.chev} aria-hidden="true" />
                     </button>
                   </li>)}
               </ul>

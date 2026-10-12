@@ -7,10 +7,12 @@
 // were free text before this: an organiser could type "Naija" and refuse every
 // Nigerian on the platform, and nothing would look broken to either of them.
 //
-// Africa first, and not as a courtesy. This is an Africa-first platform, the
-// entire current membership is in Nigeria, the UK and the US, and a picker that
-// opens on Afghanistan makes the common case the slowest one. The rest of the
-// world follows, alphabetically.
+// In alphabetical order. It was Africa first, then the rest of the world
+// alphabetically, so a picker read Senegal ... Zimbabwe and then started again
+// at Afghanistan; the CEO asked for one alphabetical list everywhere on
+// 12 October 2026 (inbox 443). AFRICA and REST_OF_WORLD stay as the record of
+// which is which; COUNTRIES, which every screen reads, is sorted, and
+// scripts/check-country-order.mjs fails on a country list that is not.
 //
 // Full names rather than ISO codes, because that is what is already stored and
 // what people read. A migration to codes would have to rewrite every existing
@@ -50,7 +52,22 @@ export const REST_OF_WORLD = [
   'Vietnam', 'Yemen',
 ];
 
-export const COUNTRIES = [...AFRICA, ...REST_OF_WORLD];
+// The names are shown in English in every language, so they are ordered the
+// English way, ignoring case and accents ("Åland" sorts with the A's).
+const byName = new Intl.Collator('en', { sensitivity: 'base' });
+
+/** Any list of country names, alphabetical. Use it for a list built on a page. */
+export function sortCountries(list) {
+  return [...list].sort((a, b) => byName.compare(String(a), String(b)));
+}
+
+export const COUNTRIES = sortCountries([...AFRICA, ...REST_OF_WORLD]);
+
+// Where an organisation says it works. Short because it is offered as chips;
+// "All Africa" first, then the countries in order. One list for creating an
+// organisation, filtering them and searching them (inbox 443: three copies,
+// none in order).
+export const ORG_REGIONS = ['All Africa', ...sortCountries(['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt'])];
 
 /** Whether a stored value is one this list knows, compared the way the backend
  *  compares it. Used to keep a country somebody already saved selectable even

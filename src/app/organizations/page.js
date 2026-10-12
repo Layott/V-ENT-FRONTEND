@@ -23,6 +23,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, signInHref, useViewer, usernameOf } from '@/lib/gating';
 import { appLocale } from '@/lib/appLocale';
+import { ORG_REGIONS } from '@/constants/countries';
 // Through `appLocale()`, never `undefined`. `toLocaleDateString(undefined)`
 // means the BROWSER's language, so a French reader on an English machine gets
 // English dates on an otherwise French page, and grep never finds it.
@@ -48,7 +49,7 @@ const TABS = [{
   label: 'My Orgs',
   needsAccount: true
 }];
-const REGIONS = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'All Africa'];
+const REGIONS = ORG_REGIONS;
 const FOCUS_OPTIONS = [{
   id: 'esports',
   label: 'Esports'

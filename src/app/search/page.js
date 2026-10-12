@@ -30,6 +30,8 @@ import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { eventTypeLabel, seriesStatusLabel } from '@/lib/labels';
 import { fuzzyFilter } from '@/lib/fuzzy';
+import { ORG_REGIONS } from '@/constants/countries';
+import { prizeText } from '@/lib/prize';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -488,6 +490,7 @@ const SearchPageInner = () => {
               <option value="single_elimination">{tt("ui.single.elim.6083", "Single Elim")}</option>
               <option value="double_elimination">{tt("ui.double.elim.89ab", "Double Elim")}</option>
               <option value="round_robin">{tt("ui.round.robin.b15b", "Round Robin")}</option>
+              <option value="league">{tt("format.label.league", "League")}</option>
             </Select>
           </FilterGroup>
           <FilterGroup label={tt("ui.status.bae7", "Status")}>
@@ -635,7 +638,7 @@ const SearchPageInner = () => {
           <FilterGroup label={tt("ui.region.0f21", "Region")}>
             <Select value={orgRegion} onChange={setOrgRegion}>
               <option value="">{tt("ui.any.region.880d", "Any region")}</option>
-              {['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt'].map(r => <option key={r} value={r}>{r}</option>)}
+              {ORG_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
             </Select>
           </FilterGroup>
           <FilterGroup label={tt("ui.verification.0312", "Verification")}>
@@ -893,7 +896,7 @@ const TournamentCard = ({
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>
             <LuTrophy className={styles.metaIcon} />
-            <span className={styles.metaPrize}>{(t.prize_pool || 0).toLocaleString()} VC</span>
+            <span className={styles.metaPrize}>{prizeText(t)}</span>
           </div>
           <div className={styles.metaRow}>
             <LuCalendar className={styles.metaIcon} />

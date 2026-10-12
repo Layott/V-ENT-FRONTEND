@@ -12,6 +12,7 @@ import styles from './user-profile-tournaments-history.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { prizeText } from '@/lib/prize';
 const UserProfileTournamentsHistory = () => {
   const tt = useT();
   const {
@@ -106,7 +107,7 @@ const UserProfileTournamentsHistory = () => {
         const name = t.tournament_title || t.name || '-';
         const game = t.game || t.core_game || '-';
         const type = t.tournament_type || t.format || '-';
-        const prize = t.prize || t.prize_pool ? `N${t.prize || t.prize_pool}` : '-';
+        const prize = t.prize || t.prize_pool ? prizeText(t) : '-';
         const status = t.status || '-';
         const pos = t.position || t.placement || '-';
         const date = formatDate(t.start_date || t.start_date_and_time || t.date);

@@ -26,7 +26,9 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export default function TournamentAccess({ tournamentId, token, visibility }) {
   const tt = useT();
   const [invites, setInvites] = useState([]);
-  const [limit, setLimit] = useState(64);
+  // The places this tournament has, or null when it has no size: there is no
+  // 64 ceiling any more (inbox 441), so a null limit means "no total".
+  const [limit, setLimit] = useState(null);
   const [queue, setQueue] = useState([]);
   const [approvalRequired, setApprovalRequired] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       const regs = await queueRes.json().catch(() => ({}));
       if (codesRes.ok && codes.status === 'success') {
         setInvites(codes.data.invites || []);
-        if (!quiet) setLimit(codes.data.limit ?? 64);
+        if (!quiet) setLimit(codes.data.limit ?? null);
       }
       if (queueRes.ok && regs.status === 'success') {
         setQueue(regs.data.registrations || []);
@@ -216,7 +218,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       <div className={styles.block}>
         <p className={styles.title}>
           {tt('access.codesTitle', 'Invite codes')}
-          <span className={styles.count}>{invites.length}/{limit}</span>
+          <span className={styles.count}>{limit ? `${invites.length}/${limit}` : invites.length}</span>
         </p>
         <p className={styles.hint}>
           {closed
@@ -225,7 +227,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
         </p>
 
         <div className={styles.mint}>
-          <input className={styles.input} type="number" min="1" max={limit}
+          <input className={styles.input} type="number" min="1" max={limit || 1000}
                  value={howMany}
                  onChange={e => setHowMany(e.target.value.replace(/[^0-9]/g, ''))} />
           <button type="button" className={styles.primary} disabled={busy}

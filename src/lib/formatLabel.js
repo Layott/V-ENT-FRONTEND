@@ -11,6 +11,7 @@ export const FORMAT_KEYS = [
   'single_elimination',
   'double_elimination',
   'round_robin',
+  'league',
   'swiss',
   'gsl',
   'battle_royale',
@@ -25,6 +26,7 @@ const FALLBACK = {
   single_elimination: 'Single elimination',
   double_elimination: 'Double elimination',
   round_robin: 'Round robin',
+  league: 'League',
   swiss: 'Swiss',
   gsl: 'GSL groups',
   battle_royale: 'Battle royale',
@@ -40,7 +42,10 @@ const FALLBACK = {
 const ALIASES = {
   swiss_system: 'swiss',
   swiss_rounds: 'swiss',
-  league: 'round_robin',
+  // 'league' was read as round robin until it became its own format (inbox
+  // 440, 12 October 2026).
+  football_league: 'league',
+  home_and_away: 'league',
   roundrobin: 'round_robin',
   rr: 'round_robin',
   single: 'single_elimination',

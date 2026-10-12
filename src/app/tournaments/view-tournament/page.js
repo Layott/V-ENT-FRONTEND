@@ -42,6 +42,8 @@ import { plural } from '@/lib/plural';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { entryStatusLabel } from '@/lib/labels';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { prizeText, prizeRowText, prizeOf, coinText, formatPrizeMoney } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -404,7 +406,7 @@ export const ViewTournamentContent = ({
           backgroundImage: `url(${bannerUrl})`
         } : undefined}>
             <div className={styles.heroOverlay}>
-              <Link href="/tournaments" className={styles.backLink}>{tt("ui.back.tournaments.407d", "← Back to Tournaments")}</Link>
+              <BackLink href="/tournaments" className={styles.backLink}>{tt("ui.back.tournaments.407d", "Back to Tournaments")}</BackLink>
               <div className={styles.heroContent}>
                 <div className={styles.heroLeft}>
                   <div className={styles.heroTags}>
@@ -488,7 +490,7 @@ export const ViewTournamentContent = ({
               <LuTrophy className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>{tt("ui.prize.pool.548a", "Prize Pool")}</p>
-                <p className={styles.metaValueBig}>{Number(tournament.prize_pool || 0).toLocaleString()} VC</p>
+                <p className={styles.metaValueBig}>{prizeText(tournament)}</p>
               </div>
             </div>
             <div className={styles.metaItem}>
@@ -983,6 +985,7 @@ const PrizePanel = ({
       pos: ordinalPlace(d.position ?? d.pos ?? i + 1),
       percent,
       amount,
+      row: d,
       label: d.label || '',
       count: d.count
     };
@@ -995,8 +998,15 @@ const PrizePanel = ({
   return <div>
       <div className={styles.prizeHero}>
         <p className={styles.metaLabel}>{tt("ui.total.prize.pool.a6fe", "Total Prize Pool")}</p>
-        <p className={styles.prizeAmount}>{formatNumber(total)} <span className={styles.vcUnit}>VC</span></p>
-        <p className={styles.prizeFiat}>≈ {coinsAsNgn(total)} NGN</p>
+        {/* As the organiser typed it, coins beneath (inbox 444). A pool set
+            in coins keeps its naira guide. */}
+        {prizeOf(tournament).amount != null ? <>
+            <p className={styles.prizeAmount}>{formatPrizeMoney(prizeOf(tournament).amount, prizeOf(tournament).currency)}</p>
+            <p className={styles.prizeFiat}>{coinText(total)}</p>
+          </> : <>
+            <p className={styles.prizeAmount}>{formatNumber(total)} <span className={styles.vcUnit}>VC</span></p>
+            <p className={styles.prizeFiat}>≈ {coinsAsNgn(total)} NGN</p>
+          </>}
       </div>
 
       <section className={styles.section}>
@@ -1021,7 +1031,7 @@ const PrizePanel = ({
                     {d.label}{d.label && d.count ? ' · ' : ''}{d.count ? plural(tt, d.count, 'slots.teamOne', '{n} team', 'slots.teams', '{n} teams') : ''}
                   </p>}
                 </div>
-                <span className={styles.prizeAmtCell}>{formatNumber(Number(amount || 0))} VC</span>
+                <span className={styles.prizeAmtCell}>{d.row ? prizeRowText(d.row) : coinText(amount)}</span>
                 <span className={styles.prizePercent}>{d.percent != null ? `${d.percent}%` : '-'}</span>
               </div>;
         })}

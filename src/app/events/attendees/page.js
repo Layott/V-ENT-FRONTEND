@@ -20,6 +20,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import BackLink from '@/components/back-link/BackLink';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const AttendeesContent = ({
   slug: slugFromPath
@@ -393,7 +394,7 @@ const AttendeesContent = ({
       return <div className={styles.errorBox}>
           <p className={styles.errorTitle}>{error}</p>
           <p className={styles.errorSub}>{tt("ui.only.organizer.event.can.0b81", "Only the organizer of this event can see its attendee list.")}</p>
-          <Link href="/events" className={styles.backLink}>{tt("ui.back.events.d104", "← Back to events")}</Link>
+          <BackLink href="/events" className={styles.backLink}>{tt("ui.back.events.d104", "Back to events")}</BackLink>
         </div>;
     }
     // The three numbers, taken from the server's shared counter rather than
@@ -618,7 +619,7 @@ const AttendeesContent = ({
         <Sidebar />
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
-            <Link href={`/events/${eventId || ''}`} className={styles.backLink}>{tt("ui.back.event.ba2d", "← Back to event")}</Link>
+            <BackLink href={`/events/${eventId || ''}`} className={styles.backLink}>{tt("ui.back.event.ba2d", "Back to event")}</BackLink>
             <h1 className={styles.pageTitle}>{tt("ui.door.list.9958", "Door list")}</h1>
             <p className={styles.pageSubtitle}>{tt("ui.everyone.holding.ticket.who.9087", "Everyone holding a ticket, and who has arrived.")}</p>
             {/* The scanner, findable. On 5 September nobody opened it at all:

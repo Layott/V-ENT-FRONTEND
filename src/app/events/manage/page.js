@@ -45,6 +45,7 @@ import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
 import { formatWithZone, formatNumber, isoToLocalInput, withLocalDatesAsISO } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import BackLink from '@/components/back-link/BackLink';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -1059,9 +1060,9 @@ export const ManageEventContent = ({
       <main className={styles.mainContainer}>
         <Sidebar />
         <div className={styles.rightPane}>
-          <Link href={`/events/${eventRef}`} className={styles.backLink}>
-            {tt('manage.backToEvent', '← Back to the event')}
-          </Link>
+          <BackLink href={`/events/${eventRef}`} className={styles.backLink}>
+            {tt('manage.backToEvent', 'Back to the event')}
+          </BackLink>
           {/* `pageHead` rather than `rowBetween`: on a phone this wraps, and
               `rowBetween` carries no bottom margin, so the button landed flush
               against the sentence below it and read as overlapping text. The
@@ -1088,9 +1089,9 @@ export const ManageEventContent = ({
           {refused ? <p className={styles.muted}>
               {tt('manage.refusedHint', 'Only the person running this event can open its workspace. The event page itself is open to everybody.')}
               {' '}
-              <Link href={`/events/${eventRef}`}>
-                {tt('manage.backToEvent', '← Back to the event')}
-              </Link>
+              <BackLink href={`/events/${eventRef}`}>
+                {tt('manage.backToEvent', 'Back to the event')}
+              </BackLink>
             </p>
             : loading ? <p className={styles.muted}>{tt('ui.loading', 'Loading…')}</p>
             : !eventRef ? <p className={styles.muted}>

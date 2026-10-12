@@ -17,6 +17,8 @@ import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import RulesEditor from '@/components/rules-editor/RulesEditor';
 import { adminToken } from '@/lib/adminToken'
+import { prizeText } from '@/lib/prize';
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'active') return shared.sActive;
@@ -322,7 +324,7 @@ function TournamentsInner() {
                         </td>
                         <td className={shared.hideMobile}>{t.participants_count || 0}</td>
                         <td className={shared.hideMobile}>
-                          {t.prize_pool ? `${Number(t.prize_pool).toLocaleString()} VC` : '-'}
+                          {t.prize_pool ? prizeText(t) : '-'}
                         </td>
                         <td className={shared.hideMobile}>
                           {t.created_at ? formatDate(t.created_at) : '-'}
@@ -376,14 +378,14 @@ function TournamentsInner() {
             {totalPages > 1 && <div className={shared.pagination}>
                 <span className={shared.paginationInfo}>{tt("ui.page.fb06", "Page")} {page} of {totalPages}</span>
                 <div className={shared.paginationBtns}>
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><PagerArrow dir="prev" /></button>
                   {Array.from({
                 length: Math.min(5, totalPages)
               }, (_, i) => {
                 const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
                 return <button key={p} className={`${shared.pageBtn} ${p === page ? shared.pageBtnActive : ''}`} onClick={() => setPage(p)}>{p}</button>;
               })}
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><PagerArrow dir="next" /></button>
                 </div>
               </div>}
           </div>

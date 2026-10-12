@@ -17,8 +17,11 @@ import { formatDate, formatNumber } from '@/lib/datetime';
 import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
+import { COUNTRIES } from '@/constants/countries';
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 const PAGE_SIZE = 20;
-const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Tanzania', 'Uganda', 'Cameroon'];
+// The one country list, alphabetical (inbox 443). The filter had eight of its
+// own, in no order, and could not find a member from anywhere else.
 const STATUSES = [{
   value: '',
   label: 'All Statuses'
@@ -337,7 +340,7 @@ function UsersInner() {
             {totalPages > 1 && <div className={shared.pagination}>
                 <span className={shared.paginationInfo}>{tt("ui.page.fb06", "Page")} {page} of {totalPages}</span>
                 <div className={shared.paginationBtns}>
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><PagerArrow dir="prev" /></button>
                   {Array.from({
                 length: Math.min(5, totalPages)
               }, (_, i) => {
@@ -346,7 +349,7 @@ function UsersInner() {
                         {p}
                       </button>;
               })}
-                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+                  <button className={shared.pageBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><PagerArrow dir="next" /></button>
                 </div>
               </div>}
           </div>

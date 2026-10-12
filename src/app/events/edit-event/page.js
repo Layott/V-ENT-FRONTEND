@@ -32,6 +32,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -215,9 +216,9 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
         <div className={styles.rightPane}>
           <div className={styles.headRow}>
             <div>
-              <Link href="/events/my-events" className={styles.back}>
-                {tt('eventEdit.back', '← My events')}
-              </Link>
+              <BackLink href="/events/my-events" className={styles.back}>
+                {tt('eventEdit.back', 'My events')}
+              </BackLink>
               <h1 className={styles.pageTitle}>
                 {tt('eventEdit.title', 'Edit event')}
               </h1>

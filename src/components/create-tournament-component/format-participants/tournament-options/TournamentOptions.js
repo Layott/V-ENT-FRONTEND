@@ -66,6 +66,8 @@ export const DEFAULT_OPTIONS = {
   third_place_match: false,
   every_place: false,
   streak_target: 0,
+  // 0: the format's own answer (League home and away, round robin once).
+  legs: 0,
   best_of_mode: 'fixed',
   best_of: 1,
   best_of_final: 3,
@@ -102,6 +104,9 @@ const Toggle = ({
     </button>
     {tip ? <InfoTip id={tip} className={styles.toggleTip} /> : null}
   </div>;
+// The formats decided by a table, which is where "each pair meets" means
+// something. Same set the server schedules as a round robin.
+const TABLE_KEYS = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
 const TournamentOptions = ({
   formData = {},
   updateFormData
@@ -179,6 +184,20 @@ const TournamentOptions = ({
               </select>
             </label>}
         </div>
+
+        {/* A table: each pair meets once, or home and away (inbox 440). */}
+        {TABLE_KEYS.has(formatKey(formData.bracket_type)) && <div className={styles.group}>
+            <h4 className={styles.groupTitle}>{tt("opts.legs", "Each pair meets")}</h4>
+            <div className={styles.choiceRow}>
+              {[[1, 'opts.legsOnce', 'Once'], [2, 'opts.legsHomeAway', 'Home and away']].map(([n, k, en]) => {
+            const shown = options.legs || (formatKey(formData.bracket_type) === 'league' ? 2 : 1);
+            return <button type="button" key={n} aria-pressed={shown === n} className={`${styles.chip} ${shown === n ? styles.chipOn : ''}`} onClick={() => set('legs', n)}>
+                  {tt(k, en)}
+                </button>;
+          })}
+            </div>
+            <p className={styles.groupHint}>{tt("opts.legsHint", "Home and away plays every pair twice, sides swapped, so it doubles the matches.")}</p>
+          </div>}
 
         {/* ----------------------------------------------------- matches */}
         <div className={styles.group}>

@@ -34,6 +34,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import styles from './edit-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -297,9 +298,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
         <div className={styles.rightPane}>
           <div className={styles.headRow}>
             <div>
-              <Link href="/tournaments/my-tournaments" className={styles.back}>
-                {tt('tEdit.back', '← My tournaments')}
-              </Link>
+              <BackLink href="/tournaments/my-tournaments" className={styles.back}>
+                {tt('tEdit.back', 'My tournaments')}
+              </BackLink>
               <h1 className={styles.pageTitle}>{tt('tEdit.title', 'Edit tournament')}</h1>
               <p className={styles.pageSub}>
                 {tt('tEdit.sub', 'Change what needs changing. Only what you touch is sent, so nothing else on the tournament moves.')}

@@ -12,6 +12,7 @@
 import Link from 'next/link';
 import { getT, serverLocale } from '@/i18n/server';
 import { POLICY_KEYS, SECTIONS } from './policyCopy';
+import BackLink from '@/components/back-link/BackLink';
 
 // No metadata here: the layout's generateMetadata gives the title and
 // description in the reader's language, and a page's own const would override
@@ -107,7 +108,7 @@ export default async function PrivacyPolicy() {
     <div style={containerStyle}>
       <div style={innerStyle}>
         {/* Home in the reader's own language, through the router. */}
-        <Link href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>&larr; {k('back')}</Link>
+        <BackLink href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>{k('back')}</BackLink>
         <h1 style={headingStyle}>{k('title')}</h1>
         <p style={subStyle}>{k('updated')}</p>
 

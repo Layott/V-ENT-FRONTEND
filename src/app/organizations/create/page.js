@@ -16,6 +16,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './create-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { ORG_REGIONS } from '@/constants/countries';
 const STEPS = [{
   id: 1,
   label: 'Identity'
@@ -32,7 +33,7 @@ const STEPS = [{
   id: 5,
   label: 'Review'
 }];
-const REGION_CHOICES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'All Africa'];
+const REGION_CHOICES = ORG_REGIONS;
 const FOCUS_CHOICES = [{
   id: 'esports',
   label: 'Esports'

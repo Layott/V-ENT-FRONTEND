@@ -16,6 +16,7 @@ import styles from './drafts.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
+import BackLink from '@/components/back-link/BackLink';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -137,7 +138,7 @@ const Drafts = () => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div>
-              <Link href="/tournaments" className={styles.backLink}>{tt("ui.back.tournaments.407d", "← Back to Tournaments")}</Link>
+              <BackLink href="/tournaments" className={styles.backLink}>{tt("ui.back.tournaments.407d", "Back to Tournaments")}</BackLink>
               <h1 className={styles.pageTitle}>{tt("ui.saved.drafts.e13d", "Saved Drafts")}</h1>
               <p className={styles.pageSub}>{tt("ui.pick.up.where.left.d3d8", "Pick up where you left off, or start fresh.")}</p>
             </div>

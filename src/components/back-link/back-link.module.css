@@ -1,0 +1,19 @@
+/* An arrow and its words as one thing: the gap is small and fixed, the icon
+   sits on the text's middle and scales with it. No motion on hover; the
+   colour change is the page's own. */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+}
+
+.icon {
+  flex: none;
+  font-size: 1.1em;
+}
+
+/* A finger needs a target, not a line of small text. */
+@media (pointer: coarse) {
+  .back { min-height: 44px; }
+}

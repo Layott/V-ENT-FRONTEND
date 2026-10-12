@@ -9,6 +9,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 const TOURNAMENT_STATUS = {
   upcoming: {
     cls: styles.sUpcoming,
@@ -333,11 +334,11 @@ const ActivityPanel = ({
               <span className={styles.pagInfo}>{tt("ui.showing.163d", "Showing")} {start + 1}-{end} of {total}</span>
             </div>
             <div className={styles.pagBtns}>
-              <button className={styles.pagBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+              <button className={styles.pagBtn} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><PagerArrow dir="prev" /></button>
               {Array.from({
             length: totalPages
           }, (_, i) => i + 1).map(n => <button key={n} className={`${styles.pagBtn} ${page === n ? styles.pagBtnActive : ''}`} onClick={() => setPage(n)}>{n}</button>)}
-              <button className={styles.pagBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+              <button className={styles.pagBtn} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><PagerArrow dir="next" /></button>
             </div>
           </div>}
       </div>

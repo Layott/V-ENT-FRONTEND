@@ -33,6 +33,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
+import PagerArrow from '@/components/pager-arrow/PagerArrow';
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -398,9 +399,9 @@ function AdminEventDetailInner() {
                 </div>}
 
               {pages > 1 && <div className={shared.pagination}>
-                <button className={shared.pageBtn} onClick={() => setTicketPage(p => Math.max(1, p - 1))} disabled={ticketPage === 1}>&lsaquo;</button>
+                <button className={shared.pageBtn} onClick={() => setTicketPage(p => Math.max(1, p - 1))} disabled={ticketPage === 1}><PagerArrow dir="prev" /></button>
                 <span className={shared.resultsCount}>{ticketPage} / {pages}</span>
-                <button className={shared.pageBtn} onClick={() => setTicketPage(p => Math.min(pages, p + 1))} disabled={ticketPage === pages}>&rsaquo;</button>
+                <button className={shared.pageBtn} onClick={() => setTicketPage(p => Math.min(pages, p + 1))} disabled={ticketPage === pages}><PagerArrow dir="next" /></button>
               </div>}
             </div>}
 
