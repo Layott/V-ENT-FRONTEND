@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+import { fileURLToPath } from 'node:url';
 
 // Production media host, e.g. "api.v-ent.co". Set NEXT_PUBLIC_MEDIA_HOST at
 // build time; without it only the local dev hosts below are allowed.
@@ -78,6 +79,8 @@ const securityHeaders = [
   // ask for any of them.
   { key: 'Permissions-Policy', value: 'camera=(self), geolocation=(self), microphone=()' },
 ];
+
+const SSR_TABLES = fileURLToPath(new URL('./src/i18n/ssrTables.js', import.meta.url));
 
 const nextConfig = {
   // DEV builds into their own directory, so a production build can never
@@ -216,12 +219,26 @@ const nextConfig = {
   // addresses have been sent in emails and printed on a listing, so they keep
   // working rather than 404ing at the moment somebody is checking what they
   // agreed to.
+  // Every language table, for the server's render only (src/i18n/ssrTables.js).
+  // In the browser build the name resolves to nothing, so the tables never
+  // ship inside a script; the browser reads its one table from /i18n/.
+  webpack(config, { isServer }) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'vent-ssr-tables$': isServer ? SSR_TABLES : false,
+    };
+    return config;
+  },
+
   async headers() {
     return [
       // A prefixed embed (/fr/embed/...) is still an embed.
       { source: '/:path((?!(?:fr/|pt/)?embed/).*)', headers: securityHeaders },
       { source: '/embed/:path*', headers: embedHeaders },
       { source: '/:locale(fr|pt)/embed/:path*', headers: embedHeaders },
+      // A language table's name is a hash of its content (inbox 454), so a
+      // copy is never stale and the browser may keep it for a year.
+      { source: '/i18n/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
     ];
   },
 

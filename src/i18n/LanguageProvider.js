@@ -11,6 +11,9 @@ import { LANGUAGES } from './generated/languages';
 import { DEFAULT_LOCALE, LOCALE_COOKIE, localePath, splitLocale } from '@/lib/locale';
 import { setAppLocale } from '@/lib/appLocale';
 import { getJson } from '@/lib/apiCache';
+// Every table, on the server only: next.config.mjs points this name at
+// src/i18n/ssrTables.js for the server build and at nothing in the browser.
+import serverTables from 'vent-ssr-tables';
 
 // The language the interface is in.
 //
@@ -51,6 +54,19 @@ const normalise = (value) => (SUPPORTED.includes(value) ? value : 'en');
 
 const loadTable = (code) => import(`./generated/${code}.js`).then((m) => m.default);
 
+// The page's own table at the first render. On the server, from the tables the
+// server holds. In the browser, from the cached script the root layout loads
+// before the page hydrates (/i18n/<code>.<hash>.js, inbox 454), so the first
+// render matches what the server sent and nothing flashes English. An older
+// page that still sends the table inline keeps working.
+function startingTable(initialTable) {
+  const code = initialTable?.code;
+  if (!code || code === 'en') return null;
+  if (initialTable.table) return initialTable.table;
+  if (typeof window === 'undefined') return serverTables?.[code] || null;
+  return window.__VENT_I18N__?.[code] || null;
+}
+
 export const LanguageProvider = ({ children, initialTable = null }) => {
   const { data: session } = useSession();
   const token = session?.user?.sessionToken;
@@ -69,9 +85,10 @@ export const LanguageProvider = ({ children, initialTable = null }) => {
   // The tables this page holds: English always (the fallback, and the index
   // `tx` translates by), the page's own language as the server sent it, and
   // any other the reader switches to, fetched then.
-  const [tables, setTables] = useState(() => (initialTable?.code && initialTable.code !== 'en'
-    ? { en, [initialTable.code]: initialTable.table }
-    : { en }));
+  const [tables, setTables] = useState(() => {
+    const table = startingTable(initialTable);
+    return table ? { en, [initialTable.code]: table } : { en };
+  });
   useEffect(() => {
     if (tables[language]) return;
     let cancelled = false;

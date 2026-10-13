@@ -11,7 +11,8 @@ import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
 import { sectionCopy } from "@/lib/seoCopy";
 import { serverLocale } from "@/i18n/server";
-import { dictionaries } from "@/i18n/dictionaries";
+import { DICT_SCRIPTS } from "@/i18n/generated/scripts";
+import Script from "next/script";
 
 // Metadata is declared, not hand-written into <head>.
 //
@@ -81,7 +82,11 @@ export default async function RootLayout({ children }) {
   // The page's own language, sent with the page so a French or Portuguese
   // reader never downloads the other two (inbox 309). English is bundled.
   const locale = await serverLocale();
-  const initialTable = locale !== 'en' ? { code: locale, table: dictionaries[locale] } : null;
+  // Only the language's NAME goes to the client. The table itself was sent
+  // inline and was 715 KB of every 783 KB French page (inbox 454); the page
+  // now names a cached script that carries it, loaded before hydration.
+  const initialTable = locale !== 'en' ? { code: locale } : null;
+  const dictScript = initialTable ? DICT_SCRIPTS[locale] : null;
   return (
     <SessionWrapper initialTable={initialTable}>
       {/* `lang` is corrected on the client by LanguageProvider once the
@@ -96,6 +101,10 @@ export default async function RootLayout({ children }) {
               client-side error page. JSON-LD is valid anywhere in the document
               and Google reads it in body, so this is where it lives. */}
           <JsonLd data={[organizationLd(), websiteLd()]} />
+          {/* The page's language table, before anything hydrates. Its name
+              carries a hash of its content, so the browser keeps it for a
+              year and fetches it again only when a word changes. */}
+          {dictScript && <Script id="vent-i18n" src={dictScript} strategy="beforeInteractive" />}
           {/* Inside <body>, because the overlay it renders has to be a sibling
               of the page and not of <html>. Inside the session and language
               providers from SessionWrapper, so it knows who is signed in and
