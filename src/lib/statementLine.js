@@ -38,6 +38,8 @@ export const STATEMENT_ENGLISH = {
   prizePayout: 'Prize, position {position}: {title}',
   registrationFee: 'Registration fee: {title}',
   entryFee: 'Entry fee: {title}',
+  gameFee: 'Game: {game}, {event}',
+  refundGameFee: 'Refund, game: {game}, {event}',
   runnerUpPrize: 'Runner-up prize: {title}',
   marketplaceSale: 'Marketplace sale: {title}',
   marketplaceRefund: 'Marketplace refund: {title}',
@@ -72,11 +74,15 @@ const fill = (text, params) => Object.entries(params || {}).reduce(
 
 const say = (tt, key, params) => fill(tt(`txn.${key}`, STATEMENT_ENGLISH[key]), params);
 
-/** The whole line for one statement row, in the reader's language. */
-export function statementLine(tt, row) {
+/**
+ * The whole line for one statement row, in the reader's language.
+ * `gameName`, from useGameNames, names a party game in that language too.
+ */
+export function statementLine(tt, row, gameName) {
   const line = row?.line;
   if (!line || !STATEMENT_ENGLISH[line.code]) return row?.description || row?.name || '-';
   const params = { ...(line.params || {}) };
+  if (gameName && params.game) params.game = gameName(params.game);
   let main;
   if (line.code === 'premium') {
     const months = Number(params.months) || 1;

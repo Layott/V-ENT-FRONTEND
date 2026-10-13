@@ -9,14 +9,15 @@
 //   node scripts/check-fuzzy.mjs
 
 import fs from 'node:fs';
+import { backendDir, backendFile } from './backend-dir.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_SCORE, fuzzyFilter, score } from '../src/lib/fuzzy.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FRONT = path.join(HERE, '..', 'src', 'lib', 'fuzzy.fixtures.json');
-const BACKENDS = ['V-ENT-BACKEND-flw', 'V-ENT-BACKEND']
-  .map((dir) => path.join(HERE, '..', '..', dir, 'vent_auth', 'fuzzy_fixtures.json'));
+// The backend being judged, not a sibling folder by name (backend-dir.mjs).
+const BACKENDS = [backendFile(path.join('vent_auth', 'fuzzy_fixtures.json'))].filter(Boolean);
 
 const cases = JSON.parse(fs.readFileSync(FRONT, 'utf8'));
 const faults = [];

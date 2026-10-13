@@ -17,13 +17,14 @@
 //   node scripts/check-forgiving-search.mjs --self-test
 
 import fs from 'node:fs';
+import { backendDir, backendFile } from './backend-dir.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FRONT = path.join(HERE, '..', 'src');
-const BACK = ['V-ENT-BACKEND-flw', 'V-ENT-BACKEND']
-  .map((d) => path.join(HERE, '..', '..', d)).find((d) => fs.existsSync(path.join(d, 'vent_auth')));
+// The backend being judged, not a sibling folder by name (backend-dir.mjs).
+const BACK = backendDir('vent_auth');
 
 const TERM = String.raw`(?:q|query|search|term|needle|searchQuery|searchTerm|modalSearch|eventSearchTerm)`;
 const JS_EXACT = new RegExp(String.raw`\.toLowerCase\(\)\.includes\(\s*${TERM}\b|\.includes\(\s*${TERM}\.toLowerCase\(\)`);

@@ -27,6 +27,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import { statementLine, kindLabel } from '@/lib/statementLine';
+import { useGameNames } from '@/lib/partyGames/useGameWords';
 import { plural } from '@/lib/plural';
 import DateField from '@/components/date-field/DateField';
 import shared from '@/components/admin/admin.module.css';
@@ -46,6 +47,8 @@ function FinanceInner() {
   const toast = useAdminToast();
 
   const [rows, setRows] = useState([]);
+  // A party game named in the reader's language (inbox 449).
+  const gameName = useGameNames(rows);
   const [meta, setMeta] = useState(null);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -463,7 +466,7 @@ function FinanceInner() {
                         <td className={row.amount < 0 ? styles.debit : styles.credit}>
                           {formatNumber(row.amount)} VC
                         </td>
-                        <td className={shared.hideMobile}>{statementLine(tt, row)}</td>
+                        <td className={shared.hideMobile}>{statementLine(tt, row, gameName)}</td>
                         <td>
                           <span className={`${shared.badge} ${row.status === 'completed' ? shared.sApproved : row.status === 'pending' ? shared.sPending : shared.sRejected}`}>
                             {stateName(row.status)}

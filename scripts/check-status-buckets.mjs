@@ -23,13 +23,16 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { backendFile } from './backend-dir.mjs';
 
 // What the backend can actually set. Read from the model rather than copied,
 // so a new status arrives here the day it is added.
-const MODEL = '../V-ENT-BACKEND/vent_tournament/models.py';
+// The backend being judged (scripts/backend-dir.mjs); this one was a path
+// relative to wherever the script happened to be started from.
+const MODEL = backendFile(path.join('vent_tournament', 'models.py'));
 
 const backendStatuses = () => {
-  if (!fs.existsSync(MODEL)) return null;
+  if (!MODEL || !fs.existsSync(MODEL)) return null;
   const src = fs.readFileSync(MODEL, 'utf8');
   const block = src.match(/STATUS_CHOICES\s*=\s*\[([\s\S]*?)\]/)
     || src.match(/TOURNAMENT_STATUS\s*=\s*\[([\s\S]*?)\]/);

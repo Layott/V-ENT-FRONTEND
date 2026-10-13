@@ -1,0 +1,168 @@
+/* Paying to play a party game (inbox 449): a sheet in the same hand as the
+   explainer, filled rows for the money, no outlines, no glow. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: rgba(8, 8, 10, 0.72);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 760px) {
+  .scrim {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.sheet {
+  background: var(--overlay-gray);
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+@media (min-width: 760px) {
+  .sheet {
+    width: min(480px, 100%);
+    border-radius: 16px;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.name {
+  margin: 0.2rem 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+}
+
+.row span:last-child {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.total {
+  background: rgba(212, 175, 55, 0.16);
+  color: var(--v-ent-light-gold);
+  font-weight: 700;
+}
+
+.note {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.pin {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: inherit;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+}
+
+.problem {
+  margin: 0;
+  color: #ff8a80;
+  font-size: 0.88rem;
+}
+
+.quiet,
+.payBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quiet {
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.quiet:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.payBtn {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.payBtn:hover {
+  background: var(--v-ent-light-gold);
+}
+
+.payBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.pin:focus-visible,
+.quiet:focus-visible,
+.payBtn:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}

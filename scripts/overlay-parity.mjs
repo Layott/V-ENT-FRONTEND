@@ -18,6 +18,7 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { backendDir } from './backend-dir.mjs';
 import puppeteer from 'puppeteer-core';
 
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -76,8 +77,11 @@ function cue(kind, payload) {
     'row.is_active = True',
     'row.save()',
   ].join('\n');
-  execFileSync('./venv/Scripts/python.exe', ['manage.py', 'shell', '-c', code], {
-    cwd: 'C:/Users/Sweez/Desktop/LAYO/CLAUDE/V-ENT/V-ENT-BACKEND',
+  // The backend being judged, with the one venv this machine keeps
+  // (scripts/backend-dir.mjs), rather than a hard-coded checkout.
+  const python = path.join(backendDir(path.join('venv', 'Scripts', 'python.exe')), 'venv', 'Scripts', 'python.exe');
+  execFileSync(python, ['manage.py', 'shell', '-c', code], {
+    cwd: backendDir('manage.py'),
     env: { ...process.env, DB_ENGINE: 'sqlite', DEBUG: 'True' },
     stdio: 'ignore',
   });

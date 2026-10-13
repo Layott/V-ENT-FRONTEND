@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import { formatNumber, formatWithZone } from '@/lib/datetime';
+import { plural } from '@/lib/plural';
 import { ventFetch } from '@/components/tournament-lib/tournamentApi';
 import { useGameWords } from '@/lib/partyGames/useGameWords';
 import { GameStill } from './stage/Stage';
@@ -49,6 +50,9 @@ export default function CheckoutGames({ eventRef, value, onChange }) {
   const tt = useT();
   const { words, say } = useGameWords();
   const [games, setGames] = useState([]);
+  // Games with an entry fee are joined on the Games tab, where the fee is
+  // paid: nobody is charged for something ticked on the way past (inbox 449).
+  const [paidCount, setPaidCount] = useState(0);
   const [open, setOpen] = useState(null);
 
   useEffect(() => {
@@ -57,7 +61,11 @@ export default function CheckoutGames({ eventRef, value, onChange }) {
     (async () => {
       try {
         const body = await ventFetch(`/event/${encodeURIComponent(eventRef)}/games/`);
-        if (!gone) setGames((body.games || []).filter((g) => g.status === 'open'));
+        const on = (body.games || []).filter((g) => g.status === 'open');
+        if (!gone) {
+          setGames(on.filter((g) => !Number(g.fee_vc)));
+          setPaidCount(on.filter((g) => Number(g.fee_vc) > 0).length);
+        }
       } catch {
         // Optional step: when the list cannot load, checkout carries on
         // without it, and the Games tab is still there afterwards.
@@ -75,7 +83,7 @@ export default function CheckoutGames({ eventRef, value, onChange }) {
     if (live.length !== value.length) onChange(live);
   }, [games]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!games.length) return null;
+  if (!games.length && !paidCount) return null;
 
   const picked = new Set(value || []);
   const toggle = (id) => {
@@ -91,9 +99,20 @@ export default function CheckoutGames({ eventRef, value, onChange }) {
       <h3 id="checkout-games-title" className={styles.title}>
         {tt('games.checkout.title', 'Want to play any games?')}
       </h3>
-      <p className={styles.muted}>
-        {tt('games.checkout.lede', 'Optional. Tick the ones you would like to play and this ticket is signed up for them. You can change it later under Games.')}
-      </p>
+      {games.length > 0 && (
+        <p className={styles.muted}>
+          {tt('games.checkout.lede', 'Optional. Tick the ones you would like to play and this ticket is signed up for them. You can change it later under Games.')}
+        </p>
+      )}
+      {paidCount > 0 && (
+        <p className={styles.muted}>
+          {plural(tt, paidCount,
+            'games.checkout.paidOne', '{n} game has an entry fee. It is paid on the Games tab once you have your ticket.',
+            'games.checkout.paid', '{n} games have an entry fee. They are paid on the Games tab once you have your ticket.',
+            formatNumber(paidCount))}
+        </p>
+      )}
+      {games.length > 0 && (
       <ul className={styles.list}>
         {games.map((g) => {
           const w = wordsForGame(g, words);
@@ -129,6 +148,7 @@ export default function CheckoutGames({ eventRef, value, onChange }) {
           );
         })}
       </ul>
+      )}
       {open && openWords && (
         <GameExplainer gameKey={open.catalogue_key} words={openWords} say={say(open.catalogue_key)}
                        onClose={() => setOpen(null)} />

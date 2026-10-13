@@ -27,6 +27,8 @@ import { BY_KEY } from '@/lib/partyGames/catalogue';
 import { GameStill } from './stage/Stage';
 import GameExplainer from './GameExplainer';
 import GamesVote from './GamesVote';
+import GamePay from './GamePay';
+import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import { kindName, shortOrigin } from './names';
 import styles from './event-games.module.css';
 
@@ -75,6 +77,8 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
   const [notice, setNotice] = useState('');
   const [problem, setProblem] = useState('');
   const [open, setOpen] = useState(null);
+  // The game being paid for (inbox 449), while its pay sheet is open.
+  const [paying, setPaying] = useState(null);
 
   const path = `/event/${encodeURIComponent(eventRef || '')}/games/`;
 
@@ -143,6 +147,33 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
 
   const nameOf = (game) => (game ? wordsForGame(game, words)?.name || '' : '');
 
+  // One answer from a join or leave door, put into the list and said back.
+  const settle = (game, body, leaving) => {
+    const fresh = body.game;
+    setData((prev) => (prev ? {
+      ...prev,
+      games: prev.games.map((g) => (g.id === fresh.id
+        ? { ...fresh, mine: { ...(g.mine || {}), [ticket.code]: fresh.mine?.[ticket.code] } }
+        : g)),
+    } : prev));
+    const mine = fresh.mine?.[ticket.code];
+    const name = nameOf(game);
+    if (leaving && Number(body.refunded_vc) > 0) {
+      setNotice(tt('games.leftRefundNotice', 'You left {name}. {n} VC is back in your wallet.')
+        .replace('{name}', name).replace('{n}', formatNumber(Number(body.refunded_vc))));
+    } else if (leaving) {
+      setNotice(tt('games.leftNotice', 'You left {name}.').replace('{name}', name));
+    } else if (Number(mine?.fee_paid_vc) > 0) {
+      setNotice(tt('games.paidNotice', 'Paid {n} VC. You are in: {name}.')
+        .replace('{n}', formatNumber(Number(mine.fee_paid_vc))).replace('{name}', name));
+    } else if (mine?.state === 'waiting') {
+      setNotice(tt('games.waitingNotice', 'You are number {n} on the waiting list for {name}.')
+        .replace('{n}', formatNumber(mine.place_in_line || 1)).replace('{name}', name));
+    } else {
+      setNotice(tt('games.joinedNotice', 'You are in: {name}.').replace('{name}', name));
+    }
+  };
+
   const press = async (game, leaving) => {
     if (!ticket) return;
     setBusy(game.id);
@@ -152,20 +183,7 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
       const body = await ventFetch(`${path}${game.id}/${leaving ? 'leave' : 'join'}/`, {
         method: 'POST', token, body: { ticket_code: ticket.code },
       });
-      const fresh = body.game;
-      setData((prev) => (prev ? {
-        ...prev,
-        games: prev.games.map((g) => (g.id === fresh.id
-          ? { ...fresh, mine: { ...(g.mine || {}), [ticket.code]: fresh.mine?.[ticket.code] } }
-          : g)),
-      } : prev));
-      const mine = fresh.mine?.[ticket.code];
-      const name = nameOf(game);
-      if (leaving) setNotice(tt('games.leftNotice', 'You left {name}.').replace('{name}', name));
-      else if (mine?.state === 'waiting') {
-        setNotice(tt('games.waitingNotice', 'You are number {n} on the waiting list for {name}.')
-          .replace('{n}', formatNumber(mine.place_in_line || 1)).replace('{name}', name));
-      } else setNotice(tt('games.joinedNotice', 'You are in: {name}.').replace('{name}', name));
+      settle(game, body, leaving);
     } catch (err) {
       setProblem(apiMessage(tt, err, 'games.pressFailed', 'That did not go through. Try again.'));
     } finally {
@@ -175,10 +193,18 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
 
   const actionFor = (game) => {
     const mine = ticket ? game.mine?.[ticket.code] : null;
+    const paid = Number(mine?.fee_paid_vc) || 0;
+    const fee = Number(game.fee_vc) || 0;
+    const started = Boolean(game.starts_at && new Date(game.starts_at).getTime() <= Date.now());
     if (mine) {
+      // What leaving does to the fee, said on the button that does it.
       const label = mine.state === 'waiting'
         ? tt('games.waitingLeave', 'Waiting list, number {n}. Leave').replace('{n}', formatNumber(mine.place_in_line || 1))
-        : tt('games.inLeave', 'You’re in. Leave');
+        : paid > 0 && !started
+          ? tt('games.inLeaveRefund', 'You’re in. Leave and get {n} VC back').replace('{n}', formatNumber(paid))
+          : paid > 0
+            ? tt('games.inLeaveKeep', 'You’re in. Leave (the fee stays)')
+            : tt('games.inLeave', 'You’re in. Leave');
       return (
         <button type="button" className={styles.inBtn} aria-pressed="true"
                 disabled={busy === game.id} onClick={() => press(game, true)}>
@@ -193,6 +219,20 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
         <button type="button" className={styles.redBtn} onClick={onOpenTickets}>
           {tt('games.getTicketToPlay', 'Get a ticket to play')}
         </button>
+      );
+    }
+    if (fee > 0) {
+      // A place in a paid game is paid for when it is taken, so a full one has
+      // no waiting list to join (inbox 449, vent_event/game_fees.py).
+      if (game.full) return <span className={styles.statusNote}>{tt('games.paidFull', 'Full')}</span>;
+      // A fee comes out of a wallet: a guest holding a ticket signs in to pay.
+      return (
+        <NeedsAccount compact action={tt('games.payAction', 'pay the entry fee')}>
+          <button type="button" className={styles.goldBtn} disabled={busy === game.id}
+                  onClick={() => setPaying(game)}>
+            {tt('games.playFor', 'Play for {n} VC').replace('{n}', formatNumber(Number(game.fee_total_vc) || fee))}
+          </button>
+        </NeedsAccount>
       );
     }
     return (
@@ -324,6 +364,11 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
                     <h3 className={styles.name}>{name}</h3>
                     {meta && <span className={styles.tag}>{kindName(tt, meta.kind)}</span>}
                     {meta?.region === 'africa' && w?.origin && <span className={styles.goldTag}>{shortOrigin(w.origin)}</span>}
+                    {Number(game.fee_vc) > 0 && (
+                      <span className={styles.goldTag}>
+                        {tt('games.feeTag', 'Entry {n} VC').replace('{n}', formatNumber(Number(game.fee_vc)))}
+                      </span>
+                    )}
                   </div>
                   <p className={styles.meta}>
                     {game.starts_at ? formatWithZone(game.starts_at) : tt('games.timeTba', 'Time to be announced')}
@@ -338,7 +383,11 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
                       </span>
                     ) : null}
                     <span>{placesText(tt, game)}</span>
-                    {game.full && <span className={styles.redTag}>{tt('games.full', 'Full, waiting list open')}</span>}
+                    {game.full && (
+                      <span className={styles.redTag}>
+                        {Number(game.fee_vc) > 0 ? tt('games.paidFull', 'Full') : tt('games.full', 'Full, waiting list open')}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className={styles.actions}>
@@ -360,6 +409,22 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
           say={say(openGame.catalogue_key)}
           onClose={() => setOpen(null)}
           action={openGame.status === 'proposed' ? null : <div className={styles.sheetAction}>{actionFor(openGame)}</div>}
+        />
+      )}
+
+      {paying && ticket && (
+        <GamePay
+          game={paying}
+          name={nameOf(paying)}
+          ticket={ticket}
+          path={path}
+          token={token}
+          onClose={() => setPaying(null)}
+          onPaid={(body) => {
+            setPaying(null);
+            setOpen(null);
+            settle(paying, body, false);
+          }}
         />
       )}
     </div>

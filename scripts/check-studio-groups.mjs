@@ -16,13 +16,14 @@
 //   node scripts/check-studio-groups.mjs --self-test
 
 import fs from 'node:fs';
+import { backendDir, backendFile } from './backend-dir.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
-const MODELS = ['V-ENT-BACKEND-flw', 'V-ENT-BACKEND']
-  .map((d) => path.join(ROOT, '..', d, 'vent_tournament', 'models.py')).find((p) => fs.existsSync(p));
+// The backend being judged, not a sibling folder by name (backend-dir.mjs).
+const MODELS = backendFile(path.join('vent_tournament', 'models.py'));
 
 /** Kinds in a named list of (kind, label) pairs in models.py. */
 export function kindsIn(python, name) {

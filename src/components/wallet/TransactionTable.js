@@ -10,6 +10,7 @@ import { useT, useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { fuzzyMatches } from '@/lib/fuzzy';
 import { statementLine, kindLabel } from '@/lib/statementLine';
+import { useGameNames } from '@/lib/partyGames/useGameWords';
 const TYPE_FILTERS = [{
   id: '',
   label: 'All'
@@ -64,6 +65,8 @@ const TransactionTable = ({
 }) => {
   const byText = useTx();
   const tt = useT();
+  // A party game named in the reader's language (inbox 449).
+  const gameName = useGameNames(transactions);
   const [search, setSearch] = useState(initial.search || '');
   const [typeFilter, setTypeFilter] = useState(initial.type || '');
   const [statusFilter, setStatusFilter] = useState(initial.status || '');
@@ -122,7 +125,7 @@ const TransactionTable = ({
     const ntype = normalizeType(tx.type || tx.transaction_type);
     const nstatus = normalizeStatus(tx.status);
     // The line as the reader sees it, so a search in French finds French.
-    const desc = `${statementLine(tt, tx)} ${tx.description || ''}`.toLowerCase();
+    const desc = `${statementLine(tt, tx, gameName)} ${tx.description || ''}`.toLowerCase();
     const ref = String(tx.reference || tx.ref || '').toLowerCase();
     const counter = String(tx.counterparty || '').toLowerCase();
     const q = search.toLowerCase().trim();
@@ -225,7 +228,7 @@ const TransactionTable = ({
                       <tr className={isOpen ? styles.expanded : ''} onClick={() => toggleExpand(id)}>
                         <td>{renderBadge(tx)}</td>
                         <td>
-                          <div className={styles.txName}>{statementLine(tt, tx)}</div>
+                          <div className={styles.txName}>{statementLine(tt, tx, gameName)}</div>
                           {tx.counterparty && tx.counterparty !== 'V-ENT Treasury' && <div className={styles.txRef}>{tx.counterparty}</div>}
                         </td>
                         <td>
@@ -278,7 +281,7 @@ const TransactionTable = ({
             return <div key={id} className={styles.txCard} onClick={() => toggleExpand(id)}>
                     <div className={styles.txCardTop}>
                       <div className={styles.txCardLeft}>
-                        <div className={styles.txName}>{statementLine(tt, tx)}</div>
+                        <div className={styles.txName}>{statementLine(tt, tx, gameName)}</div>
                         <div className={styles.txRef}>{tx.reference || tx.ref || '-'}</div>
                       </div>
                       <div className={styles.txCardRight}>
