@@ -35,6 +35,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import styles from './pay-shortfall.module.css';
 import CurrencyChoice from './CurrencyChoice';
 import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
+import { returnReferenceHere, withoutReturn } from '@/lib/payReturn';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,6 +48,17 @@ export function rememberResume(what) {
   } catch {
     // A private window with storage off. The payment still works; only the
     // "carry on where you were" part is lost, and the coins are in the wallet.
+  }
+}
+
+/** Where a purchase was up to, read without spending it: the page that has to
+ *  decide which step to open looks before the panel on that step takes it. */
+export function peekResume() {
+  try {
+    const raw = sessionStorage.getItem(RESUME_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
   }
 }
 
@@ -99,8 +111,7 @@ export default function PayShortfall({
   // purchase carries on where it left off.
   useEffect(() => {
     if (!token || paidOnce.current) return;
-    const params = new URLSearchParams(window.location.search);
-    const reference = params.get('reference') || params.get('trxref');
+    const reference = returnReferenceHere();
     if (!reference) return;
     paidOnce.current = true;
     (async () => {
@@ -112,14 +123,7 @@ export default function PayShortfall({
         const body = await res.json().catch(() => ({}));
         // The reference is spent whether or not it worked: a second run would
         // verify a payment that has already been counted.
-        const url = new URL(window.location.href);
-        url.searchParams.delete('reference');
-        url.searchParams.delete('trxref');
-        // What Flutterwave adds on its way back.
-        url.searchParams.delete('tx_ref');
-        url.searchParams.delete('transaction_id');
-        url.searchParams.delete('status');
-        window.history.replaceState({}, '', url.toString());
+        window.history.replaceState({}, '', withoutReturn(window.location.href));
         if (res.ok && body.status === 'success') {
           await load();
           if (onPaid) onPaid({ ...(takeResume() || {}), reference, viaCard: true });

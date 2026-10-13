@@ -44,6 +44,8 @@ import { entryStatusLabel } from '@/lib/labels';
 import { fuzzyMatches } from '@/lib/fuzzy';
 import { prizeText, prizeRowText, prizeOf, coinText, formatPrizeMoney } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import ResumeCard from '@/components/registration-draft/ResumeCard';
+import { readDraft } from '@/lib/registrationDraft';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -247,6 +249,18 @@ export const ViewTournamentContent = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  // A registration this person left part done (inbox 436): offered here, on
+  // the page they come back to, so nobody starts again.
+  const [myDraft, setMyDraft] = useState(null);
+  const draftRef = tournament?.slug || null;
+  useEffect(() => {
+    if (!token || !draftRef) { setMyDraft(null); return undefined; }
+    let gone = false;
+    readDraft(draftRef, token)
+      .then((info) => { if (!gone) setMyDraft(info?.draft || null); })
+      .catch(() => { if (!gone) setMyDraft(null); });
+    return () => { gone = true; };
+  }, [token, draftRef]);
   // Sharing needs somewhere to say what happened, including the case where the
   // clipboard is refused and the link itself has to be shown.
 
@@ -460,6 +474,9 @@ export const ViewTournamentContent = ({
               </div>
             </div>
           </div>
+
+          {!isOrganizer && !tournament.is_registered && !registrationClosed && myDraft && <ResumeCard
+            draft={myDraft} token={token} showTitle={false} onGone={() => setMyDraft(null)} />}
 
           {/* Check-in. Renders only when this tournament uses one and the
               viewer is either an entrant or the organiser. */}

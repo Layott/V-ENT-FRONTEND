@@ -29,6 +29,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './wallet-topup-callback.module.css';
+import { returnReference } from '@/lib/payReturn';
 
 // Only a path on this site: the address is read from the query string.
 const safeReturn = (value) => (value && value.startsWith('/') && !value.startsWith('//') ? value : '/wallets');
@@ -41,7 +42,7 @@ function Outcome() {
   const [state, setState] = useState('verifying');
   const [message, setMessage] = useState('');
   const [result, setResult] = useState(null);
-  const reference = params.get('reference') || params.get('trxref') || params.get('tx_ref') || '';
+  const reference = returnReference(params);
   const gatewaySaid = (params.get('status') || '').toLowerCase();
   const back = safeReturn(params.get('redirect_to'));
   const token = session?.user?.sessionToken;

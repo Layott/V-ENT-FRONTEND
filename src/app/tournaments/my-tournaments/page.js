@@ -20,6 +20,8 @@ import { slotsText } from '@/lib/slots';
 import { plural } from '@/lib/plural';
 import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import ResumeCard from '@/components/registration-draft/ResumeCard';
+import { useMyDrafts } from '@/lib/registrationDraft';
 const TABS = [{
   id: 'active',
   label: 'Active'
@@ -91,6 +93,8 @@ const MyTournaments = () => {
     data: session
   } = useSession();
   const token = tokenFrom(session);
+  // Registrations this person left part done, as an entrant (inbox 436).
+  const { drafts: unfinished, forget: forgetUnfinished } = useMyDrafts(token);
   const [tab, setTab] = useState('active');
   const [tournaments, setTournaments] = useState([]);
   const [drafts, setDrafts] = useState([]);
@@ -211,6 +215,13 @@ const MyTournaments = () => {
               <button className={`${styles.btn} goldBTN`}><LuPlus /> {tt("ui.create.tournament.4440", "Create Tournament")}</button>
             </Link>
           </div>
+
+          {unfinished.length > 0 && <section className={styles.unfinished} aria-labelledby="unfinished-registrations">
+              <h2 id="unfinished-registrations" className={styles.unfinishedTitle}>
+                {tt('regDraft.unfinishedTitle', 'Registrations you have not finished')}
+              </h2>
+              {unfinished.map(d => <ResumeCard key={d.tournament.slug} draft={d} token={token} onGone={forgetUnfinished} />)}
+            </section>}
 
           {/* Tab nav */}
           <div className={styles.tabBar}>

@@ -26,6 +26,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './paystack-return.module.css';
+import { confirmsItsOwnReturn, returnReferenceHere, withoutReturn } from '@/lib/payReturn';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -40,8 +41,7 @@ export default function PaystackReturn() {
     // Decide after the session resolves: signed out and "still asking" look
     // the same in the data, and asking tokenless answers 400.
     if (status === 'loading' || !token || done.current) return;
-    const params = new URLSearchParams(window.location.search);
-    const reference = params.get('reference') || params.get('trxref');
+    const reference = returnReferenceHere();
     if (!reference) return;
     // Only a wallet top-up's reference (Paystack VENT-, Flutterwave FLW-TOP-),
     // and never on a page that verifies its own payment. It used to take ANY
@@ -49,7 +49,9 @@ export default function PaystackReturn() {
     // as a top-up, failed, stripped it from the address, and the page then
     // told a paying guest no ticket was issued (walk, 29 September 2026).
     if (!/^(VENT-|FLW-TOP-)/.test(reference)) return;
-    if (/\/(wallet-topup-callback|events\/ticket-confirmed)/.test(window.location.pathname)) return;
+    // Nor on the tournament registration, whose step that sent them (the entry,
+    // or the event ticket inside it) reopens and confirms it (13 October 2026).
+    if (confirmsItsOwnReturn(window.location.pathname)) return;
     done.current = true;
 
     (async () => {
@@ -72,10 +74,7 @@ export default function PaystackReturn() {
 
       // Spent either way: a reload must not ask about a payment that has
       // already been counted.
-      const url = new URL(window.location.href);
-      url.searchParams.delete('reference');
-      url.searchParams.delete('trxref');
-      window.history.replaceState({}, '', url.toString());
+      window.history.replaceState({}, '', withoutReturn(window.location.href));
 
       if (ok) {
         const coins = Number(body.data?.vent_coins ?? body.data?.coins_added ?? 0);

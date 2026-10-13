@@ -6,14 +6,22 @@ import { ventFetch, tokenFrom } from '@/components/tournament-lib/tournamentApi'
 import ReviewModal from './review-team/Review';
 import PaymentModal from './payment/Payment';
 import SuccessModal from './success/Success';
+import TicketStep from './ticket/TicketStep';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { apiMessage } from '@/lib/apiMessage';
+import { formatDateTime } from '@/lib/datetime';
+import { discardDraft, readDraft, saveDraft, stepText } from '@/lib/registrationDraft';
+import { peekResume } from '@/components/pay/PayShortfall';
 const TournamentRegistrationModal = ({
   isOpen,
   onClose,
   onNext,
   tournament,
-  resumeReference = null
+  resumeReference = null,
+  // Opened from a "Pick up where you left off" card: go straight to the step
+  // the registration was saved at (inbox 436).
+  autoResume = false
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -27,6 +35,120 @@ const TournamentRegistrationModal = ({
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [registrationData, setRegistrationData] = useState(null);
+  // The registration as the server keeps it (inbox 436): `draft` is where this
+  // person is up to, `entry` whether the event ticket is the entry and whether
+  // they hold it. Saved at every step, so a closed tab or a card page loses
+  // nothing.
+  const [draftInfo, setDraftInfo] = useState(null);
+  const [showResume, setShowResume] = useState(false);
+  const [showTicket, setShowTicket] = useState(false);
+  const [resumeProblem, setResumeProblem] = useState('');
+  const ref = tournament?.slug || tournament?.id;
+  // Back from a card page the ticket step sent them to: the ticket step again,
+  // with the type they had chosen, never the entry (which would refuse them
+  // for want of the ticket). Read once, before the ticket step's own card
+  // panel takes the note and confirms the payment.
+  const [ticketTrip] = useState(() => {
+    if (!resumeReference) return null;
+    const back = peekResume();
+    return back?.door === 'tournament-ticket' && back?.tournament === tournament?.slug ? back : null;
+  });
+  const remember = body => saveDraft(ref, token, body).then(saved => {
+    if (saved) setDraftInfo(prev => ({ ...(prev || {}), ...saved }));
+  });
+  const needsTicket = (info = draftInfo) => Boolean(info?.entry?.needs_ticket && !info?.entry?.holds_ticket);
+  // After the team (or straight after choosing solo): the ticket first when the
+  // event ticket is the entry and they have none, else the entry itself.
+  // `also` rides in the same save: two saves sent at once can land in either
+  // order, and on a phone the step was lost that way (13 October 2026).
+  const goOn = (info = draftInfo, also = {}) => {
+    if (needsTicket(info)) {
+      setShowTicket(true);
+      remember({ ...also, step: 'ticket' });
+    } else {
+      setShowPaymentModal(true);
+      remember({ ...also, step: 'payment' });
+    }
+  };
+  const loadRoster = async team => {
+    try {
+      const teamRef = team?.slug || team?.id;
+      const data = await ventFetch(`/team/${teamRef}/roster/`, { token });
+      return (data?.members || []).map(row => ({
+        ...row.user,
+        id: row.user?.id ?? row.id,
+        name: row.user?.full_name || row.user?.username || '',
+        role: row.role
+      }));
+    } catch {
+      // The review says how many members the card said; the server decides
+      // eligibility at registration either way.
+      return [];
+    }
+  };
+  // Back to the step the registration was saved at.
+  const continueDraft = async info => {
+    const d = info?.draft;
+    setShowResume(false);
+    if (!d) return;
+    const mode = d.mode || null;
+    setSelectedOption(mode);
+    if (!mode || d.step === 'mode') return;
+    if (mode === 'team') {
+      if (!d.team || d.step === 'team') {
+        setShowTeamModal(true);
+        return;
+      }
+      const team = { id: d.team.id, slug: d.team.slug, name: d.team.name, logo: d.team.logo, game: d.team.game };
+      const members = await loadRoster(team);
+      setSelectedTeam(team);
+      setTeamMembers(members);
+      if (d.step === 'review') {
+        setShowReviewModal(true);
+        return;
+      }
+      setRegistrationData({ type: 'team', team, members });
+    } else {
+      setRegistrationData({ type: 'individual' });
+    }
+    if (needsTicket(info)) setShowTicket(true);
+    else setShowPaymentModal(true);
+  };
+  useEffect(() => {
+    if (!isOpen || !token || !ref) return undefined;
+    let gone = false;
+    readDraft(ref, token).then(info => {
+      if (gone) return;
+      setDraftInfo(info);
+      if (ticketTrip) {
+        // The step they paid from. Without a saved step to go back to, the
+        // entry step confirms the card payment, so the coins always land.
+        if (['ticket', 'payment'].includes(info?.draft?.step)) continueDraft(info);
+        else resumeAtPayment();
+        return;
+      }
+      // Back from a card page mid-entry: the Payment step takes it from there.
+      if (!info?.draft || resumeReference) return;
+      if (autoResume) continueDraft(info);
+      else setShowResume(true);
+    }).catch(() => {
+      // Nothing saved can be read: the registration starts at the start, and
+      // a card payment is still confirmed by the entry step.
+      if (!gone && ticketTrip) resumeAtPayment();
+    });
+    return () => { gone = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, token, ref]);
+  const startAgain = async () => {
+    setResumeProblem('');
+    try {
+      await discardDraft(ref, token);
+      setDraftInfo(prev => ({ ...(prev || {}), draft: null }));
+      setShowResume(false);
+    } catch (err) {
+      setResumeProblem(apiMessage(tt, err, 'regDraft.discardFailed', 'That did not go through. Try again.'));
+    }
+  };
 
   // Returning from a Paystack wallet top-up mid-registration (see
   // payment/Payment.js `handleTopUp`) lands back on this same page with a
@@ -34,8 +156,7 @@ const TournamentRegistrationModal = ({
   // making the user pick Mode → Team → Roster → Review again. The in-flight
   // selection was stashed in sessionStorage by Payment.js right before the
   // redirect to Paystack.
-  useEffect(() => {
-    if (!isOpen || !resumeReference || !tournament?.id) return;
+  const resumeAtPayment = () => {
     let draft = null;
     try {
       const raw = window.sessionStorage.getItem(`ventRegDraft:${tournament.id}`);
@@ -56,6 +177,11 @@ const TournamentRegistrationModal = ({
     setShowReviewModal(false);
     setShowSuccessModal(false);
     setShowPaymentModal(true);
+  };
+  useEffect(() => {
+    // A trip from the ticket step waits for the saved registration instead.
+    if (!isOpen || !resumeReference || !tournament?.id || ticketTrip) return;
+    resumeAtPayment();
     // Only re-run this when the modal (re)opens with a resume reference -
     // not on every keystroke of unrelated state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,8 +209,9 @@ const TournamentRegistrationModal = ({
       setRegistrationData({
         type: 'individual'
       });
-      setShowPaymentModal(true);
+      goOn(draftInfo, { mode: 'individual', team_id: null });
     } else if (selectedOption === 'team') {
+      remember({ mode: 'team', step: 'team' });
       setShowTeamModal(true);
     }
   };
@@ -100,6 +227,8 @@ const TournamentRegistrationModal = ({
     setShowReviewModal(false);
     setShowPaymentModal(false);
     setShowSuccessModal(false); // Add this
+    setShowTicket(false);
+    setShowResume(false);
     setSelectedTeam(null);
     setTeamMembers([]);
     setRegistrationData(null);
@@ -126,20 +255,8 @@ const TournamentRegistrationModal = ({
   const handleTeamProceed = async team => {
     setSelectedTeam(team);
     setShowTeamModal(false);
-    let members = [];
-    try {
-      const ref = team?.slug || team?.id;
-      const data = await ventFetch(`/team/${ref}/roster/`, { token });
-      members = (data?.members || []).map(row => ({
-        ...row.user,
-        id: row.user?.id ?? row.id,
-        name: row.user?.full_name || row.user?.username || '',
-        role: row.role
-      }));
-    } catch {
-      // The review says how many members the card said; the server
-      // decides eligibility at registration either way.
-    }
+    remember({ mode: 'team', team_id: team?.id ?? null, step: 'review' });
+    const members = await loadRoster(team);
     setTeamMembers(members);
     setShowReviewModal(true);
   };
@@ -163,7 +280,26 @@ const TournamentRegistrationModal = ({
       ...reviewData
     });
     setShowReviewModal(false);
+    goOn();
+  };
+  // The ticket step (inbox 436).
+  const handleTicketBought = () => {
+    const holding = { ...(draftInfo || {}), entry: { ...(draftInfo?.entry || {}), holds_ticket: true } };
+    setDraftInfo(holding);
+    setShowTicket(false);
     setShowPaymentModal(true);
+    remember({ step: 'payment' });
+  };
+  const handleTicketBack = () => {
+    setShowTicket(false);
+    if (registrationData?.type === 'team') setShowReviewModal(true);
+    else setRegistrationData(null);
+  };
+  const handleTicketLater = () => {
+    // Saved at this step already; the cards on the tournament page, the
+    // event's Tournaments tab and My tournaments bring them back here.
+    resetAllState();
+    if (onClose) onClose();
   };
   const handlePaymentBack = () => {
     setShowPaymentModal(false);
@@ -199,7 +335,7 @@ const TournamentRegistrationModal = ({
   if (!isOpen) return null;
   return <>
       
-      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && <div className={styles.modalOverlay} onClick={handleCancel}>
+      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onClick={handleCancel}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.register.tournament.0b66", "Register For Tournament")}</h2>
@@ -208,7 +344,22 @@ const TournamentRegistrationModal = ({
               </button>
             </div>
 
-            <div className={styles.modalBody}>
+            {showResume && draftInfo?.draft ? <div className={styles.modalBody}>
+              <div className={styles.resume}>
+                <span className={styles.resumeKicker}>{tt('regDraft.kicker', 'Pick up where you left off')}</span>
+                <p className={styles.resumeTitle}>
+                  {tt('regDraft.titleHere', 'You were registering {who} for this tournament')
+                    .replace('{who}', draftInfo.draft.mode === 'team' && draftInfo.draft.team?.name
+                      ? draftInfo.draft.team.name : tt('regDraft.solo', 'yourself, as a solo player'))}
+                </p>
+                <p className={styles.resumeText}>
+                  {tt('regDraft.whereShort', 'Next: {step}. Saved {saved}.')
+                    .replace('{step}', stepText(tt, draftInfo.draft.step))
+                    .replace('{saved}', formatDateTime(draftInfo.draft.saved_at))}
+                </p>
+                {resumeProblem && <p className={styles.resumeProblem} role="alert">{resumeProblem}</p>}
+              </div>
+            </div> : <div className={styles.modalBody}>
               <p className={styles.subtitle}>
                 {allowsIndividual && allowsTeam ? tx("Choose how you want to enter this tournament") : (allowsTeam ? tt('register.teamOnly', 'This tournament takes teams only') : tt('register.soloOnly', 'This tournament takes solo players only'))}
               </p>
@@ -238,16 +389,23 @@ const TournamentRegistrationModal = ({
                   <p className={styles.optionDescription}>{tt("ui.register.play.team.255f", "Register and play with your team")}</p>
                 </button>}
               </div>
-            </div>
+            </div>}
 
-            <div className={styles.modalFooter}>
+            {showResume && draftInfo?.draft ? <div className={styles.modalFooter}>
+              <button className={styles.cancelButton} onClick={startAgain}>
+                {tt('regDraft.startAgain', 'Start again')}
+              </button>
+              <button className={styles.nextButton} onClick={() => continueDraft(draftInfo)}>
+                {tt('regDraft.continue', 'Continue')}
+              </button>
+            </div> : <div className={styles.modalFooter}>
               <button className={styles.cancelButton} onClick={handleCancel}>
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
               <button className={`${styles.nextButton} ${!selectedOption ? styles.disabled : ''}`} onClick={handleNext} disabled={!selectedOption}>
                 {tt("ui.next.2f04", "Next →")}
               </button>
-            </div>
+            </div>}
           </div>
         </div>}
 
@@ -256,6 +414,11 @@ const TournamentRegistrationModal = ({
 
       {/* Review Modal */}
       <ReviewModal isOpen={showReviewModal} onClose={handleReviewClose} onBack={handleReviewBack} onProceed={handleReviewProceed} tournament={tournament} selectedTeam={selectedTeam} teamMembers={teamMembers} />
+
+      {/* The event ticket, when it is the entry and they have none (inbox 436) */}
+      {showTicket && <TicketStep tournament={tournament} entry={draftInfo?.entry} savedAt={draftInfo?.draft?.saved_at}
+                                 token={token} trip={ticketTrip} onBought={handleTicketBought}
+                                 onBack={handleTicketBack} onLater={handleTicketLater} />}
 
       {/* Payment Modal */}
       <PaymentModal isOpen={showPaymentModal} onClose={handlePaymentClose} onBack={handlePaymentBack} onComplete={handlePaymentComplete} tournament={tournament} selectedTeam={selectedTeam} teamMembers={teamMembers} registrationData={registrationData} resumeReference={resumeReference} />

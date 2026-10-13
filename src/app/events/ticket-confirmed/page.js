@@ -21,14 +21,15 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { GamesJoinedNote } from '@/components/party-games/CheckoutGames';
 import styles from './confirmed.module.css';
+import { returnReference } from '@/lib/payReturn';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 function Confirmed() {
   const tt = useT();
   const params = useSearchParams();
-  // Paystack returns its own `reference` or `trxref` depending on the flow.
-  const reference = params.get('reference') || params.get('trxref') || '';
+  // Paystack's `reference` or `trxref`, Flutterwave's `tx_ref`.
+  const reference = returnReference(params);
 
   const [state, setState] = useState('working');
   const [tickets, setTickets] = useState([]);

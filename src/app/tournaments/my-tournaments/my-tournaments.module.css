@@ -426,3 +426,18 @@
     min-height: 44px;
   }
 }
+
+/* Registrations left part done (inbox 436), above the organiser's own list. */
+.unfinished {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.unfinishedTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
