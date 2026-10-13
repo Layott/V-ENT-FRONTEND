@@ -29,21 +29,34 @@ const { ESLint } = require('eslint');
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 
+// no-undef does not look at JSX tags: a component drawn and never imported
+// (<GamePay /> on the Games tab, 13 October 2026) passes it and crashes the
+// page to its error screen the moment the tag renders. react/jsx-no-undef does,
+// and the plugin is already installed through eslint-config-next.
+function reactPlugin() {
+  const fromNext = createRequire(require.resolve('eslint-config-next'));
+  return fromNext('eslint-plugin-react');
+}
+
 function linter() {
   return new ESLint({
     cwd: ROOT,
     useEslintrc: false,
+    plugins: { react: reactPlugin() },
     overrideConfig: {
       parserOptions: { ecmaVersion: 2022, sourceType: 'module', ecmaFeatures: { jsx: true } },
       env: { browser: true, node: true, es2022: true },
-      rules: { 'no-undef': 'error' },
+      plugins: ['react'],
+      rules: { 'no-undef': 'error', 'react/jsx-no-undef': 'error' },
     },
   });
 }
 
+const RULES = new Set(['no-undef', 'react/jsx-no-undef']);
+
 export async function findUndefined(eslint, text, filePath = 'x.js') {
   const [res] = await eslint.lintText(text, { filePath: path.join(ROOT, 'src', filePath) });
-  return res.messages.filter((m) => m.ruleId === 'no-undef');
+  return res.messages.filter((m) => RULES.has(m.ruleId));
 }
 
 function walk(dir, acc = []) {
@@ -65,6 +78,9 @@ async function selfTest() {
     ['a helper called in JSX and never imported', 'export default function P(){ return <span>{formatDateTime(1)}</span>; }', 1],
     ['browser and node globals are known', 'export const a = () => [window.location, process.env.X, fetch, localStorage];', 0],
     ['a local function is known', 'function go(){ return 1; }\nexport default () => go();', 0],
+    ['a component drawn and never imported', 'export default function P(){ return <GamePay x={1} />; }', 1],
+    ['the same component imported', "import GamePay from './GamePay';\nexport default function P(){ return <GamePay x={1} />; }", 0],
+    ['a state value read and never declared', 'export default function P(){ return paying ? 1 : 0; }', 1],
   ];
   let failed = 0;
   for (const [name, text, want] of cases) {

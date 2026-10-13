@@ -23,11 +23,13 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { backendDir } from './backend-dir.mjs';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND = path.resolve(HERE, '..');
-const BACKEND = path.resolve(FRONTEND, '..', 'V-ENT-BACKEND');
+// The backend being judged (scripts/backend-dir.mjs), not the main checkout.
+const BACKEND = backendDir('vent_auth') || path.resolve(FRONTEND, 'no-backend-found');
 
 // "(s)" and its agreement cousins, INSIDE a string literal: `str(e)` and
 // `_row(s)` are code, `'reader(s)'` is a sentence.

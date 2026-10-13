@@ -23,6 +23,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
 import { statementLine, kindLabel } from '@/lib/statementLine';
+import { useGameNames } from '@/lib/partyGames/useGameWords';
 import { prizeText } from '@/lib/prize';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -384,6 +385,8 @@ const HomePage = () => {
   const eventsUpcoming = snapshot?.events_upcoming || [];
   const teams = snapshot?.teams || [];
   const transactions = snapshot?.transactions || [];
+  // A party game named in the reader's language (inbox 449).
+  const gameName = useGameNames(transactions);
   const activityFeed = snapshot?.activity_feed || [];
   const recommendations = snapshot?.recommendations || [];
   const animateStats = !loading && !!snapshot;
@@ -651,7 +654,7 @@ const HomePage = () => {
                             {kindLabel(tt, tx.type)}
                           </span>
                           <div className={styles.txDescBlock}>
-                            <p className={styles.txDesc}>{statementLine(tt, tx)}</p>
+                            <p className={styles.txDesc}>{statementLine(tt, tx, gameName)}</p>
                             <p className={styles.txDate}>{formatDate(tx.created_at)}</p>
                           </div>
                         </div>

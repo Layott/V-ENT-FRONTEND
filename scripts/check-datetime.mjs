@@ -46,6 +46,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { backendFile } from './backend-dir.mjs';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -276,8 +277,9 @@ function zoneHeaderWired() {
   const problems = [];
   const layout = fs.readFileSync(path.join(SRC, 'app', 'layout.js'), 'utf8');
   if (!/<ClientTimezone\s*\/>/.test(layout)) problems.push('src/app/layout.js does not mount <ClientTimezone />, so naive times arrive with no zone');
-  const settingsPath = path.join(ROOT, '..', 'V-ENT-BACKEND', 'vent', 'settings.py');
-  if (fs.existsSync(settingsPath)) {
+  // The backend being judged (scripts/backend-dir.mjs), not the main checkout.
+  const settingsPath = backendFile(path.join('vent', 'settings.py'));
+  if (settingsPath && fs.existsSync(settingsPath)) {
     const settings = fs.readFileSync(settingsPath, 'utf8');
     if (!/ClientTimezoneMiddleware/.test(settings)) problems.push('vent/settings.py does not list ClientTimezoneMiddleware, so the zone header is ignored');
     if (!/x-client-timezone/.test(settings)) problems.push('vent/settings.py does not allow x-client-timezone through CORS, so the browser cannot send it');

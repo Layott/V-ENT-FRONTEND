@@ -22,6 +22,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
 import { statementLine } from '@/lib/statementLine';
+import { useGameNames } from '@/lib/partyGames/useGameWords';
 import { apiMessage } from '@/lib/apiMessage';
 import { appLocale } from '@/lib/appLocale';
 import { formatDateTime } from '@/lib/datetime';
@@ -36,6 +37,8 @@ export default function SharedWallet({ kind, reference, name }) {
   const token = session?.user?.sessionToken;
 
   const [wallet, setWallet] = useState(null);
+  // A party game named in the reader's language (inbox 449).
+  const gameName = useGameNames(wallet?.transactions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -260,7 +263,7 @@ export default function SharedWallet({ kind, reference, name }) {
             {wallet.transactions.map((row) => (
               <div key={row.id} className={styles.row}>
                 <div className={styles.rowMain}>
-                  <strong className={styles.rowName}>{statementLine(tt, row)}</strong>
+                  <strong className={styles.rowName}>{statementLine(tt, row, gameName)}</strong>
                   <span className={styles.muted}>{formatDateTime(row.at)}</span>
                 </div>
                 <span className={row.amount < 0 ? styles.out : styles.in}>

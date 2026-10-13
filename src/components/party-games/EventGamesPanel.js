@@ -47,6 +47,7 @@ function draftOf(game) {
     place: game.place || '',
     places: game.places ? String(game.places) : '',
     prize: game.prize || '',
+    fee: Number(game.fee_vc) ? String(Number(game.fee_vc)) : '',
   };
 }
 
@@ -132,6 +133,7 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
     place: draft.place.trim(),
     places: draft.places.trim() ? Number(draft.places) : null,
     prize: draft.prize.trim(),
+    fee_vc: draft.fee.trim() ? Number(draft.fee) : 0,
   }, 'games.console.saved', 'Saved.');
 
   const remove = async (game) => {
@@ -252,6 +254,11 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                     {game.status === 'proposed' && <span className={styles.goldTag}>{tt('games.console.inVoteTag', 'In the vote')}</span>}
                     {game.status === 'closed' && <span className={styles.tag}>{tt('games.closed', 'Sign ups closed')}</span>}
                     {game.status === 'off' && <span className={styles.redTag}>{tt('games.console.offTag', 'Taken off')}</span>}
+                    {Number(game.fee_vc) > 0 && (
+                      <span className={styles.goldTag}>
+                        {tt('games.feeTag', 'Entry {n} VC').replace('{n}', formatNumber(Number(game.fee_vc)))}
+                      </span>
+                    )}
                   </div>
                   <span className={styles.meta}>
                     {game.starts_at ? formatWithZone(game.starts_at) : tt('games.timeTba', 'Time to be announced')}
@@ -296,12 +303,24 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                              onChange={(e) => setDraft({ ...draft, places: e.target.value.replace(/[^0-9]/g, '') })} />
                     </label>
                     <label className={styles.field}>
+                      <span>{tt('games.field.fee', 'Entry fee in VC (optional)')}</span>
+                      <input className={styles.input} value={draft.fee} inputMode="numeric"
+                             placeholder={tt('games.field.feeHint', 'Free with the ticket')}
+                             onChange={(e) => setDraft({ ...draft, fee: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) })} />
+                    </label>
+                    <label className={styles.field}>
                       <span>{tt('games.field.prize', 'Prize (optional)')}</span>
                       <input className={styles.input} value={draft.prize} maxLength={160}
                              placeholder={tt('games.field.prizeHint', 'What the winner gets')}
                              onChange={(e) => setDraft({ ...draft, prize: e.target.value })} />
                     </label>
                   </div>
+
+                  {draft.fee.trim() && Number(draft.fee) > 0 && (
+                    <p className={styles.muted}>
+                      {tt('games.console.feeHint', 'Paid from the player’s wallet with their PIN, or a card for what they are short. It goes back if they leave before the game starts or you take the game off. It reaches you through your event’s earnings, less the same fee as a ticket.')}
+                    </p>
+                  )}
 
                   <span className={styles.label}>
                     {tt('games.console.who', 'Who wants to play ({n})')
@@ -319,6 +338,9 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                             {p.guest ? ` · ${tt('games.console.guest', 'Guest, no account')}` : ''}
                             {' · '}
                             {tt(STATE_LABELS[p.state]?.[0] || 'games.state.in', STATE_LABELS[p.state]?.[1] || p.state)}
+                            {Number(p.fee_paid_vc) > 0
+                              ? ` · ${tt('games.console.paid', 'paid {n} VC').replace('{n}', formatNumber(Number(p.fee_paid_vc)))}`
+                              : ''}
                           </em>
                         </li>
                       ))}
@@ -348,7 +370,10 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                     )}
                     {game.status !== 'off' && (list || []).length > 0 && (
                       <button type="button" className={styles.quiet} disabled={busy === game.id}
-                              onClick={() => patch(game, { status: 'off' }, 'games.console.offNotice', 'Taken off your event. The players stay on record.')}>
+                              onClick={() => patch(game, { status: 'off' },
+                                ...(Number(game.fee_vc) > 0
+                                  ? ['games.console.offRefundNotice', 'Taken off your event. Every entry fee paid for it has gone back.']
+                                  : ['games.console.offNotice', 'Taken off your event. The players stay on record.']))}>
                         {tt('games.console.takeOff', 'Take this game off')}
                       </button>
                     )}
