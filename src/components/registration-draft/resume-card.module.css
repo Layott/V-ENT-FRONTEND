@@ -1,0 +1,94 @@
+/* "Pick up where you left off" (inbox 436): a filled panel, gold for the way
+   on, no outline and no glow. */
+
+.card {
+  background: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.kicker {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.02rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.problem {
+  margin: 0;
+  color: #ff8a80;
+  font-size: 0.86rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.goldBtn,
+.quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.goldBtn {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.goldBtn:hover {
+  background: var(--v-ent-light-gold);
+}
+
+.quiet {
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.quiet:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.quiet:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.goldBtn:focus-visible,
+.quiet:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}

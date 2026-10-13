@@ -19,6 +19,7 @@ import styles from './wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import ErrorState from '@/components/error-state/ErrorState';
+import { returnReference } from '@/lib/payReturn';
 
 // ── Stat helpers ────────────────────────────────────────────────────────────
 
@@ -81,7 +82,7 @@ const WalletsContent = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (!session?.user?.sessionToken) return; // wait for token before verifying
-    const ref = searchParams?.get('reference') || searchParams?.get('trxref');
+    const ref = returnReference(searchParams);
     if (!ref) return;
     (async () => {
       try {

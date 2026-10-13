@@ -4,7 +4,12 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 1000;
+  /* Under every sheet and dialog (1000 and up), over the floating bars (900).
+     At 1000 it tied with fifteen modal overlays and, coming later in the page,
+     drew over the bottom 70px of each on a phone: the ticket step's "Get the
+     ticket and continue" sat under it on 13 October 2026.
+     scripts/check-sheet-stacking.mjs holds the order. */
+  z-index: 950;
   background-color: #131316;
   display: flex;
   flex-direction: row;

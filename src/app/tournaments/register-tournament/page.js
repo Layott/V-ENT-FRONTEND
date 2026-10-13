@@ -14,6 +14,7 @@ import { API, tokenFrom, toTournament, ventFetch } from '@/components/tournament
 import styles from './register-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { returnReference } from '@/lib/payReturn';
 
 // Thin wrapper: loads the real tournament (real entry_fee_price + prize_pool)
 // and mounts the shared TournamentRegister modal flow (Mode → Team → Roster →
@@ -27,10 +28,11 @@ const RegisterTournamentContent = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = slugFromPath || searchParams.get('id');
-  // Present when the browser returns here after a Paystack wallet top-up
-  // redirect (see payment/Payment.js `handleTopUp`). Passed straight through
-  // to the modal so it can verify + auto-resume the paid registration.
-  const reference = searchParams.get('reference');
+  // Present when the browser returns here after a card top-up (Paystack's
+  // `reference`, Flutterwave's `tx_ref`; see payment/Payment.js `handleTopUp`
+  // and the ticket step). Passed straight through to the modal so it can
+  // verify + auto-resume the paid registration.
+  const reference = returnReference(searchParams) || null;
   const {
     data: session,
     status: sessionStatus
@@ -94,7 +96,11 @@ const RegisterTournamentContent = ({
                   .replace("{name}", tournament.tournament_title)
               : tt("registerTournament.title", "Tournament registration")}
           </h1>
-          {loading ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : loadError && !tournament ? <ErrorState message={loadError} onRetry={load} /> : !tournament ? <p className={styles.errText}>{notFound || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} />}
+          {/* The loading line only before the tournament first arrives. `load`
+              runs again when the session or the words settle, and swapping
+              the registration out for this line then threw away every step
+              it was on, a card payment coming back included (13 Oct 2026). */}
+          {loading && !tournament ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : loadError && !tournament ? <ErrorState message={loadError} onRetry={load} /> : !tournament ? <p className={styles.errText}>{notFound || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} autoResume={searchParams.get('resume') === '1'} />}
         </div>
       </main>
 

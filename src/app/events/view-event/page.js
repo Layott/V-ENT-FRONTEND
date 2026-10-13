@@ -17,6 +17,8 @@ import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
 import CheckoutGames, { GamesJoinedNote, recallPicks, rememberPicks } from '@/components/party-games/CheckoutGames';
+import ResumeCard from '@/components/registration-draft/ResumeCard';
+import { useMyDrafts } from '@/lib/registrationDraft';
 import ShareCard from '@/components/share/ShareCard';
 import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
@@ -467,6 +469,9 @@ export const ViewEventContent = ({
           maxPerEmail: askMaxPerEmail } =
     useCheckoutFields(id);
   const [buyAnswers, setBuyAnswers] = useState({});
+  // Registrations for this event's tournaments left part done (inbox 436),
+  // offered on the Tournaments tab where somebody comes back in.
+  const { drafts: myDrafts, forget: forgetDraft } = useMyDrafts(session?.user?.sessionToken);
   // Party games ticked in checkout (inbox 434, G2). Kept across a card trip
   // for coins, so coming back to buy does not ask again.
   const [buyGames, setBuyGames] = useState([]);
@@ -1735,6 +1740,9 @@ export const ViewEventContent = ({
                       {tt("ui.link.tournament.4020", "Link a tournament")}
                     </button>}
                 </div>
+
+                {myDrafts.filter(d => linkedTournaments.some(t => t.slug === d.tournament?.slug))
+                  .map(d => <ResumeCard key={d.tournament.slug} draft={d} token={session?.user?.sessionToken} onGone={forgetDraft} />)}
 
                 {isOrganizer && linkPanelOpen && <div className={styles.linkPanel}>
                     <div className={styles.linkPanelHead}>

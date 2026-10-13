@@ -114,7 +114,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  z-index: 60;
+  z-index: 1000; /* above the phone's bottom menu (950) */
 }
 
 .modal {
