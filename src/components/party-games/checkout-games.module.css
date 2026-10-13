@@ -1,0 +1,183 @@
+/* The games step in ticket checkout (inbox 434, G2), as the mockup drew it:
+   tick rows as filled buttons with aria-pressed, a still of each game, no
+   outlines. Sits inside the buy modal and the guest form alike. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0 6px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tick {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tick[aria-pressed='true'] {
+  background: rgba(212, 175, 55, 0.18);
+}
+
+.box {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: #3b3c43;
+}
+
+.tick[aria-pressed='true'] .box {
+  background: var(--v-ent-gold);
+}
+
+.still {
+  display: contents;
+}
+
+.thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 38px;
+  border-radius: 8px;
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.tick[aria-pressed='true'] .name {
+  color: var(--v-ent-light-gold);
+}
+
+.redTag {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(237, 28, 36, 0.16);
+  color: #ff8a80;
+}
+
+.how {
+  flex: none;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.how:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.tick:focus-visible,
+.how:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.joined {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.link,
+.linkBtn {
+  color: var(--v-ent-light-gold);
+  font-weight: 600;
+}
+
+.linkBtn {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.linkBtn:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .thumb {
+    width: 48px;
+    height: 30px;
+  }
+}

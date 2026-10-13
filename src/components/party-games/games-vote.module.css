@@ -1,0 +1,224 @@
+/* The vote over games (inbox 439), as the mockup drew it: a filled panel, tick
+   rows as filled buttons with aria-pressed, flat result bars. No outlines. */
+
+.panel {
+  background: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.question {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+.problem {
+  margin: 0;
+  color: #ff8a80;
+  font-size: 0.88rem;
+}
+
+.tag,
+.greenTag,
+.goldTag {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tag {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.greenTag {
+  background: rgba(76, 175, 80, 0.18);
+  color: #8fd694;
+}
+
+.goldTag {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--v-ent-light-gold);
+  margin-left: 8px;
+}
+
+.options,
+.results,
+.plainOptions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.optionRow,
+.plainOptions li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plainOptions li {
+  justify-content: space-between;
+  background: #2a2b30;
+  border-radius: 10px;
+  padding: 4px 4px 4px 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
+.option {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option[aria-pressed='true'] {
+  background: rgba(212, 175, 55, 0.18);
+  color: var(--v-ent-light-gold);
+}
+
+.box {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: #3b3c43;
+}
+
+.option[aria-pressed='true'] .box {
+  background: var(--v-ent-gold);
+}
+
+.optionName {
+  overflow-wrap: anywhere;
+}
+
+.how,
+.quiet,
+.goldBtn {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.how,
+.quiet {
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.how:hover,
+.quiet:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.quiet {
+  align-self: flex-start;
+}
+
+.goldBtn {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
+
+.goldBtn:hover {
+  background: var(--v-ent-light-gold);
+}
+
+.goldBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.option:focus-visible,
+.how:focus-visible,
+.quiet:focus-visible,
+.goldBtn:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.resultLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.88rem;
+}
+
+.bar {
+  display: block;
+  height: 6px;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: #33343a;
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--v-ent-gold);
+}

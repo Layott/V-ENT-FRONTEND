@@ -16,6 +16,7 @@ import PayShortfall from '@/components/pay/PayShortfall';
 import EventSchedule from '@/components/event-schedule/EventSchedule';
 import EventWaitlist from '@/components/event-schedule/EventWaitlist';
 import GuestCheckout from '@/components/guest-checkout/GuestCheckout';
+import CheckoutGames, { GamesJoinedNote, recallPicks, rememberPicks } from '@/components/party-games/CheckoutGames';
 import ShareCard from '@/components/share/ShareCard';
 import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
@@ -466,6 +467,9 @@ export const ViewEventContent = ({
           maxPerEmail: askMaxPerEmail } =
     useCheckoutFields(id);
   const [buyAnswers, setBuyAnswers] = useState({});
+  // Party games ticked in checkout (inbox 434, G2). Kept across a card trip
+  // for coins, so coming back to buy does not ask again.
+  const [buyGames, setBuyGames] = useState([]);
   const [buyPeople, setBuyPeople] = useState([{ answers: {} }]);
   const [buyQty, setBuyQty] = useState(1);
   const [buyError, setBuyError] = useState('');
@@ -720,6 +724,9 @@ export const ViewEventContent = ({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (activeTab && activeTab !== 'overview') params.set('tab', activeTab);else params.delete('tab');
+    // A ticket type chosen from an embed belongs to the Tickets tab; carried
+    // to another tab it reopened that checkout on a reload (walk, 13 October).
+    if (activeTab !== 'tickets') params.delete('tier');
     // Keep whatever address the page was opened on. Rewriting to
     // /events/view-event?tab=... threw the event away when the page had been
     // reached by name, because the slug lives in the path there and not in the
@@ -949,6 +956,7 @@ export const ViewEventContent = ({
     setBuyPin('');
     setBuyQty(1);
     setBuyAnswers({});
+    setBuyGames(recallPicks(id));
     setBuyPeople([{ answers: {} }]);
     setBuyStep(1);
     setBuyError('');
@@ -1077,6 +1085,8 @@ export const ViewEventContent = ({
           pin: buyPin,
           answers: buyAnswers,
           attendees: buyPeople.map(person => ({ answers: person.answers })),
+          // Signed up on the new ticket by the server, in the same request.
+          ...(buyGames.length ? { games: buyGames } : {}),
           // Who sent them here, if anybody did. Empty is the ordinary case and
           // credits nobody.
           ref: refFor(id)
@@ -1085,6 +1095,7 @@ export const ViewEventContent = ({
       const data = await res.json();
       if (data.status === 'success') {
         setBuyResult(data.data);
+        rememberPicks(id, []);
         if (typeof data.data.new_balance === 'number') {
           setWalletBalance(data.data.new_balance);
         }
@@ -1586,6 +1597,10 @@ export const ViewEventContent = ({
                     code={unlockCode}
                     onDone={() => setTierRefresh(n => n + 1)}
                     onClose={() => setGuestTier(null)}
+                    onOpenGames={() => {
+                      setGuestTier(null);
+                      openTab('games');
+                    }}
                   />
                 </div>}
 
@@ -1994,6 +2009,11 @@ export const ViewEventContent = ({
                         onChange={(fid, value) => setBuyAnswer(index, fid, value)} />
                     </div>)}
 
+                <CheckoutGames eventRef={id} value={buyGames} onChange={ids => {
+                  setBuyGames(ids);
+                  rememberPicks(id, ids);
+                }} />
+
                 {buyError && <p className={styles.modalError}>{buyError}</p>}
 
                 <button className={`${styles.modalPrimaryBtn} redBTN`} onClick={() => {
@@ -2074,12 +2094,19 @@ export const ViewEventContent = ({
                 </div>
                 <p className={styles.successTitle}>{tt("ui.payment.successful.8ea2", "Payment successful")}</p>
                 <p className={styles.successSub}>
-                  {buyQty} × {buyTier.name} for {event.name}
+                  {tt('buy.successLine', '{n} × {tier} for {event}')
+                    .replace('{n}', formatNumber(buyQty))
+                    .replace('{tier}', buyTier.name)
+                    .replace('{event}', event.name)}
                 </p>
                 {buyResult?.qr_code && <p className={styles.qrCode}>QR: {buyResult.qr_code}</p>}
                 {typeof buyResult?.new_balance === 'number' && <p className={styles.successSub}>
                     {tt("ui.new.balance.7b25", "New balance:")} {Number(buyResult.new_balance).toLocaleString()} VC
                   </p>}
+                <GamesJoinedNote rows={buyResult?.games} onOpenGames={() => {
+                  closeBuy();
+                  openTab('games');
+                }} />
                 <Link href="/events/my-tickets" className={`${styles.modalPrimaryBtn} goldBTN`} style={{
             display: 'inline-flex',
             justifyContent: 'center',

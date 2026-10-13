@@ -28,11 +28,12 @@ import styles from './guest-checkout.module.css';
 import { refFor } from '@/lib/referral';
 import { formatNumber } from '@/lib/datetime';
 import CurrencyChoice from '@/components/pay/CurrencyChoice';
+import CheckoutGames, { GamesJoinedNote, recallPicks, rememberPicks } from '@/components/party-games/CheckoutGames';
 import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-export default function GuestCheckout({ eventRef, tier, code, onDone, onClose }) {
+export default function GuestCheckout({ eventRef, tier, code, onDone, onClose, onOpenGames }) {
   const tt = useT();
 
   const { perOrder, perTicket, maxPerEmail } = useCheckoutFields(eventRef);
@@ -43,6 +44,9 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [issued, setIssued] = useState(null);
+  // Party games ticked here (inbox 434, G2). They travel with the order, through
+  // the card page too, and the ticket is signed up for them when it is issued.
+  const [games, setGames] = useState(() => recallPicks(eventRef));
   // What this costs, from the endpoint the checkout itself charges through. A
   // guest used to see the amount for the first time on the payment page, and
   // a group rate the organiser had set was never mentioned at all.
@@ -135,6 +139,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
           ...(priced?.promo?.applied ? { promo: promoCode.trim() } : {}),
           answers: orderAnswers,
           attendees: people.map(p => ({ name: p.name, answers: p.answers })),
+          ...(games.length ? { games } : {}),
           callback_url: typeof window === 'undefined' ? ''
             : `${window.location.origin}/events/ticket-confirmed`,
           // The influencer link this buyer arrived through. A guest is the
@@ -149,6 +154,8 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
 
       if (res.ok && body.status === 'success') {
         // A paid ticket goes to the card page. A free one is already issued.
+        // The picks are with the order now, on the server, either way.
+        rememberPicks(eventRef, []);
         if (body.data.authorization_url) {
           window.location.href = body.data.authorization_url;
           return;
@@ -189,6 +196,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
             </li>
           ))}
         </ul>
+        <GamesJoinedNote rows={issued.games} eventSlug={issued.tickets?.[0]?.event_slug} onOpenGames={onOpenGames} />
         <p className={styles.help}>
           {tt('guest.findAgain', 'You can find it again with your email address and the code, without an account.')}
           {' '}
@@ -305,6 +313,11 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose })
             onChange={(id, value) => setAnswer(index, id, value)} />
         </div>
       ))}
+
+      <CheckoutGames eventRef={eventRef} value={games} onChange={ids => {
+        setGames(ids);
+        rememberPicks(eventRef, ids);
+      }} />
 
       <label className={styles.field}>
         <span className={styles.label}>{tt('buy.promoLabel', 'Promo code')}</span>

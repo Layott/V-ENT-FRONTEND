@@ -5,8 +5,8 @@
 // Add games from the catalogue of fifty (or one of your own), set when, where
 // and how many places, see who wants to play, close sign ups, take a game off.
 // Approved as the organiser screen of docs/mockups/party-games.html. The vote
-// over games (G2) and fees (inbox 449, G3) come in later pieces and add to this
-// panel rather than replace it.
+// over games (G2) sits under the games as "Let people vote"; fees (inbox 449,
+// G3) come in a later piece and add to this panel rather than replace it.
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import DateField from '@/components/date-field/DateField';
@@ -22,6 +22,7 @@ import { GAMES, KINDS } from '@/lib/partyGames/catalogue';
 import { useGameWords } from '@/lib/partyGames/useGameWords';
 import { GameStill } from './stage/Stage';
 import GameExplainer from './GameExplainer';
+import GamesVoteConsole from './GamesVoteConsole';
 import { OwnGameTile, wordsForGame } from './EventGames';
 import { KIND_LABELS, kindName, shortOrigin } from './names';
 import styles from './event-games-panel.module.css';
@@ -55,6 +56,7 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
   const path = `/event/${encodeURIComponent(eventRef || '')}/games/`;
 
   const [games, setGames] = useState([]);
+  const [vote, setVote] = useState(null);
   const [status, setStatus] = useState('loading');
   const [busy, setBusy] = useState(null);
   const [problem, setProblem] = useState('');
@@ -76,6 +78,7 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
     try {
       const body = await ventFetch(path, { token });
       setGames(body.games || []);
+      setVote(body.vote || null);
       setStatus('ready');
     } catch {
       if (!quiet) setStatus('error');
@@ -183,7 +186,12 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
     }
   };
 
-  const onEvent = useMemo(() => new Set(games.filter((g) => g.status !== 'off').map((g) => g.catalogue_key)), [games]);
+  // A catalogue game on the event, or waiting on the vote: either way not offered again.
+  const onEvent = useMemo(() => new Map(games.filter((g) => g.status !== 'off').map((g) => [g.catalogue_key, g.status])), [games]);
+  const takePayload = useCallback((data) => {
+    setGames(data.games || []);
+    setVote(data.vote || null);
+  }, []);
   const signups = games.reduce((n, g) => n + (g.playing || 0) + (g.waiting || 0), 0);
 
   const pool = useMemo(() => {
@@ -241,6 +249,7 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                 <div className={styles.gameText}>
                   <div className={styles.nameLine}>
                     <span className={styles.gameName}>{name}</span>
+                    {game.status === 'proposed' && <span className={styles.goldTag}>{tt('games.console.inVoteTag', 'In the vote')}</span>}
                     {game.status === 'closed' && <span className={styles.tag}>{tt('games.closed', 'Sign ups closed')}</span>}
                     {game.status === 'off' && <span className={styles.redTag}>{tt('games.console.offTag', 'Taken off')}</span>}
                   </div>
@@ -356,6 +365,11 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
         })}
       </section>
 
+      {status === 'ready' && (
+        <GamesVoteConsole path={path} token={token} vote={vote} games={games} words={words}
+                          onPayload={takePayload} toast={toast} />
+      )}
+
       <section className={styles.panel}>
         <div className={styles.spread}>
           <h3 className={styles.subTitle}>{tt('games.console.addTitle', 'Add games')}</h3>
@@ -384,7 +398,7 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
           <ul className={styles.catalogue}>
             {pool.map((g) => {
               const w = g.words;
-              const added = onEvent.has(g.key);
+              const added = onEvent.get(g.key);
               return (
                 <li key={g.key} className={styles.catItem}>
                   <GameStill gameKey={g.key} className={styles.catThumb} say={say(g.key)} label={w?.name || g.key} />
@@ -399,7 +413,9 @@ export default function EventGamesPanel({ eventRef, token, showToast }) {
                     <button type="button" className={styles.quiet} onClick={() => setPreview(g.key)}>
                       {tt('games.console.preview', 'Preview')}
                     </button>
-                    {added ? (
+                    {added === 'proposed' ? (
+                      <span className={styles.inTag}>{tt('games.console.inVoteTag', 'In the vote')}</span>
+                    ) : added ? (
                       <span className={styles.inTag}>{tt('games.console.onEvent', 'On your event')}</span>
                     ) : (
                       <button type="button" className={styles.goldBtn} disabled={busy === 'add'}
