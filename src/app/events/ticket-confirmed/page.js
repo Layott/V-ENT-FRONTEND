@@ -19,6 +19,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
+import { GamesJoinedNote } from '@/components/party-games/CheckoutGames';
 import styles from './confirmed.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -31,6 +32,7 @@ function Confirmed() {
 
   const [state, setState] = useState('working');
   const [tickets, setTickets] = useState([]);
+  const [games, setGames] = useState([]);
   const [error, setError] = useState('');
 
   const verify = useCallback(async () => {
@@ -49,6 +51,9 @@ function Confirmed() {
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setTickets(body.data.tickets || []);
+        // The party games ticked before paying (inbox 434, G2), joined by the
+        // server as the tickets were issued.
+        setGames(body.data.games || []);
         setState('done');
         return;
       }
@@ -91,6 +96,7 @@ function Confirmed() {
               {t.attendee_name && <span>{t.attendee_name}</span>}
             </li>)}
           </ul>
+          <GamesJoinedNote rows={games} eventSlug={tickets[0]?.event_slug} />
           <p className={styles.sub}>
             {tt('guest.findAgain', 'You can find it again with your email address and the code, without an account.')}
             {' '}

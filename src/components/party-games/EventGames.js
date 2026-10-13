@@ -26,6 +26,7 @@ import { ownGameWords, useGameWords } from '@/lib/partyGames/useGameWords';
 import { BY_KEY } from '@/lib/partyGames/catalogue';
 import { GameStill } from './stage/Stage';
 import GameExplainer from './GameExplainer';
+import GamesVote from './GamesVote';
 import { kindName, shortOrigin } from './names';
 import styles from './event-games.module.css';
 
@@ -53,7 +54,7 @@ export function placesText(tt, game) {
 
 export function OwnGameTile({ name, className }) {
   return (
-    <div className={className || styles.ownTile} aria-hidden="true">
+    <div className={className || styles.ownThumb} aria-hidden="true">
       <span>{String(name || '?').trim().charAt(0).toUpperCase()}</span>
     </div>
   );
@@ -140,7 +141,7 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
     }
   };
 
-  const nameOf = (game) => wordsForGame(game, words)?.name || '';
+  const nameOf = (game) => (game ? wordsForGame(game, words)?.name || '' : '');
 
   const press = async (game, leaving) => {
     if (!ticket) return;
@@ -202,7 +203,10 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
     );
   };
 
-  const openGame = open ? games.find((g) => g.id === open) : null;
+  // Held as the game itself: a game in a vote is not in the list, and its
+  // explainer opens from the vote panel. The list's copy wins when there is one,
+  // because it carries the latest places.
+  const openGame = open ? (games.find((g) => g.id === open.id) || open) : null;
   const openWords = openGame ? wordsForGame(openGame, words) : null;
 
   return (
@@ -288,6 +292,11 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
       {notice && <p className={styles.notice} role="status">{notice}</p>}
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
 
+      {status === 'ready' && data?.vote && (
+        <GamesVote vote={data.vote} ticket={ticket} eventRef={eventRef} token={token}
+                   nameOf={nameOf} onHow={(game) => setOpen(game)} onVoted={() => load({ quiet: true })} />
+      )}
+
       {status === 'loading' && <p className={styles.muted}>{tt('games.loading', 'Loading the games...')}</p>}
       {status === 'error' && (
         <div className={styles.errorBox}>
@@ -295,7 +304,7 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
           <button type="button" className={styles.btn} onClick={() => load()}>{tt('games.tryAgain', 'Try again')}</button>
         </div>
       )}
-      {status === 'ready' && games.length === 0 && (
+      {status === 'ready' && games.length === 0 && !data?.vote && (
         <p className={styles.empty}>{tt('games.none', 'No games at this event yet. When the organiser adds some, they show here with how to play each one.')}</p>
       )}
 
@@ -333,7 +342,7 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
                   </div>
                 </div>
                 <div className={styles.actions}>
-                  <button type="button" className={styles.quietBtn} onClick={() => setOpen(game.id)}>
+                  <button type="button" className={styles.quietBtn} onClick={() => setOpen(game)}>
                     {tt('games.howToPlay', 'How to play')}
                   </button>
                   {actionFor(game)}
@@ -350,7 +359,7 @@ export default function EventGames({ eventRef, eventSlug, onOpenTickets }) {
           words={openWords}
           say={say(openGame.catalogue_key)}
           onClose={() => setOpen(null)}
-          action={<div className={styles.sheetAction}>{actionFor(openGame)}</div>}
+          action={openGame.status === 'proposed' ? null : <div className={styles.sheetAction}>{actionFor(openGame)}</div>}
         />
       )}
     </div>
