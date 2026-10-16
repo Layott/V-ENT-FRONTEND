@@ -638,12 +638,15 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     }
   };
 
-  const drawStage = async row => {
+  // `early` draws a knockout before the stages feeding it finish, every seat
+  // waiting for its place (P1d).
+  const drawStage = async (row, early = false) => {
     setBusy(true);
     setProblem('');
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/stages/${row.id}/draw/`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth }, body: '{}',
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify(early ? { early: true } : {}),
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
@@ -869,6 +872,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             const outs = outOf(row.id);
             const fed = ins.length === 0 || ins.every(l => l.fired_at);
             const drawable = canManage && !row.drawn_at && fed;
+            // A knockout fed by links can be drawn before they send, seats
+            // waiting for their places (P1d); its seats are fixed by place, so
+            // only with the cross placement.
+            const earlyDrawable = canManage && !row.drawn_at && !fed && !meta.finished
+              && ['single_elimination', 'double_elimination'].includes(row.format)
+              && (row.placement || 'cross') === 'cross';
             const closable = canManage && row.drawn_at && row.status !== 'complete' && outs.length > 0;
             // The tools for a stage already drawn. Not while a stage it feeds
             // is drawn on top of it (that one is undone first), and not once
@@ -948,6 +957,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     {tt('stages.lines.sendNow', 'Send to {target} now').replace('{target}', labelOf(l.target))}
                   </button>
                 ))}
+                {earlyDrawable && (
+                  <button type="button" className={styles.ghost} disabled={busy}
+                          onClick={() => drawStage(row, true)}>
+                    {tt('stages.drawEarly', 'Draw it now with placeholders')}
+                  </button>
+                )}
                 {drawable && (
                   <button type="button" className={styles.save} disabled={busy}
                           onClick={() => drawStage(row)}>
