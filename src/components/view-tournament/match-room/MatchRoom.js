@@ -30,6 +30,7 @@ import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
 import { matchName } from '@/lib/matchName';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { sideLabel } from '@/lib/slotLabel';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -109,8 +110,8 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   }, [onClose]);
 
   const slot = match?.your_slot || null;
-  const one = match?.participant_1?.name || tt('bracket.tbd', 'To be decided');
-  const two = match?.participant_2?.name || tt('bracket.tbd', 'To be decided');
+  const one = sideLabel(tt, match, 1, match?.format);
+  const two = sideLabel(tt, match, 2, match?.format);
   // The @username under a person's full name (CEO: "both").
   const handle = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
   const bothKnown = Boolean(match?.participant_1 && match?.participant_2);

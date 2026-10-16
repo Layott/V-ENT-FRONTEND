@@ -22,6 +22,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import styles from './running-order.module.css';
 import DateField from '@/components/date-field/DateField';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { slotLabel, slotOf } from '@/lib/slotLabel';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -176,10 +177,10 @@ export default function RunningOrder({ tournamentId, token }) {
     <li key={fixture.match_id} className={styles.fixture}>
       <span className={styles.pos}>{dayIso ? index + 1 : '-'}</span>
       <span className={styles.names}>
-        {nameOf(fixture.participant_1) || tt('bracket.tbd', 'To be decided')}
+        {nameOf(fixture.participant_1) || slotLabel(tt, slotOf(fixture, 1)) || tt('bracket.tbd', 'To be decided')}
         {handleOf(fixture.participant_1) && <span className={styles.handle}>{handleOf(fixture.participant_1)}</span>}
         <span className={styles.v}>v</span>
-        {nameOf(fixture.participant_2) || tt('bracket.tbd', 'To be decided')}
+        {nameOf(fixture.participant_2) || slotLabel(tt, slotOf(fixture, 2)) || tt('bracket.tbd', 'To be decided')}
         {handleOf(fixture.participant_2) && <span className={styles.handle}>{handleOf(fixture.participant_2)}</span>}
       </span>
       <span className={styles.actions}>
