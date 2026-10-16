@@ -41,7 +41,9 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [password, setPassword] = useState("");
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
+  // 3 to 20: the server's rule (views_helpers.USERNAME_MAX). This said 30, so a
+  // 25-character name read "free" and was refused on submit.
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
   const [loading, setLoading] = useState(false);
   const { take: takeChallenge } = useBotChallenge();
   const trapRef = useRef(null);
@@ -128,7 +130,7 @@ const Signup = () => {
       setUsernameFree(false);
       // Inline rule: 3-30 chars, letters/numbers/underscore only.
       if (uname && !usernameRegex.test(uname)) {
-        setUsernameError(tt('msg.usernameRule', "3 to 30 characters: letters, numbers and underscores only"));
+        setUsernameError(tt('msg.usernameRule', "3 to 20 characters: letters, numbers and underscores only"));
         return;
       }
       setUsernameError("");
@@ -186,7 +188,7 @@ const Signup = () => {
     // Inline validation gate - runs before any network call.
     const validationMessage = (() => {
       if (!emailRegex.test(formData.email)) return tt('msg.emailBad', "Enter a valid email address");
-      if (!usernameRegex.test((formData.username || "").trim())) return tt('msg.usernameLength', "A username is 3 to 30 characters: letters, numbers and underscores");
+      if (!usernameRegex.test((formData.username || "").trim())) return tt('msg.usernameLength', "A username is 3 to 20 characters: letters, numbers and underscores");
       if (!isPasswordValid(formData.password)) return tt('msg.passwordRule', "A password needs 8 or more characters, with an upper case letter, a lower case letter and a number");
       if (formData.password !== formData.confirmPassword) return tt('ui.passwords.do.not.match.f7c3', "Passwords do not match.");
       if (usernameError) return tt('msg.chooseDifferentUsername', "Please choose a different username");
@@ -288,7 +290,7 @@ const Signup = () => {
                         <div className={generalStyles.inputGroup}>
                             <label>{tt("ui.username.17df", "Username:")}</label>
                             <input type="text" name="username" placeholder={tt("ui.enter.username.9303", "Enter a username")} value={formData.username} onChange={handleInputChange} disabled={!usernameEditable} required />
-                            {usernameError ? <p className={styles.errorMessage} role="alert">{usernameError}</p> : usernameFree && usernameEditable ? <p className={styles.toolTip}>{tt('msg.usernameFree', "This username is free")}</p> : <p className={styles.toolTip}>{tt("ui.will.display.name.across.027d", "This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)")}</p>}
+                            {usernameError ? <p className={styles.errorMessage} role="alert">{usernameError}</p> : usernameFree && usernameEditable ? <p className={styles.toolTip}>{tt('msg.usernameFree', "This username is free")}</p> : <p className={styles.toolTip}>{tt("ui.will.display.name.across.027d", "This will be your display name across V-ent, so choose a cool one! (Max. 20 characters)")}</p>}
                         </div>
 
                         <div className={generalStyles.inputGroup}>
