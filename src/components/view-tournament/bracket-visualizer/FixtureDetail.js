@@ -20,10 +20,11 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatWithZone } from '@/lib/datetime';
 import styles from './fixture-detail.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { sideLabel } from '@/lib/slotLabel';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-export default function FixtureDetail({ match, onClose }) {
+export default function FixtureDetail({ match, onClose, format }) {
   const tt = useT();
   const [tie, setTie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,8 +69,8 @@ export default function FixtureDetail({ match, onClose }) {
 
   if (!match) return null;
 
-  const one = match.participant_1?.name || tt('bracket.tbd', 'To be decided');
-  const two = match.participant_2?.name || tt('bracket.tbd', 'To be decided');
+  const one = sideLabel(tt, match, 1, format);
+  const two = sideLabel(tt, match, 2, format);
   const done = match.status === 'completed';
   const seats = tie?.fixtures || [];
   const agg = tie?.aggregate;
