@@ -718,6 +718,13 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* Half a card in from every edge (.sqCard is 92 by 120), so a spot at 0%
+   or 100% still puts the whole card on the pitch. */
+.sqField {
+  position: absolute;
+  inset: 60px 46px;
+}
+
 .sqSpot {
   position: absolute;
   transform: translate(-50%, 50%);
