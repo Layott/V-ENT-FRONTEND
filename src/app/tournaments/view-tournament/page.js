@@ -455,6 +455,17 @@ export const ViewTournamentContent = ({
                     href={`/tournaments/${tournament?.slug || id}/run-of-show`}>
                     {tt('ros.openFromEvent', 'Open the run of show, minute by minute')}
                   </Link>}
+                  {/* The EAFC lineup, for somebody with a place here. Nothing
+                      led a player to the picker until 16 October 2026; it
+                      opens the console on the one tab they may use. */}
+                  {!isOrganizer && tournament?.is_registered && tournament?.lineups
+                    && tournament.lineups !== 'off' && <Link
+                    className={styles.runOfShowLink}
+                    href={`/tournaments/${tournament?.slug || id}/manage?tab=lineup`}>
+                    {tournament.lineups === 'closed'
+                      ? tt('lineup.seeMine', 'See the lineup you handed in')
+                      : tt('lineup.buildMine', 'Build your lineup for this tournament')}
+                  </Link>}
                   {isOrganizer ? <Link href={`/tournaments/${id}/manage`}>
                       <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.manage.bf58", "Manage")}</button>
                     </Link> : tournament.is_registered ?

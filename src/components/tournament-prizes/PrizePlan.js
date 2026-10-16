@@ -220,6 +220,10 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
               <span className={styles.position}>{row.position}</span>
               <span className={styles.who}>
                 {row.name || tt('prizes.nobody', 'Nobody')}
+                {/* Equal finishers share a place and split its prizes (P0). */}
+                {row.shared && (<span className={styles.rowProblem}>
+                  {tt('prizes.shared', 'Shared, places {places}').replace('{places}', row.shared)}
+                </span>)}
                 {row.problem && (
                   <span className={styles.rowProblem}>
                     {tt(...(ROW_PROBLEMS[row.problem] || [`prizes.row.${row.problem}`, row.problem]))}

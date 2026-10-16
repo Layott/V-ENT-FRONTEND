@@ -275,6 +275,10 @@ const ManageContent = ({ slug }) => {
     && caps !== null && access !== null;
   // A scorekeeper opens the console and sees the one tab they may use.
   const keepsScore = access?.can_record_results && !access?.can_manage;
+  // A player opens it for their EAFC lineup and sees that one tab. The picker
+  // was put here for players on 3 September and the refusal below, added the
+  // same day, turned every player away from it (16 October 2026).
+  const playsIn = !runsIt && !keepsScore && Boolean(access?.is_entrant);
   // Only the person who made it may copy it (inbox 446); an admin running it
   // from the console is not offered a copy under their own name.
   const ownsIt = viewer.signedIn && (
@@ -305,7 +309,7 @@ const ManageContent = ({ slug }) => {
   // And the body follows: the page opens on Actions, and a scorekeeper was
   // shown the whole Actions panel (codes, cancel and refund, the rules)
   // under a tab row offering Match Control alone (walk, 28 September 2026).
-  const shown = keepsScore ? 'match-control' : tab;
+  const shown = keepsScore ? 'match-control' : playsIn ? 'lineup' : tab;
   // The seat-by-seat screen is for a tie made of several matches (an
   // aggregate league, or any table with more than one seat a side). A plain
   // round robin match is one score: it was sent to the seat screen, which
@@ -346,7 +350,7 @@ const ManageContent = ({ slug }) => {
   // exists to stop, one step in. Decided only once the session and the admin
   // capabilities have answered, so the organiser is never refused their own
   // console for a moment while those load.
-  if (decided && !runsIt && !keepsScore) {
+  if (decided && !runsIt && !keepsScore && !playsIn) {
     const ref = tournament.slug || tournament.tournament_id;
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -373,7 +377,9 @@ const ManageContent = ({ slug }) => {
         <div className={styles.rightPaneContainer}>
           <div className={styles.pageHeader}>
             <div>
-              <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>
+              {playsIn
+                ? <BackLink href={`/tournaments/${tournament.slug || tournament.tournament_id}`} className={styles.backLink}>{tt("manage.viewTournamentPage", "View the tournament page")}</BackLink>
+                : <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>}
               <h1 className={styles.pageTitle}>{tournament.name || tournament.tournament_title}</h1>
               <div className={styles.headerMeta}>
                 <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
@@ -398,7 +404,7 @@ const ManageContent = ({ slug }) => {
                   that worked. */}
               {/* Not for a scorekeeper: the studio is not theirs to run, and
                   the tab it opens is one they are never shown. */}
-              {!keepsScore && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
+              {!keepsScore && !playsIn && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
                 <LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}
               </button>}
             </div>
@@ -407,7 +413,8 @@ const ManageContent = ({ slug }) => {
           {/* Sub-tab nav. A scorekeeper sees the one tab they may use: a tab
               they cannot use is a control the API would refuse. */}
           <div className={styles.tabBar}>
-            {(keepsScore ? TABS.filter(t => t.id === 'match-control') : TABS)
+            {(keepsScore ? TABS.filter(t => t.id === 'match-control')
+              : playsIn ? TABS.filter(t => t.id === 'lineup') : TABS)
               .map(t => <button key={t.id} className={`${styles.tabBtn} ${shown === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 

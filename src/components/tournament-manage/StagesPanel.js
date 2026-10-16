@@ -82,6 +82,21 @@ const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TA
       ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
       ...(format === 'double_elimination' ? { grand_final: 'reset' } : {}) });
 
+const POINT_FIELDS = ['points_win', 'points_draw', 'points_loss', 'points_bye'];
+
+/** A stage's scoring as the server reads it; null means the standard. */
+const rulesPayload = r => {
+  if (!TABLE.has(r.format)) return null;
+  const rules = r.rules || {};
+  const out = {};
+  POINT_FIELDS.forEach(key => {
+    if (rules[key] !== '' && rules[key] !== undefined && rules[key] !== null) out[key] = Number(rules[key]);
+  });
+  if (Array.isArray(rules.tiebreakers) && rules.tiebreakers.length) out.tiebreakers = rules.tiebreakers;
+  if (rules.buchholz) out.buchholz = rules.buchholz;
+  return Object.keys(out).length ? out : null;
+};
+
 /** A set of filled chips, one pressed. Never a ring. */
 const Chips = ({ value, options, onChange, disabled, label }) => (
   <div className={styles.chips} role="group" aria-label={label}>
@@ -320,6 +335,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     format, label: '', advances: format === 'round_robin' ? 2 : 0, groups: 0,
     starts_at: '', ends_at: '', place_type: '', location: '', virtual_link: '',
     placement: 'cross', direct_entrants: [], settings: defaultSettings(format),
+    rules: {},
   });
 
   const startEditing = () => {
@@ -342,6 +358,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           placement: r.placement || 'cross',
           direct_entrants: r.direct_entrants || [],
           settings: { ...defaultSettings(r.format), ...(r.settings || {}) },
+          // The stage's own scoring. It was never sent back, so saving the
+          // plan wiped whatever a stage had (P0, 16 October 2026).
+          rules: r.rules || {},
         }))
       : [blank('round_robin'), blank('single_elimination')]);
   };
@@ -351,12 +370,30 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       ? (key === 'format'
         // A new format brings its own switches; the old ones mean nothing.
         ? { ...row, format: value, settings: defaultSettings(value),
-            groups: GROUPABLE.has(value) ? row.groups : 0 }
+            groups: GROUPABLE.has(value) ? row.groups : 0,
+            rules: { ...(row.rules || {}), tiebreakers: [] } }
         : { ...row, [key]: value })
       : row)));
 
   const setSetting = (index, key, value) => setDraft(prev => prev.map(
     (row, i) => (i === index ? { ...row, settings: { ...row.settings, [key]: value } } : row)));
+
+  // A stage's scoring: points and the tie-breakers in the organiser's order.
+  const setRule = (index, key, value) => setDraft(prev => prev.map(
+    (row, i) => (i === index ? { ...row, rules: { ...(row.rules || {}), [key]: value } } : row)));
+  const setTies = (index, change) => setDraft(prev => prev.map((row, i) => {
+    if (i !== index) return row;
+    const list = change([...((row.rules || {}).tiebreakers || [])]);
+    return { ...row, rules: { ...(row.rules || {}), tiebreakers: list } };
+  }));
+  const addTie = (index, key) => setTies(index, list => (list.includes(key) ? list : [...list, key]));
+  const removeTie = (index, at) => setTies(index, list => list.filter((_k, i) => i !== at));
+  const moveTie = (index, at, by) => setTies(index, list => {
+    const to = at + by;
+    if (to < 0 || to >= list.length) return list;
+    [list[at], list[to]] = [list[to], list[at]];
+    return list;
+  });
 
   const applyPreset = index => setDraft(prev => prev.map((row, i) => {
     if (i !== index || !preset) return row;
@@ -418,6 +455,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             placement: index === 0 ? 'cross' : r.placement,
             direct_entrants: index === 0 ? [] : r.direct_entrants,
             settings: r.settings,
+            rules: rulesPayload(r),
           })),
         }),
       });
@@ -1142,6 +1180,84 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                 </>}
 
                 </fieldset>
+
+                {/* How a table ranks: points, then tie-breakers in order. Open
+                    after the draw too: the server lets the scoring change. */}
+                {TABLE.has(row.format) && (() => {
+                  const r = row.rules || {};
+                  const offered = (catalogue.find(f => f.key === row.format) || {}).scoring_tiebreakers || [];
+                  const chosen = Array.isArray(r.tiebreakers) ? r.tiebreakers : [];
+                  const name = key => tt(`tiebreak.${key}`,
+                    (offered.find(o => o.key === key) || {}).label || key.replace(/_/g, ' '));
+                  const winStandard = r.points_win !== '' && r.points_win !== undefined ? String(r.points_win) : '3';
+                  const points = [
+                    ['points_win', tt('stages.pointsWin', 'A win'), '3'],
+                    ['points_draw', tt('stages.pointsDraw', 'A draw'), '1'],
+                    ['points_loss', tt('stages.pointsLoss', 'A loss'), '0'],
+                    ...(row.format === 'swiss' ? [['points_bye', tt('stages.pointsBye', 'A bye'), winStandard]] : []),
+                  ];
+                  return (
+                    <div className={styles.scoring}>
+                      <p className={styles.subhead}>{tt('stages.scoring', 'Scoring')}</p>
+                      <p className={styles.note}>
+                        {tt('stages.scoringHint', 'How this stage ranks its table. Leave a number empty to use the tournament’s own, or 3, 1 and 0.')}
+                      </p>
+                      <div className={styles.fields}>
+                        {points.map(([key, label, standard]) => (
+                          <label key={key} className={styles.field}>
+                            <span className={styles.fieldLabel}>{label}</span>
+                            <input className={styles.number} type="number" min="0" max="100" inputMode="numeric"
+                                   value={r[key] ?? ''} placeholder={standard} disabled={busy}
+                                   onChange={e => setRule(index, key, e.target.value)} />
+                          </label>
+                        ))}
+                      </div>
+                      <p className={styles.subhead}>{tt('stages.tiebreakers', 'When level on points, then')}</p>
+                      {chosen.length ? (
+                        <ol className={styles.tieList}>
+                          {chosen.map((key, at) => (
+                            <li key={key} className={styles.tieRow}>
+                              <span className={styles.tieName}>{`${at + 1}. ${name(key)}`}</span>
+                              <button type="button" className={styles.iconBtn} disabled={busy || at === 0}
+                                      aria-label={tt('rules.moveUp', 'Move up')}
+                                      onClick={() => moveTie(index, at, -1)}>
+                                <LuArrowUp aria-hidden="true" />
+                              </button>
+                              <button type="button" className={styles.iconBtn}
+                                      disabled={busy || at === chosen.length - 1}
+                                      aria-label={tt('rules.moveDown', 'Move down')}
+                                      onClick={() => moveTie(index, at, 1)}>
+                                <LuArrowDown aria-hidden="true" />
+                              </button>
+                              <button type="button" className={styles.iconBtn} disabled={busy}
+                                      aria-label={tt('stages.tiebreakRemove', 'Remove {name}').replace('{name}', name(key))}
+                                      onClick={() => removeTie(index, at)}>
+                                <LuX aria-hidden="true" />
+                              </button>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p className={styles.note}>
+                          {tt('stages.tiebreakStandard', 'The standard order is used until you add one: the tournament’s own, else the usual order for this format.')}
+                        </p>
+                      )}
+                      {offered.some(o => !chosen.includes(o.key)) && (
+                        <div className={styles.chips} role="group" aria-label={tt('stages.tiebreakAdd', 'Add a tie-breaker')}>
+                          {offered.filter(o => !chosen.includes(o.key)).map(o => (
+                            <button key={o.key} type="button" className={`${styles.chip} ${styles.chipAdd}`} disabled={busy}
+                                    onClick={() => addTie(index, o.key)}>
+                              <LuPlus aria-hidden="true" /> {name(o.key)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <p className={styles.note}>
+                        {tt('stages.tiebreakShared', 'Sides still level on all of them share a place, and share its prize.')}
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* When and where. Blank is the tournament's own. */}
                 <p className={styles.subhead}>{tt('stages.whenWhere', 'When and where (blank is the tournament’s own)')}</p>
