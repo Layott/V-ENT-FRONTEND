@@ -31,7 +31,7 @@
 //    opened again; a bracket drawn as one format becomes stage 1 so stages
 //    can follow it. The server holds every rule (bracket_edit.py).
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatLabel } from '@/lib/formatLabel';
@@ -171,7 +171,10 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   useEffect(() => { load(); }, [load]);
   // Current without a reload: on a timer, and at once after any save on this
   // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
-  useAutoRefresh(() => load({ quiet: true }));
+  // Except our own save: its answer already carried the plan, so the wake it
+  // sets off would only read it again (inbox 487).
+  const savedAt = useRef(0);
+  useAutoRefresh(() => (Date.now() - savedAt.current < 2000 ? false : load({ quiet: true })));
 
   const loadIdRequirement = useCallback(async () => {
     try {
@@ -186,7 +189,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     }
   }, [tournamentRef]);
 
-  useEffect(() => { if (canManage && preset) loadIdRequirement(); }, [canManage, preset, loadIdRequirement]);
+  // On whether there is a preset, not on the preset object: every refresh
+  // hands back a new object, so this re-read the requirements every 15
+  // seconds and after every save (inbox 487).
+  const hasPreset = Boolean(preset);
+  useEffect(() => { if (canManage && hasPreset) loadIdRequirement(); }, [canManage, hasPreset, loadIdRequirement]);
 
   // Adds the requirement to whatever the organiser already asks for: the set
   // endpoint replaces the list, so the list is read first and written whole.
@@ -461,6 +468,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
+        savedAt.current = Date.now();
         setRows(body.data.stages || []);
         setDraft(null);
         if (showToast) showToast(tt('stages.saved', 'The plan is saved.'));

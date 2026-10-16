@@ -4,7 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import LeagueScoring from '@/components/view-tournament/standings/LeagueScoring';
 import { apiMessage } from '@/lib/apiMessage';
-import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
@@ -188,7 +188,17 @@ const ManageContent = ({ slug }) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
-  const load = useCallback(async ({ quiet = false } = {}) => {
+  // One read at a time. A save on a panel asks for a reload AND wakes every
+  // live view on the page through the change signal, so two identical reads
+  // went out in the same millisecond (inbox 487). Both start after the write
+  // has answered, so the one already running is fresh; the second waits on it.
+  const inFlight = useRef(null);
+  const load = useCallback(async (options) => {
+    if (inFlight.current) return inFlight.current;
+    inFlight.current = loadOnce(options).finally(() => { inFlight.current = null; });
+    return inFlight.current;
+  }, [id, token, router]); // eslint-disable-line react-hooks/exhaustive-deps
+  const loadOnce = async ({ quiet = false } = {}) => {
     if (!id) {
       setError(tt("msg.noTournamentSelected", "No tournament selected."));
       setLoading(false);
@@ -224,11 +234,13 @@ const ManageContent = ({ slug }) => {
       const bBody = bRes.ok ? await bRes.json() : null;
       setRounds(bBody?.data?.rounds || []);
     } catch (err) {
-      setError(apiMessage(tt, err, "api.failedToLoadThisTournament", "Failed to load this tournament."));
+      // A failed background refresh keeps what is on screen; only a load
+      // somebody asked for may replace the console with the error.
+      if (!quiet) setError(apiMessage(tt, err, "api.failedToLoadThisTournament", "Failed to load this tournament."));
     } finally {
       setLoading(false);
     }
-  }, [id, token, router]);
+  };
 
   // The organiser console during a live tournament. Scores, registrations
   // and check-ins all move while this is open, and it only ever loaded once.
@@ -318,7 +330,11 @@ const ManageContent = ({ slug }) => {
   const seats = Number(tournament?.players_per_team ?? tournament?.league?.players_per_team ?? 1) || 1;
   const isLeague = formatKey(tournament?.bracket_type || tournament?.format) === 'aggregate_2v2'
     || (seats > 1 && ['round_robin', 'league', 'ladder'].includes(formatKey(tournament?.bracket_type || tournament?.format)));
-  if (loading) {
+  // Only the first load may stand in for the console. A reload after a save
+  // put this in place of every panel, so each one unmounted, mounted again and
+  // read its own data again: six reads of the stage list for one plan saved
+  // (inbox 487), and any editor left open on another panel was lost.
+  if (loading && !tournament) {
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
         <main className={styles.mainContainer}>
@@ -430,7 +446,7 @@ const ManageContent = ({ slug }) => {
               <BattleRoyaleConsole tournamentRef={tournament.slug || tournament.tournament_id} token={token}
                                    gameTitle={tournament.game || ''} showToast={showToast}
                                    onChanged={() => load({ quiet: true })} />
-              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={load} isLeague={isLeague}
+              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={() => load({ quiet: true })} isLeague={isLeague}
                                  hideWhenEmpty={formatKey(tournament.bracket_type || tournament.format) === 'battle_royale'}
                                  format={tournament.bracket_type || tournament.format} />
               {access?.can_manage && (
@@ -480,7 +496,7 @@ const ManageContent = ({ slug }) => {
               {/* Putting somebody in directly, and squads made of players from
                   several clubs. On this tab because it is the same job: an
                   organiser deciding who is in. */}
-              <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={load} />
+              <SquadsPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} onChanged={() => load({ quiet: true })} />
             </>}
             {shown === 'brackets' && <>
               {/* What shape the whole thing is, above the bracket it produces:
@@ -489,7 +505,7 @@ const ManageContent = ({ slug }) => {
                   which format can feed which, and no screen ever read it. */}
               <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
                            token={token} canManage={Boolean(access?.can_manage)}
-                           showToast={showToast} onChanged={load} />
+                           showToast={showToast} onChanged={() => load({ quiet: true })} />
               {/* Who is where inside the drawn bracket: swap, replace, and the
                   record of every change after the start (inbox 452). Only for
                   whoever runs it; the doors refuse anybody else too. */}
