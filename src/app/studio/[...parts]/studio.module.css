@@ -718,11 +718,35 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Half a card in from every edge (.sqCard is 92 by 120), so a spot at 0%
-   or 100% still puts the whole card on the pitch. */
+/* The cards on the pitch are sized from the pitch, not in pixels. A fixed
+   92 by 120 card hung off the bottom where the pitch was short and, once
+   inset, covered the centre-backs where it was tall (E1, 16 October 2026).
+   Measured over all 28 formations: a card 11% of the pitch height never
+   overlaps another and never leaves the pitch, on any pitch from square to
+   0.65 wide (the tightest pair is 5-3-2, keeper at 6% under a centre-back at
+   21%). The field is inset by half a card, so a spot at 0% or 100% keeps
+   the whole card on. Bench cards sit outside the pitch and keep their size. */
+.sqPitch {
+  container-type: size;
+}
+
 .sqField {
   position: absolute;
-  inset: 60px 46px;
+  inset: 5.5cqh 4.22cqh;
+}
+
+.sqField .sqCard {
+  width: 8.43cqh;
+  height: 11cqh;
+  border-radius: 0.9cqh;
+}
+
+.sqField .sqRating {
+  font-size: 1.6cqh;
+}
+
+.sqField .sqName {
+  font-size: 1cqh;
 }
 
 .sqSpot {
