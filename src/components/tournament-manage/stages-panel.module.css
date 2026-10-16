@@ -409,3 +409,42 @@
   .stageTools { width: 100%; justify-content: stretch; }
   .stageTools > button { flex: 1 1 auto; }
 }
+
+/* A stage's scoring: points, then tie-breakers in the organiser's order (P0). */
+.scoring {
+  margin-top: 0.2rem;
+}
+
+.tieList {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.tieRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.tieName {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.8rem;
+  border-radius: 10px;
+  background-color: #33343a;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.chipAdd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
