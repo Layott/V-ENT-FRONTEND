@@ -442,6 +442,10 @@ export const ViewEventContent = ({
   // Ticket tiers (real, from the ticketing endpoint)
   const [tiers, setTiers] = useState([]);
   const [tiersLoading, setTiersLoading] = useState(true);
+  // The body of a list that did not come back. A failed request used to clear
+  // the tiers and draw the same empty grid as an event with nothing on sale,
+  // so a dropped connection read as "no tickets" and the buyer left.
+  const [tiersError, setTiersError] = useState(null);
   // A presale code. It is held here rather than in the panel because the LIST
   // is what it changes: a hidden tier does not appear until somebody types it.
   const [codeDraft, setCodeDraft] = useState('');
@@ -877,6 +881,7 @@ export const ViewEventContent = ({
     const controller = new AbortController();
     (async () => {
       setTiersLoading(true);
+      setTiersError(null);
       try {
         // Asked for AS the viewer: a seat their own waitlist offer holds is
         // theirs to see and buy, and is sold out to everybody else.
@@ -886,7 +891,14 @@ export const ViewEventContent = ({
           { signal: controller.signal,
             headers: session?.user?.sessionToken
               ? { Authorization: `Bearer ${session.user.sessionToken}` } : {} });
-        const body = await res.json();
+        const body = await res.json().catch(() => null);
+        if (controller.signal.aborted) return;
+        // The tiers already on screen stay: the minute refresh below failing
+        // once is no reason to empty a grid somebody is reading.
+        if (!res.ok || body?.status !== 'success') {
+          setTiersError(body || {});
+          return;
+        }
         setTiers(body?.data?.tiers || []);
         // Whether the code did anything, so the screen can say so. Somebody who
         // types a code and sees no change cannot tell a wrong code from a page
@@ -899,9 +911,10 @@ export const ViewEventContent = ({
                  pct: Number(body?.data?.fee_pct || 0),
                  flat: Number(body?.data?.fee_flat_ngn || 0) });
       } catch {
-        setTiers([]);
+        // An abort is the next request taking over, not a failure.
+        if (!controller.signal.aborted) setTiersError({});
       } finally {
-        setTiersLoading(false);
+        if (!controller.signal.aborted) setTiersLoading(false);
       }
     })();
     return () => controller.abort();
@@ -1609,7 +1622,20 @@ export const ViewEventContent = ({
                   />
                 </div>}
 
-                <div className={styles.tierGrid}>
+                {/* Three answers, kept apart: still asking, could not ask, and
+                    nothing on sale. Each only while there is no list to show. */}
+                {!tickets.length && (tiersError
+                  ? <ErrorState
+                      message={apiMessage(tt, tiersError, 'buy.tiersFailed', 'The tickets could not be loaded.')}
+                      onRetry={() => setTierRefresh(n => n + 1)} />
+                  : tiersLoading
+                    ? <p className={styles.body}>{tt("ui.loading.tickets.0c96", "Loading tickets…")}</p>
+                    : <div className={styles.emptyInner}>
+                        <IoTicketOutline className={styles.emptyInnerIcon} />
+                        <p className={styles.emptyInnerTitle}>{tt('buy.tiersEmpty', 'No tickets are on sale for this event yet.')}</p>
+                      </div>)}
+
+                {tickets.length > 0 && <div className={styles.tierGrid}>
                   {tickets.map(t => <div key={t.id} className={`${styles.tierCard} ${styles['tierCard_' + t.tier]}`}>
                       <div className={styles.tierHeader}>
                         <span className={`${styles.tierBadge} ${styles['badge_' + t.tier]}`}>
@@ -1685,7 +1711,7 @@ export const ViewEventContent = ({
                         {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : tx("Buy ticket")}
                       </button>
                     </div>)}
-                </div>
+                </div>}
               </div>}
 
             {/* VENDORS */}

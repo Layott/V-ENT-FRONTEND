@@ -291,3 +291,38 @@
   .panel { max-width: none; max-height: 94vh; border-radius: 16px 16px 0 0; }
   .primary, .quiet { width: 100%; }
 }
+
+/* Fixing a match after the draw (inbox 452): the press that clears a result,
+   and filled choice chips for how the match is played. No rings. */
+.danger {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+}
+.danger:hover { background-color: var(--v-ent-light-red, #ff2a31); }
+.danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.danger:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.choiceRow { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0; }
+.choice {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+.choice:hover { background-color: #3d3e45; }
+.choiceOn, .choiceOn:hover { background-color: rgba(255, 255, 255, 0.92); color: #131316; font-weight: var(--fw-semi-bold, 600); }
+.choice:disabled { opacity: 0.5; cursor: not-allowed; }
+.choice:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
