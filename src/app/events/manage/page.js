@@ -44,6 +44,7 @@ import EventSitePanel from '@/components/event-site/EventSitePanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
 import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
+import PendingInvites from '@/components/invitations/PendingInvites';
 import { formatWithZone, formatNumber, isoToLocalInput, withLocalDatesAsISO } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
@@ -150,6 +151,8 @@ export const ManageEventContent = ({
   const [copiedLink, setCopiedLink] = useState('');
   const [promos, setPromos] = useState([]);
   const [managers, setManagers] = useState([]);
+  // Invited by email and not here yet (inbox 455).
+  const [managerInvites, setManagerInvites] = useState([]);
   const [canAddManagers, setCanAddManagers] = useState(false);
   // The organisations this person may run something in the name of, and which
   // one this event is in. Most people are in none, and then the control says
@@ -349,6 +352,7 @@ export const ManageEventContent = ({
     setReferrals(r.body?.data?.results || []);
     setPromos(p.body?.data?.results || []);
     setManagers(m.body?.data?.results || []);
+    setManagerInvites(m.body?.data?.invites || []);
     setCanAddManagers(!!m.body?.data?.can_add);
     setEventOrg(m.body?.data?.organization || null);
 
@@ -718,14 +722,26 @@ export const ManageEventContent = ({
 
   // ------------------------------------------------------------------- team
   const addManager = async () => {
-    const done = await run(() => call('/managers/', {
+    setBusy(true);
+    setNotice('');
+    setError('');
+    const { ok, body } = await call('/managers/', {
       method: 'POST',
       body: JSON.stringify(newManager)
-    }), 'manage.managerAdded', 'Added.');
-    if (done) setNewManager({
-      username: '',
-      role: 'manager'
     });
+    setBusy(false);
+    if (!ok) {
+      setError(apiMessage(tt, body, 'api.failed', 'Failed.'));
+      return;
+    }
+    // Somebody with no account yet is emailed an invitation rather than added
+    // (inbox 455), and the notice says which happened.
+    setNotice(body?.data?.awaiting_signup
+      ? tt('manage.invitedByEmail', 'Invitation sent to {email}. They join once they make an account and accept.')
+        .replace('{email}', body.data.invited || '')
+      : tt('manage.managerAdded', 'Added.'));
+    setNewManager({ username: '', role: 'manager' });
+    await load();
   };
   const removeManager = row => run(() => call(`/managers/${row.id}/`, {
     method: 'DELETE'
@@ -1072,7 +1088,10 @@ export const ManageEventContent = ({
               7 September. */}
           <div className={styles.pageHead}>
             <h1 className={styles.pageTitle}>{tt('manage.title', 'Manage this event')}</h1>
-            <DoorScannerLink eventRef={eventRef} />
+            {/* Not beside a refusal: a signed-in stranger was handed the
+                scanner on the page that told them they may not be here. Door
+                staff reach it from their invitation and from My events. */}
+            {!refused && <DoorScannerLink eventRef={eventRef} />}
           </div>
           <p className={styles.pageSub}>
             {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
@@ -2809,6 +2828,8 @@ export const ManageEventContent = ({
                         </div>)}
                     </div>}
 
+                  {canAddManagers && <PendingInvites invites={managerInvites} token={token} onChanged={() => load({ quiet: true })} />}
+
                   {canAddManagers && <div className={styles.newRow}>
                       {/* Picked from the platform, with their picture. Door
                           staff typed one letter wrong is somebody who cannot
@@ -2817,7 +2838,8 @@ export const ManageEventContent = ({
                         value={newManager.username}
                         onChange={value => setNewManager(p => ({ ...p, username: value }))}
                         token={token}
-                        placeholder={tt('picker.findSomeone', 'Start typing a name or handle')}
+                        allowEmail
+                        placeholder={tt('picker.findSomeoneOrEmail', 'A name, a handle or an email address')}
                       />
                       <select className={styles.input} value={newManager.role} onChange={e => setNewManager(p => ({
                   ...p,

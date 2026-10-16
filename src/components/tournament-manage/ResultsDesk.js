@@ -18,12 +18,14 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './results-desk.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import PendingInvites from '@/components/invitations/PendingInvites';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ResultsDesk({ tournamentRef, token }) {
   const tt = useT();
   const [rows, setRows] = useState([]);
+  const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -48,6 +50,7 @@ export default function ResultsDesk({ tournamentRef, token }) {
     const { ok, body } = await call('');
     if (ok) {
       setRows(body.data.staff || []);
+      setInvites(body.data.invites || []);
       setError('');
     } else {
       if (!quiet) setError(apiMessage(tt, body, 'desk.loadFailed', 'Could not load who may enter results.'));
@@ -69,7 +72,13 @@ export default function ResultsDesk({ tournamentRef, token }) {
     setNote('');
     const { ok, body } = await call('', { method: 'POST', body: JSON.stringify({ username: name }) });
     setBusy(false);
-    if (ok) {
+    if (ok && body.data.awaiting_signup) {
+      // No account with that address yet: emailed an invitation (inbox 455).
+      setUsername('');
+      setNote(tt('desk.invitedByEmail', 'Invitation sent to {email}. They can enter results once they make an account and accept.')
+        .replace('{email}', body.data.invited || name));
+      load({ quiet: true });
+    } else if (ok) {
       setRows(body.data.staff || []);
       setUsername('');
       setNote(body.data.added
@@ -130,12 +139,15 @@ export default function ResultsDesk({ tournamentRef, token }) {
         </div>
       )}
 
+      <PendingInvites invites={invites} token={token} onChanged={() => load({ quiet: true })} />
+
       <form className={styles.addRow} onSubmit={add}>
         <UserPicker
           value={username}
           onChange={setUsername}
           token={token}
-          placeholder={tt('desk.usernamePlaceholder', 'Username, as on their profile')}
+          allowEmail
+          placeholder={tt('desk.usernameOrEmailPlaceholder', 'Their username, or an email address')}
         />
         <button type="submit" className={styles.primary} disabled={busy || !username.trim()}>
           {tt('desk.add', 'Let them enter results')}

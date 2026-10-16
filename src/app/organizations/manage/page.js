@@ -34,7 +34,10 @@ const TABS = [{
   label: 'Members'
 }, {
   id: 'invites',
-  label: 'Invites'
+  // "Invitations", the wording the dictionary already carries: tx() looks a
+  // label up by its English text, and "Invites" had no entry, so the tab
+  // stayed English on /fr and /pt.
+  label: 'Invitations'
 }, {
   id: 'teams',
   label: 'Teams'
@@ -789,7 +792,7 @@ const ManageOrgContent = ({
                     </p>
                     <form className={styles.inviteForm} onSubmit={sendInvite}>
                       <div className={styles.formField}>
-                        <span className={styles.formLabel}>{tt("ui.username.9c30", "Username")}</span>
+                        <span className={styles.formLabel}>{tt("org.inviteWho", "Username or email")}</span>
                         {/* Somebody is picked from the platform, with their
                             picture, rather than spelled from memory. An invite
                             typed one letter wrong is an invite that goes
@@ -798,7 +801,8 @@ const ManageOrgContent = ({
                           value={inviteName}
                           onChange={setInviteName}
                           token={session?.user?.sessionToken}
-                          placeholder={tt('picker.findSomeone', 'Start typing a name or handle')}
+                          allowEmail
+                          placeholder={tt('picker.findSomeoneOrEmail', 'A name, a handle or an email address')}
                         />
                       </div>
                       <label className={styles.formField}>
@@ -847,13 +851,20 @@ const ManageOrgContent = ({
                           <div className={styles.requestHead}>
                             <div className={styles.memberCell}>
                               <div className={styles.memberAvatar}>
-                                <Avatar src={mediaUrl(i.user?.avatar)} name={i.user?.username || i.user?.full_name} size={36} />
+                                <Avatar src={mediaUrl(i.user?.avatar)} name={i.user?.username || i.user?.full_name || i.email} size={36} />
                               </div>
                               <div className={styles.memberText}>
-                                <UserChip user={i.user} size={0} nameClassName={styles.memberName} />
+                                {/* Sent to an address with no account yet (inbox
+                                    455): there is no person to draw, so the card
+                                    names the address it went to. It used to show
+                                    a question mark and nothing else. */}
+                                {i.user ? <UserChip user={i.user} size={0} nameClassName={styles.memberName} />
+                                  : <span className={styles.memberName}>{i.email}</span>}
                                 <span className={styles.memberHandle}>
                                   {roleWord(i.role)}
                                   {i.scopes?.length ? ` · ${i.scopes.map(scopeWord).join(', ')}` : ''}
+                                  {!i.user && i.status === 'pending'
+                                    ? ` · ${tt('invite.waitingSignup', 'emailed; joins once they make an account and accept')}` : ''}
                                 </span>
                               </div>
                             </div>

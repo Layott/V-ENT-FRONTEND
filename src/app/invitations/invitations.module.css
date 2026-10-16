@@ -1,0 +1,190 @@
+/* The invitation pages (inbox 455), drawn like /organizations/invites: filled
+   surfaces on the page ground, no strokes, one green action. */
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #131316;
+  overflow-x: hidden;
+}
+
+.mainContainer { width: 100%; }
+
+.rightPaneContainer {
+  width: 100%;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .rightPaneContainer {
+    width: calc(100% - var(--shell-offset));
+    margin-left: var(--shell-offset);
+    padding: 1.75rem 1.5rem 4rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .rightPaneContainer {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 2rem 2rem 4rem;
+  }
+}
+
+.pageTitle {
+  margin: 0.5rem 0 0;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pageSubtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.problem {
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff9ba0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.said {
+  background-color: rgba(76, 175, 80, 0.14);
+  color: #8fd694;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.skeletonCard {
+  height: 180px;
+  border-radius: 14px;
+  background-color: #1c1d21;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 640px;
+}
+
+.kicker {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.role {
+  align-self: flex-start;
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* A text link with a thumb-sized target: it was a bare line of muted text,
+   about 20px tall on a phone. */
+.allLink {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.allLink:hover { color: #fff; }
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary { background-color: var(--v-ent-success, #4caf50); color: #0e1a10; }
+.primary:hover { background-color: #5cbf60; }
+.secondary { background-color: #2a2b30; color: rgba(255, 255, 255, 0.85); }
+.secondary:hover { background-color: #34353b; }
+.primary:disabled,
+.secondary:disabled { opacity: 0.55; cursor: default; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 640px;
+}
+
+.row {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.row:hover { background-color: #2a2b30; }
+
+.rowText { display: flex; flex-direction: column; min-width: 0; flex: 1; gap: 0.15rem; }
+.rowName { color: #fff; font-size: 0.95rem; font-weight: 600; overflow-wrap: anywhere; }
+.rowMeta { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; }
+
+.emptyState {
+  background-color: var(--overlay-gray);
+  border-radius: 16px;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  max-width: 640px;
+}
+
+.emptyTitle { margin: 0; color: #fff; font-size: 1rem; font-weight: 600; }

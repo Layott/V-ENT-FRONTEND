@@ -28,6 +28,7 @@ export default function robots() {
           '/edit-team-profile',
           '/onboarding',
           '/claim/',          // single-use tokens; indexing one would be a leak
+          '/invitations',     // somebody's own invitations, each found only by its token
           '/auth/',
           '/partners/authorize',   // an OAuth screen has no business in search
           '/reset-password',

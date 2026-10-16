@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import AuthHeader from '@/components/auth-header/AuthHeader';
 import generalStyles from '@/styles/auth/auth.module.css';
 import styles from './onboarding.module.css';
+import { takeNext } from '@/lib/safeNext';
 import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -62,7 +63,8 @@ const OnboardingContent = () => {
       }));
       localStorage.removeItem('needsOnboarding');
     } catch {}
-    router.push('/home');
+    // Back to what they signed up for, when they came from an invitation.
+    router.push(takeNext() || '/home');
   };
   const handleAvatar = file => {
     if (!file) return;

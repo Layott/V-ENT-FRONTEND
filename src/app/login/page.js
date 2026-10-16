@@ -9,6 +9,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { getSession, signIn } from "next-auth/react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
+import { safeNext, takeNext } from "@/lib/safeNext";
 import MessageSnackbar from "../../components/Snackbar/MessageSnackbar";
 import AuthHeader from "@/components/auth-header/AuthHeader";
 import generalStyles from "@/styles/auth/auth.module.css";
@@ -158,7 +159,10 @@ const Login = () => {
     setSnackbarType("success");
     setOpen(true);
     const needsOnboarding = typeof window !== "undefined" && localStorage.getItem("needsOnboarding") === "true";
-    const next = new URLSearchParams(window.location.search).get("next");
+    // A page somebody arrived wanting: in the address, or kept by the signup
+    // page through the email check (an invitation, inbox 455). On this site
+    // only: the address used to be followed wherever it pointed.
+    const next = safeNext(new URLSearchParams(window.location.search).get("next")) || takeNext();
     const session = await getSession();
     const home = session?.user?.isStaff ? "/admin" : "/home";
     window.location.href = next || (needsOnboarding ? "/onboarding" : home);
