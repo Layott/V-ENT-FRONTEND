@@ -12,6 +12,10 @@ export const VENT = {
   WAITLIST: `${BASE_URL}/auth/add-email-to-waitlist/`,
   SIGNUP: `${BASE_URL}/auth/signup/`,
   USER_VERIFICATION: `${BASE_URL}/auth/get-username-with-email/`,
+  // Whether a handle is free, and if not, why (taken, or reserved on the
+  // waitlist). Answers `available` either way. The signup form used to ask
+  // USER_VERIFICATION, which needs an email and refused every name with a 400.
+  USERNAME_AVAILABILITY: `${BASE_URL}/auth/admin/check-username-availability/`,
   VERIFY: `${BASE_URL}/auth/get-user-status/`,
   LOGIN: `${BASE_URL}/auth/login/`,
   FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password/send-token/`,

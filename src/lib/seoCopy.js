@@ -329,6 +329,8 @@ export const PRIVATE_TITLES = {
   'my-stalls': { en: 'My stalls', fr: 'Mes stands', pt: 'As minhas bancas' },
   'organizations/create': { en: 'New organisation', fr: 'Nouvelle organisation', pt: 'Nova organização' },
   'organizations/invites': { en: 'Invites', fr: 'Invitations', pt: 'Convites' },
+  'invitations': { en: 'Your invitations', fr: 'Vos invitations', pt: 'Os seus convites' },
+  'invitations/token': { en: 'Invitation', fr: 'Invitation', pt: 'Convite' },
   'organizations/[slug]': { en: 'Organisation', fr: 'Organisation', pt: 'Organização' },
   'partners/authorize': { en: 'Authorize', fr: 'Autoriser', pt: 'Autorizar' },
   'teams/create-team': { en: 'Create team', fr: 'Créer une équipe', pt: 'Criar equipa' },

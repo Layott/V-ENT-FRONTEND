@@ -1,0 +1,60 @@
+/* Invited by email, not accepted yet (inbox 455). Rows are a filled step off
+   the panel, like the people above them; no strokes. */
+.block { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+
+.title {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.problem {
+  margin: 0;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ff9ba0;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* The same green note as the invitation page (invitations.module.css .said). */
+.said {
+  margin: 0;
+  background-color: rgba(76, 175, 80, 0.14);
+  color: #8fd694;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.text { display: flex; flex-direction: column; min-width: 0; flex: 1; gap: 0.1rem; }
+.email { color: #fff; font-size: 0.9rem; overflow-wrap: anywhere; }
+.meta { color: rgba(255, 255, 255, 0.5); font-size: 0.78rem; }
+
+.withdraw {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.withdraw:hover { background-color: #3c3d44; }
+.withdraw:disabled { opacity: 0.55; cursor: default; }

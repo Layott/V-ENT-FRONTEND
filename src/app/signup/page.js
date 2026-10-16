@@ -2,7 +2,7 @@
 
 import { apiMessage } from '@/lib/apiMessage';
 import AuthProviders from '@/components/auth-providers/AuthProviders';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBotChallenge } from '@/lib/botChallenge';
 import BotTrap from '@/components/bot-trap/BotTrap';
 import Link from "next/link";
@@ -19,9 +19,16 @@ import styles from "./signup.module.css";
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { rememberSignup } from '@/lib/signupRecord';
+import { rememberNext } from '@/lib/safeNext';
 const Signup = () => {
   const tx = useTx();
   const tt = useT();
+  // Arrived from an invitation (or any page that sent them to sign up):
+  // keep where to come back to through the email check and the first
+  // sign in, which are separate pages (inbox 455).
+  useEffect(() => {
+    rememberNext(new URLSearchParams(window.location.search).get("next"));
+  }, []);
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -42,6 +49,10 @@ const Signup = () => {
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const [usernameEditable, setUsernameEditable] = useState(true);
+  const [usernameFree, setUsernameFree] = useState(false);
+  const usernameSeq = useRef(0);
+  const usernameTimer = useRef(null);
+  useEffect(() => () => clearTimeout(usernameTimer.current), []);
   const router = useRouter();
   const togglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState);
@@ -109,33 +120,54 @@ const Signup = () => {
     }
     if (name === "username" && usernameEditable) {
       const uname = value.trim();
+      clearTimeout(usernameTimer.current);
+      // Every keystroke takes a number; only the newest one may write the
+      // answer. Without it a slow reply about "ad" landed after the reply about
+      // "adebayo" and overwrote it.
+      const seq = ++usernameSeq.current;
+      setUsernameFree(false);
       // Inline rule: 3-30 chars, letters/numbers/underscore only.
       if (uname && !usernameRegex.test(uname)) {
-        setUsernameError("3-30 characters - letters, numbers, and underscores only");
+        setUsernameError(tt('msg.usernameRule', "3 to 30 characters: letters, numbers and underscores only"));
         return;
       }
       setUsernameError("");
       if (!uname) return;
-      try {
-        const res = await fetch(VENT.USER_VERIFICATION, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            username: value
-          })
-        });
-        const data = await res.json();
-        if (data.message === "The username does not exist") {
-          setUsernameError("");
-        } else {
-          setUsernameError(tt('msg.usernameTaken', "Username is already taken"));
-          clearError(setUsernameError);
+      usernameTimer.current = setTimeout(async () => {
+        try {
+          // The availability door, not USER_VERIFICATION: that one looks a
+          // name up by EMAIL, so a username alone was a 400 and every name,
+          // free or not, read as taken (inbox 455 walk, 13 Oct). The email
+          // goes along so a waitlist member is never refused their own
+          // reserved name.
+          const res = await fetch(VENT.USERNAME_AVAILABILITY, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username: uname,
+              email: formData.email
+            })
+          });
+          const data = await res.json();
+          if (seq !== usernameSeq.current) return;
+          if (data.available === true) {
+            setUsernameError("");
+            setUsernameFree(true);
+          } else if (data.available === false) {
+            // Held until the name changes, not cleared after a moment: a
+            // message that vanished let a taken name through the submit gate.
+            setUsernameError(apiMessage(tt, {
+              code: data.reason,
+              message: data.message,
+              data: data.data
+            }, 'msg.usernameTaken', "Username is already taken"));
+          }
+        } catch (err) {
+          // Best effort: the server checks the name again on submit.
         }
-      } catch (err) {
-        // Uniqueness check is best-effort; ignore network failures here.
-      }
+      }, 350);
     }
   };
   const handlePasswordChange = e => {
@@ -153,11 +185,11 @@ const Signup = () => {
 
     // Inline validation gate - runs before any network call.
     const validationMessage = (() => {
-      if (!emailRegex.test(formData.email)) return "Enter a valid email address";
-      if (!usernameRegex.test((formData.username || "").trim())) return "Username must be 3-30 characters (letters, numbers, underscores)";
-      if (!isPasswordValid(formData.password)) return "Password needs 8+ characters with upper case, lower case, and a number";
-      if (formData.password !== formData.confirmPassword) return "Passwords do not match";
-      if (usernameError) return "Please choose a different username";
+      if (!emailRegex.test(formData.email)) return tt('msg.emailBad', "Enter a valid email address");
+      if (!usernameRegex.test((formData.username || "").trim())) return tt('msg.usernameLength', "A username is 3 to 30 characters: letters, numbers and underscores");
+      if (!isPasswordValid(formData.password)) return tt('msg.passwordRule', "A password needs 8 or more characters, with an upper case letter, a lower case letter and a number");
+      if (formData.password !== formData.confirmPassword) return tt('ui.passwords.do.not.match.f7c3', "Passwords do not match.");
+      if (usernameError) return tt('msg.chooseDifferentUsername', "Please choose a different username");
       return null;
     })();
     if (validationMessage) {
@@ -256,7 +288,7 @@ const Signup = () => {
                         <div className={generalStyles.inputGroup}>
                             <label>{tt("ui.username.17df", "Username:")}</label>
                             <input type="text" name="username" placeholder={tt("ui.enter.username.9303", "Enter a username")} value={formData.username} onChange={handleInputChange} disabled={!usernameEditable} required />
-                            {usernameError ? <p className={styles.errorMessage}>{usernameError}</p> : <p className={styles.toolTip}>{tt("ui.will.display.name.across.027d", "This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)")}</p>}
+                            {usernameError ? <p className={styles.errorMessage} role="alert">{usernameError}</p> : usernameFree && usernameEditable ? <p className={styles.toolTip}>{tt('msg.usernameFree', "This username is free")}</p> : <p className={styles.toolTip}>{tt("ui.will.display.name.across.027d", "This will be your display name across V-ent, so choose a cool one! (Max. 30 characters)")}</p>}
                         </div>
 
                         <div className={generalStyles.inputGroup}>
