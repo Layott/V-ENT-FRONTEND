@@ -25,6 +25,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useT } from '@/i18n/LanguageProvider';
+import { EXPLAINER_KEYS } from '@/lib/explainers';
+import { explainerWords } from '@/components/format-explainer/FormatExplainer';
 import { apiMessage } from '@/lib/apiMessage';
 import OverlayPreview from './OverlayPreview';
 import StudioMedia from './StudioMedia';
@@ -136,7 +138,23 @@ const fieldsFor = (tt) => ({
   doors: [],
   ticker: [],
   bracket: [],
-  explainer: [],
+  // Which format the explainer plays (inbox 476): the tournament's own by
+  // default, read from the feed, or any of them picked here. An event has no
+  // format of its own, so this is how an event's stream explains one.
+  explainer: [
+    { key: 'format',
+      label: tt('explainer.f.format', 'Which format'),
+      choices: [
+        { value: '', label: tt('explainer.opt.own', 'This tournament’s format') },
+        ...EXPLAINER_KEYS.map((k) => ({ value: k, label: explainerWords(tt, k).title })),
+      ] },
+    { key: 'loop',
+      label: tt('explainer.f.loop', 'When it ends'),
+      choices: [
+        { value: '', label: tt('explainer.opt.again', 'Play it again after a pause') },
+        { value: 'no', label: tt('explainer.opt.once', 'Stay on the last picture') },
+      ] },
+  ],
   // The Rivalry Series set. Every fixture field is optional on purpose: blank
   // means the fixture that is live, which is what somebody with one hand on
   // the mixer wants, and what the graphics work out for themselves.
@@ -247,7 +265,7 @@ const labelsFor = (tt) => ({
   head_to_head: tt('studio.kind.headToHead', 'Head to head'),
   break_screen: tt('studio.kind.breakScreen', 'Break screen'),
   award: tt('studio.kind.award', 'Award'),
-  explainer: tt('studio.kind.explainer', 'Aggregate rule'),
+  explainer: tt('explainer.kind', 'Format explainer'),
   // The four off the CEO's stream elements sheet. They had payload editors and
   // no NAMES, so the console listed them as desk_lower_third and play_area
   // among Score bar and Now and next, which is a machine name in front of an
@@ -332,7 +350,7 @@ const autoFor = (tt) => ({
   doors: tt('studio.auto.doors', 'Reads the door: how many are in, how many the room holds.'),
   ticker: tt('studio.auto.ticker', 'Reads the table, or the programme.'),
   bracket: tt('studio.auto.bracket', 'Reads the matches in progress.'),
-  explainer: tt('studio.auto.explainer', 'Explains how a fixture is decided. Reads how many matches make one.'),
+  explainer: tt('explainer.auto', 'Plays how this tournament’s format works, as a short moving bracket with captions. A Rivalry Series tournament shows its three rules instead.'),
 });
 
 export default function StudioPanel({ kind = 'tournament', ownerRef, tournamentRef }) {

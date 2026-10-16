@@ -60,6 +60,8 @@ import PlayAreaFrame from '@/components/studio/elements/PlayAreaFrame';
 import TextLayers from '@/components/studio/TextLayers';
 import DesignedCanvas from '@/components/studio/DesignedCanvas';
 import { isDesigned } from '@/lib/overlays';
+import FormatExplainer from '@/components/format-explainer/FormatExplainer';
+import { explainerKey, explainersFor, tournamentFormats } from '@/lib/explainers';
 
 // Fast enough that a score correction looks immediate to a viewer, slow enough
 // that six hours on a venue hotspot is not a problem. The feed answers every
@@ -1127,6 +1129,41 @@ function Award({ payload }) {
   );
 }
 
+/** How this tournament is played, before it starts (inbox 476).
+ *
+ * The design puts each format's explainer on stream as a studio element an
+ * organiser plays before the event: the tournament's own format, read from the
+ * feed, or the one the operator picked. It plays its bracket and captions, rests
+ * on the finished picture, and plays again unless the operator said once. Each
+ * cue mounts it afresh, so it always starts from the beginning on air.
+ *
+ * A Rivalry Series tournament keeps the screen it already had (A5 below),
+ * because its seat count comes from the feed and its audience asked for that
+ * exact rule. Nothing known about the format draws a plate, never a blank.
+ */
+function Explainer({ data, payload = {} }) {
+  const tt = useT();
+  const asked = explainerKey(payload.format);
+  const key = asked || explainersFor(tournamentFormats(data.tournament))[0] || null;
+  const rivalry = rivalryOf(data);
+
+  if (key && (asked || !(key === 'aggregate_2v2' && rivalry))) {
+    return (
+      <div className={styles.exPlayer}>
+        <FormatExplainer format={key} variant="broadcast" autoPlay loop={payload.loop !== 'no'} />
+      </div>
+    );
+  }
+  if (!rivalry) {
+    return (
+      <EmptyPlate
+        eyebrow={tt('explainer.howItWorks', 'How it works')}
+        line={tt('explainer.comingUp', 'How this competition is played, coming up.')} />
+    );
+  }
+  return <RivalryRule data={data} />;
+}
+
 /** A5: the aggregate rule, in one screen.
  *
  * The most asked question in the chat at the last one of these was why a
@@ -1134,7 +1171,7 @@ function Award({ payload }) {
  * page has not been sent: the points a win is worth belongs to the organiser's
  * ruleset and is not in the feed, so it is not claimed here.
  */
-function Explainer({ data }) {
+function RivalryRule({ data }) {
   const tt = useT();
   const seats = Number(rivalryOf(data)?.seats) || 2;
 
