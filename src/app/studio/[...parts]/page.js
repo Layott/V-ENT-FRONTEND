@@ -770,16 +770,22 @@ function SquadDepth({ element }) {
         <span className={styles.sqFormation}>{lineup.formation}</span>
       </div>
       <div className={styles.sqPitch}>
-        {shape.map((spot) => {
-          const slot = bySlot[spot.index];
-          if (!slot) return null;
-          return (
-            <div key={spot.index} className={styles.sqSpot}
-                 style={{ left: `${spot.x}%`, bottom: `${spot.y}%` }}>
-              {card(slot, spot.index)}
-            </div>
-          );
-        })}
+        {/* The spots are laid out inside a field inset by half a card, so a
+            card on the goal line stays on the pitch. Laid out on the pitch
+            itself, the goalkeeper at 6% hung 15px off the bottom and lost
+            the end of their name (E1 on production, 16 October 2026). */}
+        <div className={styles.sqField}>
+          {shape.map((spot) => {
+            const slot = bySlot[spot.index];
+            if (!slot) return null;
+            return (
+              <div key={spot.index} className={styles.sqSpot}
+                   style={{ left: `${spot.x}%`, bottom: `${spot.y}%` }}>
+                {card(slot, spot.index)}
+              </div>
+            );
+          })}
+        </div>
       </div>
       {bench.length > 0 && (
         <div className={styles.sqBench}>
