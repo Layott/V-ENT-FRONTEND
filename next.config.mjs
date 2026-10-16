@@ -83,6 +83,17 @@ const securityHeaders = [
 const SSR_TABLES = fileURLToPath(new URL('./src/i18n/ssrTables.js', import.meta.url));
 
 const nextConfig = {
+  // Crawlers that get the title, description, canonical and robots tags in the
+  // <head>, rendered before the page is sent rather than streamed after it.
+  //
+  // Next 15 streams metadata into the body for any agent not on its list, and
+  // its list leaves out plain Googlebot (Google runs scripts, so Next trusts it
+  // to find them) and the AI crawlers, which read the HTML and run nothing.
+  // On 16 October every page served Googlebot its <title> 37 KB into the body
+  // (inbox 461). Next's own list, plus Googlebot and the model crawlers that
+  // robots.js already lets in.
+  htmlLimitedBots: /[\w-]+-Google|Google-[\w-]+|Googlebot|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|Claude-User|PerplexityBot|Perplexity-User/i,
+
   // DEV builds into their own directory, so a production build can never
   // overwrite what a running dev server is serving from.
   //
@@ -261,6 +272,12 @@ const nextConfig = {
       { source: '/terms-of-service', destination: '/terms', permanent: true },
       { source: '/tos', destination: '/terms', permanent: true },
       { source: '/privacy', destination: '/privacy-policy', permanent: true },
+      // Search Console held two sitemaps submitted on 2 December 2025,
+      // sitemap.xml and sitemaps.xml, both "Couldn't fetch" (inbox 460). The
+      // second name, and the index name some tools guess, now reach the one
+      // sitemap there is; check-search fails if either stops forwarding.
+      { source: '/sitemaps.xml', destination: '/sitemap.xml', permanent: true },
+      { source: '/sitemap_index.xml', destination: '/sitemap.xml', permanent: true },
     ];
   },
 };

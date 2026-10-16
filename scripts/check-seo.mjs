@@ -66,6 +66,65 @@ const walk = (dir, segments) => {
 walk(APP, []);
 
 const read = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '');
+
+// Whether a route is listed in the sitemap or disallowed by robots, by the
+// SHAPE of the address rather than a substring of it.
+//
+// This used to ask `sitemap.includes(firstSegment)`. /u/[username], every
+// player's profile, has the first segment "u", and sitemap.js contains the
+// letter u, so 175 indexable profiles were "listed" while the sitemap named
+// none of them (inbox 460, 16 October 2026). The same reading let any detail
+// route through whenever its listing page was listed: /teams/[slug] passed on
+// the strength of /teams. A route is now listed only when sitemap.js builds a
+// path of its exact shape (`/u/${p.username}` for /u/[username]).
+const isParam = (seg) => /^\[.+\]$/.test(seg);
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Every path-looking string or template literal in a source file. */
+export function pathLiterals(source) {
+  return [...source.matchAll(/[`'"](\/[^`'"\s]*)[`'"]/g)].map((m) => m[1]);
+}
+
+/** True when the sitemap source builds an address shaped like `segments`. */
+export function listedIn(sitemapSource, segments) {
+  const shape = new RegExp('^/' + segments
+    .map((seg) => (isParam(seg) ? '\\$\\{[^}]+\\}' : escapeRe(seg))).join('/') + '$');
+  return pathLiterals(sitemapSource).some((p) => shape.test(p));
+}
+
+/** True when a Disallow pattern in the robots source covers this route. */
+export function disallowedIn(robotsSource, segments) {
+  const sample = '/' + segments.map((seg) => (isParam(seg) ? 'x-sample' : seg)).join('/');
+  return pathLiterals(robotsSource)
+    .filter((p) => p !== '/' && !p.startsWith('//'))
+    // Robots semantics: a pattern matches from the start, `*` is any run.
+    .some((p) => new RegExp('^' + escapeRe(p).replace(/\\\*/g, '.*')).test(sample));
+}
+
+if (process.argv.includes('--self-test')) {
+  const sm = "entry('/'); entry('/teams'); entry(`/tournaments/${t.slug}`); entry(`/events/${e.slug}/stall/${v.slug}`);";
+  const rb = "disallow: ['/admin', '/events/*/manage', '/s/']";
+  const cases = [
+    ['a player profile is not listed by the letter u', !listedIn(sm, ['u', '[username]'])],
+    ['a team page is not listed by its listing page', !listedIn(sm, ['teams', '[slug]'])],
+    ['the listing page itself is listed', listedIn(sm, ['teams'])],
+    ['the home page is listed', listedIn(sm, [])],
+    ['a tournament page is listed by its shape', listedIn(sm, ['tournaments', '[slug]'])],
+    ['a nested stall page is listed by its shape', listedIn(sm, ['events', '[slug]', 'stall', '[stall]'])],
+    ['an event page is not listed by the stall shape', !listedIn(sm, ['events', '[slug]'])],
+    ['a wildcard disallow covers its route', disallowedIn(rb, ['events', '[slug]', 'manage'])],
+    ['a disallow does not cover the public event page', !disallowedIn(rb, ['events', '[slug]'])],
+    ['a prefix disallow covers what is under it', disallowedIn(rb, ['admin', 'users'])],
+    ['the short link folder is disallowed', disallowedIn(rb, ['s', '[code]'])],
+  ];
+  let bad = 0;
+  for (const [name, ok] of cases) {
+    if (!ok) { bad += 1; console.log(`FAIL  ${name}`); }
+  }
+  console.log(`${cases.length - bad}/${cases.length} self-test cases`);
+  process.exit(bad ? 1 : 0);
+}
+
 const sitemap = read(path.join(APP, 'sitemap.js'));
 const robots = read(path.join(APP, 'robots.js'));
 
@@ -109,7 +168,12 @@ for (const route of routes) {
   // Without this the checker reported 18 of these and the real answer was 5,
   // which is how a checker becomes a number people scroll past. See
   // `feedback_checker_calibration`.
-  const isNoindex = /robots\s*:\s*\{[^}]*index\s*:\s*false/.test(near);
+  // Both spellings: Next's own `robots: { index: false }`, and `noindex: true`
+  // given to lib/seo's pageMetadata, which is how most pages here say it. A
+  // conditional (`noindex: profile.indexable === false`) is NOT a decision:
+  // that page is indexable for almost every record and must be listed.
+  const isNoindex = /robots\s*:\s*\{[^}]*index\s*:\s*false/.test(near)
+    || /\bnoindex\s*:\s*true\b/.test(near);
 
   if (isDetail && isNoindex) continue;
 
@@ -125,13 +189,25 @@ for (const route of routes) {
   // In the sitemap, or explicitly disallowed. A public page in neither is one
   // nobody will find and nobody decided not to publish.
   const urlPath = '/' + real.map((s) => s.replace(/^\[(.*)\]$/, '$1')).join('/');
-  const stem = real[0] || '';
-  if (stem && !sitemap.includes(stem) && !robots.includes(stem)) {
+  // A page that serves noindex has had the decision made: it will never be
+  // in a result, so it belongs in neither list (and a Disallow would hide the
+  // noindex from the crawler that has to read it).
+  if (!isNoindex && !listedIn(sitemap, real) && !disallowedIn(robots, real)) {
     findings.push({
       file: route.file,
       rule: 'in neither the sitemap nor robots',
       detail: `nothing lists ${urlPath}, and nothing says not to. One of the `
         + 'two has to be a decision somebody made.',
+    });
+  }
+  // The opposite fault: the sitemap says "crawl this" and the page says "do
+  // not index me". /partners shipped that way until 16 October 2026.
+  if (isNoindex && listedIn(sitemap, real)) {
+    findings.push({
+      file: route.file,
+      rule: 'listed in the sitemap but serves noindex',
+      detail: `sitemap.js lists ${urlPath} and the page asks not to be indexed. `
+        + 'Take it out of the sitemap, or drop the noindex if it is public.',
     });
   }
 }

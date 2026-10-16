@@ -11,7 +11,10 @@ import { sectionCopy } from '@/lib/seoCopy';
 // (inbox 375).
 export async function generateMetadata() {
   const locale = await currentLocale();
-  return buildMetadata({ ...sectionCopy('community/post', locale), path: '/community/post', locale });
+  // noindex (inbox 461, 16 October 2026): the old ?id= address of a post; it forwards to /community/post/<token>. It told search engines to
+  // index it, with itself as the canonical, which is a thin copy competing
+  // with the real page.
+  return buildMetadata({ ...sectionCopy('community/post', locale), path: '/community/post', locale, noindex: true });
 }
 
 export default function Layout({ children }) {

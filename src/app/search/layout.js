@@ -9,7 +9,10 @@ import { sectionCopy } from '@/lib/seoCopy';
 export async function generateMetadata() {
   const locale = await currentLocale();
   const copy = sectionCopy('search', locale);
-  return buildMetadata({ ...copy, path: '/search', locale });
+  // noindex (inbox 461, 16 October 2026): search results: a page per query, which Google asks sites not to have indexed. It told search engines to
+  // index it, with itself as the canonical, which is a thin copy competing
+  // with the real page.
+  return buildMetadata({ ...copy, path: '/search', locale, noindex: true });
 }
 
 export default function Layout({ children }) {
