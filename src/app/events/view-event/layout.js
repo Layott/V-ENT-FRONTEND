@@ -11,7 +11,10 @@ import { sectionCopy } from '@/lib/seoCopy';
 // (inbox 375).
 export async function generateMetadata() {
   const locale = await currentLocale();
-  return buildMetadata({ ...sectionCopy('events/view-event', locale), path: '/events/view-event', locale });
+  // noindex (inbox 461, 16 October 2026): the old ?id= address of an event; it forwards to /events/<slug>, which is the page to rank. It told search engines to
+  // index it, with itself as the canonical, which is a thin copy competing
+  // with the real page.
+  return buildMetadata({ ...sectionCopy('events/view-event', locale), path: '/events/view-event', locale, noindex: true });
 }
 
 export default function Layout({ children }) {

@@ -31,7 +31,7 @@ async function readList(path) {
     for (const value of Object.values(data)) {
       if (!Array.isArray(value)) continue;
       for (const item of value) {
-        const key = item?.slug || item?.id || item?.tournament_id || item?.event_id;
+        const key = item?.slug || item?.id || item?.tournament_id || item?.event_id || item?.username;
         if (key && !seen.has(key)) { seen.add(key); out.push(item); }
       }
     }
@@ -92,7 +92,10 @@ export default async function sitemap() {
     entry('/marketplace', { changeFrequency: 'monthly', priority: 0.3 }),
     entry('/shop', { changeFrequency: 'monthly', priority: 0.3 }),
     entry('/wager', { changeFrequency: 'monthly', priority: 0.2 }),
-    entry('/partners', { changeFrequency: 'monthly', priority: 0.4 }),
+    // Not /partners: that is somebody's own partner area (apply, waiting,
+    // keys) and serves noindex, so listing it told Google two opposite things
+    // (check-search, 16 October 2026). The API reference below is the page
+    // an integrator searches for.
     // What V-ENT costs, and where to say what is wrong. Both are things
     // somebody searches for by name before they commit to a platform.
     entry('/pricing', { changeFrequency: 'monthly', priority: 0.6 }),
@@ -113,13 +116,21 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations, plans] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
     readList('/club/list/'),
     readList('/organization/list/'),
     readList('/billing/plans/public/'),
+    // Every profile whose owner left "show in search" on and anybody may
+    // view (inbox 460). The most linkable page the platform has, and the
+    // sitemap named none of them.
+    readList('/users/indexable/'),
+    // The anime module answers nothing while it is closed, so these lists are
+    // empty until it opens and then fill on their own.
+    readList('/anime/series/'),
+    readList('/anime/battles/'),
   ]);
 
   const tournamentPages = tournaments
@@ -161,19 +172,23 @@ export default async function sitemap() {
   // Every open stall, at its named address. A stall is a page people search
   // for by the trader's name, and it was reachable only through a query
   // string that canonicalised every stall to one URL (18 September 2026).
-  // One request per listed event, capped.
+  // One request per listed event, capped. An event with stalls also gets its
+  // stalls page, the one people open to see what is on sale there.
   const stallPages = (await Promise.all(
     events
       .filter((e) => e?.slug && e.is_active !== false)
       .slice(0, 60)
       .map(async (e) => {
-        const got = await readList(`/event/${encodeURIComponent(e.slug)}/vendors/`);
-        return got
-          .filter((v) => v?.slug)
-          .map((v) => entry(`/events/${e.slug}/stall/${v.slug}`, {
+        const got = (await readList(`/event/${encodeURIComponent(e.slug)}/vendors/`))
+          .filter((v) => v?.slug);
+        if (!got.length) return [];
+        return [
+          entry(`/events/${e.slug}/vendor-shop`, { changeFrequency: 'daily', priority: 0.5 }),
+          ...got.map((v) => entry(`/events/${e.slug}/stall/${v.slug}`, {
             changeFrequency: 'daily',
             priority: 0.5,
-          }));
+          })),
+        ];
       }),
   )).flat();
 
@@ -204,7 +219,24 @@ export default async function sitemap() {
       lastModified: p.updated_at,
     }));
 
+  const profilePages = profiles
+    .filter((p) => p?.username)
+    .map((p) => entry(`/u/${p.username}`, {
+      changeFrequency: 'weekly',
+      priority: 0.5,
+      lastModified: p.updated_at,
+    }));
+
+  const seriesPages = series
+    .filter((m) => m?.slug)
+    .map((m) => entry(`/anime/manga/${m.slug}`, { changeFrequency: 'weekly', priority: 0.4 }));
+
+  const battlePages = battles
+    .filter((b) => b?.slug)
+    .map((b) => entry(`/anime/battles/${b.slug}`, { changeFrequency: 'weekly', priority: 0.3 }));
+
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...planPages].flat();
+          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...planPages,
+          ...profilePages, ...seriesPages, ...battlePages].flat();
 }
