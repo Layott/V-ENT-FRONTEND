@@ -124,6 +124,14 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   // The plan being edited, held apart from what is saved so leaving the panel
   // without pressing Save changes nothing.
   const [draft, setDraft] = useState(null);
+  // The links between stages (P1b, design section 6): who goes where, and
+  // when. `lines` is what the server has; `draftLines` is edited beside the
+  // draft, naming its stages by the draft row's `key`, because a new stage
+  // has no id yet.
+  const [lines, setLines] = useState([]);
+  const [draftLines, setDraftLines] = useState([]);
+  const keySeq = useRef(0);
+  const newKey = () => { keySeq.current += 1; return `new-${keySeq.current}`; };
   // The stage being closed: the server's list of who goes through, which the
   // organiser may reorder before committing.
   const [closing, setClosing] = useState(null);
@@ -149,6 +157,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setRows(body.data.stages || []);
+        setLines(body.data.progressions || []);
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
         setMeta({
@@ -338,7 +347,107 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     return bits.join('. ');
   };
 
+  // ------------------------------------------------ the links (P1b)
+  const outOf = id => lines.filter(l => l.source === id)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const into = id => lines.filter(l => l.target === id);
+  const labelOf = id => rows.find(r => r.id === id)?.label || '';
+
+  // "Places 1 to 2 of each group go to Playoff, in the upper bracket." Built
+  // from the parts so every language puts them in its own order.
+  const lineSentence = (line, sourceRow, targetLabel) => {
+    const each = Number(sourceRow?.groups) > 1 && (line.group === null || line.group === undefined || line.group === '');
+    const one = Number(sourceRow?.groups) > 1 && !each;
+    const g = one ? groupLetter(line.group) : '';
+    const from = Number(line.place_from) || 1;
+    const to = Number(line.place_to) || from;
+    const scope = each ? 'Each' : one ? 'Group' : '';
+    const kind = from === to ? (from === 1 ? 'winner' : 'place') : 'range';
+    const fallback = {
+      winner: 'The winner goes to {target}', winnerEach: 'The winner of each group goes to {target}',
+      winnerGroup: 'The winner of group {g} goes to {target}',
+      place: 'Place {n} goes to {target}', placeEach: 'Place {n} of each group goes to {target}',
+      placeGroup: 'Place {n} of group {g} goes to {target}',
+      range: 'Places {a} to {b} go to {target}', rangeEach: 'Places {a} to {b} of each group go to {target}',
+      rangeGroup: 'Places {a} to {b} of group {g} go to {target}',
+    }[kind + scope];
+    const base = tt(`stages.lines.${kind}${scope}`, fallback)
+      .replace('{target}', targetLabel || '').replace('{g}', g)
+      .replace('{n}', from).replace('{a}', from).replace('{b}', to);
+    const parts = [];
+    if (line.side === 'winners') parts.push(tt('stages.lines.inUpper', 'in the upper bracket'));
+    if (line.side === 'losers') parts.push(tt('stages.lines.inLower', 'in the lower bracket'));
+    if (line.carry_points) parts.push(tt('stages.lines.keeping', 'keeping their points'));
+    if (line.fire === 'on_close') parts.push(tt('stages.lines.goesOnClose', 'as soon as the stage ends'));
+    if (line.fire === 'manual') parts.push(tt('stages.lines.goesManual', 'when you press send'));
+    return `${base}${parts.length ? `, ${parts.join(', ')}` : ''}.`;
+  };
+
+  // A plan that is only a chain (each stage into the next, from the top
+  // places, nothing else) reads as it always has.
+  const plainChain = lines.every(l => {
+    const si = rows.findIndex(r => r.id === l.source);
+    const ti = rows.findIndex(r => r.id === l.target);
+    return ti === si + 1 && Number(l.place_from) === 1 && (l.group === null || l.group === undefined)
+      && l.side === 'any' && !l.carry_points && l.fire === 'after_preview';
+  }) && rows.every(r => outOf(r.id).length <= 1);
+
+  const formatSentence = row => {
+    const name = formatLabel(tt, row.format, row.format_label);
+    return Number(row.groups) > 1
+      ? tt('stages.lineFormatGroups', '{format} in {groups} groups.').replace('{format}', name).replace('{groups}', row.groups)
+      : tt('stages.lineFormatOne', '{format} in one field.').replace('{format}', name);
+  };
+
+  // The stage that decides the tournament: the one no link leaves, fed by
+  // the best places.
+  const topSinkId = (() => {
+    const sinks = rows.filter(r => outOf(r.id).length === 0);
+    const best = r => Math.min(...into(r.id).map(l => Number(l.place_from) || 1), 1e9);
+    return sinks.sort((a, b) => best(a) - best(b) || a.order - b.order)[0]?.id;
+  })();
+
+  const newLine = (source, target, placeTo = 2) => ({
+    k: newKey(), id: null, source, target, group: null, place_from: 1, place_to: placeTo,
+    side: 'any', carry_points: false, fire: 'after_preview', fired: false,
+  });
+  const setLine = (k, key, value) => setDraftLines(prev => prev.map(l => (l.k === k ? { ...l, [key]: value } : l)));
+  // Changing where a link goes clears a side the new stage does not have.
+  const setLineTarget = (k, key) => setDraftLines(prev => prev.map(l => {
+    if (l.k !== k) return l;
+    const target = (draft || []).find(r => r.key === key);
+    return { ...l, target: key, side: target?.format === 'double_elimination' ? l.side : 'any' };
+  }));
+  const removeLine = k => setDraftLines(prev => prev.filter(l => l.k !== k || l.fired));
+  const addLine = sourceKey => {
+    const at = draft.findIndex(r => r.key === sourceKey);
+    const target = draft[at + 1] || draft.find(r => r.key !== sourceKey);
+    if (target) setDraftLines([...draftLines, newLine(sourceKey, target.key)]);
+  };
+
+  const sendLine = async (row, line) => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/${row.id}/lines/${line.id}/pull/`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth }, body: '{}',
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        after();
+        if (showToast) showToast(tt('stages.lines.sentToast', 'Sent to {target}.').replace('{target}', labelOf(line.target)));
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'stages.lines.sendFailed', 'That link was not sent.'));
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const blank = format => ({
+    key: newKey(),
     format, label: '', advances: format === 'round_robin' ? 2 : 0, groups: 0,
     starts_at: '', ends_at: '', place_type: '', location: '', virtual_link: '',
     placement: 'cross', direct_entrants: [], settings: defaultSettings(format),
@@ -347,8 +456,21 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
 
   const startEditing = () => {
     loadEntrants();
+    if (!rows.length) {
+      const first = blank('round_robin');
+      const second = blank('single_elimination');
+      setDraft([first, second]);
+      setDraftLines([newLine(first.key, second.key)]);
+      return;
+    }
+    setDraftLines(lines.map(l => ({
+      k: newKey(), id: l.id || null, source: String(l.source), target: String(l.target),
+      group: l.group ?? null, place_from: l.place_from, place_to: l.place_to, side: l.side,
+      carry_points: Boolean(l.carry_points), fire: l.fire, fired: Boolean(l.fired_at),
+    })));
     setDraft(rows.length
       ? rows.map(r => ({
+          key: String(r.id),
           // The id is how the server knows a drawn stage is still the same
           // stage (it keeps what was played on it); a new row has none.
           id: r.id,
@@ -425,8 +547,23 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     return next;
   });
 
-  const addRow = () => setDraft(prev => [...prev, blank('single_elimination')]);
-  const removeRow = index => setDraft(prev => (prev[index]?.drawn ? prev : prev.filter((_, i) => i !== index)));
+  // A stage added at the end is fed from the one before it, as adding a
+  // stage always meant, when that format can feed it.
+  const addRow = () => {
+    const row = blank('single_elimination');
+    const last = draft[draft.length - 1];
+    const fmt = catalogue.find(f => f.key === last?.format);
+    setDraft([...draft, row]);
+    if (last && (fmt?.can_feed_into || []).includes(row.format)) {
+      setDraftLines([...draftLines, newLine(last.key, row.key)]);
+    }
+  };
+  const removeRow = index => {
+    const row = draft[index];
+    if (!row || row.drawn) return;
+    setDraft(draft.filter((_, i) => i !== index));
+    setDraftLines(draftLines.filter(l => l.source !== row.key && l.target !== row.key));
+  };
 
   const networkFail = () => setProblem(tt('api.NETWORK_UNREACHABLE',
     'Could not reach the server. Check the connection and try again.'));
@@ -464,12 +601,24 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             settings: r.settings,
             rules: rulesPayload(r),
           })),
+          // The links, naming their stages by position in this plan.
+          progressions: draftLines
+            .map((l, order) => ({ l, order, source: draft.findIndex(r => r.key === l.source),
+                                  target: draft.findIndex(r => r.key === l.target) }))
+            .filter(x => x.source >= 0 && x.target >= 0)
+            .map(({ l, order, source, target }) => ({
+              ...(l.id ? { id: l.id } : {}), source, target,
+              group: l.group === null || l.group === '' || l.group === undefined ? null : Number(l.group),
+              place_from: Number(l.place_from) || 1, place_to: Number(l.place_to) || 0,
+              side: l.side, carry_points: Boolean(l.carry_points), fire: l.fire, order,
+            })),
         }),
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         savedAt.current = Date.now();
         setRows(body.data.stages || []);
+        setLines(body.data.progressions || []);
         setDraft(null);
         if (showToast) showToast(tt('stages.saved', 'The plan is saved.'));
         if (onChanged) onChanged();
@@ -477,7 +626,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       }
       const where = Number.isInteger(body.stage_index)
         ? ` ${tt('stages.atStage', '(stage {n})').replace('{n}', body.stage_index + 1)}`
-        : '';
+        : Number.isInteger(body.detail?.line_index)
+          ? ` ${tt('stages.atLine', '(link {n})').replace('{n}', body.detail.line_index + 1)}`
+          : '';
       setProblem(apiMessage(tt, body, 'stages.saveFailed',
         'That plan was not saved.') + where);
     } catch {
@@ -525,9 +676,14 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           'Could not work out who goes through.'));
         return;
       }
+      const sending = (body.data.lines || []).filter(l => !l.fired_at);
       setClosing({ row, next: body.data.next, finished: body.data.finished,
                    open: body.data.open_matches, disputes: body.data.open_disputes > 0,
-                   through: body.data.advancing || [] });
+                   through: body.data.advancing || [],
+                   // One link into the next stage reads as one list the
+                   // organiser may reorder; several are shown link by link.
+                   lines: sending,
+                   perLine: sending.length > 1 || sending.some(l => l.fire === 'manual') });
     } catch {
       networkFail();
     } finally {
@@ -551,7 +707,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth },
         body: JSON.stringify({
-          ...(closing.reordered ? { order: closing.through.map(r => r.registration_id) } : {}),
+          ...(closing.reordered && !closing.perLine ? { order: closing.through.map(r => r.registration_id) } : {}),
           ...(ignoreDisputes ? { ignore_disputes: true } : {}),
         }),
       });
@@ -707,22 +863,43 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       {!draft && rows.length > 0 && (
         <ol className={styles.list}>
           {rows.map((row, index) => {
-            const prev = rows[index - 1];
-            const drawable = canManage && !row.drawn_at && (index === 0 || prev?.status === 'complete');
-            const closable = canManage && row.drawn_at && row.status !== 'complete' && index < rows.length - 1;
-            // The tools for a stage already drawn. Not while a later stage is
-            // drawn on top of it (that one is undone first), and not once the
-            // tournament is over.
-            const nextDrawn = isDrawn(rows[index + 1]);
+            // The links decide the flow (P1b): a stage is drawn once every
+            // link into it has sent its people, closed when it has links out.
+            const ins = into(row.id);
+            const outs = outOf(row.id);
+            const fed = ins.length === 0 || ins.every(l => l.fired_at);
+            const drawable = canManage && !row.drawn_at && fed;
+            const closable = canManage && row.drawn_at && row.status !== 'complete' && outs.length > 0;
+            // The tools for a stage already drawn. Not while a stage it feeds
+            // is drawn on top of it (that one is undone first), and not once
+            // the tournament is over.
+            const nextDrawn = outs.some(l => isDrawn(rows.find(r => r.id === l.target)));
             const tools = canManage && !meta.finished && !draft && !closing && isDrawn(row) && !nextDrawn;
             const running = tools && row.status !== 'complete';
-            const reopenable = tools && row.status === 'complete' && index < rows.length - 1;
+            const reopenable = tools && row.status === 'complete' && outs.length > 0;
+            const waitingToSend = canManage && row.status === 'complete'
+              ? outs.filter(l => l.fire === 'manual' && !l.fired_at && l.id) : [];
             return (
               <li key={row.id} className={styles.stage}>
                 <span className={styles.order}>{index + 1}</span>
                 <div className={styles.stageText}>
                   <span className={styles.stageName}>{row.label}</span>
-                  <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
+                  {plainChain
+                    ? <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
+                    : <>
+                        <span className={styles.stageLine}>{formatSentence(row)}</span>
+                        {outs.length
+                          ? outs.map(l => (
+                            <span key={l.id || `${l.source}-${l.target}-${l.place_from}`} className={styles.stageLine}>
+                              {lineSentence(l, row, labelOf(l.target))}
+                            </span>
+                          ))
+                          : <span className={styles.stageLine}>
+                              {row.id === topSinkId
+                                ? tt('stages.lineDecides', 'This decides the tournament.')
+                                : tt('stages.lineSink', 'Their final places are decided here.')}
+                            </span>}
+                      </>}
                   <span className={styles.stageLine}>{playedAs(row)}</span>
                   {index > 0 && <span className={styles.stageLine}>{arrival(row, index)}</span>}
                   {(row.when?.is_its_own || row.where?.is_its_own) && (
@@ -740,13 +917,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                       ].filter(Boolean).join(', ')}
                     </span>
                   )}
-                  {row.status === 'complete' && index < rows.length - 1 && (
+                  {row.status === 'complete' && outs.length > 0 && (
                     <span className={styles.done}>
                       {tt('stages.complete', 'Closed. {n} went through.')
                         .replace('{n}', (row.advanced || []).length)}
                     </span>
                   )}
-                  {row.status === 'complete' && index === rows.length - 1 && (
+                  {row.status === 'complete' && outs.length === 0 && (
                     <span className={styles.done}>{tt('stages.decided', 'Played. The tournament is decided.')}</span>
                   )}
                   {row.status === 'running' && (
@@ -756,11 +933,21 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                         : tt('stages.running', 'Being played now')}
                     </span>
                   )}
-                  {!row.drawn_at && index > 0 && prev?.status !== 'complete' && (
-                    <span className={styles.stageWhen}>{tt('stages.waitsForPrevious', 'Drawn when the stage before it closes.')}</span>
+                  {!row.drawn_at && !fed && (
+                    <span className={styles.stageWhen}>
+                      {ins.length > 1
+                        ? tt('stages.lines.waitsForAll', 'Drawn when every stage that feeds it has sent its people.')
+                        : tt('stages.waitsForPrevious', 'Drawn when the stage before it closes.')}
+                    </span>
                   )}
                 </div>
 
+                {waitingToSend.map(l => (
+                  <button key={l.id} type="button" className={styles.save} disabled={busy}
+                          onClick={() => sendLine(row, l)}>
+                    {tt('stages.lines.sendNow', 'Send to {target} now').replace('{target}', labelOf(l.target))}
+                  </button>
+                ))}
                 {drawable && (
                   <button type="button" className={styles.save} disabled={busy}
                           onClick={() => drawStage(row)}>
@@ -915,7 +1102,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             const by = step => Boolean(draft[index + step]?.drawn);
             const pinned = locked || by(-1);
             return (
-              <div key={row.id || `new-${index}`} className={styles.row}>
+              <div key={row.key} className={styles.row}>
                 <div className={styles.rowTop}>
                   <span className={styles.order}>{index + 1}</span>
                   <input className={styles.text} value={row.label} disabled={busy}
@@ -971,23 +1158,6 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     </label>
                   )}
 
-                  <label className={styles.field}>
-                    <span className={styles.fieldLabel}>
-                      {last
-                        ? tt('stages.advancesLast', 'Nobody advances')
-                        : row.format === 'battle_royale' && s.advance_by === 'lobby'
-                          ? tt('br.advancesLobby', 'How many go through from each lobby')
-                        : row.format === 'gsl'
-                          ? tt('stages.advancesGsl', 'Through, per group (fixed at two)')
-                          : (Number(row.groups) > 1
-                            ? tt('stages.advancesEach', 'Through, per group')
-                            : tt('stages.advances', 'How many go through'))}
-                    </span>
-                    <input className={styles.number} type="number" min="0"
-                           value={last ? 0 : (row.format === 'gsl' ? 2 : row.advances)}
-                           disabled={busy || last || row.format === 'gsl' || Boolean(row.closed)}
-                           onChange={e => setField(index, 'advances', e.target.value)} />
-                  </label>
                 </div>
 
                 {/* Everything below up to "when and where" is how the stage is
@@ -1189,6 +1359,106 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
 
                 </fieldset>
 
+                {/* Where they go (P1b): the links out of this stage. Outside
+                    the locked set: a drawn stage's links still change until
+                    they have sent people. */}
+                <div className={styles.lines}>
+                  <p className={styles.subhead}>{tt('stages.lines.title', 'Where they go')}</p>
+                  {draftLines.filter(l => l.source === row.key).length === 0 && (
+                    <p className={styles.note}>{tt('stages.lines.none', 'Nobody goes on from this stage. Its places are final.')}</p>
+                  )}
+                  {draftLines.filter(l => l.source === row.key).map(l => {
+                    const target = draft.find(r => r.key === l.target);
+                    const groups = Number(row.groups) || 0;
+                    const targetName = target ? (target.label || formatLabel(tt, target.format)) : '';
+                    if (l.fired) {
+                      return (
+                        <div key={l.k} className={styles.lineRow}>
+                          <p className={styles.stageLine}>{lineSentence(l, row, targetName)}</p>
+                          <p className={styles.note}>{tt('stages.lines.firedNote', 'Already sent, so it stays as it is.')}</p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={l.k} className={styles.lineRow}>
+                        <div className={styles.fields}>
+                          <label className={styles.field}>
+                            <span className={styles.fieldLabel}>{tt('stages.lines.from', 'From place')}</span>
+                            <input className={styles.number} type="number" min="1" inputMode="numeric"
+                                   value={l.place_from} disabled={busy}
+                                   onChange={e => setLine(l.k, 'place_from', e.target.value)} />
+                          </label>
+                          <label className={styles.field}>
+                            <span className={styles.fieldLabel}>{tt('stages.lines.to', 'To place')}</span>
+                            <input className={styles.number} type="number" min="1" inputMode="numeric"
+                                   value={l.place_to} disabled={busy}
+                                   onChange={e => setLine(l.k, 'place_to', e.target.value)} />
+                          </label>
+                          {groups > 1 && (
+                            <label className={styles.field}>
+                              <span className={styles.fieldLabel}>{tt('stages.lines.of', 'Of')}</span>
+                              <select className={styles.select} value={l.group ?? ''} disabled={busy}
+                                      onChange={e => setLine(l.k, 'group', e.target.value === '' ? null : Number(e.target.value))}>
+                                <option value="">{tt('stages.lines.eachGroup', 'Each group')}</option>
+                                {Array.from({ length: groups }, (_, g) => (
+                                  <option key={g} value={g + 1}>
+                                    {tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(g + 1))}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          )}
+                          <label className={styles.field}>
+                            <span className={styles.fieldLabel}>{tt('stages.lines.target', 'Go to')}</span>
+                            <select className={styles.select} value={l.target} disabled={busy}
+                                    onChange={e => setLineTarget(l.k, e.target.value)}>
+                              {draft.filter(r => r.key !== row.key).map(r => (
+                                <option key={r.key} value={r.key}>
+                                  {`${draft.indexOf(r) + 1}. ${r.label || formatLabel(tt, r.format)}`}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                        {target?.format === 'double_elimination' && (
+                          <div className={styles.field}>
+                            <span className={styles.fieldLabel}>{tt('stages.lines.side', 'Into')}</span>
+                            <Chips value={l.side} disabled={busy} label={tt('stages.lines.side', 'Into')}
+                                   options={[['any', tt('stages.lines.sideAny', 'Wherever the format puts them')],
+                                             ['winners', tt('stages.lines.sideWinners', 'The upper bracket')],
+                                             ['losers', tt('stages.lines.sideLosers', 'The lower bracket')]]}
+                                   onChange={v => setLine(l.k, 'side', v)} />
+                          </div>
+                        )}
+                        {TABLE.has(row.format) && TABLE.has(target?.format) && (
+                          <div className={styles.field}>
+                            <span className={styles.fieldLabel}>{tt('stages.lines.carry', 'Keep their points')}</span>
+                            <Chips value={Boolean(l.carry_points)} disabled={busy} label={tt('stages.lines.carry', 'Keep their points')}
+                                   options={[[false, tt('stages.no', 'No')], [true, tt('stages.yes', 'Yes')]]}
+                                   onChange={v => setLine(l.k, 'carry_points', v)} />
+                          </div>
+                        )}
+                        <div className={styles.field}>
+                          <span className={styles.fieldLabel}>{tt('stages.lines.when', 'When they go')}</span>
+                          <Chips value={l.fire} disabled={busy} label={tt('stages.lines.when', 'When they go')}
+                                 options={[['after_preview', tt('stages.lines.fireAfterPreview', 'When I confirm the list')],
+                                           ['on_close', tt('stages.lines.fireOnClose', 'As soon as the stage ends')],
+                                           ['manual', tt('stages.lines.fireManual', 'When I press send')]]}
+                                 onChange={v => setLine(l.k, 'fire', v)} />
+                        </div>
+                        <button type="button" className={styles.quiet} disabled={busy} onClick={() => removeLine(l.k)}>
+                          {tt('stages.lines.remove', 'Remove this link')}
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {draft.length > 1 && (
+                    <button type="button" className={styles.ghost} disabled={busy} onClick={() => addLine(row.key)}>
+                      <LuPlus aria-hidden="true" /> {tt('stages.lines.add', 'Add a link')}
+                    </button>
+                  )}
+                </div>
+
                 {/* How a table ranks: points, then tie-breakers in order. Open
                     after the draw too: the server lets the scoring change. */}
                 {TABLE.has(row.format) && (() => {
@@ -1349,7 +1619,27 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     'These go through to {next}, in this seed order, as the stage’s own table has them. Move anybody up or down if you need to, then send them through. {next} is drawn in the same press.')
                     .replace(/\{next\}/g, closing.next?.label || '')}
               </p>
-              <ol className={styles.through}>
+              {closing.perLine && closing.lines.map(l => (
+                <div key={l.id} className={styles.lineRow}>
+                  <p className={styles.stageLine}>
+                    {tt('stages.lines.toTarget', 'To {target}').replace('{target}', l.target_label)}
+                    {l.fire === 'manual' ? ` ${tt('stages.lines.waitsForPress', 'Waits for you to press send.')}` : ''}
+                  </p>
+                  <ol className={styles.through}>
+                    {l.rows.map((entry, i) => (
+                      <li key={entry.registration_id} className={styles.throughRow}>
+                        <span className={styles.order}>{i + 1}</span>
+                        <span className={styles.throughName}>
+                          {entry.name}
+                          {entry.handle && entry.handle !== entry.name ? ` @${entry.handle}` : ''}
+                          {entry.group ? ` (${tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(entry.group))}, ${entry.rank})` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+              {!closing.perLine && <ol className={styles.through}>
                 {closing.through.map((entry, i) => (
                   <li key={entry.registration_id} className={styles.throughRow}>
                     <span className={styles.order}>{i + 1}</span>
@@ -1375,7 +1665,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     </span>
                   </li>
                 ))}
-              </ol>
+              </ol>}
               {(closing.next?.direct_entrants_named || []).length > 0 && (
                 <p className={styles.hint}>
                   {tt('stages.joiningToo', 'Also joining {next}, invited straight in: {names}.')
