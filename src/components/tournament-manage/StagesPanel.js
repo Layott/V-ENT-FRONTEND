@@ -21,6 +21,15 @@
 //  * DRAWING and ADVANCING are decisions. Advancing shows who the server's
 //    table sends through, in seed order, lets the organiser reorder it, and
 //    only then commits; the next stage is drawn in the same press.
+//  * EDITING AFTER THE START (CEO, 12 and 13 October 2026, inbox 450 and 452:
+//    "edit their tournaments, including the formats/brackets, seeding and all
+//    that even after the event has started"). The plan stays editable until
+//    the tournament ends: a drawn stage keeps its format, groups and match
+//    rules (what was played on them) and still changes its name, time, place
+//    and, while it runs, how many go through. Each drawn stage can have its
+//    draw undone or its format changed in one press; a closed one can be
+//    opened again; a bracket drawn as one format becomes stage 1 so stages
+//    can follow it. The server holds every rule (bracket_edit.py).
 
 import { useCallback, useEffect, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
@@ -52,6 +61,15 @@ const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladde
   'page_playoff', 'winner_stays_on']);
 const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
 const BEST_OF = [1, 2, 3, 5, 7];
+// The seeding a redraw can use: the same choices the first draw offers.
+const SEEDING = [
+  ['ranked', 'seed.ranked', 'By results'],
+  ['registration', 'seed.registration', 'Who signed up first'],
+  ['random', 'seed.random', 'Draw at random'],
+];
+
+/** Drawn, or past drawn: what was played on it is fixed. */
+const isDrawn = row => Boolean(row?.drawn_at) || Boolean(row?.status && row.status !== 'pending');
 const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
@@ -98,6 +116,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   // owner ID) on their profile to enter. The requirement already existed
   // (`game_details`); the football preset is where an organiser needs it.
   const [idRequired, setIdRequired] = useState(null);
+  // What the server says about editing after the start: a bracket drawn as
+  // one format (offered as stage 1), whether the tournament is over (nothing
+  // changes then), and how many results each drawn stage holds.
+  const [meta, setMeta] = useState({ oneFormat: false, finished: false, played: {} });
+  // A stage tool in progress: { row, kind: 'undo' | 'format' | 'reopen' },
+  // plus the choices for a format change.
+  const [acting, setActing] = useState(null);
 
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -111,6 +136,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         setRows(body.data.stages || []);
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
+        setMeta({
+          oneFormat: Boolean(body.data.one_format_drawn),
+          finished: Boolean(body.data.finished),
+          played: body.data.played || {},
+        });
       } else {
         if (!quiet) setProblem(apiMessage(tt, body, 'stages.loadFailed',
           'Could not load how this tournament is shaped.'));
@@ -198,24 +228,29 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       return tt('stages.lineLast', '{format}. This decides the tournament.')
         .replace('{format}', name);
     }
+    // One going through is "the winner", never "the top 1" (walk, 16 October
+    // 2026: the French read "Les 1 premiers de chaque poule passent").
     if (row.format === 'battle_royale' && row.settings?.advance_by === 'lobby') {
-      return tt('stages.lineLobbies', '{format}. The top {n} of each lobby go through.')
-        .replace('{format}', name)
-        .replace('{n}', row.advances);
+      return plural(tt, row.advances,
+        'stages.lineLobbiesOne', '{format}. The winner of each lobby goes through.',
+        'stages.lineLobbies', '{format}. The top {n} of each lobby go through.')
+        .replace('{format}', name);
     }
     if (row.format === 'gsl') {
       return tt('stages.lineGsl', '{format}. The top two of each group of four go through.')
         .replace('{format}', name);
     }
     if (row.groups > 1) {
-      return tt('stages.lineGroups', '{format} in {groups} groups. The top {n} of each group go through.')
+      return plural(tt, row.advances,
+        'stages.lineGroupsOne', '{format} in {groups} groups. The winner of each group goes through.',
+        'stages.lineGroups', '{format} in {groups} groups. The top {n} of each group go through.')
         .replace('{format}', name)
-        .replace('{groups}', row.groups)
-        .replace('{n}', row.advances);
+        .replace('{groups}', row.groups);
     }
-    return tt('stages.line', '{format} in one field. The top {n} go through.')
-      .replace('{format}', name)
-      .replace('{n}', row.advances);
+    return plural(tt, row.advances,
+      'stages.lineOne', '{format} in one field. The winner goes through.',
+      'stages.line', '{format} in one field. The top {n} go through.')
+      .replace('{format}', name);
   };
 
   // How a stage's matches are played, in words, for the plan view.
@@ -291,6 +326,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     loadEntrants();
     setDraft(rows.length
       ? rows.map(r => ({
+          // The id is how the server knows a drawn stage is still the same
+          // stage (it keeps what was played on it); a new row has none.
+          id: r.id,
+          drawn: isDrawn(r),
+          closed: r.status === 'complete',
           format: r.format, label: r.label,
           advances: r.advances, groups: r.groups,
           // Read back what was SET on the stage, never what it inherited.
@@ -331,16 +371,18 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       : [...row.direct_entrants, regId] };
   }));
 
+  // A drawn stage stays where it was played: it neither moves nor is passed.
   const move = (index, by) => setDraft(prev => {
     const next = [...prev];
     const to = index + by;
     if (to < 0 || to >= next.length) return prev;
+    if (next[index].drawn || next[to].drawn) return prev;
     [next[index], next[to]] = [next[to], next[index]];
     return next;
   });
 
   const addRow = () => setDraft(prev => [...prev, blank('single_elimination')]);
-  const removeRow = index => setDraft(prev => prev.filter((_, i) => i !== index));
+  const removeRow = index => setDraft(prev => (prev[index]?.drawn ? prev : prev.filter((_, i) => i !== index)));
 
   const networkFail = () => setProblem(tt('api.NETWORK_UNREACHABLE',
     'Could not reach the server. Check the connection and try again.'));
@@ -354,6 +396,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         headers: { 'Content-Type': 'application/json', ...auth },
         body: JSON.stringify({
           stages: draft.map((r, index) => ({
+            ...(r.id ? { id: r.id } : {}),
             format: r.format,
             label: r.label || '',
             // What the screen shows, not what the row last held: the last
@@ -491,6 +534,63 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
     }
   };
 
+  // ---------------------------------------------- editing after the start
+  //
+  // One request per tool, each answered with a code the screen translates.
+  // The refusals worth naming (a later stage already drawn, open disputes,
+  // results in the way) come back from the server rather than being guessed
+  // here, so the rule lives in one place.
+  const stageTool = async (path, payload, done) => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify(payload || {}),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setActing(null);
+        if (showToast) showToast(done(body.data || {}));
+        after();
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'stages.toolFailed', 'That change was not made.'));
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const adoptBracket = () => stageTool('stages/adopt/', {}, () =>
+    tt('stages.adopted', 'The bracket is the first stage now. Add stages after it, or change its format.'));
+
+  const undoDraw = row => stageTool(`stages/${row.id}/undraw/`,
+    { discard_results: Number(meta.played[row.id] || 0) > 0 },
+    () => tt('stages.undrawn', 'The draw for {stage} is undone. Change it and draw it again when you are ready.')
+      .replace('{stage}', row.label));
+
+  const reopenStage = row => stageTool(`stages/${row.id}/reopen/`, {},
+    () => tt('stages.reopened', '{stage} is open again.').replace('{stage}', row.label));
+
+  const reformatStage = (row, index) => {
+    const a = acting || {};
+    const last = index === rows.length - 1;
+    stageTool(`stages/${row.id}/reformat/`, {
+      format: a.format,
+      ...(GROUPABLE.has(a.format) ? { groups: Number(a.groups) || 0 } : { groups: 0 }),
+      ...(last ? {} : { advances: a.format === 'gsl' ? 2 : (Number(a.advances) || 0) }),
+      seed_strategy: a.seeding || 'ranked',
+      discard_results: Number(meta.played[row.id] || 0) > 0,
+      draw: true,
+    }, data => tt('stages.reformatted', '{stage} is now {format}, drawn again: {n} matches.')
+      .replace('{stage}', row.label)
+      .replace('{format}', formatLabel(tt, a.format, ''))
+      .replace('{n}', data?.draw?.matches_created ?? 0));
+  };
+
   if (loading) return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;
 
   const planLocked = rows.some(r => r.drawn_at || r.status !== 'pending');
@@ -506,8 +606,10 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
               'Run it as one format, or link stages: groups into a playoff, Swiss into a double elimination, GSL groups into a knockout. Each stage is drawn from the one before it when you close it.')}
           </p>
         </div>
-        {canManage && !draft && !planLocked && (
-          <button type="button" className={styles.ghost} onClick={startEditing}>
+        {/* Until the tournament ends, not just until the first draw. A bracket
+            drawn as one format is adopted as stage 1 first (below). */}
+        {canManage && !draft && !meta.finished && !(rows.length === 0 && meta.oneFormat) && (
+          <button type="button" className={styles.ghost} disabled={busy} onClick={startEditing}>
             {rows.length
               ? tt('stages.edit', 'Change the plan')
               : tt('stages.compose', 'Run this in stages')}
@@ -542,12 +644,33 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         </p>
       )}
 
+      {/* A bracket already drawn as one format. Making it stage 1 keeps every
+          match and result exactly as played, and is what lets a stage follow
+          it, or its format be changed and drawn again. */}
+      {!draft && rows.length === 0 && meta.oneFormat && canManage && !meta.finished && (
+        <div className={styles.idRow}>
+          <p className={styles.stageLine}>
+            {tt('stages.adoptHint', 'The bracket is drawn. To add stages after it, or to play it as a different format, make it the first stage. Every match and result stays as it is.')}
+          </p>
+          <button type="button" className={styles.ghost} disabled={busy} onClick={adoptBracket}>
+            {tt('stages.adopt', 'Add stages or change the format')}
+          </button>
+        </div>
+      )}
+
       {!draft && rows.length > 0 && (
         <ol className={styles.list}>
           {rows.map((row, index) => {
             const prev = rows[index - 1];
             const drawable = canManage && !row.drawn_at && (index === 0 || prev?.status === 'complete');
             const closable = canManage && row.drawn_at && row.status !== 'complete' && index < rows.length - 1;
+            // The tools for a stage already drawn. Not while a later stage is
+            // drawn on top of it (that one is undone first), and not once the
+            // tournament is over.
+            const nextDrawn = isDrawn(rows[index + 1]);
+            const tools = canManage && !meta.finished && !draft && !closing && isDrawn(row) && !nextDrawn;
+            const running = tools && row.status !== 'complete';
+            const reopenable = tools && row.status === 'complete' && index < rows.length - 1;
             return (
               <li key={row.id} className={styles.stage}>
                 <span className={styles.order}>{index + 1}</span>
@@ -604,6 +727,34 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     {tt('stages.closeStage', 'Close this stage')}
                   </button>
                 )}
+                {(running || reopenable) && (
+                  <span className={styles.stageTools}>
+                    {running && (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              aria-pressed={acting?.row?.id === row.id && acting.kind === 'format'}
+                              onClick={() => setActing({
+                                row, kind: 'format', index, format: row.format,
+                                groups: row.groups || 0, advances: row.advances || 0, seeding: 'ranked',
+                              })}>
+                        {tt('stages.changeFormat', 'Change the format')}
+                      </button>
+                    )}
+                    {running && (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              aria-pressed={acting?.row?.id === row.id && acting.kind === 'undo'}
+                              onClick={() => setActing({ row, kind: 'undo', index })}>
+                        {tt('stages.undoDraw', 'Undo the draw')}
+                      </button>
+                    )}
+                    {reopenable && (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              aria-pressed={acting?.row?.id === row.id && acting.kind === 'reopen'}
+                              onClick={() => setActing({ row, kind: 'reopen', index })}>
+                        {tt('stages.reopen', 'Open it again')}
+                      </button>
+                    )}
+                  </span>
+                )}
               </li>
             );
           })}
@@ -612,9 +763,96 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
 
       {!draft && planLocked && canManage && (
         <p className={styles.hint}>
-          {tt('stages.lockedNote2',
-            'A stage has been drawn, so the plan is fixed now. Changing it would restate what a drawn stage was.')}
+          {meta.finished
+            ? tt('stages.finishedNote', 'This tournament is finished, so its stages stay as they were played.')
+            : tt('stages.afterStartNote', 'Some stages are drawn. The plan still changes: a drawn stage keeps its format, groups and match rules, and the buttons on it undo its draw or change its format. Stages not drawn yet change freely.')}
         </p>
+      )}
+
+      {/* ------------------------------------------- a stage tool, confirmed */}
+      {acting && (
+        <div className={styles.confirm}>
+          <p className={styles.confirmTitle}>
+            {acting.kind === 'format'
+              ? tt('stages.formatTitle', 'Change the format of {stage}').replace('{stage}', acting.row.label)
+              : acting.kind === 'undo'
+                ? tt('stages.undoTitle', 'Undo the draw of {stage}').replace('{stage}', acting.row.label)
+                : tt('stages.reopenTitle', 'Open {stage} again').replace('{stage}', acting.row.label)}
+          </p>
+
+          {acting.kind === 'format' && (
+            <div className={styles.fields}>
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>{tt('stages.format', 'Played as')}</span>
+                <select className={styles.select} value={acting.format} disabled={busy}
+                        onChange={e => setActing(prev => ({ ...prev, format: e.target.value,
+                          groups: GROUPABLE.has(e.target.value) ? prev.groups : 0 }))}>
+                  {catalogue.map(f => (
+                    <option key={f.key} value={f.key}>{formatLabel(tt, f.key, f.label)}</option>
+                  ))}
+                </select>
+              </label>
+              {GROUPABLE.has(acting.format) && (
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.groups', 'Groups')}</span>
+                  <input className={styles.number} type="number" min="0" max="64" value={acting.groups}
+                         disabled={busy} onChange={e => setActing(prev => ({ ...prev, groups: e.target.value }))} />
+                </label>
+              )}
+              {acting.index < rows.length - 1 && (
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>
+                    {acting.format === 'gsl'
+                      ? tt('stages.advancesGsl', 'Through, per group (fixed at two)')
+                      : Number(acting.groups) > 1
+                        ? tt('stages.advancesEach', 'Through, per group')
+                        : tt('stages.advances', 'How many go through')}
+                  </span>
+                  <input className={styles.number} type="number" min="0"
+                         value={acting.format === 'gsl' ? 2 : acting.advances}
+                         disabled={busy || acting.format === 'gsl'}
+                         onChange={e => setActing(prev => ({ ...prev, advances: e.target.value }))} />
+                </label>
+              )}
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>{tt('seed.title', 'How to seed the field')}</span>
+                <Chips value={acting.seeding} disabled={busy} label={tt('seed.title', 'How to seed the field')}
+                       options={SEEDING.map(([v, key, text]) => [v, tt(key, text)])}
+                       onChange={v => setActing(prev => ({ ...prev, seeding: v }))} />
+              </div>
+            </div>
+          )}
+
+          <p className={styles.hint}>
+            {acting.kind === 'reopen'
+              ? tt('stages.reopenHint', 'Its results stay. It goes back to being played, and who went through is decided again when you close it.')
+              : Number(meta.played[acting.row.id] || 0) > 0
+                ? plural(tt, meta.played[acting.row.id],
+                    'stages.discardOne', 'Its matches are removed, and the {n} result already in them is thrown away. That cannot be undone.',
+                    'stages.discardMany', 'Its matches are removed, and the {n} results already in them are thrown away. That cannot be undone.')
+                : tt('stages.noResultsYet', 'Its matches are removed. Nothing has been played in them yet, so no result is lost.')}
+          </p>
+
+          <div className={styles.editorActions}>
+            <button type="button"
+                    className={Number(meta.played[acting.row.id] || 0) > 0 && acting.kind !== 'reopen' ? styles.danger : styles.save}
+                    disabled={busy}
+                    onClick={() => (acting.kind === 'format' ? reformatStage(acting.row, acting.index)
+                      : acting.kind === 'undo' ? undoDraw(acting.row) : reopenStage(acting.row))}>
+              {acting.kind === 'format'
+                ? tt('stages.formatGo', 'Change it and draw again')
+                : acting.kind === 'undo'
+                  ? (Number(meta.played[acting.row.id] || 0) > 0
+                    ? tt('stages.undoGoDiscard', 'Undo the draw and discard the results')
+                    : tt('stages.undoGo', 'Undo the draw'))
+                  : tt('stages.reopenGo', 'Open it again')}
+            </button>
+            <button type="button" className={styles.quiet} disabled={busy}
+                    onClick={() => { setActing(null); setProblem(''); }}>
+              {tt('ui.cancel.0f8e', 'Cancel')}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* -------------------------------------------------- the composer */}
@@ -625,8 +863,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             const table = TABLE.has(row.format);
             const knockout = KNOCKOUT.has(row.format);
             const last = index === draft.length - 1;
+            // Drawn: what was played on it stays (server: bracket_edit.save_plan).
+            const locked = Boolean(row.drawn);
+            // A neighbour that is drawn cannot be passed either way.
+            const by = step => Boolean(draft[index + step]?.drawn);
+            const pinned = locked || by(-1);
             return (
-              <div key={index} className={styles.row}>
+              <div key={row.id || `new-${index}`} className={styles.row}>
                 <div className={styles.rowTop}>
                   <span className={styles.order}>{index + 1}</span>
                   <input className={styles.text} value={row.label} disabled={busy}
@@ -634,17 +877,17 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                          aria-label={tt('stages.labelPlaceholder', 'Name this stage')}
                          onChange={e => setField(index, 'label', e.target.value)} />
                   <span className={styles.rowActions}>
-                    <button type="button" className={styles.iconBtn} disabled={index === 0 || busy}
+                    <button type="button" className={styles.iconBtn} disabled={index === 0 || busy || pinned}
                             aria-label={tt('rules.moveUp', 'Move up')}
                             onClick={() => move(index, -1)}>
                       <LuArrowUp aria-hidden="true" />
                     </button>
-                    <button type="button" className={styles.iconBtn} disabled={busy || last}
+                    <button type="button" className={styles.iconBtn} disabled={busy || last || locked || by(1)}
                             aria-label={tt('rules.moveDown', 'Move down')}
                             onClick={() => move(index, 1)}>
                       <LuArrowDown aria-hidden="true" />
                     </button>
-                    <button type="button" className={styles.iconBtn} disabled={busy || draft.length < 2}
+                    <button type="button" className={styles.iconBtn} disabled={busy || draft.length < 2 || locked}
                             aria-label={tt('stages.removeStage', 'Remove this stage')}
                             onClick={() => removeRow(index)}>
                       <LuX aria-hidden="true" />
@@ -652,10 +895,18 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   </span>
                 </div>
 
+                {locked && (
+                  <p className={styles.note}>
+                    {row.closed
+                      ? tt('stages.drawnClosedNote', 'Drawn and closed: its format, groups, match rules and who went through stay as played. Its name, time and place still change. To change the rest, open it again from the plan.')
+                      : tt('stages.drawnRunningNote', 'Drawn: its format, groups and match rules stay as played. Its name, time, place and how many go through still change. To change the rest, use Change the format or Undo the draw on the plan.')}
+                  </p>
+                )}
+
                 <div className={styles.fields}>
                   <label className={styles.field}>
                     <span className={styles.fieldLabel}>{tt('stages.format', 'Played as')}</span>
-                    <select className={styles.select} value={row.format} disabled={busy}
+                    <select className={styles.select} value={row.format} disabled={busy || locked}
                             onChange={e => setField(index, 'format', e.target.value)}>
                       {catalogue.map(f => (
                         <option key={f.key} value={f.key}>
@@ -669,7 +920,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     <label className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.groups', 'Groups')}</span>
                       <input className={styles.number} type="number" min="0" max="64"
-                             value={row.groups} disabled={busy}
+                             value={row.groups} disabled={busy || locked}
                              onChange={e => setField(index, 'groups', e.target.value)} />
                     </label>
                   )}
@@ -688,11 +939,15 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     </span>
                     <input className={styles.number} type="number" min="0"
                            value={last ? 0 : (row.format === 'gsl' ? 2 : row.advances)}
-                           disabled={busy || last || row.format === 'gsl'}
+                           disabled={busy || last || row.format === 'gsl' || Boolean(row.closed)}
                            onChange={e => setField(index, 'advances', e.target.value)} />
                   </label>
                 </div>
 
+                {/* Everything below up to "when and where" is how the stage is
+                    played, which a drawn stage keeps: one fieldset disables
+                    every control in it rather than forty separate props. */}
+                <fieldset className={styles.lockSet} disabled={locked}>
                 {/* The format's own switches. */}
                 <p className={styles.subhead}>{tt('stages.formatSettings', 'This format')}</p>
                 <div className={styles.fields}>
@@ -885,6 +1140,8 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                         </div>}
                   </div>
                 </>}
+
+                </fieldset>
 
                 {/* When and where. Blank is the tournament's own. */}
                 <p className={styles.subhead}>{tt('stages.whenWhere', 'When and where (blank is the tournament’s own)')}</p>

@@ -71,6 +71,10 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [legs, setLegs] = useState([['', ''], ['', '']]);
   const [disputing, setDisputing] = useState(false);
   const [reason, setReason] = useState('');
+  // Whoever runs the tournament fixing this match after the draw (inbox 452):
+  // the second press before a result comes off, and the rules being edited.
+  const [confirmReopen, setConfirmReopen] = useState(false);
+  const [rules, setRules] = useState(null);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     setProblem('');
@@ -227,6 +231,31 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
       method: 'POST', token, body: { match_id: matchId, ...resultBody() },
     }),
     tt('match.recorded', 'Result recorded.'));
+
+  // Taking a result back off. The winner comes back out of the next match, and
+  // the server refuses when that next match has already been played.
+  const manager = Boolean(match?.can_manage);
+  const reopenResult = async () => {
+    const done = await run(
+      () => call(`/tournament/${tournamentRef}/matches/${matchId}/reopen/`, { method: 'POST', token, body: {} }),
+      tt('match.reopened', 'The result is off. The match can be played and recorded again.'));
+    if (done) setConfirmReopen(false);
+  };
+
+  // How this match is played, after the draw: best of, two legs, whether a
+  // draw stands. For this match or every match in its round.
+  const saveRules = async () => {
+    const done = await run(
+      () => call(`/tournament/${tournamentRef}/matches/${matchId}/rules/`, {
+        method: 'POST', token,
+        body: { best_of: rules.best_of, legs: rules.legs, draw_allowed: rules.draw_allowed,
+                whole_round: rules.whole_round },
+      }),
+      rules.whole_round
+        ? tt('match.rulesRound', 'Every match in this round is played that way now.')
+        : tt('match.rulesOne', 'This match is played that way now.'));
+    if (done) setRules(null);
+  };
 
   const scoreReady = s1 !== '' && s2 !== '' && (!needsPens || (p1 !== '' && p2 !== '' && Number(p1) !== Number(p2)));
 
@@ -578,6 +607,88 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               {tt('match.disputeResult', 'Dispute this result')}
             </button>
           )}
+          {/* ------------------------------------- fixing it (whoever runs it) */}
+          {manager && ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status) && (
+            <section className={styles.block}>
+              <p className={styles.blockTitle}>{tt('match.reopenTitle', 'Take this result off')}</p>
+              <p className={styles.muted}>
+                {tt('match.reopenHelp', 'The score is cleared and the match is open again. The winner comes back out of the next match, as long as that one has not been played.')}
+              </p>
+              {!confirmReopen ? (
+                <button type="button" className={styles.quiet} disabled={busy} onClick={() => setConfirmReopen(true)}>
+                  {tt('match.reopenStart', 'Take the result off')}
+                </button>
+              ) : (
+                <div className={styles.row}>
+                  <button type="button" className={styles.danger} disabled={busy} onClick={reopenResult}>
+                    {tt('match.reopenConfirm', 'Yes, clear this result')}
+                  </button>
+                  <button type="button" className={styles.quiet} disabled={busy} onClick={() => setConfirmReopen(false)}>
+                    {tt('ui.cancel.0f8e', 'Cancel')}
+                  </button>
+                </div>
+              )}
+            </section>
+          )}
+          {manager && match.status === 'scheduled' && (
+            <section className={styles.block}>
+              <p className={styles.blockTitle}>{tt('match.rulesTitle', 'How this match is played')}</p>
+              <p className={styles.muted}>{bestOfText}</p>
+              {!rules ? (
+                <button type="button" className={styles.quiet} disabled={busy}
+                        onClick={() => setRules({
+                          best_of: Number(match.best_of) || 1, legs: Number(match.legs) || 1,
+                          draw_allowed: Boolean(match.draw_allowed), whole_round: false,
+                        })}>
+                  {tt('match.rulesChange', 'Change how it is played')}
+                </button>
+              ) : (
+                <>
+                  <div className={styles.choiceRow} role="group" aria-label={tt('match.rulesLegs', 'A tie is')}>
+                    {[[1, tt('match.rulesOneMatch', 'One match')], [2, tt('match.rulesTwoLegs', 'Two legs, total goals')]].map(([v, text]) => (
+                      <button key={v} type="button" disabled={busy} aria-pressed={rules.legs === v}
+                              className={`${styles.choice} ${rules.legs === v ? styles.choiceOn : ''}`}
+                              onClick={() => setRules(prev => ({ ...prev, legs: v }))}>{text}</button>
+                    ))}
+                  </div>
+                  {rules.legs === 1 && (
+                    <div className={styles.choiceRow} role="group" aria-label={tt('stages.bestOf', 'Best of')}>
+                      {[1, 3, 5, 7].map(n => (
+                        <button key={n} type="button" disabled={busy} aria-pressed={rules.best_of === n}
+                                className={`${styles.choice} ${rules.best_of === n ? styles.choiceOn : ''}`}
+                                onClick={() => setRules(prev => ({ ...prev, best_of: n }))}>
+                          {tt('stages.bestOfN', 'best of {n}').replace('{n}', n)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div className={styles.choiceRow} role="group" aria-label={tt('match.rulesDraw', 'When it ends level')}>
+                    {[[true, tt('match.rulesDrawStands', 'A draw stands')], [false, tt('match.rulesNeedsWinner', 'It needs a winner')]].map(([v, text]) => (
+                      <button key={String(v)} type="button" disabled={busy} aria-pressed={rules.draw_allowed === v}
+                              className={`${styles.choice} ${rules.draw_allowed === v ? styles.choiceOn : ''}`}
+                              onClick={() => setRules(prev => ({ ...prev, draw_allowed: v }))}>{text}</button>
+                    ))}
+                  </div>
+                  <div className={styles.choiceRow} role="group" aria-label={tt('match.rulesScope', 'Change it for')}>
+                    {[[false, tt('match.rulesThis', 'This match')], [true, tt('match.rulesWholeRound', 'Every match in this round')]].map(([v, text]) => (
+                      <button key={String(v)} type="button" disabled={busy} aria-pressed={rules.whole_round === v}
+                              className={`${styles.choice} ${rules.whole_round === v ? styles.choiceOn : ''}`}
+                              onClick={() => setRules(prev => ({ ...prev, whole_round: v }))}>{text}</button>
+                    ))}
+                  </div>
+                  <div className={styles.row}>
+                    <button type="button" className={styles.primary} disabled={busy} onClick={saveRules}>
+                      {tt('match.rulesSave', 'Save how it is played')}
+                    </button>
+                    <button type="button" className={styles.quiet} disabled={busy} onClick={() => setRules(null)}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </section>
+          )}
+
           {disputing && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.disputeTitle', 'What is wrong with it')}</p>

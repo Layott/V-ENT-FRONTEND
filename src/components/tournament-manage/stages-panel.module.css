@@ -364,3 +364,48 @@
   padding: 0.75rem 1rem;
   margin-top: 1rem;
 }
+
+/* Editing a stage after the start (inbox 450, 452). */
+
+/* The tools on a drawn stage: change its format, undo its draw, open it
+   again. A row of filled buttons beside the stage, wrapping under it on a
+   phone. */
+.stageTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* The press that throws results away. Red fill, never a ring. */
+.danger {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+  outline: none;
+}
+.danger:hover { background-color: var(--v-ent-light-red, #ff2a31); }
+.danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.danger:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Groups the settings a drawn stage keeps, so one `disabled` covers them.
+   A fieldset draws a box and a padding by default; neither belongs here. */
+.lockSet {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.lockSet:disabled { opacity: 0.6; }
+
+@media (max-width: 720px) {
+  .stageTools { width: 100%; justify-content: stretch; }
+  .stageTools > button { flex: 1 1 auto; }
+}

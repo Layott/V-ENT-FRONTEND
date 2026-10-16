@@ -26,6 +26,7 @@ import { ManageContent as ActionsPanel } from '../my-tournaments/manage/page';
 import InvitationsPanel from '@/components/tournament-manage/InvitationsPanel';
 import SquadsPanel from '@/components/tournament-manage/SquadsPanel';
 import StagesPanel from '@/components/tournament-manage/StagesPanel';
+import BracketEditTools from '@/components/tournament-manage/BracketEditTools';
 import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/BracketVisualizer';
 import MatchRoom from '@/components/view-tournament/match-room/MatchRoom';
 import { statusWord as matchStatusWord } from '@/components/view-tournament/match-room/matchWords';
@@ -482,6 +483,13 @@ const ManageContent = ({ slug }) => {
               <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
                            token={token} canManage={Boolean(access?.can_manage)}
                            showToast={showToast} onChanged={load} />
+              {/* Who is where inside the drawn bracket: swap, replace, and the
+                  record of every change after the start (inbox 452). Only for
+                  whoever runs it; the doors refuse anybody else too. */}
+              {access?.can_manage && (
+                <BracketEditTools tournamentRef={tournament.slug || tournament.tournament_id}
+                                  token={token} showToast={showToast} />
+              )}
               {/* A result recorded here can finish the tournament; the
                   header has to hear about it (it kept "live" until a reload). */}
               <BracketVisualizer tournamentId={tournament.slug || tournament.tournament_id}
