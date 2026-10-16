@@ -61,6 +61,7 @@ export default function LineupPicker({ tournamentRef, token, showToast,
   const [squadRules, setSquadRules] = useState(null);
   const [violations, setViolations] = useState([]);
   const [spend, setSpend] = useState(0);
+  const [entered, setEntered] = useState(null);
   // Whether what is on screen has been saved. Submitting reads the SAVED
   // squad, so handing in while a change is unsaved would submit the old one.
   const [dirty, setDirty] = useState(false);
@@ -84,6 +85,7 @@ export default function LineupPicker({ tournamentRef, token, showToast,
     if ('squad_rules' in data) setSquadRules(data.squad_rules);
     if ('violations' in data) setViolations(data.violations || []);
     if ('spend' in data) setSpend(data.spend || 0);
+    if ('entered' in data) setEntered(Boolean(data.entered));
     if ('lineup' in data) {
       const found = data.lineup;
       setLineup(found);
@@ -296,6 +298,13 @@ export default function LineupPicker({ tournamentRef, token, showToast,
 
   if (loading) {
     return <p className={styles.muted}>{tt('lineup.loading', 'Loading...')}</p>;
+  }
+
+  // Somebody who does not play here (the organiser, an admin) is told so,
+  // rather than handed a squad builder whose save the server refuses with
+  // NOT_ENTERED. Lineups being off is said by the line below either way.
+  if (entered === false && window_?.state !== 'off') {
+    return <p className={styles.muted}>{tt('lineup.notEntered', 'Only the people playing in this tournament build a lineup. Their squads appear above once they submit them.')}</p>;
   }
 
   return (
