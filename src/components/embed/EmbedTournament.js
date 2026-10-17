@@ -1,36 +1,59 @@
 'use client';
 /**
  * A tournament inside somebody else's website (inbox 360): the game, the
- * format, when, how many places are taken, the entry and the prize. Entering
- * opens on V-ENT in a new tab, where the account and the wallet are.
+ * format, when, how many places are taken, the entry and the prize.
+ *
+ * Registering happens on V-ENT, in a pop-up when the browser allows one and a
+ * new tab when it does not (P8, design 14c: "money is always taken on V-ENT's
+ * own checkout ... signing in uses Sign in with V-ENT in a pop-up, never a
+ * password typed into a third-party frame"). Nothing in this frame asks for a
+ * password, a card or a coin.
+ *
+ * The places stay current by asking the server to draw the card again
+ * (router.refresh), which reads through the page's 30 second cache: a
+ * thousand people watching one card cost the API one read every half minute,
+ * and none of them counts as a visit to the tournament.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { slotsText } from '@/lib/slots';
-import { useReportHeight } from '@/lib/embed';
-import { paintDocument, siteStyle } from '@/lib/siteTheme';
+import { useAutoRefresh } from '@/lib/useLiveData';
+import EmbedFrame from './EmbedFrame';
 import styles from './embed.module.css';
 import { prizeText } from '@/lib/prize';
 
-export default function EmbedTournament({ slug, initial, failed }) {
+/** The registration on V-ENT, in a window of its own. */
+export function openRegistration(event, url) {
+  const popup = window.open(url, 'vent-register', 'popup=yes,width=480,height=760');
+  // Refused (a blocker, a sandboxed frame): the link's own new tab instead.
+  if (popup) {
+    event.preventDefault();
+    popup.focus?.();
+  }
+}
+
+export default function EmbedTournament({ slug, initial, failed, look }) {
   const { t: tt } = useLanguage();
+  const router = useRouter();
   const [origin, setOrigin] = useState('');
   useEffect(() => { setOrigin(window.location.origin); }, []);
-  const root = useRef(null);
-  useReportHeight(root);
-  useEffect(() => paintDocument(null), []);
+  // Nothing comes back to measure, so every round counts as unchanged and
+  // the asking slows from half a minute to two.
+  useAutoRefresh(() => { router.refresh(); return false; }, [slug],
+    { interval: 30000, maxInterval: 120000 });
 
   const t = initial;
   if (failed || !t) {
     return (
-      <main ref={root} className={styles.frame} style={siteStyle(null)}>
+      <EmbedFrame look={look}>
         <p className={styles.note}>
           {failed
             ? tt('embed.unavailable', 'This could not be loaded just now. Try again in a moment.')
             : tt('embed.missingTournament', 'This tournament could not be found. It may have been removed.')}
         </p>
-      </main>
+      </EmbedFrame>
     );
   }
 
@@ -51,9 +74,10 @@ export default function EmbedTournament({ slug, initial, failed }) {
     [tt('embed.entry', 'Entry'), fee > 0 ? coins(fee) : tt('embed.free', 'Free')],
     [tt('embed.prize', 'Prize pool'), prize > 0 ? prizeText(t) : ''],
   ].filter(([, v]) => v);
+  const page = `${origin}/tournaments/${encodeURIComponent(slug)}`;
 
   return (
-    <main ref={root} className={styles.frame} style={siteStyle(null)}>
+    <EmbedFrame look={look}>
       {banner && (
         // eslint-disable-next-line @next/next/no-img-element
         <img className={styles.banner} src={banner}
@@ -69,10 +93,21 @@ export default function EmbedTournament({ slug, initial, failed }) {
           </div>
         ))}
       </dl>
-      <a className={styles.cta} href={`${origin}/tournaments/${encodeURIComponent(slug)}`}
-         target="_blank" rel="noopener">
-        {open ? tt('embed.register', 'Register on V-ENT') : tt('embed.view', 'See it on V-ENT')}
-      </a>
-    </main>
+      {open ? (
+        <>
+          <a className={styles.cta} href={`${page}/register`} target="_blank" rel="noopener"
+             onClick={(event) => openRegistration(event, `${page}/register`)}>
+            {tt('embed.register', 'Register on V-ENT')}
+          </a>
+          <p className={styles.foot}>
+            {tt('embed.registerHow', 'Opens V-ENT in a new window. You sign in and pay there, never on this page.')}
+          </p>
+        </>
+      ) : (
+        <a className={styles.cta} href={page} target="_blank" rel="noopener">
+          {tt('embed.view', 'See it on V-ENT')}
+        </a>
+      )}
+    </EmbedFrame>
   );
 }

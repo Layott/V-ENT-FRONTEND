@@ -266,8 +266,9 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
   );
 };
 
-/** A stage's table, worked out on the server from its own matches. */
-const StandingsTable = ({ rows, format, advancing, tt }) => {
+/** A stage's table, worked out on the server from its own matches. Also drawn
+ *  by the standings widget on an organiser's own website (P8). */
+export const StandingsTable = ({ rows, format, advancing, tt }) => {
   if (!rows?.length) return null;
   const swiss = norm(format) === 'swiss';
   // Formats whose table is final places decided by the matches, not a record

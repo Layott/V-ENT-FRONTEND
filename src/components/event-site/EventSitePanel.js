@@ -33,7 +33,7 @@ const SECTION_LABELS = {
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
-function CopyRow({ label, hint, code }) {
+export function CopyRow({ label, hint, code }) {
   const tt = useT();
   const [copied, setCopied] = useState(false);
   useEffect(() => {
