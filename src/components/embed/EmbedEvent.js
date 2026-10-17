@@ -5,33 +5,28 @@
  * tab. Drawn in the organiser's website colours when they have set them, so
  * the frame matches the site they built on V-ENT as well.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { formatWithZone } from '@/lib/datetime';
-import { useReportHeight } from '@/lib/embed';
-import { paintDocument, siteStyle } from '@/lib/siteTheme';
 import EventTickets from '@/components/event-site/EventTickets';
+import EmbedFrame from './EmbedFrame';
 import styles from './embed.module.css';
 
-export default function EmbedEvent({ slug, initial, failed }) {
+export default function EmbedEvent({ slug, initial, failed, look }) {
   const { t: tt } = useLanguage();
   const [origin, setOrigin] = useState('');
   useEffect(() => { setOrigin(window.location.origin); }, []);
-  const root = useRef(null);
-  useReportHeight(root);
-  const theme = initial?.site?.theme;
-  useEffect(() => paintDocument({ theme }), [theme]);
 
   const e = initial;
   if (failed || !e) {
     return (
-      <main ref={root} className={styles.frame} style={siteStyle(null)}>
+      <EmbedFrame look={look}>
         <p className={styles.note}>
           {failed
             ? tt('embed.unavailable', 'This could not be loaded just now. Try again in a moment.')
             : tt('embed.missingEvent', 'This event could not be found. It may have been removed.')}
         </p>
-      </main>
+      </EmbedFrame>
     );
   }
 
@@ -42,7 +37,7 @@ export default function EmbedEvent({ slug, initial, failed }) {
     : (e.venue_name || e.location || '');
 
   return (
-    <main ref={root} className={styles.frame} style={siteStyle(e.site)}>
+    <EmbedFrame look={look}>
       {e.banner && (
         // The organiser's own picture, from the API. next/image would need
         // every organiser's host listed; the frame is small and loads once.
@@ -67,6 +62,6 @@ export default function EmbedEvent({ slug, initial, failed }) {
           {tt('embed.more', 'Full details on V-ENT')}
         </a>
       </p>
-    </main>
+    </EmbedFrame>
   );
 }

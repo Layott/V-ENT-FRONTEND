@@ -1,13 +1,17 @@
 /*
- * V-ENT on your own website (inbox 360).
+ * V-ENT on your own website (inbox 360, widgets added by P8).
  *
  *   <div data-vent-event="your-event-slug"></div>
  *   <div data-vent-tournament="your-tournament-slug"></div>
+ *   <div data-vent-tournament="your-tournament-slug" data-vent-widget="bracket"></div>
  *   <script src="https://v-ent.co/embed.js" async></script>
  *
- * Each placeholder becomes a frame showing the event's tickets or the
- * tournament's details, sized to its content. Buying and registering open on
- * V-ENT in a new tab, so the payment page is always V-ENT's own.
+ * Each placeholder becomes a frame sized to its content: an event's tickets,
+ * a tournament's card with registration, or one part of a tournament
+ * (data-vent-widget: bracket, standings or schedule). data-vent-theme (dark or
+ * light), data-vent-accent (#rrggbb) and data-vent-font (clash or system)
+ * change the look for that one frame. Buying, registering and signing in open
+ * on V-ENT in a new window, so the payment page is always V-ENT's own.
  */
 (function () {
   var script = document.currentScript;
@@ -15,6 +19,12 @@
     try { return new URL(script && script.src ? script.src : 'https://v-ent.co/embed.js').origin; }
     catch (e) { return 'https://v-ent.co'; }
   })();
+  var WIDGETS = { bracket: 1, standings: 1, schedule: 1 };
+  var CHECKS = {
+    theme: /^(dark|light)$/,
+    accent: /^#[0-9a-fA-F]{6}$/,
+    font: /^(clash|system)$/
+  };
   var frames = {};
   var count = 0;
 
@@ -23,14 +33,24 @@
     node.setAttribute('data-vent-mounted', '1');
     count += 1;
     var id = 'vent-' + count;
+    var widget = kind === 'tournaments' ? node.getAttribute('data-vent-widget') : null;
+    var wide = !!(widget && WIDGETS[widget]);
+    var path = origin + '/embed/' + kind + '/' + encodeURIComponent(slug) + (wide ? '/' + widget : '');
+    // Only values on the list reach the frame's address.
+    var query = [];
+    for (var key in CHECKS) {
+      var value = node.getAttribute('data-vent-' + key);
+      if (value && CHECKS[key].test(value)) query.push(key + '=' + encodeURIComponent(value.toLowerCase()));
+    }
+    query.push('vent_frame=' + id);
     var frame = document.createElement('iframe');
-    frame.src = origin + '/embed/' + kind + '/' + encodeURIComponent(slug) + '?vent_frame=' + id;
+    frame.src = path + '?' + query.join('&');
     frame.title = 'V-ENT';
     frame.loading = 'lazy';
     frame.style.border = '0';
     frame.style.width = '100%';
-    frame.style.maxWidth = '640px';
-    frame.style.height = '560px';
+    frame.style.maxWidth = wide ? '100%' : '640px';
+    frame.style.height = wide ? '720px' : '560px';
     frame.style.display = 'block';
     frames[id] = frame;
     node.appendChild(frame);
