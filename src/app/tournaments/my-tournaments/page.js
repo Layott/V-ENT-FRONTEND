@@ -251,7 +251,10 @@ const MyTournaments = () => {
           </div>
 
           {/* Loading */}
-          {tab === 'blueprints' ? <BlueprintsPanel token={token}
+          {/* A blueprint that makes an edition adds a draft (or a published
+              tournament): the other tabs read again so it is there without a
+              reload (walk, 17 October 2026). */}
+          {tab === 'blueprints' ? <BlueprintsPanel token={token} onEditionMade={handleRetry}
               sources={[...tournaments, ...drafts]
                 .filter(t => t && t.slug)
                 .map(t => ({ slug: t.slug, title: t.name || t.tournament_title || t.title || t.slug }))} />
