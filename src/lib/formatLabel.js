@@ -17,6 +17,8 @@ export const FORMAT_KEYS = [
   // P3 W1: several small knockouts; GSL is its preset. A stage only format:
   // the stage planner offers it, the one-format wizard does not.
   'bracket_groups',
+  // P3 W2: a bracket written match by match, or a ready-made one. Stage only.
+  'custom_bracket',
   'battle_royale',
   'aggregate_2v2',
   'ladder',
@@ -33,6 +35,7 @@ const FALLBACK = {
   swiss: 'Swiss',
   gsl: 'GSL groups',
   bracket_groups: 'Bracket groups',
+  custom_bracket: 'Custom bracket',
   battle_royale: 'Battle royale',
   aggregate_2v2: 'Aggregate tie',
   ladder: 'Ladder',
@@ -60,6 +63,7 @@ const ALIASES = {
   gsl_groups: 'gsl',
   bracket_group: 'bracket_groups',
   knockout_groups: 'bracket_groups',
+  custom: 'custom_bracket',
   aggregate: 'aggregate_2v2',
   aggregate_2_v_2: 'aggregate_2v2',
   aggregate_league: 'aggregate_2v2',

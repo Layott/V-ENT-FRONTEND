@@ -91,7 +91,8 @@ const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TA
       ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
       ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}),
       ...(format === 'bracket_groups'
-        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}) });
+        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}),
+      ...(format === 'custom_bracket' ? { preset: '', schema_text: '' } : {}) });
 
 // How a Swiss pairs the rounds after the first (P3 W1), and its word.
 const SWISS_PAIRINGS = [
@@ -152,6 +153,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [preset, setPreset] = useState(null);
   // Whole setups a stage can start from (P3 W1): the Counter-Strike Major Swiss.
   const [formatPresets, setFormatPresets] = useState({});
+  // The ready-made custom brackets and the fields each is proven on (P3 W2).
+  const [customPresets, setCustomPresets] = useState([]);
   const [entrants, setEntrants] = useState([]);
   // The free for all bracket builder (P3 W1): its numbers while open, and
   // the rounds of the plan it last wrote.
@@ -201,6 +204,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
         setFormatPresets(body.data.format_presets || {});
+        setCustomPresets(body.data.custom_presets || []);
         setMeta({
           oneFormat: Boolean(body.data.one_format_drawn),
           finished: Boolean(body.data.finished),
@@ -1492,6 +1496,34 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                       </div>
                     )}
                     <p className={styles.note}>{tt('stages.bracketGroupsNote', 'Each group is a knockout of its own and everybody stays in their group. The matches between the ones who go through are not played.')}</p>
+                  </>}
+                  {row.format === 'custom_bracket' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.customFrom', 'Start from')}</span>
+                      <Chips value={s.preset || ''} disabled={busy} label={tt('stages.customFrom', 'Start from')}
+                             options={[['', tt('stages.customOwn', 'A bracket I write')],
+                                       ...customPresets.map(p => [p.key, tt(`stages.customPreset.${p.key}`, p.key)])]}
+                             onChange={v => setSetting(index, 'preset', v)} />
+                      {s.preset ? (
+                        <span className={styles.note}>
+                          {tt(`stages.customPresetNote.${s.preset}`, '')}
+                          {' '}
+                          {tt('stages.customSizes', 'Ready for {sizes} entrants.')
+                            .replace('{sizes}', ((customPresets.find(p => p.key === s.preset) || {}).sizes || []).join(', '))}
+                        </span>
+                      ) : null}
+                    </div>
+                    {!s.preset && (
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.customSchema', 'The bracket, one match a line')}</span>
+                        <textarea className={styles.schemaBox} rows={8} spellCheck={false} disabled={busy}
+                                  value={s.schema_text || ''} placeholder={'A=[1,4]\nB=[2,3]\nC=[W:A,W:B]! >1,2'}
+                                  onChange={e => setSetting(index, 'schema_text', e.target.value)} />
+                        <span className={styles.note}>
+                          {tt('stages.customHelp', 'A=[1,4] is seed 1 against seed 4. C=[W:A,W:B] puts the winners of A and B together, L: takes a loser instead, and - is a bye. #round 2 starts a round, [PL] puts the matches below it on the placement side, @east names a part of the bracket. ! marks the final, and >3,4 gives the places a match decides.')}
+                        </span>
+                      </label>
+                    )}
                   </>}
                   {BERGER.has(row.format) && (
                     <div className={styles.field}>
