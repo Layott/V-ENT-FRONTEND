@@ -440,6 +440,12 @@ body {
   body {
     padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   }
+  /* An embed (a frame on somebody else's site) has no bottom menu. With the room kept anyway,
+     the card, 640px wide, scrolled inside its own frame by 70px, and so did every widget on a
+     phone (walk, 17 October 2026). */
+  body:has([data-vent-embed]) {
+    padding-bottom: 0;
+  }
 }
 
 /* The first row of a form field: its label text, any "(optional)" marker, and

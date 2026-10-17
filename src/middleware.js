@@ -6,6 +6,30 @@ import {
   localeForCountry, localePath, preferredLocale, splitLocale,
 } from "@/lib/locale";
 import { PROTECTED_PATTERNS, PROTECTED_ROUTES } from "@/lib/gatedRoutes";
+import { apiOriginOf, contentSecurityPolicy, frameAncestorsValue } from "@/lib/securityHeaders.mjs";
+import { createFramePolicy, embedTarget } from "@/lib/framePolicy";
+
+// Who may frame an embed (P8, approved sites): asked of the API, kept for a
+// minute per record. One per server process, so the memory is shared by every
+// request it serves.
+const framePolicy = createFramePolicy({ api: process.env.NEXT_PUBLIC_API_URL });
+const API_ORIGIN = apiOriginOf(process.env.NEXT_PUBLIC_API_URL);
+
+/**
+ * The Content-Security-Policy of an embed: the policy every page carries, with
+ * frame-ancestors set to the sites its tournament or event is locked to, or
+ * anywhere when it is locked to none. Written here, and only here, for every
+ * address under /embed/ with or without /fr or /pt (next.config.mjs leaves it
+ * out for exactly those addresses).
+ */
+async function embedPolicy(pathname) {
+  const sources = await framePolicy(embedTarget(pathname));
+  return contentSecurityPolicy({
+    isDev: process.env.NODE_ENV === 'development',
+    apiOrigin: API_ORIGIN,
+    frameAncestors: frameAncestorsValue(sources),
+  });
+}
 
 // The gated lists live in src/lib/gatedRoutes.js, shared with the
 // session-expiry guard so both answer "does this page need an account"
@@ -66,7 +90,10 @@ export default async function middleware(req) {
     const wanted = hasPrefix ? locale : (LOCALE_CODES.includes(cookieLocale)
       ? cookieLocale
       : (preferredLocale(req.headers.get('accept-language')) || DEFAULT_LOCALE));
-    return withLocale(req, wanted, false);
+    const res = withLocale(req, wanted, false);
+    // Only the sites the organiser proved may hold this frame (P8).
+    res.headers.set('Content-Security-Policy', await embedPolicy(req.nextUrl.pathname));
+    return res;
   }
 
   if (!hasPrefix && req.method === 'GET' && !path.startsWith('/api')) {

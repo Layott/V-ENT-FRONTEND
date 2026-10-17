@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 import { fileURLToPath } from 'node:url';
+import { apiOriginOf, contentSecurityPolicy as buildPolicy } from './src/lib/securityHeaders.mjs';
 
 // Production media host, e.g. "api.v-ent.co". Set NEXT_PUBLIC_MEDIA_HOST at
 // build time; without it only the local dev hosts below are allowed.
@@ -12,13 +13,8 @@ const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 // rather than in nginx so a local build and the box send the same thing, and
 // so the list of what a page may load lives next to the code that loads it.
 //
-// The CSP names what the site actually uses, found by reading it:
-//   connect  the API (NEXT_PUBLIC_API_URL) and this origin
-//   frames   YouTube and Twitch stream embeds, Google Maps on an event, and
-//            the API's own overlays in the studio preview
-//   images   anywhere over https (avatars, maps tiles, link previews) and data
-//   scripts  this origin; 'unsafe-inline' because Next writes its bootstrap
-//            inline, 'unsafe-eval' only in development for fast refresh
+// The policy itself is src/lib/securityHeaders.mjs, which says what it allows
+// and why; the middleware reads the same module for embeds (P8).
 const isDev = process.env.NODE_ENV === 'development';
 
 // The dev server's port: PORT when set, otherwise `-p` / `--port` from the
@@ -32,36 +28,16 @@ function devPort() {
   const joined = argv.find((a) => a.startsWith('--port='));
   return joined ? joined.slice('--port='.length) : '';
 }
-const apiOrigin = (() => {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_API_URL || '').origin;
-  } catch {
-    return '';
-  }
-})();
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
-  "style-src 'self' 'unsafe-inline'",
-  // The API origin by name as well as https:, so a build pointed at a plain
-  // http API (a local production build) still shows its pictures.
-  `img-src 'self' data: blob: https: ${apiOrigin}${isDev ? ' http://localhost:* http://127.0.0.1:*' : ''}`.trim(),
-  `media-src 'self' blob: https: ${apiOrigin}`.trim(),
-  "font-src 'self' data:",
-  `connect-src 'self' ${apiOrigin}${isDev ? ' ws://localhost:* http://localhost:* http://127.0.0.1:*' : ''}`.trim(),
-  `frame-src 'self' ${apiOrigin} https://www.youtube.com https://player.twitch.tv https://www.google.com`.trim(),
-  "worker-src 'self' blob:",
-  "manifest-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "frame-ancestors 'self'",
-].join('; ');
+const apiOrigin = apiOriginOf(process.env.NEXT_PUBLIC_API_URL);
+const contentSecurityPolicy = buildPolicy({ isDev, apiOrigin });
 
 // Embeds (inbox 360) are pages other websites hold in a frame, so they carry
-// the same policy with one change: any site may frame them, and there is no
-// X-Frame-Options to contradict that. Everything else still refuses framing.
+// no X-Frame-Options to contradict their policy. Their Content-Security-Policy
+// is written by the middleware, the one writer for embeds (P8): the same
+// policy as every page, with frame-ancestors set to the sites the tournament
+// or event is locked to, or anywhere when it is locked to none. Everything
+// else still refuses framing.
 const embedHeaders = [
-  { key: 'Content-Security-Policy', value: contentSecurityPolicy.replace("frame-ancestors 'self'", 'frame-ancestors *') },
   ...(isDev ? [] : [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]),
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

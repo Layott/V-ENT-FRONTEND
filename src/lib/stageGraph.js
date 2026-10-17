@@ -48,6 +48,39 @@ export function layout(stages, lines) {
 }
 
 /**
+ * The Path view across tournaments (P2): a feed's other end is a box of its
+ * own ("Lagos Qualifier: League"), before the stages a feed fills and after
+ * the stages a feed empties, joined by the feed's line, which names who went
+ * through it. `plan` is the public stages answer, `feeds` the public feeds
+ * answer ({incoming, outgoing}); either may be missing. One function for the
+ * tournament page and the Path widget (P8): the widget once read "one stage,
+ * no path" beside a page drawing two (walk, 17 October 2026).
+ */
+export function pathWithFeeds(plan, feeds) {
+  const own = plan?.stages || [];
+  const external = [];
+  const lines = [];
+  const seen = new Set();
+  const outside = (side, end) => {
+    const id = `x-${end}-${side.stage_id}`;
+    if (!seen.has(id)) {
+      seen.add(id);
+      external.push({ id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
+                      groups: side.groups, slug: side.tournament.slug });
+    }
+    return id;
+  };
+  const through = f => (f.qualifiers || []).filter(q => q.status === 'confirmed').map(q => ({ name: q.name }));
+  (feeds?.incoming || []).forEach(f => lines.push({ ...f, sent: through(f), source: outside(f.source, 'in'), target: f.target.stage_id }));
+  (feeds?.outgoing || []).forEach(f => lines.push({ ...f, sent: through(f), source: f.source.stage_id, target: outside(f.target, 'out') }));
+  return {
+    stages: [...external.filter(x => x.id.startsWith('x-in')), ...own, ...external.filter(x => x.id.startsWith('x-out'))],
+    lines: [...(plan?.progressions || []), ...lines],
+    external,
+  };
+}
+
+/**
  * Where a stage is up to, in words. A stage drawn early (P1d) is drawn and
  * not yet played: its seats are waiting for the places that feed them, and
  * calling it "being played" sent people looking for matches that cannot
