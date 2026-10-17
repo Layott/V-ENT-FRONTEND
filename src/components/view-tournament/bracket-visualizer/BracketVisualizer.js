@@ -281,8 +281,8 @@ const StandingsTable = ({ rows, format, advancing, tt }) => {
   // Formats whose table is final places decided by the matches, not a record
   // of wins and goals: a stepladder's table read P0 W0 D0 L0 on every row
   // (walk, 28 September 2026).
-  const placed = ['single_elimination', 'double_elimination', 'gsl', 'stepladder', 'page_playoff']
-    .includes(norm(format));
+  const placed = ['single_elimination', 'double_elimination', 'gsl', 'bracket_groups', 'stepladder',
+    'page_playoff'].includes(norm(format));
   const goingThrough = new Set(advancing || []);
   // A football Swiss can end level, and a row that reads P3 W1 L1 hides the
   // draw it counted (second bracket walk, 28 September 2026). The column shows
@@ -555,6 +555,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   // Sections: one per group, or per side of a knockout, in playing order.
   const groups = [...new Set(rounds.map(r => r.group_number).filter(Boolean))];
+  // Groups that are knockouts, GSL and bracket groups (P3 W1), not tables.
+  const knockoutGroups = ['gsl', 'bracket_groups'].includes(norm(format));
   const bySide = side => rounds.filter(r => (r.bracket_side || 'winners') === side);
   const hasLosers = bySide('losers').length > 0;
   const standings = data.standings || [];
@@ -729,9 +731,19 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             <p className={styles.sectionTitle}>{tt('bracket.groupN', 'Group {g}').replace('{g}', groupLetter(g))}</p>
             <StandingsTable rows={standings.filter(r => r.group === g)} format={format}
                             advancing={data.advancing} tt={tt} />
-            {norm(format) === 'gsl'
+            {knockoutGroups && rounds.some(r => r.group_number === g && r.bracket_side === 'losers') ? <>
+              {/* A bracket group drawn as a double elimination (P3 W1, and
+                  GSL since): its winners bracket, then its losers bracket. */}
+              <p className={styles.sectionTitle}>{tt('bracket.winnersBracket', 'Winners bracket')}</p>
+              <MapKnockout rounds={rounds.filter(r => r.group_number === g && r.bracket_side === 'winners')}
+                           tt={tt} onOpen={openMatch} isMine={isMine} side="winners" format={format} />
+              <p className={styles.sectionTitle}>{tt('bracket.losersBracket', 'Losers bracket')}</p>
+              <MapKnockout rounds={rounds.filter(r => r.group_number === g && r.bracket_side === 'losers')}
+                           tt={tt} onOpen={openMatch} isMine={isMine} side="losers" format={format} />
+            </> : knockoutGroups
               ? <MapKnockout rounds={rounds.filter(r => r.group_number === g)} tt={tt}
-                             onOpen={openMatch} isMine={isMine} side="gsl" />
+                             onOpen={openMatch} isMine={isMine}
+                             side={norm(format) === 'gsl' ? 'gsl' : 'winners'} format={format} />
               : <MapFlat rounds={rounds.filter(r => r.group_number === g)} tt={tt}
                          onOpen={openMatch} isMine={isMine} />}
           </section>

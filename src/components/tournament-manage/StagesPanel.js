@@ -61,8 +61,13 @@ const TABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'swis
 // A knockout for the purpose of how a match is played: a final, two legs,
 // a winner when it ends level. The placing formats are knockouts too.
 const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladder',
-  'page_playoff', 'winner_stays_on']);
-const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
+  'page_playoff', 'winner_stays_on', 'bracket_groups']);
+// The table formats whose fixtures can follow FIDE's Berger tables (P3 W1).
+const BERGER = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
+const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'bracket_groups']);
+// How many go through each bracket group: 1 is the group's winner (the
+// bracket played to one winner), more is the group's threshold (P3 W1).
+const GROUP_THROUGH = [1, 2, 4, 8];
 const BEST_OF = [1, 2, 3, 5, 7];
 // The seeding a redraw can use: the same choices the first draw offers.
 const SEEDING = [
@@ -78,13 +83,15 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
       ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 }
-        : { legs: format === 'league' ? 2 : 1 }) }
+        : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
       ...(format === 'single_elimination'
         ? { third_place: false, every_place: false, threshold: 0, reseed: false } : {}),
       ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
-      ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}) });
+      ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}),
+      ...(format === 'bracket_groups'
+        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}) });
 
 // Stop when this many are left (P3 W1). 0 plays to one winner; in a double
 // elimination 2 is the same as no grand final.
@@ -279,6 +286,14 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       return tt('stages.lineGsl', '{format}. The top two of each group of four go through.')
         .replace('{format}', name);
     }
+    if (row.format === 'bracket_groups' && !(row.groups > 1)) {
+      // No group count of its own: the groups come from the group size (P3 W1).
+      return plural(tt, row.advances,
+        'stages.lineGroupSizeOne', '{format} in groups of {size}. The winner of each group goes through.',
+        'stages.lineGroupSize', '{format} in groups of {size}. The top {n} of each group go through.')
+        .replace('{format}', name)
+        .replace('{size}', row.settings?.group_size || 4);
+    }
     if (row.groups > 1) {
       return plural(tt, row.advances,
         'stages.lineGroupsOne', '{format} in {groups} groups. The winner of each group goes through.',
@@ -314,12 +329,19 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       return bits.join(', ');
     }
     if (s.every_place) bits.push(tt('stages.everyPlaceOn', 'a match for every place'));
-    if (Number(s.threshold) > 1) {
+    if (row.format === 'bracket_groups') {
+      bits.push(tt('stages.perGroupOn', '{n} through from each group')
+        .replace('{n}', Number(s.threshold) > 1 ? s.threshold : 1));
+    } else if (Number(s.threshold) > 1) {
       bits.push(tt('stages.thresholdOn', 'stops when {n} are left').replace('{n}', s.threshold));
     } else if (s.grand_final === 'none') {
       bits.push(tt('stages.noGrandFinal', 'no grand final'));
     }
     if (s.reseed) bits.push(tt('stages.reseedOn', 'paired again by seed each round'));
+    if (row.format === 'bracket_groups') {
+      bits.push(formatLabel(tt, s.bracket === 'single' ? 'single_elimination' : 'double_elimination', ''));
+    }
+    if (s.pairing === 'berger') bits.push(tt('stages.bergerOn', 'in Berger order'));
     if (row.format === 'winner_stays_on') {
       bits.push(s.streak_target
         ? tt('stages.streakOn', 'until {n} wins in a row').replace('{n}', s.streak_target)
@@ -1320,6 +1342,53 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   </>}
                   {row.format === 'gsl' && (
                     <p className={styles.note}>{tt('stages.gslNote', 'Groups of four, drawn automatically. Two openers, a winners match, a losers match and a decider.')}</p>
+                  )}
+                  {row.format === 'bracket_groups' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.bracket', 'Each group plays')}</span>
+                      <Chips value={s.bracket || 'double'} disabled={busy} label={tt('stages.bracket', 'Each group plays')}
+                             options={[['single', formatLabel(tt, 'single_elimination', '')],
+                                       ['double', formatLabel(tt, 'double_elimination', '')]]}
+                             onChange={v => setSetting(index, 'bracket', v)} />
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.groupThrough', 'Go through from each group')}</span>
+                      <Chips value={Number(s.threshold) > 1 ? Number(s.threshold) : 1} disabled={busy}
+                             label={tt('stages.groupThrough', 'Go through from each group')}
+                             options={GROUP_THROUGH.map(n => [n, String(n)])}
+                             onChange={v => setSetting(index, 'threshold', v > 1 ? v : 0)} />
+                    </div>
+                    {!(Number(row.groups) > 1) && (
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.groupSize', 'Group size, when no number of groups is set')}</span>
+                        <input className={styles.number} type="number" min="2" max="64" disabled={busy}
+                               value={s.group_size ?? 4}
+                               onChange={e => setSetting(index, 'group_size', Number(e.target.value) || 4)} />
+                      </label>
+                    )}
+                    {s.bracket !== 'single' && !(Number(s.threshold) > 1) && (
+                      <div className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.grandFinal', 'Grand final')}</span>
+                        <Chips value={s.grand_final && s.grand_final !== 'none' ? s.grand_final : 'single'} disabled={busy}
+                               label={tt('stages.grandFinal', 'Grand final')}
+                               options={[['reset', tt('stages.gfReset', 'With a reset')],
+                                         ['single', tt('stages.gfSingle', 'One match')]]}
+                               onChange={v => setSetting(index, 'grand_final', v)} />
+                      </div>
+                    )}
+                    <p className={styles.note}>{tt('stages.bracketGroupsNote', 'Each group is a knockout of its own and everybody stays in their group. The matches between the ones who go through are not played.')}</p>
+                  </>}
+                  {BERGER.has(row.format) && (
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.pairing', 'Fixture order')}</span>
+                      <Chips value={s.pairing || 'circle'} disabled={busy} label={tt('stages.pairing', 'Fixture order')}
+                             options={[['circle', tt('stages.pairingCircle', 'Rotation')],
+                                       ['berger', tt('stages.pairingBerger', 'FIDE Berger tables')]]}
+                             onChange={v => setSetting(index, 'pairing', v)} />
+                      {s.pairing === 'berger' && (
+                        <span className={styles.note}>{tt('stages.bergerNote', 'The order chess federations publish. Home and away alternate, and in a home and away league nobody has the same side three rounds running.')}</span>
+                      )}
+                    </div>
                   )}
                 </div>
                 {row.format === 'battle_royale' && (
