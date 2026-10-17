@@ -278,10 +278,12 @@ const NamePicker = ({
                       <Avatar src={mediaUrl(row.avatar)} name={row.username || row.full_name} size={36} />
                     </span>
                     <span className={styles.who}>
+                      {/* The chip's second line is the real name, as on every
+                          chip (CEO, 30 August 2026), never the handle again: it
+                          read "demo_chidi @demo_chidi" (walk, 17 October 2026). */}
                       <span className={styles.name}>
-                        <UserChip user={row} size={0} link={false} />
+                        <UserChip user={row} size={0} link={false} secondary handleClassName={styles.handle} />
                       </span>
-                      <span className={styles.handle}>@{row.username}</span>
                     </span>
                     {off && (
                       <span className={styles.closed}>
