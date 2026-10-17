@@ -108,6 +108,14 @@ export function ExplainerSheet({ keys, onClose, allFormatsLink = false }) {
 export default function WatchFormat({ formats, className, label, allFormatsLink = false }) {
   const tt = useT();
   const [open, setOpen] = useState(false);
+  // Closing hands the keyboard back to the button that opened the sheet;
+  // otherwise focus fell to the page and a keyboard user lost their place
+  // (walk, 17 October 2026).
+  const trigger = useRef(null);
+  const close = useCallback(() => {
+    setOpen(false);
+    requestAnimationFrame(() => trigger.current?.focus());
+  }, []);
   const keys = [...new Set((Array.isArray(formats) ? formats : [formats])
     .map((f) => explainerKey(f))
     .filter((k) => k && sceneFor(k)))];
@@ -115,6 +123,7 @@ export default function WatchFormat({ formats, className, label, allFormatsLink 
   return (
     <>
       <button
+        ref={trigger}
         type="button"
         className={`${styles.watch} ${className || ''}`}
         onClick={(e) => {
@@ -127,7 +136,7 @@ export default function WatchFormat({ formats, className, label, allFormatsLink 
         <span className={styles.playMark} aria-hidden="true" />
         {label || tt('explainer.watch', 'Watch how it works')}
       </button>
-      {open && <ExplainerSheet keys={keys} allFormatsLink={allFormatsLink} onClose={() => setOpen(false)} />}
+      {open && <ExplainerSheet keys={keys} allFormatsLink={allFormatsLink} onClose={close} />}
     </>
   );
 }
