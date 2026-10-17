@@ -6,7 +6,7 @@
  * or put tournament registrations and brackets system under their own website
  * from v-ent."
  *
- * Pick a widget (registration, bracket, standings, schedule), pick its look,
+ * Pick a widget (registration, bracket, standings, schedule, path), pick its look,
  * copy one of three snippets, and see it as visitors will. The look starts
  * from the event's website colours when the tournament runs inside an event;
  * only what the organiser changes here is written into the snippet.
@@ -31,6 +31,7 @@ const WIDGET_LABELS = {
   bracket: ['embedBuilder.bracket', 'Bracket'],
   standings: ['embedBuilder.standings', 'Standings'],
   schedule: ['embedBuilder.schedule', 'Schedule'],
+  path: ['embedBuilder.path', 'Path'],
 };
 
 const WIDGET_HINTS = {
@@ -38,6 +39,7 @@ const WIDGET_HINTS = {
   bracket: ['embedBuilder.bracketHint', 'Every stage, drawn as on the tournament page, updating as results come in.'],
   standings: ['embedBuilder.standingsHint', 'The tables, ranked by the same rules as the tournament page.'],
   schedule: ['embedBuilder.scheduleHint', 'Your running order, day by day, in each visitor\'s own time zone.'],
+  path: ['embedBuilder.pathHint', 'The stages as boxes joined by their lines, and who went through each. For a tournament in two stages or more.'],
 };
 
 export default function TournamentEmbedPanel({ tournament, token, showToast, canManage = false }) {

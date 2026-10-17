@@ -8,7 +8,7 @@
  *
  * Each placeholder becomes a frame sized to its content: an event's tickets,
  * a tournament's card with registration, or one part of a tournament
- * (data-vent-widget: bracket, standings or schedule). data-vent-theme (dark or
+ * (data-vent-widget: bracket, standings, schedule or path). data-vent-theme (dark or
  * light), data-vent-accent (#rrggbb) and data-vent-font (clash or system)
  * change the look for that one frame. Buying, registering and signing in open
  * on V-ENT in a new window, so the payment page is always V-ENT's own.
@@ -19,7 +19,7 @@
     try { return new URL(script && script.src ? script.src : 'https://v-ent.co/embed.js').origin; }
     catch (e) { return 'https://v-ent.co'; }
   })();
-  var WIDGETS = { bracket: 1, standings: 1, schedule: 1 };
+  var WIDGETS = { bracket: 1, standings: 1, schedule: 1, path: 1 };
   var CHECKS = {
     theme: /^(dark|light)$/,
     accent: /^#[0-9a-fA-F]{6}$/,

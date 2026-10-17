@@ -75,11 +75,13 @@ test('a moved frame keeps its look and its name, and nothing else', () => {
 console.log('widgets and snippets');
 
 test('every widget has an address, the card the one inbox 360 shipped', () => {
-  assert.deepEqual(WIDGETS, ['card', 'bracket', 'standings', 'schedule']);
+  assert.deepEqual(WIDGETS, ['card', 'bracket', 'standings', 'schedule', 'path']);
   assert.deepEqual(THEMED_WIDGETS, ['card', 'schedule']);
   assert.equal(widgetPath('naija-cup', 'card'), '/embed/tournaments/naija-cup');
   assert.equal(widgetPath('naija-cup', 'bracket'), '/embed/tournaments/naija-cup/bracket');
   assert.equal(widgetPath('naija-cup', 'schedule'), '/embed/tournaments/naija-cup/schedule');
+  // The Path view (P1f's StageGraph): the stages and the lines between them.
+  assert.equal(widgetPath('naija-cup', 'path'), '/embed/tournaments/naija-cup/path');
   // Not a widget: the card, never an address that 404s on somebody's page.
   assert.equal(widgetPath('naija-cup', '../admin'), '/embed/tournaments/naija-cup');
 });
@@ -167,6 +169,12 @@ test('a widget and its look reach the frame, checked; the card keeps its 640px',
   const look = lookQuery({ theme: 'light', accent: '#ff0000', font: 'system' }, {});
   assert.equal(schedule.src, `https://v-ent.co/embed/tournaments/naija-cup/schedule?${look}&vent_frame=vent-3`);
   assert.equal(bad.src, 'https://v-ent.co/embed/tournaments/naija-cup?vent_frame=vent-4');
+});
+
+test('the Path view mounts like any other widget', () => {
+  const [path] = runEmbedScript([{ 'data-vent-tournament': 'naija-cup', 'data-vent-widget': 'path' }]);
+  assert.equal(path.src, 'https://v-ent.co/embed/tournaments/naija-cup/path?vent_frame=vent-1');
+  assert.equal(path.style.maxWidth, '100%');
 });
 
 test('an event never takes a widget', () => {

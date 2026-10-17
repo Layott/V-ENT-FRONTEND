@@ -1,12 +1,14 @@
 'use client';
 /**
  * One part of a tournament inside somebody else's website (P8): the bracket,
- * the standings or the schedule, under the tournament's name and a link back.
+ * the standings, the schedule or the path, under the tournament's name and a
+ * link back.
  *
  * Each is drawn by what the tournament page itself draws, so a widget can
  * never disagree with the page: the bracket is BracketVisualizer, the
  * standings are the league tables or the stage's table from the bracket, the
- * schedule is the organiser's running order. All public, all read without an
+ * schedule is the organiser's running order, the path is StageGraph from the
+ * public plan. All public, all read without an
  * account (token null), and each keeps itself current with backoff.
  *
  * The bracket and the standings are drawn light on dark, as on V-ENT, in the
@@ -19,6 +21,7 @@ import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/B
 import EmbedFrame from './EmbedFrame';
 import EmbedStandings from './EmbedStandings';
 import EmbedSchedule from './EmbedSchedule';
+import EmbedPath from './EmbedPath';
 import styles from './embed.module.css';
 
 export default function EmbedTournamentWidget({ widget, slug, initial, failed, look }) {
@@ -56,6 +59,7 @@ export default function EmbedTournamentWidget({ widget, slug, initial, failed, l
       {widget === 'bracket' && <BracketVisualizer tournamentId={id} tournamentRef={slug} token={null} />}
       {widget === 'standings' && <EmbedStandings tournament={t} slug={slug} />}
       {widget === 'schedule' && <EmbedSchedule slug={slug} format={t.bracket_type} />}
+      {widget === 'path' && <EmbedPath slug={slug} />}
     </EmbedFrame>
   );
 }
