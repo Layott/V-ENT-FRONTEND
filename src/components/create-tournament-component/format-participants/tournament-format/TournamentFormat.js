@@ -29,6 +29,7 @@ import styles from './tournament-format.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { formatKey } from '@/lib/formatLabel';
 import { useFormatShape, structureLines } from '@/lib/formatCatalogue';
+import WatchFormat from '@/components/format-explainer/WatchFormat';
 
 // One English string per format, which is both the dictionary fallback and
 // what the screen shows if the catalogue cannot be reached. The keys are the
@@ -200,6 +201,11 @@ const TournamentFormat = ({ formData = {}, updateFormData }) => {
                 <div className={createTournamentStyles.boxTextContainer}>
                   <h4>{w ? tt(w.nameKey, row.label || w.name) : row.label}</h4>
                   <p>{w ? tt(w.blurbKey, row.summary || w.blurb) : row.summary}</p>
+                  {/* The format played out in a short moving bracket (inbox
+                      476). Watching is not choosing: the button stops its
+                      press reaching the card. A format with no explainer
+                      draws nothing here. */}
+                  <WatchFormat formats={row.key} className={styles.watch} />
                 </div>
               </div>;
           })}
