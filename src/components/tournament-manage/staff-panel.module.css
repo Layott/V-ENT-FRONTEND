@@ -1,0 +1,131 @@
+/* Who helps run a tournament, and with what (P7). Surfaces and space, no
+   strokes, nothing moves: a panel, rows one step up, filled chips with
+   aria-pressed. Radius 14 on the panel, 12 on a row, 10 on a control, 8 on a
+   chip. */
+
+.panel {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1.2rem;
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.sub {
+  margin: 0 0 1rem;
+  max-width: 64ch;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.4rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.8rem 0.9rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+}
+
+.legendRow { min-width: 0; }
+.legendTerm { color: var(--primary-bg); font-weight: var(--fw-semi-bold); font-size: 0.9rem; }
+.legendText { margin: 0.1rem 0 0; color: rgba(255, 255, 255, 0.6); font-size: 0.84rem; line-height: 1.4; }
+
+.muted { color: rgba(255, 255, 255, 0.55); margin: 0 0 0.6rem; }
+
+.note {
+  margin: 0 0 0.8rem;
+  color: var(--primary-bg);
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.error {
+  margin: 0 0 0.8rem;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ffb4b7;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.rows { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  min-width: 0;
+}
+
+.rowHead { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+.rowMain { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.rowName { color: var(--primary-bg); font-weight: var(--fw-bold); }
+.rowMeta { color: rgba(255, 255, 255, 0.55); font-size: 0.88rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.chip {
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.chip:hover { background-color: #3d3e45; color: var(--primary-bg); }
+.chipOn,
+.chipOn:hover { background-color: rgba(76, 175, 80, 0.22); color: var(--v-ent-grn, #4caf50); font-weight: var(--fw-semi-bold); }
+.chip:disabled { opacity: 0.5; cursor: default; }
+.chip:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+.add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  padding: 0.9rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+}
+
+.addTitle { margin: 0; color: var(--primary-bg); font-weight: var(--fw-semi-bold); }
+.addRow { display: flex; gap: 0.6rem; flex-wrap: wrap; min-width: 0; }
+.addRow > * { flex: 1 1 220px; min-width: 0; }
+
+.primary,
+.ghost {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.primary { align-self: flex-start; background-color: var(--v-ent-red, #ED1C24); color: var(--primary-bg); }
+.primary:disabled { opacity: 0.45; cursor: default; }
+.ghost { background-color: #35363c; color: var(--primary-bg); }
+.ghost:disabled { opacity: 0.45; cursor: default; }
+.primary:focus-visible,
+.ghost:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .panel { padding: 1rem; }
+  .primary { align-self: stretch; }
+}
