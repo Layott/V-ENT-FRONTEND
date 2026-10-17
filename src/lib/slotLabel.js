@@ -65,6 +65,11 @@ export function slotLabel(tt, slot, format) {
       : tt('bracket.slotPlace', '{stage}: place {n}'))
       .replace('{stage}', p.stage || '').replace('{n}', p.place);
   }
+  // A seat of a reseeded knockout (P3 W1): the survivor at this rank of seed,
+  // the best remaining against the worst remaining.
+  if (slot.kind === 'reseed' && slot.rank) {
+    return tt('bracket.slotReseed', 'Seed rank {n} of those still in').replace('{n}', slot.rank);
+  }
   if (slot.kind === 'reset') return tt('bracket.ifNeeded', 'Played only if needed');
   if (slot.kind === 'bye') return tt('bracket.byeSlot', 'Bye');
   if (slot.kind === 'entrant' && slot.seed) return tt('bracket.seedN', 'Seed {n}').replace('{n}', slot.seed);
