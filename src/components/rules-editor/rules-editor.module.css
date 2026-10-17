@@ -71,6 +71,9 @@
 
 .number {
   width: 100px;
+  /* 44px, the floor for anything pressed on a phone (walk, 17 October 2026: 32px). */
+  box-sizing: border-box;
+  min-height: 44px;
   background-color: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
   padding: 8px 10px;

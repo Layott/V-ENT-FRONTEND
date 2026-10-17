@@ -1,0 +1,129 @@
+/* /formats: a heading, a line of intro, a row of filled chips to jump to a
+   format, then one panel per format with its explainer and its three
+   sentences. The same shell, heading scale and intro as /roadmap. Panels are
+   the house surface (--overlay-gray, 14px), no strokes. */
+
+.pane {
+  display: block;
+}
+
+.page {
+  width: 100%;
+  max-width: 820px;
+  margin: 1.5rem auto 0;
+}
+
+.title {
+  margin: 0 0 0.6rem;
+  font-size: var(--desktop-h3-size);
+  font-weight: var(--fw-bold);
+  color: rgba(255, 255, 255, 0.98);
+}
+
+.intro {
+  margin: 0 0 1.25rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 1.5rem;
+}
+
+.jumpChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.jumpChip:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.jumpChip:focus-visible,
+.createBtn:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.format {
+  background: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.1rem 1rem 1.2rem;
+  scroll-margin-top: 80px;
+  min-width: 0;
+}
+
+.formatTitle {
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 1.35rem;
+  font-weight: var(--fw-bold);
+}
+
+.create {
+  margin: 1.5rem 0 0;
+  background: #2a2b30;
+  border-radius: 14px;
+  padding: 1.25rem 1.1rem;
+}
+
+.createTitle {
+  margin: 0 0 0.4rem;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 1.2rem;
+  font-weight: var(--fw-bold);
+}
+
+.createBody {
+  margin: 0 0 1rem;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.6;
+}
+
+.createBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+@media (min-width: 720px) {
+  .format {
+    padding: 1.35rem 1.4rem 1.4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .title {
+    font-size: var(--mobile-h3-size);
+  }
+
+  .formatTitle {
+    font-size: 1.15rem;
+  }
+
+  .format {
+    padding: 1rem 0.7rem 1.1rem;
+  }
+}

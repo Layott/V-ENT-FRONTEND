@@ -3,6 +3,8 @@
 import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatLabel } from '@/lib/formatLabel';
+import { explainersFor, tournamentFormats } from '@/lib/explainers';
+import WatchFormat from '@/components/format-explainer/WatchFormat';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import Avatar from '@/components/avatar/Avatar';
@@ -535,7 +537,7 @@ export const ViewTournamentContent = ({
                 <p className={styles.metaValue}>{slotsText(tt, tournament.current_participants, tournament.max_participants)}</p>
               </div>
             </div>
-            <div className={styles.metaItem}>
+            <div className={`${styles.metaItem} ${styles.metaFormat}`}>
               <LuMapPin className={styles.metaIcon} />
               <div>
                 <p className={styles.metaLabel}>{tt("ui.format.041a", "Format")}</p>
@@ -545,6 +547,11 @@ export const ViewTournamentContent = ({
                   ? tournament.stages.map(st => formatLabel(tt, st.format, st.format_label))
                     .join(tt('stages.thenSeparator', ', then '))
                   : formatLabel(tt, tournament.format || tournament.bracket_type)}</p>
+                {/* How that format works, as a short moving bracket (inbox
+                    476). A plan in stages offers each part of it; groups
+                    feeding a knockout is one picture. */}
+                <WatchFormat formats={explainersFor(tournamentFormats(tournament))}
+                  allFormatsLink className={styles.metaWatch} />
               </div>
             </div>
           </div>
@@ -876,16 +883,20 @@ const ParticipantsPanel = ({
     return {
       key: r?.registration_id ?? i,
       seed: r?.seed ?? i + 1,
-      name: entrant.name || entrant.username || 'Unknown',
-      tag: r?.type === 'team' ? 'Team' : entrant.username && entrant.username !== entrant.name ? `@${entrant.username}` : '',
+      name: entrant.name || entrant.username || tt('participants.unknown', 'Unknown'),
+      tag: r?.type === 'team' ? tt('participants.teamTag', 'Team') : entrant.username && entrant.username !== entrant.name ? `@${entrant.username}` : '',
       region: entrant.country || '-',
       captain: entrant.captain || '-',
       played,
-      record: played ? `${r?.wins ?? 0}W ${r?.losses ?? 0}L` : 'Not played yet',
+      // Through t(): French and Portuguese readers got "2W 1L" and "Not
+      // played yet" in English (walk, 17 October 2026).
+      record: played
+        ? tt('participants.recordWL', '{w}W {l}L').replace('{w}', r?.wins ?? 0).replace('{l}', r?.losses ?? 0)
+        : tt('participants.notPlayed', 'Not played yet'),
       winRate: r?.win_rate === null || r?.win_rate === undefined ? null : Number(r.win_rate),
       status: r?.status || 'pending'
     };
-  }), [rows]);
+  }), [rows, tt]);
   const filtered = normalized.filter(r => {
     if (!search.trim()) return true;
     const q = search.trim().toLowerCase();

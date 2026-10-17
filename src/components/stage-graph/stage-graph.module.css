@@ -1,0 +1,109 @@
+/* The stage graph (P1f). Filled boxes, no strokes around anything; the only
+   lines are the flow between stages, 3px with rounded ends, grey until the
+   line has sent its people and green after. */
+
+.graph {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+}
+
+.lines {
+  height: 100%;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.lines path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.lines polygon { fill: rgba(255, 255, 255, 0.28); }
+
+.lines .sent path { stroke: var(--v-ent-success, #4caf50); }
+.lines .sent polygon { fill: var(--v-ent-success, #4caf50); }
+
+.columns {
+  align-items: center;
+  display: flex;
+  gap: 56px;
+  position: relative;
+}
+
+.column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.box {
+  align-items: flex-start;
+  background-color: var(--overlay-gray, #212225);
+  border: none;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  gap: 4px;
+  min-height: 44px;
+  padding: 12px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.pick { cursor: pointer; }
+.pick:hover { background-color: #2a2b30; }
+.on { background-color: #33343a; }
+.pick:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.9); outline-offset: 2px; }
+
+.name {
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.format {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+}
+
+.state {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-size: 0.75rem;
+}
+
+.goes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.line {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.through {
+  color: var(--v-ent-success-light, #66bb6a);
+  display: block;
+  margin-top: 2px;
+}
+
+/* Narrow: one column under another, the words carry the flow. */
+@container (max-width: 719px) {
+  .columns {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
