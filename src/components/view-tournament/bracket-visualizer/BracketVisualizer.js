@@ -100,6 +100,9 @@ const Fixture = ({ match, tt, onOpen, mine, format }) => {
             .replace('{a}', match.winner_place).replace('{b}', match.loser_place)}
         </span>
       )}
+      {match.qualifies && !decided && (
+        <span className={styles.fixtureNote}>{tt('bracket.winnerGoesThrough', 'The winner goes through')}</span>
+      )}
       {match.status === 'scheduled' && match.scheduled_at && (
         <span className={styles.fixtureNote}>
           {tt('bracket.startsAt', 'Starts {time}').replace('{time}',
@@ -134,6 +137,11 @@ const roundTitle = (tt, round, index, count, side, format) => {
   }
   if (side === 'losers') return tt('bracket.losersRoundN', 'Losers round {n}').replace('{n}', round.round);
   if (index === count - 1 && round.matches?.some(m => m.is_final)) return tt('bracket.final', 'Final');
+  // The last round of a stage that stops at a threshold (P3 W1): its winners
+  // go through, so it is no final.
+  if (round.matches?.length && round.matches.every(m => m.qualifies)) {
+    return tt('bracket.qualifyingRound', 'Qualifying round');
+  }
   return tt('bracket.roundN', 'Round {n}').replace('{n}', round.round);
 };
 
