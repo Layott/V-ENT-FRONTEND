@@ -31,8 +31,11 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
+import Link from 'next/link';
 import StageGraph from '@/components/stage-graph/StageGraph';
-import { stageState } from '@/lib/stageGraph';
+import { feedSentence } from '@/lib/feedWords';
+import { formatWithZone } from '@/lib/datetime';
+import { pathWithFeeds, stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
 import { matchName } from '@/lib/matchName';
@@ -263,8 +266,9 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
   );
 };
 
-/** A stage's table, worked out on the server from its own matches. */
-const StandingsTable = ({ rows, format, advancing, tt }) => {
+/** A stage's table, worked out on the server from its own matches. Also drawn
+ *  by the standings widget on an organiser's own website (P8). */
+export const StandingsTable = ({ rows, format, advancing, tt }) => {
   if (!rows?.length) return null;
   const swiss = norm(format) === 'swiss';
   // Formats whose table is final places decided by the matches, not a record
@@ -473,20 +477,39 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   // a stage changes state, which is when somebody is sent on. If it cannot be
   // read, the stage buttons below stay as the way to pick a stage.
   const [path, setPath] = useState(null);
+  // Feeds to and from other tournaments (P2): "Top 4 go to Nigeria Finals".
+  const [feedRows, setFeedRows] = useState(null);
+  const [declining, setDeclining] = useState(null);
+  const [declineProblem, setDeclineProblem] = useState('');
+  const [declineBusy, setDeclineBusy] = useState(false);
   const stagesKey = (data?.stages || []).map(s => `${s.id}:${s.status}:${s.drawn}`).join('|');
   useEffect(() => {
-    if (!showPath || (data?.stages || []).length < 2) return undefined;
+    if (!showPath || (data?.stages || []).length < 1) return undefined;
     let gone = false;
     (async () => {
       try {
         const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/stages/`);
         const body = await res.json().catch(() => ({}));
         if (!gone && res.ok && body.status === 'success') setPath(body.data);
+        const fed = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/feeds/`);
+        const fedBody = await fed.json().catch(() => ({}));
+        if (!gone && fed.ok && fedBody.status === 'success') setFeedRows(fedBody.data);
       } catch { /* the stage buttons remain */ }
     })();
     return () => { gone = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stagesKey, tournamentRef, tournamentId]);
+
+  // The Path view across tournaments (P2): a feed's other end is drawn as a
+  // box of its own ("Lagos Qualifier: League"), joined by the feed's line;
+  // pressing it opens that tournament. The Path widget draws the same graph.
+  const graph = pathWithFeeds(path, feedRows);
+  const pickInPath = id => {
+    const ext = graph.external.find(x => x.id === id);
+    if (ext) { window.location.assign(`/tournaments/${ext.slug}?tab=bracket`); return; }
+    setStageId(id);
+    setView(null);
+  };
 
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
   if (error) {
@@ -522,11 +545,11 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   return (
     <div className={styles.wrap}>
-      {showPath && stages.length > 1 && (path?.stages || []).length > 1 ? (
+      {showPath && graph.stages.length > 1 && (path?.stages || []).length > 0 ? (
         <section className={styles.path} aria-label={tt('stages.graph.pathLabel', 'The path through this tournament')}>
           <p className={styles.pathTitle}>{tt('stages.graph.pathTitle', 'How this tournament runs')}</p>
-          <StageGraph stages={path.stages} lines={path.progressions || []} selected={data.stage_id} showState
-                      onPick={id => { setStageId(id); setView(null); }} />
+          <StageGraph stages={graph.stages} lines={graph.lines} selected={data.stage_id} showState
+                      onPick={pickInPath} />
         </section>
       ) : stages.length > 1 && (
         <div className={styles.stageChips} role="group"
@@ -543,6 +566,73 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             </button>
           ))}
         </div>
+      )}
+
+      {showPath && ((feedRows?.incoming || []).length > 0 || (feedRows?.outgoing || []).length > 0) && (
+        <section className={styles.feeds} aria-label={tt('feeds.publicLabel', 'Places shared with other tournaments')}>
+          {(feedRows.incoming || []).map(feed => (
+            <p key={`in-${feed.id}`} className={styles.feedLine}>
+              <span className={styles.feedKind}>{tt('feeds.comesFrom', 'Comes from')}</span>{' '}
+              <Link href={`/tournaments/${feed.source.tournament.slug}?tab=bracket`} className={styles.feedLink}>
+                {feedSentence(tt, feed, 'in')}
+              </Link>
+            </p>
+          ))}
+          {/* A qualifier's own place: when they qualified and until when they
+              may turn it down (P2b). Only their own, only while it is open. */}
+          {(feedRows.incoming || []).flatMap(feed => (feed.qualifiers || [])
+            .filter(q => mineIds.has(q.registration_id) && q.status === 'confirmed'
+              && q.decline_until && new Date(q.decline_until) > new Date())
+            .map(q => (
+              <div key={`mine-${q.registration_id}`} className={styles.feedMine}>
+                <p className={styles.feedLine}>
+                  {tt('feeds.youQualified', 'You qualified from {tournament}, place {place}. If you cannot play, decline before {date}.')
+                    .replace('{tournament}', feed.source.tournament.title).replace('{place}', q.source_place ?? '')
+                    .replace('{date}', formatWithZone(q.decline_until))}
+                </p>
+                {declining === q.registration_id ? (
+                  <button type="button" className={styles.retry} disabled={declineBusy} onClick={async () => {
+                    setDeclineBusy(true);
+                    setDeclineProblem('');
+                    try {
+                      const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/qualifiers/${q.registration_id}/decline/`, {
+                        method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {},
+                      });
+                      const body = await res.json().catch(() => ({}));
+                      if (res.ok && body.status === 'success') {
+                        setDeclining(null);
+                        const again = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/feeds/`);
+                        const againBody = await again.json().catch(() => ({}));
+                        if (again.ok && againBody.status === 'success') setFeedRows(againBody.data);
+                        load({ quiet: true });
+                        return;
+                      }
+                      setDeclineProblem(apiMessage(tt, body, 'feeds.declineFailed', 'The place was not declined.'));
+                    } catch {
+                      setDeclineProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+                    } finally {
+                      setDeclineBusy(false);
+                    }
+                  }}>
+                    {tt('feeds.declineSure', 'Yes, decline it')}
+                  </button>
+                ) : (
+                  <button type="button" className={styles.retry} onClick={() => setDeclining(q.registration_id)}>
+                    {tt('feeds.decline', 'Decline this place')}
+                  </button>
+                )}
+                {declineProblem && declining === q.registration_id && <p className={styles.state}>{declineProblem}</p>}
+              </div>
+            )))}
+          {(feedRows.outgoing || []).map(feed => (
+            <p key={`out-${feed.id}`} className={styles.feedLine}>
+              <span className={styles.feedKind}>{tt('feeds.goesTo', 'Goes to')}</span>{' '}
+              <Link href={`/tournaments/${feed.target.tournament.slug}?tab=bracket`} className={styles.feedLink}>
+                {feedSentence(tt, feed, 'out')}
+              </Link>
+            </p>
+          ))}
+        </section>
       )}
 
       {battleRoyale && (

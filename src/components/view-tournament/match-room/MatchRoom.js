@@ -234,9 +234,13 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
     }),
     tt('match.recorded', 'Result recorded.'));
 
-  // Taking a result back off. The winner comes back out of the next match, and
-  // the server refuses when that next match has already been played.
-  const manager = Boolean(match?.can_manage);
+  // Taking a result back off is the results desk's ('report'); how a match is
+  // played is the structure's ('structure'). What the viewer holds comes from
+  // the server (P7); the organiser holds both. The winner comes back out of
+  // the next match, and the server refuses when that one has been played.
+  const held = match?.permissions || [];
+  const mayReopen = held.includes('report');
+  const mayShape = held.includes('structure');
   const reopenResult = async () => {
     const done = await run(
       () => call(`/tournament/${tournamentRef}/matches/${matchId}/reopen/`, { method: 'POST', token, body: {} }),
@@ -613,7 +617,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             </button>
           )}
           {/* ------------------------------------- fixing it (whoever runs it) */}
-          {manager && ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status) && (
+          {mayReopen && ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status) && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.reopenTitle', 'Take this result off')}</p>
               <p className={styles.muted}>
@@ -635,7 +639,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               )}
             </section>
           )}
-          {manager && match.status === 'scheduled' && (
+          {mayShape && match.status === 'scheduled' && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.rulesTitle', 'How this match is played')}</p>
               <p className={styles.muted}>{bestOfText}</p>

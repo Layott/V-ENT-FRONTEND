@@ -46,6 +46,14 @@ export function slotLabel(tt, slot, format) {
   // (P1d): "Groups: group A, place 1".
   if (slot.kind === 'place' && slot.from_place) {
     const p = slot.from_place;
+    // From another tournament (P2): "Lagos Qualifier, League: place 1".
+    if (p.tournament) {
+      return (p.group
+        ? tt('bracket.slotPlaceTournamentGroup', '{tournament}, {stage}: group {g}, place {n}')
+          .replace('{g}', String.fromCharCode(64 + Number(p.group)))
+        : tt('bracket.slotPlaceTournament', '{tournament}, {stage}: place {n}'))
+        .replace('{tournament}', p.tournament).replace('{stage}', p.stage || '').replace('{n}', p.place);
+    }
     return (p.group
       ? tt('bracket.slotPlaceGroup', '{stage}: group {g}, place {n}')
         .replace('{g}', String.fromCharCode(64 + Number(p.group)))
