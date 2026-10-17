@@ -40,6 +40,7 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import MoneyPanel from '@/components/tournament-manage/MoneyPanel';
+import TournamentEmbedPanel from '@/components/embed-sites/TournamentEmbedPanel';
 import styles from './manage.module.css';
 import { tournamentStatusLabel } from '@/lib/tournamentStatus';
 import { useT } from '@/i18n/LanguageProvider';
@@ -87,6 +88,12 @@ const TABS = [{
 }, {
   id: 'production',
   label: 'Production'
+}, {
+  // Putting the tournament on the organiser's own website: a snippet per
+  // widget (P8, inbox 480). Beside Production because both are about where
+  // the tournament is seen.
+  id: 'website',
+  label: 'On your website'
 }, {
   id: 'reminders',
   label: 'Reminders'
@@ -538,6 +545,8 @@ const ManageContent = ({ slug }) => {
                   where somebody is already setting up their stream. */}
               <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
+            {shown === 'website' && <TournamentEmbedPanel tournament={tournament} token={token}
+                                                          showToast={showToast} canManage={!!access?.can_manage} />}
             {shown === 'reminders' && <>
               <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />
               {/* Discord announcements, beside the reminders, because they are

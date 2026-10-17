@@ -19,32 +19,12 @@
  */
 import { useEffect } from 'react';
 
+// The snippets and the look live in embedLook.js, which has no React in it so
+// scripts/test-embed.mjs can prove them. Re-exported here so every caller
+// keeps one import.
+export { checkoutPath, embedSnippets } from './embedLook';
+
 export const HEIGHT_MESSAGE = 'vent:embed-height';
-
-/** Where a frame sends somebody to buy: the event page's own checkout. */
-export const checkoutPath = (slug, tierId) =>
-  `/events/${encodeURIComponent(slug)}?tab=tickets${tierId ? `&tier=${encodeURIComponent(tierId)}` : ''}`;
-
-/**
- * The code an organiser pastes. `kind` is 'event' or 'tournament'; `origin`
- * is where V-ENT is served, so a snippet copied from a local build points at
- * that build and one copied from v-ent.co points at v-ent.co. `labels.button`
- * is the button's words, already translated by the caller, because the
- * organiser pastes it onto a page in their own language.
- */
-export function embedSnippets(kind, slug, origin, labels = {}) {
-  const base = (origin || '').replace(/\/$/, '');
-  const path = kind === 'tournament' ? 'tournaments' : 'events';
-  const frame = `${base}/embed/${path}/${encodeURIComponent(slug)}`;
-  return {
-    frameUrl: frame,
-    script: `<div data-vent-${kind}="${slug}"></div>\n<script src="${base}/embed.js" async></script>`,
-    iframe: `<iframe src="${frame}" title="V-ENT" width="100%" height="560" style="border:0;max-width:640px" loading="lazy"></iframe>`,
-    button: kind === 'tournament'
-      ? `<a href="${base}/tournaments/${encodeURIComponent(slug)}" target="_blank" rel="noopener">${labels.button || ''}</a>`
-      : `<a href="${base}${checkoutPath(slug)}" target="_blank" rel="noopener">${labels.button || ''}</a>`,
-  };
-}
 
 /**
  * Inside a frame: report the embed's height to the page holding it, whenever
