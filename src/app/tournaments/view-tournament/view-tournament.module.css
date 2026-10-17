@@ -208,6 +208,24 @@
   font-weight: var(--fw-semi-bold);
 }
 
+/* "Watch how it works" under the format name (inbox 476). On a phone the
+   strip is two columns, and in half of one the button broke into four lines,
+   so there the format takes the whole row; its words still wrap rather than
+   run out of the strip on the narrowest screens. */
+@media only screen and (max-width: 767px) {
+  .metaFormat {
+    grid-column: 1 / -1;
+  }
+}
+
+.metaWatch {
+  margin-top: 0.4rem;
+  padding: 6px 12px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.25;
+}
+
 .metaValueBig {
   font-size: var(--desktop-h6-size);
   color: var(--v-ent-gold);
