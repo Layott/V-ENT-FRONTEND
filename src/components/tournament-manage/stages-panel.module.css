@@ -487,3 +487,22 @@
 }
 
 .feedRow .fields { width: 100%; }
+
+.feedQualifier {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.feedConfirm {
+  background-color: #33343a;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  width: 100%;
+}

@@ -34,6 +34,10 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
   const [draft, setDraft] = useState(null);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
+  // A recall shows what it touches before anything changes (CEO 475), and a
+  // declined place the organiser fills is picked from the source standings.
+  const [recalling, setRecalling] = useState(null);
+  const [picking, setPicking] = useState(null);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     try {
@@ -128,6 +132,86 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
     }
   };
 
+  const openRecall = async (feed, qualifier) => {
+    setProblem('');
+    setRecalling({ feed, qualifier, preview: null });
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/qualifiers/${qualifier.registration_id}/recall/`,
+        { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setRecalling({ feed, qualifier, preview: body.data });
+        return;
+      }
+      setRecalling(null);
+      setProblem(apiMessage(tt, body, 'feeds.recallFailed', 'That place was not recalled.'));
+    } catch {
+      setRecalling(null);
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    }
+  };
+
+  const confirmRecall = async mode => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/qualifiers/${recalling.qualifier.registration_id}/recall/`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify({ mode }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setRecalling(null);
+        await load();
+        if (showToast) showToast(tt('feeds.recalledToast', 'Place recalled.'));
+        if (onChanged) onChanged();
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'feeds.recallFailed', 'That place was not recalled.'));
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openPick = async feed => {
+    setProblem('');
+    setPicking({ feed, rows: null, chosen: '' });
+    try {
+      const res = await fetch(`${API}/tournament/get-tournament-brackets/${feed.source.tournament.slug}/?stage=${feed.source.stage_id}`);
+      const body = await res.json().catch(() => ({}));
+      const rows = res.ok && body.status === 'success' ? (body.data.standings || []) : [];
+      setPicking({ feed, rows: rows.filter(r => Number(r.rank) > Number(feed.place_to)), chosen: '' });
+    } catch {
+      setPicking({ feed, rows: [], chosen: '' });
+    }
+  };
+
+  const confirmPick = async () => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/feeds/${picking.feed.id}/pick/`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify({ source_registration: Number(picking.chosen) }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setPicking(null);
+        await load();
+        if (showToast) showToast(tt('feeds.picked', 'Place given.'));
+        if (onChanged) onChanged();
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'feeds.pickFailed', 'That place was not given.'));
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const set = (key, value) => setDraft(d => ({ ...d, [key]: value }));
   const chosenStage = sourceStages.find(s => String(s.id) === String(draft?.sourceStage));
   const incoming = feeds?.incoming || [];
@@ -155,6 +239,96 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
             <button type="button" className={styles.quiet} disabled={busy} onClick={() => remove(feed)}>
               {tt('feeds.remove', 'Remove')}
             </button>
+          )}
+          {(feed.qualifiers || []).map(q => (
+            <div key={q.registration_id} className={styles.feedQualifier}>
+              <span className={styles.stageLine}>
+                {tt('feeds.placeName', '{place}. {name}').replace('{place}', q.source_place ?? '').replace('{name}', q.name || '')}
+                {q.status === 'declined' ? ` (${tt('feeds.declinedWord', 'declined')})` : ''}
+                {q.status === 'withdrawn' ? ` (${tt('feeds.recalledWord', 'recalled')})` : ''}
+              </span>
+              {['confirmed', 'pending'].includes(q.status) && (
+                <button type="button" className={styles.quiet} disabled={busy}
+                        onClick={() => openRecall(feed, q)}>
+                  {tt('feeds.recall', 'Recall')}
+                </button>
+              )}
+            </div>
+          ))}
+          {(feed.waiting || []).map((w, i) => (
+            <div key={`w-${i}`} className={styles.feedQualifier}>
+              <span className={styles.note}>
+                {tt('feeds.waitingPlace', 'A declined place waits for you: place {place}.').replace('{place}', w.place ?? '')}
+              </span>
+              {i === 0 && (
+                <button type="button" className={styles.quiet} disabled={busy} onClick={() => openPick(feed)}>
+                  {tt('feeds.pickWho', 'Choose who takes it')}
+                </button>
+              )}
+            </div>
+          ))}
+          {recalling?.feed.id === feed.id && (
+            <div className={styles.feedConfirm}>
+              {!recalling.preview ? <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p> : (
+                <>
+                  <p className={styles.stageLine}>
+                    {tt('feeds.recallTitle', 'Recall {name}').replace('{name}', recalling.preview.name || '')}
+                  </p>
+                  <p className={styles.note}>
+                    {tt('feeds.recallPlayed', 'Matches already played: {n}').replace('{n}', recalling.preview.played.length)}
+                    {' '}
+                    {tt('feeds.recallDrawn', 'Matches still to play: {n}').replace('{n}', recalling.preview.drawn.length)}
+                  </p>
+                  <p className={styles.note}>
+                    {recalling.preview.next
+                      ? tt('feeds.recallNext', 'The place goes to {name}, place {place} there.')
+                        .replace('{name}', recalling.preview.next.name || '').replace('{place}', recalling.preview.next.source_place ?? '')
+                      : tt('feeds.recallNobody', 'Nobody is left there to take the place.')}
+                  </p>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} disabled={busy} onClick={() => confirmRecall('hand_on')}>
+                      {tt('feeds.recallHandOn', 'Hand the place on, keep the results')}
+                    </button>
+                    {recalling.preview.played.length > 0 && (
+                      <button type="button" className={styles.quiet} disabled={busy} onClick={() => confirmRecall('undo')}>
+                        {tt('feeds.recallUndo', 'Undo their results, then hand it on')}
+                      </button>
+                    )}
+                    <button type="button" className={styles.quiet} disabled={busy} onClick={() => setRecalling(null)}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+          {picking?.feed.id === feed.id && (
+            <div className={styles.feedConfirm}>
+              {picking.rows === null ? <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p> : (
+                <>
+                  <label className={styles.field}>
+                    <span className={styles.fieldLabel}>{tt('feeds.pickWho', 'Choose who takes it')}</span>
+                    <select className={styles.select} value={picking.chosen} disabled={busy}
+                            onChange={e => setPicking(p => ({ ...p, chosen: e.target.value }))}>
+                      <option value="">{tt('feeds.pick', 'Choose')}</option>
+                      {picking.rows.map(r => (
+                        <option key={r.registration_id} value={r.registration_id}>
+                          {tt('feeds.placeName', '{place}. {name}').replace('{place}', r.rank).replace('{name}', r.name || '')}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} disabled={busy || !picking.chosen} onClick={confirmPick}>
+                      {tt('feeds.pickGo', 'Give them the place')}
+                    </button>
+                    <button type="button" className={styles.quiet} disabled={busy} onClick={() => setPicking(null)}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
       ))}

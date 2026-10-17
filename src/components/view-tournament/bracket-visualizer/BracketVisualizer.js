@@ -34,6 +34,7 @@ import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
 import Link from 'next/link';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import { feedSentence } from '@/lib/feedWords';
+import { formatWithZone } from '@/lib/datetime';
 import { stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
@@ -477,6 +478,9 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const [path, setPath] = useState(null);
   // Feeds to and from other tournaments (P2): "Top 4 go to Nigeria Finals".
   const [feedRows, setFeedRows] = useState(null);
+  const [declining, setDeclining] = useState(null);
+  const [declineProblem, setDeclineProblem] = useState('');
+  const [declineBusy, setDeclineBusy] = useState(false);
   const stagesKey = (data?.stages || []).map(s => `${s.id}:${s.status}:${s.drawn}`).join('|');
   useEffect(() => {
     if (!showPath || (data?.stages || []).length < 1) return undefined;
@@ -562,6 +566,52 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
               </Link>
             </p>
           ))}
+          {/* A qualifier's own place: when they qualified and until when they
+              may turn it down (P2b). Only their own, only while it is open. */}
+          {(feedRows.incoming || []).flatMap(feed => (feed.qualifiers || [])
+            .filter(q => mineIds.has(q.registration_id) && q.status === 'confirmed'
+              && q.decline_until && new Date(q.decline_until) > new Date())
+            .map(q => (
+              <div key={`mine-${q.registration_id}`} className={styles.feedMine}>
+                <p className={styles.feedLine}>
+                  {tt('feeds.youQualified', 'You qualified from {tournament}, place {place}. If you cannot play, decline before {date}.')
+                    .replace('{tournament}', feed.source.tournament.title).replace('{place}', q.source_place ?? '')
+                    .replace('{date}', formatWithZone(q.decline_until))}
+                </p>
+                {declining === q.registration_id ? (
+                  <button type="button" className={styles.retry} disabled={declineBusy} onClick={async () => {
+                    setDeclineBusy(true);
+                    setDeclineProblem('');
+                    try {
+                      const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/qualifiers/${q.registration_id}/decline/`, {
+                        method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {},
+                      });
+                      const body = await res.json().catch(() => ({}));
+                      if (res.ok && body.status === 'success') {
+                        setDeclining(null);
+                        const again = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/feeds/`);
+                        const againBody = await again.json().catch(() => ({}));
+                        if (again.ok && againBody.status === 'success') setFeedRows(againBody.data);
+                        load({ quiet: true });
+                        return;
+                      }
+                      setDeclineProblem(apiMessage(tt, body, 'feeds.declineFailed', 'The place was not declined.'));
+                    } catch {
+                      setDeclineProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+                    } finally {
+                      setDeclineBusy(false);
+                    }
+                  }}>
+                    {tt('feeds.declineSure', 'Yes, decline it')}
+                  </button>
+                ) : (
+                  <button type="button" className={styles.retry} onClick={() => setDeclining(q.registration_id)}>
+                    {tt('feeds.decline', 'Decline this place')}
+                  </button>
+                )}
+                {declineProblem && declining === q.registration_id && <p className={styles.state}>{declineProblem}</p>}
+              </div>
+            )))}
           {(feedRows.outgoing || []).map(feed => (
             <p key={`out-${feed.id}`} className={styles.feedLine}>
               <span className={styles.feedKind}>{tt('feeds.goesTo', 'Goes to')}</span>{' '}
