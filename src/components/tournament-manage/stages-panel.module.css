@@ -466,3 +466,43 @@
 
 /* The plan as a picture (P1f). */
 .graphWrap { margin: 0 0 18px; }
+
+/* Places from other tournaments (P2): filled rows one step up from the
+   panel, no strokes. */
+.feeds {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+}
+
+.feedRow {
+  align-items: flex-start;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem;
+}
+
+.feedRow .fields { width: 100%; }
+
+.feedQualifier {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.feedConfirm {
+  background-color: #33343a;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  width: 100%;
+}

@@ -37,6 +37,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatLabel } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
 import StageGraph from '@/components/stage-graph/StageGraph';
+import FeedsPanel from './FeedsPanel';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
@@ -1099,6 +1100,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             </button>
           </div>
         </div>
+      )}
+
+      {/* Places taken from another tournament the organiser runs (P2). */}
+      {!draft && canManage && rows.length > 0 && (
+        <FeedsPanel tournamentRef={tournamentRef} stages={rows} token={token}
+                    showToast={showToast} onChanged={after} />
       )}
 
       {/* -------------------------------------------------- the composer */}
