@@ -90,7 +90,7 @@ export default function StageGraph({ stages, lines, selected = null, onPick = nu
                     {formatLabel(tt, stage.format, stage.format_label || stage.format)}
                     {groups ? `, ${tt('stages.graph.groupsN', '{n} groups').replace('{n}', stage.groups)}` : ''}
                   </span>
-                  {showState && <span className={styles.state}>{stateOf(stage)}</span>}
+                  {showState && stage.status !== undefined && <span className={styles.state}>{stateOf(stage)}</span>}
                   {out.length > 0 && (
                     <span className={styles.goes}>
                       {out.map((e, i) => (

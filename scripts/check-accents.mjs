@@ -277,7 +277,7 @@ export function eeFix(word) {
 // Letter boundaries rather than \b, which is ASCII even with the u flag.
 const LB = String.raw`(?<![\p{L}\p{M}])`;
 const LE = String.raw`(?![\p{L}\p{M}])`;
-const A_FOR_A = new RegExp(String.raw`(?<!${LB}y\s)(?<!${LB}en\s)${LB}a\s+(?:partir|zéro|zero|chaque|quelqu|rejoindre|examiner|retirer|faire|payer|voir|venir|lire|suivre|répondre|repondre|saisir|récupérer|recuperer|répercuter|repercuter|\{|\d)|${LB}(?:[Rr]ien|[Pp]rêt|[Jj]usqu['’]|[Vv]erser|ferme|ouvre)\s*a${LE}`, 'gu');
+const A_FOR_A = new RegExp(String.raw`(?<!${LB}y\s)(?<!${LB}en\s)${LB}a\s+(?:gauche|droite|partir|zéro|zero|chaque|quelqu|rejoindre|examiner|retirer|faire|payer|voir|venir|lire|suivre|répondre|repondre|saisir|récupérer|recuperer|répercuter|repercuter|\{|\d)|${LB}(?:[Rr]ien|[Pp]rêt|[Jj]usqu['’]|[Vv]erser|ferme|ouvre)\s*a${LE}`, 'gu');
 const E_FOR_E = new RegExp(String.raw`${LB}(?:[Ii]sto|[Ii]sso|[Aa]quilo)\s+e\s+o\s+que${LE}|${LB}(?:[Ee]sse|[Ee]ssa|[Ee]ste|[Ee]sta|nada|[Cc]omo|que|[Qq]uem)\s+e\s+(?:o|a|um|uma|seu|sua|gratuit[oa]|pag[oa]|preciso|possível|obrigatóri[oa]|devid[oa]|premium)${LE}|${LB}e\s+uma\s+funcionalidade${LE}`, 'gu');
 
 export function aoFix(word) {
@@ -296,6 +296,11 @@ function selfTest() {
     ['fr', { a: 'Vers une equipe' }, 1],
     ['fr', { a: 'Vers une équipe' }, 0],
     ['fr', { a: 'A venir' }, 1],
+    // "a gauche" inside a sentence is always the preposition (studio
+    // placement chips, 17 October 2026); the leading form was already caught.
+    ['fr', { a: 'En haut a gauche' }, 1],
+    ['fr', { a: 'Au milieu a droite' }, 1],
+    ['fr', { a: 'En haut à gauche' }, 0],
     ['fr', { a: 'A accepté vos règles le {date}' }, 0],
     ['fr', { a: 'Le code est incorrect, ou il a déjà servi.' }, 0],
     ['fr', { a: 'Telecharger le releve' }, 2],

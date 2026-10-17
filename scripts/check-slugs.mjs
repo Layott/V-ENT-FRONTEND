@@ -34,6 +34,8 @@ const EXEMPT = [
    'a frame inside another website: nobody sees its address in a browser bar, and every snippet names the slug'],
   ['src/app/embed/tournaments/[slug]/page.js',
    'a frame inside another website: nobody sees its address in a browser bar, and every snippet names the slug'],
+  ['src/app/embed/tournaments/[slug]/[widget]/page.js',
+   'a frame inside another website: nobody sees its address in a browser bar, and every snippet names the slug'],
 ];
 
 const files = [];
