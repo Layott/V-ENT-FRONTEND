@@ -56,6 +56,40 @@ export function resultProblemLabel(tt, code) {
   return labels[code] || tt('partners.studios.problem.other', 'not accepted');
 }
 
+export function deliveryStatusLabel(tt, status) {
+  const labels = {
+    pending: tt('partners.studios.log.status.pending', 'Waiting'),
+    delivered: tt('partners.studios.log.status.delivered', 'Delivered'),
+    failed: tt('partners.studios.log.status.failed', 'Gave up'),
+    cancelled: tt('partners.studios.log.status.cancelled', 'Cancelled'),
+  };
+  return labels[status] || labels.pending;
+}
+
+export function deliveryKindLabel(tt, kind) {
+  const labels = {
+    event: tt('partners.studios.log.kind.event', 'Event'),
+    create_game_session: tt('partners.studios.log.kind.create_game_session', 'Create a game session'),
+    cancel_game_session: tt('partners.studios.log.kind.cancel_game_session', 'Cancel a game session'),
+    get_game_session: tt('partners.studios.log.kind.get_game_session', 'Ask for a game session'),
+  };
+  return labels[kind] || labels.event;
+}
+
+/** Why a delivery has not arrived, from the code the server recorded. */
+export function deliveryErrorLabel(tt, code, statusCode) {
+  const labels = {
+    TIMEOUT: tt('partners.studios.log.error.TIMEOUT', 'your server did not answer within 10 seconds'),
+    UNREACHABLE: tt('partners.studios.log.error.UNREACHABLE', 'we could not reach your server'),
+    HTTP_STATUS: tt('partners.studios.log.error.HTTP_STATUS', 'your server answered {code}').replace('{code}', String(statusCode ?? '')),
+    GONE: tt('partners.studios.log.error.GONE', 'your server answered 410, so we stopped'),
+    GAVE_UP: tt('partners.studios.log.error.GAVE_UP', 'every try failed, so we stopped'),
+    URL_PRIVATE_HOST: tt('partners.studios.log.error.URL_PRIVATE_HOST', 'the address now points inside a private network'),
+    STUDIO_SECRET_UNREADABLE: tt('partners.studios.log.error.STUDIO_SECRET_UNREADABLE', 'our copy of your secret cannot be read: rotate it'),
+  };
+  return labels[code] || tt('partners.studios.log.error.other', 'it did not arrive');
+}
+
 /** The settings a game still needs before it can be reviewed for live. */
 export function liveFieldLabel(tt, field) {
   const labels = {

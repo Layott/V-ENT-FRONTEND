@@ -17,6 +17,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import {
   liveFieldLabel, resultProblemLabel, studioEventLabel, studioStatus, studioStatusLabel,
 } from '@/components/studio-portal/studioLabels';
+import DeliveryLog from '@/components/studio-portal/DeliveryLog';
 import styles from '../studios.module.css';
 
 // `/partners/studios/<game>` - one game's settings (design section 14, item 1).
@@ -520,6 +521,15 @@ export default function StudioGamePage(props) {
                     {busy === 'events' ? tt('partners.studios.saving', 'Saving...') : tt('partners.studios.save', 'Save')}
                   </button>
                 </div>
+              </div>
+
+              {/* ---------------------------------------------- delivery log */}
+              <div className={styles.panel}>
+                <h2 className={styles.panelTitle}>{tt('partners.studios.log.title', 'Delivery log')}</h2>
+                <p className={styles.muted}>
+                  {tt('partners.studios.log.body', 'Every request we sent your servers, signed with your secret, and what they answered. A failed delivery is tried again for about two days.')}
+                </p>
+                <DeliveryLog slug={game.slug} token={viewer.token} />
               </div>
 
               {/* ------------------------------------------------------ live */}
