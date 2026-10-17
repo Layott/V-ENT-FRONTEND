@@ -31,7 +31,9 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
+import Link from 'next/link';
 import StageGraph from '@/components/stage-graph/StageGraph';
+import { feedSentence } from '@/lib/feedWords';
 import { stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
@@ -473,15 +475,20 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   // a stage changes state, which is when somebody is sent on. If it cannot be
   // read, the stage buttons below stay as the way to pick a stage.
   const [path, setPath] = useState(null);
+  // Feeds to and from other tournaments (P2): "Top 4 go to Nigeria Finals".
+  const [feedRows, setFeedRows] = useState(null);
   const stagesKey = (data?.stages || []).map(s => `${s.id}:${s.status}:${s.drawn}`).join('|');
   useEffect(() => {
-    if (!showPath || (data?.stages || []).length < 2) return undefined;
+    if (!showPath || (data?.stages || []).length < 1) return undefined;
     let gone = false;
     (async () => {
       try {
         const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/stages/`);
         const body = await res.json().catch(() => ({}));
         if (!gone && res.ok && body.status === 'success') setPath(body.data);
+        const fed = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/feeds/`);
+        const fedBody = await fed.json().catch(() => ({}));
+        if (!gone && fed.ok && fedBody.status === 'success') setFeedRows(fedBody.data);
       } catch { /* the stage buttons remain */ }
     })();
     return () => { gone = true; };
@@ -543,6 +550,27 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             </button>
           ))}
         </div>
+      )}
+
+      {showPath && ((feedRows?.incoming || []).length > 0 || (feedRows?.outgoing || []).length > 0) && (
+        <section className={styles.feeds} aria-label={tt('feeds.publicLabel', 'Places shared with other tournaments')}>
+          {(feedRows.incoming || []).map(feed => (
+            <p key={`in-${feed.id}`} className={styles.feedLine}>
+              <span className={styles.feedKind}>{tt('feeds.comesFrom', 'Comes from')}</span>{' '}
+              <Link href={`/tournaments/${feed.source.tournament.slug}?tab=bracket`} className={styles.feedLink}>
+                {feedSentence(tt, feed, 'in')}
+              </Link>
+            </p>
+          ))}
+          {(feedRows.outgoing || []).map(feed => (
+            <p key={`out-${feed.id}`} className={styles.feedLine}>
+              <span className={styles.feedKind}>{tt('feeds.goesTo', 'Goes to')}</span>{' '}
+              <Link href={`/tournaments/${feed.target.tournament.slug}?tab=bracket`} className={styles.feedLink}>
+                {feedSentence(tt, feed, 'out')}
+              </Link>
+            </p>
+          ))}
+        </section>
       )}
 
       {battleRoyale && (
