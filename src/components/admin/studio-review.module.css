@@ -1,0 +1,192 @@
+/* The studio review on the console's Partners page. Same surfaces as the
+   partner queue above it: filled, no strokes, gold for approval. */
+
+.wrap {
+  margin-top: 32px;
+  min-width: 0;
+}
+
+.title {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  margin: 0 0 6px;
+}
+
+.muted {
+  color: #8A8A93;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.count {
+  background: #1a1b1f;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.countLabel {
+  display: block;
+  color: #8A8A93;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.countValue {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  background: #1a1b1f;
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rowText {
+  flex: 1;
+  min-width: 180px;
+}
+
+.name {
+  margin: 0 0 2px;
+  font-weight: 600;
+  color: var(--white);
+  overflow-wrap: anywhere;
+}
+
+.chip {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  background: #303136;
+  color: #C9C9CF;
+  white-space: nowrap;
+}
+
+.chip_live { background: rgba(76, 175, 80, 0.18); color: var(--v-ent-success-light); }
+.chip_requested { background: rgba(212, 175, 55, 0.16); color: var(--v-ent-gold); }
+.chip_rejected { background: rgba(237, 28, 36, 0.16); color: #ff8a8a; }
+
+.detail {
+  margin-top: 14px;
+  background: #202126;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.meta dt {
+  color: #8A8A93;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.meta dd {
+  margin: 0;
+  color: #C9C9CF;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.field {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.note {
+  width: 100%;
+  box-sizing: border-box;
+  background: #303136;
+  color: var(--white);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.approve,
+.reject,
+.ghost {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.approve {
+  background: var(--v-ent-gold);
+  color: #131316;
+  font-weight: 600;
+}
+
+.reject {
+  background: #3a2020;
+  color: #ff8a8a;
+}
+
+.ghost {
+  background: #303136;
+  color: var(--white);
+}
+
+.approve:disabled,
+.reject:disabled,
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.error {
+  color: #ff8a8a;
+  margin: 0;
+}
