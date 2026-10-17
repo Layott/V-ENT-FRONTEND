@@ -11,14 +11,17 @@
  * from the event's website colours when the tournament runs inside an event;
  * only what the organiser changes here is written into the snippet.
  *
- * Drawn with the event console's "Website and embeds" stylesheet and its copy
- * rows, so the two tabs read as one designer's work.
+ * Below the snippets, the approved sites (P8b): which proven websites may show
+ * it, and how often each has. Drawn with the event console's "Website and
+ * embeds" stylesheet and its copy rows, so the two tabs read as one
+ * designer's work.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { THEMED_WIDGETS, WIDGETS, embedSnippets, readLook } from '@/lib/embedLook';
 import { DEFAULT_ACCENT } from '@/lib/siteTheme';
-import { CopyRow } from '@/components/event-site/EventSitePanel';
+import CopyRow from './CopyRow';
+import ApprovedSites from './ApprovedSites';
 import styles from '@/components/event-site/event-site-panel.module.css';
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -37,7 +40,7 @@ const WIDGET_HINTS = {
   schedule: ['embedBuilder.scheduleHint', 'Your running order, day by day, in each visitor\'s own time zone.'],
 };
 
-export default function TournamentEmbedPanel({ tournament, children }) {
+export default function TournamentEmbedPanel({ tournament, token, showToast, canManage = false }) {
   const tt = useT();
   const [origin, setOrigin] = useState('');
   useEffect(() => { setOrigin(window.location.origin); }, []);
@@ -157,7 +160,8 @@ export default function TournamentEmbedPanel({ tournament, children }) {
                 title={tt('siteConsole.embedPreview', 'What your visitors will see')} />
       </section>
 
-      {children}
+      {/* Which sites may show it (P8b): its managers choose; the API holds it. */}
+      {canManage && <ApprovedSites kind="tournament" slug={slug} token={token} showToast={showToast} />}
     </>
   );
 }

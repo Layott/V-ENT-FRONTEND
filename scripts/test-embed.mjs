@@ -18,6 +18,8 @@ import {
   THEMED_WIDGETS, WIDGETS, carryQuery, embedSnippets, lookQuery, readLook, widgetPath,
 } from '../src/lib/embedLook.js';
 import { scheduleGroups } from '../src/lib/scheduleGroups.js';
+import { contentSecurityPolicy, frameAncestorsValue } from '../src/lib/securityHeaders.mjs';
+import { createFramePolicy, embedTarget } from '../src/lib/framePolicy.js';
 
 let failures = 0;
 let passed = 0;
@@ -220,6 +222,140 @@ test('an empty or missing schedule is no groups, never a crash', () => {
   assert.deepEqual(scheduleGroups(null, utcDay), []);
   assert.deepEqual(scheduleGroups({ days: [], unscheduled: [] }, utcDay), []);
 });
+
+console.log('who may frame an embed (approved sites, P8b)');
+
+const later = [];
+const testAsync = (name, fn) => later.push([name, fn]);
+
+test('the policy every page carries is the one it always was', () => {
+  const csp = contentSecurityPolicy({ isDev: false, apiOrigin: 'https://api.v-ent.co' });
+  assert.match(csp, /^default-src 'self'; /);
+  assert.match(csp, /; frame-ancestors 'self'$/);
+  assert.match(csp, /connect-src 'self' https:\/\/api\.v-ent\.co/);
+  // An embed with no approved site: the same policy, framable anywhere (inbox 360).
+  assert.equal(contentSecurityPolicy({ isDev: false, apiOrigin: 'https://api.v-ent.co', frameAncestors: '*' }),
+    csp.replace("frame-ancestors 'self'", 'frame-ancestors *'));
+  assert.equal(frameAncestorsValue([]), '*');
+  assert.equal(frameAncestorsValue(["'self'", 'https://a.com', 'https://*.a.com']),
+    "'self' https://a.com https://*.a.com");
+});
+
+testAsync('next.config: every other page refuses framing, embeds leave the policy to the middleware', async () => {
+  const { default: config } = await import('../next.config.mjs');
+  const rules = await config.headers();
+  const named = (source) => rules.find((r) => r.source === source);
+  const page = rules.find((r) => r.source.includes('(?!(?:fr/|pt/)?embed/)'));
+  const header = (rule, key) => rule.headers.find((h) => h.key === key)?.value;
+  assert.match(header(page, 'Content-Security-Policy'), /frame-ancestors 'self'$/);
+  assert.equal(header(page, 'X-Frame-Options'), 'SAMEORIGIN');
+  for (const source of ['/embed/:path*', '/:locale(fr|pt)/embed/:path*']) {
+    const rule = named(source);
+    assert.ok(rule, source);
+    assert.equal(header(rule, 'Content-Security-Policy'), undefined, source);
+    assert.equal(header(rule, 'X-Frame-Options'), undefined, source);
+    assert.equal(header(rule, 'X-Content-Type-Options'), 'nosniff', source);
+  }
+});
+
+test('an embed address names its record, with or without a language', () => {
+  assert.deepEqual(embedTarget('/embed/tournaments/naija-cup/bracket'), { kind: 'tournament', ref: 'naija-cup' });
+  assert.deepEqual(embedTarget('/embed/tournaments/naija-cup'), { kind: 'tournament', ref: 'naija-cup' });
+  assert.deepEqual(embedTarget('/fr/embed/events/lagos-con'), { kind: 'event', ref: 'lagos-con' });
+  assert.deepEqual(embedTarget('/pt/embed/tournaments/ta%C3%A7a'), { kind: 'tournament', ref: 'taça' });
+  for (const path of ['/tournaments/naija-cup', '/de/embed/events/x', '/embed/teams/x', '/embed/', '/embed/events/']) {
+    assert.equal(embedTarget(path), null, path);
+  }
+});
+
+// A stand-in for the API: answers in order, counts the asks.
+const fakeApi = (answers) => {
+  const calls = [];
+  const fetchImpl = async (url, opts) => {
+    calls.push(url);
+    const next = answers.length > 1 ? answers.shift() : answers[0];
+    if (next === 'hang') {
+      return new Promise((resolve, reject) => {
+        opts.signal.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    }
+    if (next instanceof Error) throw next;
+    return { ok: next.status === 200, status: next.status, json: async () => next.body };
+  };
+  return { calls, fetchImpl };
+};
+const locked = (ancestors) => ({ status: 200, body: { status: 'success', data: { ancestors } } });
+const cup = { kind: 'tournament', ref: 'naija-cup' };
+
+testAsync('asked once a minute per record, from the API', async () => {
+  let clock = 0;
+  const api = fakeApi([locked(["'self'", 'https://theirsite.com'])]);
+  const policy = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl, now: () => clock });
+  assert.deepEqual(await policy(cup), ["'self'", 'https://theirsite.com']);
+  clock = 59000;
+  await policy(cup);
+  assert.equal(api.calls.length, 1);
+  assert.equal(api.calls[0], 'https://api.v-ent.co/sites/frame/tournament/naija-cup/');
+  clock = 61000;
+  await policy(cup);
+  assert.equal(api.calls.length, 2);
+});
+
+testAsync('stale answer kept on failure', async () => {
+  let clock = 0;
+  const api = fakeApi([locked(["'self'", 'https://theirsite.com']), { status: 503, body: {} }, new Error('down')]);
+  const policy = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl, now: () => clock });
+  await policy(cup);
+  clock = 120000;
+  assert.deepEqual(await policy(cup), ["'self'", 'https://theirsite.com']);
+  clock = 240000;
+  assert.deepEqual(await policy(cup), ["'self'", 'https://theirsite.com']);
+});
+
+testAsync('no answer falls back to anywhere, and a slow API is not waited on', async () => {
+  const down = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: fakeApi([new Error('down')]).fetchImpl });
+  assert.deepEqual(await down(cup), []);
+  const gone = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: fakeApi([{ status: 404, body: {} }]).fetchImpl });
+  assert.deepEqual(await gone(cup), []);
+  const slow = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: fakeApi(['hang']).fetchImpl, timeout: 50 });
+  const started = Date.now();
+  // AbortSignal.timeout does not keep a script alive on its own; a server does.
+  const alive = setTimeout(() => {}, 5000);
+  assert.deepEqual(await slow(cup), []);
+  clearTimeout(alive);
+  assert.ok(Date.now() - started < 1000);
+});
+
+testAsync('only sources that can be sources reach the header', async () => {
+  const api = fakeApi([locked(["'self'", 'https://ok.com', 'https://evil.com; script-src *', 'http://plain.com', '*'])]);
+  const policy = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl });
+  assert.deepEqual(await policy(cup), ["'self'", 'https://ok.com']);
+  // A lock whose every source is unreadable frames on V-ENT alone, never anywhere.
+  const odd = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: fakeApi([locked(['https://x.com/<'])]).fetchImpl });
+  assert.deepEqual(await odd(cup), ["'self'"]);
+});
+
+testAsync('the memory holds a bounded number of records', async () => {
+  const api = fakeApi([locked([])]);
+  const policy = createFramePolicy({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl, most: 2 });
+  await policy({ kind: 'tournament', ref: 'a' });
+  await policy({ kind: 'tournament', ref: 'b' });
+  await policy({ kind: 'tournament', ref: 'c' });
+  await policy({ kind: 'tournament', ref: 'a' });
+  assert.equal(api.calls.length, 4);
+});
+
+for (const [name, fn] of later) {
+  try {
+    await fn();
+    passed += 1;
+    console.log(`  ok   ${name}`);
+  } catch (err) {
+    failures += 1;
+    console.log(`  FAIL ${name}`);
+    console.log(`       ${err.message}`);
+  }
+}
 
 console.log(failures ? `${failures} failed, ${passed} passed` : `all ${passed} passed`);
 process.exit(failures ? 1 : 0);

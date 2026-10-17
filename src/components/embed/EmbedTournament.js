@@ -77,7 +77,7 @@ export default function EmbedTournament({ slug, initial, failed, look }) {
   const page = `${origin}/tournaments/${encodeURIComponent(slug)}`;
 
   return (
-    <EmbedFrame look={look}>
+    <EmbedFrame kind="tournament" slug={slug} look={look}>
       {banner && (
         // eslint-disable-next-line @next/next/no-img-element
         <img className={styles.banner} src={banner}

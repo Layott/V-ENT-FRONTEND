@@ -45,7 +45,7 @@ export default function EmbedTournamentWidget({ widget, slug, initial, failed, l
   const name = t.tournament_title || t.name || t.title;
 
   return (
-    <EmbedFrame look={frameLook} appTokens={!themed} wide>
+    <EmbedFrame kind="tournament" slug={slug} look={frameLook} appTokens={!themed} wide>
       <header className={styles.widgetHead}>
         <h1 className={styles.widgetTitle}>{name}</h1>
         <a className={styles.widgetLink} href={`${origin}/tournaments/${encodeURIComponent(slug)}`}
