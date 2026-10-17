@@ -516,8 +516,9 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
       }
       return id;
     };
-    (feedRows?.incoming || []).forEach(f => extLines.push({ ...f, source: outside(f.source, 'in'), target: f.target.stage_id }));
-    (feedRows?.outgoing || []).forEach(f => extLines.push({ ...f, source: f.source.stage_id, target: outside(f.target, 'out') }));
+    const through = f => (f.qualifiers || []).filter(q => q.status === 'confirmed').map(q => ({ name: q.name }));
+    (feedRows?.incoming || []).forEach(f => extLines.push({ ...f, sent: through(f), source: outside(f.source, 'in'), target: f.target.stage_id }));
+    (feedRows?.outgoing || []).forEach(f => extLines.push({ ...f, sent: through(f), source: f.source.stage_id, target: outside(f.target, 'out') }));
     return { stages: [...ext.filter(x => x.id.startsWith('x-in')), ...own, ...ext.filter(x => x.id.startsWith('x-out'))],
              lines: [...(path?.progressions || []), ...extLines], external: ext };
   })();

@@ -212,6 +212,31 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
     }
   };
 
+  // A qualifier's organiser sends its places from here: its last stage
+  // closes by itself, and the plan's own send button covers only the
+  // tournament's own links (walk planning, 17 October 2026).
+  const sendNow = async feed => {
+    setBusy(true);
+    setProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/${feed.source.stage_id}/lines/${feed.id}/pull/`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...auth }, body: '{}',
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        await load();
+        if (showToast) showToast(tt('feeds.sentToast', 'Sent to {tournament}.').replace('{tournament}', feed.target.tournament.title));
+        if (onChanged) onChanged();
+        return;
+      }
+      setProblem(apiMessage(tt, body, 'feeds.sendFailed', 'Those places were not sent.'));
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const set = (key, value) => setDraft(d => ({ ...d, [key]: value }));
   const chosenStage = sourceStages.find(s => String(s.id) === String(draft?.sourceStage));
   const incoming = feeds?.incoming || [];
@@ -329,6 +354,29 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
                 </>
               )}
             </div>
+          )}
+        </div>
+      ))}
+
+      {(feeds?.outgoing || []).length > 0 && (
+        <p className={styles.title}>{tt('feeds.outTitle', 'Places this tournament sends')}</p>
+      )}
+      {(feeds?.outgoing || []).map(feed => (
+        <div key={`out-${feed.id}`} className={styles.feedRow}>
+          <p className={styles.stageLine}>{feedSentence(tt, feed, 'out')}</p>
+          <p className={styles.note}>
+            {/* "Waits for League to finish" read wrong on a League already
+                over (walk, 17 October 2026). */}
+            {feed.fired_at
+              ? tt('feeds.sent', 'Sent: {n}').replace('{n}', feed.sent_count)
+              : feed.source.status === 'complete'
+                ? tt('feeds.readyToSend', '{stage} is finished: send them when you are ready.').replace('{stage}', feed.source.stage)
+                : tt('feeds.waiting', 'Waits for {stage} to finish').replace('{stage}', feed.source.stage)}
+          </p>
+          {!feed.fired_at && (
+            <button type="button" className={styles.save} disabled={busy} onClick={() => sendNow(feed)}>
+              {tt('feeds.sendNow', 'Send now')}
+            </button>
           )}
         </div>
       ))}
