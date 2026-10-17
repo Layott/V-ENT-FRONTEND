@@ -662,7 +662,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                    // One link into the next stage reads as one list the
                    // organiser may reorder; several are shown link by link.
                    lines: sending,
-                   perLine: sending.length > 1 || sending.some(l => l.fire === 'manual') });
+                   perLine: sending.length > 1 || sending.some(l => l.fire === 'manual'),
+                   // Closing a stage whose every link waits for a press sends
+                   // nobody yet, and a next stage drawn early (P1d) is not
+                   // drawn again: its seats fill. The panel said "{next} is
+                   // drawn in the same press" in both cases (walk, 17 Oct).
+                   manualOnly: sending.length > 0 && sending.every(l => l.fire === 'manual'),
+                   seatsWaiting: Boolean(body.data.next?.drawn_at) });
     } catch {
       networkFail();
     } finally {
@@ -695,9 +701,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         setClosing(null);
         after();
         if (showToast) {
-          showToast(tt('stages.advanced', '{n} go through to {next}.')
-            .replace('{n}', (body.data.advanced || []).length)
-            .replace('{next}', body.data.next?.label || ''));
+          showToast(closing.manualOnly
+            ? tt('stages.closedWaiting', '{stage} is closed. Press send when you want them in {next}.')
+              .replace('{stage}', closing.row.label).replace('{next}', closing.next?.label || '')
+            : tt('stages.advanced', '{n} go through to {next}.')
+              .replace('{n}', (body.data.advanced || []).length)
+              .replace('{next}', body.data.next?.label || ''));
         }
         return;
       }
@@ -912,8 +921,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                   )}
                   {row.status === 'complete' && outs.length > 0 && (
                     <span className={styles.done}>
-                      {tt('stages.complete', 'Closed. {n} went through.')
-                        .replace('{n}', (row.advanced || []).length)}
+                      {/* Closed with a link still waiting for the press: "0 went
+                          through" beside the send button read as a failure
+                          (walk, 17 October 2026). */}
+                      {(row.advanced || []).length === 0 && outs.some(l => l.fire === 'manual' && !l.fired_at)
+                        ? tt('stages.closedSendWaiting', 'Closed. Nobody has gone through yet: press send when you are ready.')
+                        : tt('stages.complete', 'Closed. {n} went through.')
+                          .replace('{n}', (row.advanced || []).length)}
                     </span>
                   )}
                   {row.status === 'complete' && outs.length === 0 && (
@@ -1616,7 +1630,15 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           ) : (
             <>
               <p className={styles.hint}>
-                {closing.next?.placement === 'random'
+                {closing.manualOnly
+                  ? tt('stages.confirmHintManual',
+                    'Closing {stage} fixes its final table. Nobody goes to {next} until you press send on the link.')
+                    .replace('{stage}', closing.row.label).replace(/\{next\}/g, closing.next?.label || '')
+                  : closing.seatsWaiting
+                    ? tt('stages.confirmHintSeats',
+                      'These go through to {next}, as the stage’s own table has them. Move anybody up or down within their group if a place needs correcting. {next} is already drawn, so each one takes the seat waiting for their group and place.')
+                      .replace(/\{next\}/g, closing.next?.label || '')
+                  : closing.next?.placement === 'random'
                   ? tt('stages.confirmHintRandom',
                     'These go through to {next}. {next} places them at random when it is drawn, in the same press, so the order here does not decide who meets whom.')
                     .replace(/\{next\}/g, closing.next?.label || '')
@@ -1682,11 +1704,13 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
           )}
           <div className={styles.editorActions}>
             {closing.finished && (
-              <button type="button" className={styles.save} disabled={busy || !closing.through.length}
+              <button type="button" className={styles.save} disabled={busy || (!closing.through.length && !closing.manualOnly)}
                       onClick={() => confirmClose(Boolean(closing.disputes))}>
                 {closing.disputes
                   ? tt('stages.advanceAnyway', 'Advance anyway')
-                  : tt('stages.advanceNow', 'Send these through')}
+                  : closing.manualOnly
+                    ? tt('stages.closeOnly', 'Close the stage')
+                    : tt('stages.advanceNow', 'Send these through')}
               </button>
             )}
             <button type="button" className={styles.quiet} disabled={busy}
