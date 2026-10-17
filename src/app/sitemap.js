@@ -108,6 +108,9 @@ export default async function sitemap() {
     // What opens next, in order (inbox 421): the answer to "what is V-ENT
     // building", which people and models ask by name.
     entry('/roadmap', { changeFrequency: 'monthly', priority: 0.5 }),
+    // How every tournament format works, each with its explainer (inbox
+    // 476): what somebody looks up by name before choosing one.
+    entry('/formats', { changeFrequency: 'monthly', priority: 0.5 }),
     entry('/feedback', { changeFrequency: 'monthly', priority: 0.3 }),
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.

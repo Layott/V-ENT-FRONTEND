@@ -40,6 +40,7 @@ const BASE = process.argv[2]
 // Retrying a server that is not there only makes the run slow before it says
 // nothing was checked; a server that answered is worth asking again.
 const TRIES = await answers(BASE) ? 3 : 1;
+const PER_FETCH_MS = 25000;
 
 // One of each kind: the front page, a listing, a record with its own image, a
 // legal page, and a record whose image comes from the media host.
@@ -84,7 +85,7 @@ let checked = 0;
 async function fetchPage(url, tries = TRIES) {
   for (let attempt = 1; ; attempt += 1) {
     try {
-      const res = await fetch(url, { redirect: 'follow' });
+      const res = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(PER_FETCH_MS) });
       if (res.status < 500 || attempt >= tries) return res;
     } catch (err) {
       if (attempt >= tries) throw err;
@@ -93,7 +94,22 @@ async function fetchPage(url, tries = TRIES) {
   }
 }
 
+// A dev server compiles each page the first time it is asked for, and the
+// one under test may belong to another session's walk. check-all stops any
+// checker at 300 s and calls that an ERROR, which blocks the commit: three
+// times on 17 October a commit in another lane stopped there while 3005 was
+// compiling, and passed on a retry. So each fetch has a deadline and the run
+// a budget; past it, the server is too busy to judge and nothing is counted.
+const BUDGET_MS = 120000;
+const STARTED = Date.now();
+
 for (const route of ROUTES) {
+  if (Date.now() - STARTED > BUDGET_MS) {
+    // No digits in this line, as with nothing checked: the debt ledger reads
+    // numbers off a summary line.
+    console.log('\nTHE SERVER UNDER TEST IS TOO BUSY TO JUDGE (still compiling?). Nothing counted; run it again when it is idle.');
+    process.exit(2);
+  }
   let html;
   try {
     const res = await fetchPage(`${BASE}${route}`);
@@ -158,7 +174,7 @@ for (const route of ROUTES) {
       // not a URL; the fetch below will say so
     }
     try {
-      const img = await fetch(target, { redirect: 'follow' });
+      const img = await fetch(target, { redirect: 'follow', signal: AbortSignal.timeout(PER_FETCH_MS) });
       const servedType = (img.headers.get('content-type') || '').split(';')[0].trim();
       const declaredType = meta(html, 'og:image:type');
       if (!img.ok) {
