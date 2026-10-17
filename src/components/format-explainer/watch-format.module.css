@@ -1,0 +1,172 @@
+/* "Watch how it works" and the sheet it opens (inbox 476): the party game
+   explainer's sheet (game-explainer.module.css) with a bracket in it. A filled
+   panel over a dimmed page, at the foot of the screen on a phone and in the
+   middle on a desktop. No outlines, no glow, no motion of its own. */
+
+.watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.86);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.watch:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.98);
+}
+
+.watch:focus-visible,
+.close:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+/* A play triangle, cut from a filled square. */
+.playMark {
+  width: 9px;
+  height: 10px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  flex: none;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: rgba(8, 8, 10, 0.72);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 760px) {
+  .scrim {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.sheet {
+  background: var(--overlay-gray);
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  padding: 1rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+@media (min-width: 760px) {
+  .sheet {
+    width: min(780px, 100%);
+    max-height: calc(100vh - 3rem);
+    border-radius: 16px;
+    padding: 1.35rem 1.4rem 1.4rem;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.headWords {
+  min-width: 0;
+}
+
+.kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.2rem 0 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.close {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.close:hover {
+  background: #33343a;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #2a2b30;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.all {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--v-ent-gold);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.all:hover {
+  color: var(--v-ent-light-gold);
+}
+
+.all:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--v-ent-gold);
+  color: #17140a;
+}
