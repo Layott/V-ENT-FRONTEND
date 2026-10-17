@@ -870,7 +870,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         )}
       </div>
 
-      {problem && <p className={styles.problem} role="alert">{problem}</p>}
+      {/* While a plan is being edited the refusal is drawn beside its save
+          button instead: up here it sat 2,000px above the button on a long
+          plan, and pressing save seemed to do nothing (walk of P3, 17
+          October 2026). */}
+      {problem && !draft && <p className={styles.problem} role="alert">{problem}</p>}
 
       {/* The in-game ID, for a game with a preset. Two players on phones
           find each other by it, and a result is checked against it. */}
@@ -1343,7 +1347,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                              onChange={v => setSetting(index, 'grand_final', v)} />
                     </div>
                   )}
-                  {GROUPABLE.has(row.format) && (
+                  {/* Home and away is a table's question; a bracket group is a
+                      knockout (walk of P3, 17 October 2026). */}
+                  {BERGER.has(row.format) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.legs', 'Everybody plays everybody')}</span>
                       <Chips value={Number(s.legs || (row.format === 'league' ? 2 : 1))} disabled={busy}
@@ -1799,6 +1805,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             );
           })}
 
+          {problem && <p className={styles.problem} role="alert">{problem}</p>}
           <div className={styles.editorActions}>
             <button type="button" className={styles.ghost} onClick={addRow} disabled={busy}>
               <LuPlus aria-hidden="true" /> {tt('stages.addStage', 'Add a stage')}
