@@ -499,6 +499,35 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stagesKey, tournamentRef, tournamentId]);
 
+  // The Path view across tournaments (P2): a feed's other end is drawn as a
+  // box of its own ("Lagos Qualifier: League"), joined by the feed's line;
+  // pressing it opens that tournament.
+  const graph = (() => {
+    const own = path?.stages || [];
+    const ext = [];
+    const extLines = [];
+    const seen = new Set();
+    const outside = (side, key) => {
+      const id = `x-${key}-${side.stage_id}`;
+      if (!seen.has(id)) {
+        seen.add(id);
+        ext.push({ id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
+                   groups: side.groups, slug: side.tournament.slug });
+      }
+      return id;
+    };
+    (feedRows?.incoming || []).forEach(f => extLines.push({ ...f, source: outside(f.source, 'in'), target: f.target.stage_id }));
+    (feedRows?.outgoing || []).forEach(f => extLines.push({ ...f, source: f.source.stage_id, target: outside(f.target, 'out') }));
+    return { stages: [...ext.filter(x => x.id.startsWith('x-in')), ...own, ...ext.filter(x => x.id.startsWith('x-out'))],
+             lines: [...(path?.progressions || []), ...extLines], external: ext };
+  })();
+  const pickInPath = id => {
+    const ext = graph.external.find(x => x.id === id);
+    if (ext) { window.location.assign(`/tournaments/${ext.slug}?tab=bracket`); return; }
+    setStageId(id);
+    setView(null);
+  };
+
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
   if (error) {
     return <div className={styles.state}>
@@ -533,11 +562,11 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   return (
     <div className={styles.wrap}>
-      {showPath && stages.length > 1 && (path?.stages || []).length > 1 ? (
+      {showPath && graph.stages.length > 1 && (path?.stages || []).length > 0 ? (
         <section className={styles.path} aria-label={tt('stages.graph.pathLabel', 'The path through this tournament')}>
           <p className={styles.pathTitle}>{tt('stages.graph.pathTitle', 'How this tournament runs')}</p>
-          <StageGraph stages={path.stages} lines={path.progressions || []} selected={data.stage_id} showState
-                      onPick={id => { setStageId(id); setView(null); }} />
+          <StageGraph stages={graph.stages} lines={graph.lines} selected={data.stage_id} showState
+                      onPick={pickInPath} />
         </section>
       ) : stages.length > 1 && (
         <div className={styles.stageChips} role="group"

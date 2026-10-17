@@ -9660,6 +9660,8 @@ const table = {
  "stages.checkIn": "Se présenter avant chaque match",
  "stages.checkInN": "{n} minutes pour se présenter",
  "stages.confirmHint2": "Ils passent en {next}, dans cet ordre de tête de série, tel que le classement de la phase les donne. Montez ou descendez quelqu'un si besoin, puis faites-les passer. {next} est tirée dans la même action.",
+ "bracket.slotPlaceTournament": "{tournament}, {stage} : place {n}",
+ "bracket.slotPlaceTournamentGroup": "{tournament}, {stage} : groupe {g}, place {n}",
  "feeds.placeName": "{place}. {name}",
  "feeds.declinedWord": "a refusé",
  "feeds.recalledWord": "rappelé",
