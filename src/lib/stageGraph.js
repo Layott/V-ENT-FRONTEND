@@ -47,6 +47,19 @@ export function layout(stages, lines) {
   return { columns: columns.filter(Boolean), edges, depth };
 }
 
+/**
+ * Where a stage is up to, in words. A stage drawn early (P1d) is drawn and
+ * not yet played: its seats are waiting for the places that feed them, and
+ * calling it "being played" sent people looking for matches that cannot
+ * start yet (walk, 17 October 2026).
+ */
+export function stageState(tt, stage) {
+  if (stage?.status === 'complete') return tt('bracket.stageDone', 'Finished');
+  if (stage?.status === 'running') return tt('bracket.stageLive', 'Being played');
+  if (stage?.drawn_at || stage?.drawn) return tt('bracket.stageWaiting', 'Drawn, waiting for its places');
+  return tt('bracket.stageLater', 'Not drawn yet');
+}
+
 const groupLetter = n => String.fromCharCode(64 + Number(n || 1));
 
 /**

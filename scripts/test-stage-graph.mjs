@@ -9,7 +9,7 @@
 // draft the save would refuse (a line to a removed stage, a cycle).
 
 import assert from 'node:assert/strict';
-import { layout, lineWords } from '../src/lib/stageGraph.js';
+import { layout, lineWords, stageState } from '../src/lib/stageGraph.js';
 
 let failures = 0;
 const test = (name, fn) => {
@@ -96,6 +96,17 @@ test('a line in words: one place of one group', () => {
 test('a line in words: the winner of a single field, points kept, sent on a press', () => {
   assert.equal(lineWords(tt, L('g', 'p', { place_to: 1, carry_points: true, fire: 'manual' }), { groups: 0 }, 'Final'),
     'The winner goes to Final, keeping their points, when you press send.');
+});
+
+test('a stage drawn early, waiting for its places, is not being played', () => {
+  assert.equal(stageState(tt, { status: 'pending', drawn_at: '2026-10-17T00:00:00Z' }), 'Drawn, waiting for its places');
+  assert.equal(stageState(tt, { status: 'pending', drawn: true }), 'Drawn, waiting for its places');
+});
+
+test('the other three states', () => {
+  assert.equal(stageState(tt, { status: 'running', drawn_at: 'x' }), 'Being played');
+  assert.equal(stageState(tt, { status: 'complete', drawn_at: 'x' }), 'Finished');
+  assert.equal(stageState(tt, { status: 'pending', drawn_at: null }), 'Not drawn yet');
 });
 
 console.log(`\n${failures} failed`);

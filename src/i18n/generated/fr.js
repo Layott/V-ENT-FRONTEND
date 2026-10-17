@@ -9558,6 +9558,7 @@ const table = {
  "bracket.pending": "En attente de confirmation",
  "bracket.stageDone": "Terminée",
  "bracket.stageLater": "Pas encore tirée",
+ "bracket.stageWaiting": "Tiré, en attente de ses qualifiés",
  "stages.graph.stageN": "Phase {n}",
  "stages.graph.groupsN": "{n} groupes",
  "stages.graph.through": "Qualifiés : {names}",

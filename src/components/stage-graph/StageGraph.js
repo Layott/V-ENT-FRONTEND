@@ -17,7 +17,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { formatLabel } from '@/lib/formatLabel';
-import { layout, lineWords } from '@/lib/stageGraph';
+import { layout, lineWords, stageState } from '@/lib/stageGraph';
 import styles from './stage-graph.module.css';
 
 const WIDE = 720;
@@ -65,9 +65,7 @@ export default function StageGraph({ stages, lines, selected = null, onPick = nu
   const order = (stages || []).map(s => String(s.id));
   const labelOf = id => nameOf(byId[String(id)], order.indexOf(String(id)));
 
-  const stateOf = stage => (stage.status === 'complete' ? tt('bracket.stageDone', 'Finished')
-    : stage.drawn_at || stage.drawn ? tt('bracket.stageLive', 'Being played')
-      : tt('bracket.stageLater', 'Not drawn yet'));
+  const stateOf = stage => stageState(tt, stage);
 
   return (
     <div className={styles.graph} ref={wrap}>

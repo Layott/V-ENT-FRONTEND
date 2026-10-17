@@ -9558,6 +9558,7 @@ const table = {
  "bracket.pending": "Waiting to be confirmed",
  "bracket.stageDone": "Finished",
  "bracket.stageLater": "Not drawn yet",
+ "bracket.stageWaiting": "Drawn, waiting for its places",
  "stages.graph.stageN": "Stage {n}",
  "stages.graph.groupsN": "{n} groups",
  "stages.graph.through": "Through: {names}",
