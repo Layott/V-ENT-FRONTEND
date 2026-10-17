@@ -21,19 +21,25 @@ import sharp from 'sharp';
 // This machine runs the dev server on 3001 or 3005 (the build directory
 // carries the port, see reference_local_dev_stack). With no address given,
 // whichever one answers is the one under test.
+async function answers(base) {
+  try {
+    const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(4000) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 async function firstAlive(candidates) {
   for (const base of candidates) {
-    try {
-      const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(4000) });
-      if (res.ok) return base;
-    } catch {
-      // not this one
-    }
+    if (await answers(base)) return base;
   }
   return candidates[0];
 }
 const BASE = process.argv[2]
   || await firstAlive(['http://127.0.0.1:3001', 'http://127.0.0.1:3005']);
+// Retrying a server that is not there only makes the run slow before it says
+// nothing was checked; a server that answered is worth asking again.
+const TRIES = await answers(BASE) ? 3 : 1;
 
 // One of each kind: the front page, a listing, a record with its own image, a
 // legal page, and a record whose image comes from the media host.
@@ -69,10 +75,28 @@ const named = (html, name) => {
 const problems = [];
 let checked = 0;
 
+// A dev server compiling a page, or answering while the backend restarts,
+// fails a fetch or answers 5xx for a few seconds. Counted as a broken
+// preview, that blocked commits as "debt went up" (0 to 1 on 17 October
+// 2026, 7 then 0 for a helper the same morning) when no preview had changed.
+// So a page that fails that way is asked again before it counts; a 4xx, or a
+// failure that lasts three tries, is still a real fault.
+async function fetchPage(url, tries = TRIES) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      const res = await fetch(url, { redirect: 'follow' });
+      if (res.status < 500 || attempt >= tries) return res;
+    } catch (err) {
+      if (attempt >= tries) throw err;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 3000 * attempt));
+  }
+}
+
 for (const route of ROUTES) {
   let html;
   try {
-    const res = await fetch(`${BASE}${route}`, { redirect: 'follow' });
+    const res = await fetchPage(`${BASE}${route}`);
     if (!res.ok) { problems.push(`${route} answered ${res.status}`); continue; }
     html = await res.text();
   } catch (err) {
