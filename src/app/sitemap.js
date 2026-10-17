@@ -76,6 +76,8 @@ export default async function sitemap() {
     entry('/organizations', { changeFrequency: 'daily', priority: 0.7 }),
     entry('/community', { changeFrequency: 'hourly', priority: 0.7 }),
     entry('/rankings', { changeFrequency: 'daily', priority: 0.6 }),
+    // Seasons of tournaments ranked as one competition (P5).
+    entry('/circuits', { changeFrequency: 'daily', priority: 0.6 }),
     // Modules that are announced but not open yet. They are listed because
     // each one says plainly what it will be and when, and somebody searching
     // for "V-ENT shop" should reach that rather than nothing at all. Low
@@ -116,7 +118,7 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles, circuits] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
@@ -131,6 +133,9 @@ export default async function sitemap() {
     // empty until it opens and then fill on their own.
     readList('/anime/series/'),
     readList('/anime/battles/'),
+    // Published circuits only: the list endpoint answers nothing else
+    // to a caller with no session (P5).
+    readList('/circuits/'),
   ]);
 
   const tournamentPages = tournaments
@@ -201,6 +206,11 @@ export default async function sitemap() {
   // nothing.
   const clubPages = [];
 
+  // A circuit's ranking changes every time one of its tournaments finishes.
+  const circuitPages = circuits
+    .filter((c) => c?.slug && c.is_published !== false)
+    .map((c) => entry(`/circuits/${c.slug}`, { changeFrequency: 'daily', priority: 0.6 }));
+
   const orgPages = organizations
     .filter((o) => o?.slug)
     .map((o) => entry(`/organizations/${o.slug}`, {
@@ -237,6 +247,6 @@ export default async function sitemap() {
 
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...planPages,
+          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...circuitPages, ...planPages,
           ...profilePages, ...seriesPages, ...battlePages].flat();
 }

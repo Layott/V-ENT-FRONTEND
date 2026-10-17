@@ -515,6 +515,42 @@ export async function orgMetadata(raw, slug) {
   });
 }
 
+/**
+ * Metadata for one circuit (P5). `raw` is the circuit detail payload
+ * ({circuit, tiers, tournaments, standings, adjustments}); `slug` the address
+ * it was asked for. The description says what it is, its game, how many
+ * tournaments count, and who leads, so a link preview and a model reading the
+ * page both get the facts.
+ */
+export async function circuitMetadata(raw, slug) {
+  if (raw?.__failed) return unavailableMetadata(slug, `/circuits/${slug}`);
+  if (raw?.__moved) return missingMetadata('circuit', raw.__moved, { moved: true });
+  const c = raw?.circuit;
+  if (!c?.name) return missingMetadata('circuit', `/circuits/${slug}`);
+
+  const locale = await currentLocale();
+  const { t, n, num } = recordCopy(locale);
+  const counted = (raw.tournaments || []).length;
+  const leader = (raw.standings || [])[0];
+  const description = clamp(
+    c.description
+    || [
+      t('circuit.plain', { name: c.name }),
+      c.game?.title ? t('circuit.game', { game: c.game.title }) : null,
+      counted ? n('circuit.tournaments', counted) : null,
+      leader?.entrant?.name ? t('circuit.leader', { name: leader.entrant.name, points: num(Number(leader.points)) }) : null,
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    locale,
+    title: c.name,
+    description,
+    path: `/circuits/${c.slug || slug}`,
+    image: c.game?.logo || null,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Structured data
 // ---------------------------------------------------------------------------
@@ -745,6 +781,36 @@ export function orgLd(org, path) {
     ...(org.location || org.region
       ? { address: { '@type': 'PostalAddress', addressLocality: org.location || org.region } }
       : {}),
+  };
+}
+
+/**
+ * A circuit's ranking as an ItemList (P5): position, name and points, best
+ * first, so the standings are readable as data and not only as a table.
+ */
+export function circuitLd(data, path) {
+  const c = data?.circuit;
+  if (!c?.name) return null;
+  const rows = (data.standings || []).slice(0, 50);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: c.name,
+    url: absolute(path),
+    ...(c.description ? { description: clamp(c.description, 300) } : {}),
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    numberOfItems: rows.length,
+    itemListElement: rows.map((r) => {
+      const profile = r.entrant?.type === 'team'
+        ? (r.entrant?.slug ? `/teams/${r.entrant.slug}` : null)
+        : (r.entrant?.handle ? `/u/${r.entrant.handle}` : null);
+      return {
+        '@type': 'ListItem',
+        position: r.position,
+        name: `${r.entrant?.name || ''} (${r.points} points)`.trim(),
+        ...(profile ? { url: absolute(profile) } : {}),
+      };
+    }),
   };
 }
 

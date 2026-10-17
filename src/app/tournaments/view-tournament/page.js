@@ -28,6 +28,7 @@ import RunningOrder from '@/components/view-tournament/running-order/RunningOrde
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
+import PartOfCircuit from '@/components/circuits/PartOfCircuit';
 import { tournamentStatusLabel } from '@/lib/tournamentStatus';
 import { useT } from '@/i18n/LanguageProvider';
 import AdminBar, { adminSaveResult } from '@/components/admin-bar/AdminBar';
@@ -631,6 +632,10 @@ const OverviewPanel = ({
         {tournament?.id && token && (
           <EntryChecklist tournamentId={tournament.id} token={token} />
         )}
+
+        {/* The circuit this tournament counts in, at which tier (P5). Draws
+            nothing when it is in none. */}
+        {tournament?.slug && <PartOfCircuit tournamentSlug={tournament.slug} />}
 
         {about && <section className={styles.section}>
             <h2 className={styles.sectionTitle}>{tt("ui.about.tournament.1008", "About this tournament")}</h2>
