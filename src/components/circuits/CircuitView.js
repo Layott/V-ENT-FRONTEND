@@ -17,6 +17,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { describeTable, parseTable } from '@/lib/circuitTable';
 import CircuitRanking from './CircuitRanking';
+import { divisionRule } from './LeagueView';
 import { API, entrantWord, regionWord, request, seasonDates } from './circuitWords';
 import styles from './circuits.module.css';
 
@@ -37,6 +38,46 @@ function TableCard({ title, text, tt }) {
         {describeTable(tt, table || {}).map((p) => (
           <span key={p.label} className={styles.place}>{p.label} <b className={styles.num}>{p.points}</b></span>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/** A division of a league (P5d): which one, what going up and down means
+ * here, the other divisions of its season, and the seasons either side. */
+function DivisionStrip({ league, circuit, tt }) {
+  const others = league.divisions || [];
+  const index = others.findIndex((d) => d.slug === circuit.slug);
+  return (
+    <div className={styles.strip}>
+      <span className={styles.stripText}>
+        <b>
+          {tt('league.divisionNumberOf', 'Division {n} of {total} in {league}.')
+            .replace('{n}', index >= 0 ? index + 1 : league.division).replace('{total}', others.length)
+            .replace('{league}', league.name)}
+        </b>{' '}
+        {divisionRule(tt, league, index > 0 ? others[index - 1] : null, index >= 0 ? others[index + 1] : null)}
+      </span>
+      <div className={styles.chips} role="group" aria-label={tt('league.panel.divisions', 'Divisions, top first')}>
+        <Link href={`/circuits/leagues/${encodeURIComponent(league.slug)}`} className={styles.chipLink}>
+          {tt('league.wholeLeague', 'The whole league')}
+        </Link>
+        {others.map((d) => (
+          <Link key={d.slug} href={`/circuits/${encodeURIComponent(d.slug)}`} aria-current={d.slug === circuit.slug ? 'page' : undefined}
+                className={`${styles.chipLink} ${d.slug === circuit.slug ? styles.chipLinkOn : ''}`}>
+            {d.name}
+          </Link>
+        ))}
+        {league.previous && (
+          <Link href={`/circuits/${encodeURIComponent(league.previous.slug)}`} className={styles.chipLink}>
+            {tt('league.lastSeason', 'Last season')}
+          </Link>
+        )}
+        {league.following && (
+          <Link href={`/circuits/${encodeURIComponent(league.following.slug)}`} className={styles.chipLink}>
+            {tt('league.nextSeason', 'Next season')}
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -84,7 +125,7 @@ export default function CircuitView({ slug }) {
         <h1 className={styles.pageTitle}>{tt('circuit.notFound', 'No such circuit')}</h1>
         <p className={styles.empty}>
           {tt('circuit.notFoundBody', 'This circuit does not exist, or it is not published yet.')}{' '}
-          <Link href="/circuits">{tt('circuit.seeAll', 'See every circuit')}</Link>
+          <Link href="/circuits" className={styles.textLink}>{tt('circuit.seeAll', 'See every circuit')}</Link>
         </p>
       </div>
     );
@@ -112,7 +153,7 @@ export default function CircuitView({ slug }) {
     );
   }
 
-  const { circuit, tiers, tournaments, standings, adjustments } = data;
+  const { circuit, tiers, tournaments, standings, adjustments, league } = data;
   const played = tournaments.filter((t) => t.counts).length;
   const dates = seasonDates(tt, circuit, formatDate);
 
@@ -151,6 +192,8 @@ export default function CircuitView({ slug }) {
         {circuit.description && <p className={styles.lede}>{circuit.description}</p>}
       </header>
 
+      {league && <DivisionStrip league={league} circuit={circuit} tt={tt} />}
+
       <div className={styles.chips} role="group" aria-label={tt('circuit.sections', 'Sections')}>
         {TABS.map(([id, key, english, eloKey, eloEnglish]) => (
           <button key={id} type="button" className={styles.chip} aria-pressed={tab === id} onClick={() => setTab(id)}>
@@ -162,7 +205,7 @@ export default function CircuitView({ slug }) {
 
       {tab === 'ranking' && (
         <>
-          <CircuitRanking rows={standings} entrant={circuit.entrant} engine={circuit.engine} />
+          <CircuitRanking rows={standings} entrant={circuit.entrant} engine={circuit.engine} ended={Boolean(league?.ended)} />
           <p className={styles.faint}>
             {tt('circuit.rankingRule', 'Level on points, the better single place goes first, then more events won. Entrants still level share the rank.')}
           </p>

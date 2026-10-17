@@ -551,6 +551,34 @@ export async function circuitMetadata(raw, slug) {
   });
 }
 
+export async function leagueMetadata(raw, slug) {
+  if (raw?.__failed) return unavailableMetadata(slug, `/circuits/leagues/${slug}`);
+  if (raw?.__moved) return missingMetadata('league', raw.__moved, { moved: true });
+  const l = raw?.league;
+  if (!l?.name) return missingMetadata('league', `/circuits/leagues/${slug}`);
+
+  const locale = await currentLocale();
+  const { t, n } = recordCopy(locale);
+  const count = (raw.divisions || []).length;
+  const description = clamp(
+    l.description
+    || [
+      t('league.plain', { name: l.name }),
+      l.game?.title ? t('circuit.game', { game: l.game.title }) : null,
+      count ? n('league.divisions', count) : null,
+      count > 1 ? t('league.moves', { up: l.up, down: l.down }) : null,
+    ].filter(Boolean).join(' '),
+  );
+
+  return buildMetadata({
+    locale,
+    title: l.name,
+    description,
+    path: `/circuits/leagues/${l.slug || slug}`,
+    image: l.game?.logo || null,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Structured data
 // ---------------------------------------------------------------------------
@@ -811,6 +839,28 @@ export function circuitLd(data, path) {
         ...(profile ? { url: absolute(profile) } : {}),
       };
     }),
+  };
+}
+
+/** A league (P5d): its divisions, top first, each a ranking of its own. */
+export function leagueLd(data, path) {
+  const l = data?.league;
+  if (!l?.name) return null;
+  const divisions = data.divisions || [];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: l.name,
+    url: absolute(path),
+    ...(l.description ? { description: clamp(l.description, 300) } : {}),
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    numberOfItems: divisions.length,
+    itemListElement: divisions.map((d, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: d.season ? `${d.name}, ${d.season}` : d.name,
+      url: absolute(`/circuits/${d.slug}`),
+    })),
   };
 }
 

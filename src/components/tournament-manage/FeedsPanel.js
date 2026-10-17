@@ -282,7 +282,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
 
   return (
     <div className={styles.feeds}>
-      <p className={styles.title}>{tt('feeds.title', 'Places from other tournaments')}</p>
+      <p className={styles.title}>{tt('feeds.titleWithCircuits', 'Places from other tournaments or a circuit')}</p>
       <p className={styles.hint}>
         {tt('feeds.hint', 'Take places from another tournament you run: the top of a qualifier into these finals. Each qualifier is registered here, told, and has time to decline.')}
       </p>
@@ -429,7 +429,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
 
       {!draft && stages.length > 0 && (
         <button type="button" className={styles.quiet} disabled={busy} onClick={startAdding}>
-          {tt('feeds.add', 'Take places from another tournament')}
+          {tt('feeds.addWithCircuits', 'Take places from another tournament or a circuit ranking')}
         </button>
       )}
 

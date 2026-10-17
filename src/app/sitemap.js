@@ -121,7 +121,7 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles, circuits] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles, circuits, leagues] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
@@ -139,6 +139,8 @@ export default async function sitemap() {
     // Published circuits only: the list endpoint answers nothing else
     // to a caller with no session (P5).
     readList('/circuits/'),
+    // Published leagues of division circuits (P5d), the same way.
+    readList('/circuits/leagues/'),
   ]);
 
   const tournamentPages = tournaments
@@ -213,6 +215,9 @@ export default async function sitemap() {
   const circuitPages = circuits
     .filter((c) => c?.slug && c.is_published !== false)
     .map((c) => entry(`/circuits/${c.slug}`, { changeFrequency: 'daily', priority: 0.6 }));
+  const leaguePages = leagues
+    .filter((l) => l?.slug && l.is_published !== false)
+    .map((l) => entry(`/circuits/leagues/${l.slug}`, { changeFrequency: 'daily', priority: 0.6 }));
 
   const orgPages = organizations
     .filter((o) => o?.slug)
@@ -250,6 +255,6 @@ export default async function sitemap() {
 
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...circuitPages, ...planPages,
+          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...circuitPages, ...leaguePages, ...planPages,
           ...profilePages, ...seriesPages, ...battlePages].flat();
 }

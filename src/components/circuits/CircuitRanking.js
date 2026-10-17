@@ -33,11 +33,27 @@ function decidedWords(tt, key) {
   return '';
 }
 
+/** "Going up" while a division's season runs, "Went up" once it has ended
+ * (P5d); nothing for a circuit in no league. */
+export function zoneWords(tt, zone, ended) {
+  if (zone === 'up') return ended ? tt('league.wentUp', 'Went up') : tt('league.goingUp', 'Going up');
+  if (zone === 'down') return ended ? tt('league.wentDown', 'Went down') : tt('league.goingDown', 'Going down');
+  return '';
+}
+
+export function cameWords(tt, came) {
+  if (came === 'up') return tt('league.cameUp', 'came up');
+  if (came === 'down') return tt('league.cameDown', 'came down');
+  return '';
+}
+
+export const zoneClass = (zone) => (zone === 'up' ? styles.zoneUp : zone === 'down' ? styles.zoneDown : '');
+
 const profileHref = (entrant) => (entrant.type === 'team'
   ? (entrant.slug ? `/teams/${encodeURIComponent(entrant.slug)}` : null)
   : (entrant.handle ? `/u/${encodeURIComponent(entrant.handle)}` : null));
 
-function Row({ row, index, tt }) {
+function Row({ row, index, tt, ended }) {
   const [open, setOpen] = useState(false);
   const { entrant } = row;
   const href = profileHref(entrant);
@@ -47,14 +63,19 @@ function Row({ row, index, tt }) {
       <Avatar src={entrant.avatar} name={name} size={36} />
       <span className={styles.whoText}>
         <span className={styles.whoName}>{name}</span>
-        {entrant.handle && <span className={styles.whoHandle}>@{entrant.handle}</span>}
+        {(entrant.handle || cameWords(tt, row.came)) && (
+          <span className={styles.whoHandle}>
+            {[entrant.handle ? `@${entrant.handle}` : '', cameWords(tt, row.came)].filter(Boolean).join(', ')}
+          </span>
+        )}
+        {zoneWords(tt, row.zone, ended) && <span className={styles.zoneWord}>{zoneWords(tt, row.zone, ended)}</span>}
         {row.decided_by && decidedWords(tt, row.decided_by)
           && <span className={styles.why}>{decidedWords(tt, row.decided_by)}</span>}
       </span>
     </>
   );
   return (
-    <div className={index % 2 === 0 ? styles.zebra : undefined}>
+    <div className={zoneClass(row.zone) || (index % 2 === 0 ? styles.zebra : undefined)}>
       <div className={styles.trow} role="row">
         <span className={`${styles.rank} ${styles.num} ${row.rank === 1 ? styles.rankFirst : ''}`} role="cell">
           {row.rank}
@@ -103,7 +124,7 @@ function Row({ row, index, tt }) {
   );
 }
 
-export default function CircuitRanking({ rows, entrant, engine = 'points' }) {
+export default function CircuitRanking({ rows, entrant, engine = 'points', ended = false }) {
   const tt = useT();
   if (!rows.length) {
     return (
@@ -126,7 +147,7 @@ export default function CircuitRanking({ rows, entrant, engine = 'points' }) {
       </div>
       <div>
         {rows.map((row, i) => (
-          <Row key={`${row.entrant.type}-${row.entrant.id}`} row={row} index={i} tt={tt} />
+          <Row key={`${row.entrant.type}-${row.entrant.id}`} row={row} index={i} tt={tt} ended={ended} />
         ))}
       </div>
     </div>

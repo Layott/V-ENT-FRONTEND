@@ -20,6 +20,7 @@ import useGames from '@/hooks/useGames';
 import DateField from '@/components/date-field/DateField';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { ventFetch, API as TOURNAMENT_API, toTournamentArray } from '@/components/tournament-lib/tournamentApi';
+import MembersPanel from './MembersPanel';
 import { API, REGIONS, entrantWord, regionWord, request } from './circuitWords';
 import styles from './circuits.module.css';
 
@@ -536,7 +537,7 @@ export default function CircuitManage({ slug }) {
       <div className={styles.container}>
         <p className={styles.empty}>
           {tt('circuit.manageSignedOut', 'Only the person running this circuit can change it.')}{' '}
-          <Link href={`/circuits/${encodeURIComponent(slug)}`}>{tt('circuit.seePublic', 'See the circuit')}</Link>
+          <Link href={`/circuits/${encodeURIComponent(slug)}`} className={styles.textLink}>{tt('circuit.seePublic', 'See the circuit')}</Link>
         </p>
       </div>
     );
@@ -557,13 +558,13 @@ export default function CircuitManage({ slug }) {
     );
   }
 
-  const { circuit, tiers, tournaments, adjustments } = data;
+  const { circuit, tiers, tournaments, adjustments, league } = data;
   if (!circuit.can_manage) {
     return (
       <div className={styles.container}>
         <p className={styles.empty}>
           {tt('circuit.manageSignedOut', 'Only the person running this circuit can change it.')}{' '}
-          <Link href={`/circuits/${encodeURIComponent(circuit.slug)}`}>{tt('circuit.seePublic', 'See the circuit')}</Link>
+          <Link href={`/circuits/${encodeURIComponent(circuit.slug)}`} className={styles.textLink}>{tt('circuit.seePublic', 'See the circuit')}</Link>
         </p>
       </div>
     );
@@ -582,7 +583,15 @@ export default function CircuitManage({ slug }) {
         <div>
           <h1 className={styles.pageTitle}>{circuit.name}</h1>
           <p className={styles.pageSub}>
-            <Link href={`/circuits/${encodeURIComponent(circuit.slug)}`}>{tt('circuit.seePublic', 'See the circuit')}</Link>
+            <Link href={`/circuits/${encodeURIComponent(circuit.slug)}`} className={styles.textLink}>{tt('circuit.seePublic', 'See the circuit')}</Link>
+            {league && (
+              <>
+                {' '}
+                <Link href={`/circuits/leagues/${encodeURIComponent(league.slug)}/manage`} className={styles.textLink}>
+                  {tt('league.runLeague', 'Run {league}').replace('{league}', league.name)}
+                </Link>
+              </>
+            )}
           </p>
         </div>
         <div className={styles.chips} role="group" aria-label={tt('circuit.visibility', 'Who can see it')}>
@@ -604,6 +613,7 @@ export default function CircuitManage({ slug }) {
         <TiersPanel circuit={circuit} tiers={tiers} token={viewer.token} onChanged={load} tt={tt} />
         <TournamentsPanel circuit={circuit} tiers={tiers} tournaments={tournaments} token={viewer.token} onChanged={load} tt={tt} />
         <AdjustmentsPanel circuit={circuit} adjustments={adjustments} token={viewer.token} onChanged={load} tt={tt} />
+        {league && <MembersPanel circuit={circuit} token={viewer.token} onChanged={load} />}
       </div>
 
       <div className={styles.panel}>
