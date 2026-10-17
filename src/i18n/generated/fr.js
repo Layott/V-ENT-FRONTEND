@@ -8451,6 +8451,7 @@ const table = {
  "partners.studioConnect.outcome.applied": "Enregistré sur le match",
  "partners.studioConnect.outcome.superseded": "Le match a été réglé autrement",
  "partners.studioConnect.outcome.needs": "Il faut votre intervention : enregistrez le résultat à la main.",
+ "api.ACCOUNT_NOT_LINKED": "Aucun compte V-ENT n’est lié à ce compte de jeu.",
  "api.SESSION_NOT_FOUND": "Cette session de jeu n’existe pas.",
  "api.SESSION_FINISHED": "Cette partie est déjà terminée avec un autre résultat.",
  "api.STATE_NOT_ALLOWED": "Une session ne peut pas passer à cet état depuis là où elle est.",
