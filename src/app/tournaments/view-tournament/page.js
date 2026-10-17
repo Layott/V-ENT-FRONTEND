@@ -2,7 +2,7 @@
 
 import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, formatRuns } from '@/lib/formatLabel';
 import { explainersFor, tournamentFormats } from '@/lib/explainers';
 import WatchFormat from '@/components/format-explainer/WatchFormat';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
@@ -544,7 +544,16 @@ export const ViewTournamentContent = ({
                 {/* A tournament in stages is its plan, not its bracket_type:
                     this read "Round robin" for groups into a playoff. */}
                 <p className={styles.metaValue}>{tournament.stages?.length
-                  ? tournament.stages.map(st => formatLabel(tt, st.format, st.format_label))
+                  ? formatRuns(tournament.stages).map(({ format, label, count }) => (count < 2
+                    ? formatLabel(tt, format, label)
+                    // A free for all bracket is battle royale stages one after
+                    // another: "rounds of lobbies", not the format three times
+                    // over (walk of P3, 17 October 2026).
+                    : format === 'battle_royale'
+                      ? tt('stages.lobbyRounds', '{format}, {n} rounds of lobbies')
+                        .replace('{format}', formatLabel(tt, format, label)).replace('{n}', count)
+                      : tt('stages.formatRun', '{format} in {n} stages')
+                        .replace('{format}', formatLabel(tt, format, label)).replace('{n}', count)))
                     .join(tt('stages.thenSeparator', ', then '))
                   : formatLabel(tt, tournament.format || tournament.bracket_type)}</p>
                 {/* How that format works, as a short moving bracket (inbox

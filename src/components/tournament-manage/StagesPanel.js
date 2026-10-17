@@ -1520,6 +1520,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                                   value={s.schema_text || ''} placeholder={'A=[1,4]\nB=[2,3]\nC=[W:A,W:B]! >1,2'}
                                   onChange={e => setSetting(index, 'schema_text', e.target.value)} />
                         <span className={styles.note}>
+                          {tt('stages.customHelpMore', 'R:GF1 in both seats of a [GF] match plays GF1 again if its second seat wins it, and X:F:1:2 is whoever lost to the finalist in seat 1 of F in round 2.')}
+                        </span>
+                        <span className={styles.note}>
                           {tt('stages.customHelp', 'A=[1,4] is seed 1 against seed 4. C=[W:A,W:B] puts the winners of A and B together, L: takes a loser instead, and - is a bye. #round 2 starts a round, [PL] puts the matches below it on the placement side, @east names a part of the bracket. ! marks the final, and >3,4 gives the places a match decides.')}
                         </span>
                       </label>

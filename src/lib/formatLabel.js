@@ -98,3 +98,18 @@ export const formatLabel = (tt, value, empty = '-') => {
   if (!key) return value ? String(value) : empty;
   return tt(`format.label.${key}`, FALLBACK[key]);
 };
+
+/**
+ * A plan's stages as runs of the same format, in order:
+ * [{ format, label, count }]. Three battle royale stages in a row are one
+ * run of three (a free for all bracket), so a sentence can say "three
+ * rounds of lobbies" instead of naming the format three times (walk of P3,
+ * 17 October 2026).
+ */
+export const formatRuns = (stages) => (stages || []).reduce((runs, stage) => {
+  const key = formatKey(stage.format) || stage.format;
+  const last = runs[runs.length - 1];
+  if (last && last.format === key) last.count += 1;
+  else runs.push({ format: key, label: stage.format_label, count: 1 });
+  return runs;
+}, []);
