@@ -35,6 +35,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatLabel } from '@/lib/formatLabel';
+import { lineWords } from '@/lib/stageGraph';
+import StageGraph from '@/components/stage-graph/StageGraph';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
@@ -353,35 +355,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   const into = id => lines.filter(l => l.target === id);
   const labelOf = id => rows.find(r => r.id === id)?.label || '';
 
-  // "Places 1 to 2 of each group go to Playoff, in the upper bracket." Built
-  // from the parts so every language puts them in its own order.
-  const lineSentence = (line, sourceRow, targetLabel) => {
-    const each = Number(sourceRow?.groups) > 1 && (line.group === null || line.group === undefined || line.group === '');
-    const one = Number(sourceRow?.groups) > 1 && !each;
-    const g = one ? groupLetter(line.group) : '';
-    const from = Number(line.place_from) || 1;
-    const to = Number(line.place_to) || from;
-    const scope = each ? 'Each' : one ? 'Group' : '';
-    const kind = from === to ? (from === 1 ? 'winner' : 'place') : 'range';
-    const fallback = {
-      winner: 'The winner goes to {target}', winnerEach: 'The winner of each group goes to {target}',
-      winnerGroup: 'The winner of group {g} goes to {target}',
-      place: 'Place {n} goes to {target}', placeEach: 'Place {n} of each group goes to {target}',
-      placeGroup: 'Place {n} of group {g} goes to {target}',
-      range: 'Places {a} to {b} go to {target}', rangeEach: 'Places {a} to {b} of each group go to {target}',
-      rangeGroup: 'Places {a} to {b} of group {g} go to {target}',
-    }[kind + scope];
-    const base = tt(`stages.lines.${kind}${scope}`, fallback)
-      .replace('{target}', targetLabel || '').replace('{g}', g)
-      .replace('{n}', from).replace('{a}', from).replace('{b}', to);
-    const parts = [];
-    if (line.side === 'winners') parts.push(tt('stages.lines.inUpper', 'in the upper bracket'));
-    if (line.side === 'losers') parts.push(tt('stages.lines.inLower', 'in the lower bracket'));
-    if (line.carry_points) parts.push(tt('stages.lines.keeping', 'keeping their points'));
-    if (line.fire === 'on_close') parts.push(tt('stages.lines.goesOnClose', 'as soon as the stage ends'));
-    if (line.fire === 'manual') parts.push(tt('stages.lines.goesManual', 'when you press send'));
-    return `${base}${parts.length ? `, ${parts.join(', ')}` : ''}.`;
-  };
+  // "Places 1 to 2 of each group go to Playoff, in the upper bracket." One
+  // sentence, shared with the stage graph (src/lib/stageGraph.js).
+  const lineSentence = (line, sourceRow, targetLabel) => lineWords(tt, line, sourceRow, targetLabel);
 
   // A plan that is only a chain (each stage into the next, from the top
   // places, nothing else) reads as it always has.
@@ -863,6 +839,14 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         </div>
       )}
 
+      {/* The plan as a picture (P1f): the same graph the public Path view
+          draws, with what each stage is doing and who each line sent. */}
+      {!draft && rows.length > 1 && (
+        <div className={styles.graphWrap}>
+          <StageGraph stages={rows} lines={lines} showState />
+        </div>
+      )}
+
       {!draft && rows.length > 0 && (
         <ol className={styles.list}>
           {rows.map((row, index) => {
@@ -1106,6 +1090,12 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       {/* -------------------------------------------------- the composer */}
       {draft && (
         <div className={styles.editor}>
+          {/* The draft as a picture, redrawn as links and stages change. */}
+          {draft.length > 1 && (
+            <div className={styles.graphWrap}>
+              <StageGraph stages={draft.map(r => ({ ...r, id: r.key }))} lines={draftLines} />
+            </div>
+          )}
           {draft.map((row, index) => {
             const s = row.settings || {};
             const table = TABLE.has(row.format);

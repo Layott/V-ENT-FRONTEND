@@ -31,6 +31,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
+import StageGraph from '@/components/stage-graph/StageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
 import { matchName } from '@/lib/matchName';
@@ -463,6 +464,26 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
     return mine.find(m => m.status === 'pending_opponent_confirm') || mine[0] || null;
   }, [rounds, isMine]);
 
+  // The Path view (P1f): the stages as boxes joined by their lines, with who
+  // went through each, above the bracket of the stage picked. Read again when
+  // a stage changes state, which is when somebody is sent on. If it cannot be
+  // read, the stage buttons below stay as the way to pick a stage.
+  const [path, setPath] = useState(null);
+  const stagesKey = (data?.stages || []).map(s => `${s.id}:${s.status}:${s.drawn}`).join('|');
+  useEffect(() => {
+    if ((data?.stages || []).length < 2) return undefined;
+    let gone = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/stages/`);
+        const body = await res.json().catch(() => ({}));
+        if (!gone && res.ok && body.status === 'success') setPath(body.data);
+      } catch { /* the stage buttons remain */ }
+    })();
+    return () => { gone = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stagesKey, tournamentRef, tournamentId]);
+
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
   if (error) {
     return <div className={styles.state}>
@@ -497,7 +518,13 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   return (
     <div className={styles.wrap}>
-      {stages.length > 1 && (
+      {stages.length > 1 && (path?.stages || []).length > 1 ? (
+        <section className={styles.path} aria-label={tt('stages.graph.pathLabel', 'The path through this tournament')}>
+          <p className={styles.pathTitle}>{tt('stages.graph.pathTitle', 'How this tournament runs')}</p>
+          <StageGraph stages={path.stages} lines={path.progressions || []} selected={data.stage_id} showState
+                      onPick={id => { setStageId(id); setView(null); }} />
+        </section>
+      ) : stages.length > 1 && (
         <div className={styles.stageChips} role="group"
              aria-label={tt('bracket.stagesLabel', 'Stages of this tournament')}>
           {stages.map(stage => (
