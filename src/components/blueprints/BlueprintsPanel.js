@@ -61,7 +61,7 @@ function Editions({ token, blueprintToken, tt }) {
   );
 }
 
-function BlueprintCard({ row, token, sources, onChanged, tt }) {
+function BlueprintCard({ row, token, sources, onChanged, onMade, tt }) {
   const [mode, setMode] = useState(null); // null | 'edit' | 'date' | 'delete' | 'editions'
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
@@ -132,7 +132,7 @@ function BlueprintCard({ row, token, sources, onChanged, tt }) {
       <div className={styles.actions}>
         {row.active && row.next_start && !finished && (
           <button type="button" className={styles.primary} disabled={busy}
-                  onClick={() => send(makeUrl, 'POST', {}, madeWords)}>
+                  onClick={async () => { if (await send(makeUrl, 'POST', {}, madeWords)) onMade?.(); }}>
             {tt('blueprint.makeNext', 'Make the next one now')}
           </button>
         )}
@@ -172,6 +172,7 @@ function BlueprintCard({ row, token, sources, onChanged, tt }) {
             <button type="button" className={styles.primary} disabled={busy || !when}
                     onClick={async () => {
                       const data = await send(makeUrl, 'POST', { starts_at: localInputToISO(when) }, madeWords);
+                      if (data) onMade?.();
                       if (data) { setMode(null); setWhen(''); }
                     }}>
               {tt('blueprint.makeIt', 'Make it')}
@@ -218,7 +219,7 @@ function BlueprintCard({ row, token, sources, onChanged, tt }) {
  * @param token    the session token
  * @param sources  [{slug, title}] the tournaments this organiser runs, to copy from
  */
-export default function BlueprintsPanel({ token, sources = [] }) {
+export default function BlueprintsPanel({ token, sources = [], onEditionMade }) {
   const tt = useT();
   const [rows, setRows] = useState(null);
   const [error, setError] = useState('');
@@ -311,6 +312,7 @@ export default function BlueprintsPanel({ token, sources = [] }) {
         <div className={styles.cards}>
           {rows.map((row) => (
             <BlueprintCard key={row.token} row={row} token={token} sources={sources} tt={tt}
+                           onMade={onEditionMade}
                            onChanged={() => load({ quiet: true })} />
           ))}
         </div>
