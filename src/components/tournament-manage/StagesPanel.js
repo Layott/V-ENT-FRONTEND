@@ -112,8 +112,15 @@ const Chips = ({ value, options, onChange, disabled, label }) => (
   </div>
 );
 
-export default function StagesPanel({ tournamentRef, token, canManage = false, showToast, onChanged }) {
+// `can` is what the viewer holds here (P7, from /access/): `structure` changes
+// the plan, a stage's format and adopts a drawn bracket; `place` draws a stage,
+// closes it, sends a line and undoes or reopens a draw; `manage` (the
+// organiser) asks entrants for their in-game ID, which is an entry rule.
+export default function StagesPanel({ tournamentRef, token, can = {}, showToast, onChanged }) {
   const tt = useT();
+  const canShape = Boolean(can.structure);
+  const canPlace = Boolean(can.place);
+  const canManage = Boolean(can.manage);
 
   const [rows, setRows] = useState([]);
   const [catalogue, setCatalogue] = useState([]);
@@ -798,7 +805,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         </div>
         {/* Until the tournament ends, not just until the first draw. A bracket
             drawn as one format is adopted as stage 1 first (below). */}
-        {canManage && !draft && !meta.finished && !(rows.length === 0 && meta.oneFormat) && (
+        {canShape && !draft && !meta.finished && !(rows.length === 0 && meta.oneFormat) && (
           <button type="button" className={styles.ghost} disabled={busy} onClick={startEditing}>
             {rows.length
               ? tt('stages.edit', 'Change the plan')
@@ -837,7 +844,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       {/* A bracket already drawn as one format. Making it stage 1 keeps every
           match and result exactly as played, and is what lets a stage follow
           it, or its format be changed and drawn again. */}
-      {!draft && rows.length === 0 && meta.oneFormat && canManage && !meta.finished && (
+      {!draft && rows.length === 0 && meta.oneFormat && canShape && !meta.finished && (
         <div className={styles.idRow}>
           <p className={styles.stageLine}>
             {tt('stages.adoptHint', 'The bracket is drawn. To add stages after it, or to play it as a different format, make it the first stage. Every match and result stays as it is.')}
@@ -864,22 +871,26 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             const ins = into(row.id);
             const outs = outOf(row.id);
             const fed = ins.length === 0 || ins.every(l => l.fired_at);
-            const drawable = canManage && !row.drawn_at && fed;
+            const drawable = canPlace && !row.drawn_at && fed;
             // A knockout fed by links can be drawn before they send, seats
             // waiting for their places (P1d); its seats are fixed by place, so
             // only with the cross placement.
-            const earlyDrawable = canManage && !row.drawn_at && !fed && !meta.finished
+            const earlyDrawable = canPlace && !row.drawn_at && !fed && !meta.finished
               && ['single_elimination', 'double_elimination'].includes(row.format)
               && (row.placement || 'cross') === 'cross';
-            const closable = canManage && row.drawn_at && row.status !== 'complete' && outs.length > 0;
+            const closable = canPlace && row.drawn_at && row.status !== 'complete' && outs.length > 0;
             // The tools for a stage already drawn. Not while a stage it feeds
             // is drawn on top of it (that one is undone first), and not once
             // the tournament is over.
             const nextDrawn = outs.some(l => isDrawn(rows.find(r => r.id === l.target)));
-            const tools = canManage && !meta.finished && !draft && !closing && isDrawn(row) && !nextDrawn;
+            // Changing the format is the structure's; undoing a draw and
+            // reopening a closed stage are placing (P7).
+            const tools = !meta.finished && !draft && !closing && isDrawn(row) && !nextDrawn;
             const running = tools && row.status !== 'complete';
-            const reopenable = tools && row.status === 'complete' && outs.length > 0;
-            const waitingToSend = canManage && row.status === 'complete'
+            const reformable = running && canShape;
+            const undoable = running && canPlace;
+            const reopenable = tools && canPlace && row.status === 'complete' && outs.length > 0;
+            const waitingToSend = canPlace && row.status === 'complete'
               ? outs.filter(l => l.fire === 'manual' && !l.fired_at && l.id) : [];
             return (
               <li key={row.id} className={styles.stage}>
@@ -973,9 +984,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                     {tt('stages.closeStage', 'Close this stage')}
                   </button>
                 )}
-                {(running || reopenable) && (
+                {(reformable || undoable || reopenable) && (
                   <span className={styles.stageTools}>
-                    {running && (
+                    {reformable && (
                       <button type="button" className={styles.ghost} disabled={busy}
                               aria-pressed={acting?.row?.id === row.id && acting.kind === 'format'}
                               onClick={() => setActing({
@@ -985,7 +996,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                         {tt('stages.changeFormat', 'Change the format')}
                       </button>
                     )}
-                    {running && (
+                    {undoable && (
                       <button type="button" className={styles.ghost} disabled={busy}
                               aria-pressed={acting?.row?.id === row.id && acting.kind === 'undo'}
                               onClick={() => setActing({ row, kind: 'undo', index })}>
@@ -1007,7 +1018,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         </ol>
       )}
 
-      {!draft && planLocked && canManage && (
+      {!draft && planLocked && canShape && (
         <p className={styles.hint}>
           {meta.finished
             ? tt('stages.finishedNote', 'This tournament is finished, so its stages stay as they were played.')

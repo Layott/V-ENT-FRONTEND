@@ -9,7 +9,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
-import ResultsDesk from '@/components/tournament-manage/ResultsDesk';
+import StaffPanel from '@/components/tournament-manage/StaffPanel';
+import { can, tabsFor } from '@/lib/tournamentAccess';
 import BattleRoyaleConsole from '@/components/tournament-manage/br/BattleRoyaleConsole';
 import TieScoring from '@/components/tournament-manage/TieScoring';
 import { formatKey } from '@/lib/formatLabel';
@@ -268,9 +269,9 @@ const ManageContent = ({ slug }) => {
         });
         const body = await res.json();
         if (!cancelled && body?.status === 'success') setAccess(body.data);
-        else if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false });
+        else if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false, permissions: [] });
       } catch {
-        if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false });
+        if (!cancelled) setAccess({ role: null, can_manage: false, can_record_results: false, permissions: [] });
       }
     })();
     return () => { cancelled = true; };
@@ -288,12 +289,18 @@ const ManageContent = ({ slug }) => {
   );
   const decided = !viewer.loading && (!viewer.signedIn || !!viewer.username)
     && caps !== null && access !== null;
-  // A scorekeeper opens the console and sees the one tab they may use.
-  const keepsScore = access?.can_record_results && !access?.can_manage;
+  // The tabs this viewer may open (P7). The organiser, known from the session,
+  // and an admin, known from their capabilities, see all of them at once; a
+  // helper sees the tabs their permissions open, from /access/, and nothing
+  // while it is still answering. src/lib/tournamentAccess.js decides.
+  const visibleTabs = runsIt ? TABS.map(t => t.id) : tabsFor(access);
+  const holds = permission => runsIt || can(access, permission);
+  // A helper: somebody the organiser gave part of the tournament to.
+  const helps = !runsIt && (access?.permissions || []).length > 0;
   // A player opens it for their EAFC lineup and sees that one tab. The picker
   // was put here for players on 3 September and the refusal below, added the
   // same day, turned every player away from it (16 October 2026).
-  const playsIn = !runsIt && !keepsScore && Boolean(access?.is_entrant);
+  const playsIn = !runsIt && !helps && Boolean(access?.is_entrant);
   // Only the person who made it may copy it (inbox 446); an admin running it
   // from the console is not offered a copy under their own name.
   const ownsIt = viewer.signedIn && (
@@ -324,7 +331,9 @@ const ManageContent = ({ slug }) => {
   // And the body follows: the page opens on Actions, and a scorekeeper was
   // shown the whole Actions panel (codes, cancel and refund, the rules)
   // under a tab row offering Match Control alone (walk, 28 September 2026).
-  const shown = keepsScore ? 'match-control' : playsIn ? 'lineup' : tab;
+  // A tab the viewer may not open is never shown, even when the address asks
+  // for it: they land on the first tab that is theirs.
+  const shown = visibleTabs.includes(tab) ? tab : (visibleTabs[0] || null);
   // The seat-by-seat screen is for a tie made of several matches (an
   // aggregate league, or any table with more than one seat a side). A plain
   // round robin match is one score: it was sent to the seat screen, which
@@ -369,7 +378,7 @@ const ManageContent = ({ slug }) => {
   // exists to stop, one step in. Decided only once the session and the admin
   // capabilities have answered, so the organiser is never refused their own
   // console for a moment while those load.
-  if (decided && !runsIt && !keepsScore && !playsIn) {
+  if (decided && !runsIt && visibleTabs.length === 0) {
     const ref = tournament.slug || tournament.tournament_id;
     return <div className={styles.pageContainer}>
         <Header /><MobileHeader />
@@ -421,24 +430,31 @@ const ManageContent = ({ slug }) => {
               {/* Opens the Production tab below. This was a disabled button
                   titled "Production is not available yet", beside the tab
                   that worked. */}
-              {/* Not for a scorekeeper: the studio is not theirs to run, and
-                  the tab it opens is one they are never shown. */}
-              {!keepsScore && !playsIn && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
+              {/* Only for somebody who runs production: the organiser, or a
+                  helper given the caster's part. Anybody else is never shown
+                  the tab it opens. */}
+              {holds('caster') && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
                 <LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}
               </button>}
             </div>
           </div>
 
-          {/* Sub-tab nav. A scorekeeper sees the one tab they may use: a tab
+          {/* Sub-tab nav. A helper sees the tabs their permissions open: a tab
               they cannot use is a control the API would refuse. */}
           <div className={styles.tabBar}>
-            {(keepsScore ? TABS.filter(t => t.id === 'match-control')
-              : playsIn ? TABS.filter(t => t.id === 'lineup') : TABS)
+            {TABS.filter(t => visibleTabs.includes(t.id))
               .map(t => <button key={t.id} className={`${styles.tabBtn} ${shown === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
           <div>
-            {shown === 'actions' && <ActionsPanel slug={slug} embedded onChanged={() => load({ quiet: true })} />}
+            {shown === 'actions' && <>
+              <ActionsPanel slug={slug} embedded onChanged={() => load({ quiet: true })} />
+              {/* Who helps run it, and with what (P7). The organiser's alone:
+                  a helper never adds or changes another. */}
+              {access?.can_manage && (
+                <StaffPanel tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
+              )}
+            </>}
             {shown === 'match-control' && <>
               {/* Entering results, and who may. A league tie is one game per
                   seat and is decided on total goals, so it gets its own
@@ -449,11 +465,13 @@ const ManageContent = ({ slug }) => {
               <BattleRoyaleConsole tournamentRef={tournament.slug || tournament.tournament_id} token={token}
                                    gameTitle={tournament.game || ''} showToast={showToast}
                                    onChanged={() => load({ quiet: true })} />
-              <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={() => load({ quiet: true })} isLeague={isLeague}
-                                 hideWhenEmpty={formatKey(tournament.bracket_type || tournament.format) === 'battle_royale'}
-                                 format={tournament.bracket_type || tournament.format} />
-              {access?.can_manage && (
-                <ResultsDesk tournamentRef={tournament.slug || tournament.tournament_id} token={token} />
+              {/* Entering results is the results desk's part ('report'); a
+                  helper here for the battle royale's lobbies or seats alone
+                  is not shown it. */}
+              {holds('report') && (
+                <MatchControlPanel tournamentRef={tournament.slug || tournament.tournament_id} matches={matches} token={token} showToast={showToast} onSaved={() => load({ quiet: true })} isLeague={isLeague}
+                                   hideWhenEmpty={formatKey(tournament.bracket_type || tournament.format) === 'battle_royale'}
+                                   format={tournament.bracket_type || tournament.format} />
               )}
             </>}
             {shown === 'lineup' && <>
@@ -507,12 +525,14 @@ const ManageContent = ({ slug }) => {
                   composed tournaments out of stages since the catalogue learned
                   which format can feed which, and no screen ever read it. */}
               <StagesPanel tournamentRef={tournament.slug || tournament.tournament_id}
-                           token={token} canManage={Boolean(access?.can_manage)}
+                           token={token}
+                           can={{ structure: can(access, 'structure'), place: can(access, 'place'),
+                                  manage: Boolean(access?.can_manage) }}
                            showToast={showToast} onChanged={() => load({ quiet: true })} />
               {/* Who is where inside the drawn bracket: swap, replace, and the
-                  record of every change after the start (inbox 452). Only for
-                  whoever runs it; the doors refuse anybody else too. */}
-              {access?.can_manage && (
+                  record of every change after the start (inbox 452). Placing
+                  entrants ('place'); the doors refuse anybody else too. */}
+              {can(access, 'place') && (
                 <BracketEditTools tournamentRef={tournament.slug || tournament.tournament_id}
                                   token={token} showToast={showToast} />
               )}
