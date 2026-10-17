@@ -134,8 +134,20 @@ const fieldsFor = (tt) => ({
   ],
   now_next: [],
   doors: [],
-  ticker: [],
-  bracket: [],
+  // What the ticker reads: the table or the programme as before, or the list
+  // of what just happened (P1e).
+  ticker: [
+    { key: 'source',
+      label: tt('studio.f.tickerReads', 'What it reads'),
+      choices: [
+        { value: '', label: tt('studio.opt.tableOrProgramme', 'The table, or the programme') },
+        { value: 'happenings', label: tt('studio.opt.happenings', 'What just happened') },
+      ] },
+  ],
+  // Blank is the stage being played. A name picks another (P1e).
+  bracket: [
+    { key: 'stage', label: tt('studio.f.whichStage', 'Which stage'), placeholder: 'Playoff' },
+  ],
   explainer: [],
   // The Rivalry Series set. Every fixture field is optional on purpose: blank
   // means the fixture that is live, which is what somebody with one hand on
@@ -330,8 +342,8 @@ const exitLabels = (tt) => ({
 const autoFor = (tt) => ({
   now_next: tt('studio.auto.nowNext', 'Reads the programme: what is on now, and what follows.'),
   doors: tt('studio.auto.doors', 'Reads the door: how many are in, how many the room holds.'),
-  ticker: tt('studio.auto.ticker', 'Reads the table, or the programme.'),
-  bracket: tt('studio.auto.bracket', 'Reads the matches in progress.'),
+  ticker: tt('studio.auto.ticker', 'Reads the table, the programme, or what just happened.'),
+  bracket: tt('studio.auto.bracket', 'Reads the bracket. A seat nobody has reached says where its player comes from.'),
   explainer: tt('studio.auto.explainer', 'Explains how a fixture is decided. Reads how many matches make one.'),
 });
 

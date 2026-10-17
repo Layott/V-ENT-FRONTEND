@@ -448,3 +448,21 @@
   align-items: center;
   gap: 0.35rem;
 }
+
+/* The links out of a stage (P1b): one filled row per link, a step up from the
+   stage row, no strokes. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.lineRow {
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+}
+
+/* The plan as a picture (P1f). */
+.graphWrap { margin: 0 0 18px; }
