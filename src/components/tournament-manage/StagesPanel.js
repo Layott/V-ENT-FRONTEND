@@ -146,6 +146,10 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
   // Whole setups a stage can start from (P3 W1): the Counter-Strike Major Swiss.
   const [formatPresets, setFormatPresets] = useState({});
   const [entrants, setEntrants] = useState([]);
+  // The free for all bracket builder (P3 W1): its numbers while open, and
+  // the rounds of the plan it last wrote.
+  const [ffa, setFfa] = useState(null);
+  const [ffaRounds, setFfaRounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -597,6 +601,43 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
       setDraftLines([...draftLines, newLine(last.key, row.key)]);
     }
   };
+  // A free for all bracket as a plan (P3 W1): the server writes the rounds
+  // of lobbies and the lines between them, and the draft takes them whole.
+  const buildFfa = async () => {
+    if (!ffa) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const query = new URLSearchParams({ kind: 'ffa_bracket', entrants: ffa.entrants,
+        lobby_size: ffa.lobby_size, through: ffa.through, maps: ffa.maps, final_maps: ffa.final_maps });
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/preset/?${query}`);
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setProblem(apiMessage(tt, body, 'stages.ffaFailed', 'That bracket could not be built.'));
+        return;
+      }
+      const made = (body.data.stages || []).map(s => ({
+        ...blank('battle_royale'),
+        label: s.kind === 'final'
+          ? tt('stages.ffaFinal', 'Final lobby')
+          : tt('stages.ffaRound', 'Round {n}').replace('{n}', s.round),
+        advances: s.advances,
+        settings: { ...defaultSettings('battle_royale'), ...s.settings },
+      }));
+      setDraft(made);
+      setDraftLines((body.data.lines || []).map(l => ({
+        ...newLine(made[l.source].key, made[l.target].key, l.place_to),
+        place_from: l.place_from,
+      })));
+      setFfaRounds(body.data.rounds || []);
+      setFfa(null);
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const removeRow = index => {
     const row = draft[index];
     if (!row || row.drawn) return;
@@ -1798,6 +1839,57 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
               </div>
             );
           })}
+
+          {!draft.some(r => r.drawn) && (
+            <div className={styles.scoring}>
+              <p className={styles.subhead}>{tt('stages.ffaTitle', 'A free for all bracket')}</p>
+              <p className={styles.note}>
+                {tt('stages.ffaHint', 'Rounds of lobbies: the best of each lobby go on to the next round until one final lobby is left. This replaces the stages above.')}
+              </p>
+              {ffaRounds.length > 0 && (
+                <p className={styles.note}>
+                  {ffaRounds.map((r, i) => (i === ffaRounds.length - 1
+                    ? tt('stages.ffaFinalLine', 'Final: {n} in one lobby').replace('{n}', r.entrants)
+                    : tt('stages.ffaRoundLine', 'Round {round}: {n} in {lobbies} lobbies')
+                      .replace('{round}', i + 1).replace('{n}', r.entrants).replace('{lobbies}', r.lobbies))).join('. ')}
+                </p>
+              )}
+              {ffa ? (
+                <>
+                  <div className={styles.fields}>
+                    {[
+                      ['entrants', tt('stages.ffaEntrants', 'Entrants expected'), 2, 5000],
+                      ['lobby_size', tt('stages.ffaLobbySize', 'Squads in a lobby'), 2, 100],
+                      ['through', tt('stages.ffaThrough', 'Go on from each lobby'), 1, 99],
+                      ['maps', tt('stages.ffaMaps', 'Matches in each round'), 1, 30],
+                      ['final_maps', tt('stages.ffaFinalMaps', 'Matches in the final'), 1, 30],
+                    ].map(([key, label, low, high]) => (
+                      <label key={key} className={styles.field}>
+                        <span className={styles.fieldLabel}>{label}</span>
+                        <input className={styles.number} type="number" min={low} max={high} inputMode="numeric"
+                               value={ffa[key]} disabled={busy}
+                               onChange={e => setFfa(prev => ({ ...prev, [key]: e.target.value }))} />
+                      </label>
+                    ))}
+                  </div>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} onClick={buildFfa} disabled={busy}>
+                      {tt('stages.ffaBuild', 'Write the plan')}
+                    </button>
+                    <button type="button" className={styles.quiet} onClick={() => setFfa(null)} disabled={busy}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button type="button" className={styles.ghost} disabled={busy}
+                        onClick={() => setFfa({ entrants: entrants.length || 24, lobby_size: 12, through: 4,
+                                                maps: 4, final_maps: 6 })}>
+                  {tt('stages.ffaOpen', 'Build a free for all bracket')}
+                </button>
+              )}
+            </div>
+          )}
 
           <div className={styles.editorActions}>
             <button type="button" className={styles.ghost} onClick={addRow} disabled={busy}>
