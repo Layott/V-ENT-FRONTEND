@@ -16,13 +16,16 @@
  * Pure, no React, so scripts/test-embed.mjs can import it.
  */
 
-/** Every tournament widget. `card` is the inbox 360 frame, at the bare address. */
-export const WIDGETS = ['card', 'bracket', 'standings', 'schedule'];
+/**
+ * Every tournament widget. `card` is the inbox 360 frame, at the bare address;
+ * `path` is the stages as boxes joined by their lines (P1f's StageGraph).
+ */
+export const WIDGETS = ['card', 'bracket', 'standings', 'schedule', 'path'];
 
 /**
- * The widgets drawn in the frame's own colours. The bracket and the standings
- * are the tournament page's own components, which are drawn light on dark;
- * they take the accent and the font, not a light page.
+ * The widgets drawn in the frame's own colours. The bracket, the standings and
+ * the path are the tournament page's own components, which are drawn light on
+ * dark; they take the accent and the font, not a light page.
  */
 export const THEMED_WIDGETS = ['card', 'schedule'];
 

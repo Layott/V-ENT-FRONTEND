@@ -4,8 +4,9 @@ import { WIDGETS, carryQuery, readLook } from '@/lib/embedLook';
 import EmbedTournamentWidget from '@/components/embed/EmbedTournamentWidget';
 
 // `/embed/tournaments/<slug>/<widget>`: one part of a tournament inside
-// somebody else's website (P8, inbox 480): its bracket, its standings or its
-// schedule. The card, with registration, is the bare address one level up.
+// somebody else's website (P8, inbox 480): its bracket, its standings, its
+// schedule or its path. The card, with registration, is the bare address one
+// level up.
 //
 // CEO, inbox 480: "we want people to be able to whitelist v-ent on their site
 // or put tournament registrations and brackets system under their own website

@@ -37,7 +37,7 @@ export default function EmbedEvent({ slug, initial, failed, look }) {
     : (e.venue_name || e.location || '');
 
   return (
-    <EmbedFrame look={look}>
+    <EmbedFrame kind="event" slug={slug} look={look}>
       {e.banner && (
         // The organiser's own picture, from the API. next/image would need
         // every organiser's host listed; the frame is small and loads once.

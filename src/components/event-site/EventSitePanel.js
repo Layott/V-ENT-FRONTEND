@@ -18,6 +18,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import apiMessage from '@/lib/apiMessage';
 import { embedSnippets } from '@/lib/embed';
 import { DEFAULT_ACCENT } from '@/lib/siteTheme';
+import ApprovedSites from '@/components/embed-sites/ApprovedSites';
+import CopyRow from '@/components/embed-sites/CopyRow';
 import styles from './event-site-panel.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -32,36 +34,6 @@ const SECTION_LABELS = {
 };
 
 const HEX = /^#[0-9a-f]{6}$/i;
-
-export function CopyRow({ label, hint, code }) {
-  const tt = useT();
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    if (!copied) return undefined;
-    const timer = setTimeout(() => setCopied(false), 2500);
-    return () => clearTimeout(timer);
-  }, [copied]);
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-    } catch {
-      // Blocked clipboard: the code is on screen and selectable.
-    }
-  };
-  return (
-    <div className={styles.snippet}>
-      <div className={styles.snippetHead}>
-        <p className={styles.snippetLabel}>{label}</p>
-        <button type="button" className={styles.chip} onClick={copy}>
-          {copied ? tt('siteConsole.copied', 'Copied') : tt('siteConsole.copy', 'Copy')}
-        </button>
-      </div>
-      {hint && <p className={styles.hint}>{hint}</p>}
-      <pre className={styles.code}><code>{code}</code></pre>
-    </div>
-  );
-}
 
 export default function EventSitePanel({ eventRef, token, showToast }) {
   const tt = useT();
@@ -318,6 +290,10 @@ export default function EventSitePanel({ eventRef, token, showToast }) {
         <p className={styles.label}>{tt('siteConsole.embedPreview', 'What your visitors will see')}</p>
         <iframe className={styles.preview} src={snippets.frameUrl} title={tt('siteConsole.embedPreview', 'What your visitors will see')} />
       </section>
+
+      {/* Which proven websites may show the tickets, and how often each has
+          (P8b). The same panel the tournament console has. */}
+      <ApprovedSites kind="event" slug={slug} token={token} showToast={showToast} />
     </>
   );
 }

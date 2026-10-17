@@ -545,7 +545,8 @@ const ManageContent = ({ slug }) => {
                   where somebody is already setting up their stream. */}
               <OverlaysPanel kind="tournament" ownerRef={tournament.slug || tournament.tournament_id} token={token} showToast={showToast} />
             </>}
-            {shown === 'website' && <TournamentEmbedPanel tournament={tournament} />}
+            {shown === 'website' && <TournamentEmbedPanel tournament={tournament} token={token}
+                                                          showToast={showToast} canManage={!!access?.can_manage} />}
             {shown === 'reminders' && <>
               <RemindersPanel tournamentId={tournament.tournament_id} token={token} showToast={showToast} />
               {/* Discord announcements, beside the reminders, because they are

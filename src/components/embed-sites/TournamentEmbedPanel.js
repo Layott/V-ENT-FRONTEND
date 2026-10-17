@@ -6,19 +6,22 @@
  * or put tournament registrations and brackets system under their own website
  * from v-ent."
  *
- * Pick a widget (registration, bracket, standings, schedule), pick its look,
+ * Pick a widget (registration, bracket, standings, schedule, path), pick its look,
  * copy one of three snippets, and see it as visitors will. The look starts
  * from the event's website colours when the tournament runs inside an event;
  * only what the organiser changes here is written into the snippet.
  *
- * Drawn with the event console's "Website and embeds" stylesheet and its copy
- * rows, so the two tabs read as one designer's work.
+ * Below the snippets, the approved sites (P8b): which proven websites may show
+ * it, and how often each has. Drawn with the event console's "Website and
+ * embeds" stylesheet and its copy rows, so the two tabs read as one
+ * designer's work.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { THEMED_WIDGETS, WIDGETS, embedSnippets, readLook } from '@/lib/embedLook';
 import { DEFAULT_ACCENT } from '@/lib/siteTheme';
-import { CopyRow } from '@/components/event-site/EventSitePanel';
+import CopyRow from './CopyRow';
+import ApprovedSites from './ApprovedSites';
 import styles from '@/components/event-site/event-site-panel.module.css';
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -28,6 +31,7 @@ const WIDGET_LABELS = {
   bracket: ['embedBuilder.bracket', 'Bracket'],
   standings: ['embedBuilder.standings', 'Standings'],
   schedule: ['embedBuilder.schedule', 'Schedule'],
+  path: ['embedBuilder.path', 'Path'],
 };
 
 const WIDGET_HINTS = {
@@ -35,9 +39,10 @@ const WIDGET_HINTS = {
   bracket: ['embedBuilder.bracketHint', 'Every stage, drawn as on the tournament page, updating as results come in.'],
   standings: ['embedBuilder.standingsHint', 'The tables, ranked by the same rules as the tournament page.'],
   schedule: ['embedBuilder.scheduleHint', 'Your running order, day by day, in each visitor\'s own time zone.'],
+  path: ['embedBuilder.pathHint', 'The stages as boxes joined by their lines, and who went through each. For a tournament in two stages or more.'],
 };
 
-export default function TournamentEmbedPanel({ tournament, children }) {
+export default function TournamentEmbedPanel({ tournament, token, showToast, canManage = false }) {
   const tt = useT();
   const [origin, setOrigin] = useState('');
   useEffect(() => { setOrigin(window.location.origin); }, []);
@@ -157,7 +162,8 @@ export default function TournamentEmbedPanel({ tournament, children }) {
                 title={tt('siteConsole.embedPreview', 'What your visitors will see')} />
       </section>
 
-      {children}
+      {/* Which sites may show it (P8b): its managers choose; the API holds it. */}
+      {canManage && <ApprovedSites kind="tournament" slug={slug} token={token} showToast={showToast} />}
     </>
   );
 }
