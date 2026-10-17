@@ -1585,6 +1585,16 @@
   position: absolute;
 }
 
+/* A format explainer on air (inbox 476): the player's broadcast plate,
+   centred, sized so the whole plate fits a 1920 x 1080 frame. */
+.exPlayer {
+  align-items: center;
+  display: flex;
+  inset: 4%;
+  justify-content: center;
+  position: absolute;
+}
+
 .exTitle {
   font-size: 62px;
   font-weight: 700;
