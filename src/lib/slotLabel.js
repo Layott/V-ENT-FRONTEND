@@ -42,6 +42,16 @@ export function slotLabel(tt, slot, format) {
       ? tt('bracket.winnerOf', 'Winner of {match}')
       : tt('bracket.loserOf', 'Loser of {match}')).replace('{match}', name);
   }
+  // A seat in a stage drawn early waits for a place in a stage that feeds it
+  // (P1d): "Groups: group A, place 1".
+  if (slot.kind === 'place' && slot.from_place) {
+    const p = slot.from_place;
+    return (p.group
+      ? tt('bracket.slotPlaceGroup', '{stage}: group {g}, place {n}')
+        .replace('{g}', String.fromCharCode(64 + Number(p.group)))
+      : tt('bracket.slotPlace', '{stage}: place {n}'))
+      .replace('{stage}', p.stage || '').replace('{n}', p.place);
+  }
   if (slot.kind === 'reset') return tt('bracket.ifNeeded', 'Played only if needed');
   if (slot.kind === 'bye') return tt('bracket.byeSlot', 'Bye');
   if (slot.kind === 'entrant' && slot.seed) return tt('bracket.seedN', 'Seed {n}').replace('{n}', slot.seed);
