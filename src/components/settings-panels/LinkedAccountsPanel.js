@@ -5,6 +5,7 @@ import { startLink, stopLink } from '@/lib/linking';
 
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import afcMark from '../../../public/images/afc-mark.svg';
 import shared from './settingsShared.module.css';
@@ -330,6 +331,18 @@ const LinkedAccountsPanel = ({
                   </div>;
         })}
           </div>}
+      </div>
+
+      {/* Game accounts linked through a code the game showed (P6c). Their
+          own page, because linking starts from the game, not from here. */}
+      <div className={shared.card}>
+        <h3 className={shared.cardTitle}>{tt('partners.linkGame.settingsTitle', 'Game accounts')}</h3>
+        <p className={shared.cardSub}>
+          {tt('partners.linkGame.settingsBody', 'Games built on V-ENT show you a code to link your account in the game. See and remove those links here.')}
+        </p>
+        <Link href="/link-game" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`}>
+          {tt('partners.linkGame.settingsLink', 'Your game accounts')}
+        </Link>
       </div>
     </div>;
 };

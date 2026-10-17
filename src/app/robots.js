@@ -32,6 +32,7 @@ export default function robots() {
           '/auth/',
           '/partners/authorize',   // an OAuth screen has no business in search
           '/partners/studios',     // a studio's own games, secrets and keys
+          '/link-game',            // typing a code from a game, signed in
           '/reset-password',
           '/reset-email',
           '/verify-email',
