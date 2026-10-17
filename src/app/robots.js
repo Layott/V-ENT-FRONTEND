@@ -31,6 +31,7 @@ export default function robots() {
           '/invitations',     // somebody's own invitations, each found only by its token
           '/auth/',
           '/partners/authorize',   // an OAuth screen has no business in search
+          '/partners/studios',     // a studio's own games, secrets and keys
           '/reset-password',
           '/reset-email',
           '/verify-email',

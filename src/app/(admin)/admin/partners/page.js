@@ -12,6 +12,7 @@ import styles from './partners.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
+import StudioReview from '@/components/admin/StudioReview';
 
 // The partner queue. Approving is not one button: an admin ticks exactly which
 // scopes a partner gets, and SSO is a second decision on top, because a partner
@@ -405,6 +406,9 @@ function PartnersInner() {
                 </tbody>
               </table>
             </div>}
+
+          {/* Game studios: whether a connected game may go live. */}
+          <StudioReview />
         </div>
       </div>
 

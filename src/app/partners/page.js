@@ -21,13 +21,21 @@ import { partnerStatusLabel } from '@/lib/labels';
 // at different stages: you have not applied, you have applied and are waiting,
 // or you are running a partner account and need keys.
 
+// Each group's title is said through t() by its key when it is drawn.
 const SCOPE_GROUPS = [{
+  key: 'events',
   title: 'Events',
   prefix: 'events'
 }, {
+  key: 'tournaments',
   title: 'Tournaments',
   prefix: 'tournaments'
 }, {
+  key: 'studios',
+  title: 'Game studios',
+  prefix: 'studio'
+}, {
+  key: 'people',
   title: 'Teams and players',
   prefix: ['teams', 'players', 'rankings']
 }];
@@ -294,6 +302,19 @@ const PartnersPage = () => {
                   </p>}
               </div>
 
+              {/* Game studios: connect a game so V-ENT tournaments run inside it. */}
+              {partner.status === 'approved' && <div className={styles.card}>
+                  <div className={styles.rowBetween}>
+                    <h2 className={styles.cardTitle}>{tt('partners.studios.cardTitle', 'Game studios')}</h2>
+                    <Link href="/partners/studios" className={styles.primaryBtn}>
+                      {tt('partners.studios.cardLink', 'Open game studios')}
+                    </Link>
+                  </div>
+                  <p className={styles.muted}>
+                    {tt('partners.studios.cardBody', 'Run V-ENT tournaments inside your game: connect it once, lobbies open in your game and its results score the bracket.')}
+                  </p>
+                </div>}
+
               {partner.status === 'approved' && partner.sso_status === 'approved' && <div className={styles.card}>
                   <h2 className={styles.cardTitle}>
                     {tt('partners.signInAddresses', 'Sign-in addresses')}
@@ -415,7 +436,9 @@ const PartnersPage = () => {
                 {tt("ui.ask.what.need.admin.369c", "Ask for what you need. An admin decides what is granted, and a key can never read\n                past that.")}
               </p>
               {grouped.map(([title, rows]) => <div key={title} className={styles.scopeGroup}>
-                  <p className={styles.scopeGroupTitle}>{title}</p>
+                  <p className={styles.scopeGroupTitle}>
+                    {tt(`partners.scopeGroup.${SCOPE_GROUPS.find(g => g.title === title)?.key || 'people'}`, title)}
+                  </p>
                   {rows.map(({
               key,
               label
