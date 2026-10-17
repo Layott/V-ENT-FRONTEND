@@ -448,3 +448,61 @@
   align-items: center;
   gap: 0.35rem;
 }
+
+/* The links out of a stage (P1b): one filled row per link, a step up from the
+   stage row, no strokes. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.lineRow {
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+}
+
+/* The plan as a picture (P1f). */
+.graphWrap { margin: 0 0 18px; }
+
+/* Places from other tournaments (P2): filled rows one step up from the
+   panel, no strokes. */
+.feeds {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+}
+
+.feedRow {
+  align-items: flex-start;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem;
+}
+
+.feedRow .fields { width: 100%; }
+
+.feedQualifier {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.feedConfirm {
+  background-color: #33343a;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  width: 100%;
+}
