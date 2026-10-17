@@ -1,3 +1,10 @@
+/* "Watch how it works" under each format's blurb (inbox 476): a quiet
+   filled button, set a little apart from the words above it. */
+.watch {
+  margin-top: 0.7rem;
+  align-self: flex-start;
+}
+
 /* The explanation of the format that was just picked.
 
    A filled surface a step off the panel behind it, no stroke and no accent
