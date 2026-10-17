@@ -17,6 +17,8 @@ export const FORMAT_KEYS = [
   // P3 W1: several small knockouts; GSL is its preset. A stage only format:
   // the stage planner offers it, the one-format wizard does not.
   'bracket_groups',
+  // P3 W2: a bracket written match by match, or a ready-made one. Stage only.
+  'custom_bracket',
   'battle_royale',
   'aggregate_2v2',
   'ladder',
@@ -33,6 +35,7 @@ const FALLBACK = {
   swiss: 'Swiss',
   gsl: 'GSL groups',
   bracket_groups: 'Bracket groups',
+  custom_bracket: 'Custom bracket',
   battle_royale: 'Battle royale',
   aggregate_2v2: 'Aggregate tie',
   ladder: 'Ladder',
@@ -60,6 +63,7 @@ const ALIASES = {
   gsl_groups: 'gsl',
   bracket_group: 'bracket_groups',
   knockout_groups: 'bracket_groups',
+  custom: 'custom_bracket',
   aggregate: 'aggregate_2v2',
   aggregate_2_v_2: 'aggregate_2v2',
   aggregate_league: 'aggregate_2v2',
@@ -94,3 +98,18 @@ export const formatLabel = (tt, value, empty = '-') => {
   if (!key) return value ? String(value) : empty;
   return tt(`format.label.${key}`, FALLBACK[key]);
 };
+
+/**
+ * A plan's stages as runs of the same format, in order:
+ * [{ format, label, count }]. Three battle royale stages in a row are one
+ * run of three (a free for all bracket), so a sentence can say "three
+ * rounds of lobbies" instead of naming the format three times (walk of P3,
+ * 17 October 2026).
+ */
+export const formatRuns = (stages) => (stages || []).reduce((runs, stage) => {
+  const key = formatKey(stage.format) || stage.format;
+  const last = runs[runs.length - 1];
+  if (last && last.format === key) last.count += 1;
+  else runs.push({ format: key, label: stage.format_label, count: 1 });
+  return runs;
+}, []);

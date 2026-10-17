@@ -539,6 +539,13 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const groups = [...new Set(rounds.map(r => r.group_number).filter(Boolean))];
   // Groups that are knockouts, GSL and bracket groups (P3 W1), not tables.
   const knockoutGroups = ['gsl', 'bracket_groups'].includes(norm(format));
+  // A custom bracket's parts (P3 W2): one section per branch, in the order
+  // they first appear, each round holding only that branch's matches.
+  const branches = norm(format) === 'custom_bracket'
+    ? [...new Set(rounds.flatMap(r => (r.matches || []).map(m => m.branch || '')))] : [];
+  const roundsOf = branch => rounds
+    .map(r => ({ ...r, matches: (r.matches || []).filter(m => (m.branch || '') === branch) }))
+    .filter(r => r.matches.length);
   const bySide = side => rounds.filter(r => (r.bracket_side || 'winners') === side);
   const hasLosers = bySide('losers').length > 0;
   const standings = data.standings || [];
@@ -728,6 +735,19 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                              side={norm(format) === 'gsl' ? 'gsl' : 'winners'} format={format} />
               : <MapFlat rounds={rounds.filter(r => r.group_number === g)} tt={tt}
                          onOpen={openMatch} isMine={isMine} />}
+          </section>
+        )) : branches.length > 1 ? branches.map(branch => (
+          <section key={branch || 'main'} className={styles.section}>
+            <p className={styles.sectionTitle}>
+              {branch ? tt(`bracket.branch.${branch}`, branch) : tt('bracket.branchMain', 'Main draw')}
+            </p>
+            {['winners', 'losers', 'placement', 'grand_final'].map(side => {
+              const list = roundsOf(branch).filter(r => (r.bracket_side || 'winners') === side);
+              return list.length ? (
+                <MapKnockout key={side} rounds={list} tt={tt} onOpen={openMatch} isMine={isMine}
+                             side={side === 'placement' ? 'losers' : side} format={format} />
+              ) : null;
+            })}
           </section>
         )) : table ? (
           <>

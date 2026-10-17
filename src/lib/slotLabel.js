@@ -65,6 +65,14 @@ export function slotLabel(tt, slot, format) {
   if (slot.kind === 'reseed' && slot.rank) {
     return tt('bracket.slotReseed', 'Seed rank {n} of those still in').replace('{n}', slot.rank);
   }
+  // A repechage seat (P3 W2b): whoever lost to one of the finalists, in the
+  // round named, filled once that finalist is known.
+  if (slot.kind === 'lost_to' && slot.lost_to) {
+    return (Number(slot.lost_to.side) === 1
+      ? tt('bracket.slotLostToTop', 'Lost to the top half finalist, round {n}')
+      : tt('bracket.slotLostToBottom', 'Lost to the bottom half finalist, round {n}'))
+      .replace('{n}', slot.lost_to.round);
+  }
   if (slot.kind === 'reset') return tt('bracket.ifNeeded', 'Played only if needed');
   if (slot.kind === 'bye') return tt('bracket.byeSlot', 'Bye');
   if (slot.kind === 'entrant' && slot.seed) return tt('bracket.seedN', 'Seed {n}').replace('{n}', slot.seed);
