@@ -15,6 +15,7 @@ import league from './formats/league';
 import groupsKnockout from './formats/groupsKnockout';
 import swiss from './formats/swiss';
 import gsl from './formats/gsl';
+import bracketGroups from './formats/bracketGroups';
 import battleRoyale from './formats/battleRoyale';
 import stepladder from './formats/stepladder';
 import pagePlayoff from './formats/pagePlayoff';
@@ -32,6 +33,7 @@ const ALL = [
   groupsKnockout,
   swiss,
   gsl,
+  bracketGroups,
   battleRoyale,
   stepladder,
   pagePlayoff,

@@ -14,6 +14,9 @@ export const FORMAT_KEYS = [
   'league',
   'swiss',
   'gsl',
+  // P3 W1: several small knockouts; GSL is its preset. A stage only format:
+  // the stage planner offers it, the one-format wizard does not.
+  'bracket_groups',
   'battle_royale',
   'aggregate_2v2',
   'ladder',
@@ -29,6 +32,7 @@ const FALLBACK = {
   league: 'League',
   swiss: 'Swiss',
   gsl: 'GSL groups',
+  bracket_groups: 'Bracket groups',
   battle_royale: 'Battle royale',
   aggregate_2v2: 'Aggregate tie',
   ladder: 'Ladder',
@@ -54,6 +58,8 @@ const ALIASES = {
   de: 'double_elimination',
   br: 'battle_royale',
   gsl_groups: 'gsl',
+  bracket_group: 'bracket_groups',
+  knockout_groups: 'bracket_groups',
   aggregate: 'aggregate_2v2',
   aggregate_2_v_2: 'aggregate_2v2',
   aggregate_league: 'aggregate_2v2',
