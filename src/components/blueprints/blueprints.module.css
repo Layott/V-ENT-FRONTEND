@@ -115,6 +115,11 @@
 .label { margin: 0; color: var(--primary-bg); font-weight: var(--fw-semi-bold); font-size: 0.92rem; }
 
 .input {
+  /* 44px on a phone, stated as the height and counted with the padding: the
+     number inputs measured 34px at 390 on the P7 walk (17 October) with only
+     a min-height. */
+  box-sizing: border-box;
+  height: 44px;
   min-height: 44px;
   background-color: #33343a;
   color: var(--primary-bg);
