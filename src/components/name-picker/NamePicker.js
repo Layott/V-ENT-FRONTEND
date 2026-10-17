@@ -153,6 +153,14 @@ const NamePicker = ({
   // above the field) is a different question, so what was picked goes.
   useEffect(() => { setPicked(null); setResults([]); }, [kind]);
 
+  // A parent that clears or changes the field (the staff panel empties it once
+  // somebody is added) takes the choice with it: "Chosen: demo_tobi" under an
+  // empty field read as if they were still picked (walk, 17 October 2026).
+  useEffect(() => {
+    if (picked && cfg.value(picked) !== text.replace(/^@/, '')) setPicked(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text]);
+
   useEffect(() => () => abortRef.current?.abort(), []);
 
   useEffect(() => {

@@ -22,6 +22,7 @@ import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
 import ResumeCard from '@/components/registration-draft/ResumeCard';
 import { useMyDrafts } from '@/lib/registrationDraft';
+import BlueprintsPanel from '@/components/blueprints/BlueprintsPanel';
 const TABS = [{
   id: 'active',
   label: 'Active'
@@ -31,6 +32,11 @@ const TABS = [{
 }, {
   id: 'completed',
   label: 'Finished'
+}, {
+  // Tournaments that make their next edition by themselves (P7).
+  id: 'blueprints',
+  label: 'Blueprints',
+  key: 'blueprint.tab'
 }];
 
 // Status values are tolerant of both the mock shape (`upcoming` / `in_progress`
@@ -96,6 +102,15 @@ const MyTournaments = () => {
   // Registrations this person left part done, as an entrant (inbox 436).
   const { drafts: unfinished, forget: forgetUnfinished } = useMyDrafts(token);
   const [tab, setTab] = useState('active');
+  // Linked from the console's Run it again: ?tab=blueprints opens that tab.
+  // Read after mount, so the page renders the same on the server and here.
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get('tab') === 'blueprints') setTab('blueprints');
+    } catch {
+      // No window (never on this page), or an address it cannot read: Active.
+    }
+  }, []);
   const [tournaments, setTournaments] = useState([]);
   const [drafts, setDrafts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -226,7 +241,7 @@ const MyTournaments = () => {
           {/* Tab nav */}
           <div className={styles.tabBar}>
             {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setTab(t.id)}>
-                {tx(t.label)}
+                {t.key ? tt(t.key, t.label) : tx(t.label)}
                 <span className={styles.tabCount}>
                   {t.id === 'active' && activeCount}
                   {t.id === 'drafts' && drafts.length}
@@ -236,7 +251,11 @@ const MyTournaments = () => {
           </div>
 
           {/* Loading */}
-          {loading ? <div className={styles.tournamentList} aria-hidden="true">
+          {tab === 'blueprints' ? <BlueprintsPanel token={token}
+              sources={[...tournaments, ...drafts]
+                .filter(t => t && t.slug)
+                .map(t => ({ slug: t.slug, title: t.name || t.tournament_title || t.title || t.slug }))} />
+            : loading ? <div className={styles.tournamentList} aria-hidden="true">
               {Array.from({
             length: 4
           }).map((_, i) => <div key={i} className={styles.skeletonRow} />)}
