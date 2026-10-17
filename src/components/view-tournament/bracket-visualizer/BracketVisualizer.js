@@ -35,7 +35,7 @@ import Link from 'next/link';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import { feedSentence } from '@/lib/feedWords';
 import { formatWithZone } from '@/lib/datetime';
-import { stageState } from '@/lib/stageGraph';
+import { pathWithFeeds, stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
 import { matchName } from '@/lib/matchName';
@@ -266,8 +266,9 @@ const GridCrosstab = ({ rounds, tt, onOpen }) => {
   );
 };
 
-/** A stage's table, worked out on the server from its own matches. */
-const StandingsTable = ({ rows, format, advancing, tt }) => {
+/** A stage's table, worked out on the server from its own matches. Also drawn
+ *  by the standings widget on an organiser's own website (P8). */
+export const StandingsTable = ({ rows, format, advancing, tt }) => {
   if (!rows?.length) return null;
   const swiss = norm(format) === 'swiss';
   // Formats whose table is final places decided by the matches, not a record
@@ -501,27 +502,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   // The Path view across tournaments (P2): a feed's other end is drawn as a
   // box of its own ("Lagos Qualifier: League"), joined by the feed's line;
-  // pressing it opens that tournament.
-  const graph = (() => {
-    const own = path?.stages || [];
-    const ext = [];
-    const extLines = [];
-    const seen = new Set();
-    const outside = (side, key) => {
-      const id = `x-${key}-${side.stage_id}`;
-      if (!seen.has(id)) {
-        seen.add(id);
-        ext.push({ id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
-                   groups: side.groups, slug: side.tournament.slug });
-      }
-      return id;
-    };
-    const through = f => (f.qualifiers || []).filter(q => q.status === 'confirmed').map(q => ({ name: q.name }));
-    (feedRows?.incoming || []).forEach(f => extLines.push({ ...f, sent: through(f), source: outside(f.source, 'in'), target: f.target.stage_id }));
-    (feedRows?.outgoing || []).forEach(f => extLines.push({ ...f, sent: through(f), source: f.source.stage_id, target: outside(f.target, 'out') }));
-    return { stages: [...ext.filter(x => x.id.startsWith('x-in')), ...own, ...ext.filter(x => x.id.startsWith('x-out'))],
-             lines: [...(path?.progressions || []), ...extLines], external: ext };
-  })();
+  // pressing it opens that tournament. The Path widget draws the same graph.
+  const graph = pathWithFeeds(path, feedRows);
   const pickInPath = id => {
     const ext = graph.external.find(x => x.id === id);
     if (ext) { window.location.assign(`/tournaments/${ext.slug}?tab=bracket`); return; }

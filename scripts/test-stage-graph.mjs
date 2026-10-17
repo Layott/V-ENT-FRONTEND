@@ -9,7 +9,7 @@
 // draft the save would refuse (a line to a removed stage, a cycle).
 
 import assert from 'node:assert/strict';
-import { layout, lineWords, stageState } from '../src/lib/stageGraph.js';
+import { layout, lineWords, pathWithFeeds, stageState } from '../src/lib/stageGraph.js';
 
 let failures = 0;
 const test = (name, fn) => {
@@ -107,6 +107,45 @@ test('the other three states', () => {
   assert.equal(stageState(tt, { status: 'running', drawn_at: 'x' }), 'Being played');
   assert.equal(stageState(tt, { status: 'complete', drawn_at: 'x' }), 'Finished');
   assert.equal(stageState(tt, { status: 'pending', drawn_at: null }), 'Not drawn yet');
+});
+
+// P2 feeds on the Path view: the other tournament's stage is a box of its
+// own, before the stages a feed fills and after the stages a feed empties.
+// One function draws it for the tournament page and the Path widget (P8),
+// because the widget once said "one stage, no path" beside a page drawing two.
+const side = (stage_id, title, slug) => ({ stage_id, stage: 'League', format: 'league', groups: 0,
+  tournament: { title, slug } });
+
+test('feeds become boxes either side of the tournament\'s own stages', () => {
+  const g = pathWithFeeds(
+    { stages: [{ id: 's1', label: 'Finals' }], progressions: [] },
+    {
+      incoming: [{ id: 9, source: side(4, 'Lagos Qualifier', 'lagos-qualifier'), target: { stage_id: 's1' },
+        qualifiers: [{ name: 'Amara Nwosu', status: 'confirmed' }, { name: 'Bisi Adeleke', status: 'declined' }] }],
+      outgoing: [{ id: 10, source: { stage_id: 's1' }, target: side(7, 'Africa Cup', 'africa-cup'), qualifiers: [] }],
+    });
+  assert.deepEqual(g.stages.map((s) => s.id), ['x-in-4', 's1', 'x-out-7']);
+  assert.equal(g.stages[0].label, 'Lagos Qualifier: League');
+  assert.equal(g.stages[0].slug, 'lagos-qualifier');
+  assert.deepEqual(g.lines.map((l) => [l.source, l.target]), [['x-in-4', 's1'], ['s1', 'x-out-7']]);
+  assert.deepEqual(g.lines[0].sent, [{ name: 'Amara Nwosu' }]);
+  assert.equal(g.external.length, 2);
+});
+
+test('no feeds is the plan as it was; nothing at all is an empty graph', () => {
+  const plan = { stages: [{ id: 'a' }, { id: 'b' }], progressions: [{ id: 1, source: 'a', target: 'b' }] };
+  const g = pathWithFeeds(plan, null);
+  assert.deepEqual(g.stages.map((s) => s.id), ['a', 'b']);
+  assert.equal(g.lines.length, 1);
+  assert.deepEqual(pathWithFeeds(null, null), { stages: [], lines: [], external: [] });
+});
+
+test('one other stage feeding twice is one box', () => {
+  const src = side(4, 'Lagos Qualifier', 'lagos-qualifier');
+  const g = pathWithFeeds({ stages: [{ id: 's1' }, { id: 's2' }], progressions: [] },
+    { incoming: [{ id: 1, source: src, target: { stage_id: 's1' } }, { id: 2, source: src, target: { stage_id: 's2' } }] });
+  assert.equal(g.stages.filter((s) => s.id === 'x-in-4').length, 1);
+  assert.equal(g.lines.length, 2);
 });
 
 console.log(`\n${failures} failed`);
