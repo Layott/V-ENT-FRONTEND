@@ -9,6 +9,8 @@ export function roleWord(tt, role) {
     manager: tt('manage.roleManager', 'Manager'),
     door: tt('manage.roleDoor', 'Door staff'),
     scorekeeper: tt('desk.scorekeeper', 'Scorekeeper'),
+    // A helper on a tournament, holding the parts the organiser gave (P7).
+    staff: tt('invite.role.staff', 'Helper'),
     admin: tt('invite.role.admin', 'Admin'),
     member: tt('invite.role.member', 'Member'),
   })[role] || role;
