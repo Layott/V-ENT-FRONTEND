@@ -5,12 +5,17 @@
 // CEO, 28 September 2026: "For battle royale, build it end to end ...
 // Everything including uploading results and using OCR."
 //
-// Who sees what here is what the server says (`can_record`, `can_manage`):
+// Who sees what here is what the server says (`can_record`, `permissions`,
+// P7):
 //
-//   * a scorekeeper sets each match's room and enters results, by typing or
-//     from the end-of-match screenshots;
-//   * the organiser also sets how the stage is scored, moves squads between
-//     lobbies before they play, adds or removes a match, and finishes it.
+//   * results ('report') set each match's room and enter results, by typing
+//     or from the end-of-match screenshots;
+//   * the structure ('structure') sets how the stage is scored, renames a
+//     lobby, adds or removes a match;
+//   * placing ('place') draws the lobbies, moves squads between them before
+//     they play, and finishes the stage.
+//
+// The organiser holds all three.
 //
 // A screenshot read is never saved on its own. It comes back as rows to
 // check; nothing reaches the table until somebody presses Save, and the save
@@ -603,7 +608,9 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
   // Nothing to run here: this tournament has no battle royale in it.
   if (!data.is_battle_royale && !(data.stages || []).length) return null;
 
-  const canManage = Boolean(current?.can_manage || data.can_manage);
+  const held = current?.permissions || data.permissions || [];
+  const canShape = held.includes('structure');
+  const canPlace = held.includes('place');
   const canRecord = Boolean(current?.can_record);
 
   // ---- a one-format battle royale before its stage exists
@@ -615,7 +622,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
           {tt('br.setupHint', 'Set how the lobbies are scored, then draw them. Squads are spread across lobbies by seed so every lobby gets a fair share of the strongest.')}
         </p>
         {problem && <p className={styles.problem} role="alert">{problem}</p>}
-        {canManage
+        {canShape
           ? <button type="button" className={styles.save} disabled={busy}
                     onClick={() => call('br/ensure/', { done: null, fail: ['br.setupFailed', 'Could not set up the lobbies.'] })}>
               {tt('br.setup', 'Set up the lobbies')}
@@ -656,7 +663,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
               : tt('br.beforeDraw', 'Check how this stage is scored, then draw the lobbies.')}
           </p>
         </div>
-        {canManage && !settings && (
+        {canShape && !settings && (
           <button type="button" className={styles.ghost} onClick={startEditing}>
             <LuPencil aria-hidden="true" /> {tt('br.editSettings', 'Scoring and rules')}
           </button>
@@ -728,7 +735,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
             {tt('br.drawSummary', 'Lobbies of up to {size} squads, {maps} matches each.')
               .replace('{size}', current.settings.lobby_size).replace('{maps}', current.settings.maps)}
           </p>
-          {canManage && firstBr && (stage.order === 0 || data.stages.length === 1)
+          {canPlace && firstBr && (stage.order === 0 || data.stages.length === 1)
             ? <button type="button" className={styles.save} disabled={busy} onClick={draw}>
                 {tt('br.drawLobbies', 'Draw the lobbies')}
               </button>
@@ -783,7 +790,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                   </span>
                 </span>
               )}
-              {canManage && renaming !== lobby.id && (
+              {canShape && renaming !== lobby.id && (
                 <button type="button" className={styles.iconBtn} disabled={busy}
                         aria-label={tt('br.renameLobby', 'Rename this lobby')}
                         onClick={() => { setRenaming(lobby.id); setLobbyName(lobby.name || ''); }}>
@@ -799,7 +806,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                   {seat.carried_points > 0 && (
                     <span className={styles.carry}>+{seat.carried_points}</span>
                   )}
-                  {canManage && lobbies.length > 1 && !lobbyHasResults(lobby) && (
+                  {canPlace && lobbies.length > 1 && !lobbyHasResults(lobby) && (
                     <select className={styles.select} value={lobby.number} disabled={busy}
                             aria-label={tt('br.moveTo', 'Move {name} to another lobby').replace('{name}', seat.name)}
                             onChange={e => call(`br/${stage.id}/seats/move/`, {
@@ -856,7 +863,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                                   onClick={() => setOpen(isOpen && open.kind === 'room' ? null : { kind: 'room', id: match.id })}>
                             <LuKeyRound aria-hidden="true" /> {tt('br.room', 'Room')}
                           </button>
-                          {canManage && last && match.status !== 'entered' && lobby.maps.length > 1
+                          {canShape && last && match.status !== 'entered' && lobby.maps.length > 1
                             && confirm !== `remove-${match.id}` && (
                             <button type="button" className={styles.iconBtn} disabled={busy}
                                     aria-label={tt('br.removeMatch', 'Remove {match}').replace('{match}', matchLabel(tt, match.number))}
@@ -934,7 +941,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                 );
               })}
             </ul>
-            {canManage && stage.status !== 'complete' && (
+            {canShape && stage.status !== 'complete' && (
               <div className={styles.actions}>
                 <button type="button" className={styles.ghost} disabled={busy}
                         onClick={() => call(`br/${stage.id}/lobbies/${lobby.id}/matches/`, {
@@ -957,7 +964,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
 
         <StageMvp mvp={current.mvp} />
 
-        {canManage && current.is_last_stage && stage.status !== 'complete' && (
+        {canPlace && current.is_last_stage && stage.status !== 'complete' && (
           <div className={styles.sheet}>
             <p className={styles.note}>
               {current.finished

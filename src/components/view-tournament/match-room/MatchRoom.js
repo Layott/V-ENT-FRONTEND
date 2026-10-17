@@ -31,6 +31,7 @@ import styles from './match-room.module.css';
 import { matchName } from '@/lib/matchName';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { sideLabel } from '@/lib/slotLabel';
+import { rulesSource } from '@/lib/rulesSource';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -233,9 +234,13 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
     }),
     tt('match.recorded', 'Result recorded.'));
 
-  // Taking a result back off. The winner comes back out of the next match, and
-  // the server refuses when that next match has already been played.
-  const manager = Boolean(match?.can_manage);
+  // Taking a result back off is the results desk's ('report'); how a match is
+  // played is the structure's ('structure'). What the viewer holds comes from
+  // the server (P7); the organiser holds both. The winner comes back out of
+  // the next match, and the server refuses when that one has been played.
+  const held = match?.permissions || [];
+  const mayReopen = held.includes('report');
+  const mayShape = held.includes('structure');
   const reopenResult = async () => {
     const done = await run(
       () => call(`/tournament/${tournamentRef}/matches/${matchId}/reopen/`, { method: 'POST', token, body: {} }),
@@ -271,6 +276,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         ? tt('match.bestOf', 'Best of {n}. Enter games won.').replace('{n}', match.best_of)
         : tt('match.oneGame', 'One game. Enter the goals.'))
     : '';
+
+  // Where that rule comes from (P1c): "set for this round", "from Playoff".
+  const playedFrom = match ? rulesSource(tt, match.rules, match.legs > 1 ? 'legs' : 'best_of') : null;
 
   const statusText = status => statusWord(tt, status);
 
@@ -338,7 +346,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
           <dl className={styles.facts}>
             <div><dt>{tt('match.statusLabel', 'Status')}</dt><dd>{statusText(match.status)}</dd></div>
-            <div><dt>{tt('match.formatLabel', 'Played as')}</dt><dd>{bestOfText}</dd></div>
+            <div><dt>{tt('match.formatLabel', 'Played as')}</dt><dd>{bestOfText}{playedFrom ? ` (${playedFrom})` : ''}</dd></div>
             {open && match.scheduled_at && (
               <div><dt>{tt('match.startsLabel', 'Starts')}</dt>
                 <dd>{formatWithZone(match.scheduled_at)}</dd></div>
@@ -609,7 +617,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
             </button>
           )}
           {/* ------------------------------------- fixing it (whoever runs it) */}
-          {manager && ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status) && (
+          {mayReopen && ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status) && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.reopenTitle', 'Take this result off')}</p>
               <p className={styles.muted}>
@@ -631,7 +639,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               )}
             </section>
           )}
-          {manager && match.status === 'scheduled' && (
+          {mayShape && match.status === 'scheduled' && (
             <section className={styles.block}>
               <p className={styles.blockTitle}>{tt('match.rulesTitle', 'How this match is played')}</p>
               <p className={styles.muted}>{bestOfText}</p>

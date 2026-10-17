@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { eventMetadata, fetchRecordForMetadata } from '@/lib/seo';
+import { carryQuery, readLook } from '@/lib/embedLook';
 import EmbedEvent from '@/components/embed/EmbedEvent';
 
 // `/embed/events/<slug>`: an event's tickets inside somebody else's website
@@ -22,10 +23,14 @@ export async function generateMetadata(props) {
 
 export default async function EmbedEventPage(props) {
   const { slug: raw } = await props.params;
+  const searchParams = await props.searchParams;
   const slug = decodeURIComponent(raw);
   const e = pick(await load(slug));
   // A renamed event keeps its embed working: the retired slug answers with
-  // the new address, and the frame follows it.
-  if (e?.__moved) redirect(e.__moved.replace(/\/events\//,'/embed/events/'));
-  return <EmbedEvent slug={e?.slug || slug} initial={e?.__failed ? null : e} failed={!!e?.__failed} />;
+  // the new address, and the frame follows it, keeping its look and the name
+  // embed.js sizes it by.
+  if (e?.__moved) redirect(e.__moved.replace(/\/events\//,'/embed/events/') + carryQuery(searchParams));
+  // The event website's colours, which a snippet may change for one placement.
+  const look = readLook(searchParams, e?.site);
+  return <EmbedEvent slug={e?.slug || slug} initial={e?.__failed ? null : e} failed={!!e?.__failed} look={look} />;
 }

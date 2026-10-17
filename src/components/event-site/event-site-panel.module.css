@@ -257,6 +257,12 @@
   background-color: #131316;
 }
 
+/* A bracket, a table or a schedule in the tournament console's preview (P8). */
+.previewWide {
+  max-width: 100%;
+  height: 560px;
+}
+
 .skeleton {
   height: 220px;
   border-radius: 10px;

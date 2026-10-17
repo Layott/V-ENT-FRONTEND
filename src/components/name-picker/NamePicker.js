@@ -153,6 +153,14 @@ const NamePicker = ({
   // above the field) is a different question, so what was picked goes.
   useEffect(() => { setPicked(null); setResults([]); }, [kind]);
 
+  // A parent that clears or changes the field (the staff panel empties it once
+  // somebody is added) takes the choice with it: "Chosen: demo_tobi" under an
+  // empty field read as if they were still picked (walk, 17 October 2026).
+  useEffect(() => {
+    if (picked && cfg.value(picked) !== text.replace(/^@/, '')) setPicked(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text]);
+
   useEffect(() => () => abortRef.current?.abort(), []);
 
   useEffect(() => {
@@ -270,10 +278,12 @@ const NamePicker = ({
                       <Avatar src={mediaUrl(row.avatar)} name={row.username || row.full_name} size={36} />
                     </span>
                     <span className={styles.who}>
+                      {/* The chip's second line is the real name, as on every
+                          chip (CEO, 30 August 2026), never the handle again: it
+                          read "demo_chidi @demo_chidi" (walk, 17 October 2026). */}
                       <span className={styles.name}>
-                        <UserChip user={row} size={0} link={false} />
+                        <UserChip user={row} size={0} link={false} secondary handleClassName={styles.handle} />
                       </span>
-                      <span className={styles.handle}>@{row.username}</span>
                     </span>
                     {off && (
                       <span className={styles.closed}>
