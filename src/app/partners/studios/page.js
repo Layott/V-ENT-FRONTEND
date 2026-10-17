@@ -14,6 +14,7 @@ import { signInHref, useViewer } from '@/lib/gating';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { studioStatus, studioStatusLabel } from '@/components/studio-portal/studioLabels';
 import styles from './studios.module.css';
+import useGames from '@/components/game-modes/useGames';
 
 // `/partners/studios` - a studio's games (bracket structure design, section 14).
 //
@@ -35,7 +36,11 @@ export default function StudiosPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [data, setData] = useState(null);
-  const [titles, setTitles] = useState([]);
+  // The game catalogue is public; the picker shows active titles only. Read
+  // through the shared hook: this page once kept its own fetch and stored the
+  // whole {games, count} answer, which crashed the page (walk, 17 Oct 2026).
+  const { games: catalogue } = useGames();
+  const titles = catalogue.filter(g => g.active);
   const [form, setForm] = useState(EMPTY_FORM);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState('');
@@ -78,16 +83,6 @@ export default function StudiosPage() {
     }
     load();
   }, [viewer.loading, viewer.signedIn, load]);
-
-  // The game catalogue is public; the picker shows active titles only.
-  useEffect(() => {
-    let alive = true;
-    fetch(`${API}/auth/games/`)
-      .then(res => (res.ok ? res.json() : null))
-      .then(body => { if (alive && body?.data) setTitles(body.data); })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, []);
 
   const register = async e => {
     e.preventDefault();

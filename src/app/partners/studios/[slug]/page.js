@@ -20,6 +20,7 @@ import {
 import DeliveryLog from '@/components/studio-portal/DeliveryLog';
 import UsagePanel from '@/components/studio-portal/UsagePanel';
 import styles from '../studios.module.css';
+import useGames from '@/components/game-modes/useGames';
 
 // `/partners/studios/<game>` - one game's settings (design section 14, item 1).
 //
@@ -60,7 +61,11 @@ export default function StudioGamePage(props) {
   const [events, setEvents] = useState([]);
   const [keywords, setKeywords] = useState([]);
   const [testerLimit, setTesterLimit] = useState(20);
-  const [titles, setTitles] = useState([]);
+  // The game catalogue through the shared hook, active titles only: a fetch of
+  // its own stored the whole {games, count} answer and crashed this page
+  // (walk, 17 Oct 2026).
+  const { games: catalogue } = useGames();
+  const titles = catalogue.filter(g => g.active);
 
   const [connection, setConnection] = useState(null);
   const [results, setResults] = useState(null);
@@ -143,15 +148,6 @@ export default function StudioGamePage(props) {
     }
     load();
   }, [viewer.loading, viewer.signedIn, load]);
-
-  useEffect(() => {
-    let alive = true;
-    fetch(`${API}/auth/games/`)
-      .then(res => (res.ok ? res.json() : null))
-      .then(body => { if (alive && body?.data) setTitles(body.data); })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, []);
 
   const send = async (path, payload, panel, okText, failKey, failText) => {
     setBusy(panel);
