@@ -89,3 +89,159 @@
 
 .cta:focus-visible,
 .foot a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ---- P8: every tournament surface as a widget ------------------------- */
+
+/* A bracket, a table or a schedule takes the width it is given. */
+.frameWide {
+  gap: 1rem;
+}
+
+/* The organiser's choice of the system font, so the frame sits in their
+   page. `*` in globals.css sets Clash on every element, so the class has to
+   reach every element too. */
+.systemFont,
+.systemFont * {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.widgetHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.widgetTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: var(--fw-semi-bold);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.widgetLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border-radius: 10px;
+  background-color: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+
+.widgetLink:hover { background-color: var(--surface-3); }
+
+.stateBlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--surface-2);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip:hover { background-color: var(--surface-3); color: var(--ink); }
+
+.chipOn,
+.chipOn:hover {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.groupTitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  font-weight: var(--fw-semi-bold);
+  color: var(--ink-muted);
+}
+
+.fixtures {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fixture {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background-color: var(--surface-1);
+}
+
+.fixtureTime {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.fixtureMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.fixtureSides {
+  overflow-wrap: anywhere;
+  font-weight: var(--fw-medium);
+}
+
+.versus { color: var(--ink-muted); }
+
+.won { color: var(--ink); font-weight: var(--fw-bold); }
+
+.fixtureWhere {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.fixtureState {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fw-semi-bold);
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .fixture {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .fixtureTime { grid-column: 1 / -1; }
+}
+
+.chip:focus-visible,
+.widgetLink:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }

@@ -220,6 +220,24 @@ export function formatDayShort(value, opts) {
   return render(value, { weekday: 'short', day: 'numeric', month: 'short' }, opts);
 }
 
+/** The reader's calendar day for an instant, 'YYYY-MM-DD', for grouping a
+ *  list by day (the schedule on an organiser's own website, P8). A date with
+ *  no time on it is its own day, everywhere. Null for nothing readable.
+ */
+export function dayKey(value) {
+  if (isDateOnly(value)) return value.trim();
+  const parsed = asDate(value);
+  if (parsed === null) return null;
+  try {
+    // en-CA writes year-month-day; this is a key, never shown to anybody.
+    return parsed.toLocaleDateString('en-CA', {
+      year: 'numeric', month: '2-digit', day: '2-digit', timeZone: viewerZone(),
+    });
+  } catch {
+    return parsed.toISOString().slice(0, 10);
+  }
+}
+
 /** A date and time with the zone named: "4 Sept 2026, 10:00 WAT".
  *
  *  For anything somebody has to BE somewhere for. It renders in the READER's
@@ -305,7 +323,7 @@ export function formatNumber(value, options) {
 
 export default {
   localInputToISO, isoToLocalInput, withLocalDatesAsISO,
-  formatDayShort,
+  formatDayShort, dayKey,
   viewerZone, formatDateTime, formatDate, formatTime, formatWithZone,
   formatInZone, formatDateRange, formatRelative, formatNumber,
 };
