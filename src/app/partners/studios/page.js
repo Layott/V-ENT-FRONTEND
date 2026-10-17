@@ -157,6 +157,11 @@ export default function StudiosPage() {
             <p className={styles.pageSub}>
               {tt('partners.studios.sub', 'Connect your game once and every V-ENT format runs in it: players link their accounts, matches open lobbies in your game, and the results score the bracket.')}
             </p>
+            <div className={styles.actions}>
+              <Link href="/partners/docs/studios" className={styles.ghostBtn}>
+                {tt('partners.studios.guide', 'Read the guide for game studios')}
+              </Link>
+            </div>
           </header>
 
           {(viewer.loading || (viewer.signedIn && loading)) && (

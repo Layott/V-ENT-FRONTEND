@@ -139,6 +139,8 @@ const COPY = {
 
     'docs.title': 'V-ENT API and Sign in with V-ENT',
     'docs.description': 'Build on V-ENT: read tournaments, events, teams, players and rankings through the partner API, and let people sign in to your site with their V-ENT account.',
+    'docs.studios.title': 'Run V-ENT tournaments inside your game',
+    'docs.studios.description': 'For game studios: connect your game once and every V-ENT format runs in it. Link player accounts, open lobbies for matches, post signed results, and receive signed events.',
 
     'runOfShow.title': '{name}: run of show',
     'runOfShow.days.one': 'The minute by minute running order for {name}: {cues} across {count} day, with the times, who owns each one and how long it runs.',
@@ -267,6 +269,8 @@ const COPY = {
 
     'docs.title': 'API V-ENT et connexion avec V-ENT',
     'docs.description': 'Construisez sur V-ENT : lisez les tournois, événements, équipes, joueurs et classements via l’API partenaire, et laissez les gens se connecter à votre site avec leur compte V-ENT.',
+    'docs.studios.title': 'Faites tourner les tournois V-ENT dans votre jeu',
+    'docs.studios.description': 'Pour les studios de jeux : reliez votre jeu une fois et chaque format V-ENT y fonctionne. Liez les comptes des joueurs, ouvrez des salons pour les matchs, envoyez des résultats signés et recevez des événements signés.',
 
     'runOfShow.title': '{name} : conducteur',
     'runOfShow.days.one': 'Le déroulé minute par minute de {name} : {cues} sur {count} jour, avec les horaires, qui s’occupe de chaque moment et sa durée.',
@@ -395,6 +399,8 @@ const COPY = {
 
     'docs.title': 'API da V-ENT e Entrar com a V-ENT',
     'docs.description': 'Construa sobre a V-ENT: leia torneios, eventos, equipas, jogadores e classificações através da API de parceiros, e deixe as pessoas entrarem no seu site com a conta V-ENT.',
+    'docs.studios.title': 'Realize torneios V-ENT dentro do seu jogo',
+    'docs.studios.description': 'Para estúdios de jogos: ligue o seu jogo uma vez e todos os formatos V-ENT funcionam nele. Associe as contas dos jogadores, abra salas para as partidas, envie resultados assinados e receba eventos assinados.',
 
     'runOfShow.title': '{name}: alinhamento',
     'runOfShow.days.one': 'O alinhamento minuto a minuto de {name}: {cues} em {count} dia, com as horas, quem trata de cada momento e quanto dura.',
