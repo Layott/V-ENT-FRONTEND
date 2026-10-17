@@ -508,3 +508,48 @@
 }
 
 .retry:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Feeds to and from other tournaments (P2): a filled strip of plain lines,
+   each one a link to the other tournament. */
+.feeds {
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1rem;
+}
+
+.feedLine {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.feedKind {
+  color: var(--v-ent-light-gold, #E8C760);
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.feedLink {
+  color: inherit;
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.6rem 0;
+}
+
+.feedLink:hover { color: #fff; text-decoration: underline; }
+.feedLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.feedMine {
+  align-items: center;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem;
+}
