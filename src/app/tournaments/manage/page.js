@@ -15,6 +15,7 @@ import TieScoring from '@/components/tournament-manage/TieScoring';
 import { formatKey } from '@/lib/formatLabel';
 import { slotsText } from '@/lib/slots';
 import { matchName } from '@/lib/matchName';
+import { sideLabel } from '@/lib/slotLabel';
 import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil, LuCopy } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -122,6 +123,9 @@ const flattenMatches = (rounds = []) => rounds.flatMap(r => (r.matches || []).ma
   score_p2: m.score_p2 ?? 0,
   p1: m.participant_1 || null,
   p2: m.participant_2 || null,
+  // Where each side comes from (P1a), so an empty seat reads "Winner of
+  // Round 1, match 2" here as on the bracket, not "TBD".
+  slots: m.slots || [],
   winner: m.winner || null,
   scheduled_at: m.scheduled_at || null,
   // What the match is for, so the console can name it the way the bracket
@@ -131,7 +135,6 @@ const flattenMatches = (rounds = []) => rounds.flatMap(r => (r.matches || []).ma
   loser_place: m.loser_place ?? null,
   places: m.places || null
 })));
-const nameOf = p => p?.name || p?.participant?.name || 'TBD';
 const regIdOf = p => p?.registration_id ?? p?.id ?? null;
 const ManageContent = ({ slug }) => {
   const tx = useTx();
@@ -517,7 +520,7 @@ const ManageContent = ({ slug }) => {
                   header has to hear about it (it kept "live" until a reload). */}
               <BracketVisualizer tournamentId={tournament.slug || tournament.tournament_id}
                                  tournamentRef={tournament.slug || tournament.tournament_id} token={token}
-                                 onChanged={() => load({ quiet: true })} />
+                                 onChanged={() => load({ quiet: true })} path={false} />
             </>}
             {shown === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"
@@ -776,7 +779,7 @@ const StatsPanel = ({ tournamentId, matches, token, showToast }) => {
                 onChange={e => setMatchId(e.target.value)}>
           <option value="">{tt('stats.pickMatch', 'Which match')}</option>
           {(matches || []).map(m => <option key={m.id} value={m.id}>
-            {`R${m.round} M${m.match_number}: ${nameOf(m.p1)} v ${nameOf(m.p2)}`}
+            {`R${m.round} M${m.match_number}: ${sideLabel(tt, m, 1, undefined, m.p1)} v ${sideLabel(tt, m, 2, undefined, m.p2)}`}
           </option>)}
         </select>
         <div className={styles.pickerCell}>
@@ -1148,7 +1151,7 @@ const MatchControlPanel = ({
               </span>
               <span className={`${styles.matchStatusBadge} ${styles[`matchStatus_${m.status}`]}`}>{matchStatusWord(tt, m.status)}</span>
             </div>
-            <p className={styles.matchListLabel}>{nameOf(m.p1)} {tt('match.vs', 'v')} {nameOf(m.p2)}</p>
+            <p className={styles.matchListLabel}>{sideLabel(tt, m, 1, format, m.p1)} {tt('match.vs', 'v')} {sideLabel(tt, m, 2, format, m.p2)}</p>
             {m.scheduled_at && <p className={styles.matchListTime}>{formatDate(m.scheduled_at)} · {formatTime(m.scheduled_at)}</p>}
             {m.status !== 'scheduled' && <p className={styles.matchListScore}>
               {m.score_p1} - {m.score_p2}

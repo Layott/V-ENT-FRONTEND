@@ -31,9 +31,12 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
 import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
+import StageGraph from '@/components/stage-graph/StageGraph';
+import { stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
 import { formatLabel } from '@/lib/formatLabel';
 import { matchName } from '@/lib/matchName';
+import { slotLabel, slotOf } from '@/lib/slotLabel';
 import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -51,17 +54,22 @@ const nameOf = side => side?.name || null;
 const handleOf = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
 
 /** One fixture, drawn the same way everywhere so nothing looks like two things. */
-const Fixture = ({ match, tt, onOpen, mine }) => {
+const Fixture = ({ match, tt, onOpen, mine, format }) => {
   const one = nameOf(match.participant_1);
   const two = nameOf(match.participant_2);
   const decided = ['completed', 'walkover_p1', 'walkover_p2'].includes(match.status);
   const winner = match.winner_registration_id;
   const pens = match.penalties_p1 != null && match.penalties_p2 != null;
 
-  const side = (label, score, pen, regId, handle) => (
+  // An empty seat says where its player comes from ("Winner of Round 1,
+  // match 2"), read from the match's slots (P1a), and only falls back to "To
+  // be decided" when nothing is known yet.
+  const side = (label, score, pen, regId, handle, n) => (
     <div className={`${styles.side} ${decided && winner && winner === regId ? styles.sideWon : ''}`}>
       <span className={styles.sideName}>
-        {label || <span className={styles.tbd}>{tt('bracket.tbd', 'To be decided')}</span>}
+        {label || <span className={styles.tbd}>
+          {slotLabel(tt, slotOf(match, n), format) || tt('bracket.tbd', 'To be decided')}
+        </span>}
         {label && handle && <span className={styles.handle}>{handle}</span>}
       </span>
       <span className={styles.sideScore}>
@@ -75,9 +83,9 @@ const Fixture = ({ match, tt, onOpen, mine }) => {
     <button type="button" className={`${styles.fixture} ${mine ? styles.fixtureMine : ''}`}
             onClick={() => onOpen && onOpen(match)}
             aria-label={`${one || '?'} v ${two || '?'}`}>
-      {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id, handleOf(match.participant_1))}
+      {side(one, match.score_p1, match.penalties_p1, match.participant_1?.registration_id, handleOf(match.participant_1), 1)}
       <span className={styles.versus} aria-hidden="true">v</span>
-      {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id, handleOf(match.participant_2))}
+      {side(two, match.score_p2, match.penalties_p2, match.participant_2?.registration_id, handleOf(match.participant_2), 2)}
       {match.loser_place && !match.winner_place && (
         <span className={styles.fixtureNote}>
           {tt('bracket.loserPlace', 'The loser finishes in place {n}').replace('{n}', match.loser_place)}
@@ -139,7 +147,7 @@ const MapKnockout = ({ rounds, tt, onOpen, isMine, side, format }) => (
                      paddingTop: `${index === 0 ? 0 : 12 * ((2 ** index) - 1)}px` }
                  : { gap: '12px' }}>
             {(round.matches || []).map(match => (
-              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} />
+              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} format={format} />
             ))}
           </div>
         </div>
@@ -161,7 +169,7 @@ const MapFlat = ({ rounds, tt, onOpen, isMine, format }) => (
           </p>
           <div className={styles.mapStack} style={{ gap: '12px' }}>
             {(round.matches || []).map(match => (
-              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} />
+              <Fixture key={match.match_id} match={match} tt={tt} onOpen={onOpen} mine={isMine(match)} format={format} />
             ))}
           </div>
         </div>
@@ -395,8 +403,11 @@ const PlacementSections = ({ rounds, tt, onOpen, isMine, format }) => {
   ));
 };
 
+// `path` false where the page already draws the stage picture itself (the
+// organiser's console, whose planner sits above this): two copies of one
+// picture on one screen (walk, 17 October 2026).
 export default function BracketVisualizer({ tournamentId, token = null, tournamentRef = null,
-                                           onChanged = null }) {
+                                           onChanged = null, path: showPath = true }) {
   const tt = useT();
   const [data, setData] = useState(null);
   const [stageId, setStageId] = useState(null);
@@ -457,6 +468,26 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
     return mine.find(m => m.status === 'pending_opponent_confirm') || mine[0] || null;
   }, [rounds, isMine]);
 
+  // The Path view (P1f): the stages as boxes joined by their lines, with who
+  // went through each, above the bracket of the stage picked. Read again when
+  // a stage changes state, which is when somebody is sent on. If it cannot be
+  // read, the stage buttons below stay as the way to pick a stage.
+  const [path, setPath] = useState(null);
+  const stagesKey = (data?.stages || []).map(s => `${s.id}:${s.status}:${s.drawn}`).join('|');
+  useEffect(() => {
+    if (!showPath || (data?.stages || []).length < 2) return undefined;
+    let gone = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/stages/`);
+        const body = await res.json().catch(() => ({}));
+        if (!gone && res.ok && body.status === 'success') setPath(body.data);
+      } catch { /* the stage buttons remain */ }
+    })();
+    return () => { gone = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stagesKey, tournamentRef, tournamentId]);
+
   if (loading) return <p className={styles.state}>{tt('ui.loading', 'Loading…')}</p>;
   if (error) {
     return <div className={styles.state}>
@@ -491,7 +522,13 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
 
   return (
     <div className={styles.wrap}>
-      {stages.length > 1 && (
+      {showPath && stages.length > 1 && (path?.stages || []).length > 1 ? (
+        <section className={styles.path} aria-label={tt('stages.graph.pathLabel', 'The path through this tournament')}>
+          <p className={styles.pathTitle}>{tt('stages.graph.pathTitle', 'How this tournament runs')}</p>
+          <StageGraph stages={path.stages} lines={path.progressions || []} selected={data.stage_id} showState
+                      onPick={id => { setStageId(id); setView(null); }} />
+        </section>
+      ) : stages.length > 1 && (
         <div className={styles.stageChips} role="group"
              aria-label={tt('bracket.stagesLabel', 'Stages of this tournament')}>
           {stages.map(stage => (
@@ -501,9 +538,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                     onClick={() => { setStageId(stage.id); setView(null); }}>
               <span>{stage.label}</span>
               <span className={styles.stageChipState}>
-                {stage.status === 'complete' ? tt('bracket.stageDone', 'Finished')
-                  : stage.drawn ? tt('bracket.stageLive', 'Being played')
-                    : tt('bracket.stageLater', 'Not drawn yet')}
+                {stageState(tt, stage)}
               </span>
             </button>
           ))}
@@ -633,7 +668,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                      token={token} canRecord={canRecord}
                      onClose={() => setOpenFixture(null)}
                      onChanged={() => { load({ quiet: true }); if (onChanged) onChanged(); }} />
-        : <FixtureDetail match={openFixture} onClose={() => setOpenFixture(null)} />)}
+        : <FixtureDetail match={openFixture} format={format} onClose={() => setOpenFixture(null)} />)}
     </div>
   );
 }

@@ -58,6 +58,9 @@ import NationsTable from '@/components/studio/elements/NationsTable';
 import NowNextBar from '@/components/studio/elements/NowNextBar';
 import PlayAreaFrame from '@/components/studio/elements/PlayAreaFrame';
 import TextLayers from '@/components/studio/TextLayers';
+import { slotLabel, sideLabel } from '@/lib/slotLabel';
+import { matchName } from '@/lib/matchName';
+import { happeningLine } from '@/lib/happeningLine';
 import DesignedCanvas from '@/components/studio/DesignedCanvas';
 import { isDesigned } from '@/lib/overlays';
 import FormatExplainer from '@/components/format-explainer/FormatExplainer';
@@ -453,11 +456,17 @@ function PlayerCard({ payload, data }) {
 }
 
 function Ticker({ payload, data }) {
+  const tt = useT();
   const fromTable = (data.teams || []).map(
     (t) => `${place(t.place)}  ${t.name}  ${t.won}W ${t.lost}L`);
   const fromProgramme = (data.programme || []).map(
     (p) => `${clock(p.starts_at)}  ${p.title}${p.room ? `  ${p.room}` : ''}`);
-  const items = payload.items || (data.kind === 'event' ? fromProgramme : fromTable);
+  // What just happened (P1e): results that still stand, stages started and
+  // finished, places sent on, the winner. Newest first, as the feed sends it.
+  const fromHappenings = (data.happenings || []).map((h) => happeningLine(tt, h)).filter(Boolean);
+  const items = payload.items
+    || (payload.source === 'happenings' ? fromHappenings
+      : data.kind === 'event' ? fromProgramme : fromTable);
   if (!items.length) return null;
   return (
     <div className={styles.ticker}>
@@ -483,20 +492,98 @@ function Titlecard({ payload, data, variant }) {
   );
 }
 
-function Bracket({ data }) {
+// The bracket on stream, drawn from its seats (P1e). CEO, 16 October 2026:
+// "i aprove the design". Section 14b: "Brackets on stream draw from slots,
+// placeholders included". A seat nobody has reached says where its player
+// comes from ("Winner of Round 2, match 1", "Groups: group A, place 1"), so the
+// whole path can go on air on the day it is drawn, and it reads the same rows
+// as the bracket page, so the two can never disagree.
+const TREE_FORMATS = ['single_elimination', 'double_elimination'];
+// Columns a 1080 frame can hold and still be read from a sofa. A bracket wider
+// than this shows its last four rounds, which is where a broadcast is anyway.
+const TREE_ROUNDS = 4;
+const PLAYED = ['completed', 'walkover_p1', 'walkover_p2'];
+
+function pickStage(bracket, wanted) {
+  if (!bracket.length) return null;
+  const name = String(wanted || '').trim().toLowerCase();
+  const named = name && bracket.find((s) => (s.label || '').toLowerCase() === name);
+  if (named) return named;
+  const running = bracket.filter((s) => s.status === 'running');
+  return running[running.length - 1] || bracket[bracket.length - 1];
+}
+
+function roundTitle(tt, round, format) {
+  const only = round.matches.length === 1 ? round.matches[0] : null;
+  const named = only && matchName(tt, {
+    round: only.round_number, side: only.bracket_side, is_final: only.is_final,
+    winner_place: only.winner_place, loser_place: only.loser_place,
+  }, format);
+  if (named) return named;
+  return round.bracket_side === 'losers'
+    ? tt('bracket.losersRoundN', 'Losers round {n}').replace('{n}', round.round)
+    : tt('bracket.roundN', 'Round {n}').replace('{n}', round.round);
+}
+
+function TreeMatch({ match, format }) {
+  const tt = useT();
+  const played = PLAYED.includes(match.status);
+  const side = (n) => {
+    const who = n === 1 ? match.participant_1 : match.participant_2;
+    const won = played && who && match.winner_registration_id === who.registration_id;
+    return (
+      <div className={`${styles.treeSide} ${won ? styles.treeWon : ''} ${who ? '' : styles.treeWaiting}`}>
+        <span className={styles.treeName}>{sideLabel(tt, match, n, format)}</span>
+        <span className={styles.treeScore}>{played ? (n === 1 ? match.score_p1 : match.score_p2) : ''}</span>
+      </div>
+    );
+  };
+  return <div className={styles.treeMatch}>{side(1)}{side(2)}</div>;
+}
+
+function BracketTree({ stage }) {
+  const tt = useT();
+  const upper = stage.rounds.filter((r) => r.bracket_side === 'winners' || r.bracket_side === 'grand_final');
+  const lower = stage.rounds.filter((r) => r.bracket_side === 'losers');
+  const last = (rows) => rows.slice(Math.max(0, rows.length - TREE_ROUNDS));
+  const column = (round) => (
+    <div key={`${round.bracket_side}-${round.round}`} className={styles.treeColumn}>
+      <div className={styles.treeRound}>{roundTitle(tt, round, stage.format)}</div>
+      <div className={styles.treeMatches}>
+        {round.matches.map((m) => <TreeMatch key={m.match_id} match={m} format={stage.format} />)}
+      </div>
+    </div>
+  );
+  return (
+    <div className={styles.tree}>
+      {stage.label ? <div className={styles.treeTitle}>{stage.label}</div> : null}
+      <div className={styles.treeRow}>{last(upper).map(column)}</div>
+      {lower.length ? <div className={styles.treeRow}>{last(lower).map(column)}</div> : null}
+    </div>
+  );
+}
+
+function Bracket({ payload, data }) {
+  const tt = useT();
+  const stage = pickStage(data.bracket || [], payload?.stage);
+  if (stage && TREE_FORMATS.includes(stage.format) && stage.rounds?.length) {
+    return <BracketTree stage={stage} />;
+  }
   const live = data.live || [];
   if (!live.length) return null;
+  // Every other format: the list, an empty seat naming where it comes from.
+  const empty = (slot) => slotLabel(tt, slot, stage?.format) || tt('bracket.tbd', 'To be decided');
   return (
     <div className={styles.bracket}>
       {live.map((m, i) => (
         <div key={i} className={styles.bracketRow}>
           <span className={styles.bracketRound}>R{m.round}</span>
-          <span className={styles.bracketSide}>{m.home || '-'}</span>
+          <span className={styles.bracketSide}>{m.home || empty(m.home_slot)}</span>
           <span className={styles.bracketScore}>
             {m.score[0]} - {m.score[1]}
           </span>
           <span className={`${styles.bracketSide} ${styles.bracketAway}`}>
-            {m.away || '-'}
+            {m.away || empty(m.away_slot)}
           </span>
         </div>
       ))}

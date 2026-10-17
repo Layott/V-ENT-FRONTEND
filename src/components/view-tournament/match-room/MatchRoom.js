@@ -30,6 +30,8 @@ import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
 import { matchName } from '@/lib/matchName';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { sideLabel } from '@/lib/slotLabel';
+import { rulesSource } from '@/lib/rulesSource';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -109,8 +111,8 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   }, [onClose]);
 
   const slot = match?.your_slot || null;
-  const one = match?.participant_1?.name || tt('bracket.tbd', 'To be decided');
-  const two = match?.participant_2?.name || tt('bracket.tbd', 'To be decided');
+  const one = sideLabel(tt, match, 1, match?.format);
+  const two = sideLabel(tt, match, 2, match?.format);
   // The @username under a person's full name (CEO: "both").
   const handle = side => (side?.handle && side.handle !== side.name ? `@${side.handle}` : null);
   const bothKnown = Boolean(match?.participant_1 && match?.participant_2);
@@ -271,6 +273,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         : tt('match.oneGame', 'One game. Enter the goals.'))
     : '';
 
+  // Where that rule comes from (P1c): "set for this round", "from Playoff".
+  const playedFrom = match ? rulesSource(tt, match.rules, match.legs > 1 ? 'legs' : 'best_of') : null;
+
   const statusText = status => statusWord(tt, status);
 
   return (
@@ -337,7 +342,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
           <dl className={styles.facts}>
             <div><dt>{tt('match.statusLabel', 'Status')}</dt><dd>{statusText(match.status)}</dd></div>
-            <div><dt>{tt('match.formatLabel', 'Played as')}</dt><dd>{bestOfText}</dd></div>
+            <div><dt>{tt('match.formatLabel', 'Played as')}</dt><dd>{bestOfText}{playedFrom ? ` (${playedFrom})` : ''}</dd></div>
             {open && match.scheduled_at && (
               <div><dt>{tt('match.startsLabel', 'Starts')}</dt>
                 <dd>{formatWithZone(match.scheduled_at)}</dd></div>

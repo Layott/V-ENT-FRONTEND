@@ -883,16 +883,20 @@ const ParticipantsPanel = ({
     return {
       key: r?.registration_id ?? i,
       seed: r?.seed ?? i + 1,
-      name: entrant.name || entrant.username || 'Unknown',
-      tag: r?.type === 'team' ? 'Team' : entrant.username && entrant.username !== entrant.name ? `@${entrant.username}` : '',
+      name: entrant.name || entrant.username || tt('participants.unknown', 'Unknown'),
+      tag: r?.type === 'team' ? tt('participants.teamTag', 'Team') : entrant.username && entrant.username !== entrant.name ? `@${entrant.username}` : '',
       region: entrant.country || '-',
       captain: entrant.captain || '-',
       played,
-      record: played ? `${r?.wins ?? 0}W ${r?.losses ?? 0}L` : 'Not played yet',
+      // Through t(): French and Portuguese readers got "2W 1L" and "Not
+      // played yet" in English (walk, 17 October 2026).
+      record: played
+        ? tt('participants.recordWL', '{w}W {l}L').replace('{w}', r?.wins ?? 0).replace('{l}', r?.losses ?? 0)
+        : tt('participants.notPlayed', 'Not played yet'),
       winRate: r?.win_rate === null || r?.win_rate === undefined ? null : Number(r.win_rate),
       status: r?.status || 'pending'
     };
-  }), [rows]);
+  }), [rows, tt]);
   const filtered = normalized.filter(r => {
     if (!search.trim()) return true;
     const q = search.trim().toLowerCase();
