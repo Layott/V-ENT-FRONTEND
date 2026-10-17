@@ -82,7 +82,7 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
-      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 }
+      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
         : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
@@ -92,6 +92,15 @@ const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TA
       ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}),
       ...(format === 'bracket_groups'
         ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}) });
+
+// How a Swiss pairs the rounds after the first (P3 W1), and its word.
+const SWISS_PAIRINGS = [
+  ['monrad', 'stages.pairMonrad', 'Monrad'],
+  ['dutch', 'stages.pairDutch', 'Dutch'],
+  ['valve', 'stages.pairValve', 'Valve'],
+];
+// The tie-breaks that read opponents' win percentages, which have a floor.
+const OWP_KEYS = ['opponents_win_pct', 'opp_opp_win_pct'];
 
 // Stop when this many are left (P3 W1). 0 plays to one winner; in a double
 // elimination 2 is the same as no grand final.
@@ -109,6 +118,9 @@ const rulesPayload = r => {
   });
   if (Array.isArray(rules.tiebreakers) && rules.tiebreakers.length) out.tiebreakers = rules.tiebreakers;
   if (rules.buchholz) out.buchholz = rules.buchholz;
+  if (rules.owp_floor !== '' && rules.owp_floor !== undefined && rules.owp_floor !== null) {
+    out.owp_floor = Number(rules.owp_floor);
+  }
   return Object.keys(out).length ? out : null;
 };
 
@@ -138,6 +150,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [rows, setRows] = useState([]);
   const [catalogue, setCatalogue] = useState([]);
   const [preset, setPreset] = useState(null);
+  // Whole setups a stage can start from (P3 W1): the Counter-Strike Major Swiss.
+  const [formatPresets, setFormatPresets] = useState({});
   const [entrants, setEntrants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
@@ -182,6 +196,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         setLines(body.data.progressions || []);
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
+        setFormatPresets(body.data.format_presets || {});
         setMeta({
           oneFormat: Boolean(body.data.one_format_drawn),
           finished: Boolean(body.data.finished),
@@ -361,6 +376,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (s.grand_final === 'reset') bits.push(tt('stages.resetOn', 'grand final with a reset'));
     if (s.legs > 1) bits.push(tt('stages.homeAway', 'home and away'));
     if (row.format === 'swiss' && s.rounds) bits.push(tt('stages.roundsN', '{n} rounds').replace('{n}', s.rounds));
+    if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
+      const found = SWISS_PAIRINGS.find(([v]) => v === s.pairing);
+      if (found) bits.push(tt('stages.pairedBy', 'paired {how}').replace('{how}', tt(found[1], found[2])));
+    }
+    if (Number(s.decisive_best_of) > 0) {
+      bits.push(tt('stages.decisiveOn', 'a match that decides is best of {n}').replace('{n}', s.decisive_best_of));
+    }
     if (s.draws === 'penalties') bits.push(tt('stages.pensOn', 'level goes to penalties'));
     if (s.draws === 'allowed') bits.push(tt('stages.drawsOn', 'draws count'));
     if (s.check_in_minutes) bits.push(tt('stages.checkInN', '{n} minutes to check in').replace('{n}', s.check_in_minutes));
@@ -540,6 +562,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     [list[at], list[to]] = [list[to], list[at]];
     return list;
   });
+
+  const applyFormatPreset = (index, key) => setDraft(prev => prev.map((row, i) => {
+    const chosen = formatPresets[key];
+    if (i !== index || !chosen || chosen.format !== row.format) return row;
+    return { ...row, settings: { ...row.settings, ...chosen.settings },
+             rules: { ...(row.rules || {}), ...chosen.rules } };
+  }));
 
   const applyPreset = index => setDraft(prev => prev.map((row, i) => {
     if (i !== index || !preset) return row;
@@ -1356,6 +1385,34 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                       <input className={styles.number} type="number" min="0" max="10" disabled={busy}
                              value={s.loss_limit ?? 0} onChange={e => setSetting(index, 'loss_limit', Number(e.target.value) || 0)} />
                     </label>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissPairing', 'Pair the later rounds')}</span>
+                      <Chips value={s.pairing || 'monrad'} disabled={busy} label={tt('stages.swissPairing', 'Pair the later rounds')}
+                             options={SWISS_PAIRINGS.map(([v, key, text]) => [v, tt(key, text)])}
+                             onChange={v => setSetting(index, 'pairing', v)} />
+                      <span className={styles.note}>
+                        {(s.pairing || 'monrad') === 'dutch'
+                          ? tt('stages.pairDutchNote', 'The chess way: the top half of each score group plays its bottom half, first against the one half way down.')
+                          : s.pairing === 'valve'
+                            ? tt('stages.pairValveNote', 'The Counter-Strike Major way: the strongest on a record plays the weakest on it.')
+                            : tt('stages.pairMonradNote', 'First against second, third against fourth, on the same record.')}
+                      </span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.decisive', 'A match that can send a side through or out')}</span>
+                      <Chips value={Number(s.decisive_best_of || 0)} disabled={busy}
+                             label={tt('stages.decisive', 'A match that can send a side through or out')}
+                             options={[[0, tt('stages.decisiveSame', 'Like any other')],
+                                       [3, tt('stages.bestOfN', 'best of {n}').replace('{n}', 3)],
+                                       [5, tt('stages.bestOfN', 'best of {n}').replace('{n}', 5)]]}
+                             onChange={v => setSetting(index, 'decisive_best_of', v)} />
+                    </div>
+                    {formatPresets.valve_major && (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              onClick={() => applyFormatPreset(index, 'valve_major')}>
+                        {tt('stages.valvePreset', 'Use the Counter-Strike Major setup: three wins through, three losses out, decisive matches best of three')}
+                      </button>
+                    )}
                   </>}
                   {row.format === 'gsl' && (
                     <p className={styles.note}>{tt('stages.gslNote', 'Groups of four, drawn automatically. Two openers, a winners match, a losers match and a decider.')}</p>
@@ -1649,6 +1706,17 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                           </label>
                         ))}
                       </div>
+                      {row.format === 'swiss' && (
+                        <div className={styles.field}>
+                          <span className={styles.fieldLabel}>{tt('stages.buchholzForm', 'The strength of the opponents counts their')}</span>
+                          <Chips value={r.buchholz || 'wins'} disabled={busy}
+                                 label={tt('stages.buchholzForm', 'The strength of the opponents counts their')}
+                                 options={[['wins', tt('stages.buchholzWins', 'Wins')],
+                                           ['points', tt('stages.buchholzPoints', 'Points')],
+                                           ['wins_minus_losses', tt('stages.buchholzWL', 'Wins minus losses')]]}
+                                 onChange={v => setRule(index, 'buchholz', v)} />
+                        </div>
+                      )}
                       <p className={styles.subhead}>{tt('stages.tiebreakers', 'When level on points, then')}</p>
                       {chosen.length ? (
                         <ol className={styles.tieList}>
@@ -1688,6 +1756,14 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                             </button>
                           ))}
                         </div>
+                      )}
+                      {chosen.some(k => OWP_KEYS.includes(k)) && (
+                        <label className={styles.field}>
+                          <span className={styles.fieldLabel}>{tt('stages.owpFloor', 'The lowest win percentage an opponent counts as')}</span>
+                          <input className={styles.number} type="number" min="0" max="50" inputMode="numeric"
+                                 value={r.owp_floor ?? ''} placeholder="25" disabled={busy}
+                                 onChange={e => setRule(index, 'owp_floor', e.target.value)} />
+                        </label>
                       )}
                       <p className={styles.note}>
                         {tt('stages.tiebreakShared', 'Sides still level on all of them share a place, and share its prize.')}
