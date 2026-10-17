@@ -353,6 +353,40 @@ testAsync('the memory holds a bounded number of records', async () => {
   assert.equal(api.calls.length, 4);
 });
 
+console.log('found by the walk of 17 October');
+
+const source = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+
+test('an embed keeps no room for a bottom menu it does not have', () => {
+  // Under 1024px every page body pads 70px for the bottom menu. An embed has
+  // none, so the card, 640px wide, scrolled inside its own frame by exactly
+  // that much, and so did every widget on a phone.
+  assert.match(source('src/components/embed/EmbedFrame.js'), /data-vent-embed/);
+  const css = source('src/app/globals.css');
+  const block = css.slice(css.indexOf('@media only screen and (max-width: 1023px)'));
+  assert.match(block.slice(0, 700), /body:has\(\[data-vent-embed\]\)\s*\{\s*padding-bottom:\s*0/);
+});
+
+test('the card names its format in the reader\'s language and loads its banner through mediaUrl', () => {
+  const card = source('src/components/embed/EmbedTournament.js');
+  assert.match(card, /formatLabel\(tt, t\.bracket_type/);
+  assert.match(card, /mediaUrl\(/);
+  assert.doesNotMatch(card, /t\.format_label\]/);
+});
+
+test('the Path widget draws the tournaments a feed joins, as the tournament page does', () => {
+  const widget = source('src/components/embed/EmbedPath.js');
+  assert.match(widget, /pathWithFeeds\(/);
+  assert.match(widget, /\/feeds\//);
+  assert.match(source('src/components/view-tournament/bracket-visualizer/BracketVisualizer.js'), /pathWithFeeds\(/);
+});
+
+test('a copy the browser refuses still copies or says how', () => {
+  const row = source('src/components/embed-sites/CopyRow.js');
+  assert.match(row, /execCommand\('copy'\)/);
+  assert.match(row, /siteConsole\.copyByHand/);
+});
+
 for (const [name, fn] of later) {
   try {
     await fn();

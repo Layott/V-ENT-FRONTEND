@@ -13,6 +13,7 @@
 import { useT } from '@/i18n/LanguageProvider';
 import useLiveData from '@/lib/useLiveData';
 import StageGraph from '@/components/stage-graph/StageGraph';
+import { pathWithFeeds } from '@/lib/stageGraph';
 import styles from './embed.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -20,10 +21,21 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export default function EmbedPath({ slug }) {
   const tt = useT();
   const { data, loading, error, refresh } = useLiveData(async ({ signal }) => {
-    const res = await fetch(`${API}/tournament/${encodeURIComponent(slug)}/stages/`, { signal });
+    const ref = encodeURIComponent(slug);
+    const res = await fetch(`${API}/tournament/${ref}/stages/`, { signal });
     const body = await res.json().catch(() => ({}));
     if (!res.ok || body.status !== 'success') throw body;
-    return body.data;
+    // The tournaments its feeds join (P2), drawn as boxes either side. A
+    // tournament with no feeds, or a feeds answer that fails, is its own plan.
+    let feeds = null;
+    try {
+      const fed = await fetch(`${API}/tournament/${ref}/feeds/`, { signal });
+      const fedBody = await fed.json().catch(() => ({}));
+      if (fed.ok && fedBody.status === 'success') feeds = fedBody.data;
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err;
+    }
+    return { plan: body.data, feeds };
   }, [slug], { interval: 30000, maxInterval: 120000 });
 
   if (loading && !data) return <p className={styles.note} aria-busy="true">{tt('ui.loading', 'Loading…')}</p>;
@@ -35,11 +47,11 @@ export default function EmbedPath({ slug }) {
       </div>
     );
   }
-  const stages = data?.stages || [];
-  if (stages.length < 2) {
+  const graph = pathWithFeeds(data?.plan, data?.feeds);
+  if (graph.stages.length < 2) {
     return (
       <p className={styles.note}>
-        {stages.length
+        {graph.stages.length
           ? tt('embed.pathOneStage', 'This tournament is played as one stage, so there is no path to draw.')
           : tt('embed.pathEmpty', 'The organiser has not planned the stages yet.')}
       </p>
@@ -47,7 +59,7 @@ export default function EmbedPath({ slug }) {
   }
   return (
     <section aria-label={tt('stages.graph.pathLabel', 'The path through this tournament')}>
-      <StageGraph stages={stages} lines={data.progressions || []} showState />
+      <StageGraph stages={graph.stages} lines={graph.lines} showState />
     </section>
   );
 }

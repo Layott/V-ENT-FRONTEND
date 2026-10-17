@@ -125,7 +125,9 @@ export default function EmbedFrame({ kind, slug, look, appTokens = false, wide =
   if (look?.font === 'system') classes.push(styles.systemFont);
 
   return (
-    <main ref={root} className={classes.join(' ')} style={style}>
+    // data-vent-embed tells globals.css this page has no bottom menu, so the
+    // room it keeps for one under 1024px is not kept here (walk, 17 Oct 2026).
+    <main ref={root} className={classes.join(' ')} style={style} data-vent-embed="">
       {children}
     </main>
   );

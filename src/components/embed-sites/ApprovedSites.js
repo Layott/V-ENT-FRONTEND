@@ -214,9 +214,11 @@ export default function ApprovedSites({ kind, slug, token, showToast }) {
         return;
       }
       setRecord(data.data);
+      // Frames are told who may hold them from a copy kept for up to a minute,
+      // so say when it takes effect (walk, 17 October 2026).
       showToast?.(data.data.anywhere
-        ? tt('embedSites.nowAnywhere', 'Saved. Any website can show this again.')
-        : tt('embedSites.nowLocked', 'Saved. Only the sites you allowed can show this.'));
+        ? tt('embedSites.nowAnywhereSoon', 'Saved. Within a minute, any website can show this again.')
+        : tt('embedSites.nowLockedSoon', 'Saved. Within a minute, only the sites you allowed can show this.'));
     } catch {
       setError(tt('embedSites.lockFailed', 'Where this can be shown could not be saved.'));
     } finally {
