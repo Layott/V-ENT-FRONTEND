@@ -358,6 +358,16 @@
 
 .stageChipOn .stageChipState { color: var(--v-ent-light-gold, #E8C760); }
 
+/* The Path view (P1f), above the bracket of the stage picked. */
+.path { margin: 0 0 1.5rem; }
+
+.pathTitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: var(--fw-semi-bold, 600);
+  margin: 0 0 0.75rem;
+}
+
 .myNext {
   display: flex;
   flex-direction: column;

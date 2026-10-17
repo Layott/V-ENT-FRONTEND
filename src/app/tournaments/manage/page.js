@@ -527,7 +527,7 @@ const ManageContent = ({ slug }) => {
                   header has to hear about it (it kept "live" until a reload). */}
               <BracketVisualizer tournamentId={tournament.slug || tournament.tournament_id}
                                  tournamentRef={tournament.slug || tournament.tournament_id} token={token}
-                                 onChanged={() => load({ quiet: true })} />
+                                 onChanged={() => load({ quiet: true })} path={false} />
             </>}
             {shown === 'run-of-show' && (
               <RunOfShowPanel kind="tournament"
