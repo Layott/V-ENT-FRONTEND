@@ -454,6 +454,96 @@
 
 .bracketAway { text-align: right; }
 
+/* The tree (P1e): one filled column per round, matches as filled cards, the
+   winner in full weight and a seat nobody has reached in the muted tone. No
+   connector lines: the columns and the spacing carry the shape. */
+.tree {
+  background: #17171a;
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.94);
+  display: flex;
+  flex-direction: column;
+  font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
+  gap: 18px;
+  left: 60px;
+  max-height: calc(100% - 180px);
+  overflow: hidden;
+  padding: 22px 24px;
+  position: absolute;
+  right: 60px;
+  top: 90px;
+}
+
+.treeTitle {
+  color: var(--v-ent-red, #ED1C24);
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.treeRow {
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+.treeColumn {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.treeRound {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 15px;
+  font-weight: 550;
+}
+
+.treeMatches {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.treeMatch {
+  background: #232328;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.treeSide {
+  align-items: center;
+  display: flex;
+  font-size: 17px;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 8px 14px;
+}
+
+.treeSide + .treeSide { background: rgba(255, 255, 255, 0.04); }
+
+.treeName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treeScore {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  min-width: 22px;
+  text-align: right;
+}
+
+.treeWon { font-weight: 650; }
+
+.treeWaiting { color: rgba(255, 255, 255, 0.5); font-size: 15px; }
+
 /* ---------------------------------------------------------- sponsor wall */
 /* Both kinds. A strip along the bottom, the one place logos are read. */
 
@@ -1491,6 +1581,16 @@
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
   gap: 24px;
   inset: 5%;
+  justify-content: center;
+  position: absolute;
+}
+
+/* A format explainer on air (inbox 476): the player's broadcast plate,
+   centred, sized so the whole plate fits a 1920 x 1080 frame. */
+.exPlayer {
+  align-items: center;
+  display: flex;
+  inset: 4%;
   justify-content: center;
   position: absolute;
 }

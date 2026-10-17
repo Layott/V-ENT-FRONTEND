@@ -371,8 +371,11 @@ export default function OverlaysPanel({ kind = 'tournament', ownerRef, token, sh
                 disabled={busy}
                 onClick={() => startFrom(t.key)}
               >
-                <span className={styles.templateName}>{t.name}</span>
-                <span className={styles.templateDetail}>{t.detail}</span>
+                {/* The server sends its words in English; each template reads in the
+                    reader's language by its key, the server's text the fallback
+                    (walk, 17 October 2026). */}
+                <span className={styles.templateName}>{tt(`overlay.tpl.${kind}.${t.key}.name`, t.name)}</span>
+                <span className={styles.templateDetail}>{tt(`overlay.tpl.${kind}.${t.key}.detail`, t.detail)}</span>
               </button>
             ))}
           </div>

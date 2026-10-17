@@ -131,6 +131,8 @@ const COPY = {
 
     'roadmap.title': 'What is coming to V-ENT',
     'roadmap.what': 'The modules V-ENT opens next, in order: the shop, Vermillion City (player to player trading), the anime hub, and wagers. What each will do, and how to be told when it opens.',
+    'formats.title': 'How each tournament format works',
+    'formats.what': 'Single elimination, double elimination, round robin, league, Swiss, GSL, battle royale, stepladder, page playoff, winner stays on, aggregate ties and ladders, each shown as a short moving bracket with three plain sentences.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'What a V-ENT premium subscription switches on for an organiser.',
     'premium.includes': 'Includes {features}.',
@@ -261,6 +263,8 @@ const COPY = {
 
     'roadmap.title': 'Ce qui arrive sur V-ENT',
     'roadmap.what': 'Les modules que V-ENT ouvre ensuite, dans l’ordre : la boutique, Vermillion City (échanges entre joueurs), l’espace anime et les paris. Ce que chacun fera, et comment être prévenu de son ouverture.',
+    'formats.title': 'Comment fonctionne chaque format de tournoi',
+    'formats.what': 'Élimination directe, double élimination, toutes rondes, ligue, système suisse, GSL, battle royale, échelle à paliers, playoffs système Page, le gagnant reste, confrontations au cumul et échelles, chacun montré par un court tableau animé et trois phrases simples.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'Ce qu’un abonnement V-ENT premium active pour un organisateur.',
     'premium.includes': 'Comprend {features}.',
@@ -391,6 +395,8 @@ const COPY = {
 
     'roadmap.title': 'O que vem aí na V-ENT',
     'roadmap.what': 'Os módulos que a V-ENT abre a seguir, por ordem: a loja, Vermillion City (compra e venda entre jogadores), o espaço anime e as apostas. O que cada um fará, e como ser avisado quando abrir.',
+    'formats.title': 'Como funciona cada formato de torneio',
+    'formats.what': 'Eliminação simples, dupla eliminação, todos contra todos, liga, sistema suíço, GSL, battle royale, escada por patamares, playoffs sistema Page, quem ganha fica, eliminatórias por agregado e escadas, cada um mostrado num pequeno quadro animado com três frases simples.',
     'premium.title': 'V-ENT premium',
     'premium.what': 'O que uma subscrição V-ENT premium ativa para um organizador.',
     'premium.includes': 'Inclui {features}.',
