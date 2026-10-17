@@ -11,13 +11,15 @@ import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
 import StaffPanel from '@/components/tournament-manage/StaffPanel';
 import { can, tabsFor } from '@/lib/tournamentAccess';
+import BlueprintForm, { defaultName } from '@/components/blueprints/BlueprintForm';
+import blueprintStyles from '@/components/blueprints/blueprints.module.css';
 import BattleRoyaleConsole from '@/components/tournament-manage/br/BattleRoyaleConsole';
 import TieScoring from '@/components/tournament-manage/TieScoring';
 import { formatKey } from '@/lib/formatLabel';
 import { slotsText } from '@/lib/slots';
 import { matchName } from '@/lib/matchName';
 import { sideLabel } from '@/lib/slotLabel';
-import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil, LuCopy } from 'react-icons/lu';
+import { LuRadio, LuCheck, LuEye, LuArrowRight, LuTrophy, LuExternalLink, LuPencil, LuCopy, LuRotateCw } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -308,6 +310,36 @@ const ManageContent = ({ slug }) => {
     || sameUser(viewer.id, creator?.user_id ?? creator?.id)
   );
   const [copying, setCopying] = useState(false);
+  // Run it again (P7): this tournament as a blueprint that makes its next
+  // editions. Its owner's alone, like Duplicate.
+  const [blueprinting, setBlueprinting] = useState(false);
+  const [blueprintBusy, setBlueprintBusy] = useState(false);
+  const [blueprintProblem, setBlueprintProblem] = useState('');
+  const [blueprintSaved, setBlueprintSaved] = useState('');
+  const saveBlueprint = async (body) => {
+    const ref = tournament?.slug || tournament?.tournament_id;
+    if (!ref || !token) return;
+    setBlueprintBusy(true);
+    setBlueprintProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/blueprints/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...body, tournament: ref }),
+      });
+      const answer = await res.json().catch(() => ({}));
+      if (!res.ok || answer.status !== 'success') {
+        setBlueprintProblem(apiMessage(tt, answer, 'blueprint.createFailed', 'That blueprint was not saved.'));
+        return;
+      }
+      setBlueprinting(false);
+      setBlueprintSaved(answer.data.blueprint.name);
+    } catch {
+      setBlueprintProblem(tt('api.networkProblem', 'The network is not answering. Try again.'));
+    } finally {
+      setBlueprintBusy(false);
+    }
+  };
   const duplicate = async () => {
     const ref = tournament?.slug || tournament?.tournament_id;
     if (!ref || !token) return;
@@ -427,6 +459,10 @@ const ManageContent = ({ slug }) => {
               {ownsIt && <button type="button" className={styles.outlineBtn} disabled={copying} onClick={duplicate}>
                 <LuCopy aria-hidden="true" /> {copying ? tt('dup.working', 'Copying...') : tt('dup.button', 'Duplicate')}
               </button>}
+              {ownsIt && <button type="button" className={styles.outlineBtn} aria-expanded={blueprinting}
+                                 onClick={() => { setBlueprinting(v => !v); setBlueprintSaved(''); }}>
+                <LuRotateCw aria-hidden="true" /> {tt('blueprint.runAgain', 'Run it again')}
+              </button>}
               {/* Opens the Production tab below. This was a disabled button
                   titled "Production is not available yet", beside the tab
                   that worked. */}
@@ -438,6 +474,23 @@ const ManageContent = ({ slug }) => {
               </button>}
             </div>
           </div>
+
+          {/* Run it again (P7): a blueprint of this tournament. */}
+          {ownsIt && blueprinting && <section className={blueprintStyles.card} aria-labelledby="run-again-title">
+              <h2 id="run-again-title" className={blueprintStyles.cardTitle}>{tt('blueprint.runAgainTitle', 'Run this tournament again')}</h2>
+              <p className={blueprintStyles.help}>
+                {tt('blueprint.runAgainHelp', 'Each edition copies how this tournament is set up when the edition is made: format, stages, rules, entry, prizes as typed. Nobody who entered and nothing that happened is copied. Change this tournament and the editions still to come change with it.')}
+              </p>
+              {blueprintProblem && <p className={blueprintStyles.problem} role="alert">{blueprintProblem}</p>}
+              <BlueprintForm busy={blueprintBusy}
+                             initial={{ name: defaultName(tournament.name || tournament.tournament_title) }}
+                             submitLabel={tt('blueprint.createIt', 'Save the blueprint')}
+                             onCancel={() => setBlueprinting(false)} onSubmit={saveBlueprint} />
+            </section>}
+          {blueprintSaved && <p className={blueprintStyles.note} role="status">
+              {tt('blueprint.savedFromConsole', 'Saved. {name} makes its editions from now on.').replace('{name}', blueprintSaved)}{' '}
+              <Link href="/tournaments/my-tournaments?tab=blueprints">{tt('blueprint.seeThem', 'See your blueprints')}</Link>
+            </p>}
 
           {/* Sub-tab nav. A helper sees the tabs their permissions open: a tab
               they cannot use is a control the API would refuse. */}

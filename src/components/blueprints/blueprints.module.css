@@ -1,0 +1,178 @@
+/* Blueprints (P7): the form, the panel on My Tournaments, the card for each.
+   Surfaces and space, no strokes, nothing moves. The panel sits on the page;
+   cards are one step up (14), the sheets inside them another (12), controls
+   10, chips 8. */
+
+.panel { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+
+.panelHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.panelTitle {
+  margin: 0 0 0.3rem;
+  font-size: 1.1rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.cards { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  min-width: 0;
+}
+
+.cardHead { display: flex; gap: 0.8rem; min-width: 0; }
+.cardText { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+
+.cardTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+  overflow-wrap: anywhere;
+}
+
+.line { margin: 0; color: rgba(255, 255, 255, 0.78); line-height: 1.45; overflow-wrap: anywhere; }
+.muted { margin: 0; color: rgba(255, 255, 255, 0.55); line-height: 1.45; }
+.help { margin: 0.2rem 0 0; color: rgba(255, 255, 255, 0.55); font-size: 0.86rem; line-height: 1.45; max-width: 64ch; }
+.paused { margin: 0; color: var(--v-ent-light-gold, #E8C760); line-height: 1.45; }
+
+.empty {
+  margin: 0;
+  padding: 1.2rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+}
+
+.note {
+  margin: 0;
+  color: var(--primary-bg);
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.problem {
+  margin: 0;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: #ffb4b7;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem;
+  min-width: 0;
+}
+
+.editions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+
+.edition {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  min-width: 0;
+}
+
+.editionLink { color: var(--primary-bg); font-weight: var(--fw-semi-bold); overflow-wrap: anywhere; }
+.editionLink:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+.tag {
+  background-color: #3d3e45;
+  color: rgba(255, 255, 255, 0.78);
+  border-radius: 8px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+/* ------------------------------------------------------------------ form */
+
+.form { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; flex: 1 1 200px; }
+.row { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.label { margin: 0; color: var(--primary-bg); font-weight: var(--fw-semi-bold); font-size: 0.92rem; }
+
+.input {
+  min-height: 44px;
+  background-color: #33343a;
+  color: var(--primary-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  min-width: 0;
+}
+
+.input:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.chip {
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.chip:hover { background-color: #3d3e45; color: var(--primary-bg); }
+.chipOn,
+.chipOn:hover { background-color: rgba(76, 175, 80, 0.22); color: var(--v-ent-grn, #4caf50); font-weight: var(--fw-semi-bold); }
+.chip:disabled { opacity: 0.5; cursor: default; }
+.chip:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.primary,
+.ghost,
+.danger {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.primary { background-color: var(--v-ent-red, #ED1C24); color: var(--primary-bg); }
+.ghost { background-color: #35363c; color: var(--primary-bg); }
+.ghost[aria-pressed='true'] { background-color: #45464d; }
+.danger { background-color: rgba(237, 28, 36, 0.22); color: #ffb4b7; }
+.primary:disabled,
+.ghost:disabled,
+.danger:disabled { opacity: 0.45; cursor: default; }
+.primary:focus-visible,
+.ghost:focus-visible,
+.danger:focus-visible { outline: 2px solid var(--primary-bg); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .card { padding: 0.9rem; }
+  .actions > button { flex: 1 1 auto; }
+}

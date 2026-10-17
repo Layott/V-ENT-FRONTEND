@@ -11,6 +11,7 @@
 
 import assert from 'node:assert/strict';
 import { can, tabsFor, PERMISSION_KEYS } from '../src/lib/tournamentAccess.js';
+import { scheduleSentence, nextEditionLine, pausedWords } from '../src/lib/blueprintSchedule.js';
 
 const blueprints = process.argv.includes('--blueprints');
 let passed = 0;
@@ -93,6 +94,47 @@ if (!blueprints) {
 
   test('a name the server never sends opens nothing', () => {
     assert.deepEqual(tabsFor(helper(['owner'])), []);
+  });
+}
+
+if (blueprints) {
+  const tt = (key, fallback) => fallback;
+  const when = value => `<${value}>`;
+  const row = extra => ({ every: 'week', first_start: 'A', next_start: 'B', active: true,
+    paused_reason: '', ends_after: null, made: 0, next_number: 12, lead_days: 7, ...extra });
+
+  test('weekly says how often and from when', () => {
+    assert.equal(scheduleSentence(tt, row(), when), 'Every week, from <A>');
+  });
+
+  test('daily, fortnightly and monthly', () => {
+    assert.equal(scheduleSentence(tt, row({ every: 'day' }), when), 'Every day, from <A>');
+    assert.equal(scheduleSentence(tt, row({ every: 'fortnight' }), when), 'Every two weeks, from <A>');
+    assert.equal(scheduleSentence(tt, row({ every: 'month' }), when), 'Every month, from <A>');
+  });
+
+  test('by hand says so', () => {
+    assert.equal(scheduleSentence(tt, row({ every: 'none', first_start: null }), when),
+      'Only when you press Make one now');
+  });
+
+  test('finished counts what it made', () => {
+    assert.equal(scheduleSentence(tt, row({ ends_after: 3, made: 3 }), when),
+      'Finished: it made all 3 editions');
+  });
+
+  test('the next edition, or nothing scheduled', () => {
+    assert.equal(nextEditionLine(tt, row(), when), 'Next: #12 on <B>, made 7 days before it starts');
+    assert.equal(nextEditionLine(tt, row({ lead_days: 1 }), when), 'Next: #12 on <B>, made 1 day before it starts');
+    assert.equal(nextEditionLine(tt, row({ lead_days: 0 }), when), 'Next: #12 on <B>, made on the day');
+    assert.equal(nextEditionLine(tt, row({ next_start: null }), when), 'Nothing scheduled');
+  });
+
+  test('paused by the owner, and paused by itself with the reason', () => {
+    assert.equal(pausedWords(tt, row({ active: false })), 'Paused');
+    assert.equal(pausedWords(tt, row({ active: false, paused_reason: 'BLUEPRINT_SOURCE_GONE' })),
+      'Paused: the tournament it copies was deleted or is no longer yours. Point it at another tournament you run.');
+    assert.equal(pausedWords(tt, row()), '');
   });
 }
 
