@@ -1318,7 +1318,9 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
                              onChange={v => setSetting(index, 'grand_final', v)} />
                     </div>
                   )}
-                  {GROUPABLE.has(row.format) && (
+                  {/* Home and away is a table's question; a bracket group is a
+                      knockout (walk of P3, 17 October 2026). */}
+                  {BERGER.has(row.format) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.legs', 'Everybody plays everybody')}</span>
                       <Chips value={Number(s.legs || (row.format === 'league' ? 2 : 1))} disabled={busy}
