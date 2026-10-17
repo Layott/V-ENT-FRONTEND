@@ -61,8 +61,13 @@ const TABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'swis
 // A knockout for the purpose of how a match is played: a final, two legs,
 // a winner when it ends level. The placing formats are knockouts too.
 const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladder',
-  'page_playoff', 'winner_stays_on']);
-const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
+  'page_playoff', 'winner_stays_on', 'bracket_groups']);
+// The table formats whose fixtures can follow FIDE's Berger tables (P3 W1).
+const BERGER = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
+const GROUPABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'bracket_groups']);
+// How many go through each bracket group: 1 is the group's winner (the
+// bracket played to one winner), more is the group's threshold (P3 W1).
+const GROUP_THROUGH = [1, 2, 4, 8];
 const BEST_OF = [1, 2, 3, 5, 7];
 // The seeding a redraw can use: the same choices the first draw offers.
 const SEEDING = [
@@ -77,13 +82,29 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
-      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0 }
-        : { legs: format === 'league' ? 2 : 1 }) }
+      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
+        : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
-      ...(format === 'single_elimination' ? { third_place: false, every_place: false } : {}),
+      ...(format === 'single_elimination'
+        ? { third_place: false, every_place: false, threshold: 0, reseed: false } : {}),
       ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
-      ...(format === 'double_elimination' ? { grand_final: 'reset' } : {}) });
+      ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}),
+      ...(format === 'bracket_groups'
+        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}) });
+
+// How a Swiss pairs the rounds after the first (P3 W1), and its word.
+const SWISS_PAIRINGS = [
+  ['monrad', 'stages.pairMonrad', 'Monrad'],
+  ['dutch', 'stages.pairDutch', 'Dutch'],
+  ['valve', 'stages.pairValve', 'Valve'],
+];
+// The tie-breaks that read opponents' win percentages, which have a floor.
+const OWP_KEYS = ['opponents_win_pct', 'opp_opp_win_pct'];
+
+// Stop when this many are left (P3 W1). 0 plays to one winner; in a double
+// elimination 2 is the same as no grand final.
+const THRESHOLDS = [0, 2, 4, 8, 16];
 
 const POINT_FIELDS = ['points_win', 'points_draw', 'points_loss', 'points_bye'];
 
@@ -97,6 +118,9 @@ const rulesPayload = r => {
   });
   if (Array.isArray(rules.tiebreakers) && rules.tiebreakers.length) out.tiebreakers = rules.tiebreakers;
   if (rules.buchholz) out.buchholz = rules.buchholz;
+  if (rules.owp_floor !== '' && rules.owp_floor !== undefined && rules.owp_floor !== null) {
+    out.owp_floor = Number(rules.owp_floor);
+  }
   return Object.keys(out).length ? out : null;
 };
 
@@ -126,7 +150,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [rows, setRows] = useState([]);
   const [catalogue, setCatalogue] = useState([]);
   const [preset, setPreset] = useState(null);
+  // Whole setups a stage can start from (P3 W1): the Counter-Strike Major Swiss.
+  const [formatPresets, setFormatPresets] = useState({});
   const [entrants, setEntrants] = useState([]);
+  // The free for all bracket builder (P3 W1): its numbers while open, and
+  // the rounds of the plan it last wrote.
+  const [ffa, setFfa] = useState(null);
+  const [ffaRounds, setFfaRounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -170,6 +200,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         setLines(body.data.progressions || []);
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
+        setFormatPresets(body.data.format_presets || {});
         setMeta({
           oneFormat: Boolean(body.data.one_format_drawn),
           finished: Boolean(body.data.finished),
@@ -281,6 +312,14 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       return tt('stages.lineGsl', '{format}. The top two of each group of four go through.')
         .replace('{format}', name);
     }
+    if (row.format === 'bracket_groups' && !(row.groups > 1)) {
+      // No group count of its own: the groups come from the group size (P3 W1).
+      return plural(tt, row.advances,
+        'stages.lineGroupSizeOne', '{format} in groups of {size}. The winner of each group goes through.',
+        'stages.lineGroupSize', '{format} in groups of {size}. The top {n} of each group go through.')
+        .replace('{format}', name)
+        .replace('{size}', row.settings?.group_size || 4);
+    }
     if (row.groups > 1) {
       return plural(tt, row.advances,
         'stages.lineGroupsOne', '{format} in {groups} groups. The winner of each group goes through.',
@@ -316,6 +355,19 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       return bits.join(', ');
     }
     if (s.every_place) bits.push(tt('stages.everyPlaceOn', 'a match for every place'));
+    if (row.format === 'bracket_groups') {
+      bits.push(tt('stages.perGroupOn', '{n} through from each group')
+        .replace('{n}', Number(s.threshold) > 1 ? s.threshold : 1));
+    } else if (Number(s.threshold) > 1) {
+      bits.push(tt('stages.thresholdOn', 'stops when {n} are left').replace('{n}', s.threshold));
+    } else if (s.grand_final === 'none') {
+      bits.push(tt('stages.noGrandFinal', 'no grand final'));
+    }
+    if (s.reseed) bits.push(tt('stages.reseedOn', 'paired again by seed each round'));
+    if (row.format === 'bracket_groups') {
+      bits.push(formatLabel(tt, s.bracket === 'single' ? 'single_elimination' : 'double_elimination', ''));
+    }
+    if (s.pairing === 'berger') bits.push(tt('stages.bergerOn', 'in Berger order'));
     if (row.format === 'winner_stays_on') {
       bits.push(s.streak_target
         ? tt('stages.streakOn', 'until {n} wins in a row').replace('{n}', s.streak_target)
@@ -328,6 +380,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (s.grand_final === 'reset') bits.push(tt('stages.resetOn', 'grand final with a reset'));
     if (s.legs > 1) bits.push(tt('stages.homeAway', 'home and away'));
     if (row.format === 'swiss' && s.rounds) bits.push(tt('stages.roundsN', '{n} rounds').replace('{n}', s.rounds));
+    if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
+      const found = SWISS_PAIRINGS.find(([v]) => v === s.pairing);
+      if (found) bits.push(tt('stages.pairedBy', 'paired {how}').replace('{how}', tt(found[1], found[2])));
+    }
+    if (Number(s.decisive_best_of) > 0) {
+      bits.push(tt('stages.decisiveOn', 'a match that decides is best of {n}').replace('{n}', s.decisive_best_of));
+    }
     if (s.draws === 'penalties') bits.push(tt('stages.pensOn', 'level goes to penalties'));
     if (s.draws === 'allowed') bits.push(tt('stages.drawsOn', 'draws count'));
     if (s.check_in_minutes) bits.push(tt('stages.checkInN', '{n} minutes to check in').replace('{n}', s.check_in_minutes));
@@ -508,6 +567,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     return list;
   });
 
+  const applyFormatPreset = (index, key) => setDraft(prev => prev.map((row, i) => {
+    const chosen = formatPresets[key];
+    if (i !== index || !chosen || chosen.format !== row.format) return row;
+    return { ...row, settings: { ...row.settings, ...chosen.settings },
+             rules: { ...(row.rules || {}), ...chosen.rules } };
+  }));
+
   const applyPreset = index => setDraft(prev => prev.map((row, i) => {
     if (i !== index || !preset) return row;
     const half = TABLE.has(row.format) ? preset.group : preset.knockout;
@@ -542,6 +608,43 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       setDraftLines([...draftLines, newLine(last.key, row.key)]);
     }
   };
+  // A free for all bracket as a plan (P3 W1): the server writes the rounds
+  // of lobbies and the lines between them, and the draft takes them whole.
+  const buildFfa = async () => {
+    if (!ffa) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const query = new URLSearchParams({ kind: 'ffa_bracket', entrants: ffa.entrants,
+        lobby_size: ffa.lobby_size, through: ffa.through, maps: ffa.maps, final_maps: ffa.final_maps });
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/preset/?${query}`);
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setProblem(apiMessage(tt, body, 'stages.ffaFailed', 'That bracket could not be built.'));
+        return;
+      }
+      const made = (body.data.stages || []).map(s => ({
+        ...blank('battle_royale'),
+        label: s.kind === 'final'
+          ? tt('stages.ffaFinal', 'Final lobby')
+          : tt('stages.ffaRound', 'Round {n}').replace('{n}', s.round),
+        advances: s.advances,
+        settings: { ...defaultSettings('battle_royale'), ...s.settings },
+      }));
+      setDraft(made);
+      setDraftLines((body.data.lines || []).map(l => ({
+        ...newLine(made[l.source].key, made[l.target].key, l.place_to),
+        place_from: l.place_from,
+      })));
+      setFfaRounds(body.data.rounds || []);
+      setFfa(null);
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const removeRow = index => {
     const row = draft[index];
     if (!row || row.drawn) return;
@@ -815,7 +918,11 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         )}
       </div>
 
-      {problem && <p className={styles.problem} role="alert">{problem}</p>}
+      {/* While a plan is being edited the refusal is drawn beside its save
+          button instead: up here it sat 2,000px above the button on a long
+          plan, and pressing save seemed to do nothing (walk of P3, 17
+          October 2026). */}
+      {problem && !draft && <p className={styles.problem} role="alert">{problem}</p>}
 
       {/* The in-game ID, for a game with a preset. Two players on phones
           find each other by it, and a result is checked against it. */}
@@ -1204,7 +1311,40 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                 {/* The format's own switches. */}
                 <p className={styles.subhead}>{tt('stages.formatSettings', 'This format')}</p>
                 <div className={styles.fields}>
-                  {row.format === 'single_elimination' && (
+                  {['single_elimination', 'double_elimination'].includes(row.format) && (
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.threshold', 'Stop when this many are left')}</span>
+                      <Chips value={Number(s.threshold || 0)} disabled={busy}
+                             label={tt('stages.threshold', 'Stop when this many are left')}
+                             options={THRESHOLDS.map(n => [n, n ? String(n) : tt('stages.thresholdNone', 'Play to one winner')])}
+                             onChange={v => setDraft(prev => prev.map((r, i) => (i === index
+                               ? { ...r, settings: { ...r.settings, threshold: v,
+                                 ...(v && row.format === 'single_elimination' ? { third_place: false, every_place: false } : {}) } }
+                               : r)))} />
+                      {Number(s.threshold) > 1 && (
+                        <span className={styles.note}>
+                          {row.format === 'double_elimination'
+                            ? tt('stages.thresholdNoteDouble', 'Half go through from the winners bracket and half from the losers bracket, the winners bracket first. There is no grand final.')
+                            : tt('stages.thresholdNote', 'The rounds between them are not played. They all go through, the best seeds first.')}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {row.format === 'single_elimination' && !s.every_place && (
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.reseed', 'Pair again by seed each round')}</span>
+                      <Chips value={Boolean(s.reseed)} disabled={busy}
+                             label={tt('stages.reseed', 'Pair again by seed each round')}
+                             options={[[false, tt('stages.no', 'No')], [true, tt('stages.yes', 'Yes')]]}
+                             onChange={v => setSetting(index, 'reseed', v)} />
+                      {s.reseed && (
+                        <span className={styles.note}>
+                          {tt('stages.reseedNote', 'After each round the best seed still in plays the lowest seed still in, instead of following the lines of the bracket.')}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {row.format === 'single_elimination' && !(Number(s.threshold) > 1) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.thirdPlace', 'Third-place match')}</span>
                       <Chips value={Boolean(s.third_place)} disabled={busy}
@@ -1213,14 +1353,16 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                              onChange={v => setSetting(index, 'third_place', v)} />
                     </div>
                   )}
-                  {row.format === 'single_elimination' && (
+                  {row.format === 'single_elimination' && !(Number(s.threshold) > 1) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.everyPlace', 'Play for every place')}</span>
                       <Chips value={Boolean(s.every_place)} disabled={busy}
                              label={tt('stages.everyPlace', 'Play for every place')}
                              options={[[false, tt('stages.no', 'No')], [true, tt('stages.yes', 'Yes')]]}
                              onChange={v => setDraft(prev => prev.map((r, i) => (i === index
-                               ? { ...r, settings: { ...r.settings, every_place: v, third_place: v ? false : r.settings.third_place } }
+                               ? { ...r, settings: { ...r.settings, every_place: v,
+                                 third_place: v ? false : r.settings.third_place,
+                                 reseed: v ? false : r.settings.reseed } }
                                : r)))} />
                     </div>
                   )}
@@ -1246,17 +1388,20 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                   {row.format === 'page_playoff' && (
                     <p className={styles.note}>{tt('stages.pageNote', 'Exactly four: first against second for the final, third against fourth to stay alive, then the second chance.')}</p>
                   )}
-                  {row.format === 'double_elimination' && (
+                  {row.format === 'double_elimination' && !(Number(s.threshold) > 1) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.grandFinal', 'Grand final')}</span>
                       <Chips value={s.grand_final || 'reset'} disabled={busy}
                              label={tt('stages.grandFinal', 'Grand final')}
                              options={[['reset', tt('stages.gfReset', 'With a reset')],
-                                       ['single', tt('stages.gfSingle', 'One match')]]}
+                                       ['single', tt('stages.gfSingle', 'One match')],
+                                       ['none', tt('stages.gfNone', 'None: both bracket winners go through')]]}
                              onChange={v => setSetting(index, 'grand_final', v)} />
                     </div>
                   )}
-                  {GROUPABLE.has(row.format) && (
+                  {/* Home and away is a table's question; a bracket group is a
+                      knockout (walk of P3, 17 October 2026). */}
+                  {BERGER.has(row.format) && (
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.legs', 'Everybody plays everybody')}</span>
                       <Chips value={Number(s.legs || (row.format === 'league' ? 2 : 1))} disabled={busy}
@@ -1281,9 +1426,84 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                       <input className={styles.number} type="number" min="0" max="10" disabled={busy}
                              value={s.loss_limit ?? 0} onChange={e => setSetting(index, 'loss_limit', Number(e.target.value) || 0)} />
                     </label>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissPairing', 'Pair the later rounds')}</span>
+                      <Chips value={s.pairing || 'monrad'} disabled={busy} label={tt('stages.swissPairing', 'Pair the later rounds')}
+                             options={SWISS_PAIRINGS.map(([v, key, text]) => [v, tt(key, text)])}
+                             onChange={v => setSetting(index, 'pairing', v)} />
+                      <span className={styles.note}>
+                        {(s.pairing || 'monrad') === 'dutch'
+                          ? tt('stages.pairDutchNote', 'The chess way: the top half of each score group plays its bottom half, first against the one half way down.')
+                          : s.pairing === 'valve'
+                            ? tt('stages.pairValveNote', 'The Counter-Strike Major way: the strongest on a record plays the weakest on it.')
+                            : tt('stages.pairMonradNote', 'First against second, third against fourth, on the same record.')}
+                      </span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.decisive', 'A match that can send a side through or out')}</span>
+                      <Chips value={Number(s.decisive_best_of || 0)} disabled={busy}
+                             label={tt('stages.decisive', 'A match that can send a side through or out')}
+                             options={[[0, tt('stages.decisiveSame', 'Like any other')],
+                                       [3, tt('stages.bestOfN', 'best of {n}').replace('{n}', 3)],
+                                       [5, tt('stages.bestOfN', 'best of {n}').replace('{n}', 5)]]}
+                             onChange={v => setSetting(index, 'decisive_best_of', v)} />
+                    </div>
+                    {formatPresets.valve_major && (
+                      <button type="button" className={styles.ghost} disabled={busy}
+                              onClick={() => applyFormatPreset(index, 'valve_major')}>
+                        {tt('stages.valvePreset', 'Use the Counter-Strike Major setup: three wins through, three losses out, decisive matches best of three')}
+                      </button>
+                    )}
                   </>}
                   {row.format === 'gsl' && (
                     <p className={styles.note}>{tt('stages.gslNote', 'Groups of four, drawn automatically. Two openers, a winners match, a losers match and a decider.')}</p>
+                  )}
+                  {row.format === 'bracket_groups' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.bracket', 'Each group plays')}</span>
+                      <Chips value={s.bracket || 'double'} disabled={busy} label={tt('stages.bracket', 'Each group plays')}
+                             options={[['single', formatLabel(tt, 'single_elimination', '')],
+                                       ['double', formatLabel(tt, 'double_elimination', '')]]}
+                             onChange={v => setSetting(index, 'bracket', v)} />
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.groupThrough', 'Go through from each group')}</span>
+                      <Chips value={Number(s.threshold) > 1 ? Number(s.threshold) : 1} disabled={busy}
+                             label={tt('stages.groupThrough', 'Go through from each group')}
+                             options={GROUP_THROUGH.map(n => [n, String(n)])}
+                             onChange={v => setSetting(index, 'threshold', v > 1 ? v : 0)} />
+                    </div>
+                    {!(Number(row.groups) > 1) && (
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.groupSize', 'Group size, when no number of groups is set')}</span>
+                        <input className={styles.number} type="number" min="2" max="64" disabled={busy}
+                               value={s.group_size ?? 4}
+                               onChange={e => setSetting(index, 'group_size', Number(e.target.value) || 4)} />
+                      </label>
+                    )}
+                    {s.bracket !== 'single' && !(Number(s.threshold) > 1) && (
+                      <div className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.grandFinal', 'Grand final')}</span>
+                        <Chips value={s.grand_final && s.grand_final !== 'none' ? s.grand_final : 'single'} disabled={busy}
+                               label={tt('stages.grandFinal', 'Grand final')}
+                               options={[['reset', tt('stages.gfReset', 'With a reset')],
+                                         ['single', tt('stages.gfSingle', 'One match')]]}
+                               onChange={v => setSetting(index, 'grand_final', v)} />
+                      </div>
+                    )}
+                    <p className={styles.note}>{tt('stages.bracketGroupsNote', 'Each group is a knockout of its own and everybody stays in their group. The matches between the ones who go through are not played.')}</p>
+                  </>}
+                  {BERGER.has(row.format) && (
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.pairing', 'Fixture order')}</span>
+                      <Chips value={s.pairing || 'circle'} disabled={busy} label={tt('stages.pairing', 'Fixture order')}
+                             options={[['circle', tt('stages.pairingCircle', 'Rotation')],
+                                       ['berger', tt('stages.pairingBerger', 'FIDE Berger tables')]]}
+                             onChange={v => setSetting(index, 'pairing', v)} />
+                      {s.pairing === 'berger' && (
+                        <span className={styles.note}>{tt('stages.bergerNote', 'The order chess federations publish. Home and away alternate, and in a home and away league nobody has the same side three rounds running.')}</span>
+                      )}
+                    </div>
                   )}
                 </div>
                 {row.format === 'battle_royale' && (
@@ -1527,6 +1747,17 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                           </label>
                         ))}
                       </div>
+                      {row.format === 'swiss' && (
+                        <div className={styles.field}>
+                          <span className={styles.fieldLabel}>{tt('stages.buchholzForm', 'The strength of the opponents counts their')}</span>
+                          <Chips value={r.buchholz || 'wins'} disabled={busy}
+                                 label={tt('stages.buchholzForm', 'The strength of the opponents counts their')}
+                                 options={[['wins', tt('stages.buchholzWins', 'Wins')],
+                                           ['points', tt('stages.buchholzPoints', 'Points')],
+                                           ['wins_minus_losses', tt('stages.buchholzWL', 'Wins minus losses')]]}
+                                 onChange={v => setRule(index, 'buchholz', v)} />
+                        </div>
+                      )}
                       <p className={styles.subhead}>{tt('stages.tiebreakers', 'When level on points, then')}</p>
                       {chosen.length ? (
                         <ol className={styles.tieList}>
@@ -1566,6 +1797,14 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                             </button>
                           ))}
                         </div>
+                      )}
+                      {chosen.some(k => OWP_KEYS.includes(k)) && (
+                        <label className={styles.field}>
+                          <span className={styles.fieldLabel}>{tt('stages.owpFloor', 'The lowest win percentage an opponent counts as')}</span>
+                          <input className={styles.number} type="number" min="0" max="50" inputMode="numeric"
+                                 value={r.owp_floor ?? ''} placeholder="25" disabled={busy}
+                                 onChange={e => setRule(index, 'owp_floor', e.target.value)} />
+                        </label>
                       )}
                       <p className={styles.note}>
                         {tt('stages.tiebreakShared', 'Sides still level on all of them share a place, and share its prize.')}
@@ -1618,6 +1857,58 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
             );
           })}
 
+          {!draft.some(r => r.drawn) && (
+            <div className={styles.scoring}>
+              <p className={styles.subhead}>{tt('stages.ffaTitle', 'A free for all bracket')}</p>
+              <p className={styles.note}>
+                {tt('stages.ffaHint', 'Rounds of lobbies: the best of each lobby go on to the next round until one final lobby is left. This replaces the stages above.')}
+              </p>
+              {ffaRounds.length > 0 && (
+                <p className={styles.note}>
+                  {ffaRounds.map((r, i) => (i === ffaRounds.length - 1
+                    ? tt('stages.ffaFinalLine', 'Final: {n} in one lobby').replace('{n}', r.entrants)
+                    : tt('stages.ffaRoundLine', 'Round {round}: {n} in {lobbies} lobbies')
+                      .replace('{round}', i + 1).replace('{n}', r.entrants).replace('{lobbies}', r.lobbies))).join('. ')}
+                </p>
+              )}
+              {ffa ? (
+                <>
+                  <div className={styles.fields}>
+                    {[
+                      ['entrants', tt('stages.ffaEntrants', 'Entrants expected'), 2, 5000],
+                      ['lobby_size', tt('stages.ffaLobbySize', 'Squads in a lobby'), 2, 100],
+                      ['through', tt('stages.ffaThrough', 'Go on from each lobby'), 1, 99],
+                      ['maps', tt('stages.ffaMaps', 'Matches in each round'), 1, 30],
+                      ['final_maps', tt('stages.ffaFinalMaps', 'Matches in the final'), 1, 30],
+                    ].map(([key, label, low, high]) => (
+                      <label key={key} className={styles.field}>
+                        <span className={styles.fieldLabel}>{label}</span>
+                        <input className={styles.number} type="number" min={low} max={high} inputMode="numeric"
+                               value={ffa[key]} disabled={busy}
+                               onChange={e => setFfa(prev => ({ ...prev, [key]: e.target.value }))} />
+                      </label>
+                    ))}
+                  </div>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} onClick={buildFfa} disabled={busy}>
+                      {tt('stages.ffaBuild', 'Write the plan')}
+                    </button>
+                    <button type="button" className={styles.quiet} onClick={() => setFfa(null)} disabled={busy}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button type="button" className={styles.ghost} disabled={busy}
+                        onClick={() => setFfa({ entrants: entrants.length || 24, lobby_size: 12, through: 4,
+                                                maps: 4, final_maps: 6 })}>
+                  {tt('stages.ffaOpen', 'Build a free for all bracket')}
+                </button>
+              )}
+            </div>
+          )}
+
+          {problem && <p className={styles.problem} role="alert">{problem}</p>}
           <div className={styles.editorActions}>
             <button type="button" className={styles.ghost} onClick={addRow} disabled={busy}>
               <LuPlus aria-hidden="true" /> {tt('stages.addStage', 'Add a stage')}
