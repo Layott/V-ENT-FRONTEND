@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { adminToken } from '@/lib/adminToken';
+import { formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { useAdminToast } from '@/components/admin/AdminToast';
 import { studioStatus, studioStatusLabel } from '@/components/studio-portal/studioLabels';
@@ -150,6 +151,14 @@ export default function StudioReview() {
                       <div>
                         <dt>{tt('partners.studios.admin.owner', 'Studio account')}</dt>
                         <dd>{game.partner?.owner || tt('partners.studios.admin.none', 'None given')}</dd>
+                      </div>
+                      <div>
+                        <dt>{tt('partners.studios.admin.thisMonth', 'This month')}</dt>
+                        <dd>
+                          {tt('partners.studios.usage.players', 'Players: {count}').replace('{count}', formatNumber(game.active_players_this_month || 0))}
+                          {' · '}
+                          {tt('partners.studios.usage.sessions', 'Game sessions: {count}').replace('{count}', formatNumber(game.sessions_this_month || 0))}
+                        </dd>
                       </div>
                     </dl>
                     <label className={styles.field}>

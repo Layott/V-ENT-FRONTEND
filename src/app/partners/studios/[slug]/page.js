@@ -18,6 +18,7 @@ import {
   liveFieldLabel, resultProblemLabel, studioEventLabel, studioStatus, studioStatusLabel,
 } from '@/components/studio-portal/studioLabels';
 import DeliveryLog from '@/components/studio-portal/DeliveryLog';
+import UsagePanel from '@/components/studio-portal/UsagePanel';
 import styles from '../studios.module.css';
 
 // `/partners/studios/<game>` - one game's settings (design section 14, item 1).
@@ -296,13 +297,23 @@ export default function StudioGamePage(props) {
         <section className={styles.content}>
           <BackLink href="/partners/studios">{tt('partners.studios.backToGames', 'Your games')}</BackLink>
 
+          {/* One h1, whatever the state: who is reading decides what it says. */}
+          {!viewer.loading && !(viewer.signedIn && loading) && (
+            <h1 className={styles.pageTitle}>
+              {!viewer.signedIn
+                ? tt('partners.studios.signInTitle', 'Sign in to connect a game')
+                : missing || !game
+                  ? tt('partners.studios.notFoundTitle', 'No such game')
+                  : game.name}
+            </h1>
+          )}
+
           {(viewer.loading || (viewer.signedIn && loading)) && (
             <p className={styles.muted}>{tt('ui.loading.b04b', 'Loading...')}</p>
           )}
 
           {!viewer.loading && !viewer.signedIn && (
             <div className={styles.panel}>
-              <h1 className={styles.panelTitle}>{tt('partners.studios.signInTitle', 'Sign in to connect a game')}</h1>
               <p className={styles.muted}>
                 {tt('partners.studios.signInBody', 'A game belongs to a partner account, and a partner account belongs to a V-ENT account.')}
               </p>
@@ -318,7 +329,6 @@ export default function StudioGamePage(props) {
 
           {viewer.signedIn && !loading && !loadError && missing && (
             <div className={styles.panel}>
-              <h1 className={styles.panelTitle}>{tt('partners.studios.notFoundTitle', 'No such game')}</h1>
               <p className={styles.muted}>{tt('partners.studios.notFound', 'There is no game at this address, or it belongs to another studio.')}</p>
             </div>
           )}
@@ -327,7 +337,6 @@ export default function StudioGamePage(props) {
             <>
               <header className={styles.pageHead}>
                 <div className={styles.rowBetween}>
-                  <h1 className={styles.pageTitle}>{game.name}</h1>
                   <span className={`${styles.chip} ${styles[`chip_${state}`] || ''}`}>{studioStatusLabel(tt, state)}</span>
                 </div>
                 <p className={styles.pageSub}>{game.game?.title || tt('partners.studios.noVentGame', 'No V-ENT game chosen')}</p>
@@ -530,6 +539,15 @@ export default function StudioGamePage(props) {
                   {tt('partners.studios.log.body', 'Every request we sent your servers, signed with your secret, and what they answered. A failed delivery is tried again for about two days.')}
                 </p>
                 <DeliveryLog slug={game.slug} token={viewer.token} />
+              </div>
+
+              {/* ----------------------------------------------------- usage */}
+              <div className={styles.panel}>
+                <h2 className={styles.panelTitle}>{tt('partners.studios.usage.title', 'Usage')}</h2>
+                <p className={styles.muted}>
+                  {tt('partners.studios.usage.body', 'Linked players who played and game sessions played, by month, counted from your first game session. Nothing is charged for it today.')}
+                </p>
+                <UsagePanel slug={game.slug} />
               </div>
 
               {/* ------------------------------------------------------ live */}
