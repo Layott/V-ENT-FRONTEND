@@ -1,0 +1,211 @@
+/* Linking a game account: the same surfaces as /partners and /settings.
+   Page #131316, panels #1a1b1f, one step up #202126, controls #303136. The
+   confirm step is the one panel in gold-tinted fill, because it is the one
+   decision on the page. */
+
+.page {
+  min-height: 100vh;
+  background: #131316;
+  color: var(--white);
+}
+
+.main {
+  display: flex;
+  gap: 24px;
+  padding-top: 60px;
+  padding-left: var(--shell-offset);
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.head {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 2rem;
+  margin: 0 0 6px;
+}
+
+.sub,
+.muted {
+  color: #9A9AA3;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.panel {
+  background: #1a1b1f;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.confirm {
+  background: #2a2416;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.panelTitle {
+  font-family: 'Fraunces', 'ClashGrotesk-Variable', serif;
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #C9C9CF;
+}
+
+.codeInput {
+  background: #303136;
+  color: var(--white);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-height: 52px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  width: 100%;
+  max-width: 280px;
+  box-sizing: border-box;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.primary,
+.ghost,
+.danger {
+  min-height: 44px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.92rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary {
+  background: var(--v-ent-gold);
+  color: #131316;
+  font-weight: 600;
+}
+
+.ghost {
+  background: #303136;
+  color: #C9C9CF;
+}
+
+.danger {
+  background: rgba(237, 28, 36, 0.18);
+  color: #ff8a8a;
+}
+
+.primary:disabled,
+.ghost:disabled,
+.danger:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.problem {
+  background: rgba(237, 28, 36, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #ffb3b3;
+  font-size: 0.9rem;
+  margin: 12px 0 0;
+}
+
+.success {
+  background: rgba(76, 175, 80, 0.16);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--v-ent-success-light);
+  margin: 0 0 20px;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.meta dt {
+  color: #8A8A93;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.meta dd {
+  margin: 0;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #202126;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.rowText {
+  min-width: 0;
+  flex: 1;
+}
+
+.rowName {
+  margin: 0 0 2px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .content { padding: 16px 16px 96px; }
+  .title { font-size: 1.5rem; }
+  .panel,
+  .confirm { padding: 18px 16px; }
+}

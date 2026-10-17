@@ -334,6 +334,7 @@ export const PRIVATE_TITLES = {
   'organizations/[slug]': { en: 'Organisation', fr: 'Organisation', pt: 'Organização' },
   'partners/authorize': { en: 'Authorize', fr: 'Autoriser', pt: 'Autorizar' },
   'partners/studios': { en: 'Game studios', fr: 'Studios de jeux', pt: 'Estúdios de jogos' },
+  'link-game': { en: 'Link a game account', fr: 'Lier un compte de jeu', pt: 'Associar uma conta de jogo' },
   'teams/create-team': { en: 'Create team', fr: 'Créer une équipe', pt: 'Criar equipa' },
   'teams/join/[token]': { en: 'Join a team', fr: 'Rejoindre une équipe', pt: 'Juntar-se a uma equipa' },
   'tournaments/create-tournament': { en: 'Create a tournament', fr: 'Créer un tournoi', pt: 'Criar um torneio' },
