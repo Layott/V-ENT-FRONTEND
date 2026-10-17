@@ -40,7 +40,12 @@ export default function PartOfCircuit({ tournamentSlug }) {
             ? tt('circuit.countsInTier', 'Counts in {circuit}, {tier} tier.').replace('{circuit}', circuit.name).replace('{tier}', here.tier)
             : tt('circuit.countsIn', 'Counts in {circuit}.').replace('{circuit}', circuit.name)}
         </b>
-        {top && (
+        {circuit.engine === 'elo' ? (
+          <>
+            <br />
+            <span>{tt('circuit.eloHere', "Every match here moves the circuit's Elo rating.")}</span>
+          </>
+        ) : top && (
           <>
             <br />
             <span>{tt('circuit.worthHere', 'Circuit points here: {places}.').replace('{places}', top)}</span>

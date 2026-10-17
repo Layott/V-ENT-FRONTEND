@@ -23,7 +23,7 @@ import styles from './circuits.module.css';
 const TABS = [
   ['ranking', 'circuit.tab.ranking', 'Ranking'],
   ['tournaments', 'circuit.tab.tournaments', 'Tournaments'],
-  ['points', 'circuit.tab.points', 'How points work'],
+  ['points', 'circuit.tab.points', 'How points work', 'circuit.tab.rating', 'How the rating works'],
   ['adjustments', 'circuit.tab.adjustments', 'Adjustments'],
 ];
 
@@ -152,9 +152,9 @@ export default function CircuitView({ slug }) {
       </header>
 
       <div className={styles.chips} role="group" aria-label={tt('circuit.sections', 'Sections')}>
-        {TABS.map(([id, key, english]) => (
+        {TABS.map(([id, key, english, eloKey, eloEnglish]) => (
           <button key={id} type="button" className={styles.chip} aria-pressed={tab === id} onClick={() => setTab(id)}>
-            {tt(key, english)}
+            {circuit.engine === 'elo' && eloKey ? tt(eloKey, eloEnglish) : tt(key, english)}
             {id === 'adjustments' && adjustments.length ? ` (${formatNumber(adjustments.length)})` : ''}
           </button>
         ))}
@@ -162,7 +162,7 @@ export default function CircuitView({ slug }) {
 
       {tab === 'ranking' && (
         <>
-          <CircuitRanking rows={standings} entrant={circuit.entrant} />
+          <CircuitRanking rows={standings} entrant={circuit.entrant} engine={circuit.engine} />
           <p className={styles.faint}>
             {tt('circuit.rankingRule', 'Level on points, the better single place goes first, then more events won. Entrants still level share the rank.')}
           </p>
@@ -186,7 +186,21 @@ export default function CircuitView({ slug }) {
         ) : <p className={styles.empty}>{tt('circuit.noTournaments', 'No tournaments are in this circuit yet.')}</p>
       )}
 
-      {tab === 'points' && (
+      {tab === 'points' && circuit.engine === 'elo' && (
+        <div className={styles.tier}>
+          <h3 className={styles.sectionTitle}>{tt('circuit.eloTitle', 'An Elo rating')}</h3>
+          <p className={styles.muted}>
+            {tt('circuit.eloRule', 'Everybody starts at 1000. Every finished match of a tournament in this circuit moves both sides, in the order the matches were played: beating somebody rated higher moves you further than beating somebody rated lower. One match moves a rating by at most {k}. A draw moves the lower rated side up. A walkover moves nothing.').replace('{k}', circuit.elo_k)}
+          </p>
+          <p className={styles.faint}>
+            {circuit.entrant === 'team'
+              ? tt('circuit.eloTeams', 'Clubs are rated on the matches they play as clubs.')
+              : tt('circuit.eloPlayers', 'Players are rated on their one against one matches.')}
+          </p>
+        </div>
+      )}
+
+      {tab === 'points' && circuit.engine !== 'elo' && (
         <>
           <div className={styles.tiers}>
             {tiers.map((tier) => (

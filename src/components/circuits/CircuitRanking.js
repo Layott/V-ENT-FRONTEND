@@ -18,6 +18,9 @@ import styles from './circuits.module.css';
 const points = (value) => formatNumber(Number(value), { maximumFractionDigits: 2 });
 
 function placeWords(tt, event) {
+  // An Elo circuit counts matches as they are played, before the tournament
+  // has final places.
+  if (event.place == null) return tt('circuit.stillPlaying', 'still being played');
   const place = tt('circuit.placeShort', 'Place {n}').replace('{n}', event.place);
   if (!event.shared_with) return place;
   return tt('circuit.placeShared', '{place}, shared with {n}')
@@ -83,7 +86,7 @@ function Row({ row, index, tt }) {
                 </Link>{' '}
                 <span>{placeWords(tt, event)}{event.tier ? `, ${event.tier}` : ''}</span>
               </span>
-              <span className={styles.num}>+{points(event.points)}</span>
+              <span className={styles.num}>{Number(event.points) > 0 ? '+' : ''}{points(event.points)}</span>
             </div>
           ))}
           {row.adjustments.map((adj, i) => (
@@ -100,7 +103,7 @@ function Row({ row, index, tt }) {
   );
 }
 
-export default function CircuitRanking({ rows, entrant }) {
+export default function CircuitRanking({ rows, entrant, engine = 'points' }) {
   const tt = useT();
   if (!rows.length) {
     return (
@@ -114,7 +117,9 @@ export default function CircuitRanking({ rows, entrant }) {
       <div className={styles.thead} role="row">
         <span role="columnheader">{tt('circuit.col.rank', 'Rank')}</span>
         <span role="columnheader">{entrant === 'team' ? tt('circuit.col.team', 'Team') : tt('circuit.col.player', 'Player')}</span>
-        <span role="columnheader" className={styles.right}>{tt('circuit.col.points', 'Points')}</span>
+        <span role="columnheader" className={styles.right}>
+          {engine === 'elo' ? tt('circuit.col.rating', 'Rating') : tt('circuit.col.points', 'Points')}
+        </span>
         <span role="columnheader" className={styles.right}>{tt('circuit.col.played', 'Played')}</span>
         <span role="columnheader" className={styles.right}>{tt('circuit.col.best', 'Best')}</span>
         <span role="columnheader" aria-hidden="true" />

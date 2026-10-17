@@ -78,6 +78,7 @@ function SettingsPanel({ circuit, token, onSaved, tt }) {
     entrant: circuit.entrant, season: circuit.season || '', region: circuit.region || '',
     starts_on: circuit.starts_on || '', ends_on: circuit.ends_on || '', default_table: circuit.default_table || '',
     organization: circuit.organization?.slug || '',
+    engine: circuit.engine || 'points', elo_k: String(circuit.elo_k ?? 32),
   }));
   const save = useSaver(tt);
   const set = (key) => (value) => setForm((f) => ({ ...f, [key]: value }));
@@ -96,7 +97,7 @@ function SettingsPanel({ circuit, token, onSaved, tt }) {
     if (parseTable(form.default_table).error) return;
     const data = await save.run(() => request(`${API}/circuits/${encodeURIComponent(circuit.slug)}/`, {
       method: 'PATCH', token,
-      body: { ...form, game: form.game ? Number(form.game) : null },
+      body: { ...form, game: form.game ? Number(form.game) : null, elo_k: Number(form.elo_k) || 32 },
     }), tt('circuit.saved', 'Saved.'));
     if (data) onSaved(data);
   };
@@ -171,9 +172,26 @@ function SettingsPanel({ circuit, token, onSaved, tt }) {
                      ariaLabel={tt('circuit.form.ends', 'Ends')} onChange={(e) => set('ends_on')(e.target.value)} />
         </div>
       </div>
-      <TableField id="circuit-default-table" tt={tt} value={form.default_table} disabled={save.busy}
-                  label={tt('circuit.form.defaultTable', 'Points for a tournament with no tier')}
-                  onChange={set('default_table')} />
+      <div className={styles.field}>
+        <span className={styles.label}>{tt('circuit.form.engine', 'Ranked by')}</span>
+        <div className={styles.chips} role="group" aria-label={tt('circuit.form.engine', 'Ranked by')}>
+          <button type="button" className={styles.chip} aria-pressed={form.engine === 'points'} disabled={save.busy}
+                  onClick={() => set('engine')('points')}>{tt('circuit.engine.points', 'Points from final places')}</button>
+          <button type="button" className={styles.chip} aria-pressed={form.engine === 'elo'} disabled={save.busy}
+                  onClick={() => set('engine')('elo')}>{tt('circuit.engine.elo', 'Elo from every match')}</button>
+        </div>
+      </div>
+      {form.engine === 'elo' ? (
+        <label className={styles.field}>
+          <span className={styles.label}>{tt('circuit.form.eloK', 'Most one match can move a rating (4 to 64)')}</span>
+          <input id="circuit-elo-k" className={styles.input} type="number" min="4" max="64" inputMode="numeric"
+                 value={form.elo_k} disabled={save.busy} onChange={(e) => set('elo_k')(e.target.value)} />
+        </label>
+      ) : (
+        <TableField id="circuit-default-table" tt={tt} value={form.default_table} disabled={save.busy}
+                    label={tt('circuit.form.defaultTable', 'Points for a tournament with no tier')}
+                    onChange={set('default_table')} />
+      )}
       {save.note && <p className={styles.note} role="status">{save.note}</p>}
       {save.problem && <p className={styles.problem} role="alert">{save.problem}</p>}
       <div className={styles.actions}>
