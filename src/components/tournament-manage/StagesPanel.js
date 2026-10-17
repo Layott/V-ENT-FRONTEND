@@ -819,7 +819,11 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
         )}
       </div>
 
-      {problem && <p className={styles.problem} role="alert">{problem}</p>}
+      {/* While a plan is being edited the refusal is drawn beside its save
+          button instead: up here it sat 2,000px above the button on a long
+          plan, and pressing save seemed to do nothing (walk of P3, 17
+          October 2026). */}
+      {problem && !draft && <p className={styles.problem} role="alert">{problem}</p>}
 
       {/* The in-game ID, for a game with a preset. Two players on phones
           find each other by it, and a result is checked against it. */}
@@ -1654,6 +1658,7 @@ export default function StagesPanel({ tournamentRef, token, canManage = false, s
             );
           })}
 
+          {problem && <p className={styles.problem} role="alert">{problem}</p>}
           <div className={styles.editorActions}>
             <button type="button" className={styles.ghost} onClick={addRow} disabled={busy}>
               <LuPlus aria-hidden="true" /> {tt('stages.addStage', 'Add a stage')}
