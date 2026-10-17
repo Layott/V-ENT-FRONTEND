@@ -148,5 +148,26 @@ test('one other stage feeding twice is one box', () => {
   assert.equal(g.lines.length, 2);
 });
 
+// P5c: a circuit's ranking feeding a stage is a box of its own, named for the
+// circuit and opening its ranking, never a stage id that does not exist.
+test('a circuit ranking is a box that opens the circuit', () => {
+  const ranking = { stage_id: null, stage: null, format: 'circuit', groups: 0, tournament: null,
+    circuit: { slug: 'naija-pro-circuit', name: 'Naija Pro Circuit' } };
+  const g = pathWithFeeds({ stages: [{ id: 's1', label: 'Finals' }], progressions: [] },
+    { incoming: [{ id: 3, source: ranking, target: { stage_id: 's1' }, qualifiers: [] },
+                 { id: 4, source: ranking, target: { stage_id: 's1' }, qualifiers: [] }] });
+  assert.deepEqual(g.stages.map((s) => s.id), ['x-in-c-naija-pro-circuit', 's1']);
+  assert.equal(g.stages[0].label, 'Naija Pro Circuit');
+  assert.equal(g.stages[0].kind, 'circuit');
+  assert.equal(g.stages[0].href, '/circuits/naija-pro-circuit');
+  assert.equal(g.lines.length, 2);
+});
+
+test('a tournament box carries its bracket address', () => {
+  const g = pathWithFeeds({ stages: [{ id: 's1' }], progressions: [] },
+    { incoming: [{ id: 1, source: side(4, 'Lagos Qualifier', 'lagos-qualifier'), target: { stage_id: 's1' } }] });
+  assert.equal(g.stages[0].href, '/tournaments/lagos-qualifier?tab=bracket');
+});
+
 console.log(`\n${failures} failed`);
 process.exit(failures ? 1 : 0);

@@ -9,6 +9,10 @@
  * the feeds that come in, what each has sent, and a form to add one. The
  * server checks everything (both tournaments yours, same game, room, no
  * circle); a refusal comes back as a code this screen translates.
+ *
+ * A feed may also come from a circuit's ranking (P5c, design section 13):
+ * the top of a season's table into its finals. A ranking never closes by
+ * itself, so that kind waits for the organiser here to press Send now.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
@@ -21,8 +25,9 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 const groupLetter = n => String.fromCharCode(64 + Number(n || 1));
 
-const blank = () => ({ source: '', sourceStage: '', placeFrom: 1, placeTo: 2, group: '',
-                       targetStage: '', fire: 'after_preview', declineHours: 48, onDecline: 'next' });
+const blank = () => ({ kind: 'tournament', source: '', sourceStage: '', circuit: '', placeFrom: 1,
+                       placeTo: 2, group: '', targetStage: '', fire: 'after_preview', declineHours: 48,
+                       onDecline: 'next' });
 
 export default function FeedsPanel({ tournamentRef, stages, token, showToast, onChanged }) {
   const tt = useT();
@@ -30,6 +35,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
   const [feeds, setFeeds] = useState(null);
   const [failed, setFailed] = useState(false);
   const [mine, setMine] = useState(null);
+  const [myCircuits, setMyCircuits] = useState(null);
   const [sourceStages, setSourceStages] = useState([]);
   const [draft, setDraft] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -69,6 +75,21 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
     }
   };
 
+  // The circuits this organiser runs, asked for the first time the circuit
+  // kind is chosen. The server still checks the game and the entrants.
+  const pickKind = async kind => {
+    setDraft(d => ({ ...d, kind }));
+    setProblem('');
+    if (kind !== 'circuit' || myCircuits) return;
+    try {
+      const res = await fetch(`${API}/circuits/?mine=1`, { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      setMyCircuits(res.ok && body.status === 'success' ? (body.data.circuits || []) : []);
+    } catch {
+      setMyCircuits([]);
+    }
+  };
+
   const pickSource = async slug => {
     setDraft(d => ({ ...d, source: slug, sourceStage: '', group: '' }));
     setSourceStages([]);
@@ -88,12 +109,18 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/feeds/`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
-        body: JSON.stringify({
-          target_stage: Number(draft.targetStage), source_tournament: draft.source,
-          source_stage: Number(draft.sourceStage), place_from: Number(draft.placeFrom),
-          place_to: Number(draft.placeTo), group: draft.group === '' ? null : Number(draft.group),
-          fire: draft.fire, decline_hours: Number(draft.declineHours), on_decline: draft.onDecline,
-        }),
+        body: JSON.stringify(draft.kind === 'circuit'
+          ? {
+            target_stage: Number(draft.targetStage), source_circuit: draft.circuit,
+            place_from: Number(draft.placeFrom), place_to: Number(draft.placeTo),
+            fire: 'manual', decline_hours: Number(draft.declineHours), on_decline: 'next',
+          }
+          : {
+            target_stage: Number(draft.targetStage), source_tournament: draft.source,
+            source_stage: Number(draft.sourceStage), place_from: Number(draft.placeFrom),
+            place_to: Number(draft.placeTo), group: draft.group === '' ? null : Number(draft.group),
+            fire: draft.fire, decline_hours: Number(draft.declineHours), on_decline: draft.onDecline,
+          }),
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
@@ -215,17 +242,27 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
   // A qualifier's organiser sends its places from here: its last stage
   // closes by itself, and the plan's own send button covers only the
   // tournament's own links (walk planning, 17 October 2026).
+  // A circuit's ranking sends from the tournament it fills (P5c): it has no
+  // stage of its own, so its own door.
   const sendNow = async feed => {
     setBusy(true);
     setProblem('');
+    const door = feed.source.circuit
+      ? `${API}/tournament/${tournamentRef}/feeds/${feed.id}/pull/`
+      : `${API}/tournament/${tournamentRef}/stages/${feed.source.stage_id}/lines/${feed.id}/pull/`;
     try {
-      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/${feed.source.stage_id}/lines/${feed.id}/pull/`, {
+      const res = await fetch(door, {
         method: 'POST', headers: { 'Content-Type': 'application/json', ...auth }, body: '{}',
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         await load();
-        if (showToast) showToast(tt('feeds.sentToast', 'Sent to {tournament}.').replace('{tournament}', feed.target.tournament.title));
+        if (showToast) {
+          showToast(feed.source.circuit
+            ? tt('feeds.circuitSentToast', 'Places sent in from the {circuit} ranking.')
+              .replace('{circuit}', feed.source.circuit.name)
+            : tt('feeds.sentToast', 'Sent to {tournament}.').replace('{tournament}', feed.target.tournament.title));
+        }
         if (onChanged) onChanged();
         return;
       }
@@ -239,6 +276,8 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
 
   const set = (key, value) => setDraft(d => ({ ...d, [key]: value }));
   const chosenStage = sourceStages.find(s => String(s.id) === String(draft?.sourceStage));
+  const fromCircuit = draft?.kind === 'circuit';
+  const ready = draft && draft.targetStage && (fromCircuit ? draft.circuit : draft.source && draft.sourceStage);
   const incoming = feeds?.incoming || [];
 
   return (
@@ -258,8 +297,15 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
           <p className={styles.note}>
             {feed.fired_at
               ? tt('feeds.sent', 'Sent: {n}').replace('{n}', feed.sent_count)
-              : tt('feeds.waiting', 'Waits for {stage} to finish').replace('{stage}', feed.source.stage)}
+              : feed.source.circuit
+                ? tt('feeds.circuitWaits', 'Waits for you: the ranking keeps moving until you send these places in.')
+                : tt('feeds.waiting', 'Waits for {stage} to finish').replace('{stage}', feed.source.stage)}
           </p>
+          {!feed.fired_at && feed.source.circuit && (
+            <button type="button" className={styles.save} disabled={busy} onClick={() => sendNow(feed)}>
+              {tt('feeds.sendNow', 'Send now')}
+            </button>
+          )}
           {!feed.fired_at && (
             <button type="button" className={styles.quiet} disabled={busy} onClick={() => remove(feed)}>
               {tt('feeds.remove', 'Remove')}
@@ -285,7 +331,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
               <span className={styles.note}>
                 {tt('feeds.waitingPlace', 'A declined place waits for you: place {place}.').replace('{place}', w.place ?? '')}
               </span>
-              {i === 0 && (
+              {i === 0 && !feed.source.circuit && (
                 <button type="button" className={styles.quiet} disabled={busy} onClick={() => openPick(feed)}>
                   {tt('feeds.pickWho', 'Choose who takes it')}
                 </button>
@@ -389,10 +435,41 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
 
       {draft && (
         <div className={styles.feedRow}>
-          {mine !== null && mine.length === 0 && (
+          <div className={styles.chips} role="group" aria-label={tt('feeds.kindLabel', 'Where the places come from')}>
+            {[['tournament', tt('feeds.kindTournament', 'Another tournament')],
+              ['circuit', tt('feeds.kindCircuit', 'A circuit ranking')]].map(([key, label]) => (
+              <button key={key} type="button" disabled={busy} aria-pressed={draft.kind === key}
+                      className={`${styles.chip} ${draft.kind === key ? styles.chipOn : ''}`}
+                      onClick={() => pickKind(key)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {!fromCircuit && mine !== null && mine.length === 0 && (
             <p className={styles.empty}>{tt('feeds.noTournaments', 'You run no other tournament to take places from.')}</p>
           )}
+          {fromCircuit && myCircuits !== null && myCircuits.length === 0 && (
+            <p className={styles.empty}>{tt('feeds.noCircuits', 'You run no circuit to take places from.')}</p>
+          )}
+          {fromCircuit && (
+            <p className={styles.note}>
+              {tt('feeds.circuitHint', 'A ranking never finishes by itself: the places go in when you press Send now, in ranking order. A declined place goes to the next one down.')}
+            </p>
+          )}
           <div className={styles.fields}>
+            {fromCircuit && (
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>{tt('feeds.sourceCircuit', 'From which circuit')}</span>
+                <select className={styles.select} value={draft.circuit} disabled={busy || myCircuits === null}
+                        onChange={e => set('circuit', e.target.value)}>
+                  <option value="">{tt('feeds.pick', 'Choose')}</option>
+                  {(myCircuits || []).map(c => (
+                    <option key={c.slug} value={c.slug}>{c.season ? `${c.name}, ${c.season}` : c.name}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {!fromCircuit && (<>
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('feeds.sourceTournament', 'From which tournament')}</span>
               <select className={styles.select} value={draft.source} disabled={busy || mine === null}
@@ -425,6 +502,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
                 </select>
               </label>
             )}
+            </>)}
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('feeds.placeFrom', 'From place')}</span>
               <input type="number" className={styles.number} min={1} value={draft.placeFrom} disabled={busy}
@@ -442,6 +520,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
                 {stages.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </label>
+            {!fromCircuit && (
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('stages.lines.when', 'When they go')}</span>
               <select className={styles.select} value={draft.fire} disabled={busy}
@@ -451,11 +530,13 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
                 <option value="manual">{tt('stages.lines.fireManual', 'When I press send')}</option>
               </select>
             </label>
+            )}
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('feeds.declineHours', 'Hours to decline')}</span>
               <input type="number" className={styles.number} min={1} max={720} value={draft.declineHours}
                      disabled={busy} onChange={e => set('declineHours', e.target.value)} />
             </label>
+            {!fromCircuit && (
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('feeds.onDecline', 'A declined place goes to')}</span>
               <select className={styles.select} value={draft.onDecline} disabled={busy}
@@ -464,10 +545,11 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
                 <option value="organiser">{tt('feeds.onDeclineOrganiser', 'Whoever I pick')}</option>
               </select>
             </label>
+            )}
           </div>
           <div className={styles.editorActions}>
             <button type="button" className={styles.save}
-                    disabled={busy || !draft.source || !draft.sourceStage || !draft.targetStage}
+                    disabled={busy || !ready}
                     onClick={save}>
               {tt('feeds.save', 'Add this feed')}
             </button>

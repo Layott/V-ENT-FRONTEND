@@ -46,6 +46,11 @@ export function slotLabel(tt, slot, format) {
   // (P1d): "Groups: group A, place 1".
   if (slot.kind === 'place' && slot.from_place) {
     const p = slot.from_place;
+    // From a circuit's ranking (P5c): "Naija Pro Circuit ranking: place 3".
+    if (p.circuit) {
+      return tt('bracket.slotPlaceCircuit', '{circuit} ranking: place {n}')
+        .replace('{circuit}', p.circuit).replace('{n}', p.place);
+    }
     // From another tournament (P2): "Lagos Qualifier, League: place 1".
     if (p.tournament) {
       return (p.group

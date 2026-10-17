@@ -32,6 +32,11 @@ export function happeningLine(tt, h) {
     case 'stage_closed':
       return tt('studio.hp.closed', '{stage} is finished').replace('{stage}', d.stage || '');
     case 'line_sent':
+      if (d.circuit) {
+        // Places sent in from a circuit's ranking (P5c).
+        return tt('studio.hp.sentCircuit', '{count} through from the {circuit} ranking to {target}')
+          .replace('{count}', d.count ?? 0).replace('{circuit}', d.circuit).replace('{target}', d.target || '');
+      }
       return tt('studio.hp.sent', '{count} through from {stage} to {target}')
         .replace('{count}', d.count ?? 0).replace('{stage}', d.stage || '').replace('{target}', d.target || '');
     case 'tournament_won':
