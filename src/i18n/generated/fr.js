@@ -8800,7 +8800,7 @@ const table = {
  "partners.linkGame.unlinkFailed": "Ce lien n’a pas été retiré.",
  "partners.linkGame.cancel": "Annuler",
  "partners.linkGame.settingsTitle": "Comptes de jeu",
- "partners.linkGame.settingsBody": "Les jeux construits sur V-ENT vous montrent un code pour lier votre compte dans le jeu. Consultez et retirez ces liens ici.",
+ "partners.linkGame.settingsBody": "Les jeux construits sur V-ENT vous montrent un code pour lier votre compte dans le jeu. Consultez et retirez ces liens sur la page de vos comptes de jeu.",
  "partners.linkGame.settingsLink": "Vos comptes de jeu",
  "partners.studioConnect.title": "Intégration de jeu",
  "partners.studioConnect.body": "Jouez les matchs de ce tournoi dans un jeu. Quand un match est prêt, V-ENT demande au jeu d’ouvrir un salon, le code du salon apparaît dans la salle du match, et le résultat du jeu est enregistré sur le match. Vous pouvez toujours corriger un résultat à la main.",

@@ -8800,7 +8800,7 @@ const table = {
  "partners.linkGame.unlinkFailed": "Essa associação não foi removida.",
  "partners.linkGame.cancel": "Cancelar",
  "partners.linkGame.settingsTitle": "Contas de jogo",
- "partners.linkGame.settingsBody": "Os jogos construídos sobre a V-ENT mostram-lhe um código para associar a sua conta no jogo. Veja e remova essas associações aqui.",
+ "partners.linkGame.settingsBody": "Os jogos construídos sobre a V-ENT mostram-lhe um código para associar a sua conta no jogo. Veja e remova essas associações na página das suas contas de jogo.",
  "partners.linkGame.settingsLink": "As suas contas de jogo",
  "partners.studioConnect.title": "Integração de jogo",
  "partners.studioConnect.body": "Dispute as partidas deste torneio dentro de um jogo. Quando uma partida está pronta, a V-ENT pede ao jogo que abra uma sala, o código da sala aparece na sala da partida e o resultado do jogo é registado na partida. Pode sempre corrigir um resultado à mão.",

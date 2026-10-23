@@ -338,7 +338,7 @@ const LinkedAccountsPanel = ({
       <div className={shared.card}>
         <h3 className={shared.cardTitle}>{tt('partners.linkGame.settingsTitle', 'Game accounts')}</h3>
         <p className={shared.cardSub}>
-          {tt('partners.linkGame.settingsBody', 'Games built on V-ENT show you a code to link your account in the game. See and remove those links here.')}
+          {tt('partners.linkGame.settingsBody', 'Games built on V-ENT show you a code to link your account in the game. See and remove those links on your game accounts page.')}
         </p>
         <Link href="/link-game" className={`${shared.btn} ${shared.btnSm} ${shared.ghostBTN}`}>
           {tt('partners.linkGame.settingsLink', 'Your game accounts')}

@@ -8800,7 +8800,7 @@ const table = {
  "partners.linkGame.unlinkFailed": "That link was not removed.",
  "partners.linkGame.cancel": "Cancel",
  "partners.linkGame.settingsTitle": "Game accounts",
- "partners.linkGame.settingsBody": "Games built on V-ENT show you a code to link your account in the game. See and remove those links here.",
+ "partners.linkGame.settingsBody": "Games built on V-ENT show you a code to link your account in the game. See and remove those links on your game accounts page.",
  "partners.linkGame.settingsLink": "Your game accounts",
  "partners.studioConnect.title": "Game integration",
  "partners.studioConnect.body": "Run this tournament's matches inside a game. When a match is ready, V-ENT asks the game to open a lobby, the room code appears in the match room, and the game's result is recorded on the match. You can still correct any result by hand.",
