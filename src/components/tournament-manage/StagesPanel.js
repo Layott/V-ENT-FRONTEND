@@ -34,7 +34,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatLabel, stageFormatLabel } from '@/lib/formatLabel';
+import { formatLabel, stageFormatLabel, stageName } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import FeedsPanel from './FeedsPanel';
@@ -427,7 +427,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const outOf = id => lines.filter(l => l.source === id)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const into = id => lines.filter(l => l.target === id);
-  const labelOf = id => rows.find(r => r.id === id)?.label || '';
+  // A stage's name on screen: what the organiser typed, else the format's name in the reader's language.
+  const nameOf = row => stageName(tt, row?.label, row?.format, row?.settings?.preset);
+  const labelOf = id => nameOf(rows.find(r => r.id === id));
 
   // "Places 1 to 2 of each group go to Playoff, in the upper bracket." One
   // sentence, shared with the stage graph (src/lib/stageGraph.js).
@@ -746,7 +748,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       if (res.ok && body.status === 'success') {
         if (showToast) {
           showToast(tt('stages.drawn', '{stage} is drawn: {n} matches.')
-            .replace('{stage}', row.label).replace('{n}', body.data?.draw?.matches_created ?? 0));
+            .replace('{stage}', nameOf(row)).replace('{n}', body.data?.draw?.matches_created ?? 0));
         }
         after();
         return;
@@ -821,10 +823,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         if (showToast) {
           showToast(closing.manualOnly
             ? tt('stages.closedWaiting', '{stage} is closed. Press send when you want them in {next}.')
-              .replace('{stage}', closing.row.label).replace('{next}', closing.next?.label || '')
+              .replace('{stage}', nameOf(closing.row)).replace('{next}', nameOf(closing.next))
             : tt('stages.advanced', '{n} go through to {next}.')
               .replace('{n}', (body.data.advanced || []).length)
-              .replace('{next}', body.data.next?.label || ''));
+              .replace('{next}', stageName(tt, body.data.next?.label)));
         }
         return;
       }
@@ -878,10 +880,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const undoDraw = row => stageTool(`stages/${row.id}/undraw/`,
     { discard_results: Number(meta.played[row.id] || 0) > 0 },
     () => tt('stages.undrawn', 'The draw for {stage} is undone. Change it and draw it again when you are ready.')
-      .replace('{stage}', row.label));
+      .replace('{stage}', nameOf(row)));
 
   const reopenStage = row => stageTool(`stages/${row.id}/reopen/`, {},
-    () => tt('stages.reopened', '{stage} is open again.').replace('{stage}', row.label));
+    () => tt('stages.reopened', '{stage} is open again.').replace('{stage}', nameOf(row)));
 
   const reformatStage = (row, index) => {
     const a = acting || {};
@@ -894,7 +896,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       discard_results: Number(meta.played[row.id] || 0) > 0,
       draw: true,
     }, data => tt('stages.reformatted', '{stage} is now {format}, drawn again: {n} matches.')
-      .replace('{stage}', row.label)
+      .replace('{stage}', nameOf(row))
       .replace('{format}', formatLabel(tt, a.format, ''))
       .replace('{n}', data?.draw?.matches_created ?? 0));
   };
@@ -1011,7 +1013,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
               <li key={row.id} className={styles.stage}>
                 <span className={styles.order}>{index + 1}</span>
                 <div className={styles.stageText}>
-                  <span className={styles.stageName}>{row.label}</span>
+                  <span className={styles.stageName}>{nameOf(row)}</span>
                   {plainChain
                     ? <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
                     : <>
@@ -1146,10 +1148,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         <div className={styles.confirm}>
           <p className={styles.confirmTitle}>
             {acting.kind === 'format'
-              ? tt('stages.formatTitle', 'Change the format of {stage}').replace('{stage}', acting.row.label)
+              ? tt('stages.formatTitle', 'Change the format of {stage}').replace('{stage}', nameOf(acting.row))
               : acting.kind === 'undo'
-                ? tt('stages.undoTitle', 'Undo the draw of {stage}').replace('{stage}', acting.row.label)
-                : tt('stages.reopenTitle', 'Open {stage} again').replace('{stage}', acting.row.label)}
+                ? tt('stages.undoTitle', 'Undo the draw of {stage}').replace('{stage}', nameOf(acting.row))
+                : tt('stages.reopenTitle', 'Open {stage} again').replace('{stage}', nameOf(acting.row))}
           </p>
 
           {acting.kind === 'format' && (
@@ -1667,7 +1669,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                   {draftLines.filter(l => l.source === row.key).map(l => {
                     const target = draft.find(r => r.key === l.target);
                     const groups = Number(row.groups) || 0;
-                    const targetName = target ? (target.label || formatLabel(tt, target.format)) : '';
+                    const targetName = target ? nameOf(target) : '';
                     if (l.fired) {
                       return (
                         <div key={l.k} className={styles.lineRow}>
@@ -1711,7 +1713,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                                     onChange={e => setLineTarget(l.k, e.target.value)}>
                               {draft.filter(r => r.key !== row.key).map(r => (
                                 <option key={r.key} value={r.key}>
-                                  {`${draft.indexOf(r) + 1}. ${r.label || formatLabel(tt, r.format)}`}
+                                  {`${draft.indexOf(r) + 1}. ${nameOf(r)}`}
                                 </option>
                               ))}
                             </select>
@@ -1969,7 +1971,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         <div className={styles.confirm}>
           <p className={styles.confirmTitle}>
             {tt('stages.confirmTitle', 'Closing {stage}')
-              .replace('{stage}', closing.row.label)}
+              .replace('{stage}', nameOf(closing.row))}
           </p>
           {!closing.finished ? (
             <p className={styles.problem}>
@@ -1982,18 +1984,18 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                 {closing.manualOnly
                   ? tt('stages.confirmHintManual',
                     'Closing {stage} fixes its final table. Nobody goes to {next} until you press send on the link.')
-                    .replace('{stage}', closing.row.label).replace(/\{next\}/g, closing.next?.label || '')
+                    .replace('{stage}', nameOf(closing.row)).replace(/\{next\}/g, nameOf(closing.next))
                   : closing.seatsWaiting
                     ? tt('stages.confirmHintSeats',
                       'These go through to {next}, as the stage’s own table has them. Move anybody up or down within their group if a place needs correcting. {next} is already drawn, so each one takes the seat waiting for their group and place.')
-                      .replace(/\{next\}/g, closing.next?.label || '')
+                      .replace(/\{next\}/g, nameOf(closing.next))
                   : closing.next?.placement === 'random'
                   ? tt('stages.confirmHintRandom',
                     'These go through to {next}. {next} places them at random when it is drawn, in the same press, so the order here does not decide who meets whom.')
-                    .replace(/\{next\}/g, closing.next?.label || '')
+                    .replace(/\{next\}/g, nameOf(closing.next))
                   : tt('stages.confirmHint2',
                     'These go through to {next}, in this seed order, as the stage’s own table has them. Move anybody up or down if you need to, then send them through. {next} is drawn in the same press.')
-                    .replace(/\{next\}/g, closing.next?.label || '')}
+                    .replace(/\{next\}/g, nameOf(closing.next))}
               </p>
               {closing.perLine && closing.lines.map(l => (
                 <div key={l.id} className={styles.lineRow}>
@@ -2045,7 +2047,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
               {(closing.next?.direct_entrants_named || []).length > 0 && (
                 <p className={styles.hint}>
                   {tt('stages.joiningToo', 'Also joining {next}, invited straight in: {names}.')
-                    .replace('{next}', closing.next?.label || '')
+                    .replace('{next}', nameOf(closing.next))
                     .replace('{names}', closing.next.direct_entrants_named.map(e => e.name).join(', '))}
                 </p>
               )}

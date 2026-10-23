@@ -39,6 +39,7 @@
 
 import { useCallback, useEffect, useRef, useState, use } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
+import { stageName } from '@/lib/formatLabel';
 import styles from './studio.module.css';
 import {
   place, clock, spansDays, dayOf, rivalryOf, tagOf, count, optIn,
@@ -312,7 +313,7 @@ function Standings({ payload, data }) {
     return (
       <div className={`${styles.standings} ${styles.stWide}`}>
         <div className={styles.stTitle}>
-          {payload.title || data.battle_royale?.stage || data.tournament?.title || tt('studio.rv.standings', 'Standings')}
+          {payload.title || stageName(tt, data.battle_royale?.stage) || data.tournament?.title || tt('studio.rv.standings', 'Standings')}
         </div>
         <div className={styles.stHead}>
           <span className={styles.stPos} />

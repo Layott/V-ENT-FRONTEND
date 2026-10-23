@@ -37,7 +37,7 @@ import { feedFrom, feedSentence } from '@/lib/feedWords';
 import { formatWithZone } from '@/lib/datetime';
 import { pathWithFeeds, stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, stageName } from '@/lib/formatLabel';
 import { matchName } from '@/lib/matchName';
 import { slotLabel, slotOf } from '@/lib/slotLabel';
 import styles from './bracket-visualizer.module.css';
@@ -519,7 +519,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   // The Path view across tournaments (P2): a feed's other end is drawn as a
   // box of its own ("Lagos Qualifier: League"), joined by the feed's line;
   // pressing it opens that tournament. The Path widget draws the same graph.
-  const graph = pathWithFeeds(path, feedRows);
+  const graph = pathWithFeeds(path, feedRows, tt);
   const pickInPath = id => {
     const ext = graph.external.find(x => x.id === id);
     if (ext) { window.location.assign(ext.href); return; }
@@ -584,7 +584,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                     className={`${styles.stageChip} ${data.stage_id === stage.id ? styles.stageChipOn : ''}`}
                     aria-pressed={data.stage_id === stage.id}
                     onClick={() => { setStageId(stage.id); setView(null); }}>
-              <span>{stage.label}</span>
+              <span>{stageName(tt, stage.label, stage.format, stage.preset)}</span>
               <span className={styles.stageChipState}>
                 {stageState(tt, stage)}
               </span>

@@ -17,7 +17,7 @@
 import { useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
 import useLiveData from '@/lib/useLiveData';
-import { formatKey } from '@/lib/formatLabel';
+import { formatKey, stageName } from '@/lib/formatLabel';
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import StandingsPanel from '@/components/view-tournament/standings/StandingsPanel';
 import BattleRoyaleBoard from '@/components/view-tournament/battle-royale/BattleRoyaleBoard';
@@ -59,7 +59,7 @@ function StageStandings({ tournamentId, slug }) {
         <button key={stage.id} type="button" aria-pressed={data.stage_id === stage.id}
                 className={data.stage_id === stage.id ? `${styles.chip} ${styles.chipOn}` : styles.chip}
                 onClick={() => setStageId(stage.id)}>
-          {stage.label}
+          {stageName(tt, stage.label, stage.format, stage.preset)}
         </button>
       ))}
     </div>
