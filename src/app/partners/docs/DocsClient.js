@@ -61,6 +61,10 @@ export default function DocsClient({ index, sso }) {
         <Link href="/partners" className={styles.cta}>
           {t('docs.applyCta', 'Apply for access')}
         </Link>
+        <p className={styles.note}>
+          {t('partners.studioDocs.fromReference', 'Making a game? Connect it so V-ENT tournaments run inside it:')}{' '}
+          <Link href="/partners/docs/studios">{t('partners.studioDocs.fromReferenceLink', 'the guide for game studios')}</Link>
+        </p>
       </header>
 
       {/* ------------------------------------------------------- getting in */}

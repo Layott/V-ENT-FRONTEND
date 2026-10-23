@@ -47,7 +47,7 @@ export default function EmbedPath({ slug }) {
       </div>
     );
   }
-  const graph = pathWithFeeds(data?.plan, data?.feeds);
+  const graph = pathWithFeeds(data?.plan, data?.feeds, tt);
   if (graph.stages.length < 2) {
     return (
       <p className={styles.note}>

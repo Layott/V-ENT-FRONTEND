@@ -13,6 +13,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import shared from '@/components/admin/admin.module.css';
 import styles from './tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { stageName } from '@/lib/formatLabel';
 import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import RulesEditor from '@/components/rules-editor/RulesEditor';
@@ -898,7 +899,7 @@ function OverrideScoreModal({
   const canSubmit = Boolean(chosen && (!level || drawOk || pensOk));
   // Which stage and group, so two "Round 1, match 1" rows can be told apart.
   const whereOf = m => [
-    m.stage_label,
+    stageName(tt, m.stage_label),
     m.group_number ? tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + Number(m.group_number))) : null,
     m.bracket_side === 'losers' ? tt('bracket.losersBracket', 'Losers bracket')
       : m.bracket_side === 'grand_final' ? tt('bracket.grandFinal', 'Grand final') : null,

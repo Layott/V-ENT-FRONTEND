@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuRotateCcw, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, formatSummary } from '@/lib/formatLabel';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './rules-editor.module.css';
 
@@ -204,7 +204,7 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
       <div className={styles.head}>
         <div>
           <h3 className={styles.title}>{tt('rules.title', 'How this tournament is scored')}</h3>
-          {meta?.format && <p className={styles.formatNote}>{meta.format.summary}</p>}
+          {meta?.format && <p className={styles.formatNote}>{formatSummary(tt, meta.format.key, meta.format.summary)}</p>}
         </div>
         {canEdit && (
           <button type="button" className={styles.ghost} onClick={reset} disabled={saving}>
@@ -228,7 +228,7 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
             {presets.formats.map(f => (
               <button key={f.key} type="button"
                       className={`${styles.chip} ${picked === f.key ? styles.chipOn : ''}`}
-                      title={f.summary}
+                      title={formatSummary(tt, f.key, f.summary)}
                       onClick={() => takePreset(f.key)}>
                 {formatLabel(tt, f.key, f.label)}
               </button>
@@ -236,7 +236,7 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
           </div>
           {picked && (
             <p className={styles.hint}>
-              {presets.formats.find(f => f.key === picked)?.summary}
+              {formatSummary(tt, picked, presets.formats.find(f => f.key === picked)?.summary)}
             </p>
           )}
         </section>

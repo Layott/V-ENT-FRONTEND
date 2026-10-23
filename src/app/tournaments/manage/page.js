@@ -43,6 +43,7 @@ import OverlaysPanel from '@/components/overlays/OverlaysPanel';
 import StudioPanel from '@/components/studio/StudioPanel';
 import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import MoneyPanel from '@/components/tournament-manage/MoneyPanel';
+import StudioConnectPanel from '@/components/studio-connect/StudioConnectPanel';
 import TournamentEmbedPanel from '@/components/embed-sites/TournamentEmbedPanel';
 import styles from './manage.module.css';
 import { tournamentStatusLabel } from '@/lib/tournamentStatus';
@@ -108,6 +109,11 @@ const TABS = [{
 }, {
   id: 'stats',
   label: 'Player stats'
+}, {
+  // Matches played in a studio's game: lobbies opened by the game and its
+  // results recorded here (game studios, design section 14).
+  id: 'game',
+  label: 'Game integration'
 }];
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
@@ -644,6 +650,11 @@ const ManageContent = ({ slug }) => {
                                entrants={(participants || []).map(p => p.name || p.team_name || p.username).filter(Boolean)} />
                 <StatsPanel tournamentId={tournament.tournament_id} matches={matches} token={token} showToast={showToast} />
               </>}
+            {shown === 'game' && (
+              access?.can_manage
+                ? <StudioConnectPanel tournamentRef={tournament.slug || tournament.tournament_id} showToast={showToast} />
+                : <p className={styles.panelSub}>{tt('partners.studioConnect.organiserOnly', 'Only the organiser can connect this tournament to a game.')}</p>
+            )}
           </div>
         </div>
       </main>

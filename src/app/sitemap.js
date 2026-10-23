@@ -115,6 +115,8 @@ export default async function sitemap() {
     // The API reference is how an integrator finds V-ENT at all, so it is worth
     // more in search than the application form it points at.
     entry('/partners/docs', { changeFrequency: 'monthly', priority: 0.5 }),
+    // The guide for game studios, which a studio searches for by name.
+    entry('/partners/docs/studios', { changeFrequency: 'monthly', priority: 0.5 }),
     entry('/login', { changeFrequency: 'yearly', priority: 0.3 }),
     entry('/signup', { changeFrequency: 'yearly', priority: 0.4 }),
     entry('/privacy-policy', { changeFrequency: 'yearly', priority: 0.2 }),
