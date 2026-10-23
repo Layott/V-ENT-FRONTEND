@@ -6,7 +6,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import styles from './authorize.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
 
 // The consent screen. Somebody arrives here from a partner's site and is asked,
 // in plain words, whether that site may see a named list of things. Nothing is
@@ -14,7 +13,6 @@ import { useTx } from '@/i18n/LanguageProvider';
 // and the partner and redirect address are both checked by the server before
 // anything is shown.
 const AuthorizeContent = () => {
-  const tx = useTx();
   const tt = useT();
   const params = useSearchParams();
   const router = useRouter();
@@ -126,7 +124,7 @@ const AuthorizeContent = () => {
 
             <p className={styles.listLabel}>{tt("ui.they.will.able.see.5f02", "They will be able to see:")}</p>
             <ul className={styles.list}>
-              {info.scopes.map(s => <li key={s.key}>{tx(s.label)}</li>)}
+              {info.scopes.map(s => <li key={s.key}>{tt(`partners.identityScope.${s.key}`, s.label)}</li>)}
             </ul>
 
             <p className={styles.fineprint}>
@@ -145,7 +143,7 @@ const AuthorizeContent = () => {
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
               <button type="button" className={styles.primary} onClick={allow} disabled={working}>
-                {working ? tx("Approving...") : `Allow ${info.partner.name}`}
+                {working ? tt('partners.approving', 'Approving...') : tt('partners.allowPartner', 'Allow {name}').replace('{name}', info.partner.name)}
               </button>
             </div>
           </>}
