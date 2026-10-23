@@ -53,7 +53,7 @@ export default function SelfCheckIn(props) {
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setState(body.data);
-        setError('');
+        if (!quiet) setError('');
         return;
       }
       if (!quiet) setError(apiMessage(tt, body, 'checkIn.notFound',

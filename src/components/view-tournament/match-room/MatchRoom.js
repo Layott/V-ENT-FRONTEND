@@ -79,7 +79,10 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [rules, setRules] = useState(null);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
-    setProblem('');
+    // The poll leaves a refusal on screen: a player told why their result
+    // could not stand lost the sentence at the next refresh (walk, 17
+    // October 2026).
+    if (!quiet) setProblem('');
     try {
       const got = await call(`/tournament/match/${matchId}/`, { token });
       if (got.ok) {

@@ -553,7 +553,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setData(body.data);
-        setProblem('');
+        if (!quiet) setProblem('');
       } else if (!quiet) {
         setProblem(apiMessage(tt, body, 'br.loadFailed', 'Could not load the battle royale.'));
       }

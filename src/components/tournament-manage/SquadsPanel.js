@@ -47,7 +47,7 @@ export default function SquadsPanel({ tournamentRef, token, showToast, onChanged
     try {
       const res = await fetch(base, { headers: auth });
       const body = await res.json().catch(() => ({}));
-      if (body?.status === 'success') { setSquads(body.data?.squads || []); setError(''); }
+      if (body?.status === 'success') { setSquads(body.data?.squads || []); if (!quiet) setError(''); }
       else if (!quiet) setError(apiMessage(tt, body, 'squad.loadFailed', 'Could not load the squads.'));
     } catch (err) {
       if (!quiet) setError(apiMessage(tt, err, 'squad.loadFailed', 'Could not load the squads.'));

@@ -34,7 +34,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, stageFormatLabel } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import FeedsPanel from './FeedsPanel';
@@ -91,7 +91,8 @@ const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TA
       ...(format === 'winner_stays_on' ? { streak_target: 0, max_matches: 0 } : {}),
       ...(format === 'double_elimination' ? { grand_final: 'reset', threshold: 0 } : {}),
       ...(format === 'bracket_groups'
-        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}) });
+        ? { bracket: 'double', threshold: 2, group_size: 4, grand_final: 'none' } : {}),
+      ...(format === 'custom_bracket' ? { preset: '', schema_text: '' } : {}) });
 
 // How a Swiss pairs the rounds after the first (P3 W1), and its word.
 const SWISS_PAIRINGS = [
@@ -152,6 +153,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [preset, setPreset] = useState(null);
   // Whole setups a stage can start from (P3 W1): the Counter-Strike Major Swiss.
   const [formatPresets, setFormatPresets] = useState({});
+  // The ready-made custom brackets and the fields each is proven on (P3 W2).
+  const [customPresets, setCustomPresets] = useState([]);
   const [entrants, setEntrants] = useState([]);
   // The free for all bracket builder (P3 W1): its numbers while open, and
   // the rounds of the plan it last wrote.
@@ -191,7 +194,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentRef) { setLoading(false); return; }
-    setProblem('');
+    // A quiet refresh leaves a refusal where it is: clearing it here wiped
+    // "Match C takes a side from a match that is not in the bracket" off the
+    // plan a few seconds after Save (walk, 17 October 2026).
+    if (!quiet) setProblem('');
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/stages/`, { headers: auth });
       const body = await res.json().catch(() => ({}));
@@ -201,6 +207,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         setCatalogue(body.data.catalogue || []);
         setPreset(body.data.preset || null);
         setFormatPresets(body.data.format_presets || {});
+        setCustomPresets(body.data.custom_presets || []);
         setMeta({
           oneFormat: Boolean(body.data.one_format_drawn),
           finished: Boolean(body.data.finished),
@@ -294,7 +301,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   // One sentence per stage, built here rather than taken from the server's
   // `summary`, which is written in English inside Python.
   const sentence = (row, index, list) => {
-    const name = formatLabel(tt, row.format, row.format_label);
+    const name = stageFormatLabel(tt, { ...row, preset: row.settings?.preset });
     const last = index === list.length - 1;
     if (last) {
       return tt('stages.lineLast', '{format}. This decides the tournament.')
@@ -1492,6 +1499,39 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                       </div>
                     )}
                     <p className={styles.note}>{tt('stages.bracketGroupsNote', 'Each group is a knockout of its own and everybody stays in their group. The matches between the ones who go through are not played.')}</p>
+                  </>}
+                  {row.format === 'custom_bracket' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.customFrom', 'Start from')}</span>
+                      <Chips value={s.preset || ''} disabled={busy} label={tt('stages.customFrom', 'Start from')}
+                             options={[['', tt('stages.customOwn', 'A bracket I write')],
+                                       ...customPresets.map(p => [p.key, tt(`stages.customPreset.${p.key}`, p.key)])]}
+                             onChange={v => setSetting(index, 'preset', v)} />
+                      {s.preset ? (
+                        <span className={styles.note}>
+                          {tt(`stages.customPresetNote.${s.preset}`, '')}
+                          {' '}
+                          {tt('stages.customSizes', 'Ready for {sizes} entrants.')
+                            .replace('{sizes}', ((customPresets.find(p => p.key === s.preset) || {}).sizes || []).join(', '))}
+                        </span>
+                      ) : null}
+                    </div>
+                    {!s.preset && (
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.customSchema', 'The bracket, one match a line')}</span>
+                        <textarea className={styles.schemaBox} rows={8} spellCheck={false} disabled={busy}
+                                  value={s.schema_text || ''} placeholder={'A=[1,4]\nB=[2,3]\nC=[W:A,W:B]! >1,2'}
+                                  onChange={e => setSetting(index, 'schema_text', e.target.value)} />
+                        {/* One note, the basics first: as two the replay
+                            sentence sat above the one it builds on, a gap
+                            apart (walk, 17 October 2026). */}
+                        <span className={styles.note}>
+                          {tt('stages.customHelp', 'A=[1,4] is seed 1 against seed 4. C=[W:A,W:B] puts the winners of A and B together, L: takes a loser instead, and - is a bye. #round 2 starts a round, [PL] puts the matches below it on the placement side, @east names a part of the bracket. ! marks the final, and >3,4 gives the places a match decides.')}
+                          {' '}
+                          {tt('stages.customHelpMore', 'R:GF1 in both seats of a [GF] match plays GF1 again if its second seat wins it, and X:F:1:2 is whoever lost to the finalist in seat 1 of F in round 2.')}
+                        </span>
+                      </label>
+                    )}
                   </>}
                   {BERGER.has(row.format) && (
                     <div className={styles.field}>

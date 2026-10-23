@@ -131,6 +131,14 @@ const roundTitle = (tt, round, index, count, side, format) => {
     }, format);
   }
   if (side === 'grand_final') {
+    // Triple elimination plays the final of the lower brackets, and its
+    // replay, on this side before the grand final (P3 W2b): four columns all
+    // read "Grand final" (walk, 17 October 2026).
+    if (round.matches?.some(m => Number(m.loser_place) >= 3)) {
+      return round.matches.every(m => (m.slots || []).length && m.slots.every(s => s.kind === 'reset'))
+        ? tt('bracket.lowerFinalReplay', 'Final of the lower brackets, replay')
+        : tt('bracket.lowerFinal', 'Final of the lower brackets');
+    }
     return count > 1 && index === count - 1
       ? tt('bracket.grandFinalReset', 'Grand final, reset')
       : tt('bracket.grandFinal', 'Grand final');
@@ -539,6 +547,13 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const groups = [...new Set(rounds.map(r => r.group_number).filter(Boolean))];
   // Groups that are knockouts, GSL and bracket groups (P3 W1), not tables.
   const knockoutGroups = ['gsl', 'bracket_groups'].includes(norm(format));
+  // A custom bracket's parts (P3 W2): one section per branch, in the order
+  // they first appear, each round holding only that branch's matches.
+  const branches = norm(format) === 'custom_bracket'
+    ? [...new Set(rounds.flatMap(r => (r.matches || []).map(m => m.branch || '')))] : [];
+  const roundsOf = branch => rounds
+    .map(r => ({ ...r, matches: (r.matches || []).filter(m => (m.branch || '') === branch) }))
+    .filter(r => r.matches.length);
   const bySide = side => rounds.filter(r => (r.bracket_side || 'winners') === side);
   const hasLosers = bySide('losers').length > 0;
   const standings = data.standings || [];
@@ -728,6 +743,22 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                              side={norm(format) === 'gsl' ? 'gsl' : 'winners'} format={format} />
               : <MapFlat rounds={rounds.filter(r => r.group_number === g)} tt={tt}
                          onOpen={openMatch} isMine={isMine} />}
+          </section>
+        )) : branches.length > 1 ? branches.map(branch => (
+          <section key={branch || 'main'} className={styles.section}>
+            <p className={styles.sectionTitle}>
+              {branch ? tt(`bracket.branch.${branch}`, branch) : tt('bracket.branchMain', 'Main draw')}
+            </p>
+            {['winners', 'losers', 'placement', 'grand_final'].map(side => {
+              const list = roundsOf(branch).filter(r => (r.bracket_side || 'winners') === side);
+              return list.length ? (
+                // Placement rounds are titled as rounds: drawn as "losers",
+                // West of a compass draw read "Losers round 2" (walk, 17
+                // October 2026).
+                <MapKnockout key={side} rounds={list} tt={tt} onOpen={openMatch} isMine={isMine}
+                             side={side} format={format} />
+              ) : null;
+            })}
           </section>
         )) : table ? (
           <>

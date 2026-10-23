@@ -40,6 +40,12 @@ export function matchName(tt, match, format) {
       : tt('bracket.pageTop', 'First against second');
   }
   if (f === 'winner_stays_on') return tt('bracket.challengeN', 'Challenge {n}').replace('{n}', round);
+  // A grand-final match that decides third or lower is the final of the lower
+  // brackets (triple elimination, P3 W2b): the real grand final's seat read
+  // "Winner of Grand final" (walk, 17 October 2026).
+  if (match.side === 'grand_final' && loserPlace >= 3) {
+    return tt('bracket.lowerFinal', 'Final of the lower brackets');
+  }
   // Any other format's deciding match is its final, wherever it sits.
   if (match.side === 'grand_final') return tt('bracket.grandFinal', 'Grand final');
   if (match.is_final) return tt('bracket.final', 'Final');

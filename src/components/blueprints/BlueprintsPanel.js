@@ -234,7 +234,7 @@ export default function BlueprintsPanel({ token, sources = [], onEditionMade }) 
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setRows(body.data.blueprints || []);
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'blueprint.loadFailed', 'Could not load your blueprints.'));
       }
