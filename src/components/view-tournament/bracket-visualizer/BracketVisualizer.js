@@ -131,6 +131,14 @@ const roundTitle = (tt, round, index, count, side, format) => {
     }, format);
   }
   if (side === 'grand_final') {
+    // Triple elimination plays the final of the lower brackets, and its
+    // replay, on this side before the grand final (P3 W2b): four columns all
+    // read "Grand final" (walk, 17 October 2026).
+    if (round.matches?.some(m => Number(m.loser_place) >= 3)) {
+      return round.matches.every(m => (m.slots || []).length && m.slots.every(s => s.kind === 'reset'))
+        ? tt('bracket.lowerFinalReplay', 'Final of the lower brackets, replay')
+        : tt('bracket.lowerFinal', 'Final of the lower brackets');
+    }
     return count > 1 && index === count - 1
       ? tt('bracket.grandFinalReset', 'Grand final, reset')
       : tt('bracket.grandFinal', 'Grand final');
@@ -744,8 +752,11 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             {['winners', 'losers', 'placement', 'grand_final'].map(side => {
               const list = roundsOf(branch).filter(r => (r.bracket_side || 'winners') === side);
               return list.length ? (
+                // Placement rounds are titled as rounds: drawn as "losers",
+                // West of a compass draw read "Losers round 2" (walk, 17
+                // October 2026).
                 <MapKnockout key={side} rounds={list} tt={tt} onOpen={openMatch} isMine={isMine}
-                             side={side === 'placement' ? 'losers' : side} format={format} />
+                             side={side} format={format} />
               ) : null;
             })}
           </section>

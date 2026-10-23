@@ -34,7 +34,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, stageFormatLabel } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import FeedsPanel from './FeedsPanel';
@@ -194,7 +194,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentRef) { setLoading(false); return; }
-    setProblem('');
+    // A quiet refresh leaves a refusal where it is: clearing it here wiped
+    // "Match C takes a side from a match that is not in the bracket" off the
+    // plan a few seconds after Save (walk, 17 October 2026).
+    if (!quiet) setProblem('');
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/stages/`, { headers: auth });
       const body = await res.json().catch(() => ({}));
@@ -298,7 +301,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   // One sentence per stage, built here rather than taken from the server's
   // `summary`, which is written in English inside Python.
   const sentence = (row, index, list) => {
-    const name = formatLabel(tt, row.format, row.format_label);
+    const name = stageFormatLabel(tt, { ...row, preset: row.settings?.preset });
     const last = index === list.length - 1;
     if (last) {
       return tt('stages.lineLast', '{format}. This decides the tournament.')
@@ -1519,11 +1522,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                         <textarea className={styles.schemaBox} rows={8} spellCheck={false} disabled={busy}
                                   value={s.schema_text || ''} placeholder={'A=[1,4]\nB=[2,3]\nC=[W:A,W:B]! >1,2'}
                                   onChange={e => setSetting(index, 'schema_text', e.target.value)} />
-                        <span className={styles.note}>
-                          {tt('stages.customHelpMore', 'R:GF1 in both seats of a [GF] match plays GF1 again if its second seat wins it, and X:F:1:2 is whoever lost to the finalist in seat 1 of F in round 2.')}
-                        </span>
+                        {/* One note, the basics first: as two the replay
+                            sentence sat above the one it builds on, a gap
+                            apart (walk, 17 October 2026). */}
                         <span className={styles.note}>
                           {tt('stages.customHelp', 'A=[1,4] is seed 1 against seed 4. C=[W:A,W:B] puts the winners of A and B together, L: takes a loser instead, and - is a bye. #round 2 starts a round, [PL] puts the matches below it on the placement side, @east names a part of the bracket. ! marks the final, and >3,4 gives the places a match decides.')}
+                          {' '}
+                          {tt('stages.customHelpMore', 'R:GF1 in both seats of a [GF] match plays GF1 again if its second seat wins it, and X:F:1:2 is whoever lost to the finalist in seat 1 of F in round 2.')}
                         </span>
                       </label>
                     )}

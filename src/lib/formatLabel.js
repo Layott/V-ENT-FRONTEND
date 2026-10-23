@@ -108,8 +108,21 @@ export const formatLabel = (tt, value, empty = '-') => {
  */
 export const formatRuns = (stages) => (stages || []).reduce((runs, stage) => {
   const key = formatKey(stage.format) || stage.format;
+  const preset = stage.preset || null;
   const last = runs[runs.length - 1];
-  if (last && last.format === key) last.count += 1;
-  else runs.push({ format: key, label: stage.format_label, count: 1 });
+  if (last && last.format === key && last.preset === preset) last.count += 1;
+  else runs.push({ format: key, label: stage.format_label, preset, count: 1 });
   return runs;
 }, []);
+
+/**
+ * What one stage is played as: its format, or for a custom bracket drawn from
+ * a preset the preset's own name ("Compass draw"). "Custom bracket" alone did
+ * not say which of six shapes it was (walk of P3 W2, 17 October 2026).
+ * `stage` is { format, format_label, preset }.
+ */
+export const stageFormatLabel = (tt, stage) => (
+  formatKey(stage?.format) === 'custom_bracket' && stage?.preset
+    ? tt(`stages.customPreset.${stage.preset}`, stage.preset)
+    : formatLabel(tt, stage?.format, stage?.format_label)
+);

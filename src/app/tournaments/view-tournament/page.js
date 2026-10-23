@@ -2,7 +2,7 @@
 
 import { withLocalDatesAsISO, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
-import { formatLabel, formatRuns } from '@/lib/formatLabel';
+import { formatLabel, formatRuns, stageFormatLabel } from '@/lib/formatLabel';
 import { explainersFor, tournamentFormats } from '@/lib/explainers';
 import WatchFormat from '@/components/format-explainer/WatchFormat';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
@@ -545,8 +545,8 @@ export const ViewTournamentContent = ({
                 {/* A tournament in stages is its plan, not its bracket_type:
                     this read "Round robin" for groups into a playoff. */}
                 <p className={styles.metaValue}>{tournament.stages?.length
-                  ? formatRuns(tournament.stages).map(({ format, label, count }) => (count < 2
-                    ? formatLabel(tt, format, label)
+                  ? formatRuns(tournament.stages).map(({ format, label, preset, count }) => (count < 2
+                    ? stageFormatLabel(tt, { format, format_label: label, preset })
                     // A free for all bracket is battle royale stages one after
                     // another: "rounds of lobbies", not the format three times
                     // over (walk of P3, 17 October 2026).

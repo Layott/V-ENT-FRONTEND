@@ -22,7 +22,13 @@ export function sourceName(tt, from, format) {
     winner_place: from.winner_place, loser_place: from.loser_place,
   }, format);
   if (named) return named;
-  const round = from.side === 'losers'
+  // A part of a custom bracket names itself (P3 W2): North and South of a
+  // compass draw both read "Loser of Round 2, match 1" when one meant East's
+  // second round and the other West's (walk, 17 October 2026).
+  const round = from.branch
+    ? tt('bracket.branchRoundN', '{branch} round {n}')
+      .replace('{branch}', tt(`bracket.branch.${from.branch}`, from.branch)).replace('{n}', from.round)
+    : from.side === 'losers'
     ? tt('bracket.losersRoundN', 'Losers round {n}').replace('{n}', from.round)
     : tt('bracket.roundN', 'Round {n}').replace('{n}', from.round);
   const group = from.group
