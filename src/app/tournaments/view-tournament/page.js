@@ -679,7 +679,7 @@ const OverviewPanel = ({
                 </div>}
               <div>
                 <p className={styles.metaLabel}>{tt("ui.entry.fee.a428", "Entry Fee")}</p>
-                <p className={styles.metaValue}>{entryFee > 0 ? `${entryFee.toLocaleString()} VC` : 'Free'}</p>
+                <p className={styles.metaValue}>{entryFee > 0 ? `${formatNumber(entryFee)} VC` : tt('ui.free.75f5', 'Free')}</p>
               </div>
             </div>
           </section>}
