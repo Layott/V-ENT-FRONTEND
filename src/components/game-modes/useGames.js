@@ -24,6 +24,7 @@ export default function useGames() {
       setGames((body?.data?.games || []).map(g => ({
         id: g.id,
         name: g.name,
+        active: g.is_active !== false,
         series: g.series || [],
       })));
     } catch {

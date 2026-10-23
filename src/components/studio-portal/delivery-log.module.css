@@ -1,0 +1,167 @@
+/* The delivery log inside a game's panel: rows one step up from the panel,
+   filled chips for the filter, no strokes. */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #202126;
+  color: #9A9AA3;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+}
+
+.filterOn {
+  background: var(--v-ent-gold);
+  color: #131316;
+  font-weight: 600;
+}
+
+.ping,
+.resend {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+}
+
+.ping {
+  background: var(--v-ent-gold);
+  color: #131316;
+  font-weight: 600;
+}
+
+.resend {
+  background: #303136;
+  color: #C9C9CF;
+}
+
+.ping:disabled,
+.resend:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.muted {
+  color: #9A9AA3;
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
+.notice {
+  background: #202126;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #C9C9CF;
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+}
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.error {
+  color: #ff8a8a;
+  margin: 0;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  background: #202126;
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.what {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.chip {
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  background: #303136;
+  color: #C9C9CF;
+  white-space: nowrap;
+}
+
+.chip_delivered { background: rgba(76, 175, 80, 0.18); color: var(--v-ent-success-light); }
+.chip_pending { background: rgba(212, 175, 55, 0.16); color: var(--v-ent-gold); }
+.chip_failed { background: rgba(237, 28, 36, 0.16); color: #ff8a8a; }
+
+.meta {
+  color: #8A8A93;
+  font-size: 0.82rem;
+  margin: 6px 0 0;
+}
+
+.reason {
+  color: #ffb3b3;
+  font-size: 0.85rem;
+  margin: 6px 0 0;
+}
+
+.excerpt {
+  background: #131316;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px 0 0;
+  color: #C9C9CF;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 160px;
+  overflow: auto;
+}
+
+.ref {
+  display: inline-block;
+  margin-top: 8px;
+  color: #6E6E78;
+  font-size: 0.75rem;
+}
+
+.rowActions {
+  margin-top: 8px;
+}
