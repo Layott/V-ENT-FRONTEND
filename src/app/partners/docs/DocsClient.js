@@ -124,7 +124,7 @@ export default function DocsClient({ index, sso }) {
               {Object.entries(scopes).map(([key, description]) => (
                 <div className={styles.defRow} key={key}>
                   <dt className={styles.defKey}><code>{key}</code></dt>
-                  <dd className={styles.defVal}>{description}</dd>
+                  <dd className={styles.defVal}>{t(`partners.scope.${key}`, description)}</dd>
                 </div>
               ))}
             </dl>}

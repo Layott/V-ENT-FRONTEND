@@ -45,6 +45,8 @@ export const requestStatusLabel = (tt, value) => lookup(tt, 'reqstatus', value);
 
 /** A partner application: pending, approved, rejected, suspended. */
 export const partnerStatusLabel = (tt, value) => lookup(tt, 'partnerstatus', value);
+/** Whether a partner's sign-in with V-ENT is: none, requested, approved, rejected. */
+export const ssoStatusLabel = (tt, value) => lookup(tt, 'ssostatus', value);
 
 /** A manga series: ongoing, completed, hiatus. */
 export const seriesStatusLabel = (tt, value) => lookup(tt, 'seriesstatus', value);

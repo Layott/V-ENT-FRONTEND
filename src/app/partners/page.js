@@ -13,27 +13,28 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './partners.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate } from '@/lib/datetime';
-import { partnerStatusLabel } from '@/lib/labels';
+import { partnerStatusLabel, ssoStatusLabel } from '@/lib/labels';
 
 // The partner area. Three states in one page, because they are the same subject
 // at different stages: you have not applied, you have applied and are waiting,
 // or you are running a partner account and need keys.
 
 const SCOPE_GROUPS = [{
+  key: 'events',
   title: 'Events',
   prefix: 'events'
 }, {
+  key: 'tournaments',
   title: 'Tournaments',
   prefix: 'tournaments'
 }, {
+  key: 'teams',
   title: 'Teams and players',
   prefix: ['teams', 'players', 'rankings']
 }];
 const groupFor = scope => SCOPE_GROUPS.find(g => Array.isArray(g.prefix) ? g.prefix.some(p => scope.startsWith(p)) : scope.startsWith(g.prefix)) || SCOPE_GROUPS[SCOPE_GROUPS.length - 1];
 const PartnersPage = () => {
-  const tx = useTx();
   const tt = useT();
   const {
     data: session,
@@ -149,9 +150,7 @@ const PartnersPage = () => {
         body: JSON.stringify({ redirect_uris: uris })
       });
       const body = await res.json().catch(() => ({}));
-      say(body.message || (res.ok
-        ? tt('partners.redirectsSaved', 'Sign-in addresses saved.')
-        : tt('partners.redirectsFailed', 'Could not save those addresses.')));
+      say(apiMessage(tt, body, res.ok ? 'partners.redirectsSaved' : 'partners.redirectsFailed', res.ok ? 'Sign-in addresses saved.' : 'Could not save those addresses.'));
       if (res.ok) {
         setNewRedirect('');
         await load();
@@ -180,7 +179,7 @@ const PartnersPage = () => {
   const apply = async e => {
     e.preventDefault();
     if (!token) {
-      say('Sign in first, so the application belongs to your account.');
+      say(tt('partners.signInFirst', 'Sign in first, so the application belongs to your account.'));
       return;
     }
     setSaving(true);
@@ -197,10 +196,10 @@ const PartnersPage = () => {
         })
       });
       const body = await res.json();
-      say(body.message || (res.ok ? 'Application sent.' : 'Could not send that application.'));
+      say(apiMessage(tt, body, res.ok ? 'partners.applySent' : 'partners.applyFailed', res.ok ? 'Application sent.' : 'Could not send that application.'));
       if (res.ok) await load();
     } catch {
-      say('Could not send that application.');
+      say(tt('partners.applyFailed', 'Could not send that application.'));
     } finally {
       setSaving(false);
     }
@@ -226,7 +225,7 @@ const PartnersPage = () => {
       }
       say(apiMessage(tt, body, "api.keyIssued", "Key issued."));
     } catch {
-      say('Could not issue a key.');
+      say(tt('partners.keyIssueFailed', 'Could not issue a key.'));
     } finally {
       setSaving(false);
     }
@@ -245,7 +244,7 @@ const PartnersPage = () => {
       say(apiMessage(tt, body, "api.keyRevoked", "Key revoked."));
       await load();
     } catch {
-      say('Could not revoke that key.');
+      say(tt('partners.keyRevokeFailed', 'Could not revoke that key.'));
     } finally {
       setSaving(false);
     }
@@ -285,8 +284,8 @@ const PartnersPage = () => {
                 </div>
                 <dl className={styles.metaGrid}>
                   <div><dt>{tt("ui.applied.a3e4", "Applied")}</dt><dd>{formatDate(partner.created_at)}</dd></div>
-                  <div><dt>{tt("ui.sign.v.ent.9ce8", "Sign-in with V-ENT")}</dt><dd>{partner.sso_status}</dd></div>
-                  <div><dt>{tt("ui.scopes.granted.f614", "Scopes granted")}</dt><dd>{partner.approved_scopes.length || tx("None yet")}</dd></div>
+                  <div><dt>{tt("ui.sign.v.ent.9ce8", "Sign-in with V-ENT")}</dt><dd>{ssoStatusLabel(tt, partner.sso_status)}</dd></div>
+                  <div><dt>{tt("ui.scopes.granted.f614", "Scopes granted")}</dt><dd>{partner.approved_scopes.length || tt('partners.noneYet', 'None yet')}</dd></div>
                 </dl>
                 {partner.review_note && <p className={styles.muted}>{tt("ui.reviewer.note.27b1", "Reviewer note:")} {partner.review_note}</p>}
                 {partner.status === 'pending' && <p className={styles.muted}>
@@ -349,8 +348,8 @@ const PartnersPage = () => {
                           <div>
                             <p className={styles.keyName}>{k.name}</p>
                             <p className={styles.muted}>
-                              {k.key_id} · {k.scopes.join(', ') || tx("no scopes")} ·{' '}
-                              {k.revoked_at ? 'revoked' : `${k.rate_limit_per_minute}/min`}
+                              {k.key_id} · {k.scopes.join(', ') || tt('partners.noScopes', 'no scopes')} ·{' '}
+                              {k.revoked_at ? tt('partners.revoked', 'revoked') : tt('partners.ratePerMinute', '{n}/min').replace('{n}', k.rate_limit_per_minute)}
                             </p>
                           </div>
                           {!k.revoked_at && status === 'authenticated' && <button type="button" className={styles.ghostBtn} onClick={() => revokeKey(k.id)} disabled={saving}>
@@ -415,14 +414,14 @@ const PartnersPage = () => {
                 {tt("ui.ask.what.need.admin.369c", "Ask for what you need. An admin decides what is granted, and a key can never read\n                past that.")}
               </p>
               {grouped.map(([title, rows]) => <div key={title} className={styles.scopeGroup}>
-                  <p className={styles.scopeGroupTitle}>{title}</p>
+                  <p className={styles.scopeGroupTitle}>{tt(`partners.group.${SCOPE_GROUPS.find(g => g.title === title).key}`, title)}</p>
                   {rows.map(({
               key,
               label
             }) => <label key={key} className={styles.checkRow}>
                       <input type="checkbox" checked={form.requested_scopes.includes(key)} onChange={() => toggleScope(key)} />
                       <span>
-                        <code>{key}</code> {label}
+                        <code>{key}</code> {tt(`partners.scope.${key}`, label)}
                         {/* Said on the row, so it is answered before it is asked. */}
                         <span className={selfServe.includes(key) ? styles.instantTag : styles.reviewTag}>
                           {selfServe.includes(key)
@@ -485,7 +484,7 @@ const PartnersPage = () => {
                 </div>}
 
               <button type="submit" className={styles.primaryBtn} disabled={saving}>
-                {saving ? tx("Sending...") : tx("Send application")}
+                {saving ? tt('partners.sending', 'Sending...') : tt('partners.sendApplication', 'Send application')}
               </button>
             </form>}
 
