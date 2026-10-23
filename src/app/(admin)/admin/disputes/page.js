@@ -10,6 +10,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import shared from '@/components/admin/admin.module.css';
 import styles from './disputes.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import { stageName } from '@/lib/formatLabel';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { adminToken } from '@/lib/adminToken'
@@ -34,7 +35,7 @@ const STATUS_LABELS = {
 function matchLabel(d, tt) {
   if (d?.round_number == null || d?.match_number == null) return '-';
   return [
-    d.stage_label,
+    stageName(tt, d.stage_label),
     d.group_number ? tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + Number(d.group_number))) : null,
     d.bracket_side === 'losers' ? tt('bracket.losersBracket', 'Losers bracket')
       : d.bracket_side === 'grand_final' ? tt('bracket.grandFinal', 'Grand final') : null,

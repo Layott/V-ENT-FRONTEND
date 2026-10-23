@@ -27,7 +27,7 @@ import { useState } from 'react';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import styles from './tournament-format.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-import { formatKey } from '@/lib/formatLabel';
+import { formatKey, formatSummary } from '@/lib/formatLabel';
 import { useFormatShape, structureLines } from '@/lib/formatCatalogue';
 import WatchFormat from '@/components/format-explainer/WatchFormat';
 
@@ -200,7 +200,7 @@ const TournamentFormat = ({ formData = {}, updateFormData }) => {
                 <div className={`${createTournamentStyles.option} ${isChosen ? createTournamentStyles.selected : ''}`} />
                 <div className={createTournamentStyles.boxTextContainer}>
                   <h4>{w ? tt(w.nameKey, row.label || w.name) : row.label}</h4>
-                  <p>{w ? tt(w.blurbKey, row.summary || w.blurb) : row.summary}</p>
+                  <p>{w ? tt(w.blurbKey, row.summary || w.blurb) : formatSummary(tt, row.key, row.summary)}</p>
                   {/* The format played out in a short moving bracket (inbox
                       476). Watching is not choosing: the button stops its
                       press reaching the card. A format with no explainer

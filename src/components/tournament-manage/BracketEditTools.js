@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
+import { stageName } from '@/lib/formatLabel';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { plural } from '@/lib/plural';
 import styles from './bracket-edit-tools.module.css';
@@ -158,7 +159,7 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
           <span className={styles.label}>{tt('bracketEdit.stage', 'In which stage')}</span>
           <select className={styles.select} value={stageId} disabled={busy}
                   onChange={e => setStageId(e.target.value)}>
-            {stages.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+            {stages.map(s => <option key={s.id} value={s.id}>{stageName(tt, s.label, s.format)}</option>)}
           </select>
         </label>
       )}
@@ -226,7 +227,7 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
             <li key={e.id} className={styles.historyRow}>
               <span className={styles.historyWhat}>
                 {tt(`bracketEdit.kind.${e.kind}`, KIND_WORDS[e.kind] || e.kind)}
-                {e.stage?.label ? ` · ${e.stage.label}` : ''}
+                {e.stage?.label ? ` · ${stageName(tt, e.stage.label, e.stage.format)}` : ''}
               </span>
               <span className={styles.muted}>
                 {[e.by ? `@${e.by}` : null, formatDateTime(e.at)].filter(Boolean).join(' · ')}

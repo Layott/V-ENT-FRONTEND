@@ -1,3 +1,4 @@
+import { stageName } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
 
 /**
@@ -7,7 +8,7 @@ import { lineWords } from '@/lib/stageGraph';
  * sentence for the organiser's feeds panel and the public bracket page.
  */
 export function feedSentence(tt, feed, direction) {
-  const line = lineWords(tt, feed, { groups: feed.source.groups }, feed.target.stage);
+  const line = lineWords(tt, feed, { groups: feed.source.groups }, stageName(tt, feed.target.stage, feed.target.format));
   if (direction === 'in' && feed.source.circuit) {
     // A circuit ranking (P5c): "Naija Pro Circuit ranking: Places 1 to 4 go
     // to Finals."
@@ -16,7 +17,7 @@ export function feedSentence(tt, feed, direction) {
   }
   return (direction === 'in'
     ? tt('feeds.fromLine', '{tournament}, {stage}: {line}')
-      .replace('{tournament}', feed.source.tournament.title).replace('{stage}', feed.source.stage)
+      .replace('{tournament}', feed.source.tournament.title).replace('{stage}', stageName(tt, feed.source.stage, feed.source.format))
     : tt('feeds.toLine', 'To {tournament}: {line}')
       .replace('{tournament}', feed.target.tournament.title))
     .replace('{line}', line);
