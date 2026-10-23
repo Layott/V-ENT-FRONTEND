@@ -1,3 +1,5 @@
+import { stageName } from './formatLabel.js';
+
 /**
  * A tournament in stages as a picture: where each stage sits, and the lines
  * between them (P1f).
@@ -56,7 +58,7 @@ export function layout(stages, lines) {
  * tournament page and the Path widget (P8): the widget once read "one stage,
  * no path" beside a page drawing two (walk, 17 October 2026).
  */
-export function pathWithFeeds(plan, feeds) {
+export function pathWithFeeds(plan, feeds, tt = (_key, fallback) => fallback) {
   const own = plan?.stages || [];
   const external = [];
   const lines = [];
@@ -70,7 +72,7 @@ export function pathWithFeeds(plan, feeds) {
       external.push(side.circuit
         ? { id, label: side.circuit.name, kind: 'circuit', format: 'circuit', groups: 0,
             href: `/circuits/${side.circuit.slug}` }
-        : { id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
+        : { id, label: `${side.tournament.title}: ${stageName(tt, side.stage, side.format)}`, format: side.format,
             groups: side.groups, slug: side.tournament.slug,
             href: `/tournaments/${side.tournament.slug}?tab=bracket` });
     }

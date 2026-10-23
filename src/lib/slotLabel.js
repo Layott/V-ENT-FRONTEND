@@ -1,4 +1,5 @@
 import { matchName } from '@/lib/matchName';
+import { stageName } from '@/lib/formatLabel';
 
 /**
  * Where one side of a match comes from, in words (P1a).
@@ -63,13 +64,13 @@ export function slotLabel(tt, slot, format) {
         ? tt('bracket.slotPlaceTournamentGroup', '{tournament}, {stage}: group {g}, place {n}')
           .replace('{g}', String.fromCharCode(64 + Number(p.group)))
         : tt('bracket.slotPlaceTournament', '{tournament}, {stage}: place {n}'))
-        .replace('{tournament}', p.tournament).replace('{stage}', p.stage || '').replace('{n}', p.place);
+        .replace('{tournament}', p.tournament).replace('{stage}', stageName(tt, p.stage)).replace('{n}', p.place);
     }
     return (p.group
       ? tt('bracket.slotPlaceGroup', '{stage}: group {g}, place {n}')
         .replace('{g}', String.fromCharCode(64 + Number(p.group)))
       : tt('bracket.slotPlace', '{stage}: place {n}'))
-      .replace('{stage}', p.stage || '').replace('{n}', p.place);
+      .replace('{stage}', stageName(tt, p.stage)).replace('{n}', p.place);
   }
   // A seat of a reseeded knockout (P3 W1): the survivor at this rank of seed,
   // the best remaining against the worst remaining.

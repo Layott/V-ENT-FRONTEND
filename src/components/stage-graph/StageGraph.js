@@ -16,7 +16,7 @@
  */
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/LanguageProvider';
-import { formatLabel } from '@/lib/formatLabel';
+import { formatLabel, stageName } from '@/lib/formatLabel';
 import { layout, lineWords, stageState } from '@/lib/stageGraph';
 import styles from './stage-graph.module.css';
 
@@ -61,7 +61,9 @@ export default function StageGraph({ stages, lines, selected = null, onPick = nu
   }, [shape]);
 
   const byId = Object.fromEntries((stages || []).map(s => [String(s.id), s]));
-  const nameOf = (stage, i) => stage?.label || tt('stages.graph.stageN', 'Stage {n}').replace('{n}', i + 1);
+  const nameOf = (stage, i) => (stage?.label
+    ? stageName(tt, stage.label, stage.format, stage.preset)
+    : tt('stages.graph.stageN', 'Stage {n}').replace('{n}', i + 1));
   const order = (stages || []).map(s => String(s.id));
   const labelOf = id => nameOf(byId[String(id)], order.indexOf(String(id)));
 
