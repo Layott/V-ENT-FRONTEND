@@ -49,7 +49,11 @@ export default function NeedsAccount({ action, children, compact = false, return
   if (compact) {
     return (
       <Link href={signUpHref(here)} className={styles.compact}>
-        {tt('needsAccount.compact', 'Sign in to do this')}
+        {/* Two compact links side by side must say which is which (P5d
+            walk: "Sign in to do this" twice on /circuits). */}
+        {action
+          ? tt('needsAccount.compactTo', 'Sign in to {action}').replace('{action}', action)
+          : tt('needsAccount.compact', 'Sign in to do this')}
       </Link>
     );
   }

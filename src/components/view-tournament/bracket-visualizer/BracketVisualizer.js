@@ -33,7 +33,7 @@ import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
 import Link from 'next/link';
 import StageGraph from '@/components/stage-graph/StageGraph';
-import { feedSentence } from '@/lib/feedWords';
+import { feedFrom, feedSentence } from '@/lib/feedWords';
 import { formatWithZone } from '@/lib/datetime';
 import { pathWithFeeds, stageState } from '@/lib/stageGraph';
 import { formatDayShort, formatTime } from '@/lib/datetime';
@@ -514,7 +514,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const graph = pathWithFeeds(path, feedRows);
   const pickInPath = id => {
     const ext = graph.external.find(x => x.id === id);
-    if (ext) { window.location.assign(`/tournaments/${ext.slug}?tab=bracket`); return; }
+    if (ext) { window.location.assign(ext.href); return; }
     setStageId(id);
     setView(null);
   };
@@ -583,7 +583,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
           {(feedRows.incoming || []).map(feed => (
             <p key={`in-${feed.id}`} className={styles.feedLine}>
               <span className={styles.feedKind}>{tt('feeds.comesFrom', 'Comes from')}</span>{' '}
-              <Link href={`/tournaments/${feed.source.tournament.slug}?tab=bracket`} className={styles.feedLink}>
+              <Link href={feedFrom(feed).href} className={styles.feedLink}>
                 {feedSentence(tt, feed, 'in')}
               </Link>
             </p>
@@ -597,7 +597,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
               <div key={`mine-${q.registration_id}`} className={styles.feedMine}>
                 <p className={styles.feedLine}>
                   {tt('feeds.youQualified', 'You qualified from {tournament}, place {place}. If you cannot play, decline before {date}.')
-                    .replace('{tournament}', feed.source.tournament.title).replace('{place}', q.source_place ?? '')
+                    .replace('{tournament}', feedFrom(feed).title).replace('{place}', q.source_place ?? '')
                     .replace('{date}', formatWithZone(q.decline_until))}
                 </p>
                 {declining === q.registration_id ? (
