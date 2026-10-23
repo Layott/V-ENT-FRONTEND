@@ -54,7 +54,7 @@ export default function DiscordServerPanel({ orgRef, token, showToast }) {
       if (body?.status === 'success') {
         setServers(body.data.servers || []);
         setCapabilities(body.data.capabilities || []);
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'dserver.loadFailed', 'Could not load your Discord servers.'));
       }

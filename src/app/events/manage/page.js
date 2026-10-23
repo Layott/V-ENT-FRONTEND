@@ -303,7 +303,7 @@ export const ManageEventContent = ({
     }
     if (!quiet) {
       setLoading(true);
-      setError('');
+      if (!quiet) setError('');
       setRefused(false);
     }
     const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
