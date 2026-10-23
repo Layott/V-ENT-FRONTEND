@@ -53,12 +53,25 @@ if (!blueprints) {
     assert.deepEqual(tabsFor(helper(['caster'])), ['run-of-show', 'production']);
   });
 
-  test('structure sees match control and brackets', () => {
-    assert.deepEqual(tabsFor(helper(['structure'])), ['match-control', 'brackets']);
+  test('structure sees brackets alone when there is no battle royale', () => {
+    assert.deepEqual(tabsFor(helper(['structure'])), ['brackets']);
   });
 
-  test('place sees match control and brackets', () => {
-    assert.deepEqual(tabsFor(helper(['place'])), ['match-control', 'brackets']);
+  test('structure sees match control and brackets with a battle royale', () => {
+    assert.deepEqual(tabsFor(helper(['structure']), { battleRoyale: true }), ['match-control', 'brackets']);
+  });
+
+  test('place sees brackets alone when there is no battle royale', () => {
+    assert.deepEqual(tabsFor(helper(['place'])), ['brackets']);
+  });
+
+  test('place sees match control and brackets with a battle royale', () => {
+    assert.deepEqual(tabsFor(helper(['place']), { battleRoyale: true }), ['match-control', 'brackets']);
+  });
+
+  test('a battle royale does not open match control to a caster or standings helper', () => {
+    assert.deepEqual(tabsFor(helper(['caster']), { battleRoyale: true }), ['run-of-show', 'production']);
+    assert.deepEqual(tabsFor(helper(['standings']), { battleRoyale: true }), ['stats']);
   });
 
   test('standings sees player stats', () => {

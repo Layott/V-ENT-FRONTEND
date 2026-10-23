@@ -308,7 +308,11 @@ const ManageContent = ({ slug }) => {
   // and an admin, known from their capabilities, see all of them at once; a
   // helper sees the tabs their permissions open, from /access/, and nothing
   // while it is still answering. src/lib/tournamentAccess.js decides.
-  const visibleTabs = runsIt ? TABS.map(t => t.id) : tabsFor(access);
+  // The same two ways the battle royale console finds one to run: the whole
+  // tournament is one, or one of its stages is.
+  const battleRoyale = formatKey(tournament?.bracket_type || tournament?.format) === 'battle_royale'
+    || (tournament?.stages || []).some(s => formatKey(s.format) === 'battle_royale');
+  const visibleTabs = runsIt ? TABS.map(t => t.id) : tabsFor(access, { battleRoyale });
   const holds = permission => runsIt || can(access, permission);
   // A helper: somebody the organiser gave part of the tournament to.
   const helps = !runsIt && (access?.permissions || []).length > 0;
