@@ -56,13 +56,13 @@ const collectErrors = (issues) => {
 const basicInfoSchema = z
   .object({
     tournament_title: z
-      .string({ required_error: 'Tournament title is required' })
+      .string({ error: 'Tournament title is required' })
       .trim()
       .min(1, 'Tournament title is required')
       .max(148, 'Title must be 148 characters or fewer'),
-    game: z.string({ required_error: 'Please select a game' }).trim().min(1, 'Please select a game'),
-    start_date_and_time: z.string({ required_error: 'Start date & time is required' }).min(1, 'Start date & time is required'),
-    end_date_and_time: z.string({ required_error: 'End date & time is required' }).min(1, 'End date & time is required'),
+    game: z.string({ error: 'Please select a game' }).trim().min(1, 'Please select a game'),
+    start_date_and_time: z.string({ error: 'Start date & time is required' }).min(1, 'Start date & time is required'),
+    end_date_and_time: z.string({ error: 'End date & time is required' }).min(1, 'End date & time is required'),
     reg_end_date_and_time: z.string().optional(),
     entry_fee: z.union([z.string(), z.number()]).optional(),
   })
@@ -73,18 +73,18 @@ const basicInfoSchema = z
     const regEnd = data.reg_end_date_and_time ? new Date(data.reg_end_date_and_time).getTime() : NaN;
 
     if (!Number.isNaN(start) && start < Date.now() + DAY_MS) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['start_date_and_time'], message: 'Start date must be at least 24 hours from now' });
+      ctx.addIssue({ code: 'custom', path: ['start_date_and_time'], message: 'Start date must be at least 24 hours from now' });
     }
     if (!Number.isNaN(start) && !Number.isNaN(end) && end <= start) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['end_date_and_time'], message: 'End date must be after the start date' });
+      ctx.addIssue({ code: 'custom', path: ['end_date_and_time'], message: 'End date must be after the start date' });
     }
     if (!Number.isNaN(regEnd) && !Number.isNaN(start) && regEnd > start) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['reg_end_date_and_time'], message: 'Registration deadline must be on or before the start date' });
+      ctx.addIssue({ code: 'custom', path: ['reg_end_date_and_time'], message: 'Registration deadline must be on or before the start date' });
     }
     if (!isBlank(data.entry_fee)) {
       const fee = toNumber(data.entry_fee);
       if (Number.isNaN(fee) || fee < 0) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['entry_fee'], message: 'Entry fee cannot be negative' });
+        ctx.addIssue({ code: 'custom', path: ['entry_fee'], message: 'Entry fee cannot be negative' });
       }
     }
   });
@@ -98,7 +98,7 @@ export function validateBasicInfo(formData = {}) {
 // ── Step 2 - Format & Participants ──────────────────────────────────────────
 const formatParticipantsSchema = z
   .object({
-    bracket_type: z.string({ required_error: 'Select a tournament format' }).min(1, 'Select a tournament format'),
+    bracket_type: z.string({ error: 'Select a tournament format' }).min(1, 'Select a tournament format'),
     tournament_access: z.string().optional(),
     team_size: z.union([z.string(), z.number()]).optional(),
     min_number_of_participants: z.union([z.string(), z.number()]).optional(),
@@ -113,18 +113,18 @@ const formatParticipantsSchema = z
       const max = toNumber(data.max_number_of_participants);
 
       if (Number.isNaN(min) || min < 2) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['min_number_of_participants'], message: 'Minimum must be at least 2' });
+        ctx.addIssue({ code: 'custom', path: ['min_number_of_participants'], message: 'Minimum must be at least 2' });
       }
       if (Number.isNaN(max) || max < 2) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['max_number_of_participants'], message: 'Maximum must be at least 2' });
+        ctx.addIssue({ code: 'custom', path: ['max_number_of_participants'], message: 'Maximum must be at least 2' });
       } else if (!Number.isNaN(min) && max < min) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['max_number_of_participants'], message: 'Maximum must be greater than or equal to minimum' });
+        ctx.addIssue({ code: 'custom', path: ['max_number_of_participants'], message: 'Maximum must be greater than or equal to minimum' });
       }
     }
 
     if (access === 'teams' || access === 'both') {
       if (isBlank(data.team_size)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['team_size'], message: 'Select the number of players per team' });
+        ctx.addIssue({ code: 'custom', path: ['team_size'], message: 'Select the number of players per team' });
       }
     }
   });
@@ -138,7 +138,7 @@ export function validateFormatParticipants(formData = {}) {
 // ── Step 3 - Prize Distribution ─────────────────────────────────────────────
 const prizeDistributionSchema = z
   .object({
-    prize_distribution_type: z.string({ required_error: 'Choose how the prize is distributed' }).min(1, 'Choose how the prize is distributed'),
+    prize_distribution_type: z.string({ error: 'Choose how the prize is distributed' }).min(1, 'Choose how the prize is distributed'),
     winner_prize: z.union([z.string(), z.number()]).optional(),
     prize_distribution: z
       .array(
@@ -156,7 +156,7 @@ const prizeDistributionSchema = z
     if (type === 'winner-takes-all' || type === 'winner_takes_all') {
       const prize = toNumber(data.winner_prize);
       if (Number.isNaN(prize) || prize < 0) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['winner_prize'], message: 'Enter a prize amount of 0 or more' });
+        ctx.addIssue({ code: 'custom', path: ['winner_prize'], message: 'Enter a prize amount of 0 or more' });
       }
     } else if (type === 'distributed') {
       const positions = Array.isArray(data.prize_distribution) ? data.prize_distribution : [];
@@ -164,11 +164,11 @@ const prizeDistributionSchema = z
       const winnerPrize = toNumber(winner?.prize);
 
       if (!winner || Number.isNaN(winnerPrize) || winnerPrize < 0) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['prize_distribution'], message: '1st place prize is required and must be 0 or more' });
+        ctx.addIssue({ code: 'custom', path: ['prize_distribution'], message: '1st place prize is required and must be 0 or more' });
       } else {
         const hasNegative = positions.some((p) => !isBlank(p.prize) && Number(p.prize) < 0);
         if (hasNegative) {
-          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['prize_distribution'], message: 'Prize amounts cannot be negative' });
+          ctx.addIssue({ code: 'custom', path: ['prize_distribution'], message: 'Prize amounts cannot be negative' });
         }
       }
     }
@@ -185,7 +185,7 @@ export function validatePrizeDistribution(formData = {}) {
 const sponsorsLinksSchema = z
   .object({
     sponsors: z.array(z.object({ name: z.string().optional(), logo: z.any().optional() })).optional(),
-    webSocialLinks: z.record(z.string()).optional(),
+    webSocialLinks: z.record(z.string(), z.string()).optional(),
   })
   .passthrough()
   .superRefine((data, ctx) => {
@@ -193,7 +193,7 @@ const sponsorsLinksSchema = z
     sponsors.forEach((sponsor, index) => {
       if (sponsor?.logo && isBlank(sponsor?.name)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: [`sponsor_${index}_name`],
           message: `Sponsor #${index + 1}: name is required when a logo is uploaded`,
         });
@@ -204,7 +204,7 @@ const sponsorsLinksSchema = z
     Object.entries(links).forEach(([key, value]) => {
       if (!isBlank(value) && !isValidUrl(value)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: [key],
           message: `${key.replace(/_link$/, '').replace(/_/g, ' ')} must be a valid URL`,
         });
