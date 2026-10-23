@@ -52,7 +52,7 @@ export default function DiscordChannels({ kind, reference, token, showToast }) {
       if (body?.status === 'success') {
         setRows(body.data.webhooks || []);
         setChoices(body.data.choices || []);
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'discord.loadFailed', 'Could not load the Discord channels.'));
       }

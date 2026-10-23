@@ -78,7 +78,7 @@ export default function SquadRulesPanel({ tournamentRef, token, showToast }) {
             notes: found.notes || '',
           });
         }
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'squadRules.loadFailed', 'Could not load the squad rules.'));
       }

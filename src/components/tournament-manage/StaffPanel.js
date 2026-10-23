@@ -102,7 +102,7 @@ export default function StaffPanel({ tournamentRef, token }) {
       if (ok) {
         setRows(body.data.staff || []);
         setInvites(body.data.invites || []);
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'staff.loadFailed', 'Could not load who helps run this tournament.'));
       }

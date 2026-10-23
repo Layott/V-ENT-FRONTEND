@@ -66,7 +66,7 @@ export default function SubmittedLineups({ tournamentRef, token, showToast, onDe
         setRows(body.data.lineups || []);
         setCount(Number(body.data.count || 0));
         setSubmitted(Number(body.data.submitted || 0));
-        setError('');
+        if (!quiet) setError('');
       } else if (!quiet) {
         setError(apiMessage(tt, body, 'lineups.loadFailed', 'Could not load the squads.'));
       }

@@ -68,7 +68,7 @@ export default function SharedWallet({ kind, reference, name }) {
         setWallet(null);
       } else {
         setWallet(body.data);
-        setError('');
+        if (!quiet) setError('');
       }
     } catch {
       if (!quiet) setError(tt('api.networkProblem', 'The network is not answering. Try again.'));

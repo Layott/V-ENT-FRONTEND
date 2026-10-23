@@ -63,7 +63,7 @@ export default function PrizePlan({ tournamentRef, token, onClose, showToast }) 
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!quiet) setLoading(true);
-    setProblem('');
+    if (!quiet) setProblem('');
     try {
       const res = await fetch(`${API}/tournament/${tournamentRef}/prizes/plan/`,
         { headers: { Authorization: `Bearer ${token}` } });
