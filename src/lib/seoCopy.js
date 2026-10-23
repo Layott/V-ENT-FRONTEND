@@ -222,6 +222,27 @@ export const SECTION_COPY = {
     },
   },
 
+  circuits: {
+    en: {
+      title: 'Circuits: seasons of tournaments ranked as one',
+      description:
+        'Esports circuits on V-ENT: a season of tournaments where every final place earns points '
+        + 'by the table of its tier, ranked by game and region.',
+    },
+    fr: {
+      title: 'Circuits : des saisons de tournois classées comme une seule compétition',
+      description:
+        'Les circuits esport sur V-ENT : une saison de tournois où chaque place finale rapporte des '
+        + 'points selon le barème de sa catégorie, classés par jeu et par région.',
+    },
+    pt: {
+      title: 'Circuitos: temporadas de torneios classificadas como uma só',
+      description:
+        'Circuitos de esports na V-ENT: uma temporada de torneios em que cada lugar final dá pontos '
+        + 'pela tabela do seu escalão, classificados por jogo e por região.',
+    },
+  },
+
   search: {
     en: { title: 'Search V-ENT',
           description: 'Search tournaments, events, teams and players across V-ENT.' },

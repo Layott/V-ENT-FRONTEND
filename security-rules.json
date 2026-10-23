@@ -87,6 +87,11 @@
       "rule": "R80",
       "path": "GHSA-vfj7-8cjw-p6xm",
       "reason": "braces <=3.0.3 has no fixed release. It reaches us only as eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch, at lint time over our own source globs; no user input ever reaches a pattern and it is not in the production bundle. Re-check when a fixed braces ships (8 Oct 2026)."
+    },
+    {
+      "rule": "R80",
+      "path": "GHSA-mrhx-c7xc-m3w5",
+      "reason": "zod 3.24.2 reaches this repo only as a devDependency, puppeteer-core > chromium-bidi, which validates messages from the local Chrome it drives during the walk scripts; no visitor input reaches it and the standalone build has no puppeteer. The site's own zod is 4.6.7, past the fix. Read by hand 23 Oct 2026; revisit when chromium-bidi moves to zod 4"
     }
   ]
 }

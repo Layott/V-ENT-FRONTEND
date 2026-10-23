@@ -234,6 +234,9 @@ const RankingsView = () => {
           <h1 className={styles.pageTitle}>{tt("ui.rankings.f5fe", "Rankings")}</h1>
           <p className={styles.pageSub}>{tt("ui.top.players.teams.organizations.399d", "Top players, teams and organizations across V-ENT.")}</p>
         </div>
+        {/* Circuits rank one season of tournaments as a competition of its
+            own (P5); this is their door from the rankings people already use. */}
+        <Link href="/circuits" className={styles.circuitsLink}>{tt('circuit.fromRankings', 'Circuits')}</Link>
       </div>
 
       {/* Tabs */}
