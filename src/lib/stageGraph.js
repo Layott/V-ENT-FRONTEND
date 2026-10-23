@@ -62,11 +62,17 @@ export function pathWithFeeds(plan, feeds) {
   const lines = [];
   const seen = new Set();
   const outside = (side, end) => {
-    const id = `x-${end}-${side.stage_id}`;
+    // A circuit ranking (P5c) has no stage: its box is the circuit, and
+    // pressing it opens the ranking.
+    const id = side.circuit ? `x-${end}-c-${side.circuit.slug}` : `x-${end}-${side.stage_id}`;
     if (!seen.has(id)) {
       seen.add(id);
-      external.push({ id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
-                      groups: side.groups, slug: side.tournament.slug });
+      external.push(side.circuit
+        ? { id, label: side.circuit.name, kind: 'circuit', format: 'circuit', groups: 0,
+            href: `/circuits/${side.circuit.slug}` }
+        : { id, label: `${side.tournament.title}: ${side.stage}`, format: side.format,
+            groups: side.groups, slug: side.tournament.slug,
+            href: `/tournaments/${side.tournament.slug}?tab=bracket` });
     }
     return id;
   };

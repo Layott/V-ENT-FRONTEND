@@ -8,10 +8,27 @@ import { lineWords } from '@/lib/stageGraph';
  */
 export function feedSentence(tt, feed, direction) {
   const line = lineWords(tt, feed, { groups: feed.source.groups }, feed.target.stage);
+  if (direction === 'in' && feed.source.circuit) {
+    // A circuit ranking (P5c): "Naija Pro Circuit ranking: Places 1 to 4 go
+    // to Finals."
+    return tt('feeds.fromCircuitLine', '{circuit} ranking: {line}')
+      .replace('{circuit}', feed.source.circuit.name).replace('{line}', line);
+  }
   return (direction === 'in'
     ? tt('feeds.fromLine', '{tournament}, {stage}: {line}')
       .replace('{tournament}', feed.source.tournament.title).replace('{stage}', feed.source.stage)
     : tt('feeds.toLine', 'To {tournament}: {line}')
       .replace('{tournament}', feed.target.tournament.title))
     .replace('{line}', line);
+}
+
+/**
+ * Where an incoming feed's places come from, as a name and a page: another
+ * tournament's bracket, or a circuit's ranking (P5c).
+ */
+export function feedFrom(feed) {
+  const circuit = feed?.source?.circuit;
+  if (circuit) return { title: circuit.name, href: `/circuits/${circuit.slug}`, circuit: true };
+  const t = feed?.source?.tournament || {};
+  return { title: t.title, href: `/tournaments/${t.slug}?tab=bracket`, circuit: false };
 }

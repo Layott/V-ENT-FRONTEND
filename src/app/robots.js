@@ -58,6 +58,8 @@ export default function robots() {
           '/disputes',        // somebody's own disputes, and the other side's
           '/organizations/invites',  // somebody's own invitations
           '/organizations/*/manage', // roles, invites, and the profile form
+          '/circuits/*/manage',      // a circuit's organiser screen (P5); the
+                                     // circuit page itself is public
           '/embed/',          // a frame for somebody else's website; the
                               // event or tournament page is what ranks
           '/studio/',         // broadcast graphics: transparent pages meant
@@ -91,6 +93,7 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/wallets', '/settings', '/community/dm', '/claim/',
                    '/events/*/edit', '/events/*/manage', '/events/*/attendees',
+                   '/circuits/*/manage',
                    '/events/check-in/', '/s/', '/studio/', '/embed/', '/production',
                    '/run-of-show/', '/logout', '/marketplace/create',
                    '/marketplace/dashboard', '/marketplace/purchase',

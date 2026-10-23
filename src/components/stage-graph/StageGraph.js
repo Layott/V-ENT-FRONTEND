@@ -87,7 +87,9 @@ export default function StageGraph({ stages, lines, selected = null, onPick = nu
                 <>
                   <span className={styles.name}>{nameOf(stage, order.indexOf(String(stage.id)))}</span>
                   <span className={styles.format}>
-                    {formatLabel(tt, stage.format, stage.format_label || stage.format)}
+                    {stage.kind === 'circuit'
+                      ? tt('circuit.rankingBox', 'Circuit ranking')
+                      : formatLabel(tt, stage.format, stage.format_label || stage.format)}
                     {groups ? `, ${tt('stages.graph.groupsN', '{n} groups').replace('{n}', stage.groups)}` : ''}
                   </span>
                   {showState && stage.status !== undefined && <span className={styles.state}>{stateOf(stage)}</span>}
