@@ -8,12 +8,17 @@ import {
 import { PROTECTED_PATTERNS, PROTECTED_ROUTES } from "@/lib/gatedRoutes";
 import { apiOriginOf, contentSecurityPolicy, frameAncestorsValue } from "@/lib/securityHeaders.mjs";
 import { createFramePolicy, embedTarget } from "@/lib/framePolicy";
+import { createHostLookup, hostOf, isAssetPath, isOwnHost, recordPath } from "@/lib/customHost";
 
 // Who may frame an embed (P8, approved sites): asked of the API, kept for a
 // minute per record. One per server process, so the memory is shared by every
 // request it serves.
 const framePolicy = createFramePolicy({ api: process.env.NEXT_PUBLIC_API_URL });
 const API_ORIGIN = apiOriginOf(process.env.NEXT_PUBLIC_API_URL);
+
+// Which record an organiser's own address shows (P8c): asked of the API, kept
+// for five minutes per host.
+const hostLookup = createHostLookup({ api: process.env.NEXT_PUBLIC_API_URL });
 
 /**
  * The Content-Security-Policy of an embed: the policy every page carries, with
@@ -54,7 +59,35 @@ function redirectTo(path, req) {
   return NextResponse.redirect(new URL(path, base));
 }
 
+/**
+ * A request on an organiser's own address (P8c, level 3). The address shows
+ * one tournament or event: `/` is rewritten to its page and the record's own
+ * address is served as itself (its tabs write that address), Next's own files
+ * and the API routes pass. Every other path, register, sign in, pay, any other
+ * page, goes to the same path on v-ent.co, because sign in and money stay on
+ * V-ENT (plan item 6) and a link that 404s is a dead end. An address nobody
+ * has set up is a 404.
+ */
+async function customHost(req, host) {
+  const found = await hostLookup(host);
+  if (!found) return new NextResponse('Not found', { status: 404 });
+  const { locale, path } = splitLocale(req.nextUrl.pathname);
+  if (path !== '/' && path !== recordPath(found)) {
+    if (isAssetPath(req.nextUrl.pathname)) return NextResponse.next();
+    return NextResponse.redirect(new URL(req.nextUrl.pathname + req.nextUrl.search, 'https://v-ent.co'));
+  }
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(LOCALE_HEADER, locale);
+  const url = req.nextUrl.clone();
+  url.pathname = (locale !== DEFAULT_LOCALE ? `/${locale}` : '') + recordPath(found);
+  return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+}
+
 export default async function middleware(req) {
+  // ── An organiser's own address ──────────────────────────────────
+  const host = hostOf(req.headers.get('x-forwarded-host') || req.headers.get('host'));
+  if (!isOwnHost(host)) return customHost(req, host);
+
   // ── Language prefix ─────────────────────────────────────────────
   //
   // `/fr/tournaments` is the French address for `/tournaments`. The prefix is
