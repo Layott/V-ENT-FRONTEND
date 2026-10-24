@@ -9,33 +9,33 @@
 
 .state,
 .empty {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.5));
   font-size: 0.9rem;
   line-height: 1.55;
 }
 
 .scoring {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.62));
   font-size: 0.86rem;
   line-height: 1.6;
   max-width: 72ch;
 }
 
 .block {
-  background-color: #1a1a1e;
+  background-color: var(--bv-surface, #1a1a1e);
   border-radius: 14px;
   padding: 1.1rem;
 }
 
 .blockTitle {
-  color: #fff;
+  color: var(--bv-text, #fff);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 1.05rem;
   font-weight: var(--fw-semi-bold, 600);
 }
 
 .blockSub {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   line-height: 1.5;
   margin-top: 0.25rem;
@@ -56,7 +56,7 @@
 }
 
 .table thead th {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.45));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.72rem;
   font-weight: var(--fw-medium, 500);
@@ -73,7 +73,7 @@
 }
 
 .table tbody td {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--bv-text-soft, rgba(255, 255, 255, 0.85));
   font-size: 0.88rem;
   padding: 0.62rem 0.55rem;
   text-align: right;
@@ -82,11 +82,11 @@
 
 /* Zebra rather than a rule between rows. */
 .table tbody tr:nth-child(odd) {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--bv-tint, rgba(255, 255, 255, 0.04));
 }
 
 .table tbody tr:first-child td {
-  color: #fff;
+  color: var(--bv-text, #fff);
 }
 
 .table tbody tr:first-child td:first-child {
@@ -100,7 +100,7 @@
 .posCol {
   text-align: left !important;
   width: 34px;
-  color: rgba(255, 255, 255, 0.45) !important;
+  color: var(--bv-muted, rgba(255, 255, 255, 0.45)) !important;
 }
 
 .nameCol {
@@ -113,7 +113,7 @@
 
 .ptsCol {
   width: 52px;
-  color: #fff !important;
+  color: var(--bv-text, #fff) !important;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-weight: var(--fw-semi-bold, 600);
 }
@@ -143,20 +143,20 @@
   transition: background-color 0.12s, color 0.12s;
 }
 
-.toggleOn { background: #d6a94a; color: #16160f; font-weight: 600; }
+.toggleOn { background: var(--bv-gold-fill, #d6a94a); color: var(--bv-on-gold, #16160f); font-weight: 600; }
 
 .toggleOff {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--bv-tint, rgba(255, 255, 255, 0.07));
+  color: var(--bv-text-soft, rgba(255, 255, 255, 0.7));
 }
 
-.toggleOff:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.toggleOff:hover { background: var(--bv-surface-2, rgba(255, 255, 255, 0.12)); color: var(--bv-text, #fff); }
 
 /* The two pickers in the head-to-head block. A filled control, same shape
    as the toggles beside it, and 44px tall for a thumb. */
 .pick {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  background: var(--bv-tint, rgba(255, 255, 255, 0.07));
+  color: var(--bv-text, #fff);
   border: none;
   border-radius: 10px;
   min-height: 44px;
@@ -167,7 +167,7 @@
 }
 
 .how {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.45));
   font-size: 0.78rem;
   line-height: 1.5;
   max-width: 60ch;
@@ -175,18 +175,18 @@
 
 .pickable { cursor: pointer; }
 
-.pickable:hover { background: rgba(255, 255, 255, 0.05); }
+.pickable:hover { background: var(--bv-tint, rgba(255, 255, 255, 0.05)); }
 
 /* A deduction, beside the total it explains. */
 .adjusted {
-  color: #f0c674;
+  color: var(--bv-gold-text, #f0c674);
   font-size: 0.72rem;
   margin-left: 0.3rem;
 }
 
 .cardWrap {
   align-items: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--bv-scrim, rgba(0, 0, 0, 0.6));
   bottom: 0;
   display: flex;
   justify-content: center;
@@ -199,7 +199,7 @@
 }
 
 .card {
-  background: #1b1b1f;
+  background: var(--bv-surface, #1b1b1f);
   border-radius: 16px;
   max-height: 85vh;
   max-width: 34rem;
@@ -216,7 +216,7 @@
 }
 
 .cardName {
-  color: #fff;
+  color: var(--bv-text, #fff);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 1.25rem;
   font-weight: 600;
@@ -224,19 +224,19 @@
 }
 
 .cardClose {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bv-tint, rgba(255, 255, 255, 0.08));
   border-radius: 9px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--bv-text-soft, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   flex-shrink: 0;
   font-size: 0.82rem;
   padding: 0.35rem 0.75rem;
 }
 
-.cardClose:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.cardClose:hover { background: var(--bv-surface-2, rgba(255, 255, 255, 0.14)); color: var(--bv-text, #fff); }
 
 .cardPts {
-  color: #d6a94a;
+  color: var(--bv-gold-text, #d6a94a);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
@@ -250,7 +250,7 @@
 }
 
 .cardCell {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bv-tint, rgba(255, 255, 255, 0.04));
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -260,25 +260,25 @@
 }
 
 .cardLabel {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--bv-muted, rgba(255, 255, 255, 0.5));
   font-size: 0.72rem;
 }
 
 .cardValue {
-  color: #fff;
+  color: var(--bv-text, #fff);
   font-size: 1.05rem;
   font-weight: 600;
 }
 
 .cardAdjust {
-  background: rgba(214, 158, 46, 0.12);
+  background: var(--bv-gold-tint, rgba(214, 158, 46, 0.12));
   border-radius: 11px;
   margin-top: 0.9rem;
   padding: 0.75rem 0.85rem;
 }
 
 .cardAdjustRow {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--bv-text-soft, rgba(255, 255, 255, 0.8));
   font-size: 0.84rem;
   line-height: 1.5;
   margin: 0.25rem 0 0;

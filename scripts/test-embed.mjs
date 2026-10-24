@@ -76,7 +76,7 @@ console.log('widgets and snippets');
 
 test('every widget has an address, the card the one inbox 360 shipped', () => {
   assert.deepEqual(WIDGETS, ['card', 'bracket', 'standings', 'schedule', 'path']);
-  assert.deepEqual(THEMED_WIDGETS, ['card', 'schedule']);
+  assert.deepEqual(THEMED_WIDGETS, ['card', 'bracket', 'standings', 'schedule', 'path']);
   assert.equal(widgetPath('naija-cup', 'card'), '/embed/tournaments/naija-cup');
   assert.equal(widgetPath('naija-cup', 'bracket'), '/embed/tournaments/naija-cup/bracket');
   assert.equal(widgetPath('naija-cup', 'schedule'), '/embed/tournaments/naija-cup/schedule');

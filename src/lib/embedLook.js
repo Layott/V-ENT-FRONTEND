@@ -23,11 +23,14 @@
 export const WIDGETS = ['card', 'bracket', 'standings', 'schedule', 'path'];
 
 /**
- * The widgets drawn in the frame's own colours. The bracket, the standings and
- * the path are the tournament page's own components, which are drawn light on
- * dark; they take the accent and the font, not a light page.
+ * The widgets drawn in the frame's own colours, so theme=light draws every one
+ * of them on a light page. The bracket, the standings and the path are the
+ * tournament page's own components: their colours are --bv-* variables in
+ * their stylesheets, each falling back to the dark value the tournament page
+ * has always used, and the light theme in embed.module.css sets them. Dark is
+ * still the default, so the tournament page itself does not change.
  */
-export const THEMED_WIDGETS = ['card', 'schedule'];
+export const THEMED_WIDGETS = ['card', 'bracket', 'standings', 'schedule', 'path'];
 
 export const THEMES = ['dark', 'light'];
 export const FONTS = ['clash', 'system'];
