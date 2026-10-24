@@ -29,6 +29,7 @@ import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/B
 import RunningOrder from '@/components/view-tournament/running-order/RunningOrder';
 import { isLeagueFormat } from '@/components/create-tournament-component/format-participants/league-setup/LeagueSetup';
 import CheckInStrip from '@/components/view-tournament/check-in/CheckInStrip';
+import NextActions from '@/components/view-tournament/next-actions/NextActions';
 import EntryChecklist from '@/components/entry-requirements/EntryChecklist';
 import PartOfCircuit from '@/components/circuits/PartOfCircuit';
 import { tournamentStatusLabel } from '@/lib/tournamentStatus';
@@ -491,6 +492,12 @@ export const ViewTournamentContent = ({
 
           {!isOrganizer && !tournament.is_registered && !registrationClosed && myDraft && <ResumeCard
             draft={myDraft} token={token} showTitle={false} onGone={() => setMyDraft(null)} />}
+
+          {/* What to do next for this viewer, with its deadline (P4a). One
+              list for the check-in, the match and the register button, so
+              they cannot disagree. Renders nothing when there is nothing due. */}
+          <NextActions tournamentRef={tournament.tournament_id || tournament.id || id}
+                       slug={tournament.slug} token={token} onOpenTab={setActiveTab} />
 
           {/* Check-in. Renders only when this tournament uses one and the
               viewer is either an entrant or the organiser. */}

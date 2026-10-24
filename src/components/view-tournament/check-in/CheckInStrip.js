@@ -2,7 +2,7 @@
 
 import { apiMessage } from '@/lib/apiMessage';
 import { plural } from '@/lib/plural';
-import { formatTime } from '@/lib/datetime';
+import { formatWithZone } from '@/lib/datetime';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LuAlarmClock, LuCircleCheck, LuUsers } from 'react-icons/lu';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
@@ -12,14 +12,16 @@ import { useT } from '@/i18n/LanguageProvider';
 // The check-in window, on the page where somebody is actually waiting.
 //
 // Three audiences, one strip:
-//   an entrant, who needs a button and a countdown;
-//   the organiser, who needs the count and the button that closes it;
+//   an entrant, who is told when check-in closes (their button is in
+//   NextActions, the one list of what to do, P4a);
+//   the organiser, who needs the count, the countdown and the button that
+//   closes it;
 //   everybody else, who gets nothing at all, which is why this renders null
 //   far more often than it renders.
 //
-// The countdown ticks locally off a fetched deadline rather than polling every
-// second. Server time is the authority, so the clock is re-synced whenever the
-// component refetches instead of drifting quietly for an hour.
+// The organiser's countdown ticks locally off a fetched deadline rather than
+// polling every second. Server time is the authority, so the clock is re-synced
+// whenever the component refetches instead of drifting quietly for an hour.
 
 const pad = n => String(n).padStart(2, '0');
 const formatRemaining = seconds => {
@@ -31,13 +33,13 @@ const formatRemaining = seconds => {
   }
   return `${mins}:${pad(secs)}`;
 };
-// Through the timing model: the reader's zone and the language they chose.
-// `toLocaleTimeString([])` printed "12:40 AM" to a Portuguese reader (second
-// bracket walk, 28 September 2026).
+// Through the timing model: the reader's zone, named, and the language they
+// chose. `toLocaleTimeString([])` printed "12:40 AM" to a Portuguese reader
+// (second bracket walk, 28 September 2026). Every deadline names its zone.
 const formatClock = iso => {
   if (!iso) return '';
   try {
-    return formatTime(iso);
+    return formatWithZone(iso);
   } catch {
     return '';
   }
@@ -75,9 +77,10 @@ const CheckInStrip = ({
   }, [load]);
 
   // Local tick, re-synced by load(). Stops dead at zero rather than counting
-  // into negative numbers.
+  // into negative numbers. The organiser's count only: an entrant reads the
+  // closing time, and NextActions carries the countdown for them.
   useEffect(() => {
-    if (!state?.open_now || remaining <= 0) return undefined;
+    if (!state?.open_now || !isOrganizer || remaining <= 0) return undefined;
     timerRef.current = setInterval(() => {
       setRemaining(prev => {
         if (prev <= 1) {
@@ -89,29 +92,8 @@ const CheckInStrip = ({
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [state?.open_now, remaining > 0, load]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state?.open_now, isOrganizer, remaining > 0, load]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const checkIn = async () => {
-    setBusy(true);
-    setNotice(null);
-    try {
-      await ventFetch(API.TOURNAMENT.CHECK_IN(tournamentId), {
-        method: 'POST',
-        token
-      });
-      // No success notice: the headline flips to "You are checked in", and
-      // saying it twice reads like it happened twice.
-      await load();
-      onChanged?.();
-    } catch (error) {
-      setNotice({
-        type: 'error',
-        text: apiMessage(tt, error, 'checkin.errCheckIn', 'Could not check you in.')
-      });
-    } finally {
-      setBusy(false);
-    }
-  };
   // Closing takes people out of the tournament, so it is a second press after
   // saying who and what happens to their entry (second bracket walk, 28
   // September 2026: one press removed a paid entrant with nothing said).
@@ -169,7 +151,6 @@ const CheckInStrip = ({
   if (state.bracket_drawn) return null;
   if (!state.registered && !isOrganizer) return null;
   if (state.closed && !isOrganizer && state.checked_in) return null;
-  const showEntrantAction = state.registered && !state.checked_in && state.open_now;
   // What missing check-in costs THIS reader. An entrant who paid is told
   // whether the fee comes back (the organiser's choice, off by default: CEO
   // decision D-1), before the window closes rather than after.
@@ -199,7 +180,9 @@ const CheckInStrip = ({
         {state.checked_in && state.registered ? <p className={styles.headlineDone}>
             <LuCircleCheck /> {tt("ui.checked.e5d7", "You are checked in")}
           </p> : state.open_now ? <p className={styles.headline}>
-            <LuAlarmClock /> {tt("ui.check.closes.aaca", "Check-in closes in")} {formatRemaining(remaining)}
+            <LuAlarmClock /> {isOrganizer
+              ? <>{tt("ui.check.closes.aaca", "Check-in closes in")} {formatRemaining(remaining)}</>
+              : <>{tt('checkin.closesAt', 'Check-in closes {time}').replace('{time}', formatClock(state.closes_at))}</>}
           </p> : state.closed ? <p className={styles.headlineClosed}>
             {(state.closed_by_organiser
               ? tt('checkin.closedByOrganiser', 'The organiser closed check-in at {time}')
@@ -252,10 +235,6 @@ const CheckInStrip = ({
       </div>
 
       <div className={styles.actions}>
-        {showEntrantAction && <button type="button" className={styles.primaryBtn} onClick={checkIn} disabled={busy}>
-            {busy ? tt('checkin.checkingIn', 'Checking in...') : tt('checkin.checkIn', 'Check in')}
-          </button>}
-
         {isOrganizer && !state.closed_by_organiser && !state.closed && <button type="button" className={styles.ghostBtn} onClick={extend} disabled={busy}>
             {tt("ui.add.minutes.f939", "Add 15 minutes")}
           </button>}

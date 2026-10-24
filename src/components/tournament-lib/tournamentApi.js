@@ -40,6 +40,9 @@ export const API = {
     CHECK_IN_STATUS: (id) => `/tournament/${id}/check-in/status/`,
     CLOSE_CHECK_IN: (id) => `/tournament/${id}/close-check-in/`,
     EXTEND_CHECK_IN: (id) => `/tournament/${id}/extend-check-in/`,
+    // P4a: what this viewer can do next (public), and what the people running it need to settle.
+    NEXT_ACTIONS: (id) => `/tournament/${id}/next-actions/`,
+    ACTIONS_LIST: (id) => `/tournament/${id}/actions-list/`,
   },
   TEAM: {
     MY_TEAMS: '/team/my-teams/',

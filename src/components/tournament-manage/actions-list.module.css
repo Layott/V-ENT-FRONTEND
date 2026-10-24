@@ -1,0 +1,127 @@
+/* Needs you, at the top of the console (P4a). A filled panel with rows one step
+   up from it, no strokes. Radius 14 on the panel, 12 on a row, 10 on a control,
+   every control 44px tall. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.text {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: var(--fw-semi-bold);
+  color: var(--primary-bg);
+  line-height: 1.4;
+}
+
+.meta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.action {
+  display: flex;
+  min-width: 0;
+}
+
+.errorRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--v-ent-light-red);
+}
+
+.btn,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn {
+  background-color: var(--v-ent-red);
+  color: #fff;
+}
+
+.btn:hover { background-color: var(--v-ent-light-red); }
+
+.btnGhost {
+  background-color: #393a40;
+  color: #ddd;
+}
+
+.btnGhost:hover { background-color: #45464d; }
+
+.btn:focus-visible,
+.btnGhost:focus-visible {
+  outline: 2px solid var(--v-ent-light-gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 40rem) {
+  .row { flex-direction: column; align-items: stretch; }
+  .action, .btn { width: 100%; }
+}
