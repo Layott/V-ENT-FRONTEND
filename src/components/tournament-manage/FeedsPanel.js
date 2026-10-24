@@ -27,7 +27,7 @@ const groupLetter = n => String.fromCharCode(64 + Number(n || 1));
 
 const blank = () => ({ kind: 'tournament', source: '', sourceStage: '', circuit: '', placeFrom: 1,
                        placeTo: 2, group: '', targetStage: '', fire: 'after_preview', declineHours: 48,
-                       onDecline: 'next' });
+                       onDecline: 'next', ticketTier: '' });
 
 export default function FeedsPanel({ tournamentRef, stages, token, showToast, onChanged }) {
   const tt = useT();
@@ -120,6 +120,8 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
             source_stage: Number(draft.sourceStage), place_from: Number(draft.placeFrom),
             place_to: Number(draft.placeTo), group: draft.group === '' ? null : Number(draft.group),
             fire: draft.fire, decline_hours: Number(draft.declineHours), on_decline: draft.onDecline,
+            // A ticket to this tournament's event for each qualifier (P2d).
+            ticket_tier: draft.ticketTier === '' ? null : Number(draft.ticketTier),
           }),
       });
       const body = await res.json().catch(() => ({}));
@@ -294,6 +296,11 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
       {incoming.map(feed => (
         <div key={feed.id} className={styles.feedRow}>
           <p className={styles.stageLine}>{feedSentence(tt, feed, 'in')}</p>
+          {feed.ticket_tier && (
+            <p className={styles.note}>
+              {tt('feeds.ticketLine', 'Each qualifier also gets a {tier} ticket.').replace('{tier}', feed.ticket_tier.name)}
+            </p>
+          )}
           <p className={styles.note}>
             {feed.fired_at
               ? tt('feeds.sent', 'Sent: {n}').replace('{n}', feed.sent_count)
@@ -536,6 +543,20 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
               <input type="number" className={styles.number} min={1} max={720} value={draft.declineHours}
                      disabled={busy} onChange={e => set('declineHours', e.target.value)} />
             </label>
+            {!fromCircuit && (feeds?.ticket_tiers || []).length > 0 && (
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{tt('feeds.ticketTier', 'Qualifiers also get a ticket')}</span>
+              <select className={styles.select} value={draft.ticketTier} disabled={busy}
+                      onChange={e => set('ticketTier', e.target.value)}>
+                <option value="">{tt('feeds.ticketNone', 'No ticket, just the place')}</option>
+                {feeds.ticket_tiers.map(tier => (
+                  <option key={tier.id} value={tier.id}>
+                    {tt('feeds.ticketOption', '{tier} ({event})').replace('{tier}', tier.name).replace('{event}', tier.event)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            )}
             {!fromCircuit && (
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{tt('feeds.onDecline', 'A declined place goes to')}</span>
