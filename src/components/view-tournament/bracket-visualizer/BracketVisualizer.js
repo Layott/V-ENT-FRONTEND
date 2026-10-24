@@ -182,9 +182,11 @@ const MapFlat = ({ rounds, tt, onOpen, isMine, format }) => (
       {rounds.map(round => (
         <div key={round.round} className={styles.mapCol}>
           <p className={styles.colTitle}>
-            {norm(format) === 'winner_stays_on'
-              ? roundTitle(tt, round, 0, 0, 'winners', format)
-              : tt('bracket.matchday', 'Matchday {n}').replace('{n}', round.round)}
+            {norm(format) === 'challenge_ladder'
+              ? tt('bracket.challengeN', 'Challenge {n}').replace('{n}', round.round)
+              : norm(format) === 'winner_stays_on'
+                ? roundTitle(tt, round, 0, 0, 'winners', format)
+                : tt('bracket.matchday', 'Matchday {n}').replace('{n}', round.round)}
           </p>
           <div className={styles.mapStack} style={{ gap: '12px' }}>
             {(round.matches || []).map(match => (
@@ -395,6 +397,45 @@ const StreakTable = ({ rows, tt }) => {
   </>;
 };
 
+/** A challenge ladder (P3 W3d): a filled row per place, or on a pyramid a line
+ *  of filled tiles per level. Only the places the viewer may challenge carry a
+ *  button, so a stranger or a signed-out reader never sees a live control. */
+const LadderBoard = ({ rows, ladder, tt, challenging, onChallenge }) => {
+  const open = new Set(ladder.challengeable || []);
+  const slot = (row, tile) => (
+    <div key={row.registration_id}
+         className={`${tile ? styles.ladderTile : styles.ladderRow} ${ladder.mine === row.registration_id ? styles.ladderMine : ''}`}>
+      <span className={styles.ladderPlace}>{row.rank ?? '-'}</span>
+      <span className={styles.ladderName}>
+        {row.name}
+        {row.handle && row.handle !== row.name && <span className={styles.handle}>@{row.handle}</span>}
+        {ladder.mine === row.registration_id && <span className={styles.handle}>{tt('ladder.yourPlace', 'Your place')}</span>}
+      </span>
+      <span className={styles.ladderRecord}>{row.wins}-{row.losses}</span>
+      {open.has(row.registration_id) && (
+        <button type="button" className={styles.ladderBtn} disabled={Boolean(challenging)}
+                onClick={() => onChallenge(row.registration_id)}>
+          {challenging === row.registration_id
+            ? tt('ladder.challenging', 'Challenging…')
+            : tt('ladder.challenge', 'Challenge')}
+        </button>
+      )}
+    </div>
+  );
+  if (ladder.shape === 'pyramid') {
+    const levels = [...new Set(rows.map(r => Number(r.level) || 1))].sort((a, b) => a - b);
+    return levels.map(level => (
+      <div key={level} className={styles.ladderLevel}>
+        <p className={styles.ladderLevelTitle}>{tt('ladder.level', 'Level {n}').replace('{n}', level)}</p>
+        <div className={styles.ladderTiles}>
+          {rows.filter(r => (Number(r.level) || 1) === level).map(row => slot(row, true))}
+        </div>
+      </div>
+    ));
+  }
+  return <div className={styles.ladderList}>{rows.map(row => slot(row, false))}</div>;
+};
+
 /** The matches below first place, one section per range of places. */
 const PlacementSections = ({ rounds, tt, onOpen, isMine, format }) => {
   const ranges = new Map();
@@ -435,6 +476,8 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const [error, setError] = useState('');
   const [view, setView] = useState(null);
   const [openFixture, setOpenFixture] = useState(null);
+  const [challenging, setChallenging] = useState(null);
+  const [challengeProblem, setChallengeProblem] = useState('');
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
@@ -541,6 +584,7 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const stages = data.stages || [];
   const battleRoyale = norm(format) === 'battle_royale';
   const streak = norm(format) === 'winner_stays_on';
+  const ladderFormat = norm(format) === 'challenge_ladder';
   const current = view || (table ? 'grid' : 'map');
 
   // Sections: one per group, or per side of a knockout, in playing order.
@@ -559,6 +603,27 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
   const standings = data.standings || [];
 
   const openMatch = match => setOpenFixture(match);
+
+  // A challenge is made as the signed-in viewer, and the server decides whether
+  // it may be. A made one reloads the bracket, which carries the new match.
+  const challenge = async targetId => {
+    setChallenging(targetId);
+    setChallengeProblem('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef || tournamentId}/stages/${data.stage_id}/challenge/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ target_registration_id: targetId }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') load({ quiet: true });
+      else setChallengeProblem(apiMessage(tt, body, 'ladder.challengeFailed', 'The challenge was not made.'));
+    } catch {
+      setChallengeProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setChallenging(null);
+    }
+  };
   const roomFor = openFixture && (canRecord || isMine(openFixture))
     && openFixture.participant_1 && openFixture.participant_2;
 
@@ -693,7 +758,9 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
             <p className={styles.formatHint}>
               {/* How THIS format runs, in the words the wizard used for it: a
                   page playoff carried the knockout sentence (walk, 28 September 2026). */}
-              {table
+              {ladderFormat
+                ? tt('bracket.ladderHint', 'Everybody holds a place. Challenge somebody a few places above, win, and you swap places.')
+                : table
                 ? tt('bracket.flatHint', 'Every entrant meets the others. Nobody is knocked out, so the table decides it.')
                 : norm(format) === 'stepladder'
                   ? tt('format.stepladderBlurb', 'The lowest seeds play first and each winner climbs to meet the next seed up. The top seed waits in the final.')
@@ -760,7 +827,15 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
               ) : null;
             })}
           </section>
-        )) : table ? (
+        )) : ladderFormat ? (
+          <>
+            <LadderBoard rows={standings} ladder={data.ladder || {}} tt={tt}
+                         challenging={challenging} onChallenge={challenge} />
+            {challengeProblem && <p className={styles.state}>{challengeProblem}</p>}
+            {data.ladder?.closed && <p className={styles.gridNote}>{tt('ladder.closed', 'This ladder has closed.')}</p>}
+            <MapFlat rounds={rounds} tt={tt} onOpen={openMatch} isMine={isMine} format={format} />
+          </>
+        ) : table ? (
           <>
             <StandingsTable rows={standings} format={format} advancing={data.advancing} tt={tt} />
             {fixtures(rounds)}

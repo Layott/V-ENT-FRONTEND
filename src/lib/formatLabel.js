@@ -27,6 +27,9 @@ export const FORMAT_KEYS = [
   'stepladder',
   'page_playoff',
   'winner_stays_on',
+  // P3 W3d: a challenge ladder, a stage only format. Places are held and swapped
+  // by challenges, so nothing is drawn up front.
+  'challenge_ladder',
 ];
 
 const FALLBACK = {
@@ -45,6 +48,7 @@ const FALLBACK = {
   stepladder: 'Stepladder',
   page_playoff: 'Page playoff',
   winner_stays_on: 'Winner stays on',
+  challenge_ladder: 'Challenge ladder',
 };
 
 // The spellings a row or a screen may still hold, mapped to the key. Mirrors
@@ -150,6 +154,7 @@ const SERVER_NAME = {
   winner_stays_on: 'Winner stays on',
   aggregate_2v2: 'Aggregate tie',
   ladder: 'Ladder',
+  challenge_ladder: 'Challenge ladder',
 };
 
 /**
@@ -193,6 +198,7 @@ const SUMMARY = {
   winner_stays_on: 'The winner keeps playing the next challenger in the queue. Ends when everybody has had a go, or when somebody reaches the winning streak the organiser set.',
   aggregate_2v2: 'Each player faces their opposite number, and the tie is decided on total goals across those fixtures.',
   ladder: 'Play when you like over a period. The table is the standing.',
+  challenge_ladder: 'Everybody holds a place. Challenge somebody a few places above, win, and you swap places. Runs until the stage ends.',
 };
 
 // The rules screen and the format picker print the format's summary. Inbox

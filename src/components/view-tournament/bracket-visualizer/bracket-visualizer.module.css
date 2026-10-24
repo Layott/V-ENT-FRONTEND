@@ -553,3 +553,88 @@
   justify-content: space-between;
   padding: 0.7rem 0.9rem;
 }
+
+/* A challenge ladder (P3 W3d): a filled row per place, or on a pyramid a line
+   of filled tiles per level. Surface and space, never a rule. */
+.ladderList,
+.ladderTiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ladderTiles {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.ladderRow,
+.ladderTile {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  background-color: var(--overlay-gray, #212225);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  min-width: 0;
+}
+
+.ladderTile {
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  flex: 1 1 200px;
+  max-width: 280px;
+}
+
+.ladderTile .ladderBtn { grid-column: 1 / -1; }
+
+.ladderMine { background-color: rgba(212, 175, 55, 0.12); }
+.ladderMine .ladderName { color: var(--v-ent-light-gold, #E8C760); }
+
+.ladderPlace {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: var(--fw-semi-bold, 600);
+  text-align: center;
+}
+
+.ladderName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+
+.ladderRecord {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ladderBtn {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-grn, #4caf50);
+  color: var(--primary-text, #fff);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+}
+
+.ladderBtn:disabled { opacity: 0.6; cursor: default; }
+.ladderBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ladderLevel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ladderLevelTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}

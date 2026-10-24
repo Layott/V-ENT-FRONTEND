@@ -80,7 +80,10 @@ const SEEDING = [
 const isDrawn = row => Boolean(row?.drawn_at) || Boolean(row?.status && row.status !== 'pending');
 const CHECK_IN = [0, 5, 10, 15, 30];
 
-const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
+const defaultSettings = format => (format === 'battle_royale' ? defaultBR()
+  : format === 'challenge_ladder'
+    ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '', reach: 3, shape: 'ladder' }
+  : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
       ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
         : format === 'league_phase' ? { legs: 1, pots: 4, per_pot: 2 }
@@ -393,6 +396,12 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (row.format === 'league_phase') {
       bits.push(tt('stages.potsLine', '{pots} pots, {n} from each')
         .replace('{pots}', s.pots || 4).replace('{n}', s.per_pot || 2));
+    }
+    if (row.format === 'challenge_ladder') {
+      bits.push((s.shape || 'ladder') === 'pyramid'
+        ? tt('stages.pyramidLine', 'drawn as a pyramid')
+        : plural(tt, s.reach || 3, 'stages.ladderReachOne', 'challenges up to 1 place',
+                 'stages.ladderReach', 'challenges up to {n} places'));
     }
     if (row.format === 'swiss' && s.rounds) bits.push(tt('stages.roundsN', '{n} rounds').replace('{n}', s.rounds));
     if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
@@ -1483,6 +1492,26 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                              options={[1, 2, 3, 4].map(n => [n, String(n)])}
                              onChange={v => setSetting(index, 'per_pot', v)} />
                     </div>
+                  </>}
+                  {/* P3 W3d: a ladder is drawn as one line of places, or in levels as a pyramid. */}
+                  {row.format === 'challenge_ladder' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.shape', 'Shape')}</span>
+                      <Chips value={s.shape || 'ladder'} disabled={busy} label={tt('stages.shape', 'Shape')}
+                             options={[['ladder', tt('stages.shapeLadder', 'Ladder')],
+                                       ['pyramid', tt('stages.shapePyramid', 'Pyramid')]]}
+                             onChange={v => setSetting(index, 'shape', v)} />
+                    </div>
+                    {(s.shape || 'ladder') === 'ladder' && (
+                      <div className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.reach', 'Challenge up to')}</span>
+                        <Chips value={Number(s.reach || 3)} disabled={busy} label={tt('stages.reach', 'Challenge up to')}
+                               options={[1, 2, 3, 5].map(n => [n, n === 1
+                                 ? tt('stages.reachOne', '1 place')
+                                 : tt('stages.reachN', '{n} places').replace('{n}', n)])}
+                               onChange={v => setSetting(index, 'reach', v)} />
+                      </div>
+                    )}
                   </>}
                   {row.format === 'swiss' && <>
                     <label className={styles.field}>
