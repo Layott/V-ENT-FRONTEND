@@ -457,8 +457,9 @@ export function normaliseTeam(data) {
 export async function teamMetadata(raw, slug) {
   const team = normaliseTeam(raw);
   if (team?.__failed) return unavailableMetadata(slug, `/teams/${slug}`);
+  // Moved before missing, as for organisations: a moved answer has no name.
+  if (team?.__moved) return missingMetadata('team', team.__moved, { moved: true });
   if (!team || !team.team_name) return missingMetadata('team', `/teams/${slug}`);
-  if (team.__moved) return missingMetadata('team', team.__moved, { moved: true });
 
   const locale = await currentLocale();
   const { t, n } = recordCopy(locale);
@@ -489,8 +490,10 @@ export async function teamMetadata(raw, slug) {
 export async function orgMetadata(raw, slug) {
   const org = raw?.__moved || raw?.__failed ? raw : (raw?.organization || raw);
   if (org?.__failed) return unavailableMetadata(slug, `/organizations/${slug}`);
+  // Moved before missing: a moved answer carries no name, so testing the name
+  // first described every renamed organisation as gone, noindex.
+  if (org?.__moved) return missingMetadata('organization', org.__moved, { moved: true });
   if (!org || !(org.name || org.org_name)) return missingMetadata('organization', `/organizations/${slug}`);
-  if (org.__moved) return missingMetadata('organization', org.__moved, { moved: true });
 
   const locale = await currentLocale();
   const { t, n } = recordCopy(locale);
@@ -512,6 +515,64 @@ export async function orgMetadata(raw, slug) {
     path: `/organizations/${org.slug || slug}`,
     image: org.banner || org.logo || null,
     type: 'profile',
+  });
+}
+
+/**
+ * A post has no title of its own, so its opening words stand for one. Seventy
+ * characters is what fits on one line of a search result.
+ */
+const postHeadline = (post) => clamp(post?.body, 70);
+
+/**
+ * Metadata for one forum thread. `raw` is the thread detail payload ({thread}).
+ *
+ * A thread is public content: it is what somebody searches for, and the forum
+ * links to every one. So it is described from its own title and opening words
+ * and indexed. The payload carries no deleted, hidden or private flag for a
+ * thread, so there is nothing to noindex on; a removed thread answers 404 and
+ * is described as missing.
+ */
+export async function threadMetadata(raw, slug) {
+  const thread = raw?.__moved || raw?.__failed ? raw : (raw?.thread || raw);
+  if (thread?.__failed) return unavailableMetadata(slug, `/community/thread/${slug}`);
+  if (thread?.__moved) return missingMetadata('thread', thread.__moved, { moved: true });
+  if (!thread?.title) return missingMetadata('thread', `/community/thread/${slug}`);
+
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
+  return buildMetadata({
+    locale,
+    title: thread.title,
+    description: clamp(thread.body) || t('thread.plain', { title: thread.title }),
+    path: `/community/thread/${thread.slug || slug}`,
+    type: 'article',
+    publishedTime: thread.created_at,
+  });
+}
+
+/**
+ * Metadata for one feed post. `raw` is the post detail payload ({post}). Like a
+ * thread it is public content and indexed; a post with only a picture has no
+ * words, so it is described by its author and the site.
+ */
+export async function postMetadata(raw, slug) {
+  const post = raw?.__moved || raw?.__failed ? raw : (raw?.post || raw);
+  if (post?.__failed) return unavailableMetadata(slug, `/community/post/${slug}`);
+  if (post?.__moved) return missingMetadata('post', post.__moved, { moved: true });
+  if (!post?.id) return missingMetadata('post', `/community/post/${slug}`);
+
+  const locale = await currentLocale();
+  const { t } = recordCopy(locale);
+  const author = post.author?.full_name || post.author?.username;
+  return buildMetadata({
+    locale,
+    title: postHeadline(post) || t('post.plain'),
+    description: clamp(post.body) || t(author ? 'post.by' : 'post.plain', { author }),
+    path: `/community/post/${post.slug || slug}`,
+    image: post.image || null,
+    type: 'article',
+    publishedTime: post.created_at,
   });
 }
 
@@ -864,28 +925,53 @@ export function leagueLd(data, path) {
   };
 }
 
-export function discussionLd(thread, path) {
+// One InteractionCounter per count the payload really carries, so a count the
+// payload does not send is left out of the markup rather than written as zero.
+const counter = (type, count) => ({
+  '@type': 'InteractionCounter',
+  interactionType: `https://schema.org/${type}`,
+  userInteractionCount: count,
+});
+
+/** A forum thread, from the fields the thread payload really carries. */
+export function threadLd(thread, path) {
   if (!thread?.title) return null;
+  const author = thread.author?.full_name || thread.author?.username;
+  const stats = [
+    thread.upvotes != null ? counter('LikeAction', thread.upvotes) : null,
+    thread.reply_count != null ? counter('CommentAction', thread.reply_count) : null,
+  ].filter(Boolean);
   return {
     '@context': 'https://schema.org',
     '@type': 'DiscussionForumPosting',
     headline: thread.title,
     url: absolute(path),
-    ...(thread.body ? { text: clamp(thread.body, 500) } : {}),
+    ...(thread.body ? { articleBody: clamp(thread.body, 500) } : {}),
     ...(thread.created_at ? { datePublished: thread.created_at } : {}),
-    ...(thread.author?.username
-      ? { author: { '@type': 'Person', name: thread.author.full_name || thread.author.username } }
-      : {}),
-    ...(thread.reply_count != null
-      ? { commentCount: thread.reply_count }
-      : {}),
-    ...(thread.upvote_count != null
-      ? { interactionStatistic: {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/LikeAction',
-        userInteractionCount: thread.upvote_count,
-      } }
-      : {}),
+    ...(author ? { author: { '@type': 'Person', name: author } } : {}),
+    ...(stats.length ? { interactionStatistic: stats } : {}),
+  };
+}
+
+/** A feed post, from the fields the post payload really carries. */
+export function postLd(post, path) {
+  if (!post?.id) return null;
+  const author = post.author?.full_name || post.author?.username;
+  const headline = postHeadline(post);
+  const stats = [
+    post.like_count != null ? counter('LikeAction', post.like_count) : null,
+    post.comment_count != null ? counter('CommentAction', post.comment_count) : null,
+  ].filter(Boolean);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SocialMediaPosting',
+    ...(headline ? { headline } : {}),
+    url: absolute(path),
+    ...(post.body ? { articleBody: clamp(post.body, 500) } : {}),
+    ...(post.image ? { image: post.image } : {}),
+    ...(post.created_at ? { datePublished: post.created_at } : {}),
+    ...(author ? { author: { '@type': 'Person', name: author } } : {}),
+    ...(stats.length ? { interactionStatistic: stats } : {}),
   };
 }
 

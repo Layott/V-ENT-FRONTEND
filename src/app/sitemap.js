@@ -123,7 +123,7 @@ export default async function sitemap() {
     entry('/terms', { changeFrequency: 'yearly', priority: 0.2 }),
   ];
 
-  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles, circuits, leagues] = await Promise.all([
+  const [tournaments, events, teams, clubs, organizations, plans, profiles, series, battles, circuits, leagues, threads, posts] = await Promise.all([
     readList('/tournament/get-all-tournaments/'),
     readList('/event/get-all-events/'),
     readList('/team/get-all-teams/'),
@@ -143,6 +143,11 @@ export default async function sitemap() {
     readList('/circuits/'),
     // Published leagues of division circuits (P5d), the same way.
     readList('/circuits/leagues/'),
+    // The newest page of each only (the list endpoints take no page past the
+    // first 10), so these name the newest threads and posts. Older ones are
+    // reached through the forum and through links, and found from there.
+    readList('/thread/list/'),
+    readList('/post/list/'),
   ]);
 
   const tournamentPages = tournaments
@@ -255,8 +260,26 @@ export default async function sitemap() {
     .filter((b) => b?.slug)
     .map((b) => entry(`/anime/battles/${b.slug}`, { changeFrequency: 'weekly', priority: 0.3 }));
 
+  // Forum threads and feed posts are public content and are what people share,
+  // so the newest of each are listed. Each carries its own slug.
+  const threadPages = threads
+    .filter((t) => t?.slug)
+    .map((t) => entry(`/community/thread/${t.slug}`, {
+      changeFrequency: 'daily',
+      priority: 0.5,
+      lastModified: t.last_activity_at || t.created_at,
+    }));
+
+  const postPages = posts
+    .filter((p) => p?.slug)
+    .map((p) => entry(`/community/post/${p.slug}`, {
+      changeFrequency: 'weekly',
+      priority: 0.4,
+      lastModified: p.created_at,
+    }));
+
   // entry() returns one row per language, so the lists arrive nested.
   return [...staticPages, ...tournamentPages, ...eventPages, ...runOfShowPages,
-          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...circuitPages, ...leaguePages, ...planPages,
+          ...stallPages, ...teamPages, ...clubPages, ...orgPages, ...threadPages, ...postPages, ...circuitPages, ...leaguePages, ...planPages,
           ...profilePages, ...seriesPages, ...battlePages].flat();
 }
