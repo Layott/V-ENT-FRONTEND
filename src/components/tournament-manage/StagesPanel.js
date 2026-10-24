@@ -163,6 +163,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [ffaRounds, setFfaRounds] = useState([]);
   // The split league builder (P3 W3a): its numbers while open.
   const [split, setSplit] = useState(null);
+  // The Swiss with a top cut builder (P3 W3c): its numbers while open.
+  const [swiss, setSwiss] = useState(null);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -662,6 +664,51 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     }
   };
 
+  // A Swiss with a top cut as a plan (P3 W3c): a fixed number of Swiss rounds,
+  // then the top places play a single elimination bracket. The server writes
+  // both stages and the line that sends the cut into the bracket.
+  const buildSwiss = async () => {
+    if (!swiss) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const query = new URLSearchParams({ kind: 'swiss_top_cut', entrants: swiss.entrants,
+        cut: swiss.cut });
+      // Empty rounds leaves the count to the server (the fewest that separate the field).
+      if (String(swiss.rounds).trim() !== '') query.set('rounds', swiss.rounds);
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/preset/?${query}`, { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setProblem(apiMessage(tt, body, 'stages.swissFailed', 'That Swiss with a top cut could not be built.'));
+        return;
+      }
+      const labelOf = s => (s.format === 'swiss'
+        ? tt('stages.swissRoundsLabel', 'Swiss')
+        : tt('stages.swissCutLabel', 'Top cut'));
+      const made = (body.data.stages || []).map(s => ({
+        ...blank(s.format),
+        label: labelOf(s),
+        advances: s.advances,
+        settings: { ...defaultSettings(s.format), ...s.settings },
+        // A preset may set the tie-breaks too (a card game Swiss ranks on
+        // opponents' win percentage).
+        rules: s.rules || {},
+      }));
+      setDraft(made);
+      setDraftLines((body.data.lines || []).map(l => ({
+        ...newLine(made[l.source].key, made[l.target].key, l.place_to),
+        place_from: l.place_from,
+        carry_points: Boolean(l.carry_points),
+      })));
+      setFfaRounds([]);
+      setSwiss(null);
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   // A split league as a plan (P3 W3a): one league, then a top league and a
   // bottom league that keep the points each side won. The server writes the
   // three stages and the lines that carry the points into them.
@@ -688,6 +735,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         label: labelOf(s.kind),
         advances: s.advances,
         settings: { ...defaultSettings(s.format), ...s.settings },
+        // A preset may set the tie-breaks too (a card game Swiss ranks on
+        // opponents' win percentage).
+        rules: s.rules || {},
       }));
       setDraft(made);
       setDraftLines((body.data.lines || []).map(l => ({
@@ -2047,6 +2097,47 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                         onClick={() => setSplit({ entrants: entrants.length || 12, legs: 2,
                                                   top: Math.floor((entrants.length || 12) / 2) })}>
                   {tt('stages.splitOpen', 'Build a split league')}
+                </button>
+              )}
+              <p className={styles.subhead}>{tt('stages.swissTitle', 'A Swiss with a top cut')}</p>
+              <p className={styles.note}>
+                {tt('stages.swissHint', 'Everybody plays a fixed number of Swiss rounds, then the top places play a single elimination bracket. Card games run it this way. This replaces the stages above.')}
+              </p>
+              {swiss ? (
+                <>
+                  <div className={styles.fields}>
+                    <label className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissEntrants', 'Entrants expected')}</span>
+                      <input className={styles.number} type="number" min={8} max={5000} inputMode="numeric"
+                             value={swiss.entrants} disabled={busy}
+                             onChange={e => setSwiss(prev => ({ ...prev, entrants: e.target.value }))} />
+                    </label>
+                    <label className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissCutRounds', 'Swiss rounds (leave empty for the automatic count)')}</span>
+                      <input className={styles.number} type="number" min={3} max={15} inputMode="numeric"
+                             value={swiss.rounds} disabled={busy}
+                             onChange={e => setSwiss(prev => ({ ...prev, rounds: e.target.value }))} />
+                    </label>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissCut', 'Places that play the bracket')}</span>
+                      <Chips value={Number(swiss.cut)} disabled={busy} label={tt('stages.swissCut', 'Places that play the bracket')}
+                             options={[[4, '4'], [8, '8'], [16, '16'], [32, '32']]}
+                             onChange={v => setSwiss(prev => ({ ...prev, cut: v }))} />
+                    </div>
+                  </div>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} onClick={buildSwiss} disabled={busy}>
+                      {tt('stages.swissBuild', 'Write the plan')}
+                    </button>
+                    <button type="button" className={styles.quiet} onClick={() => setSwiss(null)} disabled={busy}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button type="button" className={styles.ghost} disabled={busy}
+                        onClick={() => setSwiss({ entrants: entrants.length || 16, rounds: '', cut: 8 })}>
+                  {tt('stages.swissOpen', 'Build a Swiss with a top cut')}
                 </button>
               )}
             </div>
