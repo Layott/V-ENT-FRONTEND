@@ -23,6 +23,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { stageName } from '@/lib/formatLabel';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { plural } from '@/lib/plural';
+import { PREVIEW_SHOWN, matchLine, undoSentence } from '@/lib/undoPreview';
 import styles from './bracket-edit-tools.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -53,6 +54,10 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
   const [swap, setSwap] = useState({ a: '', b: '' });
   const [repl, setRepl] = useState({ out: '', in: '' });
   const [stageId, setStageId] = useState('');
+  // The rounds and groups of the chosen stage, for the repairs below (P4b).
+  const [rounds, setRounds] = useState([]);
+  // A repair waiting for its confirm press: { kind, n, preview }.
+  const [repair, setRepair] = useState(null);
 
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -79,8 +84,25 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
     }
   }, [tournamentRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // The chosen stage's fixtures, so the repairs know which groups are finished
+  // and which Swiss round is the last one with nobody having played it.
+  const loadRounds = useCallback(async () => {
+    if (!tournamentRef || !stageId) { setRounds([]); return; }
+    try {
+      const res = await fetch(`${API}/tournament/get-tournament-brackets/${tournamentRef}/?stage=${encodeURIComponent(stageId)}`, { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      setRounds(body?.status === 'success' ? (body.data.rounds || []) : []);
+    } catch {
+      setRounds([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tournamentRef, token, stageId]);
+
   useEffect(() => { load(); }, [load]);
-  useAutoRefresh(() => load({ quiet: true }));
+  useEffect(() => { loadRounds(); }, [loadRounds]);
+  // A repair confirmed for one stage must not be pressed for another.
+  useEffect(() => { setRepair(null); }, [stageId]);
+  useAutoRefresh(() => { load({ quiet: true }); loadRounds(); });
 
   const nameOf = id => entrants.find(x => String(x.registration_id) === String(id))?.participant?.name || '';
 
@@ -100,6 +122,7 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
         setSaid(text);
         if (showToast) showToast(text);
         load({ quiet: true });
+        loadRounds();
         return true;
       }
       setProblem(apiMessage(tt, body, 'bracketEdit.failed', 'That change was not made.'));
@@ -128,6 +151,84 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
         .replace('{in}', nameOf(repl.in)).replace('{out}', nameOf(repl.out)));
     if (ok) setRepl({ out: '', in: '' });
   };
+
+  // The three repairs (P4b). A group is finished when every match in it has
+  // ended; the last Swiss round can be taken back while nobody has played it.
+  const ENDED = ['completed', 'bye', 'walkover_p1', 'walkover_p2', 'cancelled'];
+  const UNPLAYED = ['scheduled', 'bye'];
+  const groupNumbers = [...new Set(rounds.map(r => r.group_number).filter(Boolean))].sort((a, b) => a - b);
+  const finishedGroups = groupNumbers.filter(g => rounds
+    .filter(r => r.group_number === g)
+    .every(r => r.matches.every(m => ENDED.includes(m.status))));
+  const roundNumbers = rounds.map(r => r.round);
+  const firstRound = roundNumbers.length ? Math.min(...roundNumbers) : 0;
+  const lastRound = roundNumbers.length ? Math.max(...roundNumbers) : 0;
+  const chosen = stages.find(s => String(s.id) === String(stageId));
+  const lastOpen = chosen?.format === 'swiss' && lastRound > firstRound
+    && rounds.filter(r => r.round === lastRound && !r.group_number)
+      .every(r => r.matches.every(m => UNPLAYED.includes(m.status)));
+
+  const repairPath = r => (r.kind === 'group'
+    ? `stages/${stageId}/groups/${r.n}/reopen/`
+    : `stages/${stageId}/rounds/${r.n}/${r.kind === 'delete' ? 'delete' : 'regenerate'}/`);
+
+  // One request to a repair door. The preview asks what would go; the real
+  // press discards results only when the preview said some would be cleared.
+  const postRepair = async (r, preview) => {
+    setBusy(true);
+    setProblem('');
+    setSaid('');
+    try {
+      const res = await fetch(`${API}/tournament/${tournamentRef}/${repairPath(r)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...auth },
+        body: JSON.stringify(preview ? { preview: true } : { discard_results: Boolean(r.preview?.results_cleared) }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') return body.data || {};
+      setProblem(apiMessage(tt, body, 'bracketEdit.failed', 'That change was not made.'));
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+    return null;
+  };
+
+  const startRepair = async (kind, n) => {
+    const r = { kind, n, preview: null };
+    setRepair(r);
+    const data = await postRepair(r, true);
+    if (data) setRepair({ ...r, preview: data });
+    else setRepair(null);
+  };
+
+  const confirmRepair = async () => {
+    const r = repair;
+    const data = await postRepair(r, false);
+    if (!data) return;
+    setRepair(null);
+    const text = r.kind === 'group'
+      ? tt('bracketEdit.groupDone', 'Group {g} is open again. Its places are decided again when it finishes.')
+        .replace('{g}', String.fromCharCode(64 + r.n))
+      : r.kind === 'delete'
+        ? tt('bracketEdit.roundDone', 'Round {n} is removed.').replace('{n}', r.n)
+        : tt('bracketEdit.roundRegen', 'Round {n} is paired again.').replace('{n}', r.n);
+    setSaid(text);
+    if (showToast) showToast(text);
+    load({ quiet: true });
+    loadRounds();
+  };
+
+  const repairTitle = r => (r.kind === 'group'
+    ? tt('bracketEdit.groupTitle', 'Reopen group {g}').replace('{g}', String.fromCharCode(64 + r.n))
+    : r.kind === 'delete'
+      ? tt('bracketEdit.deleteTitle', 'Delete round {n}').replace('{n}', r.n)
+      : tt('bracketEdit.regenTitle', 'Pair round {n} again').replace('{n}', r.n));
+
+  const repairGo = r => (r.kind === 'group' ? tt('bracketEdit.groupGo', 'Reopen the group')
+    : r.kind === 'delete' ? tt('bracketEdit.deleteGo', 'Delete the round')
+      : tt('bracketEdit.regenGo', 'Pair it again'));
 
   if (loading) return <section className={styles.panel}><p className={styles.muted}>{tt('ui.loading.33ce', 'Loading…')}</p></section>;
   if (failed) {
@@ -216,6 +317,73 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
               {tt('bracketEdit.replaceGo', 'Replace')}
             </button>
           </div>
+        </div>
+      )}
+
+      {chosen && (finishedGroups.length > 0 || lastOpen) && (
+        <div className={styles.tool}>
+          <p className={styles.toolTitle}>{tt('bracketEdit.repairTitle', 'Groups and rounds')}</p>
+          <p className={styles.muted}>
+            {tt('bracketEdit.repairSub', 'Each one shows what it would undo before it does it. Nothing changes until you confirm.')}
+          </p>
+          {finishedGroups.map(g => (
+            <div key={`g${g}`} className={styles.repairRow}>
+              <span className={styles.historyWhat}>
+                {tt('bracket.groupN', 'Group {g}').replace('{g}', String.fromCharCode(64 + g))}
+              </span>
+              <button type="button" className={styles.quiet} disabled={busy || Boolean(repair)}
+                      onClick={() => startRepair('group', g)}>
+                {tt('bracketEdit.reopenGroup', 'Reopen this group')}
+              </button>
+            </div>
+          ))}
+          {lastOpen && (
+            <div className={styles.repairRow}>
+              <span className={styles.historyWhat}>
+                {tt('bracketEdit.roundN', 'Round {n}').replace('{n}', lastRound)}
+              </span>
+              <span className={styles.repairButtons}>
+                <button type="button" className={styles.quiet} disabled={busy || Boolean(repair)}
+                        onClick={() => startRepair('delete', lastRound)}>
+                  {tt('bracketEdit.deleteRound', 'Delete the last round')}
+                </button>
+                <button type="button" className={styles.quiet} disabled={busy || Boolean(repair)}
+                        onClick={() => startRepair('regen', lastRound)}>
+                  {tt('bracketEdit.regenRound', 'Regenerate this round')}
+                </button>
+              </span>
+            </div>
+          )}
+
+          {repair && (
+            <div className={styles.confirm}>
+              <p className={styles.toolTitle}>{repairTitle(repair)}</p>
+              {repair.preview && (
+                <>
+                  <p className={styles.muted}>{undoSentence(tt, repair.preview)}</p>
+                  <ul className={styles.previewList}>
+                    {(repair.preview.matches_undone || []).slice(0, PREVIEW_SHOWN).map((m, i) => (
+                      <li key={i} className={styles.previewRow}>{matchLine(tt, m, chosen.format, nameOf)}</li>
+                    ))}
+                  </ul>
+                  {(repair.preview.matches_undone || []).length > PREVIEW_SHOWN && (
+                    <p className={styles.muted}>
+                      {tt('undo.more', 'and {n} more').replace('{n}', repair.preview.matches_undone.length - PREVIEW_SHOWN)}
+                    </p>
+                  )}
+                </>
+              )}
+              <span className={styles.repairButtons}>
+                <button type="button" className={repair.preview?.results_cleared ? styles.danger : styles.primary}
+                        disabled={busy || !repair.preview} onClick={confirmRepair}>
+                  {repairGo(repair)}
+                </button>
+                <button type="button" className={styles.quiet} disabled={busy} onClick={() => { setRepair(null); setProblem(''); }}>
+                  {tt('ui.cancel.0f8e', 'Cancel')}
+                </button>
+              </span>
+            </div>
+          )}
         </div>
       )}
 

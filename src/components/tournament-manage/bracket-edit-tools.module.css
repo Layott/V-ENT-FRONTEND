@@ -145,3 +145,64 @@
   .panel { padding: 1rem 0.9rem; }
   .primary { align-self: stretch; }
 }
+
+/* The repairs (P4b): a group or round row, and the confirm beneath it. A
+   filled surface, no ring, the same press styles as the rest of the panel. */
+.repairRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.8rem;
+  background-color: #2a2b30;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+}
+
+.repairButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: #33343a;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.previewList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.previewRow {
+  background-color: #2a2b30;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.86rem;
+}
+
+.danger {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 1.1rem;
+  background-color: var(--v-ent-red, #ED1C24);
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold, 600);
+  cursor: pointer;
+}
+.danger:hover { background-color: var(--v-ent-light-red, #ff2a31); }
+.danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.danger:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
