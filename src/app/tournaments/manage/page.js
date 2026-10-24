@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useViewer, sameUser, usernameOf } from '@/lib/gating';
 import { useAdminCapabilities } from '@/components/admin-bar/AdminBar';
 import StaffPanel from '@/components/tournament-manage/StaffPanel';
+import ActionsList from '@/components/tournament-manage/ActionsList';
 import { can, tabsFor } from '@/lib/tournamentAccess';
 import BlueprintForm, { defaultName } from '@/components/blueprints/BlueprintForm';
 import blueprintStyles from '@/components/blueprints/blueprints.module.css';
@@ -508,6 +509,13 @@ const ManageContent = ({ slug }) => {
               {tt('blueprint.savedFromConsole', 'Saved. {name} makes its editions from now on.').replace('{name}', blueprintSaved)}{' '}
               <Link href="/tournaments/my-tournaments?tab=blueprints">{tt('blueprint.seeThem', 'See your blueprints')}</Link>
             </p>}
+
+          {/* Needs you (P4a): what the people running this must settle, above
+              the tabs that settle it. Only for somebody who runs something here;
+              the server sends each helper the kinds their permissions reach. */}
+          {decided && (runsIt || helps) && <ActionsList
+            tournamentRef={tournament.tournament_id || tournament.id}
+            token={token} slug={tournament.slug} onOpenTab={openTab} />}
 
           {/* Sub-tab nav. A helper sees the tabs their permissions open: a tab
               they cannot use is a control the API would refuse. */}
