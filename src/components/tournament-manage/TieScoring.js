@@ -91,9 +91,16 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
       } else {
         setDraft((all) => ({ ...all, [slot]: {} }));
         await reload();
+        const crewSettled = detail.tie_rule === 'crew' && body.data?.tie_status === 'completed';
         showToast?.(body.data?.tie_status === 'completed'
-          ? tt('tie.settled', 'Every seat is in. The tie is settled.')
-          : tt('tie.recorded', 'Seat {n} recorded.').replace('{n}', String(slot)));
+          ? (crewSettled
+            ? tt('tie.crewSettled', 'The crew battle is decided.')
+            : tt('tie.settled', 'Every seat is in. The tie is settled.'))
+          : detail.tie_rule === 'crew'
+            ? tt('tie.gameRecorded', 'Game {n} recorded.').replace('{n}', String(slot))
+            : detail.team_game && f.slot > detail.seats
+              ? tt('tie.teamGameRecorded', 'Team game recorded.')
+              : tt('tie.recorded', 'Seat {n} recorded.').replace('{n}', String(slot)));
         onRecorded?.();
       }
     } catch {
@@ -106,18 +113,33 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
   if (!detail) return null;
   const agg = detail.aggregate || {};
   const settled = detail.status === 'completed';
+  const rule = detail.tie_rule || 'goals';
+
+  /** A crew game has no fixed players, and neither does the team game. */
+  const openRow = (f) => rule === 'crew' || (Boolean(detail.team_game) && f.slot > detail.seats);
+
+  /** What a row is called: a game of a crew battle, the team game, or a seat. */
+  const rowName = (f) => {
+    if (rule === 'crew') return tt('tie.gameN', 'Game {n}').replace('{n}', String(f.slot));
+    if (detail.team_game && f.slot > detail.seats) return tt('tie.teamGame', 'Team game');
+    return tt('tie.seat', 'Seat {n}').replace('{n}', String(f.slot));
+  };
 
   return (
     <div className={styles.wrap}>
       <div className={styles.head}>
         <h2 className={styles.title}>{tt('tie.title', 'This tie, seat by seat')}</h2>
         <p className={styles.sub}>
-          {tt('tie.sub', 'One game per seat. The tie is decided on total goals across the seats, never on games won, and it settles itself once every seat is in.')}
+          {rule === 'crew'
+            ? tt('tie.subCrew', 'Players go one at a time. The loser of each game is out and the winner stays on. The first crew to knock out every opponent wins, and the tie settles itself then.')
+            : rule === 'sub_wins'
+              ? tt('tie.subWins', 'One game per seat. The tie goes to the side that wins more games, and it settles itself once every game is in.')
+              : tt('tie.sub', 'One game per seat. The tie is decided on total goals across the seats, never on games won, and it settles itself once every seat is in.')}
         </p>
       </div>
 
       <div className={styles.aggregate}>
-        <span className={styles.aggLabel}>{tt('tie.aggregate', 'Aggregate')}</span>
+        <span className={styles.aggLabel}>{rule === 'goals' ? tt('tie.aggregate', 'Aggregate') : tt('tie.aggWins', 'Games won')}</span>
         <span className={styles.aggScore}>
           {agg.participant_1 ?? 0} <span className={styles.aggDash} /> {agg.participant_2 ?? 0}
         </span>
@@ -143,17 +165,17 @@ export default function TieScoring({ tie, token, onRecorded, showToast }) {
           return (
             <div key={f.slot} className={`${styles.seat} ${done ? styles.seatDone : ''}`}>
               <div className={styles.seatHead}>
-                <span className={styles.seatLabel}>{tt('tie.seat', 'Seat {n}').replace('{n}', String(f.slot))}</span>
+                <span className={styles.seatLabel}>{rowName(f)}</span>
                 <span className={styles.seatStatus}>{done ? tt('tie.in', 'In') : tt('tie.notYet', 'Not yet')}</span>
               </div>
               <div className={styles.seatRow}>
-                <span className={styles.player}>{f.player_1?.name || f.player_1?.username || tt('tie.seatEmpty', 'Seat not filled')}</span>
+                <span className={styles.player}>{f.player_1?.name || f.player_1?.username || (openRow(f) ? tt('tie.whoever', 'Whoever plays') : tt('tie.seatEmpty', 'Seat not filled'))}</span>
                 <input className={styles.goals} inputMode="numeric" value={v1}
                        onChange={(e) => setDraft((all) => ({ ...all, [f.slot]: { ...(all[f.slot] || {}), goals_1: e.target.value } }))} />
                 <span className={styles.dash} />
                 <input className={styles.goals} inputMode="numeric" value={v2}
                        onChange={(e) => setDraft((all) => ({ ...all, [f.slot]: { ...(all[f.slot] || {}), goals_2: e.target.value } }))} />
-                <span className={`${styles.player} ${styles.playerAway}`}>{f.player_2?.name || f.player_2?.username || tt('tie.seatEmpty', 'Seat not filled')}</span>
+                <span className={`${styles.player} ${styles.playerAway}`}>{f.player_2?.name || f.player_2?.username || (openRow(f) ? tt('tie.whoever', 'Whoever plays') : tt('tie.seatEmpty', 'Seat not filled'))}</span>
               </div>
               <div className={styles.seatActions}>
                 <button type="button" className={styles.primary}
