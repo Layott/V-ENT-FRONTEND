@@ -82,7 +82,7 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
-      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
+      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0, mcmahon_bands: 0 }
         : format === 'league_phase' ? { legs: 1, pots: 4, per_pot: 2 }
         : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
@@ -398,6 +398,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
       const found = SWISS_PAIRINGS.find(([v]) => v === s.pairing);
       if (found) bits.push(tt('stages.pairedBy', 'paired {how}').replace('{how}', tt(found[1], found[2])));
+    }
+    if (row.format === 'swiss' && Number(s.mcmahon_bands) > 1) {
+      bits.push(tt('stages.mcmahonOn', 'McMahon, {n} bands by seed').replace('{n}', s.mcmahon_bands));
     }
     if (Number(s.decisive_best_of) > 0) {
       bits.push(tt('stages.decisiveOn', 'a match that decides is best of {n}').replace('{n}', s.decisive_best_of));
@@ -1511,6 +1514,21 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                           : s.pairing === 'valve'
                             ? tt('stages.pairValveNote', 'The Counter-Strike Major way: the strongest on a record plays the weakest on it.')
                             : tt('stages.pairMonradNote', 'First against second, third against fourth, on the same record.')}
+                      </span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.mcmahon', 'Starting scores (McMahon)')}</span>
+                      <Chips value={Number(s.mcmahon_bands || 0)} disabled={busy}
+                             label={tt('stages.mcmahon', 'Starting scores (McMahon)')}
+                             options={[[0, tt('stages.mcmahonOff', 'Everybody on 0')],
+                                       [2, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 2)],
+                                       [3, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 3)],
+                                       [4, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 4)]]}
+                             onChange={v => setSetting(index, 'mcmahon_bands', v)} />
+                      <span className={styles.note}>
+                        {Number(s.mcmahon_bands || 0) > 1
+                          ? tt('stages.mcmahonNote', 'The field is split by seed. The top band starts on 0, the next on -1, and so on. Every round pairs equal scores, so games are even from round one.')
+                          : tt('stages.mcmahonOffNote', 'An ordinary Swiss: everybody starts level.')}
                       </span>
                     </div>
                     <div className={styles.field}>
