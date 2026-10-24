@@ -29,6 +29,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import FixtureDetail from './FixtureDetail';
+import FormatDecision from './FormatDecision';
+import { titleOf } from '@/lib/formatDecision';
 import MatchRoom from '../match-room/MatchRoom';
 import BattleRoyaleBoard from '../battle-royale/BattleRoyaleBoard';
 import Link from 'next/link';
@@ -649,13 +651,21 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
                     className={`${styles.stageChip} ${data.stage_id === stage.id ? styles.stageChipOn : ''}`}
                     aria-pressed={data.stage_id === stage.id}
                     onClick={() => { setStageId(stage.id); setView(null); }}>
-              <span>{stageName(tt, stage.label, stage.format, stage.preset)}</span>
+              <span>{titleOf(tt, stage)}</span>
               <span className={styles.stageChipState}>
                 {stageState(tt, stage)}
               </span>
             </button>
           ))}
         </div>
+      )}
+
+      {/* How the selected stage's format is decided, or how it was (P4c). Keyed
+          on the formats, so the page reads it again once a stage is settled. */}
+      {data.stage_id && stages.length > 0 && (
+        <FormatDecision key={`${data.stage_id}:${stages.map(s => s.format).join('|')}`}
+                        tournamentRef={tournamentRef || tournamentId} stageId={data.stage_id}
+                        entrant={mineIds.size > 0} />
       )}
 
       {showPath && ((feedRows?.incoming || []).length > 0 || (feedRows?.outgoing || []).length > 0) && (

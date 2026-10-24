@@ -36,6 +36,7 @@ import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatLabel, stageFormatLabel, stageName } from '@/lib/formatLabel';
 import { lineWords } from '@/lib/stageGraph';
+import { UNDECIDED, decidedSentence, decideSentence, isUndecided, statusSentence, titleOf } from '@/lib/formatDecision';
 import StageGraph from '@/components/stage-graph/StageGraph';
 import FeedsPanel from './FeedsPanel';
 import { useT } from '@/i18n/LanguageProvider';
@@ -77,11 +78,21 @@ const SEEDING = [
   ['random', 'seed.random', 'Draw at random'],
 ];
 
+// How a stage whose format is chosen later is decided (P4c): the word and the
+// rule's key, and the English behind the word.
+const DECIDE_BY = [
+  ['vote', 'stages.decideVote', 'The entrants vote'],
+  ['bands', 'stages.decideBands', 'By the number who register'],
+  ['organiser', 'stages.decideOrganiser', 'I pick before the draw'],
+];
+
 /** Drawn, or past drawn: what was played on it is fixed. */
 const isDrawn = row => Boolean(row?.drawn_at) || Boolean(row?.status && row.status !== 'pending');
 const CHECK_IN = [0, 5, 10, 15, 30];
 
-const defaultSettings = format => (format === 'battle_royale' ? defaultBR()
+const defaultSettings = format => (format === UNDECIDED
+  ? { decide_by: 'vote', options: ['round_robin', 'single_elimination'], bands: [], apply: 'auto' }
+  : format === 'battle_royale' ? defaultBR()
   : format === 'challenge_ladder'
     ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '', reach: 3, shape: 'ladder' }
   : TABLE.has(format)
@@ -143,6 +154,39 @@ const Chips = ({ value, options, onChange, disabled, label }) => (
     ))}
   </div>
 );
+
+// The organiser's pick for an undecided stage (P4c): the formats the entrants
+// were offered, or any format when there were none, and the band the count
+// proposed, accepted as it stands.
+const PickFormat = ({ row, catalogue, busy, onSettle }) => {
+  const tt = useT();
+  const state = row.format_decision || {};
+  const offered = (state.options || []).map(o => o.key);
+  const pool = offered.length ? offered : catalogue.map(f => f.key);
+  const [choice, setChoice] = useState('');
+  return (
+    <div className={styles.pick}>
+      {state.proposed && (
+        <button type="button" className={styles.save} disabled={busy} onClick={() => onSettle(row, '')}>
+          {tt('stages.acceptBand', 'Accept {format}').replace('{format}', formatLabel(tt, state.proposed, ''))}
+        </button>
+      )}
+      <label className={styles.field}>
+        <span className={styles.fieldLabel}>{tt('stages.pickFormat', 'Or pick the format')}</span>
+        <select className={styles.select} value={choice} disabled={busy} onChange={e => setChoice(e.target.value)}>
+          <option value="">{tt('stages.pickNone', 'Choose a format')}</option>
+          {pool.map(key => (
+            <option key={key} value={key}>{formatLabel(tt, key, '')}</option>
+          ))}
+        </select>
+      </label>
+      <button type="button" className={styles.ghost} disabled={busy || !choice}
+              onClick={() => onSettle(row, choice)}>
+        {tt('stages.pickGo', 'Set this format')}
+      </button>
+    </div>
+  );
+};
 
 // `can` is what the viewer holds here (P7, from /access/): `structure` changes
 // the plan, a stage's format and adopts a drawn bracket; `place` draws a stage,
@@ -461,7 +505,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const into = id => lines.filter(l => l.target === id);
   // A stage's name on screen: what the organiser typed, else the format's name in the reader's language.
-  const nameOf = row => stageName(tt, row?.label, row?.format, row?.settings?.preset);
+  const nameOf = row => titleOf(tt, row);
   const labelOf = id => nameOf(rows.find(r => r.id === id));
 
   // "Places 1 to 2 of each group go to Playoff, in the upper bracket." One
@@ -1058,6 +1102,105 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     // Keyed on the choices themselves: the row object is rebuilt on every load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [acting?.kind, acting?.row?.id, acting?.format, acting?.groups, acting?.advances, acting?.seeding]);
+  // The organiser settles a stage whose format is still open (P4c). No format
+  // accepts the band the count proposed.
+  const settleFormat = (row, format) => stageTool(`stages/${row.id}/format/settle/`,
+    format ? { format } : {},
+    data => tt('stages.settled', '{stage} is now {format}.')
+      .replace('{stage}', nameOf(row))
+      .replace('{format}', formatLabel(tt, data.format_decision?.format, '')));
+
+  // A stage whose format is chosen later, in the editor (P4c): how it is
+  // decided, and the choices that go with that way. Its match settings wait
+  // until it has a format.
+  const decideFields = (row, index) => {
+    const d = row.settings || {};
+    const by = d.decide_by || 'vote';
+    const options = d.options || [];
+    const bands = d.bands || [];
+    const setBands = next => setSetting(index, 'bands', next);
+    const nextFrom = bands.reduce((top, b) => Math.max(top, (b.max === null || b.max === '' || b.max === undefined
+      ? Number(b.min) : Number(b.max)) + 1), 0);
+    return (
+      <>
+        <p className={styles.subhead}>{tt('stages.decideHow', 'How the format is decided')}</p>
+        <div className={styles.field}>
+          <Chips value={by} disabled={busy} label={tt('stages.decideHow', 'How the format is decided')}
+                 options={DECIDE_BY.map(([v, key, text]) => [v, tt(key, text)])}
+                 onChange={v => setSetting(index, 'decide_by', v)} />
+          <span className={styles.note}>
+            {by === 'vote' && options.length < 2
+              ? tt('stages.decideOfferNeed', 'Offer two to five formats for the entrants to choose from.')
+              : decideSentence(tt, { ...d, decide_by: by })}
+          </span>
+        </div>
+        {by === 'vote' && (
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>{tt('stages.decideOffer', 'Formats to choose from (2 to 5)')}</span>
+            <div className={styles.chips} role="group" aria-label={tt('stages.decideOffer', 'Formats to choose from (2 to 5)')}>
+              {catalogue.map(f => {
+                const on = options.includes(f.key);
+                return (
+                  <button key={f.key} type="button" disabled={busy || (!on && options.length >= 5)}
+                          className={`${styles.chip} ${on ? styles.chipOn : ''}`} aria-pressed={on}
+                          onClick={() => setSetting(index, 'options',
+                            on ? options.filter(k => k !== f.key) : [...options, f.key])}>
+                    {formatLabel(tt, f.key, f.label)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {by === 'bands' && (
+          <>
+            <span className={styles.fieldLabel}>{tt('stages.bandsHead', 'Format by how many are confirmed')}</span>
+            {bands.map((band, at) => (
+              <div key={at} className={styles.bandRow}>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.bandFromLabel', 'From')}</span>
+                  <input className={styles.number} type="number" min="0" inputMode="numeric" value={band.min} disabled={busy}
+                         onChange={e => setBands(bands.map((b, i) => (i === at ? { ...b, min: e.target.value } : b)))} />
+                </label>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.bandToLabel', 'To')}</span>
+                  <input className={styles.number} type="number" min="0" inputMode="numeric" value={band.max ?? ''}
+                         placeholder={tt('stages.bandNoTop', 'No limit')} disabled={busy}
+                         onChange={e => setBands(bands.map((b, i) => (i === at ? { ...b, max: e.target.value } : b)))} />
+                </label>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{tt('stages.bandFormat', 'Format')}</span>
+                  <select className={styles.select} value={band.format} disabled={busy}
+                          onChange={e => setBands(bands.map((b, i) => (i === at ? { ...b, format: e.target.value } : b)))}>
+                    {catalogue.map(f => (
+                      <option key={f.key} value={f.key}>{formatLabel(tt, f.key, f.label)}</option>
+                    ))}
+                  </select>
+                </label>
+                <button type="button" className={styles.iconBtn} disabled={busy}
+                        aria-label={tt('stages.bandRemove', 'Remove this band')}
+                        onClick={() => setBands(bands.filter((_, i) => i !== at))}>
+                  <LuX aria-hidden="true" />
+                </button>
+              </div>
+            ))}
+            <button type="button" className={styles.ghost} disabled={busy}
+                    onClick={() => setBands([...bands, { min: nextFrom, max: null,
+                      format: catalogue[0]?.key || 'round_robin' }])}>
+              <LuPlus aria-hidden="true" /> {tt('stages.bandAdd', 'Add a band')}
+            </button>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{tt('stages.applyWhen', 'When registration closes')}</span>
+              <Chips value={d.apply || 'auto'} disabled={busy} label={tt('stages.applyWhen', 'When registration closes')}
+                     options={[['auto', tt('stages.applyAuto', 'Apply it')],
+                               ['confirm', tt('stages.applyConfirm', 'Ask me first')]]}
+                     onChange={v => setSetting(index, 'apply', v)} />
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
 
   if (loading) return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;
 
@@ -1146,11 +1289,12 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
             const ins = into(row.id);
             const outs = outOf(row.id);
             const fed = ins.length === 0 || ins.every(l => l.fired_at);
-            const drawable = canPlace && !row.drawn_at && fed;
+            // A stage whose format is not chosen yet has nothing to draw.
+            const drawable = canPlace && !row.drawn_at && fed && !isUndecided(row);
             // A knockout fed by links can be drawn before they send, seats
             // waiting for their places (P1d); its seats are fixed by place, so
             // only with the cross placement.
-            const earlyDrawable = canPlace && !row.drawn_at && !fed && !meta.finished
+            const earlyDrawable = canPlace && !row.drawn_at && !fed && !meta.finished && !isUndecided(row)
               && ['single_elimination', 'double_elimination'].includes(row.format)
               && (row.placement || 'cross') === 'cross';
             const closable = canPlace && row.drawn_at && row.status !== 'complete' && outs.length > 0;
@@ -1172,10 +1316,12 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                 <span className={styles.order}>{index + 1}</span>
                 <div className={styles.stageText}>
                   <span className={styles.stageName}>{nameOf(row)}</span>
-                  {plainChain
+                  {plainChain && !isUndecided(row)
                     ? <span className={styles.stageLine}>{sentence(row, index, rows)}</span>
                     : <>
-                        <span className={styles.stageLine}>{formatSentence(row)}</span>
+                        <span className={styles.stageLine}>
+                          {isUndecided(row) ? decideSentence(tt, row.settings) : formatSentence(row)}
+                        </span>
                         {outs.length
                           ? outs.map(l => (
                             <span key={l.id || `${l.source}-${l.target}-${l.place_from}`} className={styles.stageLine}>
@@ -1188,7 +1334,17 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                                 : tt('stages.lineSink', 'Their final places are decided here.')}
                             </span>}
                       </>}
-                  <span className={styles.stageLine}>{playedAs(row)}</span>
+                  {!isUndecided(row) && <span className={styles.stageLine}>{playedAs(row)}</span>}
+                  {row.format_decision && !isUndecided(row) && row.format_decision.by && (
+                    <span className={styles.stageLine}>{decidedSentence(tt, row.format_decision)}</span>
+                  )}
+                  {isUndecided(row) && statusSentence(tt, row.format_decision) && (
+                    <span className={styles.stageLine}>{statusSentence(tt, row.format_decision)}</span>
+                  )}
+                  {canShape && isUndecided(row) && (row.format_decision?.needs_organiser || row.format_decision?.proposed
+                    || row.format_decision?.decide_by === 'organiser') && (
+                    <PickFormat row={row} catalogue={catalogue} busy={busy} onSettle={settleFormat} />
+                  )}
                   {index > 0 && <span className={styles.stageLine}>{arrival(row, index)}</span>}
                   {(row.when?.is_its_own || row.where?.is_its_own) && (
                     <span className={styles.stageWhen}>
@@ -1472,6 +1628,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                     <span className={styles.fieldLabel}>{tt('stages.format', 'Played as')}</span>
                     <select className={styles.select} value={row.format} disabled={busy || locked}
                             onChange={e => setField(index, 'format', e.target.value)}>
+                      <option value={UNDECIDED}>{tt('stages.decideLater', 'Decide later')}</option>
                       {catalogue.map(f => (
                         <option key={f.key} value={f.key}>
                           {formatLabel(tt, f.key, f.label)}
@@ -1491,10 +1648,13 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
 
                 </div>
 
+                {isUndecided(row) && decideFields(row, index)}
+
                 {/* Everything below up to "when and where" is how the stage is
                     played, which a drawn stage keeps: one fieldset disables
                     every control in it rather than forty separate props. */}
                 <fieldset className={styles.lockSet} disabled={locked}>
+                {!isUndecided(row) && <>
                 {/* The format's own switches. */}
                 <p className={styles.subhead}>{tt('stages.formatSettings', 'This format')}</p>
                 <div className={styles.fields}>
@@ -1796,13 +1956,14 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                     </div>
                   )}
                 </div>
+                </>}
                 {row.format === 'battle_royale' && (
                   <BRSettingsFields value={s} disabled={busy} isLast={last}
                                     onChange={next => setDraft(prev => prev.map((r, i) => (i === index ? { ...r, settings: next } : r)))} />
                 )}
 
                 {/* How a match is played. */}
-                {row.format !== 'battle_royale' && <>
+                {!['battle_royale', UNDECIDED].includes(row.format) && <>
                 <p className={styles.subhead}>{tt('stages.matchSettings', 'Each match')}</p>
                 {preset && (
                   <button type="button" className={styles.ghost} disabled={busy} onClick={() => applyPreset(index)}>
