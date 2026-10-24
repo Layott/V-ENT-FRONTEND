@@ -44,6 +44,10 @@ const SEEDING_CHOICES = [{
   label: 'By ranking',
   hint: 'Strongest entrants are kept apart until late rounds.'
 }, {
+  value: 'rating',
+  label: 'By rating (Elo)',
+  hint: 'From every match played on V-ENT in this game. Anybody new starts level.'
+}, {
   value: 'manual_order',
   label: 'I will seed it myself',
   hint: 'You set the order before generating.'

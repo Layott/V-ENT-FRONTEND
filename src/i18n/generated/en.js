@@ -10664,6 +10664,8 @@ const table = {
  "stages.buchholzForm": "The strength of the opponents counts their",
  "stages.valvePreset": "Use the Counter-Strike Major setup: three wins through, three losses out, decisive matches best of three",
  "stages.decisiveOn": "a match that decides is best of {n}",
+ "seed.rating": "By rating (Elo)",
+ "seed.ratingHint": "From every match played on V-ENT in this game, strongest first. Anybody new starts level, in sign up order.",
  "stages.decisiveSame": "Like any other",
  "stages.decisive": "A match that can send a side through or out",
  "stages.pairedBy": "paired {how}",
