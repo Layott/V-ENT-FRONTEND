@@ -82,7 +82,7 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
-      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
+      ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0, mcmahon_bands: 0 }
         : format === 'league_phase' ? { legs: 1, pots: 4, per_pot: 2 }
         : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }),
       ...(format === 'aggregate_2v2' ? { tie_rule: 'goals', team_game: false } : {}) }
@@ -164,6 +164,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const [ffaRounds, setFfaRounds] = useState([]);
   // The split league builder (P3 W3a): its numbers while open.
   const [split, setSplit] = useState(null);
+  // The Swiss with a top cut builder (P3 W3c): its numbers while open.
+  const [swiss, setSwiss] = useState(null);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -404,6 +406,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
       const found = SWISS_PAIRINGS.find(([v]) => v === s.pairing);
       if (found) bits.push(tt('stages.pairedBy', 'paired {how}').replace('{how}', tt(found[1], found[2])));
+    }
+    if (row.format === 'swiss' && Number(s.mcmahon_bands) > 1) {
+      bits.push(tt('stages.mcmahonOn', 'McMahon, {n} bands by seed').replace('{n}', s.mcmahon_bands));
     }
     if (Number(s.decisive_best_of) > 0) {
       bits.push(tt('stages.decisiveOn', 'a match that decides is best of {n}').replace('{n}', s.decisive_best_of));
@@ -668,6 +673,51 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     }
   };
 
+  // A Swiss with a top cut as a plan (P3 W3c): a fixed number of Swiss rounds,
+  // then the top places play a single elimination bracket. The server writes
+  // both stages and the line that sends the cut into the bracket.
+  const buildSwiss = async () => {
+    if (!swiss) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const query = new URLSearchParams({ kind: 'swiss_top_cut', entrants: swiss.entrants,
+        cut: swiss.cut });
+      // Empty rounds leaves the count to the server (the fewest that separate the field).
+      if (String(swiss.rounds).trim() !== '') query.set('rounds', swiss.rounds);
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/preset/?${query}`, { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setProblem(apiMessage(tt, body, 'stages.swissFailed', 'That Swiss with a top cut could not be built.'));
+        return;
+      }
+      const labelOf = s => (s.format === 'swiss'
+        ? tt('stages.swissRoundsLabel', 'Swiss')
+        : tt('stages.swissCutLabel', 'Top cut'));
+      const made = (body.data.stages || []).map(s => ({
+        ...blank(s.format),
+        label: labelOf(s),
+        advances: s.advances,
+        settings: { ...defaultSettings(s.format), ...s.settings },
+        // A preset may set the tie-breaks too (a card game Swiss ranks on
+        // opponents' win percentage).
+        rules: s.rules || {},
+      }));
+      setDraft(made);
+      setDraftLines((body.data.lines || []).map(l => ({
+        ...newLine(made[l.source].key, made[l.target].key, l.place_to),
+        place_from: l.place_from,
+        carry_points: Boolean(l.carry_points),
+      })));
+      setFfaRounds([]);
+      setSwiss(null);
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   // A split league as a plan (P3 W3a): one league, then a top league and a
   // bottom league that keep the points each side won. The server writes the
   // three stages and the lines that carry the points into them.
@@ -694,6 +744,9 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
         label: labelOf(s.kind),
         advances: s.advances,
         settings: { ...defaultSettings(s.format), ...s.settings },
+        // A preset may set the tie-breaks too (a card game Swiss ranks on
+        // opponents' win percentage).
+        rules: s.rules || {},
       }));
       setDraft(made);
       setDraftLines((body.data.lines || []).map(l => ({
@@ -1540,6 +1593,21 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                       </span>
                     </div>
                     <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.mcmahon', 'Starting scores (McMahon)')}</span>
+                      <Chips value={Number(s.mcmahon_bands || 0)} disabled={busy}
+                             label={tt('stages.mcmahon', 'Starting scores (McMahon)')}
+                             options={[[0, tt('stages.mcmahonOff', 'Everybody on 0')],
+                                       [2, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 2)],
+                                       [3, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 3)],
+                                       [4, tt('stages.mcmahonBands', '{n} bands').replace('{n}', 4)]]}
+                             onChange={v => setSetting(index, 'mcmahon_bands', v)} />
+                      <span className={styles.note}>
+                        {Number(s.mcmahon_bands || 0) > 1
+                          ? tt('stages.mcmahonNote', 'The field is split by seed. The top band starts on 0, the next on -1, and so on. Every round pairs equal scores, so games are even from round one.')
+                          : tt('stages.mcmahonOffNote', 'An ordinary Swiss: everybody starts level.')}
+                      </span>
+                    </div>
+                    <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.decisive', 'A match that can send a side through or out')}</span>
                       <Chips value={Number(s.decisive_best_of || 0)} disabled={busy}
                              label={tt('stages.decisive', 'A match that can send a side through or out')}
@@ -2073,6 +2141,47 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                         onClick={() => setSplit({ entrants: entrants.length || 12, legs: 2,
                                                   top: Math.floor((entrants.length || 12) / 2) })}>
                   {tt('stages.splitOpen', 'Build a split league')}
+                </button>
+              )}
+              <p className={styles.subhead}>{tt('stages.swissTitle', 'A Swiss with a top cut')}</p>
+              <p className={styles.note}>
+                {tt('stages.swissHint', 'Everybody plays a fixed number of Swiss rounds, then the top places play a single elimination bracket. Card games run it this way. This replaces the stages above.')}
+              </p>
+              {swiss ? (
+                <>
+                  <div className={styles.fields}>
+                    <label className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissEntrants', 'Entrants expected')}</span>
+                      <input className={styles.number} type="number" min={8} max={5000} inputMode="numeric"
+                             value={swiss.entrants} disabled={busy}
+                             onChange={e => setSwiss(prev => ({ ...prev, entrants: e.target.value }))} />
+                    </label>
+                    <label className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissCutRounds', 'Swiss rounds (leave empty for the automatic count)')}</span>
+                      <input className={styles.number} type="number" min={3} max={15} inputMode="numeric"
+                             value={swiss.rounds} disabled={busy}
+                             onChange={e => setSwiss(prev => ({ ...prev, rounds: e.target.value }))} />
+                    </label>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.swissCut', 'Places that play the bracket')}</span>
+                      <Chips value={Number(swiss.cut)} disabled={busy} label={tt('stages.swissCut', 'Places that play the bracket')}
+                             options={[[4, '4'], [8, '8'], [16, '16'], [32, '32']]}
+                             onChange={v => setSwiss(prev => ({ ...prev, cut: v }))} />
+                    </div>
+                  </div>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} onClick={buildSwiss} disabled={busy}>
+                      {tt('stages.swissBuild', 'Write the plan')}
+                    </button>
+                    <button type="button" className={styles.quiet} onClick={() => setSwiss(null)} disabled={busy}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button type="button" className={styles.ghost} disabled={busy}
+                        onClick={() => setSwiss({ entrants: entrants.length || 16, rounds: '', cut: 8 })}>
+                  {tt('stages.swissOpen', 'Build a Swiss with a top cut')}
                 </button>
               )}
             </div>

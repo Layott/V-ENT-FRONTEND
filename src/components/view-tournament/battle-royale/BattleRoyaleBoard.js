@@ -103,7 +103,7 @@ export default function BattleRoyaleBoard({ tournamentRef, stageId = null, token
   return (
     <div>
       <p className={styles.note}>{scoringLine(tt, current.settings)}</p>
-      {current.settings.match_point > 0 && (
+      {current.settings.match_point > 0 && current.settings.score_by !== 'time' && (
         <p className={styles.note}>
           {tt('br.matchPointLine', 'Match point is {n}: a squad at or over it that wins a match takes its lobby.')
             .replace('{n}', current.settings.match_point)}

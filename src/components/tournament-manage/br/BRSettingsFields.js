@@ -57,6 +57,7 @@ export const defaultBR = (game = '') => {
     mvp_criteria: ['kills', 'damage', 'assists'],
     mvp_scope: 'overall',
     match_point: 0,
+    score_by: 'points',
     advance_by: 'overall',
     carry_over: {},
     check_in_minutes: 0,
@@ -214,6 +215,18 @@ export default function BRSettingsFields({ value, onChange, disabled = false, is
       </div>
 
       <p className={styles.subhead}>{tt('br.scoringHead', 'Points')}</p>
+      <div className={styles.field}>
+        <span className={styles.fieldLabel}>{tt('br.scoreBy', 'Score by')}</span>
+        <Chips value={s.score_by || 'points'} disabled={disabled} label={tt('br.scoreBy', 'Score by')}
+               options={[['points', tt('br.scoreByPoints', 'Points')],
+                         ['time', tt('br.scoreByTime', 'Time')]]}
+               onChange={v => set('score_by', v)} />
+      </div>
+      {s.score_by === 'time' && (
+        <p className={styles.note}>
+          {tt('br.scoreByTimeNote', 'Lowest total time wins. Leave the placement empty and it follows from the times.')}
+        </p>
+      )}
       <div className={styles.field}>
         <span className={styles.fieldLabel}>{tt('br.placementTable', 'Placement points')}</span>
         <Chips value={s.placement_preset} disabled={disabled}
