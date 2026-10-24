@@ -30,6 +30,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { plural } from '@/lib/plural';
 import DateField from '@/components/date-field/DateField';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
+import { formatDuration } from '@/lib/duration';
 import BRSettingsFields, { defaultBR } from './BRSettingsFields';
 import BRStandings, { StageMvp, goingThrough, lobbyLabel } from './BRStandings';
 import styles from './br.module.css';
@@ -46,7 +47,7 @@ export const matchLabel = (tt, number) => tt('br.matchN', 'MATCH {n}').replace('
 
 const blankRow = seat => ({
   registration_id: seat.registration_id, name: seat.name,
-  played: true, placement: '', kills: '', assists: '', damage: '',
+  played: true, placement: '', kills: '', assists: '', damage: '', time: '',
   bonus: '', penalty: '', adjustment_note: '',
   players: (seat.roster || []).map(u => ({ user_id: u.user_id, name: u.username,
                                             kills: '', damage: '', assists: '' })),
@@ -62,6 +63,7 @@ const fromResult = (seat, result) => {
     played: result.played,
     placement: result.placement ?? '',
     kills: result.kills ?? '',
+    time: result.duration_ms != null ? formatDuration(result.duration_ms) : '',
     assists: result.assists || '',
     damage: result.damage || '',
     bonus: result.bonus || '',
@@ -76,7 +78,7 @@ const fromResult = (seat, result) => {
 
 const blankish = v => v === '' || v === null || v === undefined;
 
-function EntrySheet({ match, lobby, tt, onSave, onClose, busy }) {
+function EntrySheet({ match, lobby, tt, onSave, onClose, busy, timed }) {
   const byReg = useMemo(() => new Map((match.results || []).map(r => [r.registration_id, r])),
     [match.results]);
   const [rows, setRows] = useState(() => lobby.seats.map(s => fromResult(s, byReg.get(s.registration_id))));
@@ -106,6 +108,10 @@ function EntrySheet({ match, lobby, tt, onSave, onClose, busy }) {
       }
       if (!blankish(r.assists)) out.assists = Number(r.assists) || 0;
       if (!blankish(r.damage)) out.damage = Number(r.damage) || 0;
+      // A squad with no time did not finish; the server reads the placements
+      // from the times when the stage is scored by time.
+      const time = timed && r.played ? String(r.time || '').trim() : '';
+      if (time) out.time = time;
       return out;
     });
     onSave(payload);
@@ -122,7 +128,7 @@ function EntrySheet({ match, lobby, tt, onSave, onClose, busy }) {
       <div className={styles.entryRows}>
         {rows.map((r, i) => (
           <div key={r.registration_id} className={styles.entryRow}>
-            <div className={styles.entryTop}>
+            <div className={timed ? `${styles.entryTop} ${styles.entryTimed}` : styles.entryTop}>
               <span className={styles.entryName}>{r.name}</span>
               <label className={styles.field} style={{ margin: 0 }}>
                 <span className={styles.fieldLabel}>{tt('br.placement', 'Place')}</span>
@@ -142,6 +148,15 @@ function EntrySheet({ match, lobby, tt, onSave, onClose, busy }) {
                        disabled={busy || !r.played || r.players.some(p => !blankish(p.kills))}
                        onChange={e => set(i, 'kills', e.target.value)} />
               </label>
+              {timed && (
+                <label className={styles.field} style={{ margin: 0 }}>
+                  <span className={styles.fieldLabel}>{tt('br.time', 'Time')}</span>
+                  <input className={styles.text} type="text" maxLength={12}
+                         placeholder={tt('br.timePlaceholder', 'm:ss')} value={r.time}
+                         disabled={busy || !r.played}
+                         onChange={e => set(i, 'time', e.target.value)} />
+                </label>
+              )}
               <div className={styles.chips}>
                 <button type="button" className={`${styles.chip} ${!r.played ? styles.chipOn : ''}`}
                         aria-pressed={!r.played} disabled={busy}
@@ -907,6 +922,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                     )}
                     {isOpen && open.kind === 'entry' && (
                       <EntrySheet match={match} lobby={lobby} tt={tt} busy={busy}
+                                  timed={current.settings?.score_by === 'time'}
                                   onSave={rows => saveResults(match, rows)} onClose={() => setOpen(null)} />
                     )}
                     {isOpen && open.kind === 'entry' && match.status === 'entered' && (

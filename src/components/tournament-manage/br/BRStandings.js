@@ -9,6 +9,7 @@
 
 import { useT } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
+import { formatDuration } from '@/lib/duration';
 import { plural } from '@/lib/plural';
 import UserChip from '@/components/user-chip/UserChip';
 import { TIEBREAK_WORDS } from './BRSettingsFields';
@@ -50,6 +51,8 @@ const split = (tt, row) => {
   if (row.decided_by === 'match_point') {
     return tt('br.splitMatchPoint', 'Below the squad that won on match point');
   }
+  if (row.decided_by === 'time') return tt('br.splitTime', 'Lower total time');
+  if (row.decided_by === 'finished') return tt('br.splitFinished', 'More matches finished');
   return tt('bracket.splitBy', 'Level on points; {how}')
     .replace('{how}', tt(`tiebreak.${row.decided_by}`,
       TIEBREAK_WORDS[row.decided_by] || row.decided_by.replace(/_/g, ' ')).toLowerCase());
@@ -69,6 +72,8 @@ export default function BRStandings({ rows, through = new Set(), byLobby = false
     return <p className={styles.state}>{tt('br.noTable', 'The table fills in as results are entered.')}</p>;
   }
   const n = v => formatNumber(v ?? 0);
+  // A time-scored stage shows each squad's total time where the points were.
+  const byTime = rows[0]?.score_by === 'time';
   return (
     <div className={styles.tableScroller}>
       <table className={styles.table}>
@@ -81,9 +86,10 @@ export default function BRStandings({ rows, through = new Set(), byLobby = false
             <th title={tt('br.col.playedLong', 'Matches played')}>{tt('br.col.played', 'M')}</th>
             <th title={tt('br.col.booyahsLong', 'First places')}>{tt('br.col.booyahs', '1st')}</th>
             <th title={tt('br.col.killsLong', 'Kills')}>{tt('br.col.kills', 'Kills')}</th>
-            <th title={tt('br.col.placementLong', 'Points from placements')}>{tt('br.col.placement', 'Place pts')}</th>
-            <th title={tt('br.col.killPointsLong', 'Points from kills')}>{tt('br.col.killPoints', 'Kill pts')}</th>
-            <th title={tt('br.col.totalLong', 'Total points')}>{tt('br.col.total', 'Total')}</th>
+            {!byTime && <th title={tt('br.col.placementLong', 'Points from placements')}>{tt('br.col.placement', 'Place pts')}</th>}
+            {!byTime && <th title={tt('br.col.killPointsLong', 'Points from kills')}>{tt('br.col.killPoints', 'Kill pts')}</th>}
+            {!byTime && <th title={tt('br.col.totalLong', 'Total points')}>{tt('br.col.total', 'Total')}</th>}
+            {byTime && <th title={tt('br.col.timeLong', 'Total time of the matches finished')}>{tt('br.col.time', 'Time')}</th>}
             <th title={tt('br.col.mvpLong', 'Match MVPs')}>{tt('br.col.mvp', 'MVP')}</th>
           </tr>
         </thead>
@@ -114,9 +120,15 @@ export default function BRStandings({ rows, through = new Set(), byLobby = false
                 <td>{row.maps_played}</td>
                 <td>{row.booyahs}</td>
                 <td>{row.kills}</td>
-                <td>{n(row.placement_points)}</td>
-                <td>{n(row.kill_points)}</td>
-                <td className={styles.tablePts}>{n(row.points)}</td>
+                {!byTime && <td>{n(row.placement_points)}</td>}
+                {!byTime && <td>{n(row.kill_points)}</td>}
+                {!byTime && <td className={styles.tablePts}>{n(row.points)}</td>}
+                {byTime && <td className={styles.tablePts}>
+                  {formatDuration(row.time_ms)}
+                  {row.unfinished > 0 && <span className={styles.small}>
+                    {tt('br.dnfN', 'DNF {n}').replace('{n}', n(row.unfinished))}
+                  </span>}
+                </td>}
                 <td>{row.mvp_count}</td>
               </tr>
             );
