@@ -24,6 +24,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber, formatRelative } from '@/lib/datetime';
 import CopyRow from './CopyRow';
+import CustomAddress from './CustomAddress';
 import styles from '@/components/event-site/event-site-panel.module.css';
 import own from './approved-sites.module.css';
 
@@ -328,6 +329,9 @@ export default function ApprovedSites({ kind, slug, token, showToast }) {
           <p className={styles.hint}>{tt('embedSites.viewsEmpty', 'No views on other websites yet. They are counted here once a snippet is live.')}</p>
         )}
       </section>
+
+      <CustomAddress kind={kind} slug={slug} token={token} call={call} showToast={showToast}
+                     hasDnsSite={sites.some((s) => s.verified && s.method === 'dns')} />
     </>
   );
 }

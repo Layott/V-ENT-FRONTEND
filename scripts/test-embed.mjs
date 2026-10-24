@@ -20,6 +20,7 @@ import {
 import { scheduleGroups } from '../src/lib/scheduleGroups.js';
 import { contentSecurityPolicy, frameAncestorsValue } from '../src/lib/securityHeaders.mjs';
 import { createFramePolicy, embedTarget } from '../src/lib/framePolicy.js';
+import { createHostLookup, hostOf, isAssetPath, isOwnHost, recordPath } from '../src/lib/customHost.js';
 
 let failures = 0;
 let passed = 0;
@@ -385,6 +386,72 @@ test('a copy the browser refuses still copies or says how', () => {
   const row = source('src/components/embed-sites/CopyRow.js');
   assert.match(row, /execCommand\('copy'\)/);
   assert.match(row, /siteConsole\.copyByHand/);
+});
+
+test('a host is V-ENT\'s own, or somebody\'s address', () => {
+  assert.equal(hostOf('Tournaments.TheirSite.com:8443'), 'tournaments.theirsite.com');
+  for (const own of ['v-ent.co', 'www.v-ent.co', 'app.v-ent.co', 'localhost', '127.0.0.1', '192.168.1.5', '']) {
+    assert.equal(isOwnHost(own), true, own);
+  }
+  for (const other of ['tournaments.theirsite.com', 'notv-ent.co', 'v-ent.co.evil.com']) {
+    assert.equal(isOwnHost(other), false, other);
+  }
+});
+
+test('a page on another address loads its own files and nothing else of V-ENT', () => {
+  for (const ok of ['/_next/static/chunks/a.js', '/api/og', '/fonts/ClashGrotesk.woff2', '/favicon.ico']) {
+    assert.equal(isAssetPath(ok), true, ok);
+  }
+  for (const no of ['/login', '/wallets', '/tournaments/other-cup', '/admin', '/sitemap.xml', '/_nextish']) {
+    assert.equal(isAssetPath(no), false, no);
+  }
+});
+
+test('the record path is the tournament page or the event site', () => {
+  assert.equal(recordPath({ kind: 'tournament', slug: 'naija-cup' }), '/tournaments/naija-cup');
+  assert.equal(recordPath({ kind: 'event', slug: 'lagos-con' }), '/events/lagos-con/site');
+});
+
+const live = { status: 200, body: { status: 'success', data: { kind: 'tournament', slug: 'naija-cup' } } };
+
+testAsync('a host is asked once in five minutes, a no for thirty seconds', async () => {
+  let clock = 0;
+  const api = fakeApi([live]);
+  const lookup = createHostLookup({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl, now: () => clock });
+  assert.deepEqual(await lookup('tournaments.theirsite.com'), { kind: 'tournament', slug: 'naija-cup' });
+  clock = 299000;
+  await lookup('tournaments.theirsite.com');
+  assert.equal(api.calls.length, 1);
+  assert.equal(api.calls[0], 'https://api.v-ent.co/sites/host/?host=tournaments.theirsite.com');
+  clock = 301000;
+  await lookup('tournaments.theirsite.com');
+  assert.equal(api.calls.length, 2);
+
+  const none = fakeApi([{ status: 404, body: {} }]);
+  const miss = createHostLookup({ api: 'https://api.v-ent.co', fetchImpl: none.fetchImpl, now: () => clock });
+  assert.equal(await miss('x.theirsite.com'), null);
+  clock += 29000;
+  await miss('x.theirsite.com');
+  assert.equal(none.calls.length, 1);
+  clock += 2000;
+  await miss('x.theirsite.com');
+  assert.equal(none.calls.length, 2);
+});
+
+testAsync('a host lookup that fails keeps the last answer, else says no', async () => {
+  let clock = 0;
+  const api = fakeApi([live, { status: 503, body: {} }]);
+  const lookup = createHostLookup({ api: 'https://api.v-ent.co', fetchImpl: api.fetchImpl, now: () => clock });
+  await lookup('a.theirsite.com');
+  clock = 400000;
+  assert.deepEqual(await lookup('a.theirsite.com'), { kind: 'tournament', slug: 'naija-cup' });
+  const down = createHostLookup({ api: 'https://api.v-ent.co', fetchImpl: fakeApi([new Error('down')]).fetchImpl });
+  assert.equal(await down('b.theirsite.com'), null);
+  const odd = createHostLookup({
+    api: 'https://api.v-ent.co',
+    fetchImpl: fakeApi([{ status: 200, body: { data: { kind: 'wallet', slug: 'x' } } }]).fetchImpl,
+  });
+  assert.equal(await odd('c.theirsite.com'), null);
 });
 
 for (const [name, fn] of later) {
