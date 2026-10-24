@@ -32,6 +32,7 @@ import { matchName } from '@/lib/matchName';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { sideLabel } from '@/lib/slotLabel';
 import { rulesSource } from '@/lib/rulesSource';
+import { PREVIEW_SHOWN, matchLine, undoSentence } from '@/lib/undoPreview';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +77,9 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   // Whoever runs the tournament fixing this match after the draw (inbox 452):
   // the second press before a result comes off, and the rules being edited.
   const [confirmReopen, setConfirmReopen] = useState(false);
+  // What taking the result off would undo, read from the server before the
+  // confirm press (P4b). Nothing is changed until that press.
+  const [reopenPreview, setReopenPreview] = useState(null);
   const [rules, setRules] = useState(null);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
@@ -244,12 +248,35 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const held = match?.permissions || [];
   const mayReopen = held.includes('report');
   const mayShape = held.includes('structure');
+  const reopenPath = `/tournament/${tournamentRef}/matches/${matchId}/reopen/`;
+  const previewReopen = async () => {
+    setBusy(true);
+    setProblem('');
+    setNote('');
+    try {
+      const got = await call(reopenPath, { method: 'POST', token, body: { preview: true } });
+      if (got.ok) {
+        setReopenPreview(got.body.data);
+        setConfirmReopen(true);
+      } else {
+        setProblem(apiMessage(tt, got.body, 'match.actionFailed', 'That did not go through.'));
+      }
+    } catch {
+      setProblem(tt('api.NETWORK_UNREACHABLE',
+        'Could not reach the server. Check the connection and try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
   const reopenResult = async () => {
     const done = await run(
-      () => call(`/tournament/${tournamentRef}/matches/${matchId}/reopen/`, { method: 'POST', token, body: {} }),
+      () => call(reopenPath, { method: 'POST', token, body: {} }),
       tt('match.reopened', 'The result is off. The match can be played and recorded again.'));
-    if (done) setConfirmReopen(false);
+    if (done) { setConfirmReopen(false); setReopenPreview(null); }
   };
+  const cancelReopen = () => { setConfirmReopen(false); setReopenPreview(null); };
+  const nameOfSide = id => [match?.participant_1, match?.participant_2]
+    .find(p => p?.registration_id === id)?.name || '';
 
   // How this match is played, after the draw: best of, two legs, whether a
   // draw stands. For this match or every match in its round.
@@ -627,18 +654,35 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
                 {tt('match.reopenHelp', 'The score is cleared and the match is open again. The winner comes back out of the next match, as long as that one has not been played.')}
               </p>
               {!confirmReopen ? (
-                <button type="button" className={styles.quiet} disabled={busy} onClick={() => setConfirmReopen(true)}>
+                <button type="button" className={styles.quiet} disabled={busy} onClick={previewReopen}>
                   {tt('match.reopenStart', 'Take the result off')}
                 </button>
               ) : (
-                <div className={styles.row}>
+                <>
+                  {reopenPreview && (
+                    <>
+                      <p className={styles.muted}>{undoSentence(tt, reopenPreview)}</p>
+                      <ul className={styles.previewList}>
+                        {(reopenPreview.matches_undone || []).slice(0, PREVIEW_SHOWN).map((m, i) => (
+                          <li key={i} className={styles.previewRow}>{matchLine(tt, m, match?.format, nameOfSide)}</li>
+                        ))}
+                      </ul>
+                      {(reopenPreview.matches_undone || []).length > PREVIEW_SHOWN && (
+                        <p className={styles.muted}>
+                          {tt('undo.more', 'and {n} more').replace('{n}', reopenPreview.matches_undone.length - PREVIEW_SHOWN)}
+                        </p>
+                      )}
+                    </>
+                  )}
+                  <div className={styles.row}>
                   <button type="button" className={styles.danger} disabled={busy} onClick={reopenResult}>
                     {tt('match.reopenConfirm', 'Yes, clear this result')}
                   </button>
-                  <button type="button" className={styles.quiet} disabled={busy} onClick={() => setConfirmReopen(false)}>
+                  <button type="button" className={styles.quiet} disabled={busy} onClick={cancelReopen}>
                     {tt('ui.cancel.0f8e', 'Cancel')}
                   </button>
-                </div>
+                  </div>
+                </>
               )}
             </section>
           )}

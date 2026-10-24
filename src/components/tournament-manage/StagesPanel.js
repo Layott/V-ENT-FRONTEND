@@ -45,6 +45,7 @@ import { presetButton, roomText } from '@/components/view-tournament/match-room/
 import BRSettingsFields, { defaultBR } from './br/BRSettingsFields';
 import { lobbyLabel } from './br/BRStandings';
 import { plural } from '@/lib/plural';
+import { PREVIEW_SHOWN, matchLine, undoSentence } from '@/lib/undoPreview';
 import styles from './stages-panel.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
 
@@ -198,6 +199,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   // A stage tool in progress: { row, kind: 'undo' | 'format' | 'reopen' },
   // plus the choices for a format change.
   const [acting, setActing] = useState(null);
+  // What the stage tool in progress would undo, read from the server before
+  // the confirm press (P4b). Nothing changes until that press.
+  const [preview, setPreview] = useState(null);
+  const previewSeq = useRef(0);
 
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -1003,21 +1008,56 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   const reopenStage = row => stageTool(`stages/${row.id}/reopen/`, {},
     () => tt('stages.reopened', '{stage} is open again.').replace('{stage}', nameOf(row)));
 
-  const reformatStage = (row, index) => {
-    const a = acting || {};
+  const nameOfEntrant = id => entrants.find(p => String(p.registration_id) === String(id))?.participant?.name || '';
+
+  // The reformat body, shared by the preview and the real change so the
+  // preview answers for exactly what would be sent.
+  const reformatBody = (row, index, a = {}) => {
     const last = index === rows.length - 1;
-    stageTool(`stages/${row.id}/reformat/`, {
+    return {
       format: a.format,
       ...(GROUPABLE.has(a.format) ? { groups: Number(a.groups) || 0 } : { groups: 0 }),
       ...(last ? {} : { advances: a.format === 'gsl' ? 2 : (Number(a.advances) || 0) }),
       seed_strategy: a.seeding || 'ranked',
       discard_results: Number(meta.played[row.id] || 0) > 0,
       draw: true,
-    }, data => tt('stages.reformatted', '{stage} is now {format}, drawn again: {n} matches.')
+    };
+  };
+
+  const reformatStage = (row, index) => {
+    const a = acting || {};
+    stageTool(`stages/${row.id}/reformat/`, reformatBody(row, index, a), data => tt('stages.reformatted', '{stage} is now {format}, drawn again: {n} matches.')
       .replace('{stage}', nameOf(row))
       .replace('{format}', formatLabel(tt, a.format, ''))
       .replace('{n}', data?.draw?.matches_created ?? 0));
   };
+
+  // Asked as the confirm surface opens, and again when its choices change.
+  // A late answer for a choice already left behind is dropped.
+  useEffect(() => {
+    setPreview(null);
+    if (!acting) return;
+    const seq = ++previewSeq.current;
+    const { row, kind, index } = acting;
+    const path = kind === 'undo' ? 'undraw' : kind === 'reopen' ? 'reopen' : 'reformat';
+    const payload = kind === 'undo'
+      ? { discard_results: Number(meta.played[row.id] || 0) > 0 }
+      : kind === 'reopen' ? {} : reformatBody(row, index, acting);
+    fetch(`${API}/tournament/${tournamentRef}/stages/${row.id}/${path}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...auth },
+      body: JSON.stringify({ ...payload, preview: true }),
+    })
+      .then(async res => ({ ok: res.ok, body: await res.json().catch(() => ({})) }))
+      .then(({ ok, body }) => {
+        if (seq !== previewSeq.current) return;
+        if (ok && body.status === 'success') setPreview(body.data || {});
+        else setProblem(apiMessage(tt, body, 'stages.toolFailed', 'That change was not made.'));
+      })
+      .catch(() => { if (seq === previewSeq.current) networkFail(); });
+    // Keyed on the choices themselves: the row object is rebuilt on every load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [acting?.kind, acting?.row?.id, acting?.format, acting?.groups, acting?.advances, acting?.seeding]);
 
   if (loading) return <p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p>;
 
@@ -1315,6 +1355,25 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
             </div>
           )}
 
+          {acting.kind !== 'reopen' && preview && (
+            <>
+              <p className={styles.hint}>{undoSentence(tt, preview)}</p>
+              {(preview.matches_undone || []).length > 0 && (
+                <ul className={styles.previewList}>
+                  {(preview.matches_undone || []).slice(0, PREVIEW_SHOWN).map((m, i) => (
+                    <li key={i} className={styles.previewRow}>{matchLine(tt, m, acting.row.format, nameOfEntrant)}</li>
+                  ))}
+                </ul>
+              )}
+              {(preview.matches_undone || []).length > PREVIEW_SHOWN && (
+                <p className={styles.hint}>
+                  {tt('undo.more', 'and {n} more').replace('{n}', preview.matches_undone.length - PREVIEW_SHOWN)}
+                </p>
+              )}
+            </>
+          )}
+
+          {(acting.kind === 'reopen' || !preview) && (
           <p className={styles.hint}>
             {acting.kind === 'reopen'
               ? tt('stages.reopenHint', 'Its results stay. It goes back to being played, and who went through is decided again when you close it.')
@@ -1324,6 +1383,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                     'stages.discardMany', 'Its matches are removed, and the {n} results already in them are thrown away. That cannot be undone.')
                 : tt('stages.noResultsYet', 'Its matches are removed. Nothing has been played in them yet, so no result is lost.')}
           </p>
+          )}
 
           <div className={styles.editorActions}>
             <button type="button"

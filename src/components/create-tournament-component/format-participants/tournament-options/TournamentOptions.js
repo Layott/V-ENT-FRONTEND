@@ -31,6 +31,29 @@ const CHECK_IN_CHOICES = [{
   value: 60,
   label: '1 hour before'
 }];
+// How long a score one side reports waits for the other side before it stands
+// on its own (P4b). The server takes 5 to 1440 minutes, or 0 for off.
+const AUTO_CONFIRM_CHOICES = [{
+  value: 0,
+  key: 'opts.autoConfirmOff',
+  label: 'Off'
+}, {
+  value: 15,
+  key: 'opts.autoConfirm15',
+  label: '15 minutes'
+}, {
+  value: 30,
+  key: 'opts.autoConfirm30',
+  label: '30 minutes'
+}, {
+  value: 60,
+  key: 'opts.autoConfirm60',
+  label: '1 hour'
+}, {
+  value: 1440,
+  key: 'opts.autoConfirm1440',
+  label: '1 day'
+}];
 const SEEDING_CHOICES = [{
   value: 'registration',
   label: 'Registration order',
@@ -65,6 +88,8 @@ const ROSTER_LOCK_CHOICES = [{
 export const DEFAULT_OPTIONS = {
   check_in_minutes: 15,
   forfeit_without_check_in: true,
+  // 0 is off: the opponent confirms, or the organiser records the score.
+  auto_confirm_minutes: 0,
   refund_no_shows: false,
   seeding_method: 'registration',
   third_place_match: false,
@@ -252,6 +277,18 @@ const TournamentOptions = ({
               </select>
             </label>
           </div>
+
+          {/* A score one side reports that the other never answers is confirmed
+              after this long, as if they had agreed (P4b). Off by default. */}
+          <p className={styles.fieldLabel}>{tt("opts.autoConfirm", "Confirm a reported score on its own")}</p>
+          <div className={styles.choiceRow}>
+            {AUTO_CONFIRM_CHOICES.map(choice => <button type="button" key={choice.value} aria-pressed={options.auto_confirm_minutes === choice.value} className={`${styles.chip} ${options.auto_confirm_minutes === choice.value ? styles.chipOn : ''}`} onClick={() => set('auto_confirm_minutes', choice.value)}>
+                {tt(choice.key, choice.label)}
+              </button>)}
+          </div>
+          <p className={styles.groupHint}>
+            {tt("opts.autoConfirmHint", "A score one side reports is confirmed after this long if the other side does not answer.")}
+          </p>
 
           <Toggle id="require_screenshot" tip="requireScreenshot" label={tt("ui.require.screenshot.every.result.bf3a", "Require a screenshot with every result")} hint={tt("opts.screenshotHint", "Disputes are far easier to settle when there is a picture attached.")} checked={options.require_screenshot} onChange={v => set('require_screenshot', v)} />
         </div>
