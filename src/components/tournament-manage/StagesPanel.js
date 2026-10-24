@@ -286,7 +286,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   // somebody is composing, because nobody else needs it.
   const loadEntrants = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/tournament/get-tournament-participants/${tournamentRef}/`);
+      // With the token: a draft's entrants answer its organiser only.
+      const res = await fetch(`${API}/tournament/get-tournament-participants/${tournamentRef}/`, { headers: auth });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') {
         setEntrants((body.data.participants || []).filter(p => ['confirmed', 'pending'].includes(p.status)));
@@ -294,7 +295,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     } catch {
       // The picker says there is nobody to choose; the plan still saves.
     }
-  }, [tournamentRef]);
+  }, [tournamentRef, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const after = () => { load(); if (onChanged) onChanged(); };
 

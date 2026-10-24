@@ -1,5 +1,6 @@
 'use client';
 
+import { useViewer } from '@/lib/gating';
 import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -172,12 +173,17 @@ const TournamentDetailsBracket = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const tournamentId = tournament?.id;
+  // A draft answers its creator only, so the token goes with the request;
+  // the request never waits for it (a public page loads signed out too).
+  const { token } = useViewer();
   const fetchBracket = useCallback(async () => {
     if (!tournamentId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-brackets/${tournamentId}/`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-brackets/${tournamentId}/`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       if (data.status === 'success') {
         const payload = data.data;
@@ -191,7 +197,7 @@ const TournamentDetailsBracket = ({
     } finally {
       setLoading(false);
     }
-  }, [tournamentId, tt]);
+  }, [tournamentId, tt, token]);
   useEffect(() => { fetchBracket(); }, [fetchBracket]);
   const allPositions = useMemo(() => computeAllPositions(rounds), [rounds]);
   const bracketHeight = useMemo(() => totalBracketHeight(rounds[0]?.matches?.length || 0), [rounds]);
