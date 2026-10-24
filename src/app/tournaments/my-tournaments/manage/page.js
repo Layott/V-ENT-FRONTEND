@@ -335,6 +335,8 @@ const ManageContent = ({
                     {[
                       ['ranked', 'seed.ranked', 'By results',
                        'seed.rankedHint', 'Best record first, from what has been played. Falls back to any seeds you set, then to alphabetical.'],
+                      ['rating', 'seed.rating', 'By rating (Elo)',
+                       'seed.ratingHint', 'From every match played on V-ENT in this game, strongest first. Anybody new starts level, in sign up order.'],
                       ['manual_order', 'seed.manual', 'The order I set',
                        'seed.manualHint', 'Yours exactly. Anybody you leave out is added at the end rather than dropped.'],
                       ['registration', 'seed.registration', 'Who signed up first',
