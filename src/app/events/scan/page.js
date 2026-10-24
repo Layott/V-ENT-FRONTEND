@@ -59,6 +59,7 @@ import jsQR from 'jsqr';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
+import { splitScan, verifySeal } from '@/lib/ticketSeal';
 import styles from './scan.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -217,6 +218,30 @@ function ScanContent() {
   const [cameraOn, setCameraOn] = useState(false);
 
   // ------------------------------------------------------------- the list
+
+  // The public half of the ticket seal, kept on this phone so a seal can be
+  // judged with no signal. Fetched when the page opens; the stored copy stands
+  // when the fetch cannot be made, and a reply with no key keeps it too.
+  // See src/lib/ticketSeal.js for what a seal proves.
+  const sealKeyRef = useRef(null);
+  useEffect(() => {
+    try {
+      const held = window.localStorage.getItem('vent-door-seal-key');
+      if (held) sealKeyRef.current = JSON.parse(held);
+    } catch { /* none */ }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/event/door/seal-key/`, { cache: 'no-store' });
+        const body = await res.json().catch(() => ({}));
+        const key = body?.data?.key;
+        if (cancelled || !res.ok || !key) return;
+        sealKeyRef.current = key;
+        try { window.localStorage.setItem('vent-door-seal-key', JSON.stringify(key)); } catch { /* full or blocked */ }
+      } catch { /* offline: the stored key stands */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const download = useCallback(async ({ quiet = false } = {}) => {
     if (!token || !eventRef) return;
@@ -429,6 +454,16 @@ function ScanContent() {
 
   // -------------------------------------------------------------- scanning
 
+  // The seal, judged on this phone before anything is queued or sent. A code
+  // with no seal, or a seal this phone holds no key for, is not judged at all:
+  // it goes on as the bare code, exactly as it always did.
+  const checkSeal = useCallback(async (raw) => {
+    const { code, seal } = splitScan(raw);
+    if (!seal || !sealKeyRef.current) return { code, genuine: false, tampered: false };
+    const genuine = await verifySeal(sealKeyRef.current, code, seal);
+    return { code, genuine, tampered: !genuine };
+  }, []);
+
   /**
    * A code this device has never heard of, put to the server.
    *
@@ -488,6 +523,12 @@ function ScanContent() {
         return;
       }
 
+      // The server's own refusal of a forged seal. The code sent was the bare
+      // one, so this is rare, but it is the same answer the phone gives.
+      if (res.status === 400 && body.code === 'TICKET_TAMPERED') {
+        setLast({ kind: 'tampered', code: key, fromServer: true });
+        return;
+      }
       if (res.status === 403) {
         setLast({ kind: 'notYours', code: key });
         return;
@@ -554,9 +595,13 @@ function ScanContent() {
    * check it in, which is exactly the thing a steward asking a question does
    * not want to do.
    */
-  const lookUp = useCallback(async (code) => {
-    const key = String(code || '').trim().toUpperCase();
+  const lookUp = useCallback(async (raw) => {
+    const { code: key, tampered } = await checkSeal(raw);
     if (!key) return;
+    if (tampered) {
+      setLast({ kind: 'tampered', code: key });
+      return;
+    }
     setLast({ kind: 'checking', code: key });
     try {
       const res = await fetch(
@@ -567,6 +612,8 @@ function ScanContent() {
         setLast({ kind: 'looked', code: key, ...body.data });
       } else if (res.status === 409 && body.code === 'TICKET_TRANSFERRED') {
         setLast({ kind: 'transferred', code: key, moved: body.data || {} });
+      } else if (res.status === 400 && body.code === 'TICKET_TAMPERED') {
+        setLast({ kind: 'tampered', code: key, fromServer: true });
       } else if (res.status === 403) {
         setLast({ kind: 'notYours', code: key });
       } else {
@@ -575,20 +622,28 @@ function ScanContent() {
     } catch {
       setLast({ kind: 'unknown', code: key });
     }
-  }, [gate, token, day]);
+  }, [gate, token, day, checkSeal]);
 
-  const decide = useCallback((code, { fromCamera = false } = {}) => {
-    const key = String(code || '').trim().toUpperCase();
-    if (!key) return;
+  const decide = useCallback(async (code, { fromCamera = false } = {}) => {
+    const bare = splitScan(code).code;
+    if (!bare) return;
 
     if (fromCamera) {
       const seen = lastSeenRef.current;
-      if (seen.code === key && Date.now() - seen.at < 3000) return;
-      lastSeenRef.current = { code: key, at: Date.now() };
+      if (seen.code === bare && Date.now() - seen.at < 3000) return;
+      lastSeenRef.current = { code: bare, at: Date.now() };
     }
 
+    // A seal that does not verify is judged here, before anything is queued or
+    // sent. The server is not to hear about a code we know was made up.
+    const { code: key, genuine, tampered } = await checkSeal(code);
+    if (tampered) {
+      setLast({ kind: 'tampered', code: key });
+      return;
+    }
 
-    const ticket = ticketsRef.current?.[key];
+    let ticket = ticketsRef.current?.[key];
+    let offlineGenuine = false;
     if (!ticket) {
       // NOT on the list this device downloaded. That is not the same as not
       // being on the list, and on 4 September it told somebody who had
@@ -604,8 +659,15 @@ function ScanContent() {
         askServer(key);
         return;
       }
-      setLast({ kind: 'unknown', code: key });
-      return;
+      // A genuine seal with no signal to ask about it: admitted on the seal alone,
+      // and the check-in is sent when signal returns. Without a genuine seal this
+      // is still "not on the list I have".
+      if (!genuine || navigator.onLine) {
+        setLast({ kind: 'unknown', code: key });
+        return;
+      }
+      ticket = { attendee_name: '', code: key };
+      offlineGenuine = true;
     }
 
     // The wrong day, decided here as well as at the API. A steward holding a
@@ -637,8 +699,8 @@ function ScanContent() {
     setScanned(nextScanned);
     setPending(nextPending);
     remember(nextScanned, nextPending);
-    setLast({ kind: 'in', code: key, ticket });
-  }, [gate, day, remember, token, askServer]);
+    setLast({ kind: 'in', code: key, ticket, offlineGenuine });
+  }, [gate, day, remember, token, askServer, checkSeal]);
 
   const startCamera = useCallback(async () => {
     if (typeof window === 'undefined') return;
@@ -809,6 +871,7 @@ function ScanContent() {
               : last.kind === 'wrongDay' ? styles.resultDuplicate
                 : last.kind === 'transferred' ? styles.resultDuplicate
                   : last.kind === 'looked' ? (last.admissible ? styles.resultChecking : styles.resultDuplicate)
+                    : last.kind === 'tampered' ? styles.resultTampered
                     : styles.resultUnknown}>
         {last.kind === 'checking' && <>
           <strong>{tt('scan.checking', 'Checking with V-ENT')}</strong>
@@ -842,6 +905,9 @@ function ScanContent() {
           <strong>{tt('scan.letThemIn', 'Let them in')}</strong>
           <span>{last.ticket.attendee_name || last.ticket.username || last.code}</span>
           {last.ticket.tier_name && <span className={styles.resultSub}>{last.ticket.tier_name}</span>}
+          {last.offlineGenuine && <span className={styles.resultSub}>
+            {tt('scan.genuineOffline', 'Genuine ticket bought after the list was downloaded. Checked when the door is back online.')}
+          </span>}
         </>}
 
         {last.kind === 'duplicate' && <>
@@ -910,6 +976,16 @@ function ScanContent() {
           </span>}
           <span className={styles.resultSub}>
             {tt('scan.notAdmittedYet', 'Not checked in. Press Check to admit them.')}
+          </span>
+        </>}
+
+        {last.kind === 'tampered' && <>
+          <LuTriangleAlert aria-hidden="true" />
+          <strong>{tt('scan.tampered', 'Not a V-ENT ticket')}</strong>
+          <span className={styles.resultSub}>
+            {last.fromServer
+              ? tt('api.TICKET_TAMPERED', 'This code was not issued by V-ENT.')
+              : tt('scan.tamperedLine', 'This code was changed or made up. Do not let them in.')}
           </span>
         </>}
 
