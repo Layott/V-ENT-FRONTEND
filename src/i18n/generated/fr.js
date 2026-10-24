@@ -5692,6 +5692,7 @@ const table = {
  "admin.partnerRejected": "Refusé",
  "admin.partnerSuspended": "Suspendu",
  "admin.scopesGranted": "{granted} sur {asked}",
+ "admin.scopesGrantedOnly": "Accordés : {granted}",
  "api.PARTNER_ADMIN_SUPER_ONLY": "Seul un super administrateur peut gérer l'accès des partenaires.",
  "admin.countEventsMany": "{n} événements",
  "admin.countEventsOne": "{n} événement",
