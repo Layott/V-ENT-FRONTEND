@@ -12,6 +12,8 @@ export const FORMAT_KEYS = [
   'double_elimination',
   'round_robin',
   'league',
+  // P3 W3a: pots dealt by seed, a few opponents from each. Stage only.
+  'league_phase',
   'swiss',
   'gsl',
   // P3 W1: several small knockouts; GSL is its preset. A stage only format:
@@ -32,6 +34,7 @@ const FALLBACK = {
   double_elimination: 'Double elimination',
   round_robin: 'Round robin',
   league: 'League',
+  league_phase: 'League phase',
   swiss: 'Swiss',
   gsl: 'GSL groups',
   bracket_groups: 'Bracket groups',
@@ -136,6 +139,7 @@ const SERVER_NAME = {
   double_elimination: 'Double elimination',
   round_robin: 'Round robin',
   league: 'League',
+  league_phase: 'League phase',
   swiss: 'Swiss',
   gsl: 'GSL groups',
   bracket_groups: 'Bracket groups',
@@ -163,7 +167,11 @@ export const stageName = (tt, label, format, preset) => {
     ? formatKey(format)
     : Object.keys(SERVER_NAME).find((k) => SERVER_NAME[k].toLowerCase() === lower) || null;
   if (!key) return text;
-  if (!text || lower === SERVER_NAME[key].toLowerCase()) return stageFormatLabel(tt, { format: key, preset });
+  // Any format's own name counts, not only this stage's: a stage switched from
+  // single elimination to a compass draw kept "Single elimination" as its name
+  // (live walk, 24 October 2026). Nobody types a format's name for another format.
+  const automatic = Object.values(SERVER_NAME).some((n) => n.toLowerCase() === lower);
+  if (!text || automatic) return stageFormatLabel(tt, { format: key, preset });
   return text;
 };
 
@@ -174,6 +182,7 @@ const SUMMARY = {
   double_elimination: 'Two losses to be out. One bad game does not end a run.',
   round_robin: 'Everyone plays everyone. The table decides it.',
   league: 'Everyone plays everyone, home and away. Points decide the table.',
+  league_phase: 'Everybody is dealt into pots by seed and plays a few opponents from every pot, about half at home. One table ranks the whole field.',
   swiss: 'Paired against somebody on the same record each round. Nobody is knocked out early and everybody plays the same number of games.',
   gsl: 'Groups of four, double elimination inside each. Two advance, and everybody plays at least twice.',
   bracket_groups: 'Several small knockouts, single or double elimination. Everybody stays in their group, and the best of each go through.',

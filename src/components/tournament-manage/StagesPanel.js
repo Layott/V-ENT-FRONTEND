@@ -57,7 +57,7 @@ const PLACE_WORDS = {
   hybrid: 'Online and at a venue',
 };
 
-const TABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'swiss']);
+const TABLE = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'swiss', 'league_phase']);
 // A knockout for the purpose of how a match is played: a final, two legs,
 // a winner when it ends level. The placing formats are knockouts too.
 const KNOCKOUT = new Set(['single_elimination', 'double_elimination', 'stepladder',
@@ -83,6 +83,7 @@ const CHECK_IN = [0, 5, 10, 15, 30];
 const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TABLE.has(format)
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
       ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
+        : format === 'league_phase' ? { legs: 1, pots: 4, per_pot: 2 }
         : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
@@ -389,6 +390,10 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (s.third_place) bits.push(tt('stages.thirdPlaceOn', 'a third-place match'));
     if (s.grand_final === 'reset') bits.push(tt('stages.resetOn', 'grand final with a reset'));
     if (s.legs > 1) bits.push(tt('stages.homeAway', 'home and away'));
+    if (row.format === 'league_phase') {
+      bits.push(tt('stages.potsLine', '{pots} pots, {n} from each')
+        .replace('{pots}', s.pots || 4).replace('{n}', s.per_pot || 2));
+    }
     if (row.format === 'swiss' && s.rounds) bits.push(tt('stages.roundsN', '{n} rounds').replace('{n}', s.rounds));
     if (row.format === 'swiss' && s.pairing && s.pairing !== 'monrad') {
       const found = SWISS_PAIRINGS.find(([v]) => v === s.pairing);
@@ -1464,6 +1469,21 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                              onChange={v => setSetting(index, 'legs', v)} />
                     </div>
                   )}
+                  {/* P3 W3a: how the field is dealt, and how many it meets from each pot. */}
+                  {row.format === 'league_phase' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.pots', 'Pots')}</span>
+                      <Chips value={Number(s.pots || 4)} disabled={busy} label={tt('stages.pots', 'Pots')}
+                             options={[2, 3, 4, 5, 6, 8].map(n => [n, String(n)])}
+                             onChange={v => setSetting(index, 'pots', v)} />
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.perPot', 'Opponents from each pot')}</span>
+                      <Chips value={Number(s.per_pot || 2)} disabled={busy} label={tt('stages.perPot', 'Opponents from each pot')}
+                             options={[1, 2, 3, 4].map(n => [n, String(n)])}
+                             onChange={v => setSetting(index, 'per_pot', v)} />
+                    </div>
+                  </>}
                   {row.format === 'swiss' && <>
                     <label className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.swissRounds', 'Rounds (0 works it out)')}</span>
