@@ -1,0 +1,35 @@
+/* The page's own dark surface comes from the document (globals.css), so this
+   only holds the room the page will fill and sets the words in it. */
+.served {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--white);
+}
+
+.description {
+  margin: 0;
+  max-width: 44rem;
+  font-size: var(--fs-p-size-desktop);
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
+  color: var(--white);
+  opacity: 0.7;
+}
+
+@media (max-width: 720px) {
+  .title {
+    font-size: var(--mobile-h2-size);
+  }
+
+  .description {
+    font-size: var(--fs-p-size-mobile);
+  }
+}

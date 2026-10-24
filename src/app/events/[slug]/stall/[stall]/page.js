@@ -1,3 +1,4 @@
+import ServedSummary from '@/components/seo/ServedSummary';
 import { Suspense } from 'react';
 import { buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata, missingMetadata, currentLocale } from '@/lib/seo';
 import StallBySlugClient from './StallBySlugClient';
@@ -48,8 +49,12 @@ export async function generateMetadata(props) {
 
 export default async function StallBySlugPage(props) {
   const params = await props.params;
+  // The served HTML names the page and says what it is (inbox 517): the
+  // words the route gives a search result, under its own h1.
+  const described = await generateMetadata(props);
+
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <Suspense fallback={<ServedSummary title={described?.title} description={described?.description} />}>
       <StallBySlugClient
         eventSlug={decodeURIComponent(params.slug)}
         stallSlug={decodeURIComponent(params.stall)}

@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
+import ServedSummary from '@/components/seo/ServedSummary';
 import JsonLd from '@/components/seo/JsonLd';
 import { SITE, absolute, breadcrumbLd, buildMetadata, clamp, currentLocale, fetchRecordForMetadata, unavailableMetadata, missingMetadata } from '@/lib/seo';
 import PlanPageClient from './PlanPageClient';
@@ -114,6 +115,10 @@ const PlanBySlug = async props => {
 
   const path = `/plans/${plan?.slug || slug}`;
 
+  // The served HTML names the record and says what it is (inbox 517): the same
+  // words the route gives a search result, under the record's own h1.
+  const described = await generateMetadata(props);
+
   return (
     <>
       <JsonLd
@@ -129,7 +134,7 @@ const PlanBySlug = async props => {
           ]),
         ]}
       />
-      <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+      <Suspense fallback={<ServedSummary title={plan?.name} description={described?.description} />}>
         <PlanPageClient slug={slug} />
       </Suspense>
     </>

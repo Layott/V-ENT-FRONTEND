@@ -5,6 +5,7 @@ import {
   breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, tournamentLd,
   tournamentMetadata,
 } from '@/lib/seo';
+import ServedSummary from '@/components/seo/ServedSummary';
 import TournamentBySlugClient from './TournamentBySlugClient';
 import { toSlugAddress } from '@/lib/slugAddress';
 
@@ -46,6 +47,10 @@ const TournamentBySlug = async props => {
 
   const path = `/tournaments/${t?.slug || slug}`;
 
+  // The served HTML names the record and says what it is (inbox 517): the same
+  // words the route gives a search result, under the record's own h1.
+  const described = await generateMetadata(props);
+
   return (
     <>
       <JsonLd
@@ -58,7 +63,7 @@ const TournamentBySlug = async props => {
           ]),
         ]}
       />
-      <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+      <Suspense fallback={<ServedSummary title={t?.tournament_title} description={described?.description} />}>
         <TournamentBySlugClient slug={slug} />
       </Suspense>
     </>

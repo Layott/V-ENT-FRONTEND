@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
+import ServedSummary from '@/components/seo/ServedSummary';
 import JsonLd from '@/components/seo/JsonLd';
 import { absolute, breadcrumbLd, buildMetadata, clamp, fetchForMetadata, currentLocale } from '@/lib/seo';
 import ListingClient from './ListingClient';
@@ -76,6 +77,10 @@ const ListingPage = async props => {
   await toSlugAddress(slug, listing, '/marketplace/listing', await props.searchParams);
   const path = `/marketplace/listing/${listing?.slug || slug}`;
 
+  // The served HTML names the record and says what it is (inbox 517): the same
+  // words the route gives a search result, under the record's own h1.
+  const described = await generateMetadata(props);
+
   return (
     <>
       {listing && (
@@ -113,7 +118,7 @@ const ListingPage = async props => {
           ]}
         />
       )}
-      <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+      <Suspense fallback={<ServedSummary title={listing?.title} description={described?.description} />}>
         <ListingClient slug={slug} />
       </Suspense>
     </>
