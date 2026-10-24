@@ -74,6 +74,14 @@ export default function FixtureDetail({ match, onClose, format }) {
   const done = match.status === 'completed';
   const seats = tie?.fixtures || [];
   const agg = tie?.aggregate;
+  const rule = tie?.tie_rule || 'goals';
+
+  /** A crew game is a game; the team game is the one after the seats. */
+  const rowName = seat => {
+    if (rule === 'crew') return tt('fixture.gameN', 'Game {n}').replace('{n}', seat.slot);
+    if (tie?.team_game && seat.slot > tie?.seats) return tt('fixture.teamGame', 'Team game');
+    return tt('fixture.seatN', 'Seat {n}').replace('{n}', seat.slot);
+  };
 
   return (
     <div className={styles.overlay}
@@ -121,7 +129,7 @@ export default function FixtureDetail({ match, onClose, format }) {
                 return (
                   <li key={seat.slot} className={styles.seat}>
                     <span className={styles.seatNo}>
-                      {tt('fixture.seatN', 'Seat {n}').replace('{n}', seat.slot)}
+                      {rowName(seat)}
                     </span>
                     <span className={styles.seatSide}>
                       {seat.player_1?.name || tt('fixture.empty', 'Nobody seated')}
@@ -142,11 +150,15 @@ export default function FixtureDetail({ match, onClose, format }) {
                 fact that this is goals added and not matches won. */}
             {agg && (
               <p className={styles.aggregate}>
-                {tt('fixture.aggregate', 'Added across the seats: {a} - {b}.')
+                {(rule === 'goals'
+                  ? tt('fixture.aggregate', 'Added across the seats: {a} - {b}.')
+                  : tt('fixture.gamesWon', 'Games won: {a} - {b}.'))
                   .replace('{a}', agg.participant_1)
                   .replace('{b}', agg.participant_2)}
                 {' '}
-                {tt('fixture.aggregateNote', 'The fixture goes on goals added, not on how many matches each side won.')}
+                {rule === 'goals'
+                  ? tt('fixture.aggregateNote', 'The fixture goes on goals added, not on how many matches each side won.')
+                  : tt('fixture.gamesWonNote', 'The fixture goes on games won, not on goals added.')}
               </p>
             )}
           </>
