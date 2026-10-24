@@ -106,7 +106,7 @@ const Toggle = ({
   </div>;
 // The formats decided by a table, which is where "each pair meets" means
 // something. Same set the server schedules as a round robin.
-const TABLE_KEYS = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2']);
+const TABLE_KEYS = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'league_phase']);
 const TournamentOptions = ({
   formData = {},
   updateFormData
