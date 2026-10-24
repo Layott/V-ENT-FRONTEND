@@ -395,7 +395,7 @@ function PartnersInner() {
                       <td>{p.owner}</td>
                       <td><span className={statusBadgeClass(p.status)}>{statusLabel(tt, p.status)}</span></td>
                       <td>{statusLabel(tt, p.sso_status)}</td>
-                      <td>{tt('admin.scopesGranted', '{granted} of {asked}').replace('{granted}', p.approved_scopes?.length || 0).replace('{asked}', p.requested_scopes?.length || 0)}</td>
+                      <td>{scopeCount(tt, p)}</td>
                       <td>{(p.keys || []).filter(k => !k.revoked_at).length}</td>
                       <td>
                         <button type="button" className={styles.reviewBtn} onClick={() => openPartner(p)}>
@@ -645,6 +645,16 @@ function PartnersInner() {
         </div>}
     </div>;
 }
+// What was granted against what was asked. An admin may grant scopes the
+// partner never asked for, and the walk's studio asked for none, so "1 of 0"
+// read like a fault (P6 walk, 17 October). Then only the grant is counted.
+const scopeCount = (tt, p) => {
+  const granted = p.approved_scopes?.length || 0;
+  const asked = p.requested_scopes?.length || 0;
+  if (!asked || granted > asked) return tt('admin.scopesGrantedOnly', 'Granted: {granted}').replace('{granted}', granted);
+  return tt('admin.scopesGranted', '{granted} of {asked}').replace('{granted}', granted).replace('{asked}', asked);
+};
+
 export default function AdminPartnersPage() {
   return <AdminToastProvider>
       <PartnersInner />
