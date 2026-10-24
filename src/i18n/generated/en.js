@@ -10981,6 +10981,7 @@ const table = {
  "br.damage": "Damage",
  "br.didNotPlay": "Did not play",
  "br.dnfN": "DNF {n}",
+ "br.dnf": "DNF",
  "br.drawLobbies": "Draw the lobbies",
  "br.drawSummary": "Lobbies of up to {size} squads, {maps} matches each.",
  "br.drawn": "The lobbies are drawn.",

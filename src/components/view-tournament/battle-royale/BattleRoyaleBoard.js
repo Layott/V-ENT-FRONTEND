@@ -13,6 +13,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatNumber, formatWithZone } from '@/lib/datetime';
+import { formatDuration } from '@/lib/duration';
 import { plural } from '@/lib/plural';
 import BRStandings, { StageMvp, goingThrough, lobbyLabel } from '@/components/tournament-manage/br/BRStandings';
 import { matchLabel } from '@/components/tournament-manage/br/BattleRoyaleConsole';
@@ -190,7 +191,8 @@ export default function BattleRoyaleBoard({ tournamentRef, stageId = null, token
                             <th>{tt('br.placement', 'Place')}</th>
                             <th className={styles.tableName}>{tt('br.col.squad', 'Squad')}</th>
                             <th>{tt('br.kills', 'Kills')}</th>
-                            <th>{tt('br.col.total', 'Total')}</th>
+                            {/* A stage scored by time shows each squad's time in the match, not points. */}
+                            <th>{current.settings.score_by === 'time' ? tt('br.col.time', 'Time') : tt('br.col.total', 'Total')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -203,7 +205,13 @@ export default function BattleRoyaleBoard({ tournamentRef, stageId = null, token
                                 {r.adjustment_note && <span className={styles.small}>{r.adjustment_note}</span>}
                               </td>
                               <td>{r.kills}</td>
-                              <td className={styles.tablePts}>{r.total}</td>
+                              <td className={styles.tablePts}>
+                                {current.settings.score_by !== 'time'
+                                  ? r.total
+                                  : r.played && r.duration_ms != null
+                                    ? formatDuration(r.duration_ms)
+                                    : r.played ? tt('br.dnf', 'DNF') : '-'}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
