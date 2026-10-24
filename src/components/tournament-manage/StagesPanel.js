@@ -84,7 +84,8 @@ const defaultSettings = format => (format === 'battle_royale' ? defaultBR() : TA
   ? { best_of: 1, draws: 'allowed', check_in_minutes: 0, room_host: 'p1', room_settings: '',
       ...(format === 'swiss' ? { rounds: 0, win_target: 0, loss_limit: 0, pairing: 'monrad', decisive_best_of: 0 }
         : format === 'league_phase' ? { legs: 1, pots: 4, per_pot: 2 }
-        : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }) }
+        : { legs: format === 'league' ? 2 : 1, pairing: 'circle' }),
+      ...(format === 'aggregate_2v2' ? { tie_rule: 'goals', team_game: false } : {}) }
   : { best_of: 1, final_best_of: 0, knockout_legs: 1, draws: 'penalties', check_in_minutes: 0,
       room_host: 'p1', room_settings: '',
       ...(format === 'single_elimination'
@@ -390,6 +391,11 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
     if (s.third_place) bits.push(tt('stages.thirdPlaceOn', 'a third-place match'));
     if (s.grand_final === 'reset') bits.push(tt('stages.resetOn', 'grand final with a reset'));
     if (s.legs > 1) bits.push(tt('stages.homeAway', 'home and away'));
+    if (row.format === 'aggregate_2v2') {
+      if (s.tie_rule === 'sub_wins') bits.push(tt('stages.decidedGamesWon', 'decided on games won'));
+      if (s.tie_rule === 'crew') bits.push(tt('stages.decidedCrew', 'as a crew battle'));
+      if (s.team_game && s.tie_rule !== 'crew') bits.push(tt('stages.plusTeamGame', 'plus a team game'));
+    }
     if (row.format === 'league_phase') {
       bits.push(tt('stages.potsLine', '{pots} pots, {n} from each')
         .replace('{pots}', s.pots || 4).replace('{n}', s.per_pot || 2));
@@ -1469,6 +1475,26 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                              onChange={v => setSetting(index, 'legs', v)} />
                     </div>
                   )}
+                  {/* How a tie is decided, and whether the team plays one game
+                      together after the seats. Crew has no team game. */}
+                  {row.format === 'aggregate_2v2' && <>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>{tt('stages.tieRule', 'Decide each tie by')}</span>
+                      <Chips value={s.tie_rule || 'goals'} disabled={busy} label={tt('stages.tieRule', 'Decide each tie by')}
+                             options={[['goals', tt('stages.tieRuleGoals', 'Total goals')],
+                                       ['sub_wins', tt('stages.tieRuleSubWins', 'Games won')],
+                                       ['crew', tt('stages.tieRuleCrew', 'Crew battle')]]}
+                             onChange={v => setSetting(index, 'tie_rule', v)} />
+                    </div>
+                    {(s.tie_rule || 'goals') !== 'crew' && (
+                      <div className={styles.field}>
+                        <span className={styles.fieldLabel}>{tt('stages.teamGame', 'A team game after the seats')}</span>
+                        <Chips value={Boolean(s.team_game)} disabled={busy} label={tt('stages.teamGame', 'A team game after the seats')}
+                               options={[[false, tt('stages.teamGameNo', 'No')], [true, tt('stages.teamGameYes', 'Yes')]]}
+                               onChange={v => setSetting(index, 'team_game', v)} />
+                      </div>
+                    )}
+                  </>}
                   {/* P3 W3a: how the field is dealt, and how many it meets from each pot. */}
                   {row.format === 'league_phase' && <>
                     <div className={styles.field}>
