@@ -1,0 +1,63 @@
+/* How a stage's format is decided, on the public bracket page (P4c). One filled
+   surface, a sentence, and filled chips for the vote. No strokes. */
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.line {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #33343a;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.chip:hover { background-color: #3d3e45; color: #fff; }
+.chipOn,
+.chipOn:hover { background-color: rgba(212, 175, 55, 0.22); color: var(--v-ent-light-gold, #E8C760); }
+.chip:disabled { opacity: 0.5; cursor: not-allowed; }
+.chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.count {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+}
+
+.problem {
+  color: var(--v-ent-red, #ed1c24);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

@@ -543,3 +543,24 @@
 }
 .schemaBox:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .schemaBox:disabled { opacity: 0.6; }
+
+/* A stage whose format is chosen later (P4c): the organiser's pick once the
+   entrants or the count have not settled it, and one filled row per band. */
+.pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.bandRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  background-color: #33343a;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  margin-top: 0.5rem;
+}
