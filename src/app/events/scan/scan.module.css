@@ -137,7 +137,8 @@
 
 .resultIn,
 .resultDuplicate,
-.resultUnknown {
+.resultUnknown,
+.resultTampered {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -149,20 +150,23 @@
 
 .resultIn strong,
 .resultDuplicate strong,
-.resultUnknown strong {
+.resultUnknown strong,
+.resultTampered strong {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 1.5rem;
 }
 
 .resultIn span,
 .resultDuplicate span,
-.resultUnknown span {
+.resultUnknown span,
+.resultTampered span {
   font-size: 1rem;
 }
 
 .resultIn svg,
 .resultDuplicate svg,
-.resultUnknown svg {
+.resultUnknown svg,
+.resultTampered svg {
   width: 2.4rem;
   height: 2.4rem;
 }
@@ -182,6 +186,12 @@
 .resultUnknown {
   background-color: rgba(237, 28, 36, 0.18);
   color: #FF8A8A;
+}
+/* A seal that does not verify: somebody made this code up or changed it. The
+   strongest answer on the screen, so a flat red fill and nothing around it. */
+.resultTampered {
+  background-color: var(--v-ent-red);
+  color: #fff;
 }
 
 .resultSub {

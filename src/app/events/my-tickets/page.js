@@ -106,6 +106,9 @@ const normaliseTicket = t => ({
   ...t,
   id: t.id,
   code: t.code,
+  // The sealed payload when the server has one, else the bare code. Only the QR
+  // reads this; the code printed under it stays the bare code.
+  qr: t.qr || t.code,
   status: STATUS_MAP[t.status] || t.status,
   tier: t.tier?.name || t.tier || '',
   event_id: t.event?.event_id ?? t.event?.id,
@@ -346,7 +349,7 @@ const MyTickets = () => {
             return <button key={t.id} className={styles.ticketCard} onClick={() => setActiveTicket(t)} type="button">
                     <div className={`${styles.ticketLeft} ${styles['leftTier_' + tCls]}`}>
                       <div className={styles.qrThumb}>
-                        <TicketQr value={t.code} size={92} className={styles.qrCanvasSmall} />
+                        <TicketQr value={t.qr || t.code} size={92} className={styles.qrCanvasSmall} />
                         <FaQrcode />
                       </div>
                       <p className={styles.ticketCode}>{t.qr_code}</p>
@@ -418,7 +421,7 @@ const MyTickets = () => {
 
             <div className={styles.qrModalBody}>
               <div className={styles.qrLargeWrap}>
-                <TicketQr value={activeTicket.code} size={220} className={styles.qrCanvas} />
+                <TicketQr value={activeTicket.qr || activeTicket.code} size={220} className={styles.qrCanvas} />
                 <p className={styles.qrLargeCode}>{activeTicket.code}</p>
               </div>
 
