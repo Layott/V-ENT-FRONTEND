@@ -44,7 +44,7 @@ import styles from './bracket-visualizer.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-const TABLE_FORMATS = new Set(['round_robin', 'ladder', 'aggregate_2v2', 'swiss', 'league']);
+const TABLE_FORMATS = new Set(['round_robin', 'ladder', 'aggregate_2v2', 'swiss', 'league', 'league_phase']);
 const OPEN = ['scheduled', 'in_progress', 'pending_opponent_confirm'];
 
 const norm = format => String(format || '').trim().toLowerCase().replace(/[\s-]+/g, '_');

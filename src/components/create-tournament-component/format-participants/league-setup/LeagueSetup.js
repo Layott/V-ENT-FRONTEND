@@ -24,7 +24,7 @@ import { useT } from '@/i18n/LanguageProvider';
 // Every format whose winner comes off a table rather than out of a bracket.
 const TABLE_FORMATS = new Set([
   'round-robin', 'round_robin', 'roundrobin', 'rr',
-  'league', 'ladder', 'aggregate_2v2', 'aggregate-2v2',
+  'league', 'ladder', 'aggregate_2v2', 'aggregate-2v2', 'league_phase',
 ]);
 
 export const isLeagueFormat = value => TABLE_FORMATS.has(
