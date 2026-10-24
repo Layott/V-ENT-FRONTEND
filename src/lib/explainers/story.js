@@ -94,6 +94,8 @@ export const ART = {
   streak: '{n} in a row',
   streakGoal: 'First to {n} in a row wins',
   waits: 'Waits for the final',
+  challengeWon: '{winner} wins and they swap',
+  challengeHeld: '{winner} wins, nobody moves',
 };
 
 /** A drawn word with its numbers filled in, through a translator. */

@@ -12,6 +12,7 @@ import singleElimination from './formats/singleElimination';
 import doubleElimination from './formats/doubleElimination';
 import roundRobin from './formats/roundRobin';
 import league from './formats/league';
+import leaguePhase from './formats/leaguePhase';
 import groupsKnockout from './formats/groupsKnockout';
 import swiss from './formats/swiss';
 import gsl from './formats/gsl';
@@ -23,6 +24,7 @@ import pagePlayoff from './formats/pagePlayoff';
 import winnerStaysOn from './formats/winnerStaysOn';
 import aggregate from './formats/aggregate';
 import ladder from './formats/ladder';
+import challengeLadder from './formats/challengeLadder';
 
 // The order the help page lists them in: the knockouts, then the tables, then
 // the playoffs and the rest.
@@ -31,6 +33,7 @@ const ALL = [
   doubleElimination,
   roundRobin,
   league,
+  leaguePhase,
   groupsKnockout,
   swiss,
   gsl,
@@ -42,6 +45,7 @@ const ALL = [
   winnerStaysOn,
   aggregate,
   ladder,
+  challengeLadder,
 ];
 
 export const EXPLAINERS = Object.fromEntries(ALL.map((e) => [e.key, e]));
